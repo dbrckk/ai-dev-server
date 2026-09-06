@@ -32,7 +32,7 @@ jobs:
           set -euo pipefail
           OP=$(jq -r '.operation // "status"' control/request.json)
           case "$OP" in
-            rebuild|status|start_services|doctor|logs) ;;
+            rebuild|status|start_services|doctor|logs|codespace_logs) ;;
             *) echo "Unsupported operation: $OP"; exit 1 ;;
           esac
           echo "operation=$OP" >> "$GITHUB_OUTPUT"
@@ -48,14 +48,13 @@ jobs:
           echo "Codespace: $NAME"
 
       - name: Ensure Codespace is running
-        if: steps.request.outputs.operation != 'rebuild'
+        if: steps.request.outputs.operation != 'rebuild' && steps.request.outputs.operation != 'codespace_logs'
         shell: bash
         run: |
           set -euo pipefail
           NAME='${{ steps.codespace.outputs.name }}'
           STATE=$(gh codespace view -c "$NAME" --json state --jq .state)
           echo "Current state: $STATE"
-
           case "$STATE" in
             Available) ;;
             Rebuilding|Starting|Provisioning|Creating|Updating)
@@ -69,7 +68,6 @@ jobs:
                 "https://api.github.com/user/codespaces/$NAME/start" >/dev/null || true
               ;;
           esac
-
           if [ "$STATE" != "Available" ]; then
             for i in {1..90}; do
               STATE=$(gh codespace view -c "$NAME" --json state --jq .state 2>/dev/null || true)
@@ -85,29 +83,27 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          NAME='${{ steps.codespace.outputs.name }}'
-          gh codespace rebuild -c "$NAME" --full
+          gh codespace rebuild -c '${{ steps.codespace.outputs.name }}' --full
+
+      - name: Read Codespace build logs
+        if: steps.request.outputs.operation == 'codespace_logs'
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh codespace logs -c '${{ steps.codespace.outputs.name }}' | tee remote-output.txt
 
       - name: Run remote operation
-        if: steps.request.outputs.operation != 'rebuild'
+        if: steps.request.outputs.operation != 'rebuild' && steps.request.outputs.operation != 'codespace_logs'
         shell: bash
         run: |
           set -euo pipefail
           NAME='${{ steps.codespace.outputs.name }}'
           OP='${{ steps.request.outputs.operation }}'
           case "$OP" in
-            status)
-              CMD='cd /workspaces/ai-dev-server && bash scripts/status.sh'
-              ;;
-            start_services)
-              CMD='cd /workspaces/ai-dev-server && git pull --ff-only && bash scripts/start-all.sh && bash scripts/status.sh'
-              ;;
-            doctor)
-              CMD='cd /workspaces/ai-dev-server && git pull --ff-only && bash scripts/doctor.sh'
-              ;;
-            logs)
-              CMD='for f in "$HOME"/.cache/ai-dev-server/logs/*.log; do echo "===== $f ====="; tail -n 120 "$f"; done'
-              ;;
+            status) CMD='cd /workspaces/ai-dev-server && bash scripts/status.sh' ;;
+            start_services) CMD='cd /workspaces/ai-dev-server && git pull --ff-only && bash scripts/start-all.sh && bash scripts/status.sh' ;;
+            doctor) CMD='cd /workspaces/ai-dev-server && git pull --ff-only && bash scripts/doctor.sh' ;;
+            logs) CMD='for f in "$HOME"/.cache/ai-dev-server/logs/*.log; do echo "===== $f ====="; tail -n 120 "$f"; done' ;;
           esac
           gh codespace ssh -c "$NAME" "$CMD" | tee remote-output.txt
 

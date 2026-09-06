@@ -54,7 +54,7 @@ jobs:
           echo 'Codespace did not become available'
           exit 1
 
-      - name: Let isolated FCC agent implement one safe improvement
+      - name: Generate deterministic FCC edit plan
         id: patch
         run: |
           set -euo pipefail
@@ -80,57 +80,130 @@ jobs:
           git clone --depth 1 https://github.com/dbrckk/Jumpy.git "$WORK" >/dev/null 2>&1
           cd "$WORK"
 
+          CONTEXT=$(python - <<'PY'
+          from pathlib import Path
+          wanted = [
+              'README.md','docs/PRODUCTION_ROADMAP.md','docs/GAME_DESIGN.md','SETUP_REQUIRED.txt',
+              'project.godot','scripts/main.gd','scripts/profile.gd','scripts/integrations.gd','assets/ui/theme.tres'
+          ]
+          total=0
+          for name in wanted:
+              p=Path(name)
+              if not p.exists():
+                  continue
+              text=p.read_text(errors='replace')
+              if total+len(text)>75000:
+                  text=text[:max(0,75000-total)]
+              print(f'\n===== FILE: {name} =====\n{text}')
+              total += len(text)
+              if total>=75000:
+                  break
+          PY
+          )
+
+          MODEL=$(grep -E '^MODEL=' "$HOME/.fcc/.env" | tail -n1 | cut -d= -f2-)
           PROMPT=$(cat <<'PROMPT_END'
           You are the autonomous senior game engineer for Jumpy, a Godot 4.7 portrait mobile arcade game aiming for exceptional viral/hybrid-casual quality.
 
-          Work directly in this isolated clone. Inspect README.md, docs/PRODUCTION_ROADMAP.md, docs/GAME_DESIGN.md, SETUP_REQUIRED.txt and the relevant source files. Choose exactly ONE highest-impact SAFE improvement that can be fully implemented now. Prefer core feel, retention, clarity, replayability, polish, accessibility, deterministic daily play, progression, or robust code.
+          Review the supplied current repository files and choose exactly ONE highest-impact SAFE improvement that can be completed now. Prefer core feel, retention, clarity, replayability, polish, accessibility, deterministic daily play, progression, or robust code. Follow the production roadmap.
 
-          Implement the change in the files. Do not just describe it. Do not commit or push. Maximum 2 changed text files and roughly 180 changed lines. Do not edit .github/, do not add credentials, keystores, network calls, external plugins, paid services, API dependencies, store actions, or binary assets. Do not weaken existing safety or determinism. If no safe useful improvement is possible, make no changes.
+          You are NOT writing a git diff. Return exact deterministic search/replace edits copied from the supplied files. Maximum 3 edits across maximum 2 existing text files. Each search string must be copied EXACTLY from the current file and should be long enough to occur exactly once. Keep the total change focused (roughly <=180 lines). Do not edit .github/, export signing, credentials, secrets, network calls, external plugins, paid services, API dependencies, store actions, or binary assets. Do not weaken deterministic daily generation or existing safety.
 
-          Before finishing, review your edits for Godot 4.7 syntax and keep the repository internally consistent. Keep this iteration focused enough to finish quickly.
+          Return ONLY:
+          NO_CHANGE: <reason>
+          or
+          EDIT_JSON_START
+          {"summary":"short description","edits":[{"path":"scripts/example.gd","search":"exact existing text","replace":"exact replacement text"}]}
+          EDIT_JSON_END
+
+          JSON must be valid. Do not include markdown fences.
           PROMPT_END
           )
-
-          AGENT_RC=0
-          timeout -k 5s 140s fcc-opencode run "$PROMPT" >/tmp/jumpy-agent.log 2>&1 || AGENT_RC=$?
-          echo "AGENT_RC=$AGENT_RC"
-
-          CHANGED=$(git diff --name-only)
-          if [ -z "$CHANGED" ]; then
-            echo 'RESULT=NO_CHANGE'
-            tail -n 12 /tmp/jumpy-agent.log | tr '\n' ' ' | head -c 800 | sed 's/^/REASON=/'
-            echo
-            exit 0
-          fi
-
-          set +e
-          python - <<'PY'
-          import subprocess
-          changed=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
-          forbidden=[p for p in changed if p.startswith('.github/') or any(s in p.lower() for s in ['secret','keystore','.jks','.p12'])]
-          if forbidden or len(changed) > 2:
-              print('RESULT=SAFETY_REJECTED')
-              print('FILES='+','.join(changed))
-              raise SystemExit(20)
+          PROMPT="$PROMPT\n\n$CONTEXT"
+          PAYLOAD=$(python - "$MODEL" "$PROMPT" <<'PY'
+          import json,sys
+          print(json.dumps({
+              'model':sys.argv[1],
+              'max_tokens':5200,
+              'messages':[{'role':'user','content':sys.argv[2]}],
+              'stream':False
+          }))
           PY
-          SAFETY_RC=$?
-          set -e
-          if [ "$SAFETY_RC" -eq 20 ]; then
-            git reset --hard HEAD >/dev/null
-            exit 0
-          elif [ "$SAFETY_RC" -ne 0 ]; then
-            echo 'RESULT=SAFETY_CHECK_FAILED'
-            exit 0
-          fi
+          )
+          RESPONSE=$(curl -sS --max-time 180 -H 'Content-Type: application/json' -X POST http://127.0.0.1:8082/v1/messages --data-binary "$PAYLOAD" || true)
 
-          FILES=$(git diff --name-only | paste -sd, -)
-          PATCH_B64=$(git diff --binary | base64 -w0)
-          echo 'RESULT=PATCH'
-          echo "FILES=$FILES"
-          echo "PATCH_B64=$PATCH_B64"
+          python - "$RESPONSE" <<'PY'
+          import base64,json,re,subprocess,sys
+          from pathlib import Path
+          try:
+              d=json.loads(sys.argv[1])
+              text='\n'.join(str(x.get('text','')) for x in d.get('content',[]) if isinstance(x,dict) and x.get('type')=='text')
+          except Exception as e:
+              print('RESULT=INVALID_RESPONSE')
+              print('REASON='+str(e)[:250])
+              raise SystemExit(0)
+          if 'NO_CHANGE:' in text and 'EDIT_JSON_START' not in text:
+              print('RESULT=NO_CHANGE')
+              print('REASON='+text.split('NO_CHANGE:',1)[1].strip().splitlines()[0][:300])
+              raise SystemExit(0)
+          m=re.search(r'EDIT_JSON_START\s*\n(.*?)\nEDIT_JSON_END',text,re.S)
+          if not m:
+              print('RESULT=NO_EDIT_PLAN')
+              print('REASON=missing_structured_edit_markers')
+              raise SystemExit(0)
+          try:
+              plan=json.loads(m.group(1).strip())
+          except Exception as e:
+              print('RESULT=INVALID_EDIT_JSON')
+              print('REASON='+str(e)[:250])
+              raise SystemExit(0)
+          edits=plan.get('edits',[])
+          if not isinstance(edits,list) or not 1 <= len(edits) <= 3:
+              print('RESULT=SAFETY_REJECTED')
+              print('REASON=invalid_edit_count')
+              raise SystemExit(0)
+          paths=[]
+          for edit in edits:
+              path=str(edit.get('path',''))
+              search=str(edit.get('search',''))
+              replace=str(edit.get('replace',''))
+              if (not path or path.startswith('.github/') or any(s in path.lower() for s in ['secret','keystore','.jks','.p12']) or not search):
+                  print('RESULT=SAFETY_REJECTED')
+                  print('REASON=forbidden_path_or_empty_search')
+                  raise SystemExit(0)
+              p=Path(path)
+              if not p.is_file():
+                  print('RESULT=EDIT_REJECTED')
+                  print('REASON=path_not_existing_text_file:'+path)
+                  raise SystemExit(0)
+              content=p.read_text(errors='strict')
+              count=content.count(search)
+              if count != 1:
+                  print('RESULT=EDIT_REJECTED')
+                  print('REASON=search_match_count_%d:%s' % (count,path))
+                  raise SystemExit(0)
+              p.write_text(content.replace(search,replace,1))
+              paths.append(path)
+          changed=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
+          if len(changed)>2 or len(set(paths))>2 or not changed:
+              print('RESULT=SAFETY_REJECTED')
+              print('REASON=changed_file_limit')
+              raise SystemExit(0)
+          stat=subprocess.check_output(['git','diff','--numstat'],text=True)
+          churn=sum(sum(int(x) for x in line.split()[:2] if x.isdigit()) for line in stat.splitlines())
+          if churn>260:
+              print('RESULT=SAFETY_REJECTED')
+              print('REASON=change_too_large')
+              raise SystemExit(0)
+          patch=subprocess.check_output(['git','diff','--binary'])
+          print('RESULT=PATCH')
+          print('SUMMARY='+re.sub(r'\s+',' ',str(plan.get('summary','improvement')))[:300])
+          print('FILES='+','.join(changed))
+          print('PATCH_B64='+base64.b64encode(patch).decode())
+          PY
           REMOTE
           DATA=$(base64 -w0 /tmp/remote-cycle.sh)
-          timeout -k 5s 190s gh codespace ssh -c "$NAME" "printf '%s' '$DATA' | base64 -d | bash" > /tmp/cycle.out || true
+          timeout -k 5s 230s gh codespace ssh -c "$NAME" "printf '%s' '$DATA' | base64 -d | bash" > /tmp/cycle.out || true
           sed -E 's/(PATCH_B64=).*/\1[REDACTED]/' /tmp/cycle.out
           RESULT=$(grep '^RESULT=' /tmp/cycle.out | tail -n1 | cut -d= -f2- || true)
           echo "result=${RESULT:-UNKNOWN}" >> "$GITHUB_OUTPUT"
@@ -203,7 +276,7 @@ jobs:
           echo "Schedule: minute 15 and 45 of every hour" >> "$GITHUB_STEP_SUMMARY"
           echo "Result: ${{ steps.patch.outputs.result }}" >> "$GITHUB_STEP_SUMMARY"
           if [ '${{ steps.patch.outputs.has_patch }}' = 'true' ]; then
-            echo 'Candidate generated in an isolated clone; commit occurs only after real Godot validation.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Candidate created from deterministic exact-match edits; commit occurs only after real Godot validation.' >> "$GITHUB_STEP_SUMMARY"
           else
             echo 'No repository write was attempted this cycle.' >> "$GITHUB_STEP_SUMMARY"
           fi

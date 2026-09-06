@@ -29,7 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           OP=$(jq -r '.operation // "status"' control/request.json)
-          case "$OP" in recreate|rebuild|status|start_services|doctor|logs|codespace_logs) ;; *) exit 1;; esac
+          case "$OP" in recreate|rebuild|status|start_services|restart_services|doctor|logs|codespace_logs) ;; *) exit 1;; esac
           echo "operation=$OP" >> "$GITHUB_OUTPUT"
 
       - name: Find Codespace
@@ -69,7 +69,7 @@ jobs:
         run: |
           set -euo pipefail
           NAME='${{ steps.codespace.outputs.name }}'
-          for FILE in start-all.sh status.sh doctor.sh; do
+          for FILE in start-all.sh restart-all.sh status.sh doctor.sh; do
             DATA=$(base64 -w0 "scripts/$FILE")
             timeout 60s gh codespace ssh -c "$NAME" "printf '%s' '$DATA' | base64 -d > /workspaces/ai-dev-server/scripts/$FILE"
           done
@@ -90,10 +90,17 @@ jobs:
           case "$OP" in
             status) CMD='cd /workspaces/ai-dev-server && bash scripts/status.sh' ;;
             start_services) CMD='cd /workspaces/ai-dev-server && bash scripts/start-all.sh && bash scripts/status.sh' ;;
+            restart_services) CMD='cd /workspaces/ai-dev-server && bash scripts/restart-all.sh && bash scripts/status.sh' ;;
             doctor) CMD='cd /workspaces/ai-dev-server && bash scripts/doctor.sh' ;;
             logs) CMD='for f in "$HOME"/.cache/ai-dev-server/logs/*.log; do echo "===== $f ====="; tail -n 120 "$f"; done' ;;
           esac
           timeout 120s gh codespace ssh -c "$NAME" "$CMD" | tee remote-output.txt
+
+      - name: Sanitize remote output
+        if: always()
+        run: |
+          [ -f remote-output.txt ] || exit 0
+          sed -E 's/(\?token=)[A-Za-z0-9._~-]+/\1[REDACTED]/g; s/(ghu_)[A-Za-z0-9]+/\1[REDACTED]/g; s/(github_pat_)[A-Za-z0-9_]+/\1[REDACTED]/g' remote-output.txt > safe-output.txt
 
       - name: Persist remote output
         if: always()
@@ -101,13 +108,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          [ -f remote-output.txt ] || exit 0
-          cp remote-output.txt control/last-output.txt
+          [ -f safe-output.txt ] || exit 0
+          cp safe-output.txt control/last-output.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add control/last-output.txt
           git diff --cached --quiet && exit 0
-          git commit -m 'Record remote Codespace output'
+          git commit -m 'Record sanitized remote Codespace output'
           git push
 
       - name: Summary
@@ -117,4 +124,4 @@ jobs:
           echo "## Remote Codespace Control" >> "$GITHUB_STEP_SUMMARY"
           echo "Operation: ${{ steps.request.outputs.operation }}" >> "$GITHUB_STEP_SUMMARY"
           echo "Codespace: $NAME" >> "$GITHUB_STEP_SUMMARY"
-          [ ! -f remote-output.txt ] || { echo '```text' >> "$GITHUB_STEP_SUMMARY"; tail -n 200 remote-output.txt >> "$GITHUB_STEP_SUMMARY"; echo '```' >> "$GITHUB_STEP_SUMMARY"; }
+          [ ! -f safe-output.txt ] || { echo '```text' >> "$GITHUB_STEP_SUMMARY"; tail -n 200 safe-output.txt >> "$GITHUB_STEP_SUMMARY"; echo '```' >> "$GITHUB_STEP_SUMMARY"; }

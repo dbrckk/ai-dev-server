@@ -1,6 +1,6 @@
-started fcc (pid 5857)
-started dsh (pid 5862)
-started cdesktop (pid 5898)
+started fcc (pid 6666)
+started dsh (pid 6673)
+started cdesktop (pid 6731)
 === AI Dev Server status ===
 Free Claude Code     OK (port 8082)
 DeepSeek Harness     OK (port 3080)
@@ -16,68 +16,34 @@ Installed CLIs:
 
 === startup log tails ===
 --- fcc ---
-INFO:     Started server process [5857]
+INFO:     Started server process [6666]
 INFO:     Waiting for application startup.
 INFO:     Admin UI: http://127.0.0.1:8082/admin (local-only)
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8082 (Press CTRL+C to quit)
-INFO:     127.0.0.1:55280 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36254 - "GET /health HTTP/1.1" 200 OK
 --- dsh ---
-    at boot (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/dsh-app-boot/lib/index.js:1511:9)
-    at async runProfile (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/dsh/lib/profile-boot-BTzzdrGY.js:261:14)
-    at async file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/dsh/lib/bin.js:130:3 {
-  [cause]: Error: failed to apply loader entry include (cordis:include): failed to apply loader entry webserver (@deepseek-ai/dsh-host-webserver): listen EADDRINUSE: address already in use 127.0.0.1:3080
-      at updateError (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:309:9)
-      at Entry._init (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:529:10)
-      at async Entry.init (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:505:4)
-      at async Entry.update (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:426:37)
-      at async EntryGroup.create (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:65:4)
-      at async Proxy.create (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:227:14)
-      at async mountRootInclude (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/dsh-app-boot/lib/index.js:1309:20)
-      at async boot (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/dsh-app-boot/lib/index.js:1500:3)
-      at async runProfile (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/dsh/lib/profile-boot-BTzzdrGY.js:261:14)
-      at async file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/dsh/lib/bin.js:130:3 {
-    [cause]: Error: failed to apply loader entry webserver (@deepseek-ai/dsh-host-webserver): listen EADDRINUSE: address already in use 127.0.0.1:3080
-        at updateError (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:309:9)
-        at Entry._init (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:529:10)
-        at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-        at async Entry.init (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:505:4)
-        at async Entry.update (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:426:37)
-        at async EntryGroup.create (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:65:4)
-        at async Promise.allSettled (index 101)
-        at async EntryGroup.update (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:97:21)
-        at async Include._apply (file:///home/node/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/dsh-app-boot/lib/index.js:240:3) {
-      [cause]: Error: listen EADDRINUSE: address already in use 127.0.0.1:3080
-          at Server.setupListenHandle [as _listen2] (node:net:1939:16)
-          at listenInCluster (node:net:1996:12)
-          at node:net:2205:7
-          at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
-        code: 'EADDRINUSE',
-        errno: -98,
-        syscall: 'listen',
-        address: '127.0.0.1',
-        port: 3080
-      }
-    }
-  }
-}
-
-Node.js v22.16.0
+dsh web: http://127.0.0.1:3080/?token=[REDACTED]
 --- cdesktop ---
 Starting cdesktop v0.2.3...
-[2m2026-09-06T14:33:25.375577Z[0m [32m INFO[0m [2mexecutors::profile[0m[2m:[0m No user profiles.json found, using defaults only
-[2m2026-09-06T14:33:25.375760Z[0m [32m INFO[0m [2mexecutors::profile[0m[2m:[0m Recommended executor: CLAUDE_CODE
-[2m2026-09-06T14:33:25.404454Z[0m [32m INFO[0m [2mlocal_deployment[0m[2m:[0m Starting orphaned file cleanup...
-[2m2026-09-06T14:33:25.407266Z[0m [31mERROR[0m [2mlocal_deployment[0m[2m:[0m failed to create remote client [3me[0m[2m=[0mUrl("relative URL without a base")
+[2m2026-09-06T14:35:02.291421Z[0m [32m INFO[0m [2mexecutors::profile[0m[2m:[0m No user profiles.json found, using defaults only
+[2m2026-09-06T14:35:02.291608Z[0m [32m INFO[0m [2mexecutors::profile[0m[2m:[0m Recommended executor: CLAUDE_CODE
+[2m2026-09-06T14:35:02.323778Z[0m [32m INFO[0m [2mlocal_deployment[0m[2m:[0m Starting orphaned file cleanup...
+[2m2026-09-06T14:35:02.323923Z[0m [31mERROR[0m [2mlocal_deployment[0m[2m:[0m failed to create remote client [3me[0m[2m=[0mUrl("relative URL without a base")
+[2m2026-09-06T14:35:02.349644Z[0m [32m INFO[0m [2mlocal_deployment::container[0m[2m:[0m Starting periodic workspace cleanup...
+[2m2026-09-06T14:35:02.350274Z[0m [32m INFO[0m [2mservices::services::pr_monitor[0m[2m:[0m Starting PR monitoring service with interval 60s
+[2m2026-09-06T14:35:02.376942Z[0m [32m INFO[0m [2mserver[0m[2m:[0m Main server on :3000, Preview proxy on :35275
+[2m2026-09-06T14:35:02.410635Z[0m [32m INFO[0m [2mserver[0m[2m:[0m Opening browser...
+[2m2026-09-06T14:35:02.435247Z[0m [33m WARN[0m [2mserver[0m[2m:[0m Failed to open browser automatically: Launcher "gio" "open" "http://127.0.0.1:3000" failed with ExitStatus(unix_wait_status(512)). Please open http://127.0.0.1:3000 manually.
 === AI Dev Server status ===
 Free Claude Code     OK (port 8082)
 DeepSeek Harness     OK (port 3080)
 cdesktop             OK (port 3000)
 
 Installed CLIs:
-  fcc-server      missing
-  fcc-claude      missing
-  fcc-opencode    missing
-  fcc-dsh         missing
+  fcc-server      /home/node/.local/bin/fcc-server
+  fcc-claude      /home/node/.local/bin/fcc-claude
+  fcc-opencode    /home/node/.local/bin/fcc-opencode
+  fcc-dsh         /home/node/.local/bin/fcc-dsh
   claude          /usr/local/share/npm-global/bin/claude
   opencode        /usr/local/share/npm-global/bin/opencode

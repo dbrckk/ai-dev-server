@@ -69,9 +69,10 @@ jobs:
         run: |
           set -euo pipefail
           NAME='${{ steps.codespace.outputs.name }}'
-          gh codespace cp -c "$NAME" scripts/start-all.sh remote:/workspaces/ai-dev-server/scripts/start-all.sh
-          gh codespace cp -c "$NAME" scripts/status.sh remote:/workspaces/ai-dev-server/scripts/status.sh
-          gh codespace cp -c "$NAME" scripts/doctor.sh remote:/workspaces/ai-dev-server/scripts/doctor.sh
+          for FILE in start-all.sh status.sh doctor.sh; do
+            DATA=$(base64 -w0 "scripts/$FILE")
+            timeout 60s gh codespace ssh -c "$NAME" "printf '%s' '$DATA' | base64 -d > /workspaces/ai-dev-server/scripts/$FILE"
+          done
 
       - name: Rebuild Codespace
         if: steps.request.outputs.operation == 'rebuild'

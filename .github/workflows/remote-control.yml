@@ -55,14 +55,25 @@ jobs:
           NAME='${{ steps.codespace.outputs.name }}'
           STATE=$(gh codespace view -c "$NAME" --json state --jq .state)
           echo "Current state: $STATE"
+
+          case "$STATE" in
+            Available) ;;
+            Rebuilding|Starting|Provisioning|Creating|Updating)
+              echo "Codespace is transitioning; waiting for Available..."
+              ;;
+            *)
+              curl -sS -X POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer $GH_TOKEN" \
+                -H "X-GitHub-Api-Version: 2026-03-10" \
+                "https://api.github.com/user/codespaces/$NAME/start" >/dev/null || true
+              ;;
+          esac
+
           if [ "$STATE" != "Available" ]; then
-            curl -fsSL -X POST \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: Bearer $GH_TOKEN" \
-              -H "X-GitHub-Api-Version: 2026-03-10" \
-              "https://api.github.com/user/codespaces/$NAME/start" >/dev/null
-            for i in {1..60}; do
+            for i in {1..90}; do
               STATE=$(gh codespace view -c "$NAME" --json state --jq .state 2>/dev/null || true)
+              echo "State: $STATE"
               [ "$STATE" = "Available" ] && break
               sleep 5
             done

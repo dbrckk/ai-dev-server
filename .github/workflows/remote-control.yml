@@ -1,0 +1,118 @@
+name: Remote Codespace Control
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - control/request.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  control:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.CODESPACES_PAT }}
+      REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate secret
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${GH_TOKEN:-}" || { echo 'Missing CODESPACES_PAT'; exit 1; }
+
+      - name: Read request
+        id: request
+        shell: bash
+        run: |
+          set -euo pipefail
+          OP=$(jq -r '.operation // "status"' control/request.json)
+          case "$OP" in
+            rebuild|status|start_services|doctor|logs) ;;
+            *) echo "Unsupported operation: $OP"; exit 1 ;;
+          esac
+          echo "operation=$OP" >> "$GITHUB_OUTPUT"
+
+      - name: Find Codespace
+        id: codespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          NAME=$(gh codespace list --json name,repository,state --jq ".[] | select(.repository.nameWithOwner == \"$REPO\") | .name" | head -n1)
+          test -n "$NAME" || { echo "No Codespace found for $REPO"; exit 1; }
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "Codespace: $NAME"
+
+      - name: Ensure Codespace is running
+        if: steps.request.outputs.operation != 'rebuild'
+        shell: bash
+        run: |
+          set -euo pipefail
+          NAME='${{ steps.codespace.outputs.name }}'
+          STATE=$(gh codespace view -c "$NAME" --json state --jq .state)
+          echo "Current state: $STATE"
+          if [ "$STATE" != "Available" ]; then
+            curl -fsSL -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "X-GitHub-Api-Version: 2026-03-10" \
+              "https://api.github.com/user/codespaces/$NAME/start" >/dev/null
+            for i in {1..60}; do
+              STATE=$(gh codespace view -c "$NAME" --json state --jq .state 2>/dev/null || true)
+              [ "$STATE" = "Available" ] && break
+              sleep 5
+            done
+            [ "$STATE" = "Available" ] || { echo "Codespace did not become available"; exit 1; }
+          fi
+
+      - name: Rebuild Codespace
+        if: steps.request.outputs.operation == 'rebuild'
+        shell: bash
+        run: |
+          set -euo pipefail
+          NAME='${{ steps.codespace.outputs.name }}'
+          gh codespace rebuild -c "$NAME" --full
+
+      - name: Run remote operation
+        if: steps.request.outputs.operation != 'rebuild'
+        shell: bash
+        run: |
+          set -euo pipefail
+          NAME='${{ steps.codespace.outputs.name }}'
+          OP='${{ steps.request.outputs.operation }}'
+          case "$OP" in
+            status)
+              CMD='cd /workspaces/ai-dev-server && bash scripts/status.sh'
+              ;;
+            start_services)
+              CMD='cd /workspaces/ai-dev-server && git pull --ff-only && bash scripts/start-all.sh && bash scripts/status.sh'
+              ;;
+            doctor)
+              CMD='cd /workspaces/ai-dev-server && git pull --ff-only && bash scripts/doctor.sh'
+              ;;
+            logs)
+              CMD='for f in "$HOME"/.cache/ai-dev-server/logs/*.log; do echo "===== $f ====="; tail -n 120 "$f"; done'
+              ;;
+          esac
+          gh codespace ssh -c "$NAME" "$CMD" | tee remote-output.txt
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## Remote Codespace Control'
+            echo
+            echo "Operation: ${{ steps.request.outputs.operation }}"
+            echo "Codespace: ${{ steps.codespace.outputs.name }}"
+            if [ -f remote-output.txt ]; then
+              echo
+              echo '```text'
+              tail -n 200 remote-output.txt
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

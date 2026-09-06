@@ -69,7 +69,9 @@ jobs:
         run: |
           set -euo pipefail
           NAME='${{ steps.codespace.outputs.name }}'
-          gh codespace cp -c "$NAME" scripts/start-all.sh scripts/status.sh scripts/doctor.sh remote:/workspaces/ai-dev-server/scripts/
+          gh codespace cp -c "$NAME" scripts/start-all.sh remote:/workspaces/ai-dev-server/scripts/start-all.sh
+          gh codespace cp -c "$NAME" scripts/status.sh remote:/workspaces/ai-dev-server/scripts/status.sh
+          gh codespace cp -c "$NAME" scripts/doctor.sh remote:/workspaces/ai-dev-server/scripts/doctor.sh
 
       - name: Rebuild Codespace
         if: steps.request.outputs.operation == 'rebuild'

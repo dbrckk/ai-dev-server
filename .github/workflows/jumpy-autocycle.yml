@@ -1,0 +1,247 @@
+name: Jumpy Autonomous Evolution
+
+on:
+  schedule:
+    # Avoid minute 0 where GitHub notes higher scheduler load.
+    - cron: '15,45 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/jumpy-autocycle.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: jumpy-autonomous-evolution
+  cancel-in-progress: false
+
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ secrets.CODESPACES_PAT }}
+      INFRA_REPO: dbrckk/ai-dev-server
+      GAME_REPO: dbrckk/Jumpy
+    steps:
+      - name: Validate credentials
+        run: |
+          set -euo pipefail
+          test -n "${GH_TOKEN:-}" || { echo 'Missing CODESPACES_PAT'; exit 1; }
+
+      - name: Find and wake AI Codespace
+        id: codespace
+        run: |
+          set -euo pipefail
+          NAME=$(gh codespace list --json name,repository --jq ".[] | select(.repository == \"$INFRA_REPO\") | .name" | head -n1)
+          test -n "$NAME" || { echo 'No ai-dev-server Codespace found'; exit 1; }
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          STATE=$(gh codespace view -c "$NAME" --json state --jq .state)
+          if [ "$STATE" != Available ]; then
+            curl -fsSL -X POST \
+              -H 'Accept: application/vnd.github+json' \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H 'X-GitHub-Api-Version: 2026-03-10' \
+              "https://api.github.com/user/codespaces/$NAME/start" >/dev/null || true
+          fi
+          for i in {1..120}; do
+            STATE=$(gh codespace view -c "$NAME" --json state --jq .state 2>/dev/null || true)
+            [ "$STATE" = Available ] && exit 0
+            sleep 5
+          done
+          echo 'Codespace did not become available'
+          exit 1
+
+      - name: Ask FCC for one safe improvement patch
+        id: patch
+        run: |
+          set -euo pipefail
+          NAME='${{ steps.codespace.outputs.name }}'
+          cat > /tmp/remote-cycle.sh <<'REMOTE'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          export PATH="$HOME/.local/bin:$PATH"
+          BASE="$HOME/.cache/ai-dev-server"
+          mkdir -p "$BASE/logs"
+
+          if ! curl -fsS --max-time 3 http://127.0.0.1:8082/health >/dev/null 2>&1; then
+            nohup fcc-server >"$BASE/logs/fcc.log" 2>&1 < /dev/null &
+            for i in {1..30}; do
+              curl -fsS --max-time 2 http://127.0.0.1:8082/health >/dev/null 2>&1 && break
+              sleep 1
+            done
+          fi
+          curl -fsS --max-time 3 http://127.0.0.1:8082/health >/dev/null
+
+          WORK=/tmp/jumpy-autocycle
+          rm -rf "$WORK"
+          git clone --depth 1 https://github.com/dbrckk/Jumpy.git "$WORK" >/dev/null 2>&1
+          cd "$WORK"
+
+          CONTEXT=$(python - <<'PY'
+          from pathlib import Path
+          wanted = [
+              'README.md','SETUP_REQUIRED.txt','docs/GAME_DESIGN.md','docs/PRODUCTION_ROADMAP.md',
+              'project.godot','export_presets.cfg','scripts/main.gd','scripts/profile.gd',
+              'scripts/integrations.gd','assets/ui/theme.tres'
+          ]
+          total = 0
+          for name in wanted:
+              p = Path(name)
+              if not p.exists():
+                  continue
+              text = p.read_text(errors='replace')
+              if total + len(text) > 90000:
+                  text = text[:max(0, 90000-total)]
+              print(f'\n===== {name} =====\n{text}')
+              total += len(text)
+              if total >= 90000:
+                  break
+          PY
+          )
+
+          MODEL=$(grep -E '^MODEL=' "$HOME/.fcc/.env" | tail -n1 | cut -d= -f2-)
+          PROMPT=$(cat <<'PROMPT_END'
+          You are the autonomous senior game engineer for Jumpy, a Godot 4.7 portrait mobile arcade game aiming for exceptional viral/hybrid-casual quality.
+
+          Choose exactly ONE highest-impact SAFE improvement that can be completed now from the current repository state. Prefer core feel, retention, clarity, replayability, polish, accessibility, deterministic daily play, progression, or robust code. Follow docs/PRODUCTION_ROADMAP.md. Do NOT require a new API, credential, paid service, account action, store publication, binary asset, or external plugin. Do NOT edit .github/, export signing secrets, or introduce network calls. Keep the change focused: maximum 2 existing/new text files and roughly 180 changed lines.
+
+          Return ONLY one of these forms:
+          NO_CHANGE: <short reason>
+          or
+          PATCH_START
+          <a valid unified git diff starting with diff --git ...>
+          PATCH_END
+
+          The patch must apply cleanly to the exact files supplied below. Do not use markdown fences. Do not explain outside the markers.
+          PROMPT_END
+          )
+          PROMPT="$PROMPT\n\n$CONTEXT"
+          PAYLOAD=$(python - "$MODEL" "$PROMPT" <<'PY'
+          import json,sys
+          print(json.dumps({
+              'model': sys.argv[1],
+              'max_tokens': 2600,
+              'messages': [{'role':'user','content':sys.argv[2]}],
+              'stream': False
+          }))
+          PY
+          )
+          RESPONSE=$(curl -sS --max-time 180 -H 'Content-Type: application/json' -X POST http://127.0.0.1:8082/v1/messages --data-binary "$PAYLOAD")
+          python - "$RESPONSE" <<'PY'
+          import json,re,sys,pathlib,subprocess,base64
+          try:
+              d=json.loads(sys.argv[1])
+              text='\n'.join(str(x.get('text','')) for x in d.get('content',[]) if isinstance(x,dict) and x.get('type')=='text')
+          except Exception as e:
+              print('RESULT=INVALID_RESPONSE')
+              raise SystemExit(0)
+          if 'NO_CHANGE:' in text and 'PATCH_START' not in text:
+              reason=text.split('NO_CHANGE:',1)[1].strip().splitlines()[0][:300]
+              print('RESULT=NO_CHANGE')
+              print('REASON='+reason.replace('\n',' '))
+              raise SystemExit(0)
+          m=re.search(r'PATCH_START\s*\n(.*?)\nPATCH_END', text, re.S)
+          if not m:
+              print('RESULT=NO_PATCH')
+              raise SystemExit(0)
+          patch=m.group(1).strip()+"\n"
+          pathlib.Path('/tmp/jumpy.patch').write_text(patch)
+          check=subprocess.run(['git','apply','--check','/tmp/jumpy.patch'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+          if check.returncode != 0:
+              print('RESULT=PATCH_REJECTED')
+              print('REASON='+check.stdout.replace('\n',' ')[:500])
+              raise SystemExit(0)
+          subprocess.check_call(['git','apply','/tmp/jumpy.patch'])
+          changed=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
+          forbidden=[p for p in changed if p.startswith('.github/') or any(s in p.lower() for s in ['secret','keystore','.jks','.p12'])]
+          if forbidden or len(changed) > 2:
+              print('RESULT=SAFETY_REJECTED')
+              print('REASON=forbidden_or_too_many_files')
+              raise SystemExit(0)
+          out=subprocess.check_output(['git','diff','--binary'])
+          print('RESULT=PATCH')
+          print('FILES='+','.join(changed))
+          print('PATCH_B64='+base64.b64encode(out).decode())
+          PY
+          REMOTE
+          DATA=$(base64 -w0 /tmp/remote-cycle.sh)
+          timeout 240s gh codespace ssh -c "$NAME" "printf '%s' '$DATA' | base64 -d | bash" > /tmp/cycle.out
+          sed -E 's/(PATCH_B64=).*/\1[REDACTED]/' /tmp/cycle.out
+          RESULT=$(grep '^RESULT=' /tmp/cycle.out | tail -n1 | cut -d= -f2- || true)
+          echo "result=${RESULT:-UNKNOWN}" >> "$GITHUB_OUTPUT"
+          if [ "$RESULT" = PATCH ]; then
+            grep '^PATCH_B64=' /tmp/cycle.out | tail -n1 | cut -d= -f2- | base64 -d > /tmp/jumpy.patch
+            echo "has_patch=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_patch=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout Jumpy
+        if: steps.patch.outputs.has_patch == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: dbrckk/Jumpy
+          token: ${{ secrets.CODESPACES_PAT }}
+          path: jumpy
+          fetch-depth: 1
+
+      - name: Apply candidate patch
+        if: steps.patch.outputs.has_patch == 'true'
+        run: |
+          set -euo pipefail
+          cd jumpy
+          git apply --check /tmp/jumpy.patch
+          git apply /tmp/jumpy.patch
+          echo 'Candidate files:'
+          git diff --name-only
+          test -n "$(git diff --name-only)"
+
+      - name: Install Godot 4.7.2 stable
+        if: steps.patch.outputs.has_patch == 'true'
+        run: |
+          set -euo pipefail
+          curl -fL -o /tmp/godot.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp/godot-ci
+          mv /tmp/godot-ci/Godot_v4.7.2-stable_linux.x86_64 /tmp/godot-ci/godot
+          chmod +x /tmp/godot-ci/godot
+
+      - name: Validate candidate with real Godot
+        if: steps.patch.outputs.has_patch == 'true'
+        run: |
+          set -euo pipefail
+          cd jumpy
+          set -o pipefail
+          /tmp/godot-ci/godot --headless --path . --editor --quit 2>&1 | tee /tmp/godot.log
+          if grep -E 'SCRIPT ERROR|Parse Error|Cannot parse|Failed loading resource' /tmp/godot.log; then
+            echo 'Blocking Godot error detected'
+            exit 1
+          fi
+          test -f SETUP_REQUIRED.txt
+          test -f docs/PRODUCTION_ROADMAP.md
+
+      - name: Commit validated improvement
+        if: steps.patch.outputs.has_patch == 'true'
+        run: |
+          set -euo pipefail
+          cd jumpy
+          git config user.name 'jumpy-autocycle[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --quiet && { echo 'No effective change'; exit 0; }
+          git commit -m "Autocycle: evolve Jumpy safely"
+          git push origin HEAD:main
+
+      - name: Cycle summary
+        if: always()
+        run: |
+          echo "## Jumpy autonomous cycle" >> "$GITHUB_STEP_SUMMARY"
+          echo "Schedule: minute 15 and 45 of every hour" >> "$GITHUB_STEP_SUMMARY"
+          echo "Result: ${{ steps.patch.outputs.result }}" >> "$GITHUB_STEP_SUMMARY"
+          if [ '${{ steps.patch.outputs.has_patch }}' = 'true' ]; then
+            echo 'A candidate patch was generated, Godot-validated, and committed only if validation succeeded.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'No repository write was attempted this cycle.' >> "$GITHUB_STEP_SUMMARY"
+          fi

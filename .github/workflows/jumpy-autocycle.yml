@@ -137,19 +137,17 @@ jobs:
           print(text.strip()[-10000:])
           PY
 
-          # Known high-confidence transformations are deterministic. When exhausted, the open-ended
-          # implementation lane receives the strategic review as a tightly scoped brief.
           python - <<'PY' > /tmp/jumpy-candidates.txt
           from pathlib import Path
           main=Path('scripts/main.gd').read_text()
           candidates=[]
           if '"clutch": clutch' not in main:
               candidates.append(('CLUTCH_LANDING','Reward edge landings as a readable skill moment.'))
-          if 'STREAK %d' not in main:
+          if 'STREAK %d' not in main and 'ui.mission.text = "MISSIONS  •  RUNS %d/%d  •  PERFECT %d/%d\\nTOTAL SCORE %d/%d"' in main:
               candidates.append(('STREAK_MENU','Surface current streak on the home screen.'))
-          if 'DAILY BEST %d' not in main:
+          if 'DAILY BEST %d' not in main and 'DAILY SEED • SAME WORLD FOR EVERYONE' in main:
               candidates.append(('DAILY_BEST_MENU','Surface the daily best score in daily mode.'))
-          if 'PERFECT %d  •  COINS %d' not in main:
+          if 'PERFECT %d  •  COINS %d' not in main and 'ui.gameover.text = "SCORE %d\\nBEST %d\\n%s"' in main:
               candidates.append(('RUN_STATS_GAMEOVER','Improve post-run feedback with skill/run stats.'))
           for ident,desc in candidates:
               print(f'{ident}: {desc}')
@@ -182,8 +180,8 @@ jobs:
               old='''\tvar perfect: bool = absf(PLAYER_X - center) <= perfect_zone\n\tif perfect:\n\t\tcombo += 1\n\t\tperfects += 1\n\t\tflow = minf(5.0, 1.0 + float(combo) * 0.25)\n\t\tscore += int(18.0 * flow)\n\t\tcamera_kick = 9.0\n\t\tflash = 0.24\n\t\tburst(Vector2(PLAYER_X, player_y + PLAYER_R), Color("ffffff"), 22, 420.0)\n\t\tIntegrations.haptic(32)\n\telse:\n\t\tcombo = maxi(0, combo - 1)\n\t\tflow = maxf(1.0, 1.0 + float(combo) * 0.25)\n\t\tburst(Vector2(PLAYER_X, player_y + PLAYER_R), skin_color(), 6, 180.0)\n\tIntegrations.event("landing", {"perfect": perfect, "combo": combo, "score": score})'''
               new='''\tvar perfect: bool = absf(PLAYER_X - center) <= perfect_zone\n\tvar left_edge: float = float(p.x)\n\tvar right_edge: float = float(p.x) + float(p.w)\n\tvar edge_distance: float = minf(absf(PLAYER_X - left_edge), absf(right_edge - PLAYER_X))\n\tvar clutch: bool = not perfect and edge_distance <= PLAYER_R * 0.72\n\tif perfect:\n\t\tcombo += 1\n\t\tperfects += 1\n\t\tflow = minf(5.0, 1.0 + float(combo) * 0.25)\n\t\tscore += int(18.0 * flow)\n\t\tcamera_kick = 9.0\n\t\tflash = 0.24\n\t\tburst(Vector2(PLAYER_X, player_y + PLAYER_R), Color("ffffff"), 22, 420.0)\n\t\tIntegrations.haptic(32)\n\telif clutch:\n\t\tcombo += 1\n\t\tflow = minf(5.0, 1.0 + float(combo) * 0.18)\n\t\tscore += int(12.0 * flow)\n\t\tcamera_kick = 12.0\n\t\tburst(Vector2(PLAYER_X, player_y + PLAYER_R), Color("ffe66d"), 18, 360.0)\n\t\tIntegrations.haptic(26)\n\telse:\n\t\tcombo = maxi(0, combo - 1)\n\t\tflow = maxf(1.0, 1.0 + float(combo) * 0.25)\n\t\tburst(Vector2(PLAYER_X, player_y + PLAYER_R), skin_color(), 6, 180.0)\n\tIntegrations.event("landing", {"perfect": perfect, "clutch": clutch, "combo": combo, "score": score})'''
           elif task == 'STREAK_MENU':
-              old='''\t\tui.mission.text = "MISSIONS  •  RUNS %d/%d  •  PERFECT %d/%d\\nTOTAL SCORE %d/%d" % [m.runs, m.runs_goal, m.perfects, m.perfects_goal, m.score, m.score_goal]'''
-              new='''\t\tui.mission.text = "STREAK %d  •  MISSIONS  •  RUNS %d/%d  •  PERFECT %d/%d\\nTOTAL SCORE %d/%d" % [int(Profile.data.streak_days), m.runs, m.runs_goal, m.perfects, m.perfects_goal, m.score, m.score_goal]'''
+              old='''\t\tui.mission.text = "MISSIONS  •  RUNS %d/%d  •  PERFECT %d/%d\\nTOTAL SCORE %d/%d" % [mission_data.runs, mission_data.runs_goal, mission_data.perfects, mission_data.perfects_goal, mission_data.score, mission_data.score_goal]'''
+              new='''\t\tui.mission.text = "STREAK %d  •  MISSIONS  •  RUNS %d/%d  •  PERFECT %d/%d\\nTOTAL SCORE %d/%d" % [int(Profile.data.streak_days), mission_data.runs, mission_data.runs_goal, mission_data.perfects, mission_data.perfects_goal, mission_data.score, mission_data.score_goal]'''
           elif task == 'DAILY_BEST_MENU':
               old='''\tui.subtitle.text = "DAILY SEED • SAME WORLD FOR EVERYONE" if value else "TAP • LAND • FLOW"'''
               new='''\tui.subtitle.text = "DAILY SEED • DAILY BEST %d" % int(Profile.data.daily_best) if value else "TAP • LAND • FLOW"'''
@@ -216,9 +214,8 @@ jobs:
             timeout -k 5s 360s fcc-opencode run "$IMPLEMENT_PROMPT\n\nSTRATEGIC REVIEW:\n$STRATEGY" >/tmp/jumpy-implement.log 2>&1 || true
           fi
 
-          # Safety inspection before exporting any candidate.
           python - <<'PY'
-          import subprocess,sys
+          import subprocess
           changed=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
           forbidden=[p for p in changed if p.startswith('.github/') or any(x in p.lower() for x in ['secret','keystore','.jks','.p12'])]
           if forbidden or len(changed)>3:
@@ -226,15 +223,12 @@ jobs:
               subprocess.run(['git','reset','--hard','HEAD'],check=False,stdout=subprocess.DEVNULL)
           PY
 
-          # Living strategic memory is updated every successful planning cycle, even if implementation
-          # produced no source change. Previous auto-generated section is replaced rather than appended forever.
           python - "$CHOICE" <<'PY'
           from pathlib import Path
           import datetime,re,sys
           p=Path('docs/AUTONOMOUS_STATE.md')
           s=p.read_text()
-          strategy=Path('/tmp/jumpy-strategy.txt').read_text(errors='replace').strip()
-          strategy=strategy[-8000:]
+          strategy=Path('/tmp/jumpy-strategy.txt').read_text(errors='replace').strip()[-8000:]
           remaining=Path('/tmp/jumpy-candidates.txt').read_text(errors='replace').strip()
           choice=sys.argv[1] or 'OPEN_ENDED_STRATEGIC_TASK'
           now=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
@@ -320,7 +314,6 @@ jobs:
           cd jumpy
           git config user.name 'jumpy-autocycle[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          # Stage only files that were part of the candidate diff; Godot may generate local .uid files during validation.
           git diff --name-only -z | xargs -0 -r git add --
           git diff --cached --quiet && { echo 'No effective validated change'; exit 0; }
           git commit -m 'Autocycle: systemic Jumpy evolution'

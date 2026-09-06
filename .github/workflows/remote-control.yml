@@ -29,7 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           OP=$(jq -r '.operation // "status"' control/request.json)
-          case "$OP" in recreate|rebuild|status|start_services|restart_services|doctor|provider_status|logs|codespace_logs) ;; *) exit 1;; esac
+          case "$OP" in recreate|rebuild|status|start_services|restart_services|doctor|provider_status|configure_nvidia|logs|codespace_logs) ;; *) exit 1;; esac
           echo "operation=$OP" >> "$GITHUB_OUTPUT"
 
       - name: Find Codespace
@@ -80,8 +80,21 @@ jobs:
         if: steps.request.outputs.operation == 'codespace_logs'
         run: timeout 45s gh codespace logs -c '${{ steps.codespace.outputs.name }}' | tee remote-output.txt || true
 
+      - name: Configure NVIDIA NIM securely
+        if: steps.request.outputs.operation == 'configure_nvidia'
+        env:
+          NVIDIA_NIM_API_KEY: ${{ secrets.NVIDIA_NIM_API_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "${NVIDIA_NIM_API_KEY:-}" || { echo 'Missing repository secret: NVIDIA_NIM_API_KEY'; exit 1; }
+          NAME='${{ steps.codespace.outputs.name }}'
+          PAYLOAD=$(jq -nc --arg key "$NVIDIA_NIM_API_KEY" '{values:{NVIDIA_NIM_API_KEY:$key,MODEL:"nvidia_nim/nvidia/nemotron-3-super-120b-a12b"}}')
+          DATA=$(printf '%s' "$PAYLOAD" | base64 -w0)
+          CMD="set -e; printf '%s' '$DATA' | base64 -d > /tmp/fcc-provider.json; curl -fsS -H 'Content-Type: application/json' -X POST http://127.0.0.1:8082/admin/api/config/apply --data-binary @/tmp/fcc-provider.json >/tmp/fcc-apply.json; rm -f /tmp/fcc-provider.json; python -c \"import json; d=json.load(open('/tmp/fcc-apply.json')); print('nvidia_configuration: applied' if d.get('applied') else 'nvidia_configuration: failed')\"; rm -f /tmp/fcc-apply.json; curl -sS -X POST http://127.0.0.1:8082/admin/api/providers/nvidia_nim/test | python -c \"import json,sys; d=json.load(sys.stdin); print('nvidia_provider_test:', 'OK' if d.get('ok') else 'FAILED')\""
+          timeout 120s gh codespace ssh -c "$NAME" "$CMD" | tee remote-output.txt
+
       - name: Run remote operation
-        if: steps.request.outputs.operation != 'recreate' && steps.request.outputs.operation != 'rebuild' && steps.request.outputs.operation != 'codespace_logs'
+        if: steps.request.outputs.operation != 'recreate' && steps.request.outputs.operation != 'rebuild' && steps.request.outputs.operation != 'codespace_logs' && steps.request.outputs.operation != 'configure_nvidia'
         run: |
           set -euo pipefail
           NAME='${{ steps.codespace.outputs.name }}'; OP='${{ steps.request.outputs.operation }}'
@@ -99,7 +112,7 @@ jobs:
         if: always()
         run: |
           [ -f remote-output.txt ] || exit 0
-          sed -E 's/(\?token=)[A-Za-z0-9._~-]+/\1[REDACTED]/g; s/(ghu_)[A-Za-z0-9]+/\1[REDACTED]/g; s/(github_pat_)[A-Za-z0-9_]+/\1[REDACTED]/g' remote-output.txt > safe-output.txt
+          sed -E 's/(\?token=)[A-Za-z0-9._~-]+/\1[REDACTED]/g; s/(ghu_)[A-Za-z0-9]+/\1[REDACTED]/g; s/(github_pat_)[A-Za-z0-9_]+/\1[REDACTED]/g; s/(nvapi-)[A-Za-z0-9._~-]+/\1[REDACTED]/g' remote-output.txt > safe-output.txt
 
       - name: Persist remote output
         if: always()

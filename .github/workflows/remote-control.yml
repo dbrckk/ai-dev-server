@@ -64,6 +64,13 @@ jobs:
           for i in {1..120}; do STATE=$(gh codespace view -c "$NAME" --json state --jq .state 2>/dev/null || true); [ "$STATE" = Available ] && exit 0; sleep 5; done
           exit 1
 
+      - name: Sync control scripts to Codespace
+        if: steps.request.outputs.operation != 'recreate' && steps.request.outputs.operation != 'rebuild' && steps.request.outputs.operation != 'codespace_logs'
+        run: |
+          set -euo pipefail
+          NAME='${{ steps.codespace.outputs.name }}'
+          gh codespace cp -c "$NAME" scripts/start-all.sh scripts/status.sh scripts/doctor.sh remote:/workspaces/ai-dev-server/scripts/
+
       - name: Rebuild Codespace
         if: steps.request.outputs.operation == 'rebuild'
         run: gh codespace rebuild -c '${{ steps.codespace.outputs.name }}' --full
@@ -83,7 +90,7 @@ jobs:
             doctor) CMD='cd /workspaces/ai-dev-server && bash scripts/doctor.sh' ;;
             logs) CMD='for f in "$HOME"/.cache/ai-dev-server/logs/*.log; do echo "===== $f ====="; tail -n 120 "$f"; done' ;;
           esac
-          gh codespace ssh -c "$NAME" "$CMD" | tee remote-output.txt
+          timeout 120s gh codespace ssh -c "$NAME" "$CMD" | tee remote-output.txt
 
       - name: Persist remote output
         if: always()

@@ -87,16 +87,12 @@ jobs:
 
           Implement the change in the files. Do not just describe it. Do not commit or push. Maximum 2 changed text files and roughly 180 changed lines. Do not edit .github/, do not add credentials, keystores, network calls, external plugins, paid services, API dependencies, store actions, or binary assets. Do not weaken existing safety or determinism. If no safe useful improvement is possible, make no changes.
 
-          Before finishing, review your edits for Godot 4.7 syntax and keep the repository internally consistent.
+          Before finishing, review your edits for Godot 4.7 syntax and keep the repository internally consistent. Keep this iteration focused enough to finish quickly.
           PROMPT_END
           )
 
           AGENT_RC=0
-          if fcc-claude --help 2>&1 | grep -q -- '--dangerously-skip-permissions'; then
-            timeout 190s fcc-claude --dangerously-skip-permissions -p "$PROMPT" >/tmp/jumpy-agent.log 2>&1 || AGENT_RC=$?
-          else
-            timeout 190s fcc-opencode run "$PROMPT" >/tmp/jumpy-agent.log 2>&1 || AGENT_RC=$?
-          fi
+          timeout -k 5s 140s fcc-opencode run "$PROMPT" >/tmp/jumpy-agent.log 2>&1 || AGENT_RC=$?
           echo "AGENT_RC=$AGENT_RC"
 
           CHANGED=$(git diff --name-only)
@@ -107,8 +103,9 @@ jobs:
             exit 0
           fi
 
+          set +e
           python - <<'PY'
-          import subprocess,sys
+          import subprocess
           changed=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
           forbidden=[p for p in changed if p.startswith('.github/') or any(s in p.lower() for s in ['secret','keystore','.jks','.p12'])]
           if forbidden or len(changed) > 2:
@@ -117,8 +114,12 @@ jobs:
               raise SystemExit(20)
           PY
           SAFETY_RC=$?
+          set -e
           if [ "$SAFETY_RC" -eq 20 ]; then
             git reset --hard HEAD >/dev/null
+            exit 0
+          elif [ "$SAFETY_RC" -ne 0 ]; then
+            echo 'RESULT=SAFETY_CHECK_FAILED'
             exit 0
           fi
 
@@ -129,7 +130,7 @@ jobs:
           echo "PATCH_B64=$PATCH_B64"
           REMOTE
           DATA=$(base64 -w0 /tmp/remote-cycle.sh)
-          timeout 240s gh codespace ssh -c "$NAME" "printf '%s' '$DATA' | base64 -d | bash" > /tmp/cycle.out
+          timeout -k 5s 190s gh codespace ssh -c "$NAME" "printf '%s' '$DATA' | base64 -d | bash" > /tmp/cycle.out || true
           sed -E 's/(PATCH_B64=).*/\1[REDACTED]/' /tmp/cycle.out
           RESULT=$(grep '^RESULT=' /tmp/cycle.out | tail -n1 | cut -d= -f2- || true)
           echo "result=${RESULT:-UNKNOWN}" >> "$GITHUB_OUTPUT"

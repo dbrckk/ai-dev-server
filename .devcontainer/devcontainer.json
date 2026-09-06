@@ -8,16 +8,16 @@
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   "postCreateCommand": "bash scripts/bootstrap.sh",
+  "postStartCommand": "bash scripts/start-all.sh",
   "forwardPorts": [8082, 3080, 3000],
   "portsAttributes": {
-    "8082": { "label": "Free Claude Code Admin", "onAutoForward": "notify" },
-    "3080": { "label": "DeepSeek Harness", "onAutoForward": "notify" },
-    "3000": { "label": "cdesktop", "onAutoForward": "notify" }
+    "8082": { "label": "Free Claude Code Admin/API", "onAutoForward": "notify", "visibility": "private" },
+    "3080": { "label": "DeepSeek Harness", "onAutoForward": "openBrowser", "visibility": "private" },
+    "3000": { "label": "cdesktop", "onAutoForward": "notify", "visibility": "private" }
   },
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-vscode.vscode-json",
         "ms-python.python",
         "eamodio.gitlens"
       ],

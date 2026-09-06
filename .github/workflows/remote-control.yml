@@ -20,115 +20,63 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Validate secret
-        shell: bash
         run: |
           set -euo pipefail
           test -n "${GH_TOKEN:-}" || { echo 'Missing CODESPACES_PAT'; exit 1; }
 
       - name: Read request
         id: request
-        shell: bash
         run: |
           set -euo pipefail
           OP=$(jq -r '.operation // "status"' control/request.json)
-          case "$OP" in
-            recreate|rebuild|status|start_services|doctor|logs|codespace_logs) ;;
-            *) echo "Unsupported operation: $OP"; exit 1 ;;
-          esac
+          case "$OP" in recreate|rebuild|status|start_services|doctor|logs|codespace_logs) ;; *) exit 1;; esac
           echo "operation=$OP" >> "$GITHUB_OUTPUT"
 
       - name: Find Codespace
         id: codespace
-        shell: bash
         run: |
           set -euo pipefail
-          NAME=$(gh codespace list --json name,repository,state --jq ".[] | select(.repository == \"$REPO\") | .name" | head -n1)
-          if [ -n "$NAME" ]; then
-            echo "name=$NAME" >> "$GITHUB_OUTPUT"
-            echo "Codespace: $NAME"
-          else
-            echo "name=" >> "$GITHUB_OUTPUT"
-            echo "No existing Codespace found"
-          fi
+          NAME=$(gh codespace list --json name,repository --jq ".[] | select(.repository == \"$REPO\") | .name" | head -n1)
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
 
       - name: Recreate Codespace cleanly
         if: steps.request.outputs.operation == 'recreate'
         id: recreate
-        shell: bash
         run: |
           set -euo pipefail
-          NAME='${{ steps.codespace.outputs.name }}'
-          if [ -n "$NAME" ]; then
-            echo "Deleting stale Codespace: $NAME"
-            gh codespace delete -c "$NAME" --force
-            for i in {1..30}; do
-              if ! gh codespace view -c "$NAME" >/dev/null 2>&1; then break; fi
-              sleep 2
-            done
-          fi
-          echo "Creating fresh Codespace from $REPO@main"
-          NEW_NAME=$(gh codespace create -R "$REPO" -b main --idle-timeout 30m --display-name "AI Dev Server" | tail -n1 | tr -d '\r')
-          test -n "$NEW_NAME" || { echo 'Codespace creation returned no name'; exit 1; }
-          echo "name=$NEW_NAME" >> "$GITHUB_OUTPUT"
-          echo "Fresh Codespace: $NEW_NAME"
+          OLD='${{ steps.codespace.outputs.name }}'
+          [ -z "$OLD" ] || gh codespace delete -c "$OLD" --force
+          REPO_ID='${{ github.event.repository.id }}'
+          PAYLOAD=$(jq -nc --argjson id "$REPO_ID" '{repository_id:$id,ref:"main",idle_timeout_minutes:30,display_name:"AI Dev Server"}')
+          RESPONSE=$(curl -fsSL -X POST -H 'Accept: application/vnd.github+json' -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2026-03-10' https://api.github.com/user/codespaces -d "$PAYLOAD")
+          NEW=$(printf '%s' "$RESPONSE" | jq -r '.name')
+          test -n "$NEW" -a "$NEW" != null
+          echo "name=$NEW" >> "$GITHUB_OUTPUT"
+          echo "Fresh Codespace: $NEW"
 
       - name: Ensure Codespace is running
         if: steps.request.outputs.operation != 'recreate' && steps.request.outputs.operation != 'rebuild' && steps.request.outputs.operation != 'codespace_logs'
-        shell: bash
         run: |
           set -euo pipefail
-          NAME='${{ steps.codespace.outputs.name }}'
-          test -n "$NAME" || { echo 'No Codespace found'; exit 1; }
+          NAME='${{ steps.codespace.outputs.name }}'; test -n "$NAME"
           STATE=$(gh codespace view -c "$NAME" --json state --jq .state)
-          echo "Current state: $STATE"
-          case "$STATE" in
-            Available) ;;
-            Rebuilding|Starting|Provisioning|Creating|Updating)
-              echo "Codespace is transitioning; waiting for Available..."
-              ;;
-            *)
-              curl -sS -X POST \
-                -H "Accept: application/vnd.github+json" \
-                -H "Authorization: Bearer $GH_TOKEN" \
-                -H "X-GitHub-Api-Version: 2026-03-10" \
-                "https://api.github.com/user/codespaces/$NAME/start" >/dev/null || true
-              ;;
-          esac
-          if [ "$STATE" != "Available" ]; then
-            for i in {1..120}; do
-              STATE=$(gh codespace view -c "$NAME" --json state --jq .state 2>/dev/null || true)
-              echo "State: $STATE"
-              [ "$STATE" = "Available" ] && break
-              sleep 5
-            done
-            [ "$STATE" = "Available" ] || { echo "Codespace did not become available"; exit 1; }
-          fi
+          [ "$STATE" = Available ] || curl -fsSL -X POST -H 'Accept: application/vnd.github+json' -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2026-03-10' "https://api.github.com/user/codespaces/$NAME/start" >/dev/null || true
+          for i in {1..120}; do STATE=$(gh codespace view -c "$NAME" --json state --jq .state 2>/dev/null || true); [ "$STATE" = Available ] && exit 0; sleep 5; done
+          exit 1
 
       - name: Rebuild Codespace
         if: steps.request.outputs.operation == 'rebuild'
-        shell: bash
-        run: |
-          set -euo pipefail
-          NAME='${{ steps.codespace.outputs.name }}'
-          test -n "$NAME" || { echo 'No Codespace found'; exit 1; }
-          gh codespace rebuild -c "$NAME" --full
+        run: gh codespace rebuild -c '${{ steps.codespace.outputs.name }}' --full
 
       - name: Read Codespace build logs
         if: steps.request.outputs.operation == 'codespace_logs'
-        shell: bash
-        run: |
-          set -euo pipefail
-          NAME='${{ steps.codespace.outputs.name }}'
-          test -n "$NAME" || { echo 'No Codespace found'; exit 1; }
-          timeout 45s gh codespace logs -c "$NAME" | tee remote-output.txt || true
+        run: timeout 45s gh codespace logs -c '${{ steps.codespace.outputs.name }}' | tee remote-output.txt || true
 
       - name: Run remote operation
         if: steps.request.outputs.operation != 'recreate' && steps.request.outputs.operation != 'rebuild' && steps.request.outputs.operation != 'codespace_logs'
-        shell: bash
         run: |
           set -euo pipefail
-          NAME='${{ steps.codespace.outputs.name }}'
-          OP='${{ steps.request.outputs.operation }}'
+          NAME='${{ steps.codespace.outputs.name }}'; OP='${{ steps.request.outputs.operation }}'
           case "$OP" in
             status) CMD='cd /workspaces/ai-dev-server && bash scripts/status.sh' ;;
             start_services) CMD='cd /workspaces/ai-dev-server && git pull --ff-only && bash scripts/start-all.sh && bash scripts/status.sh' ;;
@@ -139,19 +87,9 @@ jobs:
 
       - name: Summary
         if: always()
-        shell: bash
         run: |
-          FINAL_NAME='${{ steps.recreate.outputs.name }}'
-          [ -n "$FINAL_NAME" ] || FINAL_NAME='${{ steps.codespace.outputs.name }}'
-          {
-            echo '## Remote Codespace Control'
-            echo
-            echo "Operation: ${{ steps.request.outputs.operation }}"
-            echo "Codespace: $FINAL_NAME"
-            if [ -f remote-output.txt ]; then
-              echo
-              echo '```text'
-              tail -n 200 remote-output.txt
-              echo '```'
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
+          NAME='${{ steps.recreate.outputs.name }}'; [ -n "$NAME" ] || NAME='${{ steps.codespace.outputs.name }}'
+          echo "## Remote Codespace Control" >> "$GITHUB_STEP_SUMMARY"
+          echo "Operation: ${{ steps.request.outputs.operation }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Codespace: $NAME" >> "$GITHUB_STEP_SUMMARY"
+          [ ! -f remote-output.txt ] || { echo '```text' >> "$GITHUB_STEP_SUMMARY"; tail -n 200 remote-output.txt >> "$GITHUB_STEP_SUMMARY"; echo '```' >> "$GITHUB_STEP_SUMMARY"; }

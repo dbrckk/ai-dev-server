@@ -29,7 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           OP=$(jq -r '.operation // "status"' control/request.json)
-          case "$OP" in recreate|rebuild|status|start_services|restart_services|doctor|provider_status|configure_nvidia|logs|codespace_logs) ;; *) exit 1;; esac
+          case "$OP" in recreate|rebuild|status|start_services|restart_services|doctor|provider_status|configure_nvidia|agent_test|logs|codespace_logs) ;; *) exit 1;; esac
           echo "operation=$OP" >> "$GITHUB_OUTPUT"
 
       - name: Find Codespace
@@ -69,7 +69,7 @@ jobs:
         run: |
           set -euo pipefail
           NAME='${{ steps.codespace.outputs.name }}'
-          DATA=$(tar -czf - scripts/start-all.sh scripts/restart-all.sh scripts/status.sh scripts/doctor.sh scripts/provider-status.sh | base64 -w0)
+          DATA=$(tar -czf - scripts/start-all.sh scripts/restart-all.sh scripts/status.sh scripts/doctor.sh scripts/provider-status.sh scripts/agent-test.sh | base64 -w0)
           timeout 60s gh codespace ssh -c "$NAME" "printf '%s' '$DATA' | base64 -d | tar -xzf - -C /workspaces/ai-dev-server"
 
       - name: Rebuild Codespace
@@ -104,9 +104,10 @@ jobs:
             restart_services) CMD='cd /workspaces/ai-dev-server && bash scripts/restart-all.sh && bash scripts/status.sh' ;;
             doctor) CMD='cd /workspaces/ai-dev-server && bash scripts/doctor.sh' ;;
             provider_status) CMD='cd /workspaces/ai-dev-server && bash scripts/provider-status.sh' ;;
+            agent_test) CMD='cd /workspaces/ai-dev-server && bash scripts/agent-test.sh' ;;
             logs) CMD='for f in "$HOME"/.cache/ai-dev-server/logs/*.log; do echo "===== $f ====="; tail -n 120 "$f"; done' ;;
           esac
-          timeout 120s gh codespace ssh -c "$NAME" "$CMD" | tee remote-output.txt
+          timeout 300s gh codespace ssh -c "$NAME" "$CMD" | tee remote-output.txt
 
       - name: Sanitize remote output
         if: always()

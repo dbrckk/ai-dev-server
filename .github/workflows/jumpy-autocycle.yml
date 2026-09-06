@@ -108,14 +108,12 @@ jobs:
 
           Choose exactly ONE highest-impact SAFE improvement that can be completed now from the current repository state. Prefer core feel, retention, clarity, replayability, polish, accessibility, deterministic daily play, progression, or robust code. Follow docs/PRODUCTION_ROADMAP.md. Do NOT require a new API, credential, paid service, account action, store publication, binary asset, or external plugin. Do NOT edit .github/, export signing secrets, or introduce network calls. Keep the change focused: maximum 2 existing/new text files and roughly 180 changed lines.
 
-          Return ONLY one of these forms:
-          NO_CHANGE: <short reason>
-          or
+          Your final output MUST contain either NO_CHANGE: <short reason>, or a complete unified git diff. Prefer this exact format:
           PATCH_START
-          <a valid unified git diff starting with diff --git ...>
+          <valid unified git diff starting with diff --git ...>
           PATCH_END
 
-          The patch must apply cleanly to the exact files supplied below. Do not use markdown fences. Do not explain outside the markers.
+          The patch must apply cleanly to the exact files supplied below. No markdown fences are needed.
           PROMPT_END
           )
           PROMPT="$PROMPT\n\n$CONTEXT"
@@ -123,31 +121,41 @@ jobs:
           import json,sys
           print(json.dumps({
               'model': sys.argv[1],
-              'max_tokens': 2600,
+              'max_tokens': 6000,
               'messages': [{'role':'user','content':sys.argv[2]}],
               'stream': False
           }))
           PY
           )
-          RESPONSE=$(curl -sS --max-time 180 -H 'Content-Type: application/json' -X POST http://127.0.0.1:8082/v1/messages --data-binary "$PAYLOAD")
+          RESPONSE=$(curl -sS --max-time 210 -H 'Content-Type: application/json' -X POST http://127.0.0.1:8082/v1/messages --data-binary "$PAYLOAD")
           python - "$RESPONSE" <<'PY'
           import json,re,sys,pathlib,subprocess,base64
           try:
               d=json.loads(sys.argv[1])
               text='\n'.join(str(x.get('text','')) for x in d.get('content',[]) if isinstance(x,dict) and x.get('type')=='text')
-          except Exception as e:
+          except Exception:
               print('RESULT=INVALID_RESPONSE')
               raise SystemExit(0)
-          if 'NO_CHANGE:' in text and 'PATCH_START' not in text:
+          if 'NO_CHANGE:' in text and 'diff --git ' not in text:
               reason=text.split('NO_CHANGE:',1)[1].strip().splitlines()[0][:300]
               print('RESULT=NO_CHANGE')
               print('REASON='+reason.replace('\n',' '))
               raise SystemExit(0)
+
           m=re.search(r'PATCH_START\s*\n(.*?)\nPATCH_END', text, re.S)
-          if not m:
-              print('RESULT=NO_PATCH')
-              raise SystemExit(0)
-          patch=m.group(1).strip()+"\n"
+          if m:
+              patch=m.group(1).strip()+"\n"
+          else:
+              start=text.find('diff --git ')
+              if start < 0:
+                  print('RESULT=NO_PATCH')
+                  print('REASON=no_unified_diff_in_model_output')
+                  raise SystemExit(0)
+              patch=text[start:]
+              patch=re.sub(r'\n```[^\n]*\s*$', '\n', patch, flags=re.S)
+              if '\nPATCH_END' in patch:
+                  patch=patch.split('\nPATCH_END',1)[0]+'\n'
+
           pathlib.Path('/tmp/jumpy.patch').write_text(patch)
           check=subprocess.run(['git','apply','--check','/tmp/jumpy.patch'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
           if check.returncode != 0:
@@ -168,7 +176,7 @@ jobs:
           PY
           REMOTE
           DATA=$(base64 -w0 /tmp/remote-cycle.sh)
-          timeout 240s gh codespace ssh -c "$NAME" "printf '%s' '$DATA' | base64 -d | bash" > /tmp/cycle.out
+          timeout 270s gh codespace ssh -c "$NAME" "printf '%s' '$DATA' | base64 -d | bash" > /tmp/cycle.out
           sed -E 's/(PATCH_B64=).*/\1[REDACTED]/' /tmp/cycle.out
           RESULT=$(grep '^RESULT=' /tmp/cycle.out | tail -n1 | cut -d= -f2- || true)
           echo "result=${RESULT:-UNKNOWN}" >> "$GITHUB_OUTPUT"

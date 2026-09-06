@@ -54,7 +54,7 @@ jobs:
           echo 'Codespace did not become available'
           exit 1
 
-      - name: Ask FCC for one safe improvement patch
+      - name: Let isolated FCC agent implement one safe improvement
         id: patch
         run: |
           set -euo pipefail
@@ -80,103 +80,56 @@ jobs:
           git clone --depth 1 https://github.com/dbrckk/Jumpy.git "$WORK" >/dev/null 2>&1
           cd "$WORK"
 
-          CONTEXT=$(python - <<'PY'
-          from pathlib import Path
-          wanted = [
-              'README.md','SETUP_REQUIRED.txt','docs/GAME_DESIGN.md','docs/PRODUCTION_ROADMAP.md',
-              'project.godot','export_presets.cfg','scripts/main.gd','scripts/profile.gd',
-              'scripts/integrations.gd','assets/ui/theme.tres'
-          ]
-          total = 0
-          for name in wanted:
-              p = Path(name)
-              if not p.exists():
-                  continue
-              text = p.read_text(errors='replace')
-              if total + len(text) > 90000:
-                  text = text[:max(0, 90000-total)]
-              print(f'\n===== {name} =====\n{text}')
-              total += len(text)
-              if total >= 90000:
-                  break
-          PY
-          )
-
-          MODEL=$(grep -E '^MODEL=' "$HOME/.fcc/.env" | tail -n1 | cut -d= -f2-)
           PROMPT=$(cat <<'PROMPT_END'
           You are the autonomous senior game engineer for Jumpy, a Godot 4.7 portrait mobile arcade game aiming for exceptional viral/hybrid-casual quality.
 
-          Choose exactly ONE highest-impact SAFE improvement that can be completed now from the current repository state. Prefer core feel, retention, clarity, replayability, polish, accessibility, deterministic daily play, progression, or robust code. Follow docs/PRODUCTION_ROADMAP.md. Do NOT require a new API, credential, paid service, account action, store publication, binary asset, or external plugin. Do NOT edit .github/, export signing secrets, or introduce network calls. Keep the change focused: maximum 2 existing/new text files and roughly 180 changed lines.
+          Work directly in this isolated clone. Inspect README.md, docs/PRODUCTION_ROADMAP.md, docs/GAME_DESIGN.md, SETUP_REQUIRED.txt and the relevant source files. Choose exactly ONE highest-impact SAFE improvement that can be fully implemented now. Prefer core feel, retention, clarity, replayability, polish, accessibility, deterministic daily play, progression, or robust code.
 
-          Your final output MUST contain either NO_CHANGE: <short reason>, or a complete unified git diff. Prefer this exact format:
-          PATCH_START
-          <valid unified git diff starting with diff --git ...>
-          PATCH_END
+          Implement the change in the files. Do not just describe it. Do not commit or push. Maximum 2 changed text files and roughly 180 changed lines. Do not edit .github/, do not add credentials, keystores, network calls, external plugins, paid services, API dependencies, store actions, or binary assets. Do not weaken existing safety or determinism. If no safe useful improvement is possible, make no changes.
 
-          The patch must apply cleanly to the exact files supplied below. No markdown fences are needed.
+          Before finishing, review your edits for Godot 4.7 syntax and keep the repository internally consistent.
           PROMPT_END
           )
-          PROMPT="$PROMPT\n\n$CONTEXT"
-          PAYLOAD=$(python - "$MODEL" "$PROMPT" <<'PY'
-          import json,sys
-          print(json.dumps({
-              'model': sys.argv[1],
-              'max_tokens': 6000,
-              'messages': [{'role':'user','content':sys.argv[2]}],
-              'stream': False
-          }))
-          PY
-          )
-          RESPONSE=$(curl -sS --max-time 210 -H 'Content-Type: application/json' -X POST http://127.0.0.1:8082/v1/messages --data-binary "$PAYLOAD")
-          python - "$RESPONSE" <<'PY'
-          import json,re,sys,pathlib,subprocess,base64
-          try:
-              d=json.loads(sys.argv[1])
-              text='\n'.join(str(x.get('text','')) for x in d.get('content',[]) if isinstance(x,dict) and x.get('type')=='text')
-          except Exception:
-              print('RESULT=INVALID_RESPONSE')
-              raise SystemExit(0)
-          if 'NO_CHANGE:' in text and 'diff --git ' not in text:
-              reason=text.split('NO_CHANGE:',1)[1].strip().splitlines()[0][:300]
-              print('RESULT=NO_CHANGE')
-              print('REASON='+reason.replace('\n',' '))
-              raise SystemExit(0)
 
-          m=re.search(r'PATCH_START\s*\n(.*?)\nPATCH_END', text, re.S)
-          if m:
-              patch=m.group(1).strip()+"\n"
-          else:
-              start=text.find('diff --git ')
-              if start < 0:
-                  print('RESULT=NO_PATCH')
-                  print('REASON=no_unified_diff_in_model_output')
-                  raise SystemExit(0)
-              patch=text[start:]
-              patch=re.sub(r'\n```[^\n]*\s*$', '\n', patch, flags=re.S)
-              if '\nPATCH_END' in patch:
-                  patch=patch.split('\nPATCH_END',1)[0]+'\n'
+          AGENT_RC=0
+          if fcc-claude --help 2>&1 | grep -q -- '--dangerously-skip-permissions'; then
+            timeout 190s fcc-claude --dangerously-skip-permissions -p "$PROMPT" >/tmp/jumpy-agent.log 2>&1 || AGENT_RC=$?
+          else
+            timeout 190s fcc-opencode run "$PROMPT" >/tmp/jumpy-agent.log 2>&1 || AGENT_RC=$?
+          fi
+          echo "AGENT_RC=$AGENT_RC"
 
-          pathlib.Path('/tmp/jumpy.patch').write_text(patch)
-          check=subprocess.run(['git','apply','--check','/tmp/jumpy.patch'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
-          if check.returncode != 0:
-              print('RESULT=PATCH_REJECTED')
-              print('REASON='+check.stdout.replace('\n',' ')[:500])
-              raise SystemExit(0)
-          subprocess.check_call(['git','apply','/tmp/jumpy.patch'])
+          CHANGED=$(git diff --name-only)
+          if [ -z "$CHANGED" ]; then
+            echo 'RESULT=NO_CHANGE'
+            tail -n 12 /tmp/jumpy-agent.log | tr '\n' ' ' | head -c 800 | sed 's/^/REASON=/'
+            echo
+            exit 0
+          fi
+
+          python - <<'PY'
+          import subprocess,sys
           changed=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
           forbidden=[p for p in changed if p.startswith('.github/') or any(s in p.lower() for s in ['secret','keystore','.jks','.p12'])]
           if forbidden or len(changed) > 2:
               print('RESULT=SAFETY_REJECTED')
-              print('REASON=forbidden_or_too_many_files')
-              raise SystemExit(0)
-          out=subprocess.check_output(['git','diff','--binary'])
-          print('RESULT=PATCH')
-          print('FILES='+','.join(changed))
-          print('PATCH_B64='+base64.b64encode(out).decode())
+              print('FILES='+','.join(changed))
+              raise SystemExit(20)
           PY
+          SAFETY_RC=$?
+          if [ "$SAFETY_RC" -eq 20 ]; then
+            git reset --hard HEAD >/dev/null
+            exit 0
+          fi
+
+          FILES=$(git diff --name-only | paste -sd, -)
+          PATCH_B64=$(git diff --binary | base64 -w0)
+          echo 'RESULT=PATCH'
+          echo "FILES=$FILES"
+          echo "PATCH_B64=$PATCH_B64"
           REMOTE
           DATA=$(base64 -w0 /tmp/remote-cycle.sh)
-          timeout 270s gh codespace ssh -c "$NAME" "printf '%s' '$DATA' | base64 -d | bash" > /tmp/cycle.out
+          timeout 240s gh codespace ssh -c "$NAME" "printf '%s' '$DATA' | base64 -d | bash" > /tmp/cycle.out
           sed -E 's/(PATCH_B64=).*/\1[REDACTED]/' /tmp/cycle.out
           RESULT=$(grep '^RESULT=' /tmp/cycle.out | tail -n1 | cut -d= -f2- || true)
           echo "result=${RESULT:-UNKNOWN}" >> "$GITHUB_OUTPUT"
@@ -249,7 +202,7 @@ jobs:
           echo "Schedule: minute 15 and 45 of every hour" >> "$GITHUB_STEP_SUMMARY"
           echo "Result: ${{ steps.patch.outputs.result }}" >> "$GITHUB_STEP_SUMMARY"
           if [ '${{ steps.patch.outputs.has_patch }}' = 'true' ]; then
-            echo 'A candidate patch was generated, Godot-validated, and committed only if validation succeeded.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Candidate generated in an isolated clone; commit occurs only after real Godot validation.' >> "$GITHUB_STEP_SUMMARY"
           else
             echo 'No repository write was attempted this cycle.' >> "$GITHUB_STEP_SUMMARY"
           fi

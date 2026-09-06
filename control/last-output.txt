@@ -1,7 +1,7 @@
 fcc_service: OK
 === Jumpy FCC autonomous audit ===
 repo: dbrckk/Jumpy
-claude_code_audit: running
-claude_code_result: AGENT_ISSUES:  1. main.gd:_draw and main.gd:burst - Shared RNG for gameplay (platform/coin spawn) and visual effects (screen shake/particles) breaks daily seed determinism; advances RNG variably per frame rate, causing different worlds for same seed. Fix: Separate gameplay RNG from visual effect RNG. 2. profile.gd:save - No error handling for file write failures; silent save failures can lose player progress without notification. Fix: Check store_string() return value and handle errors (e.g., log, notify). 3. main.gd:try_land - Fixed 8.0px vertical collision tolerance may cause platform tunneling at high velocities (player moves >8px/frame), skipping landings. Fix: Scale tolerance with player velocity or use continuous collision detection. 4. main.gd:collect_coin - Hardcoded 78.0px coin collection distance assumes fixed 1080x1920 resolution; may break on different screen sizes/densities without scaling. Fix: Implement resolution-independent scaling (e.g., viewport stretch or relative units). 
-claude_code_rc: 0
-opencode_audit: running
+claude_code_result: 
+claude_code_rc: 124
+opencode_result: 
+opencode_rc: 124

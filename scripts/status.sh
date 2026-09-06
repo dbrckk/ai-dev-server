@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -u
+export PATH="$HOME/.local/bin:$PATH"
 
 check_port() {
   local port="$1" name="$2"

@@ -38,8 +38,17 @@ check_http() {
     *) echo "  $name: FAIL ($code)" ;;
   esac
 }
+check_dsh() {
+  local code
+  code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 8 "http://127.0.0.1:3080/" 2>/dev/null || echo 000)
+  case "$code" in
+    2*|3*) echo "  DSH web: OK ($code)" ;;
+    401) echo "  DSH web: OK (401, authentication required)" ;;
+    *) echo "  DSH web: FAIL ($code)" ;;
+  esac
+}
 check_http "FCC health" "http://127.0.0.1:8082/health"
-check_http "DSH web" "http://127.0.0.1:3080/"
+check_dsh
 check_http "cdesktop" "http://127.0.0.1:3000/"
 
 echo

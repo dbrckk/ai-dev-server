@@ -1,9 +1,8 @@
-=== FCC provider status ===
-config_file: present
-model: nvidia_nim/nvidia/nemotron-3-super-120b-a12b
-configured_credentials:
-  NVIDIA_NIM_API_KEY
-admin_status: reachable
-model_generation_test: running
-model_generation_test: OK
-model_response: FCC_MODEL_OK
+=== FCC agent smoke test ===
+repo: dbrckk/deadline-zero
+claude_code_test: running
+claude_code_test: FAILED (rc=1)
+claude_code_preview: Free Claude Code proxy is not reachable at http://127.0.0.1:8082: [Errno 111] Connection refused Start it in another terminal with: fcc-server
+opencode_test: running
+opencode_test: FAILED (rc=126)
+opencode_preview: FCC requires OpenCode 1.18.18 or newer. Install OpenCode from: https://opencode.ai/docs/

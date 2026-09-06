@@ -12,18 +12,25 @@ Depuis un smartphone, utiliser un Codespace comme machine Linux distante avec :
 - DeepSeek Harness Web
 - cdesktop
 - Git/GitHub
-- outils de préparation de sprites
+- génération de sprites via le plugin Pollinations pour OpenCode
 
 ## Démarrage
 
 1. Créer/ouvrir un Codespace sur ce dépôt.
 2. Attendre la fin du `postCreateCommand`.
-3. Dans le terminal, exécuter `./scripts/finish-fcc.sh` pour initialiser FCC si nécessaire.
-4. Lancer une interface :
-   - `./scripts/start-fcc.sh`
-   - `./scripts/start-dsh.sh`
-   - `./scripts/start-cdesktop.sh`
+3. Dans le terminal, exécuter `bash scripts/finish-fcc.sh` pour initialiser FCC si nécessaire.
+4. Lancer l'interface voulue :
+   - `bash scripts/start-fcc.sh`
+   - `bash scripts/start-dsh.sh`
+   - `bash scripts/start-cdesktop.sh`
+5. Pour ajouter la génération d'images/sprites à OpenCode : `bash scripts/enable-sprites.sh`, puis `/poll login` dans OpenCode.
 
 Les ports 8082, 3080 et 3000 sont prévus pour être forwardés par Codespaces.
 
-> Les clés/API et authentifications restent à renseigner par l'utilisateur dans les interfaces concernées. Ne jamais les committer dans le dépôt.
+## Sécurité
+
+Les clés API, jetons et fichiers `.env` sont ignorés par Git. Ne jamais les committer dans le dépôt.
+
+## Remarque
+
+Free Claude Code et les fournisseurs IA évoluent rapidement. L'installation est volontairement séparée du build critique du Codespace afin qu'une modification de FCC ne rende pas la création du Codespace inutilisable.

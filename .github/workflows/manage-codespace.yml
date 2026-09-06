@@ -1,0 +1,130 @@
+name: Manage AI Dev Codespace
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Create/reuse or start the Codespace"
+        required: true
+        default: "ensure"
+        type: choice
+        options:
+          - ensure
+          - start
+      machine:
+        description: "Codespace machine type"
+        required: false
+        default: "basicLinux32gb"
+        type: string
+      idle_timeout_minutes:
+        description: "Idle timeout in minutes"
+        required: false
+        default: "30"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  manage:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.CODESPACES_PAT }}
+      REPO: ${{ github.repository }}
+      REF: ${{ github.ref_name }}
+
+    steps:
+      - name: Check secret
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "Missing repository secret: CODESPACES_PAT"
+            exit 1
+          fi
+
+      - name: Find existing Codespace
+        id: find
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY_OWNER}"
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+
+          DATA=$(curl -fsSL \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "https://api.github.com/user/codespaces?per_page=100")
+
+          NAME=$(printf '%s' "$DATA" | jq -r \
+            --arg full "$REPO" \
+            '.codespaces[] | select(.repository.full_name == $full) | .name' | head -n1)
+
+          if [ -n "$NAME" ] && [ "$NAME" != "null" ]; then
+            echo "name=$NAME" >> "$GITHUB_OUTPUT"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Codespace if missing
+        id: create
+        if: ${{ inputs.action == 'ensure' && steps.find.outputs.exists != 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          REPO_ID="${{ github.event.repository.id }}"
+          MACHINE="${{ inputs.machine }}"
+          TIMEOUT="${{ inputs.idle_timeout_minutes }}"
+
+          PAYLOAD=$(jq -nc \
+            --argjson repository_id "$REPO_ID" \
+            --arg ref "main" \
+            --arg machine "$MACHINE" \
+            --argjson idle_timeout_minutes "$TIMEOUT" \
+            '{repository_id:$repository_id, ref:$ref, machine:$machine, idle_timeout_minutes:$idle_timeout_minutes, display_name:"AI Dev Server"}')
+
+          RESPONSE=$(curl -fsSL -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            https://api.github.com/user/codespaces \
+            -d "$PAYLOAD")
+
+          NAME=$(printf '%s' "$RESPONSE" | jq -r '.name')
+          WEB_URL=$(printf '%s' "$RESPONSE" | jq -r '.web_url')
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "web_url=$WEB_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Start existing Codespace
+        if: ${{ steps.find.outputs.exists == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          NAME="${{ steps.find.outputs.name }}"
+          curl -fsSL -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "https://api.github.com/user/codespaces/${NAME}/start" >/tmp/start.json || true
+
+      - name: Summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ steps.find.outputs.exists }}" = "true" ]; then
+            NAME="${{ steps.find.outputs.name }}"
+            URL="https://${NAME}.github.dev"
+          else
+            NAME="${{ steps.create.outputs.name }}"
+            URL="${{ steps.create.outputs.web_url }}"
+          fi
+
+          {
+            echo "## AI Dev Codespace"
+            echo
+            echo "Codespace: \`$NAME\`"
+            echo
+            echo "Open: $URL"
+          } >> "$GITHUB_STEP_SUMMARY"

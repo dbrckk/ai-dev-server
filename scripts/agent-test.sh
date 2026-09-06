@@ -24,12 +24,12 @@ PROMPT='Audit this Godot 4.7 mobile game read-only. Find only blocking or high-i
 echo '=== Jumpy FCC autonomous audit ==='
 echo 'repo: dbrckk/Jumpy'
 
-CLAUDE_OUT=$(timeout 48s fcc-claude -p "$PROMPT" 2>&1)
+CLAUDE_OUT=$(timeout 110s fcc-claude -p "$PROMPT" 2>&1)
 CLAUDE_RC=$?
 printf 'claude_code_result: %s\n' "$(printf '%s' "$CLAUDE_OUT" | grep -E 'AGENT_(OK|ISSUES):' | tail -n1 | head -c 1700)"
 echo "claude_code_rc: $CLAUDE_RC"
 
-OPENCODE_OUT=$(timeout 48s fcc-opencode run "$PROMPT" 2>&1)
+OPENCODE_OUT=$(timeout 110s fcc-opencode run "$PROMPT" 2>&1)
 OPENCODE_RC=$?
 printf 'opencode_result: %s\n' "$(printf '%s' "$OPENCODE_OUT" | grep -E 'AGENT_(OK|ISSUES):' | tail -n1 | head -c 1700)"
 echo "opencode_rc: $OPENCODE_RC"

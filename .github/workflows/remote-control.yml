@@ -32,7 +32,7 @@ jobs:
           set -euo pipefail
           OP=$(jq -r '.operation // "status"' control/request.json)
           case "$OP" in
-            rebuild|status|start_services|doctor|logs|codespace_logs) ;;
+            recreate|rebuild|status|start_services|doctor|logs|codespace_logs) ;;
             *) echo "Unsupported operation: $OP"; exit 1 ;;
           esac
           echo "operation=$OP" >> "$GITHUB_OUTPUT"
@@ -43,16 +43,41 @@ jobs:
         run: |
           set -euo pipefail
           NAME=$(gh codespace list --json name,repository,state --jq ".[] | select(.repository == \"$REPO\") | .name" | head -n1)
-          test -n "$NAME" || { echo "No Codespace found for $REPO"; exit 1; }
-          echo "name=$NAME" >> "$GITHUB_OUTPUT"
-          echo "Codespace: $NAME"
+          if [ -n "$NAME" ]; then
+            echo "name=$NAME" >> "$GITHUB_OUTPUT"
+            echo "Codespace: $NAME"
+          else
+            echo "name=" >> "$GITHUB_OUTPUT"
+            echo "No existing Codespace found"
+          fi
 
-      - name: Ensure Codespace is running
-        if: steps.request.outputs.operation != 'rebuild' && steps.request.outputs.operation != 'codespace_logs'
+      - name: Recreate Codespace cleanly
+        if: steps.request.outputs.operation == 'recreate'
+        id: recreate
         shell: bash
         run: |
           set -euo pipefail
           NAME='${{ steps.codespace.outputs.name }}'
+          if [ -n "$NAME" ]; then
+            echo "Deleting stale Codespace: $NAME"
+            gh codespace delete -c "$NAME" --force
+            for i in {1..30}; do
+              if ! gh codespace view -c "$NAME" >/dev/null 2>&1; then break; fi
+              sleep 2
+            done
+          fi
+          echo "Creating fresh Codespace from $REPO@main"
+          NEW_NAME=$(gh codespace create -R "$REPO" -b main --idle-timeout 30m --display-name "AI Dev Server" --json name --jq .name)
+          echo "name=$NEW_NAME" >> "$GITHUB_OUTPUT"
+          echo "Fresh Codespace: $NEW_NAME"
+
+      - name: Ensure Codespace is running
+        if: steps.request.outputs.operation != 'recreate' && steps.request.outputs.operation != 'rebuild' && steps.request.outputs.operation != 'codespace_logs'
+        shell: bash
+        run: |
+          set -euo pipefail
+          NAME='${{ steps.codespace.outputs.name }}'
+          test -n "$NAME" || { echo 'No Codespace found'; exit 1; }
           STATE=$(gh codespace view -c "$NAME" --json state --jq .state)
           echo "Current state: $STATE"
           case "$STATE" in
@@ -69,7 +94,7 @@ jobs:
               ;;
           esac
           if [ "$STATE" != "Available" ]; then
-            for i in {1..90}; do
+            for i in {1..120}; do
               STATE=$(gh codespace view -c "$NAME" --json state --jq .state 2>/dev/null || true)
               echo "State: $STATE"
               [ "$STATE" = "Available" ] && break
@@ -83,17 +108,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh codespace rebuild -c '${{ steps.codespace.outputs.name }}' --full
+          NAME='${{ steps.codespace.outputs.name }}'
+          test -n "$NAME" || { echo 'No Codespace found'; exit 1; }
+          gh codespace rebuild -c "$NAME" --full
 
       - name: Read Codespace build logs
         if: steps.request.outputs.operation == 'codespace_logs'
         shell: bash
         run: |
           set -euo pipefail
-          gh codespace logs -c '${{ steps.codespace.outputs.name }}' | tee remote-output.txt
+          NAME='${{ steps.codespace.outputs.name }}'
+          test -n "$NAME" || { echo 'No Codespace found'; exit 1; }
+          timeout 45s gh codespace logs -c "$NAME" | tee remote-output.txt || true
 
       - name: Run remote operation
-        if: steps.request.outputs.operation != 'rebuild' && steps.request.outputs.operation != 'codespace_logs'
+        if: steps.request.outputs.operation != 'recreate' && steps.request.outputs.operation != 'rebuild' && steps.request.outputs.operation != 'codespace_logs'
         shell: bash
         run: |
           set -euo pipefail
@@ -111,11 +140,13 @@ jobs:
         if: always()
         shell: bash
         run: |
+          FINAL_NAME='${{ steps.recreate.outputs.name }}'
+          [ -n "$FINAL_NAME" ] || FINAL_NAME='${{ steps.codespace.outputs.name }}'
           {
             echo '## Remote Codespace Control'
             echo
             echo "Operation: ${{ steps.request.outputs.operation }}"
-            echo "Codespace: ${{ steps.codespace.outputs.name }}"
+            echo "Codespace: $FINAL_NAME"
             if [ -f remote-output.txt ]; then
               echo
               echo '```text'

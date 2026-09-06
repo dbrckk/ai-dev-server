@@ -1,7 +1,2 @@
 fcc_service: OK
-=== Jumpy FCC autonomous audit ===
-repo: dbrckk/Jumpy
-claude_code_result: 
-claude_code_rc: 124
-opencode_result: 
-opencode_rc: 124
+fcc_release_audit: NO_VERDICT We need to find any high-impact correctness issues: parse/runtime errors, broken Godot APIs, impossible gameplay, save corruption, nondeterministic daily level generation, mobile input blockers, unsafe credential handling. We have project.godot, main.gd, profile.gd, integrations.gd. Let's review: - In project.godot: input tap mapping: includes Object(InputEventKey,"physical_keycode":32) (space) and Object(InputEventKey,"physical_keycode":4194309) (what is that? 4194309 is KEY_ENTER? Actually KEYMASK? Actually Godot's physical_keycode constants: KEY_SPACE=32, KEY_ENTER=... but 4194309 looks like a scancode? Actually physical_keycode uses scancode? In Godot 4, physical_keycode is the hardware scancode. For space it's 44? Wait, not sure. But mapping includes 4194309 which is likely KEY_ENTER with some flag? Might be wrong. However, they also include InputEventMouseButton button_index 1 (left click). That's fine. The space mapping may be off but not blocking. Potential issue: The input mapping uses Object(InputEventKey,"physical_keycode":32) which is correct for space? In Godot 4, InputEventKey has scancode property? Actually physical_keycode is the hardware scancode. Space bar scancod

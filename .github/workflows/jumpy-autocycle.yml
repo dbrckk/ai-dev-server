@@ -121,7 +121,6 @@ jobs:
               text=' '.join(str(x.get('text','')) for x in d.get('content',[]) if isinstance(x,dict) and x.get('type')=='text')
           except Exception:
               pass
-          # Prefer the last explicit candidate mention. If the model fails formatting, use the first unfinished task.
           hits=[]
           for ident in ids:
               for m in re.finditer(r'\b'+re.escape(ident)+r'\b',text):
@@ -229,7 +228,7 @@ jobs:
           cd jumpy
           git config user.name 'jumpy-autocycle[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
+          git add scripts/main.gd
           git diff --cached --quiet && { echo 'No effective change'; exit 0; }
           git commit -m "Autocycle: evolve Jumpy safely"
           git push origin HEAD:main
@@ -245,3 +244,5 @@ jobs:
           else
             echo 'No repository write was attempted this cycle.' >> "$GITHUB_STEP_SUMMARY"
           fi
+
+# Manual verification trigger after granting Jumpy Contents write permission.

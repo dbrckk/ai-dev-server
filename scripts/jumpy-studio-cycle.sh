@@ -159,7 +159,13 @@ PROMPT
 )
   timeout -k 5s 420s fcc-opencode run "$IMPLEMENT_PROMPT\n\nSTRATEGIC REVIEW:\n$STRATEGY" >/tmp/jumpy-implement.log 2>&1 || true
   if [ -s /tmp/jumpy-implement.log ]; then
-    IMPLEMENTATION_NOTE=$(tail -n 20 /tmp/jumpy-implement.log | tr '\n' ' ' | head -c 1800)
+    IMPLEMENTATION_NOTE=$(python - <<'PY'
+from pathlib import Path
+text=Path('/tmp/jumpy-implement.log').read_text(errors='replace')
+lines=text.splitlines()[-20:]
+print(' '.join(lines)[-1800:])
+PY
+    )
   fi
 fi
 

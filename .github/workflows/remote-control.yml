@@ -79,8 +79,8 @@ jobs:
           NAME='${{ steps.codespace.outputs.name }}'; OP='${{ steps.request.outputs.operation }}'
           case "$OP" in
             status) CMD='cd /workspaces/ai-dev-server && bash scripts/status.sh' ;;
-            start_services) CMD='cd /workspaces/ai-dev-server && git pull --ff-only && bash scripts/start-all.sh && bash scripts/status.sh' ;;
-            doctor) CMD='cd /workspaces/ai-dev-server && git pull --ff-only && bash scripts/doctor.sh' ;;
+            start_services) CMD='cd /workspaces/ai-dev-server && bash scripts/start-all.sh && bash scripts/status.sh' ;;
+            doctor) CMD='cd /workspaces/ai-dev-server && bash scripts/doctor.sh' ;;
             logs) CMD='for f in "$HOME"/.cache/ai-dev-server/logs/*.log; do echo "===== $f ====="; tail -n 120 "$f"; done' ;;
           esac
           gh codespace ssh -c "$NAME" "$CMD" | tee remote-output.txt

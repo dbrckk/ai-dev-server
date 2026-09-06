@@ -42,7 +42,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          NAME=$(gh codespace list --json name,repository,state --jq ".[] | select(.repository.nameWithOwner == \"$REPO\") | .name" | head -n1)
+          NAME=$(gh codespace list --json name,repository,state --jq ".[] | select(.repository == \"$REPO\") | .name" | head -n1)
           test -n "$NAME" || { echo "No Codespace found for $REPO"; exit 1; }
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
           echo "Codespace: $NAME"

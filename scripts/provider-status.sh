@@ -40,7 +40,7 @@ if [ -n "$MODEL" ]; then
 import json, sys
 print(json.dumps({
   "model": sys.argv[1],
-  "max_tokens": 32,
+  "max_tokens": 256,
   "messages": [{"role": "user", "content": "Reply exactly with FCC_MODEL_OK"}],
   "stream": False,
 }))

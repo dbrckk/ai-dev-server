@@ -1,0 +1,30 @@
+{
+  "name": "AI Dev Server",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "postCreateCommand": "bash scripts/bootstrap.sh",
+  "forwardPorts": [8082, 3080, 3000],
+  "portsAttributes": {
+    "8082": { "label": "Free Claude Code Admin", "onAutoForward": "notify" },
+    "3080": { "label": "DeepSeek Harness", "onAutoForward": "notify" },
+    "3000": { "label": "cdesktop", "onAutoForward": "notify" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-json",
+        "ms-python.python",
+        "eamodio.gitlens"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+  "remoteUser": "node"
+}

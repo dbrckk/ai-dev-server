@@ -1,0 +1,19 @@
+name: Validate AI Dev Server
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate devcontainer JSON
+        run: python -m json.tool .devcontainer/devcontainer.json >/dev/null
+      - name: Validate shell scripts
+        run: |
+          for f in scripts/*.sh; do
+            bash -n "$f"
+          done

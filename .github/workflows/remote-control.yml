@@ -67,7 +67,8 @@ jobs:
             done
           fi
           echo "Creating fresh Codespace from $REPO@main"
-          NEW_NAME=$(gh codespace create -R "$REPO" -b main --idle-timeout 30m --display-name "AI Dev Server" --json name --jq .name)
+          NEW_NAME=$(gh codespace create -R "$REPO" -b main --idle-timeout 30m --display-name "AI Dev Server" | tail -n1 | tr -d '\r')
+          test -n "$NEW_NAME" || { echo 'Codespace creation returned no name'; exit 1; }
           echo "name=$NEW_NAME" >> "$GITHUB_OUTPUT"
           echo "Fresh Codespace: $NEW_NAME"
 

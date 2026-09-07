@@ -26,6 +26,11 @@ class JourneyTests(unittest.TestCase):
         val = copy.deepcopy(VALID)
         val[0]['steps'][0] = {'action': 'shell', 'value': 'anything'}
         with self.assertRaises(ValueError): validate_journeys(val)
+    def test_action_must_be_a_string(self):
+        for action in ([], {}, None, True):
+            val = copy.deepcopy(VALID)
+            val[0]['steps'][0]['action'] = action
+            with self.subTest(action=action), self.assertRaises(ValueError): validate_journeys(val)
     def test_rejects_duplicate_or_reserved_path(self):
         for val in [VALID * 2, [dict(VALID[0], id='initial')], [dict(VALID[0], id='../escape')]]:
             with self.subTest(val=val), self.assertRaises(ValueError): validate_journeys(val)

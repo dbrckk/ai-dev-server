@@ -47,17 +47,17 @@ void main() {
           for (final step in journey['steps'] as List<dynamic>) {
             final action = step['action'] as String;
             final key = step['key'] as String?;
-            final target = key == null ? null : find.byKey(ValueKey<String>(key));
-            if (target != null) expect(target, findsOneWidget);
+            final target = find.byKey(ValueKey<String>(key ?? '__unused'));
+            if (key != null) expect(target, findsOneWidget);
             switch (action) {
               case 'tap':
-                await tester.ensureVisible(target!);
-                await tester.tap(target!);
+                await tester.ensureVisible(target);
+                await tester.tap(target);
               case 'enter_text':
-                await tester.ensureVisible(target!);
-                await tester.enterText(target!, step['value'] as String);
+                await tester.ensureVisible(target);
+                await tester.enterText(target, step['value'] as String);
               case 'scroll':
-                await tester.drag(target!, Offset(0, (step['dy'] as num).toDouble()));
+                await tester.drag(target, Offset(0, (step['dy'] as num).toDouble()));
               case 'expect_text':
                 expect(find.text(step['value'] as String), findsWidgets);
               case 'expect_absent':

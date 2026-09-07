@@ -26,7 +26,7 @@ def validate_journeys(value):
             fields = {'tap': {'action', 'key'}, 'enter_text': {'action', 'key', 'value'},
                       'expect_text': {'action', 'value'}, 'expect_absent': {'action', 'value'},
                       'expect_key': {'action', 'key'}, 'scroll': {'action', 'key', 'dy'}}
-            if action not in fields or set(step) != fields[action]:
+            if not isinstance(action, str) or action not in fields or set(step) != fields[action]:
                 raise ValueError('Unsupported action or fields')
             if 'key' in step and (not isinstance(step['key'], str) or not re.fullmatch(r'[a-z][a-z0-9_-]{0,59}', step['key'])):
                 raise ValueError('Keys must be stable lower-case ValueKey names')

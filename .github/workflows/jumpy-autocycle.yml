@@ -26,7 +26,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run autonomous Jumpy studio cycle
-        run: bash scripts/jumpy-studio-cycle.sh
+        run: |
+          cp scripts/jumpy-studio-cycle.sh /tmp/jumpy-studio-cycle-runtime.sh
+          sed -i 's|WORK=/tmp/jumpy-studio-cycle|WORK=/workspaces/ai-dev-server/.jumpy-studio-cycle|' /tmp/jumpy-studio-cycle-runtime.sh
+          bash /tmp/jumpy-studio-cycle-runtime.sh
       - name: Summary
         if: always()
         run: |

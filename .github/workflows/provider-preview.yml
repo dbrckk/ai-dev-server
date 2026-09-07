@@ -6,6 +6,7 @@ on:
     paths: ['control/provider-probe.json']
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: studio-provider-preview
   cancel-in-progress: false
@@ -17,6 +18,17 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
+      - name: Inspect previous provider failure
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 34146251637 --repo "$GITHUB_REPOSITORY" --name provider-preview-1 --dir "$RUNNER_TEMP/provider-diagnostic"
+          python - <<'PYCODE'
+          import json, os
+          from pathlib import Path
+          report = json.loads((Path(os.environ['RUNNER_TEMP']) / 'provider-diagnostic/report.json').read_text())
+          print(json.dumps({'status': report.get('status'), 'blockers': report.get('blockers')}, ensure_ascii=True))
+          PYCODE
       - name: Generate and validate a bounded preview with the configured provider
         env:
           STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}

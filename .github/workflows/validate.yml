@@ -35,8 +35,9 @@ jobs:
           bad=[]
           for p in Path('.github/workflows').glob('*.y*ml'):
               for i,line in enumerate(p.read_text(errors='replace').splitlines(),1):
-                  m=re.search(r'uses:\s*([^\s#]+)', line)
-                  if not m: continue
+                  m=re.match(r'^\s*-\s*uses:\s*([^\s#]+)', line)
+                  if not m:
+                      continue
                   ref=m.group(1)
                   if ref.startswith('./') or ref.startswith('docker://'):
                       continue

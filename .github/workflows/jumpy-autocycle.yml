@@ -9,6 +9,7 @@ on:
     paths:
       - '.github/workflows/jumpy-autocycle.yml'
       - 'scripts/jumpy-studio-cycle-v2.sh'
+      - 'docs/EXTERNAL_SOURCE_POLICY.md'
 
 permissions:
   contents: read
@@ -24,7 +25,7 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.CODESPACES_PAT }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, immutable SHA
       - name: Run autonomous Jumpy studio cycle v2
         run: bash scripts/jumpy-studio-cycle-v2.sh
       - name: Summary

@@ -43,8 +43,6 @@ PYMODEL
 export BEST_MODEL
 echo "BEST_MODEL=$BEST_MODEL"
 
-# Persist the good route for future sessions. Running agents use --model directly, so the
-# healthy FCC process does not need to be restarted just to apply this file update.
 python - "$HOME/.fcc/.env" "$BEST_MODEL" <<'PYMODELENV'
 from pathlib import Path
 import re,sys
@@ -55,7 +53,6 @@ for key in ['MODEL','MODEL_OPUS','MODEL_SONNET','MODEL_HAIKU']:
     else: s += '\n'+line
 p.write_text(s)
 PYMODELENV
-
 MODEL="$BEST_MODEL"'''
 if health not in s:
     raise SystemExit('model probe anchor mismatch')
@@ -78,6 +75,13 @@ replacement = r'''run_agent() {
     done
     echo 'FCC_UNAVAILABLE' | tee -a /tmp/jumpy-agent.log
     return 1
+  }
+
+  ensure_codex() {
+    if command -v codex >/dev/null 2>&1; then return 0; fi
+    echo 'CODEX_INSTALL=self-heal' | tee -a /tmp/jumpy-agent.log
+    npm install -g @openai/codex >>/tmp/jumpy-agent.log 2>&1 || return 1
+    command -v codex >/dev/null 2>&1
   }
 
   run_one_agent() {
@@ -106,14 +110,16 @@ replacement = r'''run_agent() {
     return 1
   }
 
-  if command -v fcc-claude >/dev/null 2>&1 && command -v claude >/dev/null 2>&1; then
-    run_one_agent "claude-code" "$primary_budget" 'fcc-claude --model "$BEST_MODEL" -p "$(cat /tmp/brief.txt)"' && return 0
+  # Prefer the strongest harness that is actually compatible with FCC direct provider model refs.
+  if command -v fcc-codex >/dev/null 2>&1 && ensure_codex; then
+    run_one_agent "codex" "$primary_budget" 'fcc-codex exec --model "$BEST_MODEL" "$(cat /tmp/brief.txt)"' && return 0
   fi
-  if command -v fcc-codex >/dev/null 2>&1 && command -v codex >/dev/null 2>&1; then
-    run_one_agent "codex" "$fallback_budget" 'fcc-codex exec --model "$BEST_MODEL" "$(cat /tmp/brief.txt)"' && return 0
+  # Claude Code remains a fallback; its client-side model validation can reject direct gateway refs.
+  if command -v fcc-claude >/dev/null 2>&1 && command -v claude >/dev/null 2>&1; then
+    run_one_agent "claude-code" "$fallback_budget" 'fcc-claude -p "$(cat /tmp/brief.txt)"' && return 0
   fi
   if command -v fcc-opencode >/dev/null 2>&1 && command -v opencode >/dev/null 2>&1; then
-    run_one_agent "opencode" "$fallback_budget" 'fcc-opencode run --model "$BEST_MODEL" "$(cat /tmp/brief.txt)"' && return 0
+    run_one_agent "opencode" "$fallback_budget" 'fcc-opencode run "$(cat /tmp/brief.txt)"' && return 0
   fi
   echo 'AGENT_SELECTED=none' | tee -a /tmp/jumpy-agent.log
   return 0
@@ -150,7 +156,7 @@ changed_replacement = '''CHANGED=$(git diff --name-only)
 [ -n "$CHANGED" ] || { echo 'RESULT=NO_CHANGE'; exit 0; }
 if [ "$PHASE" = "OPEN_ENDED" ] && ! printf '%s\n' "$CHANGED" | awk '$0 != "docs/AUTONOMOUS_STATE.md" {found=1} END {exit !found}'; then
   echo '=== AGENT DIAGNOSTIC ==='
-  tail -n 40 /tmp/jumpy-agent.log 2>/dev/null || true
+  tail -n 50 /tmp/jumpy-agent.log 2>/dev/null || true
   git checkout -- docs/AUTONOMOUS_STATE.md
   echo 'RESULT=NO_SOURCE_CHANGE'
   exit 0

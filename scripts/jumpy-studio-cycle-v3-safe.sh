@@ -13,7 +13,6 @@ if old not in s:
     raise SystemExit('open-ended prompt anchor mismatch')
 s = s.replace(old, new, 1)
 
-# Select a live model before any agent starts. Direct provider refs bypass stale tier mappings.
 health = 'curl -fsS --max-time 3 http://127.0.0.1:8082/health >/dev/null\n\nMODEL=$(grep -E \'^MODEL=\' "$HOME/.fcc/.env" | tail -n1 | cut -d= -f2-)'
 probe = r'''curl -fsS --max-time 3 http://127.0.0.1:8082/health >/dev/null
 
@@ -41,9 +40,9 @@ for model in candidates:
 PYMODEL
 )
 [ -n "$BEST_MODEL" ] || { echo 'MODEL_PROBE_FAILED'; exit 2; }
+export BEST_MODEL
 echo "BEST_MODEL=$BEST_MODEL"
 
-# Persist the working direct route for all FCC launchers and remove stale Claude tier overrides.
 python - "$HOME/.fcc/.env" "$BEST_MODEL" <<'PYMODELENV'
 from pathlib import Path
 import re,sys
@@ -55,7 +54,6 @@ for key in ['MODEL','MODEL_OPUS','MODEL_SONNET','MODEL_HAIKU']:
 p.write_text(s)
 PYMODELENV
 
-# Restart FCC so launchers see the selected route.
 pkill -f '[f]cc-server' 2>/dev/null || true
 nohup fcc-server >"$BASE/logs/fcc.log" 2>&1 < /dev/null &
 for _ in {1..30}; do curl -fsS --max-time 2 http://127.0.0.1:8082/health >/dev/null 2>&1 && break; sleep 1; done
@@ -77,7 +75,7 @@ replacement = r'''run_agent() {
     local name="$1" budget="$2" command="$3"
     echo "AGENT_ATTEMPT=$name" | tee -a /tmp/jumpy-agent.log
     setsid env -u GH_TOKEN -u GITHUB_TOKEN -u CODESPACES_PAT -u NVIDIA_NIM_API_KEY \
-      GIT_TERMINAL_PROMPT=0 SSH_AUTH_SOCK= GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null \
+      GIT_TERMINAL_PROMPT=0 SSH_AUTH_SOCK= GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null BEST_MODEL="$BEST_MODEL" \
       bash -lc "cd /workspaces/ai-dev-server/.jumpy-studio-cycle && git config --local credential.helper '' && $command" \
       >>/tmp/jumpy-agent.log 2>&1 &
     local pid=$! loops=$((budget / 2)) timed_out=1
@@ -114,7 +112,6 @@ if n != 1:
     raise SystemExit(f'agent router anchor mismatch ({n})')
 s = s2
 
-# Canonicalize mixed GDScript indentation before strict diff checks/Godot.
 anchor = "if [ -s /tmp/jumpy-agent.log ]; then"
 repair = r'''python - <<'PY2'
 from pathlib import Path
@@ -135,11 +132,12 @@ if anchor not in s:
     raise SystemExit('agent-log anchor mismatch')
 s = s.replace(anchor, repair + anchor, 1)
 
-# Never create fake progress: an open-ended cycle with documentation only becomes a no-op.
 changed_anchor = 'CHANGED=$(git diff --name-only)\n[ -n "$CHANGED" ] || { echo \'RESULT=NO_CHANGE\'; exit 0; }'
 changed_replacement = '''CHANGED=$(git diff --name-only)
 [ -n "$CHANGED" ] || { echo 'RESULT=NO_CHANGE'; exit 0; }
 if [ "$PHASE" = "OPEN_ENDED" ] && ! printf '%s\n' "$CHANGED" | awk '$0 != "docs/AUTONOMOUS_STATE.md" {found=1} END {exit !found}'; then
+  echo '=== AGENT DIAGNOSTIC ==='
+  tail -n 40 /tmp/jumpy-agent.log 2>/dev/null || true
   git checkout -- docs/AUTONOMOUS_STATE.md
   echo 'RESULT=NO_SOURCE_CHANGE'
   exit 0
@@ -156,6 +154,5 @@ set +e
 bash scripts/jumpy-studio-cycle-v3-runner.sh 2>&1 | tee "$LOG"
 RC=${PIPESTATUS[0]}
 set -e
-
 if [ "$RC" -eq 0 ]; then exit 0; fi
 exit "$RC"

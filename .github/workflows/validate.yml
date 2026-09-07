@@ -48,3 +48,8 @@ jobs:
               print('\n'.join(bad))
               sys.exit(1)
           PY
+
+      - name: Test mobile studio orchestration and security boundaries
+        run: python -m unittest discover -s tests -v
+      - name: Validate mobile brief queue
+        run: python studio/queue.py

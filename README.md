@@ -1,6 +1,13 @@
 # AI Dev Server
 
-Environnement de développement mobile-first pour GitHub Codespaces.
+Studio de création mobile autonome et environnement de développement pour GitHub Codespaces.
+
+## Création d'une nouvelle application depuis ChatGPT
+
+Le moteur `studio/` reçoit un brief dans `control/mobile-requests/`, enchaîne produit → design → développement → tests/compilation → revues → corrections et sauvegarde les sources dans une branche du dépôt cible. Il livre un APK Android debug et des captures quand les contrôles passent.
+
+**[Configuration, utilisation et limites du studio mobile](docs/MOBILE_STUDIO.md)**. L'exemple est désactivé. Le moteur cible actuellement les nouvelles applications Flutter ; les cycles Jumpy historiques restent séparés.
+
 
 ## Objectif
 
@@ -34,3 +41,4 @@ Les clés API, jetons et fichiers `.env` sont ignorés par Git. Ne jamais les co
 ## Remarque
 
 Free Claude Code et les fournisseurs IA évoluent rapidement. L'installation est volontairement séparée du build critique du Codespace afin qu'une modification de FCC ne rende pas la création du Codespace inutilisable.
+

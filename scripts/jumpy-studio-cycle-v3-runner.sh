@@ -69,7 +69,16 @@ PY2
 s2, n = re.subn(pattern, lambda _m: phase, s, flags=re.S)
 if n != 1:
     raise SystemExit(f'v3 settings-phase anchor mismatch ({n})')
-p.write_text(s2)
+s = s2
+
+# 3) Final validation must include untracked files too. Intent-to-add makes them visible to diff/scope/secret scans.
+final_needle = "# Final scope and secret check after patch application.\nFILES=$(git diff --name-only)"
+final_replacement = "# Final scope and secret check after patch application. Include untracked files in every gate.\ngit add -N --all\nFILES=$(git diff --name-only)"
+if s.count(final_needle) != 1:
+    raise SystemExit('v3 final-scope anchor mismatch')
+s = s.replace(final_needle, final_replacement, 1)
+
+p.write_text(s)
 PY
 
 bash -n "$TMP"

@@ -7,8 +7,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
-from core import StudioError, API, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict
-from run import execute
+from core import StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict
+from run import execute, GitHub
 from queue import matrix
 
 REQUEST = {'id': 'demo-v1', 'target_repo': 'owner/mobile', 'app_name': 'demo_app',
@@ -171,6 +171,34 @@ class StudioTests(unittest.TestCase):
                 (Path(d) / f'{i}.json').write_text(json.dumps(dict(REQUEST, id=f'demo-{i}')))
             with self.assertRaises(StudioError):
                 matrix(d)
+    def test_empty_repository_initialized_through_contents(self):
+        class Empty(GitHub):
+            def __init__(self):
+                self.repo = '/repos/owner/mobile'
+                self.writes = []
+            def get(self, path):
+                if path == '':
+                    return {'size': 0}
+                raise APIError(409)
+            def call(self, method, path, data=None):
+                self.writes.append((method, path))
+                return {'commit': {'sha': 'seed'}}
+        gh = Empty()
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(gh.restore('studio/demo', Path(d)), (None, 'seed'))
+        self.assertEqual(gh.writes, [('PUT', '/repos/owner/mobile/contents/README.md')])
+    def test_repository_access_error_never_initializes(self):
+        class Denied(GitHub):
+            def __init__(self):
+                self.repo = '/repos/owner/mobile'
+            def get(self, path):
+                if path == '':
+                    return {'size': 0}
+                raise APIError(403)
+            def call(self, *args):
+                raise AssertionError('Must not mutate inaccessible repository')
+        with tempfile.TemporaryDirectory() as d, self.assertRaises(APIError):
+            Denied().restore('studio/demo', Path(d))
     def test_disabled_request_no_access(self):
         with tempfile.TemporaryDirectory() as d:
             self.assertEqual(execute(dict(REQUEST, enabled=False), Path(d), Path(d)), {'status': 'disabled'})

@@ -95,6 +95,11 @@ def verdict(value):
         raise StudioError('Invalid reviewer verdict')
     return value
 
+class APIError(StudioError):
+    def __init__(self, status):
+        self.status = status
+        super().__init__('API HTTP ' + str(status))
+
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         raise StudioError('Credential-bearing HTTP redirects are refused')
@@ -120,7 +125,7 @@ class API:
             except urllib.error.HTTPError as e:
                 # Never print remote bodies: providers may echo secrets or prompts.
                 if method not in ('GET', 'POST') or e.code not in (429, 502, 503, 504) or attempt == 2:
-                    raise StudioError('API HTTP ' + str(e.code)) from None
+                    raise APIError(e.code) from None
                 time.sleep(2 ** attempt)
             except (urllib.error.URLError, TimeoutError):
                 raise StudioError('API unavailable or timed out') from None
@@ -168,6 +173,7 @@ class Model:
 class Sandbox:
     def __init__(self, root):
         self.root = root.resolve()
+        self.native_files = {}
     def run(self, args, network=False, timeout=600):
         name = 'mobile-studio-' + uuid.uuid4().hex
         for p in [self.root, *self.root.rglob('*')]:
@@ -192,11 +198,15 @@ class Sandbox:
         if rc:
             raise StudioError('Flutter bootstrap failed: ' + log[-1000:])
         (self.root / 'test/widget_test.dart').unlink(missing_ok=True)
+        self.native_files = {p.relative_to(self.root).as_posix(): p.read_bytes()
+                             for folder in ('android', 'ios') for p in (self.root / folder).rglob('*')
+                             if p.is_file() and not p.is_symlink() and p.name != 'local.properties'}
     def gates(self, name):
         # Trusted test is reinstated every round; model cannot edit its reserved name.
         probe = Path(__file__).with_name('visual_test.dart').read_text().replace('APP_NAME', name)
         (self.root / 'test').mkdir(exist_ok=True)
         (self.root / 'test/__studio_visual_test.dart').write_text(probe)
+        (self.root / 'dart_test.yaml').write_text('tags:\n  studio-visual:\n')
         logs = []
         for args, network in [(['flutter', 'pub', 'get'], True),
                               (['flutter', 'analyze', '--no-pub'], False),
@@ -206,6 +216,11 @@ class Sandbox:
             rc, out = self.run(args, network=network, timeout=900)
             logs.append({'command': args, 'exit_code': rc, 'output': out})
             if rc:
+                return False, logs
+        for rel, original in self.native_files.items():
+            p = self.root / rel
+            if p.is_symlink() or not p.is_file() or p.read_bytes() != original:
+                logs.append({'command': ['native-template-integrity'], 'exit_code': 1, 'output': 'Native template changed: ' + rel})
                 return False, logs
         apk = self.root / 'build/app/outputs/flutter-apk/app-debug.apk'
         pngs = list((self.root / 'test/goldens').glob('*.png'))

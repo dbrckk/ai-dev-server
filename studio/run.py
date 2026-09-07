@@ -11,7 +11,7 @@ import sys
 import tempfile
 import urllib.error
 
-from core import API, Model, Sandbox, StudioError, allowed, apply_patch, canonical, request_check, verdict, SECRET
+from core import API, APIError, Model, Sandbox, StudioError, allowed, apply_patch, canonical, request_check, verdict, SECRET
 
 class GitHub(API):
     def __init__(self, repo):
@@ -22,9 +22,18 @@ class GitHub(API):
     def get(self, path):
         return self.call('GET', self.repo + path)
     def restore(self, branch, root):
-        refs = self.get('/git/matching-refs/heads/' + branch)
-        exact = [r for r in refs if r['ref'] == 'refs/heads/' + branch]
         metadata = self.get('')
+        try:
+            refs = self.get('/git/matching-refs/heads/' + branch)
+        except APIError as e:
+            if e.status != 409 or metadata.get('size', 0) != 0:
+                raise
+            # Git data endpoints reject an entirely empty repository. Seed it through Contents.
+            initial = self.call('PUT', self.repo + '/contents/README.md', {
+                'message': 'Initialize mobile studio target',
+                'content': base64.b64encode(b'# Mobile app\n\nSources are generated in the studio branch.\n').decode()})
+            return None, initial['commit']['sha']
+        exact = [r for r in refs if r['ref'] == 'refs/heads/' + branch]
         if metadata.get('archived'):
             raise StudioError('Target repository is archived')
         if not exact:
@@ -44,7 +53,7 @@ class GitHub(API):
         state = None
         for item in tree['tree']:
             path = item['path']
-            if item['type'] != 'blob' or not (allowed(path) or path == '.studio/state.json'):
+            if item['type'] != 'blob' or not (allowed(path) or path in ('.studio/state.json', 'pubspec.lock')):
                 continue
             if item.get('mode') != '100644' or item.get('size', 0) > 600000:
                 raise StudioError('Unsupported target file')
@@ -52,6 +61,8 @@ class GitHub(API):
             content = base64.b64decode(blob['content']).decode()
             if path == '.studio/state.json':
                 state = json.loads(content)
+            elif path == 'pubspec.lock':
+                (root / path).write_text(content)
             else:
                 apply_patch(root, {'files': [{'path': path, 'content': content}]})
         if state is None:
@@ -63,6 +74,7 @@ class GitHub(API):
         previous = {}
         if parent:
             previous = {x['path']: x.get('sha') for x in self.get('/git/trees/' + parent + '?recursive=1')['tree']}
+        candidates = {}
         for p in sorted(root.rglob('*')):
             if not p.is_file() or p.is_symlink():
                 continue
@@ -71,9 +83,11 @@ class GitHub(API):
                 continue
             if rel.startswith('test/__studio') or rel.endswith(('local.properties', '.iml')):
                 continue
-            if not (allowed(rel) or rel == 'pubspec.lock' or rel.startswith(('android/', 'ios/'))):
+            if not (allowed(rel) or rel == 'pubspec.lock'):
                 continue
-            content = p.read_bytes()
+            candidates[rel] = p.read_bytes()
+        candidates.update(getattr(self, 'native_files', {}))
+        for rel, content in sorted(candidates.items()):
             if len(content) > 1000000 or SECRET.search(content.decode(errors='ignore')):
                 raise StudioError('Publication file rejected')
             sha = hashlib.sha1(b'blob ' + str(len(content)).encode() + b'\0' + content).hexdigest()
@@ -131,8 +145,11 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             return state
         sandbox = sandbox_factory(root)
         sandbox.create(req['app_name'])
+        github.native_files = getattr(sandbox, 'native_files', {})
         for p in saved_root.rglob('*'):
-            if p.is_file():
+            if p.name == 'pubspec.lock':
+                (root / 'pubspec.lock').write_bytes(p.read_bytes())
+            elif p.is_file():
                 apply_patch(root, {'files': [{'path': p.relative_to(saved_root).as_posix(), 'content': p.read_text()}]})
     model = model_factory(req['max_calls'])
     state['cycles'] += 1

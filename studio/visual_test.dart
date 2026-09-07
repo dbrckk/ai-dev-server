@@ -23,7 +23,7 @@ void main() {
         tester.platformDispatcher.clearAllTestValues();
       });
       final handle = tester.ensureSemantics();
-      addTearDown(handle.dispose);
+      try {
       await tester.pumpWidget(const StudioApp());
       await tester.pumpAndSettle(const Duration(milliseconds: 100), EnginePhase.sendSemanticsUpdate, const Duration(seconds: 10));
       expect(tester.takeException(), isNull, reason: 'No render/layout/runtime exception');
@@ -32,6 +32,9 @@ void main() {
       await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
       await expectLater(tester, meetsGuideline(textContrastGuideline));
       await expectLater(find.byType(StudioApp), matchesGoldenFile('goldens/${variant.$1}.png'));
+      } finally {
+        handle.dispose();
+      }
     });
   }
 }

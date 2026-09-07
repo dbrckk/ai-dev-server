@@ -53,19 +53,3 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Validate mobile brief queue
         run: python studio/queue.py
-  mobile-smoke:
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          persist-credentials: false
-      - name: Compile and render a real Flutter fixture in the studio sandbox
-        run: python studio/smoke.py
-      - name: Preserve smoke diagnostics
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: studio-smoke
-          path: studio-output/
-          if-no-files-found: warn

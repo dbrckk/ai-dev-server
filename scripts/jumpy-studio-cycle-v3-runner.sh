@@ -32,7 +32,7 @@ s = s.replace(needle, replacement, 1)
 
 # 2) Known settings phase is deterministic: no long model call, no partial callbacks.
 pattern = r"  ACCESSIBILITY_SETTINGS_UI\)\n.*?\n    run_agent 120 ;;\n"
-phase = r'''  ACCESSIBILITY_SETTINGS_UI)
+phase = r"""  ACCESSIBILITY_SETTINGS_UI)
     python - <<'PY2'
 from pathlib import Path
 p=Path('scripts/main.gd')
@@ -60,14 +60,13 @@ old_show='''func show_menu(value: bool) -> void:\n\tui.title.visible = value\n\t
 new_show='''func show_menu(value: bool) -> void:\n\tif not value:\n\t\tsettings_open = false\n\tvar show_main: bool = value and not settings_open\n\tui.title.visible = show_main\n\tui.subtitle.visible = show_main\n\tui.hint.visible = show_main\n\tui.mission.visible = show_main\n\tui.daily.visible = show_main\n\tui.normal.visible = show_main\n\tui.skin.visible = show_main\n\tui.settings.visible = value\n\trefresh_settings_ui()\n\tui.gameover.visible = false\n'''
 once(old_show,new_show,'show_menu settings integration')
 
-# Death screen must hide the settings button too.
 once('\tui.skin.visible = false\n\tcamera_kick = 18.0\n', '\tui.skin.visible = false\n\tui.settings.visible = false\n\trefresh_settings_ui()\n\tcamera_kick = 18.0\n', 'death settings visibility')
 
 p.write_text(s)
 PY2
     NOTE='Added deterministic persistent player-facing settings for sound, haptics, reduced motion and high contrast.' ;;
-'''
-s2, n = re.subn(pattern, phase, s, flags=re.S)
+"""
+s2, n = re.subn(pattern, lambda _m: phase, s, flags=re.S)
 if n != 1:
     raise SystemExit(f'v3 settings-phase anchor mismatch ({n})')
 p.write_text(s2)

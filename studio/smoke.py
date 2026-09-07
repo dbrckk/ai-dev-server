@@ -17,7 +17,23 @@ class StudioApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
     theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)),
     darkTheme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark)),
-    home: Scaffold(appBar: AppBar(title: const Text('Focus')), body: const Center(child: Text('Ready'))),
+    home: const HomeScreen(),
+  );
+}
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Focus')),
+    body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+      const Text('Ready'),
+      FilledButton(key: const ValueKey('settings_button'), onPressed: () {
+        Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => Scaffold(
+          appBar: AppBar(title: const Text('Settings')),
+          body: const Center(child: Text('Session duration')),
+        )));
+      }, child: const Text('Open settings')),
+    ])),
   );
 }
 """},
@@ -34,8 +50,12 @@ void main() {
 }
 """}
 ]})
-passed, logs = sandbox.gates('smoke_app')
+passed, logs = sandbox.gates('smoke_app', [{'id': 'settings', 'steps': [
+    {'action': 'tap', 'key': 'settings_button'}, {'action': 'expect_text', 'value': 'Session duration'}]}])
 Path('studio-output').mkdir(exist_ok=True)
+import shutil
+for screenshot in (root / 'test/goldens').glob('*.png'):
+    shutil.copyfile(screenshot, Path('studio-output') / screenshot.name)
 Path('studio-output/smoke.json').write_text(json.dumps({'passed': passed, 'logs': logs}, indent=2))
 for log in logs:
     print(' '.join(log['command']), log['exit_code'])

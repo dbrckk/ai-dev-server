@@ -1,0 +1,34 @@
+name: Real Provider Mobile Preview
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, codex/mobile-journeys]
+    paths: ['control/provider-probe.json']
+permissions:
+  contents: read
+concurrency:
+  group: studio-provider-preview
+  cancel-in-progress: false
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Generate and validate a bounded preview with the configured provider
+        env:
+          STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
+          STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
+          STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
+          STUDIO_VISION_MODEL: ${{ vars.STUDIO_VISION_MODEL }}
+        run: python studio/provider_probe.py
+      - name: Retain real evidence and generated sources
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: provider-preview-${{ github.run_number }}
+          path: studio-output/
+          if-no-files-found: warn
+          retention-days: 14

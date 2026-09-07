@@ -14,6 +14,7 @@ from queue import matrix
 REQUEST = {'id': 'demo-v1', 'target_repo': 'owner/mobile', 'app_name': 'demo_app',
            'brief': 'Create a complete working focus timer mobile app.', 'enabled': True,
            'max_rounds': 3, 'max_calls': 12, 'max_cycles': 5}
+JOURNEYS = [{'id': 'settings', 'steps': [{'action': 'tap', 'key': 'settings_button'}, {'action': 'expect_text', 'value': 'Settings'}]}]
 PATCH = {'files': [{'path': 'lib/app.dart', 'content': 'source'}, {'path': 'test/app_test.dart', 'content': 'test'}]}
 
 class FakeGitHub:
@@ -42,7 +43,7 @@ class FakeModel:
             return PATCH
         if role in ('review', 'visual'):
             return {'passed': True, 'blockers': []}
-        return {'acceptance': ['timer works']}
+        return {'acceptance': ['timer works'], 'journeys': copy.deepcopy(JOURNEYS)}
 
 class FakeSandbox:
     def __init__(self, root):
@@ -50,15 +51,16 @@ class FakeSandbox:
         self.attempt = 0
     def create(self, name):
         (self.root / 'test').mkdir(exist_ok=True)
-    def gates(self, name):
+    def gates(self, name, journeys):
         self.attempt += 1
         p = self.root / 'build/app/outputs/flutter-apk/app-debug.apk'
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_bytes(b'actual fixture apk')
         d = self.root / 'test/goldens'
         d.mkdir(parents=True, exist_ok=True)
-        for i in range(4):
-            (d / f'{i}.png').write_bytes(b'fixture')
+        for screen in ['initial'] + [j['id'] for j in journeys]:
+            for i in range(4):
+                (d / f'{screen}--{i}.png').write_bytes(b'fixture')
         return True, [{'exit_code': 0}]
 
 class StudioTests(unittest.TestCase):
@@ -110,11 +112,11 @@ class StudioTests(unittest.TestCase):
         self.assertEqual(state['status'], 'validated_preview')
         self.assertEqual(state['release_status'], 'not_store_ready')
         self.assertTrue((root / 'out/app-debug.apk').exists())
-        self.assertEqual(len(list((root / 'out').glob('*.png'))), 4)
+        self.assertEqual(len(list((root / 'out').glob('*.png'))), 8)
     def test_repair_loop(self):
         class RepairSandbox(FakeSandbox):
-            def gates(self, name):
-                passed, logs = super().gates(name)
+            def gates(self, name, journeys):
+                passed, logs = super().gates(name, journeys)
                 return self.attempt >= 2, logs
         state, _, _ = self.run_fixture(sandbox=RepairSandbox)
         self.assertEqual(state['rounds'], 2)
@@ -126,8 +128,8 @@ class StudioTests(unittest.TestCase):
         self.assertTrue((root / 'out/app-debug.apk').exists())
     def test_failed_build_does_not_export_stale_apk(self):
         class Failed(FakeSandbox):
-            def gates(self, name):
-                super().gates(name)
+            def gates(self, name, journeys):
+                super().gates(name, journeys)
                 return False, [{'exit_code': 1}]
         state, root, _ = self.run_fixture(sandbox=Failed)
         self.assertEqual(state['status'], 'repair_needed')

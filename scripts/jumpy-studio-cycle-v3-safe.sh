@@ -13,28 +13,33 @@ if old not in s:
     raise SystemExit('open-ended prompt anchor mismatch')
 s = s.replace(old, new, 1)
 
-# Probe strong current models through the exact FCC gateway before invoking an editor.
-# The chosen model is then explicitly passed to every agent, avoiding stale CLI defaults.
+# Probe current FCC models through the exact Anthropic-compatible gateway.
+# A plain text response is not enough for an autonomous coding agent: the winning
+# model must demonstrate structured tool use before it can be selected.
 health = 'curl -fsS --max-time 3 http://127.0.0.1:8082/health >/dev/null\n\nMODEL=$(grep -E \'^MODEL=\' "$HOME/.fcc/.env" | tail -n1 | cut -d= -f2-)'
 probe = r'''curl -fsS --max-time 3 http://127.0.0.1:8082/health >/dev/null
 
 BEST_MODEL=$(python - <<'PYMODEL'
 import json, urllib.request
-# Ordered by coding/agentic capability. A model is eligible only after a live response.
+# Prefer current coding/agentic families exposed by FCC/NVIDIA. Eligibility requires
+# a live structured tool call, not merely successful text generation.
 candidates = [
+    'nvidia_nim/z-ai/glm5.1',
+    'nvidia_nim/moonshotai/kimi-k2.5',
+    'nvidia_nim/minimaxai/minimax-m2.5',
     'nvidia_nim/nvidia/nemotron-3-ultra-550b-a55b',
     'nvidia_nim/nvidia/nemotron-3.5-lightning-30b-a3b',
     'nvidia_nim/nvidia/nemotron-3-super-120b-a12b',
-    'nvidia_nim/nvidia/nemotron-3-nano-30b-a3b',
 ]
+tool={'name':'read_probe','description':'Return a probe value','input_schema':{'type':'object','properties':{'value':{'type':'string'}},'required':['value']}}
 for model in candidates:
-    body=json.dumps({'model':model,'max_tokens':12,'messages':[{'role':'user','content':'Reply OK'}],'stream':False}).encode()
+    body=json.dumps({'model':model,'max_tokens':96,'messages':[{'role':'user','content':'Use the read_probe tool exactly once with value OK. Do not answer with plain text.'}],'tools':[tool],'tool_choice':{'type':'tool','name':'read_probe'},'stream':False}).encode()
     req=urllib.request.Request('http://127.0.0.1:8082/v1/messages',data=body,headers={'Content-Type':'application/json'},method='POST')
     try:
-        with urllib.request.urlopen(req,timeout=12) as r:
+        with urllib.request.urlopen(req,timeout=15) as r:
             data=json.loads(r.read().decode('utf-8','replace'))
-            text=' '.join(str(x.get('text','')) for x in data.get('content',[]) if isinstance(x,dict))
-            if r.status == 200 and text.strip():
+            blocks=data.get('content',[])
+            if r.status == 200 and any(isinstance(x,dict) and x.get('type')=='tool_use' and x.get('name')=='read_probe' for x in blocks):
                 print(model)
                 break
     except Exception:
@@ -49,8 +54,10 @@ if health not in s:
     raise SystemExit('model probe anchor mismatch')
 s = s.replace(health, probe, 1)
 
-# Route by demonstrated success in this environment. OpenCode gets first attempt because it
-# has previously produced a Godot-valid Jumpy source diff. Claude Code is the independent fallback.
+# Claude Code is the primary autonomous editor when available because FCC natively
+# preserves its Anthropic tool protocol. acceptEdits removes the non-interactive
+# permission deadlock without granting unrestricted shell bypass. OpenCode remains
+# an independent fallback. Both run without repository/provider credentials.
 pattern = r'''run_agent\(\) \{\n.*?\n\}\n\ncase \"\$PHASE\" in'''
 replacement = r'''run_agent() {
   local seconds="$1"
@@ -92,11 +99,11 @@ replacement = r'''run_agent() {
     return 1
   }
 
-  if command -v fcc-opencode >/dev/null 2>&1 && command -v opencode >/dev/null 2>&1; then
-    run_one_agent "opencode" "$primary_budget" 'fcc-opencode run --model "$BEST_MODEL" "$(cat /tmp/brief.txt)"' && return 0
-  fi
   if command -v fcc-claude >/dev/null 2>&1 && command -v claude >/dev/null 2>&1; then
-    run_one_agent "claude-code" "$fallback_budget" 'fcc-claude --model "$BEST_MODEL" -p "$(cat /tmp/brief.txt)"' && return 0
+    run_one_agent "claude-code" "$primary_budget" 'fcc-claude --model "$BEST_MODEL" --permission-mode acceptEdits -p "$(cat /tmp/brief.txt)"' && return 0
+  fi
+  if command -v fcc-opencode >/dev/null 2>&1 && command -v opencode >/dev/null 2>&1; then
+    run_one_agent "opencode" "$fallback_budget" 'fcc-opencode run --model "$BEST_MODEL" "$(cat /tmp/brief.txt)"' && return 0
   fi
   echo 'AGENT_SELECTED=none' | tee -a /tmp/jumpy-agent.log
   return 0

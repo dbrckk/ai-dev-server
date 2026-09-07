@@ -24,15 +24,18 @@ jobs:
   evolve:
     runs-on: ubuntu-latest
     timeout-minutes: 18
-    env:
-      GH_TOKEN: ${{ secrets.CODESPACES_PAT }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, immutable SHA
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # immutable SHA
+        with:
+          persist-credentials: false
       - name: Run hardened autonomous Jumpy studio cycle v3
+        env:
+          GH_TOKEN: ${{ secrets.CODESPACES_PAT }}
         run: bash scripts/jumpy-studio-cycle-v3-safe.sh
       - name: Summary
         if: always()
         run: |
           echo '## Jumpy autonomous studio cycle v3' >> "$GITHUB_STEP_SUMMARY"
           echo 'Cadence: every 20 minutes (:07 / :27 / :47). Newer cycles supersede stale in-flight cycles.' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Security: secret-isolated agent → deterministic known phases → safe no-op handling → strict scope gate → Godot validation → final secret scan → validated push.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Agent routing: best available coding agent → automatic fallback → deterministic phase when safer.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Security: credentials scoped to orchestrator step; agent receives no GitHub/provider secrets; strict scope gate → Godot validation → final secret scan → validated push.' >> "$GITHUB_STEP_SUMMARY"

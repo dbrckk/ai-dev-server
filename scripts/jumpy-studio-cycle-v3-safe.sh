@@ -13,22 +13,25 @@ if old not in s:
     raise SystemExit('open-ended prompt anchor mismatch')
 s = s.replace(old, new, 1)
 
-# Probe only models that have recently answered successfully through this exact FCC/NIM path.
+# Probe strong current models through the exact FCC gateway before invoking an editor.
+# The chosen model is then explicitly passed to every agent, avoiding stale CLI defaults.
 health = 'curl -fsS --max-time 3 http://127.0.0.1:8082/health >/dev/null\n\nMODEL=$(grep -E \'^MODEL=\' "$HOME/.fcc/.env" | tail -n1 | cut -d= -f2-)'
 probe = r'''curl -fsS --max-time 3 http://127.0.0.1:8082/health >/dev/null
 
 BEST_MODEL=$(python - <<'PYMODEL'
 import json, urllib.request
+# Ordered by coding/agentic capability. A model is eligible only after a live response.
 candidates = [
-    'nvidia_nim/deepseek-ai/deepseek-v4-pro-0813',
-    'nvidia_nim/nvidia/nemotron-3.5-lightning-30b-a3b',
     'nvidia_nim/nvidia/nemotron-3-ultra-550b-a55b',
+    'nvidia_nim/nvidia/nemotron-3.5-lightning-30b-a3b',
+    'nvidia_nim/nvidia/nemotron-3-super-120b-a12b',
+    'nvidia_nim/nvidia/nemotron-3-nano-30b-a3b',
 ]
 for model in candidates:
     body=json.dumps({'model':model,'max_tokens':12,'messages':[{'role':'user','content':'Reply OK'}],'stream':False}).encode()
     req=urllib.request.Request('http://127.0.0.1:8082/v1/messages',data=body,headers={'Content-Type':'application/json'},method='POST')
     try:
-        with urllib.request.urlopen(req,timeout=10) as r:
+        with urllib.request.urlopen(req,timeout=12) as r:
             data=json.loads(r.read().decode('utf-8','replace'))
             text=' '.join(str(x.get('text','')) for x in data.get('content',[]) if isinstance(x,dict))
             if r.status == 200 and text.strip():
@@ -46,13 +49,13 @@ if health not in s:
     raise SystemExit('model probe anchor mismatch')
 s = s.replace(health, probe, 1)
 
-# Route by demonstrated success in this environment. OpenCode has already produced a Jumpy
-# source diff that passed Godot; Codex is skipped while its Linux namespace sandbox is unavailable.
+# Route by demonstrated success in this environment. OpenCode gets first attempt because it
+# has previously produced a Godot-valid Jumpy source diff. Claude Code is the independent fallback.
 pattern = r'''run_agent\(\) \{\n.*?\n\}\n\ncase \"\$PHASE\" in'''
 replacement = r'''run_agent() {
   local seconds="$1"
-  local primary_budget=$((seconds - 20))
-  local fallback_budget=20
+  local primary_budget=$((seconds * 2 / 3))
+  local fallback_budget=$((seconds - primary_budget))
   EXEC_STATUS="no_agent"
   : >/tmp/jumpy-agent.log
 
@@ -66,9 +69,9 @@ replacement = r'''run_agent() {
   run_one_agent() {
     local name="$1" budget="$2" command="$3"
     ensure_fcc || return 1
-    echo "AGENT_ATTEMPT=$name" | tee -a /tmp/jumpy-agent.log
+    echo "AGENT_ATTEMPT=$name MODEL=$BEST_MODEL" | tee -a /tmp/jumpy-agent.log
     setsid env -u GH_TOKEN -u GITHUB_TOKEN -u CODESPACES_PAT -u NVIDIA_NIM_API_KEY \
-      GIT_TERMINAL_PROMPT=0 SSH_AUTH_SOCK= GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null \
+      BEST_MODEL="$BEST_MODEL" GIT_TERMINAL_PROMPT=0 SSH_AUTH_SOCK= GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null \
       bash -lc "cd /workspaces/ai-dev-server/.jumpy-studio-cycle && git config --local credential.helper '' && $command" \
       >>/tmp/jumpy-agent.log 2>&1 &
     local pid=$! loops=$((budget / 2)) timed_out=1
@@ -83,17 +86,17 @@ replacement = r'''run_agent() {
       EXEC_STATUS="${name}_completed"
     fi
     if git diff --name-only | awk '$0 != "docs/AUTONOMOUS_STATE.md" {found=1} END {exit !found}'; then
-      echo "AGENT_SELECTED=$name" | tee -a /tmp/jumpy-agent.log
+      echo "AGENT_SELECTED=$name MODEL=$BEST_MODEL" | tee -a /tmp/jumpy-agent.log
       return 0
     fi
     return 1
   }
 
   if command -v fcc-opencode >/dev/null 2>&1 && command -v opencode >/dev/null 2>&1; then
-    run_one_agent "opencode" "$primary_budget" 'fcc-opencode run "$(cat /tmp/brief.txt)"' && return 0
+    run_one_agent "opencode" "$primary_budget" 'fcc-opencode run --model "$BEST_MODEL" "$(cat /tmp/brief.txt)"' && return 0
   fi
   if command -v fcc-claude >/dev/null 2>&1 && command -v claude >/dev/null 2>&1; then
-    run_one_agent "claude-code" "$fallback_budget" 'fcc-claude -p "$(cat /tmp/brief.txt)"' && return 0
+    run_one_agent "claude-code" "$fallback_budget" 'fcc-claude --model "$BEST_MODEL" -p "$(cat /tmp/brief.txt)"' && return 0
   fi
   echo 'AGENT_SELECTED=none' | tee -a /tmp/jumpy-agent.log
   return 0
@@ -105,8 +108,7 @@ if n != 1:
     raise SystemExit(f'agent router anchor mismatch ({n})')
 s = s2
 
-# If an open-ended agent produces no source change, continue autonomously with the next known
-# safe atomic improvement instead of wasting the cycle.
+# If agents produce no source change, continue with the next known-safe atomic improvement.
 agent_log_anchor = "if [ -s /tmp/jumpy-agent.log ]; then"
 fallback = r'''if [ "$PHASE" = "OPEN_ENDED" ] && ! git diff --name-only | awk '$0 != "docs/AUTONOMOUS_STATE.md" {found=1} END {exit !found}'; then
   python - <<'PYFALLBACK'

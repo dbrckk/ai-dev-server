@@ -4,8 +4,9 @@ set -euo pipefail
 mkdir -p "$HOME/.local/bin" "$HOME/.cache/ai-dev-server/logs"
 export PATH="$HOME/.local/bin:$PATH"
 
-# Core agent CLIs.
-npm install -g opencode-ai @anthropic-ai/claude-code
+# Core coding-agent CLIs. Keep multiple independent harnesses so the autonomous router
+# can select the strongest working agent and fail over without waiting for a rebuild.
+npm install -g opencode-ai @anthropic-ai/claude-code @openai/codex
 
 # Python tooling and sprite post-processing.
 python -m pip install --user --upgrade uv pillow rembg

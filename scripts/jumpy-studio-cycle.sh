@@ -7,7 +7,7 @@ GAME_REPO="dbrckk/Jumpy"
 
 NAME=$(gh codespace list --json name,repository --jq ".[] | select(.repository == \"$INFRA_REPO\") | .name" | head -n1)
 test -n "$NAME" || { echo 'No ai-dev-server Codespace found'; exit 1; }
-STATE=$(gh codespace view -c "$NAME" --json state --jq .state)
+STATE=$(gh codespace view -c "$NAME" --json state --jq .state 2>/dev/null || true)
 if [ "$STATE" != Available ]; then
   curl -fsSL -X POST \
     -H 'Accept: application/vnd.github+json' \
@@ -42,28 +42,31 @@ WORK=/tmp/jumpy-studio-cycle
 rm -rf "$WORK"
 git clone --depth 1 https://github.com/dbrckk/Jumpy.git "$WORK" >/dev/null 2>&1
 cd "$WORK"
+BASE_SHA=$(git rev-parse HEAD)
 
 CONTEXT=$(python - <<'PY'
 from pathlib import Path
 files=[
  'docs/AUTONOMOUS_TEAM.md','docs/AUTONOMOUS_STATE.md','docs/PRODUCTION_ROADMAP.md',
- 'docs/GAME_DESIGN.md','SETUP_REQUIRED.txt','README.md','project.godot',
+ 'docs/GAME_DESIGN.md','docs/EXPERIMENTS.md','SETUP_REQUIRED.txt','README.md','project.godot',
  'scripts/main.gd','scripts/profile.gd','scripts/integrations.gd','assets/ui/theme.tres'
 ]
-budget=100000; used=0
+budget=105000; used=0
 for name in files:
     p=Path(name)
-    if not p.exists(): continue
+    if not p.exists():
+        continue
     text=p.read_text(errors='replace')
     remaining=budget-used
-    if remaining <= 0: break
+    if remaining <= 0:
+        break
     text=text[:remaining]
     print(f'\n===== {name} =====\n{text}')
     used += len(text)
 PY
 )
 
-# High-confidence executable shortcuts. They are options, never mandatory priorities.
+# Safe executable shortcuts are optional accelerators, never the roadmap.
 python - <<'PY' > /tmp/jumpy-candidates.txt
 from pathlib import Path
 main=Path('scripts/main.gd').read_text()
@@ -79,37 +82,38 @@ PY
 MODEL=$(grep -E '^MODEL=' "$HOME/.fcc/.env" | tail -n1 | cut -d= -f2-)
 CANDIDATES=$(cat /tmp/jumpy-candidates.txt 2>/dev/null || true)
 STRATEGY_PROMPT=$(cat <<'PROMPT'
-Act as the complete senior game-development studio defined in docs/AUTONOMOUS_TEAM.md. Audit the CURRENT Jumpy repository systemically and adversarially.
+Act as Jumpy's complete senior game-development studio. Audit the CURRENT repository systemically and adversarially.
 
-Evaluate creative direction, one-touch game feel, mastery/difficulty, engineering, architecture, UX/UI, visual feedback, audio/haptics, accessibility, retention/progression, social/viral loops, performance, QA/testability, analytics/experimentation, Android/release and compliance. Find root causes and second-order effects. If a path is blocked, open alternative paths instead of stopping.
+Evaluate creative direction, one-touch game feel, mastery/difficulty, engineering, architecture, UX/UI, visual feedback, audio/haptics, accessibility, retention/progression, social/viral loops, performance, QA/testability, analytics/experimentation, Android/release and compliance. Find root causes, dependencies and second-order effects. If a path is blocked, open alternate routes rather than stopping.
 
-Produce a concise but concrete cycle plan:
-- weakest domains and strongest evidence;
-- ONE highest-value safe implementation feasible now without a new external account/API/paid service;
-- acceptance criteria;
-- next 3–7 actions in priority order;
-- blockers and alternative routes;
-- roadmap changes if needed.
+For this cycle produce:
+1. the weakest domains with concrete repository evidence;
+2. ONE highest-value safe implementation feasible now without a new external account/API/paid service;
+3. measurable acceptance criteria;
+4. the next 3-7 actions in priority order;
+5. blockers plus alternate routes;
+6. roadmap changes if current evidence warrants them.
 
-The following deterministic shortcuts MAY be selected only if one truly is the highest-value immediate action. If so, write its exact ID on a separate line as `SHORTCUT: ID`. Otherwise write `SHORTCUT: NONE` and the open-ended executor will implement your actual priority.
+The deterministic shortcuts below are merely accelerators. Select one only if it truly matches the highest-value action, using exactly `SHORTCUT: ID`. Otherwise use `SHORTCUT: NONE` so the open-ended executor tackles the real priority.
 
-Do not lower the quality bar to claim completion. Preserve the one-touch core while increasing depth, polish and evidence.
+Never inflate quality scores or claim AAA completion without evidence. Preserve Jumpy's one-touch simplicity while increasing depth, polish, robustness and test evidence.
 PROMPT
 )
 PAYLOAD=$(python - "$MODEL" "$STRATEGY_PROMPT\n\nSHORTCUTS:\n$CANDIDATES\n\nCURRENT REPOSITORY:\n$CONTEXT" <<'PY'
 import json,sys
-print(json.dumps({'model':sys.argv[1],'max_tokens':4800,'messages':[{'role':'user','content':sys.argv[2]}],'stream':False}))
+print(json.dumps({'model':sys.argv[1],'max_tokens':4200,'messages':[{'role':'user','content':sys.argv[2]}],'stream':False}))
 PY
 )
-RESPONSE=$(curl -sS --max-time 180 -H 'Content-Type: application/json' -X POST http://127.0.0.1:8082/v1/messages --data-binary "$PAYLOAD" || true)
+RESPONSE=$(curl -sS --max-time 120 -H 'Content-Type: application/json' -X POST http://127.0.0.1:8082/v1/messages --data-binary "$PAYLOAD" || true)
 python - "$RESPONSE" <<'PY' > /tmp/jumpy-strategy.txt
 import json,sys
+fallback='Strategic model response unavailable. Preserve current roadmap, inspect the repository directly, and implement the safest highest-impact local improvement.'
 try:
     d=json.loads(sys.argv[1])
-    text='\n'.join(str(x.get('text','')) for x in d.get('content',[]) if isinstance(x,dict) and x.get('type')=='text')
+    text='\n'.join(str(x.get('text','')) for x in d.get('content',[]) if isinstance(x,dict) and x.get('type')=='text').strip()
 except Exception:
-    text='Strategic model response unavailable. Re-audit using repository evidence and choose a safe local improvement.'
-print(text.strip()[-12000:])
+    text=''
+print((text or fallback)[-12000:])
 PY
 
 CHOICE=$(python - /tmp/jumpy-strategy.txt /tmp/jumpy-candidates.txt <<'PY'
@@ -121,9 +125,13 @@ print(m.group(1) if m and m.group(1) in ids else '')
 PY
 )
 
+EXECUTION_LANE='open-ended'
+EXECUTION_STATUS='not_started'
 IMPLEMENTATION_NOTE=''
+
 if [ -n "$CHOICE" ]; then
-  echo "EXECUTION_LANE=deterministic:$CHOICE"
+  EXECUTION_LANE="deterministic:$CHOICE"
+  EXECUTION_STATUS='completed'
   python - "$CHOICE" <<'PY'
 from pathlib import Path
 import sys
@@ -141,69 +149,102 @@ if s.count(old) != 1:
 p.write_text(s.replace(old,new,1))
 PY
 else
-  echo 'EXECUTION_LANE=open-ended'
   STRATEGY=$(cat /tmp/jumpy-strategy.txt)
-  IMPLEMENT_PROMPT=$(cat <<'PROMPT'
-Work as Jumpy's senior implementation pair. Implement the SINGLE immediate priority from the strategic review in this isolated clone. Do not merely discuss it.
+  cat > /tmp/jumpy-brief.txt <<EOF
+Work as Jumpy's senior implementation pair. Implement the SINGLE immediate priority from the strategic review below in this isolated clone. Do not merely discuss it.
 
 Rules:
 - Godot 4.7 compatible; preserve deterministic daily behavior and one-touch simplicity.
 - Prefer systemic, maintainable changes over hacks.
-- Modify at most 4 EXISTING text files and roughly 350 changed lines this cycle.
+- Modify at most 4 existing text files and roughly 350 changed lines this cycle.
 - Do not commit or push.
 - Do not touch .github/, secrets, signing, keystores, external credentials, paid services or binary assets.
 - Do not add a new external dependency.
-- If the proposed route is blocked, implement the best independent local alternative that advances the same objective.
+- If the proposed route is blocked, implement the best independent local alternative advancing the same objective.
 - Inspect your own diff and correct obvious errors before exiting.
-PROMPT
-)
-  timeout -k 5s 420s fcc-opencode run "$IMPLEMENT_PROMPT\n\nSTRATEGIC REVIEW:\n$STRATEGY" >/tmp/jumpy-implement.log 2>&1 || true
+- You have a strict bounded execution window. Produce useful file changes early instead of spending the whole run reasoning.
+
+STRATEGIC REVIEW:
+$STRATEGY
+EOF
+
+  # Isolate the CLI in its own process group. If it stalls, kill the whole group and continue the cycle.
+  setsid bash -lc 'fcc-opencode run "$(cat /tmp/jumpy-brief.txt)"' >/tmp/jumpy-implement.log 2>&1 &
+  AGENT_PID=$!
+  EXECUTION_STATUS='running'
+  for _ in {1..90}; do
+    if ! kill -0 "$AGENT_PID" 2>/dev/null; then
+      wait "$AGENT_PID" || true
+      EXECUTION_STATUS='completed'
+      break
+    fi
+    sleep 2
+  done
+  if kill -0 "$AGENT_PID" 2>/dev/null; then
+    EXECUTION_STATUS='timeout_180s'
+    kill -TERM -- "-$AGENT_PID" 2>/dev/null || true
+    sleep 3
+    kill -KILL -- "-$AGENT_PID" 2>/dev/null || true
+    wait "$AGENT_PID" 2>/dev/null || true
+  fi
   if [ -s /tmp/jumpy-implement.log ]; then
     IMPLEMENTATION_NOTE=$(python - <<'PY'
 from pathlib import Path
 text=Path('/tmp/jumpy-implement.log').read_text(errors='replace')
-lines=text.splitlines()[-20:]
-print(' '.join(lines)[-1800:])
+print(' '.join(text.splitlines()[-30:])[-2200:])
 PY
     )
   fi
 fi
 
-# Reject unsafe or excessively broad source edits. If rejected, keep only the strategic state update.
-python - <<'PY'
+echo "EXECUTION_LANE=$EXECUTION_LANE"
+echo "EXECUTION_STATUS=$EXECUTION_STATUS"
+
+# Safety gate. Unsafe or over-broad implementation is discarded; strategic state still survives.
+python - <<'PY' > /tmp/jumpy-safety.txt
 import subprocess
 changed=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
 forbidden=[p for p in changed if p.startswith('.github/') or any(x in p.lower() for x in ['secret','keystore','.jks','.p12'])]
-if forbidden or len(changed)>4:
-    print('Rejecting unsafe/broad implementation:',changed)
+source=[p for p in changed if p != 'docs/AUTONOMOUS_STATE.md']
+if forbidden or len(source)>4:
+    print('REJECTED: '+(','.join(changed) or 'none'))
     subprocess.run(['git','reset','--hard','HEAD'],check=False,stdout=subprocess.DEVNULL)
+else:
+    print('ACCEPTABLE: '+(','.join(changed) or 'none'))
 PY
+SAFETY_NOTE=$(cat /tmp/jumpy-safety.txt)
 
-python - "$CHOICE" "$IMPLEMENTATION_NOTE" <<'PY'
+python - "$CHOICE" "$EXECUTION_LANE" "$EXECUTION_STATUS" "$SAFETY_NOTE" "$IMPLEMENTATION_NOTE" "$BASE_SHA" <<'PY'
 from pathlib import Path
 import datetime,re,sys
-p=Path('docs/AUTONOMOUS_STATE.md'); s=p.read_text()
+p=Path('docs/AUTONOMOUS_STATE.md')
+s=p.read_text() if p.exists() else '# Jumpy — Autonomous Living State\n'
 strategy=Path('/tmp/jumpy-strategy.txt').read_text(errors='replace').strip()[-10000:]
 remaining=Path('/tmp/jumpy-candidates.txt').read_text(errors='replace').strip()
-focus=sys.argv[1] or 'OPEN_ENDED_STRATEGIC_TASK'
-note=sys.argv[2].strip()
+choice,lane,status,safety,note,base=sys.argv[1:7]
+focus=choice or 'OPEN_ENDED_STRATEGIC_TASK'
 now=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
 block=f'''<!-- AUTO_CYCLE_START -->
 ## Latest autonomous strategic cycle
 **Time:** {now}  
-**Execution focus:** `{focus}`
+**Base commit:** `{base[:12]}`  
+**Execution focus:** `{focus}`  
+**Lane:** `{lane}`  
+**Executor status:** `{status}`
 
 ### Multidisciplinary review and immediate plan
 {strategy}
 
 ### Executor evidence
-{note if note else 'Implementation lane completed without a diagnostic note. Source diff and Godot validation determine whether code is accepted.'}
+Safety gate: {safety}
+
+{note if note else 'No useful executor transcript was produced. Treat this as execution evidence and choose an alternate implementation route next cycle if no source change survives.'}
 
 ### Remaining deterministic shortcuts
-{remaining if remaining else 'None. Strategy is not constrained by a fixed feature catalog; use the open-ended implementation lane.'}
+{remaining if remaining else 'None. Strategy is not constrained by a fixed feature catalog; continue through open-ended implementation.'}
 
 ### Operating instruction
-Re-audit the whole product next cycle. Treat failed approaches as evidence, choose alternate paths, and change priorities whenever current evidence makes another action higher-value.
+Re-audit the whole product next cycle. A timeout, invalid diff, missing implementation or failed validation is evidence: diagnose the root cause, change the route, and keep advancing independent work. Never repeatedly spend cycles on the same failed method without adaptation.
 <!-- AUTO_CYCLE_END -->'''
 pattern=r'<!-- AUTO_CYCLE_START -->.*?<!-- AUTO_CYCLE_END -->'
 s=re.sub(pattern,block,s,flags=re.S) if re.search(pattern,s,re.S) else s.rstrip()+'\n\n'+block+'\n'
@@ -219,10 +260,17 @@ echo "PATCH_B64=$(git diff --binary | base64 -w0)"
 REMOTE
 
 DATA=$(base64 -w0 /tmp/jumpy-remote-cycle.sh)
-timeout -k 5s 840s gh codespace ssh -c "$NAME" "printf '%s' '$DATA' | base64 -d | bash" > /tmp/jumpy-cycle.out
-sed -E 's/(PATCH_B64=).*/\1[REDACTED]/' /tmp/jumpy-cycle.out
+set +e
+timeout -k 5s 420s gh codespace ssh -c "$NAME" "printf '%s' '$DATA' | base64 -d | bash" > /tmp/jumpy-cycle.out
+REMOTE_RC=$?
+set -e
+sed -E 's/(PATCH_B64=).*/\1[REDACTED]/' /tmp/jumpy-cycle.out || true
+if [ "$REMOTE_RC" -ne 0 ]; then
+  echo "Remote cycle failed with rc=$REMOTE_RC"
+  exit 1
+fi
 RESULT=$(grep '^RESULT=' /tmp/jumpy-cycle.out | tail -n1 | cut -d= -f2- || true)
-[ "$RESULT" = PATCH ] || exit 0
+[ "$RESULT" = PATCH ] || { echo "Cycle result: ${RESULT:-UNKNOWN}"; exit 0; }
 grep '^PATCH_B64=' /tmp/jumpy-cycle.out | tail -n1 | cut -d= -f2- | base64 -d > /tmp/jumpy.patch
 
 rm -rf /tmp/jumpy-validated
@@ -238,10 +286,27 @@ mkdir -p /tmp/godot-jumpy
 unzip -q /tmp/godot.zip -d /tmp/godot-jumpy
 mv /tmp/godot-jumpy/Godot_v4.7.2-stable_linux.x86_64 /tmp/godot-jumpy/godot
 chmod +x /tmp/godot-jumpy/godot
-/tmp/godot-jumpy/godot --headless --path . --editor --quit 2>&1 | tee /tmp/jumpy-godot.log
-if grep -E 'SCRIPT ERROR|Parse Error|Cannot parse|Failed loading resource' /tmp/jumpy-godot.log; then
-  echo 'Blocking Godot error detected; candidate not committed.'
-  exit 1
+
+set +e
+/tmp/godot-jumpy/godot --headless --path . --editor --quit > /tmp/jumpy-godot.log 2>&1
+GODOT_RC=$?
+set -e
+cat /tmp/jumpy-godot.log
+if [ "$GODOT_RC" -ne 0 ] || grep -E 'SCRIPT ERROR|Parse Error|Cannot parse|Failed loading resource' /tmp/jumpy-godot.log; then
+  echo 'Godot rejected implementation; preserving only diagnostic state.'
+  git diff --name-only | while read -r f; do
+    [ "$f" = 'docs/AUTONOMOUS_STATE.md' ] || git checkout HEAD -- "$f"
+  done
+  python - <<'PY'
+from pathlib import Path
+p=Path('docs/AUTONOMOUS_STATE.md')
+s=p.read_text()
+marker='\n### Validation outcome\nGodot 4.7.2 rejected the implementation candidate. Source changes were discarded; this diagnostic state is preserved so the next cycle must choose a different implementation route.\n'
+pos=s.find('<!-- AUTO_CYCLE_END -->')
+if pos >= 0:
+    s=s[:pos]+marker+s[pos:]
+p.write_text(s)
+PY
 fi
 
 test -f docs/AUTONOMOUS_TEAM.md
@@ -252,6 +317,6 @@ test -f SETUP_REQUIRED.txt
 git config user.name 'jumpy-autocycle[bot]'
 git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 git diff --name-only -z | xargs -0 -r git add --
-git diff --cached --quiet && { echo 'No effective validated change'; exit 0; }
+git diff --cached --quiet && { echo 'No effective validated or diagnostic change'; exit 0; }
 git commit -m 'Autocycle: adaptive studio evolution'
 git push origin HEAD:main

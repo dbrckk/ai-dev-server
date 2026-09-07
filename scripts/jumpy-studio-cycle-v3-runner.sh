@@ -11,6 +11,10 @@ import re, sys
 p = Path(sys.argv[1])
 s = p.read_text()
 
+# 0) Strategy is advisory. A provider stall must never consume most of a 20-minute cycle.
+# Repository-derived deterministic phases continue even when the strategy endpoint is unavailable.
+s = s.replace("curl -sS --max-time 70 -H 'Content-Type: application/json'", "curl -sS --max-time 20 -H 'Content-Type: application/json'", 1)
+
 # 1) Harmless formatting defects from an interrupted agent should not waste a cycle.
 needle = "subprocess.run(['git','diff','--check'],check=True)"
 replacement = r'''# Normalize harmless trailing spaces/tabs in changed text files before strict diff validation.

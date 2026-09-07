@@ -2,7 +2,7 @@ name: Jumpy Autonomous Evolution
 
 on:
   schedule:
-    - cron: '15,45 * * * *'
+    - cron: '7,27,47 * * * *'
   workflow_dispatch:
   push:
     branches: [main]
@@ -31,5 +31,5 @@ jobs:
         if: always()
         run: |
           echo '## Jumpy autonomous studio cycle v2' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Cadence: every 30 minutes (:15 / :45).' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Cadence: every 20 minutes (:07 / :27 / :47).' >> "$GITHUB_STEP_SUMMARY"
           echo 'Control loop: systemic audit → source-derived atomic phase → bounded implementation → Godot validation → living state → validated push.' >> "$GITHUB_STEP_SUMMARY"

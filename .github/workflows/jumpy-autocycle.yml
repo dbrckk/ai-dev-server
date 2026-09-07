@@ -17,12 +17,12 @@ permissions:
 
 concurrency:
   group: jumpy-autonomous-evolution
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   evolve:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 18
     env:
       GH_TOKEN: ${{ secrets.CODESPACES_PAT }}
     steps:
@@ -33,5 +33,5 @@ jobs:
         if: always()
         run: |
           echo '## Jumpy autonomous studio cycle v3' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Cadence: every 20 minutes (:07 / :27 / :47).' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Security: secret-isolated agent → safe whitespace normalization → strict scope gate → Godot validation → final secret scan → validated push.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Cadence: every 20 minutes (:07 / :27 / :47). Newer cycles supersede stale in-flight cycles.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Security: secret-isolated agent → deterministic known phases → safe whitespace normalization → strict scope gate → Godot validation → final secret scan → validated push.' >> "$GITHUB_STEP_SUMMARY"

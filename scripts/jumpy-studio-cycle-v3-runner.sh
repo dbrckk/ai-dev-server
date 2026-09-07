@@ -89,6 +89,149 @@ if s.count(count_needle) != 1:
     raise SystemExit('v3 source-count anchor mismatch')
 s = s.replace(count_needle, count_replacement, 1)
 
+# 5) Empirically benchmark FCC agents in the live Codespace before entrusting Jumpy to one.
+# Text completion/tool-probe success is necessary but not sufficient: the winner must perform
+# an exact file edit in a disposable git repository using the same BEST_MODEL.
+agent_pattern = r'''run_agent\(\) \{\n.*?\n\}\n\ncase \"\$PHASE\" in'''
+agent_replacement = r'''run_agent() {
+  local seconds="$1"
+  local primary_budget=$((seconds * 3 / 4))
+  local fallback_budget=$((seconds - primary_budget))
+  EXEC_STATUS="no_agent"
+  : >/tmp/jumpy-agent.log
+
+  ensure_fcc() {
+    if curl -fsS --max-time 3 http://127.0.0.1:8082/health >/dev/null 2>&1; then return 0; fi
+    nohup fcc-server >"$BASE/logs/fcc.log" 2>&1 < /dev/null &
+    for _ in {1..30}; do curl -fsS --max-time 2 http://127.0.0.1:8082/health >/dev/null 2>&1 && return 0; sleep 1; done
+    return 1
+  }
+
+  agent_available() {
+    case "$1" in
+      claude-code) command -v fcc-claude >/dev/null 2>&1 && command -v claude >/dev/null 2>&1 ;;
+      opencode) command -v fcc-opencode >/dev/null 2>&1 && command -v opencode >/dev/null 2>&1 ;;
+      *) return 1 ;;
+    esac
+  }
+
+  benchmark_agent() {
+    local name="$1" dir cmd rc
+    dir=$(mktemp -d "/tmp/jumpy-fcc-bench-${name}.XXXXXX")
+    pushd "$dir" >/dev/null
+    git init -q
+    git config user.email benchmark@localhost
+    git config user.name 'FCC benchmark'
+    printf 'ORIGINAL\n' > TARGET.txt
+    git add TARGET.txt && git commit -qm baseline
+    printf '%s\n' 'Edit TARGET.txt. Replace its entire contents with exactly FCC_AGENT_OK. Do not create other files. Perform the edit; do not merely explain.' >/tmp/jumpy-fcc-bench-brief.txt
+    case "$name" in
+      claude-code) cmd='fcc-claude --model "$BEST_MODEL" --permission-mode acceptEdits -p "$(cat /tmp/jumpy-fcc-bench-brief.txt)"' ;;
+      opencode) cmd='fcc-opencode run --model "$BEST_MODEL" "$(cat /tmp/jumpy-fcc-bench-brief.txt)"' ;;
+      *) popd >/dev/null; rm -rf "$dir"; return 1 ;;
+    esac
+    set +e
+    timeout -k 3s 32s env -u GH_TOKEN -u GITHUB_TOKEN -u CODESPACES_PAT -u NVIDIA_NIM_API_KEY \
+      BEST_MODEL="$BEST_MODEL" GIT_TERMINAL_PROMPT=0 SSH_AUTH_SOCK= \
+      bash -lc "$cmd" >"/tmp/jumpy-fcc-bench-${name}.log" 2>&1
+    rc=$?
+    set -e
+    local ok=1
+    if [ "$rc" -eq 0 ] && [ "$(cat TARGET.txt 2>/dev/null || true)" = 'FCC_AGENT_OK' ] \
+       && [ "$(git diff --name-only | paste -sd, -)" = 'TARGET.txt' ]; then
+      ok=0
+    fi
+    popd >/dev/null
+    rm -rf "$dir"
+    if [ "$ok" -eq 0 ]; then
+      echo "FCC_BENCH_PASS=$name MODEL=$BEST_MODEL" | tee -a /tmp/jumpy-agent.log
+      return 0
+    fi
+    echo "FCC_BENCH_FAIL=$name MODEL=$BEST_MODEL RC=$rc" | tee -a /tmp/jumpy-agent.log
+    tail -n 10 "/tmp/jumpy-fcc-bench-${name}.log" >>/tmp/jumpy-agent.log 2>/dev/null || true
+    return 1
+  }
+
+  choose_agent() {
+    local cache="$HOME/.cache/ai-dev-server/fcc-agent-winner.txt"
+    local model_cache="$HOME/.cache/ai-dev-server/fcc-agent-model.txt"
+    mkdir -p "$HOME/.cache/ai-dev-server"
+    if [ -s "$cache" ] && [ -s "$model_cache" ] && [ "$(cat "$model_cache")" = "$BEST_MODEL" ]; then
+      local cached
+      cached=$(cat "$cache")
+      if agent_available "$cached"; then
+        echo "$cached"
+        return 0
+      fi
+    fi
+    local candidate
+    for candidate in claude-code opencode; do
+      if agent_available "$candidate" && benchmark_agent "$candidate"; then
+        printf '%s\n' "$candidate" > "$cache"
+        printf '%s\n' "$BEST_MODEL" > "$model_cache"
+        echo "$candidate"
+        return 0
+      fi
+    done
+    rm -f "$cache" "$model_cache"
+    echo none
+  }
+
+  run_one_agent() {
+    local name="$1" budget="$2" command="$3"
+    ensure_fcc || return 1
+    echo "AGENT_ATTEMPT=$name MODEL=$BEST_MODEL" | tee -a /tmp/jumpy-agent.log
+    setsid env -u GH_TOKEN -u GITHUB_TOKEN -u CODESPACES_PAT -u NVIDIA_NIM_API_KEY \
+      BEST_MODEL="$BEST_MODEL" GIT_TERMINAL_PROMPT=0 SSH_AUTH_SOCK= GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null \
+      bash -lc "cd /workspaces/ai-dev-server/.jumpy-studio-cycle && git config --local credential.helper '' && $command" \
+      >>/tmp/jumpy-agent.log 2>&1 &
+    local pid=$! loops=$((budget / 2)) timed_out=1
+    for _ in $(seq 1 "$loops"); do
+      if ! kill -0 "$pid" 2>/dev/null; then wait "$pid" || true; timed_out=0; break; fi
+      sleep 2
+    done
+    if [ "$timed_out" -eq 1 ]; then
+      kill -TERM -- "-$pid" 2>/dev/null || true; sleep 2; kill -KILL -- "-$pid" 2>/dev/null || true; wait "$pid" 2>/dev/null || true
+      EXEC_STATUS="${name}_timeout_${budget}s"
+    else
+      EXEC_STATUS="${name}_completed"
+    fi
+    if git diff --name-only | awk '$0 != "docs/AUTONOMOUS_STATE.md" {found=1} END {exit !found}'; then
+      echo "AGENT_SELECTED=$name MODEL=$BEST_MODEL" | tee -a /tmp/jumpy-agent.log
+      return 0
+    fi
+    # A cached winner that stops editing is immediately invalidated so the next route is re-benchmarked.
+    rm -f "$HOME/.cache/ai-dev-server/fcc-agent-winner.txt" "$HOME/.cache/ai-dev-server/fcc-agent-model.txt"
+    return 1
+  }
+
+  ensure_fcc || { echo 'AGENT_SELECTED=none FCC_UNAVAILABLE=1' | tee -a /tmp/jumpy-agent.log; return 0; }
+  local winner
+  winner=$(choose_agent)
+  echo "AGENT_BENCH_WINNER=$winner MODEL=$BEST_MODEL" | tee -a /tmp/jumpy-agent.log
+
+  if [ "$winner" = 'claude-code' ]; then
+    run_one_agent "claude-code" "$primary_budget" 'fcc-claude --model "$BEST_MODEL" --permission-mode acceptEdits -p "$(cat /tmp/brief.txt)"' && return 0
+    if agent_available opencode && benchmark_agent opencode; then
+      run_one_agent "opencode" "$fallback_budget" 'fcc-opencode run --model "$BEST_MODEL" "$(cat /tmp/brief.txt)"' && return 0
+    fi
+  elif [ "$winner" = 'opencode' ]; then
+    run_one_agent "opencode" "$primary_budget" 'fcc-opencode run --model "$BEST_MODEL" "$(cat /tmp/brief.txt)"' && return 0
+    if agent_available claude-code && benchmark_agent claude-code; then
+      run_one_agent "claude-code" "$fallback_budget" 'fcc-claude --model "$BEST_MODEL" --permission-mode acceptEdits -p "$(cat /tmp/brief.txt)"' && return 0
+    fi
+  fi
+
+  echo 'AGENT_SELECTED=none' | tee -a /tmp/jumpy-agent.log
+  return 0
+}
+
+case "$PHASE" in'''
+s2, n = re.subn(agent_pattern, agent_replacement, s, count=1, flags=re.S)
+if n != 1:
+    raise SystemExit(f'v3 empirical-agent anchor mismatch ({n})')
+s = s2
+
 p.write_text(s)
 PY
 

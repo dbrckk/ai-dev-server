@@ -82,6 +82,13 @@ if s.count(final_needle) != 1:
     raise SystemExit('v3 final-scope anchor mismatch')
 s = s.replace(final_needle, final_replacement, 1)
 
+# 4) A diagnostic-only cycle has zero source files and is valid. Avoid grep+pipefail treating that as an error.
+count_needle = "COUNT=$(printf '%s\\n' \"$FILES\" | grep -v '^docs/AUTONOMOUS_STATE.md$' | sed '/^$/d' | wc -l)"
+count_replacement = "COUNT=$(printf '%s\\n' \"$FILES\" | awk 'NF && $0 != \"docs/AUTONOMOUS_STATE.md\" {n++} END {print n+0}')"
+if s.count(count_needle) != 1:
+    raise SystemExit('v3 source-count anchor mismatch')
+s = s.replace(count_needle, count_replacement, 1)
+
 p.write_text(s)
 PY
 

@@ -5,15 +5,45 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, immutable SHA
       - name: Validate devcontainer JSON
         run: python -m json.tool .devcontainer/devcontainer.json >/dev/null
       - name: Validate shell scripts
         run: |
+          set -euo pipefail
           for f in scripts/*.sh; do
+            echo "Checking $f"
             bash -n "$f"
           done
+      - name: Validate external-source policy
+        run: |
+          test -s docs/EXTERNAL_SOURCE_POLICY.md
+          grep -q 'Never execute code fetched from an unreviewed source with repository secrets available' docs/EXTERNAL_SOURCE_POLICY.md
+      - name: Reject mutable third-party GitHub Actions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, sys
+          bad=[]
+          for p in Path('.github/workflows').glob('*.y*ml'):
+              for i,line in enumerate(p.read_text(errors='replace').splitlines(),1):
+                  m=re.search(r'uses:\s*([^\s#]+)', line)
+                  if not m: continue
+                  ref=m.group(1)
+                  if ref.startswith('./') or ref.startswith('docker://'):
+                      continue
+                  if '@' not in ref or not re.search(r'@[0-9a-fA-F]{40}$', ref):
+                      bad.append(f'{p}:{i}: {ref}')
+          if bad:
+              print('Mutable action references are not allowed:')
+              print('\n'.join(bad))
+              sys.exit(1)
+          PY

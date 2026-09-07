@@ -8,11 +8,12 @@ p = Path('scripts/jumpy-studio-cycle-v3.sh')
 s = p.read_text()
 
 old = 'Implement ONE smallest complete safe improvement from the strategic review below. Modify at most 2 existing text files and about 100 changed lines. No external downloads, package installs, dependencies, network calls, credentials, .github edits, binary assets or release configuration. Produce useful edits early and leave no undefined symbols. If the main idea is too large, choose a smaller local improvement.'
-new = 'EDIT FIRST. Within the first concrete action, modify ONLY scripts/main.gd with one small compile-complete improvement. Use TABS ONLY for GDScript indentation. Do not redo pulse if it already respects reduced_motion. Priority order: (1) reduced-motion perfect/clutch feedback; (2) reduced-motion death feedback; (3) high-contrast gameplay readability; then the next smallest local gameplay/UX improvement. Do not spend the cycle only reading. Keep the diff under about 100 changed lines. No external downloads, package installs, dependencies, network calls, credentials, .github edits, binary assets or release configuration. Leave no undefined symbols.'
+new = 'EDIT FIRST. Modify ONLY scripts/main.gd with one small compile-complete improvement. Use TABS ONLY for GDScript indentation. Do not redo completed work. Priority: reduced-motion perfect/clutch feedback, then reduced-motion death feedback, then high-contrast readability, then the next smallest gameplay/UX improvement. Do not spend the cycle only reading. Keep the diff under about 100 changed lines. No downloads, installs, dependencies, network calls, credentials, .github edits, binary assets or release config. Leave no undefined symbols.'
 if old not in s:
     raise SystemExit('open-ended prompt anchor mismatch')
 s = s.replace(old, new, 1)
 
+# Probe only models that have recently answered successfully through this exact FCC/NIM path.
 health = 'curl -fsS --max-time 3 http://127.0.0.1:8082/health >/dev/null\n\nMODEL=$(grep -E \'^MODEL=\' "$HOME/.fcc/.env" | tail -n1 | cut -d= -f2-)'
 probe = r'''curl -fsS --max-time 3 http://127.0.0.1:8082/health >/dev/null
 
@@ -20,16 +21,14 @@ BEST_MODEL=$(python - <<'PYMODEL'
 import json, urllib.request
 candidates = [
     'nvidia_nim/deepseek-ai/deepseek-v4-pro-0813',
-    'nvidia_nim/nvidia/nemotron-3-ultra-550b-a55b',
-    'nvidia_nim/moonshotai/kimi-k2.6',
     'nvidia_nim/nvidia/nemotron-3.5-lightning-30b-a3b',
-    'nvidia_nim/nvidia/nemotron-3-super-120b-a12b',
+    'nvidia_nim/nvidia/nemotron-3-ultra-550b-a55b',
 ]
 for model in candidates:
     body=json.dumps({'model':model,'max_tokens':12,'messages':[{'role':'user','content':'Reply OK'}],'stream':False}).encode()
     req=urllib.request.Request('http://127.0.0.1:8082/v1/messages',data=body,headers={'Content-Type':'application/json'},method='POST')
     try:
-        with urllib.request.urlopen(req,timeout=18) as r:
+        with urllib.request.urlopen(req,timeout=10) as r:
             data=json.loads(r.read().decode('utf-8','replace'))
             text=' '.join(str(x.get('text','')) for x in data.get('content',[]) if isinstance(x,dict))
             if r.status == 200 and text.strip():
@@ -39,49 +38,29 @@ for model in candidates:
         pass
 PYMODEL
 )
-[ -n "$BEST_MODEL" ] || { echo 'MODEL_PROBE_FAILED'; exit 2; }
+[ -n "$BEST_MODEL" ] || BEST_MODEL=$(grep -E '^MODEL=' "$HOME/.fcc/.env" | tail -n1 | cut -d= -f2- | tr -d '"')
 export BEST_MODEL
 echo "BEST_MODEL=$BEST_MODEL"
-
-python - "$HOME/.fcc/.env" "$BEST_MODEL" <<'PYMODELENV'
-from pathlib import Path
-import re,sys
-p=Path(sys.argv[1]); model=sys.argv[2]; s=p.read_text()
-for key in ['MODEL','MODEL_OPUS','MODEL_SONNET','MODEL_HAIKU']:
-    line=f'{key}="{model}"'
-    if re.search(rf'(?m)^{key}=.*$',s): s=re.sub(rf'(?m)^{key}=.*$',line,s)
-    else: s += '\n'+line
-p.write_text(s)
-PYMODELENV
 MODEL="$BEST_MODEL"'''
 if health not in s:
     raise SystemExit('model probe anchor mismatch')
 s = s.replace(health, probe, 1)
 
+# Route by demonstrated success in this environment. OpenCode has already produced a Jumpy
+# source diff that passed Godot; Codex is skipped while its Linux namespace sandbox is unavailable.
 pattern = r'''run_agent\(\) \{\n.*?\n\}\n\ncase \"\$PHASE\" in'''
 replacement = r'''run_agent() {
   local seconds="$1"
-  local primary_budget=$((seconds * 2 / 3))
-  local fallback_budget=$((seconds - primary_budget))
+  local primary_budget=$((seconds - 20))
+  local fallback_budget=20
   EXEC_STATUS="no_agent"
   : >/tmp/jumpy-agent.log
 
   ensure_fcc() {
     if curl -fsS --max-time 3 http://127.0.0.1:8082/health >/dev/null 2>&1; then return 0; fi
     nohup fcc-server >"$BASE/logs/fcc.log" 2>&1 < /dev/null &
-    for _ in {1..30}; do
-      curl -fsS --max-time 2 http://127.0.0.1:8082/health >/dev/null 2>&1 && return 0
-      sleep 1
-    done
-    echo 'FCC_UNAVAILABLE' | tee -a /tmp/jumpy-agent.log
+    for _ in {1..30}; do curl -fsS --max-time 2 http://127.0.0.1:8082/health >/dev/null 2>&1 && return 0; sleep 1; done
     return 1
-  }
-
-  ensure_codex() {
-    if command -v codex >/dev/null 2>&1; then return 0; fi
-    echo 'CODEX_INSTALL=self-heal' | tee -a /tmp/jumpy-agent.log
-    npm install -g @openai/codex >>/tmp/jumpy-agent.log 2>&1 || return 1
-    command -v codex >/dev/null 2>&1
   }
 
   run_one_agent() {
@@ -89,7 +68,7 @@ replacement = r'''run_agent() {
     ensure_fcc || return 1
     echo "AGENT_ATTEMPT=$name" | tee -a /tmp/jumpy-agent.log
     setsid env -u GH_TOKEN -u GITHUB_TOKEN -u CODESPACES_PAT -u NVIDIA_NIM_API_KEY \
-      GIT_TERMINAL_PROMPT=0 SSH_AUTH_SOCK= GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null BEST_MODEL="$BEST_MODEL" \
+      GIT_TERMINAL_PROMPT=0 SSH_AUTH_SOCK= GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null \
       bash -lc "cd /workspaces/ai-dev-server/.jumpy-studio-cycle && git config --local credential.helper '' && $command" \
       >>/tmp/jumpy-agent.log 2>&1 &
     local pid=$! loops=$((budget / 2)) timed_out=1
@@ -110,16 +89,11 @@ replacement = r'''run_agent() {
     return 1
   }
 
-  # Prefer the strongest harness that is actually compatible with FCC direct provider model refs.
-  if command -v fcc-codex >/dev/null 2>&1 && ensure_codex; then
-    run_one_agent "codex" "$primary_budget" 'fcc-codex exec --model "$BEST_MODEL" "$(cat /tmp/brief.txt)"' && return 0
+  if command -v fcc-opencode >/dev/null 2>&1 && command -v opencode >/dev/null 2>&1; then
+    run_one_agent "opencode" "$primary_budget" 'fcc-opencode run "$(cat /tmp/brief.txt)"' && return 0
   fi
-  # Claude Code remains a fallback; its client-side model validation can reject direct gateway refs.
   if command -v fcc-claude >/dev/null 2>&1 && command -v claude >/dev/null 2>&1; then
     run_one_agent "claude-code" "$fallback_budget" 'fcc-claude -p "$(cat /tmp/brief.txt)"' && return 0
-  fi
-  if command -v fcc-opencode >/dev/null 2>&1 && command -v opencode >/dev/null 2>&1; then
-    run_one_agent "opencode" "$fallback_budget" 'fcc-opencode run "$(cat /tmp/brief.txt)"' && return 0
   fi
   echo 'AGENT_SELECTED=none' | tee -a /tmp/jumpy-agent.log
   return 0
@@ -131,8 +105,36 @@ if n != 1:
     raise SystemExit(f'agent router anchor mismatch ({n})')
 s = s2
 
-anchor = "if [ -s /tmp/jumpy-agent.log ]; then"
-repair = r'''python - <<'PY2'
+# If an open-ended agent produces no source change, continue autonomously with the next known
+# safe atomic improvement instead of wasting the cycle.
+agent_log_anchor = "if [ -s /tmp/jumpy-agent.log ]; then"
+fallback = r'''if [ "$PHASE" = "OPEN_ENDED" ] && ! git diff --name-only | awk '$0 != "docs/AUTONOMOUS_STATE.md" {found=1} END {exit !found}'; then
+  python - <<'PYFALLBACK'
+from pathlib import Path
+p=Path('scripts/main.gd'); s=p.read_text()
+changed=False
+if 'var feedback_scale: float = 0.35 if bool(Profile.data.reduced_motion) else 1.0' not in s:
+    anchor='\tvar clutch: bool = not perfect and edge_distance <= PLAYER_R * 0.72\n'
+    if anchor in s:
+        s=s.replace(anchor, anchor+'\tvar feedback_scale: float = 0.35 if bool(Profile.data.reduced_motion) else 1.0\n',1)
+        s=s.replace('\t\tcamera_kick = 9.0\n\t\tflash = 0.24\n\t\tburst(Vector2(PLAYER_X, player_y + PLAYER_R), Color("ffffff"), 22, 420.0)\n', '\t\tcamera_kick = 9.0 * feedback_scale\n\t\tflash = 0.24 * feedback_scale\n\t\tburst(Vector2(PLAYER_X, player_y + PLAYER_R), Color("ffffff"), maxi(4, int(22.0 * feedback_scale)), 420.0 * feedback_scale)\n',1)
+        s=s.replace('\t\tcamera_kick = 12.0\n\t\tburst(Vector2(PLAYER_X, player_y + PLAYER_R), Color("ffe66d"), 18, 360.0)\n', '\t\tcamera_kick = 12.0 * feedback_scale\n\t\tburst(Vector2(PLAYER_X, player_y + PLAYER_R), Color("ffe66d"), maxi(4, int(18.0 * feedback_scale)), 360.0 * feedback_scale)\n',1)
+        changed=True
+elif 'var death_feedback_scale: float = 0.3 if bool(Profile.data.reduced_motion) else 1.0' not in s:
+    anchor='\trefresh_settings_ui()\n\tcamera_kick = 18.0\n\tflash = 0.35\n\tburst(Vector2(PLAYER_X, player_y), skin_color(), 35, 520.0)\n'
+    repl='\trefresh_settings_ui()\n\tvar death_feedback_scale: float = 0.3 if bool(Profile.data.reduced_motion) else 1.0\n\tcamera_kick = 18.0 * death_feedback_scale\n\tflash = 0.35 * death_feedback_scale\n\tburst(Vector2(PLAYER_X, player_y), skin_color(), maxi(5, int(35.0 * death_feedback_scale)), 520.0 * death_feedback_scale)\n'
+    if anchor in s:
+        s=s.replace(anchor,repl,1); changed=True
+if changed: p.write_text(s)
+PYFALLBACK
+  if git diff --name-only | grep -q '^scripts/main.gd$'; then
+    EXEC_STATUS="${EXEC_STATUS}+deterministic_fallback"
+    NOTE='Agent fallback applied the next compile-checkable Reduced Motion feedback improvement.'
+  fi
+fi
+
+# Canonicalize mixed GDScript indentation before strict validation.
+python - <<'PYINDENT'
 from pathlib import Path
 p=Path('scripts/main.gd')
 if p.exists():
@@ -140,23 +142,22 @@ if p.exists():
     for line in p.read_text().splitlines(keepends=True):
         body=line.rstrip('\r\n'); ending=line[len(body):]; i=0; cols=0
         while i < len(body) and body[i] in (' ', '\t'):
-            cols += (4 - cols % 4) if body[i]=='\t' else 1; i += 1
+            cols += (4-cols%4) if body[i]=='\t' else 1; i+=1
         if i: body=('\t'*(cols//4))+(' '*(cols%4))+body[i:]
         out.append(body+ending)
     p.write_text(''.join(out))
-PY2
+PYINDENT
 
 '''
-if anchor not in s:
+if agent_log_anchor not in s:
     raise SystemExit('agent-log anchor mismatch')
-s = s.replace(anchor, repair + anchor, 1)
+s = s.replace(agent_log_anchor, fallback + agent_log_anchor, 1)
 
+# No documentation-only fake progress.
 changed_anchor = 'CHANGED=$(git diff --name-only)\n[ -n "$CHANGED" ] || { echo \'RESULT=NO_CHANGE\'; exit 0; }'
 changed_replacement = '''CHANGED=$(git diff --name-only)
 [ -n "$CHANGED" ] || { echo 'RESULT=NO_CHANGE'; exit 0; }
 if [ "$PHASE" = "OPEN_ENDED" ] && ! printf '%s\n' "$CHANGED" | awk '$0 != "docs/AUTONOMOUS_STATE.md" {found=1} END {exit !found}'; then
-  echo '=== AGENT DIAGNOSTIC ==='
-  tail -n 50 /tmp/jumpy-agent.log 2>/dev/null || true
   git checkout -- docs/AUTONOMOUS_STATE.md
   echo 'RESULT=NO_SOURCE_CHANGE'
   exit 0

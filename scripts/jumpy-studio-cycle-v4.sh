@@ -19,6 +19,14 @@ for old, new in repls.items():
     if old not in s:
         raise SystemExit(f'runner benchmark anchor missing: {old}')
     s = s.replace(old, new)
+
+# Surface a short, sanitized benchmark tail when no agent passes. The agents run with all
+# repository/provider secrets removed, and the extra redaction is defense in depth.
+needle_diag = '''  winner=$(choose_agent)\n  echo "AGENT_BENCH_WINNER=$winner MODEL=$BEST_MODEL" | tee -a /tmp/jumpy-agent.log\n'''
+replacement_diag = '''  winner=$(choose_agent)\n  echo "AGENT_BENCH_WINNER=$winner MODEL=$BEST_MODEL" | tee -a /tmp/jumpy-agent.log\n  if [ "$winner" = 'none' ]; then\n    echo 'FCC_BENCH_DIAGNOSTICS_BEGIN' >&2\n    for diag in /tmp/jumpy-fcc-bench-claude-code.log /tmp/jumpy-fcc-bench-opencode.log; do\n      [ -s "$diag" ] || continue\n      echo "--- $(basename "$diag") ---" >&2\n      tail -n 16 "$diag" | sed -E 's/(github_pat_|gh[pousr]_)[A-Za-z0-9_]+/[REDACTED]/g; s/(Bearer[[:space:]]+)[A-Za-z0-9._-]+/\\1[REDACTED]/g; s/([Aa][Pp][Ii][_-]?[Kk][Ee][Yy][[:space:]]*[:=][[:space:]]*)[^[:space:]]+/\\1[REDACTED]/g' >&2 || true\n    done\n    echo 'FCC_BENCH_DIAGNOSTICS_END' >&2\n  fi\n'''
+if needle_diag not in s:
+    raise SystemExit('runner diagnostic anchor missing')
+s = s.replace(needle_diag, replacement_diag, 1)
 runner.write_text(s)
 
 safe = Path('scripts/jumpy-studio-cycle-v3-safe.sh')

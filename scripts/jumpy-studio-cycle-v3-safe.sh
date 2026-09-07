@@ -43,6 +43,8 @@ PYMODEL
 export BEST_MODEL
 echo "BEST_MODEL=$BEST_MODEL"
 
+# Persist the good route for future sessions. Running agents use --model directly, so the
+# healthy FCC process does not need to be restarted just to apply this file update.
 python - "$HOME/.fcc/.env" "$BEST_MODEL" <<'PYMODELENV'
 from pathlib import Path
 import re,sys
@@ -54,10 +56,6 @@ for key in ['MODEL','MODEL_OPUS','MODEL_SONNET','MODEL_HAIKU']:
 p.write_text(s)
 PYMODELENV
 
-pkill -f '[f]cc-server' 2>/dev/null || true
-nohup fcc-server >"$BASE/logs/fcc.log" 2>&1 < /dev/null &
-for _ in {1..30}; do curl -fsS --max-time 2 http://127.0.0.1:8082/health >/dev/null 2>&1 && break; sleep 1; done
-curl -fsS --max-time 3 http://127.0.0.1:8082/health >/dev/null
 MODEL="$BEST_MODEL"'''
 if health not in s:
     raise SystemExit('model probe anchor mismatch')
@@ -71,8 +69,20 @@ replacement = r'''run_agent() {
   EXEC_STATUS="no_agent"
   : >/tmp/jumpy-agent.log
 
+  ensure_fcc() {
+    if curl -fsS --max-time 3 http://127.0.0.1:8082/health >/dev/null 2>&1; then return 0; fi
+    nohup fcc-server >"$BASE/logs/fcc.log" 2>&1 < /dev/null &
+    for _ in {1..30}; do
+      curl -fsS --max-time 2 http://127.0.0.1:8082/health >/dev/null 2>&1 && return 0
+      sleep 1
+    done
+    echo 'FCC_UNAVAILABLE' | tee -a /tmp/jumpy-agent.log
+    return 1
+  }
+
   run_one_agent() {
     local name="$1" budget="$2" command="$3"
+    ensure_fcc || return 1
     echo "AGENT_ATTEMPT=$name" | tee -a /tmp/jumpy-agent.log
     setsid env -u GH_TOKEN -u GITHUB_TOKEN -u CODESPACES_PAT -u NVIDIA_NIM_API_KEY \
       GIT_TERMINAL_PROMPT=0 SSH_AUTH_SOCK= GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null BEST_MODEL="$BEST_MODEL" \
@@ -98,6 +108,9 @@ replacement = r'''run_agent() {
 
   if command -v fcc-claude >/dev/null 2>&1 && command -v claude >/dev/null 2>&1; then
     run_one_agent "claude-code" "$primary_budget" 'fcc-claude --model "$BEST_MODEL" -p "$(cat /tmp/brief.txt)"' && return 0
+  fi
+  if command -v fcc-codex >/dev/null 2>&1 && command -v codex >/dev/null 2>&1; then
+    run_one_agent "codex" "$fallback_budget" 'fcc-codex exec --model "$BEST_MODEL" "$(cat /tmp/brief.txt)"' && return 0
   fi
   if command -v fcc-opencode >/dev/null 2>&1 && command -v opencode >/dev/null 2>&1; then
     run_one_agent "opencode" "$fallback_budget" 'fcc-opencode run --model "$BEST_MODEL" "$(cat /tmp/brief.txt)"' && return 0

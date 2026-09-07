@@ -1,0 +1,214 @@
+"""GitHub brief -> bounded Flutter studio -> checkpoint branch and build artifacts."""
+from __future__ import annotations
+import argparse
+import base64
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import sys
+import tempfile
+import urllib.error
+
+from core import API, Model, Sandbox, StudioError, allowed, apply_patch, canonical, request_check, verdict, SECRET
+
+class GitHub(API):
+    def __init__(self, repo):
+        super().__init__('https://api.github.com', os.environ.get('STUDIO_GITHUB_TOKEN', ''))
+        if not self.key:
+            raise StudioError('Missing STUDIO_GITHUB_TOKEN with access to target repository')
+        self.repo = '/repos/' + repo
+    def get(self, path):
+        return self.call('GET', self.repo + path)
+    def restore(self, branch, root):
+        refs = self.get('/git/matching-refs/heads/' + branch)
+        exact = [r for r in refs if r['ref'] == 'refs/heads/' + branch]
+        metadata = self.get('')
+        if metadata.get('archived'):
+            raise StudioError('Target repository is archived')
+        if not exact:
+            # New apps only: reject populated targets instead of overwriting another stack.
+            if metadata.get('size', 0) > 0:
+                default = metadata['default_branch']
+                tree = self.get('/git/trees/' + default + '?recursive=1')
+                paths = {x['path'] for x in tree['tree'] if x['type'] == 'blob'}
+                if paths - {'README.md', 'LICENSE', '.gitignore'}:
+                    raise StudioError('Initial target must be empty or contain only README/LICENSE/.gitignore')
+                return None, self.get('/branches/' + default)['commit']['sha']
+            return None, None
+        parent = exact[0]['object']['sha']
+        tree = self.get('/git/trees/' + parent + '?recursive=1')
+        if tree.get('truncated') or len(tree['tree']) > 1000:
+            raise StudioError('Target tree exceeds supported size')
+        state = None
+        for item in tree['tree']:
+            path = item['path']
+            if item['type'] != 'blob' or not (allowed(path) or path == '.studio/state.json'):
+                continue
+            if item.get('mode') != '100644' or item.get('size', 0) > 600000:
+                raise StudioError('Unsupported target file')
+            blob = self.get('/git/blobs/' + item['sha'])
+            content = base64.b64decode(blob['content']).decode()
+            if path == '.studio/state.json':
+                state = json.loads(content)
+            else:
+                apply_patch(root, {'files': [{'path': path, 'content': content}]})
+        if state is None:
+            raise StudioError('Existing studio branch has no checkpoint; refusing overwrite')
+        return state, parent
+    def publish(self, branch, parent, root, state):
+        # Platform files are produced by the trusted flutter create template, never by model patches.
+        entries = []
+        previous = {}
+        if parent:
+            previous = {x['path']: x.get('sha') for x in self.get('/git/trees/' + parent + '?recursive=1')['tree']}
+        for p in sorted(root.rglob('*')):
+            if not p.is_file() or p.is_symlink():
+                continue
+            rel = p.relative_to(root).as_posix()
+            if any(x in ('build', '.dart_tool', '.studio-cache', '.gradle', 'goldens') for x in p.relative_to(root).parts):
+                continue
+            if rel.startswith('test/__studio') or rel.endswith(('local.properties', '.iml')):
+                continue
+            if not (allowed(rel) or rel == 'pubspec.lock' or rel.startswith(('android/', 'ios/'))):
+                continue
+            content = p.read_bytes()
+            if len(content) > 1000000 or SECRET.search(content.decode(errors='ignore')):
+                raise StudioError('Publication file rejected')
+            sha = hashlib.sha1(b'blob ' + str(len(content)).encode() + b'\0' + content).hexdigest()
+            if previous.get(rel) == sha:
+                continue
+            entry = {'path': rel, 'mode': '100755' if rel == 'android/gradlew' else '100644', 'type': 'blob'}
+            try:
+                entry['content'] = content.decode('utf-8')
+            except UnicodeDecodeError:
+                blob = self.call('POST', self.repo + '/git/blobs', {'encoding': 'base64', 'content': base64.b64encode(content).decode()})
+                entry['sha'] = blob['sha']
+            entries.append(entry)
+        entries.append({'path': '.studio/state.json', 'mode': '100644', 'type': 'blob', 'content': canonical(state)})
+        data = {'tree': entries}
+        if parent:
+            data['base_tree'] = self.get('/git/commits/' + parent)['tree']['sha']
+        tree = self.call('POST', self.repo + '/git/trees', data)
+        commit = self.call('POST', self.repo + '/git/commits', {'message': 'Mobile studio: ' + state['status'], 'tree': tree['sha'], 'parents': [parent] if parent else []})
+        refs = self.get('/git/matching-refs/heads/' + branch)
+        exists = any(r['ref'] == 'refs/heads/' + branch for r in refs)
+        if exists:
+            self.call('PATCH', self.repo + '/git/refs/heads/' + branch, {'sha': commit['sha'], 'force': False})
+        else:
+            self.call('POST', self.repo + '/git/refs', {'ref': 'refs/heads/' + branch, 'sha': commit['sha']})
+        return commit['sha']
+
+def context(req, state, root):
+    files = {p.relative_to(root).as_posix(): p.read_text() for p in sorted(root.rglob('*'))
+             if p.is_file() and not p.is_symlink() and allowed(p.relative_to(root).as_posix())}
+    return canonical({'request': req, 'product': state.get('product'), 'design': state.get('design'),
+                      'previous_blockers': state.get('blockers', []), 'files': files})
+
+def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sandbox):
+    req = request_check(req)
+    if not req['enabled']:
+        return {'status': 'disabled'}
+    if req['target_repo'].lower() == os.environ.get('GITHUB_REPOSITORY', '').lower():
+        raise StudioError('Target must be separate from the control repository')
+    github = github or GitHub(req['target_repo'])
+    branch = 'studio/' + req['id']
+    root.mkdir(parents=True, exist_ok=True)
+    out.mkdir(parents=True, exist_ok=True)
+    if any(root.iterdir()):
+        raise StudioError('Workspace must be fresh; resume uses the remote checkpoint')
+    # Read checkpoint before bootstrapping: completed/budget-exhausted requests cost no model/build work.
+    with tempfile.TemporaryDirectory() as saved:
+        saved_root = Path(saved)
+        state, parent = github.restore(branch, saved_root)
+        fingerprint = hashlib.sha256(canonical({k: v for k, v in req.items() if k != 'enabled'}).encode()).hexdigest()
+        if state and state.get('request_hash') != fingerprint:
+            raise StudioError('Brief changed for existing id; use a new id and fresh target')
+        state = state or {'request_hash': fingerprint, 'status': 'pending', 'cycles': 0, 'rounds': 0, 'blockers': []}
+        if state['status'] == 'validated_preview' or state['cycles'] >= req['max_cycles']:
+            (out / 'report.json').write_text(canonical(state))
+            return state
+        sandbox = sandbox_factory(root)
+        sandbox.create(req['app_name'])
+        for p in saved_root.rglob('*'):
+            if p.is_file():
+                apply_patch(root, {'files': [{'path': p.relative_to(saved_root).as_posix(), 'content': p.read_text()}]})
+    model = model_factory(req['max_calls'])
+    state['cycles'] += 1
+    try:
+        for role in ('product', 'design'):
+            if role not in state:
+                state[role] = model.ask(role, context(req, state, root))
+                state['status'] = role + '_complete'
+                parent = github.publish(branch, parent, root, state)
+        for _ in range(req['max_rounds']):
+            state['rounds'] += 1
+            patch = model.ask('implementation', context(req, state, root))
+            apply_patch(root, patch)
+            if not any(not p.name.startswith('__studio') for p in (root / 'test').rglob('*_test.dart')):
+                raise StudioError('Implementation must supply meaningful tests')
+            passed, logs = sandbox.gates(req['app_name'])
+            (out / 'validation.json').write_text(canonical(logs))
+            state['status'] = 'repair_needed'
+            if not passed:
+                state['blockers'] = ['Validation failed: ' + canonical(logs[-1:])[-16000:]]
+                parent = github.publish(branch, parent, root, state)
+                continue
+            review = verdict(model.ask('review', context(req, state, root)))
+            state['code_review'] = review
+            if not review['passed']:
+                state['blockers'] = review['blockers']
+                parent = github.publish(branch, parent, root, state)
+                continue
+            screenshots = sorted((root / 'test/goldens').glob('*.png'))
+            if not model.vision:
+                state.update(status='awaiting_visual_review', blockers=['Configure STUDIO_VISION_MODEL on a provider supporting image input.'])
+                break
+            visual = verdict(model.ask('visual', canonical({'brief': req['brief'], 'design': state['design']}), screenshots))
+            state['visual_review'] = visual
+            if not visual['passed']:
+                state['blockers'] = visual['blockers']
+                parent = github.publish(branch, parent, root, state)
+                continue
+            state.update(status='validated_preview', blockers=[])
+            break
+    except StudioError as e:
+        state.update(status='blocked', blockers=[str(e)])
+    finally:
+        state['model_calls_this_cycle'] = model.calls
+        state['limits'] = {'max_cycles': req['max_cycles'], 'max_calls_per_cycle': req['max_calls'], 'max_rounds_per_cycle': req['max_rounds']}
+        state['release_status'] = 'not_store_ready'
+        state['coverage'] = 'Static analysis, generated tests, Android debug APK, four initial-screen renders. No real-device or full navigation visual validation.'
+        # Copy only actual output; publication failures retain downloadable local evidence.
+        for p in (root / 'test/goldens').glob('*.png'):
+            shutil.copyfile(p, out / p.name)
+        apk = root / 'build/app/outputs/flutter-apk/app-debug.apk'
+        # Failed later rounds may leave an earlier APK: export it only if the last gate passed.
+        if state['status'] in ('validated_preview', 'awaiting_visual_review') and apk.is_file():
+            shutil.copyfile(apk, out / 'app-debug.apk')
+            state['apk_sha256'] = hashlib.sha256(apk.read_bytes()).hexdigest()
+        (out / 'report.json').write_text(canonical(state))
+        sha = github.publish(branch, parent, root, state)
+        state['checkpoint_commit'] = sha
+        (out / 'report.json').write_text(canonical(state))
+    return state
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('request')
+    parser.add_argument('--work', default='/tmp/mobile-studio-app')
+    parser.add_argument('--out', default='studio-output')
+    args = parser.parse_args()
+    try:
+        state = execute(json.loads(Path(args.request).read_text()), Path(args.work), Path(args.out))
+        print(canonical({'status': state['status'], 'checkpoint_commit': state.get('checkpoint_commit')}))
+        return 0 if state['status'] in ('disabled', 'validated_preview', 'awaiting_visual_review') else 1
+    except (StudioError, ValueError, OSError) as e:
+        Path(args.out).mkdir(parents=True, exist_ok=True)
+        (Path(args.out) / 'error.json').write_text(canonical({'status': 'blocked', 'error': type(e).__name__, 'detail': str(e) if isinstance(e, StudioError) else 'Invalid configuration or local IO failure'}))
+        print('Studio blocked; see error.json and existing checkpoint.', file=sys.stderr)
+        return 1
+
+if __name__ == '__main__':
+    sys.exit(main())

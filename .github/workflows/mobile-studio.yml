@@ -1,0 +1,70 @@
+name: Autonomous Mobile Studio
+on:
+  push:
+    branches: [main]
+    paths: ['control/mobile-requests/*.json']
+  workflow_dispatch:
+  schedule:
+    - cron: '3,23,43 * * * *'
+permissions:
+  contents: read
+jobs:
+  queue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      projects: ${{ steps.queue.outputs.projects }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - id: queue
+        run: echo "projects=$(python studio/queue.py)" >> "$GITHUB_OUTPUT"
+  create:
+    needs: queue
+    if: needs.queue.outputs.projects != '[]'
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        project: ${{ fromJSON(needs.queue.outputs.projects) }}
+    concurrency:
+      group: mobile-studio-${{ matrix.project.target }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Run bounded studio
+        env:
+          STUDIO_REQUEST: ${{ matrix.project.file }}
+          STUDIO_GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
+          STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
+          STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
+          STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
+          STUDIO_VISION_MODEL: ${{ vars.STUDIO_VISION_MODEL }}
+        run: python studio/run.py "$STUDIO_REQUEST"
+      - name: Retain report, screenshots and actual APK
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mobile-${{ matrix.project.id }}-${{ github.run_number }}
+          path: studio-output/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Summary
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
+              for name in ('report.json', 'error.json'):
+                  p = Path('studio-output') / name
+                  if p.exists():
+                      d = json.loads(p.read_text())
+                      out.write('Mobile studio status: ' + str(d.get('status', 'unknown')) + '\n')
+                      out.write('Download the artifact for the report and available evidence.\n')
+          PY

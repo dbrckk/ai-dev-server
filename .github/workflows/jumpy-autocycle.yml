@@ -8,7 +8,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/jumpy-autocycle.yml'
-      - 'scripts/jumpy-studio-cycle-v2.sh'
+      - 'scripts/jumpy-studio-cycle-v3.sh'
       - 'docs/EXTERNAL_SOURCE_POLICY.md'
 
 permissions:
@@ -26,11 +26,11 @@ jobs:
       GH_TOKEN: ${{ secrets.CODESPACES_PAT }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, immutable SHA
-      - name: Run autonomous Jumpy studio cycle v2
-        run: bash scripts/jumpy-studio-cycle-v2.sh
+      - name: Run hardened autonomous Jumpy studio cycle v3
+        run: bash scripts/jumpy-studio-cycle-v3.sh
       - name: Summary
         if: always()
         run: |
-          echo '## Jumpy autonomous studio cycle v2' >> "$GITHUB_STEP_SUMMARY"
+          echo '## Jumpy autonomous studio cycle v3' >> "$GITHUB_STEP_SUMMARY"
           echo 'Cadence: every 20 minutes (:07 / :27 / :47).' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Control loop: systemic audit → source-derived atomic phase → bounded implementation → Godot validation → living state → validated push.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Security: secret-isolated agent → strict scope gate → Godot validation → final secret scan → validated push.' >> "$GITHUB_STEP_SUMMARY"

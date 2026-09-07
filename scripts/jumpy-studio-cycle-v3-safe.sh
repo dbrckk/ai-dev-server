@@ -12,9 +12,8 @@ if old not in s:
     raise SystemExit('open-ended prompt anchor mismatch')
 s = s.replace(old, new, 1)
 
-# Repair a recurring model failure before safety checks/Godot: generated GDScript sometimes
-# uses groups of 4 leading spaces in a tab-indented file. Normalize only main.gd after the
-# agent finishes; semantic content is unchanged and Godot remains the final authority.
+# Repair recurring model indentation failures before safety checks/Godot.
+# Canonicalize any leading mixed tab/space prefix in main.gd to 4-column tabs.
 anchor = "if [ -s /tmp/jumpy-agent.log ]; then"
 repair = r'''python - <<'PY2'
 from pathlib import Path
@@ -24,11 +23,16 @@ if p.exists():
     for line in p.read_text().splitlines(keepends=True):
         body=line.rstrip('\r\n')
         ending=line[len(body):]
-        n=0
-        while n < len(body) and body[n] == ' ':
-            n += 1
-        if n >= 4:
-            body = ('\t' * (n // 4)) + (' ' * (n % 4)) + body[n:]
+        i=0
+        while i < len(body) and body[i] in ' \t':
+            i += 1
+        prefix=body[:i]
+        if ' ' in prefix:
+            cols=0
+            for ch in prefix:
+                cols += 4 if ch == '\t' else 1
+            prefix=('\t' * (cols // 4)) + (' ' * (cols % 4))
+            body=prefix + body[i:]
         out.append(body + ending)
     p.write_text(''.join(out))
 PY2

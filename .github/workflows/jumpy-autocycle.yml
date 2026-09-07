@@ -13,6 +13,7 @@ on:
       - 'scripts/jumpy-studio-cycle-v3-safe.sh'
       - 'scripts/jumpy-studio-cycle-v4.sh'
       - 'scripts/jumpy-studio-cycle-v5.sh'
+      - 'scripts/jumpy-studio-cycle-v6.sh'
       - 'scripts/fcc-agent-benchmark.sh'
       - 'docs/EXTERNAL_SOURCE_POLICY.md'
 
@@ -31,14 +32,14 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # immutable SHA
         with:
           persist-credentials: false
-      - name: Run hardened autonomous Jumpy studio cycle v5
+      - name: Run hardened autonomous Jumpy studio cycle v6
         env:
           GH_TOKEN: ${{ secrets.CODESPACES_PAT }}
-        run: bash scripts/jumpy-studio-cycle-v5.sh
+        run: bash scripts/jumpy-studio-cycle-v6.sh
       - name: Summary
         if: always()
         run: |
-          echo '## Jumpy autonomous studio cycle v5' >> "$GITHUB_STEP_SUMMARY"
+          echo '## Jumpy autonomous studio cycle v6' >> "$GITHUB_STEP_SUMMARY"
           echo 'Cadence: every 20 minutes (:07 / :27 / :47). Newer cycles supersede stale in-flight cycles.' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Agent routing: live FCC model probe → empirical file-edit benchmark → productive agent when available → explicit validated deterministic fallback otherwise.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Agent routing: live FCC model probe → empirical file-edit benchmark → sanitized diagnostics → productive agent when available → explicit validated deterministic fallback otherwise.' >> "$GITHUB_STEP_SUMMARY"
           echo 'Security: credentials scoped to orchestrator step; agents receive no GitHub/provider secrets; deterministic fallback has strict single-file scope → Godot validation → secret scan → validated push.' >> "$GITHUB_STEP_SUMMARY"

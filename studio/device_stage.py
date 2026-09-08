@@ -8,6 +8,7 @@ from pathlib import Path
 from completion import apply_completion, next_stage
 from core import StudioError, canonical
 from device_qa import validate_release_on_device
+from journeys import validate_journeys
 from run import GitHub
 
 
@@ -22,7 +23,12 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
         report_path.write_text(canonical(state))
         return state
 
-    evidence = validate_release_on_device(root, out)
+    try:
+        journeys = validate_journeys(state.get('product', {}).get('journeys'))
+    except ValueError as e:
+        raise StudioError('Device QA requires validated product journeys: ' + str(e)) from None
+
+    evidence = validate_release_on_device(root, out, journeys)
     state.setdefault('release_evidence', {})['real_device'] = evidence
     apply_completion(state)
 

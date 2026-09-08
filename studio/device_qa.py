@@ -1,4 +1,4 @@
-"""Trusted Android emulator QA for validated release artifacts."""
+"""Trusted Android emulator QA for validated release artifacts and journeys."""
 from __future__ import annotations
 
 import hashlib
@@ -10,6 +10,7 @@ import subprocess
 import time
 
 from core import StudioError, canonical
+from runtime_journeys import run_on_device
 
 CRASH_PATTERNS = ('FATAL EXCEPTION', 'AndroidRuntime: FATAL', 'ANR in ')
 SYSTEM_IMAGE = os.environ.get('STUDIO_ANDROID_SYSTEM_IMAGE', 'system-images;android-35;google_apis;x86_64')
@@ -74,7 +75,8 @@ def start_emulator() -> subprocess.Popen:
                             start_new_session=True)
 
 
-def validate_release_on_device(root: Path, out: Path, adb: str = 'adb') -> dict:
+def validate_release_on_device(root: Path, out: Path, journeys: list[dict] | None = None,
+                               adb: str = 'adb') -> dict:
     apk = root / 'build/app/outputs/flutter-apk/app-release.apk'
     if not apk.is_file() or apk.stat().st_size < 1000:
         return {'passed': False, 'blockers': ['release_apk_missing'], 'logs': []}
@@ -89,16 +91,24 @@ def validate_release_on_device(root: Path, out: Path, adb: str = 'adb') -> dict:
         if not boot['passed']:
             return {'passed': False, 'blockers': ['emulator_boot_timeout'], 'logs': [boot]}
 
+        serial = os.environ.get('ANDROID_SERIAL')
+        if not serial:
+            devices = run_command([adb, 'devices'], timeout=30).stdout.splitlines()
+            serials = [line.split()[0] for line in devices[1:] if '\tdevice' in line]
+            if len(serials) != 1:
+                return {'passed': False, 'blockers': ['ambiguous_android_target'], 'logs': []}
+            serial = serials[0]
+
         pkg = package_name(root)
         logs: list[dict] = []
-        run_command([adb, 'logcat', '-c'], timeout=30)
-        install = run_command([adb, 'install', '-r', '-t', str(apk)], timeout=180)
+        run_command([adb, '-s', serial, 'logcat', '-c'], timeout=30)
+        install = run_command([adb, '-s', serial, 'install', '-r', '-t', str(apk)], timeout=180)
         logs.append({'command': ['adb', 'install'], 'exit_code': install.returncode,
                      'output': install.stdout[-4000:]})
         if install.returncode:
             return {'passed': False, 'blockers': ['release_install_failed'], 'logs': logs}
 
-        launch = run_command([adb, 'shell', 'monkey', '-p', pkg, '-c',
+        launch = run_command([adb, '-s', serial, 'shell', 'monkey', '-p', pkg, '-c',
                               'android.intent.category.LAUNCHER', '1'], timeout=60)
         logs.append({'command': ['adb', 'shell', 'monkey'], 'exit_code': launch.returncode,
                      'output': launch.stdout[-4000:]})
@@ -109,12 +119,12 @@ def validate_release_on_device(root: Path, out: Path, adb: str = 'adb') -> dict:
         out.mkdir(parents=True, exist_ok=True)
         screenshot = out / 'device-release.png'
         with screenshot.open('wb') as handle:
-            shot = subprocess.run([adb, 'exec-out', 'screencap', '-p'], stdout=handle,
+            shot = subprocess.run([adb, '-s', serial, 'exec-out', 'screencap', '-p'], stdout=handle,
                                   stderr=subprocess.PIPE, timeout=60)
         if shot.returncode or screenshot.stat().st_size < 1000:
             return {'passed': False, 'blockers': ['device_screenshot_failed'], 'logs': logs}
 
-        logcat = run_command([adb, 'logcat', '-d', '-v', 'brief'], timeout=60)
+        logcat = run_command([adb, '-s', serial, 'logcat', '-d', '-v', 'brief'], timeout=60)
         crash_lines = [line for line in logcat.stdout.splitlines()
                        if any(pattern in line for pattern in CRASH_PATTERNS)]
         logs.append({'command': ['adb', 'logcat', '-d'], 'exit_code': logcat.returncode,
@@ -122,10 +132,25 @@ def validate_release_on_device(root: Path, out: Path, adb: str = 'adb') -> dict:
         if crash_lines:
             return {'passed': False, 'blockers': ['runtime_crash_detected'], 'logs': logs}
 
-        return {'passed': True, 'package': pkg,
-                'apk_sha256': hashlib.sha256(apk.read_bytes()).hexdigest(),
-                'screenshot_sha256': hashlib.sha256(screenshot.read_bytes()).hexdigest(),
-                'logs': logs}
+        journey_evidence = None
+        if journeys:
+            journey_evidence = run_on_device(root, journeys, serial)
+            if not journey_evidence.get('passed'):
+                return {'passed': False, 'blockers': ['runtime_journeys_failed'],
+                        'release_smoke': {'passed': True, 'package': pkg},
+                        'journeys': journey_evidence, 'logs': logs}
+
+        return {
+            'passed': True,
+            'environment': 'android_emulator',
+            'device_serial': serial,
+            'package': pkg,
+            'apk_sha256': hashlib.sha256(apk.read_bytes()).hexdigest(),
+            'screenshot_sha256': hashlib.sha256(screenshot.read_bytes()).hexdigest(),
+            'release_smoke': {'passed': True},
+            'journeys': journey_evidence or {'passed': True, 'journey_count': 0},
+            'logs': logs,
+        }
     finally:
         if shutil.which(adb):
             try:
@@ -141,11 +166,14 @@ def validate_release_on_device(root: Path, out: Path, adb: str = 'adb') -> dict:
 
 def main() -> int:
     import argparse
+    import json
     parser = argparse.ArgumentParser()
     parser.add_argument('--work', required=True)
     parser.add_argument('--out', required=True)
+    parser.add_argument('--journeys-json')
     args = parser.parse_args()
-    result = validate_release_on_device(Path(args.work), Path(args.out))
+    journeys = json.loads(Path(args.journeys_json).read_text()) if args.journeys_json else None
+    result = validate_release_on_device(Path(args.work), Path(args.out), journeys)
     print(canonical(result))
     return 0 if result.get('passed') else 1
 

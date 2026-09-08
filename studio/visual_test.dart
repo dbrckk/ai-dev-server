@@ -58,7 +58,7 @@ Future<void> loadSdkFonts() async {
   }
   await textLoader.load();
   final icons = File('${directory.path}/MaterialIcons-Regular.otf');
-  if (!icons.isFileSync()) throw StateError('Material Icons font missing');
+  if (!icons.existsSync()) throw StateError('Material Icons font missing');
   final iconLoader = FontLoader('MaterialIcons');
   iconLoader.addFont(Future.value(ByteData.sublistView(icons.readAsBytesSync())));
   await iconLoader.load();

@@ -11,6 +11,7 @@ import sys
 import tempfile
 import urllib.error
 
+from journeys import validate_journeys
 from core import API, APIError, Model, Sandbox, StudioError, allowed, apply_patch, canonical, request_check, verdict, SECRET
 
 class GitHub(API):
@@ -140,9 +141,14 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         if state and state.get('request_hash') != fingerprint:
             raise StudioError('Brief changed for existing id; use a new id and fresh target')
         state = state or {'request_hash': fingerprint, 'status': 'pending', 'cycles': 0, 'rounds': 0, 'blockers': []}
+        if state['status'] == 'validated_preview' and state.get('validation_contract') != 2:
+            state.update(status='validation_upgrade_required', blockers=['Acceptance-journey validation required for this older checkpoint.'])
+        if state.get('product') and 'journeys' not in state['product']:
+            state.pop('product')
         if state['status'] == 'validated_preview' or state['cycles'] >= req['max_cycles']:
             (out / 'report.json').write_text(canonical(state))
             return state
+        model = model_factory(req['max_calls'])
         sandbox = sandbox_factory(root)
         sandbox.create(req['app_name'])
         github.native_files = getattr(sandbox, 'native_files', {})
@@ -151,12 +157,17 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                 (root / 'pubspec.lock').write_bytes(p.read_bytes())
             elif p.is_file():
                 apply_patch(root, {'files': [{'path': p.relative_to(saved_root).as_posix(), 'content': p.read_text()}]})
-    model = model_factory(req['max_calls'])
     state['cycles'] += 1
     try:
         for role in ('product', 'design'):
             if role not in state:
-                state[role] = model.ask(role, context(req, state, root))
+                result = model.ask(role, context(req, state, root))
+                if role == 'product':
+                    try:
+                        validate_journeys(result.get('journeys'))
+                    except ValueError as e:
+                        raise StudioError(str(e)) from None
+                state[role] = result
                 state['status'] = role + '_complete'
                 parent = github.publish(branch, parent, root, state)
         for _ in range(req['max_rounds']):
@@ -164,14 +175,22 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             patch = model.ask('implementation', context(req, state, root))
             apply_patch(root, patch)
             if not any(not p.name.startswith('__studio') for p in (root / 'test').rglob('*_test.dart')):
-                raise StudioError('Implementation must supply meaningful tests')
-            passed, logs = sandbox.gates(req['app_name'])
+                qa_patch = model.ask('tests', context(req, state, root))
+                apply_patch(root, qa_patch)
+            if not any(not p.name.startswith('__studio') for p in (root / 'test').rglob('*_test.dart')):
+                raise StudioError('QA must supply test/*_test.dart files')
+            try:
+                journeys = validate_journeys(state['product'].get('journeys'))
+            except ValueError as e:
+                raise StudioError(str(e)) from None
+            passed, logs = sandbox.gates(req['app_name'], journeys)
             (out / 'validation.json').write_text(canonical(logs))
             state['status'] = 'repair_needed'
             if not passed:
                 state['blockers'] = ['Validation failed: ' + canonical(logs[-1:])[-16000:]]
                 parent = github.publish(branch, parent, root, state)
                 continue
+            state['validation_contract'] = 2
             review = verdict(model.ask('review', context(req, state, root)))
             state['code_review'] = review
             if not review['passed']:
@@ -182,7 +201,18 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             if not model.vision:
                 state.update(status='awaiting_visual_review', blockers=['Configure STUDIO_VISION_MODEL on a provider supporting image input.'])
                 break
-            visual = verdict(model.ask('visual', canonical({'brief': req['brief'], 'design': state['design']}), screenshots))
+            # Inspect one screen/path at a time: bounded multimodal payloads and exact coverage.
+            visual = {'passed': True, 'blockers': []}
+            state['visual_reviews'] = {}
+            for screen in ['initial'] + [j['id'] for j in journeys]:
+                batch = [p for p in screenshots if p.name.startswith(screen + '--')]
+                if len(batch) != 4:
+                    raise StudioError('Missing actual screenshots for ' + screen)
+                result = verdict(model.ask('visual', canonical({'brief': req['brief'], 'design': state['design'],
+                    'screen': screen, 'journeys': journeys}), batch))
+                state['visual_reviews'][screen] = result
+                visual['blockers'].extend(screen + ': ' + item for item in result['blockers'])
+            visual['passed'] = not visual['blockers']
             state['visual_review'] = visual
             if not visual['passed']:
                 state['blockers'] = visual['blockers']
@@ -194,9 +224,10 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         state.update(status='blocked', blockers=[str(e)])
     finally:
         state['model_calls_this_cycle'] = model.calls
+        state['models_used'] = getattr(model, 'models_used', {})
         state['limits'] = {'max_cycles': req['max_cycles'], 'max_calls_per_cycle': req['max_calls'], 'max_rounds_per_cycle': req['max_rounds']}
         state['release_status'] = 'not_store_ready'
-        state['coverage'] = 'Static analysis, generated tests, Android debug APK, four initial-screen renders. No real-device or full navigation visual validation.'
+        state['coverage'] = {'variants_per_path': 4, 'journeys': [j['id'] for j in state.get('product', {}).get('journeys', [])], 'scope': 'Initial screen and final screen of each declared journey; not all possible states or real-device testing.'}
         # Copy only actual output; publication failures retain downloadable local evidence.
         for p in (root / 'test/goldens').glob('*.png'):
             shutil.copyfile(p, out / p.name)

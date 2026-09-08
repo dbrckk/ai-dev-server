@@ -5,10 +5,12 @@ adaptation request into the next bounded factory-evolution job.
 """
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 from pathlib import Path
 import re
+import sys
 
 SUPPORTED_RESOURCE_KINDS = {
     'official_docs',
@@ -135,3 +137,30 @@ def consume(request_path: Path, out: Path, baseline_sha: str) -> dict:
     path = out / 'evolution-work-order.json'
     path.write_text(json.dumps(work_order, ensure_ascii=False, sort_keys=True, indent=2) + '\n')
     return work_order
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('request')
+    parser.add_argument('--baseline-sha', required=True)
+    parser.add_argument('--out', default='studio-output')
+    args = parser.parse_args(argv)
+    try:
+        order = consume(Path(args.request), Path(args.out), args.baseline_sha)
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        Path(args.out).mkdir(parents=True, exist_ok=True)
+        (Path(args.out) / 'evolution-error.json').write_text(json.dumps({
+            'status': 'blocked',
+            'error': type(exc).__name__,
+        }, sort_keys=True) + '\n')
+        return 1
+    print(json.dumps({
+        'status': order['status'],
+        'candidate_id': order['candidate_id'],
+        'candidate_branch': order['candidate_branch'],
+    }, sort_keys=True))
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

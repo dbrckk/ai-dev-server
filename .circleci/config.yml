@@ -1,51 +1,71 @@
 version: 2.1
 
+parameters:
+  mode:
+    type: enum
+    enum: ["queue", "preview", "smoke"]
+    default: "smoke"
+
 jobs:
-  journeys:
-    docker: [{image: cimg/python:3.12.11}]
-    steps: [checkout, {run: "python tests/test_journeys.py -v"}]
-  privacy:
-    docker: [{image: cimg/python:3.12.11}]
-    steps: [checkout, {run: "python tests/test_privacy.py -v"}]
-  release:
-    docker: [{image: cimg/python:3.12.11}]
-    steps: [checkout, {run: "python tests/test_release.py -v"}]
-  runtime_journeys:
-    docker: [{image: cimg/python:3.12.11}]
-    steps: [checkout, {run: "python tests/test_runtime_journeys.py -v"}]
-  security:
-    docker: [{image: cimg/python:3.12.11}]
-    steps: [checkout, {run: "python tests/test_security.py -v"}]
-  store:
-    docker: [{image: cimg/python:3.12.11}]
-    steps: [checkout, {run: "python tests/test_store.py -v"}]
-  studio:
-    docker: [{image: cimg/python:3.12.11}]
-    steps: [checkout, {run: "python tests/test_studio.py -v"}]
-  transport:
-    docker: [{image: cimg/python:3.12.11}]
-    steps: [checkout, {run: "python tests/test_transport.py -v"}]
-  capability:
-    docker: [{image: cimg/python:3.12.11}]
-    steps: [checkout, {run: "python tests/test_capability_qa.py -v"}]
-  performance:
-    docker: [{image: cimg/python:3.12.11}]
-    steps: [checkout, {run: "python tests/test_performance_qa.py -v"}]
-  native:
-    docker: [{image: cimg/python:3.12.11}]
-    steps: [checkout, {run: "python tests/test_native_qa.py -v"}]
+  validate:
+    docker:
+      - image: cimg/python:3.12.11
+    steps:
+      - checkout
+      - run:
+          name: Validate engine and request queue without secrets
+          command: |
+            python -m compileall -q studio tests
+            python -m unittest discover -s tests -v
+            python -m json.tool .devcontainer/devcontainer.json >/dev/null
+            python -m json.tool control/ci.json >/dev/null
+            python studio/queue.py
+            for script in scripts/*.sh; do bash -n "$script"; done
+  mobile:
+    machine:
+      image: android:current
+    resource_class: large.gen2
+    steps:
+      - checkout
+      - run:
+          name: Generate, build release and validate on Android emulator
+          no_output_timeout: 30m
+          command: python3 studio/ci_runner.py "<< pipeline.parameters.mode >>"
+      - store_artifacts:
+          path: studio-output
+          destination: mobile-studio
+  smoke:
+    machine:
+      image: ubuntu-2404:current
+    resource_class: large
+    steps:
+      - checkout
+      - run:
+          name: Build Android and render actual Flutter screens without secrets
+          no_output_timeout: 30m
+          command: python3 studio/smoke.py
+      - store_artifacts:
+          path: studio-output
+          destination: flutter-smoke
 
 workflows:
-  diagnose:
+  mobile-generation:
+    when:
+      not:
+        equal: ["smoke", << pipeline.parameters.mode >>]
     jobs:
-      - journeys
-      - privacy
-      - release
-      - runtime_journeys
-      - security
-      - store
-      - studio
-      - transport
-      - capability
-      - performance
-      - native
+      - validate
+      - mobile:
+          requires: [validate]
+          context: mobile-studio
+          serial-group: << pipeline.project.slug >>/mobile-studio
+          filters:
+            branches:
+              only: main
+  build-verification:
+    when:
+      equal: ["smoke", << pipeline.parameters.mode >>]
+    jobs:
+      - validate
+      - smoke:
+          requires: [validate]

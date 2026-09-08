@@ -56,3 +56,15 @@ class TransportTests(unittest.TestCase):
         m.api.call = Mock(return_value={'choices': [{'message': {'content': '{"tokens":{}}'}}]})
         m.ask('design', 'brief')
         self.assertIs(m.api.call.call_args.args[2]['stream'], False)
+
+class MalformedEnvelopeTests(unittest.TestCase):
+    def test_bad_choices_trigger_bounded_repair_without_attribute_crash(self):
+        invalid = [None, [], {}, {'choices': []}, {'choices': [None]},
+                   {'choices': ['invalid']}, {'choices': [{'message': None}]}]
+        for envelope in invalid:
+            with self.subTest(envelope=envelope), patch.dict('os.environ', {'STUDIO_API_KEY': 'test'}, clear=True):
+                model = Model(2)
+                model.api.call = Mock(return_value=envelope)
+                with self.assertRaisesRegex(StudioError, 'Structured response rejected'):
+                    model.ask('design', 'brief')
+                self.assertEqual(model.calls, 2)

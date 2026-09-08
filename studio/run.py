@@ -13,6 +13,7 @@ import urllib.error
 
 from journeys import validate_journeys
 from core import API, APIError, Model, Sandbox, StudioError, allowed, apply_patch, canonical, request_check, verdict, SECRET
+from project_context import write as write_project_context
 
 class GitHub(API):
     def __init__(self, repo):
@@ -29,7 +30,6 @@ class GitHub(API):
         except APIError as e:
             if e.status != 409 or metadata.get('size', 0) != 0:
                 raise
-            # Git data endpoints reject an entirely empty repository. Seed it through Contents.
             initial = self.call('PUT', self.repo + '/contents/README.md', {
                 'message': 'Initialize mobile studio target',
                 'content': base64.b64encode(b'# Mobile app\n\nSources are generated in the studio branch.\n').decode()})
@@ -38,7 +38,6 @@ class GitHub(API):
         if metadata.get('archived'):
             raise StudioError('Target repository is archived')
         if not exact:
-            # New apps only: reject populated targets instead of overwriting another stack.
             if metadata.get('size', 0) > 0:
                 default = metadata['default_branch']
                 tree = self.get('/git/trees/' + default + '?recursive=1')
@@ -70,7 +69,6 @@ class GitHub(API):
             raise StudioError('Existing studio branch has no checkpoint; refusing overwrite')
         return state, parent
     def publish(self, branch, parent, root, state):
-        # Platform files are produced by the trusted flutter create template, never by model patches.
         entries = []
         previous = {}
         if parent:
@@ -84,7 +82,7 @@ class GitHub(API):
                 continue
             if rel.startswith('test/__studio') or rel.endswith(('local.properties', '.iml')):
                 continue
-            if not (allowed(rel) or rel == 'pubspec.lock'):
+            if not (allowed(rel) or rel in ('pubspec.lock', 'PROJECT_CONTEXT.md')):
                 continue
             candidates[rel] = p.read_bytes()
         candidates.update(getattr(self, 'native_files', {}))
@@ -133,7 +131,6 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     out.mkdir(parents=True, exist_ok=True)
     if any(root.iterdir()):
         raise StudioError('Workspace must be fresh; resume uses the remote checkpoint')
-    # Read checkpoint before bootstrapping: completed/budget-exhausted requests cost no model/build work.
     with tempfile.TemporaryDirectory() as saved:
         saved_root = Path(saved)
         state, parent = github.restore(branch, saved_root)
@@ -158,6 +155,11 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             elif p.is_file():
                 apply_patch(root, {'files': [{'path': p.relative_to(saved_root).as_posix(), 'content': p.read_text()}]})
     state['cycles'] += 1
+
+    def checkpoint(parent_sha):
+        write_project_context(root, req, state)
+        return github.publish(branch, parent_sha, root, state)
+
     try:
         for role in ('product', 'design'):
             if role not in state:
@@ -169,7 +171,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                         raise StudioError(str(e)) from None
                 state[role] = result
                 state['status'] = role + '_complete'
-                parent = github.publish(branch, parent, root, state)
+                parent = checkpoint(parent)
         for _ in range(req['max_rounds']):
             state['rounds'] += 1
             patch = model.ask('implementation', context(req, state, root))
@@ -188,20 +190,19 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             state['status'] = 'repair_needed'
             if not passed:
                 state['blockers'] = ['Validation failed: ' + canonical(logs[-1:])[-16000:]]
-                parent = github.publish(branch, parent, root, state)
+                parent = checkpoint(parent)
                 continue
             state['validation_contract'] = 2
             review = verdict(model.ask('review', context(req, state, root)))
             state['code_review'] = review
             if not review['passed']:
                 state['blockers'] = review['blockers']
-                parent = github.publish(branch, parent, root, state)
+                parent = checkpoint(parent)
                 continue
             screenshots = sorted((root / 'test/goldens').glob('*.png'))
             if not model.vision:
                 state.update(status='awaiting_visual_review', blockers=['Configure STUDIO_VISION_MODEL on a provider supporting image input.'])
                 break
-            # Inspect one screen/path at a time: bounded multimodal payloads and exact coverage.
             visual = {'passed': True, 'blockers': []}
             state['visual_reviews'] = {}
             for screen in ['initial'] + [j['id'] for j in journeys]:
@@ -216,7 +217,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             state['visual_review'] = visual
             if not visual['passed']:
                 state['blockers'] = visual['blockers']
-                parent = github.publish(branch, parent, root, state)
+                parent = checkpoint(parent)
                 continue
             state.update(status='validated_preview', blockers=[])
             break
@@ -228,16 +229,14 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         state['limits'] = {'max_cycles': req['max_cycles'], 'max_calls_per_cycle': req['max_calls'], 'max_rounds_per_cycle': req['max_rounds']}
         state['release_status'] = 'not_store_ready'
         state['coverage'] = {'variants_per_path': 4, 'journeys': [j['id'] for j in state.get('product', {}).get('journeys', [])], 'scope': 'Initial screen and final screen of each declared journey; not all possible states or real-device testing.'}
-        # Copy only actual output; publication failures retain downloadable local evidence.
         for p in (root / 'test/goldens').glob('*.png'):
             shutil.copyfile(p, out / p.name)
         apk = root / 'build/app/outputs/flutter-apk/app-debug.apk'
-        # Failed later rounds may leave an earlier APK: export it only if the last gate passed.
         if state['status'] in ('validated_preview', 'awaiting_visual_review') and apk.is_file():
             shutil.copyfile(apk, out / 'app-debug.apk')
             state['apk_sha256'] = hashlib.sha256(apk.read_bytes()).hexdigest()
         (out / 'report.json').write_text(canonical(state))
-        sha = github.publish(branch, parent, root, state)
+        sha = checkpoint(parent)
         state['checkpoint_commit'] = sha
         (out / 'report.json').write_text(canonical(state))
     return state

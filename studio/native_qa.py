@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import time
@@ -34,12 +35,39 @@ def _serial(adb: str) -> str:
 
 
 def _declared_permissions(root: Path) -> list[str]:
+    """Source-manifest permissions, retained as corroborating evidence/tests."""
     manifest = root / 'android/app/src/main/AndroidManifest.xml'
     if not manifest.is_file():
         return []
-    import re
     text = manifest.read_text(errors='replace')
     return sorted(set(re.findall(r'<uses-permission[^>]+android:name=["\']([^"\']+)["\']', text)))
+
+
+def _parse_permission_output(text: str) -> list[str]:
+    """Parse permission names from apkanalyzer/aapt output without trusting formatting."""
+    return sorted(set(re.findall(r'android\.permission\.[A-Z0-9_]+', text)))
+
+
+def _release_permissions(apk: Path) -> dict:
+    """Inspect permissions from the built APK so dependency/flavor manifests are included."""
+    attempts = []
+    commands = []
+    if shutil.which('apkanalyzer'):
+        commands.append(['apkanalyzer', 'manifest', 'permissions', str(apk)])
+    if shutil.which('aapt'):
+        commands.append(['aapt', 'dump', 'permissions', str(apk)])
+    if shutil.which('aapt2'):
+        commands.append(['aapt2', 'dump', 'permissions', str(apk)])
+    for command in commands:
+        result = run_command(command, timeout=60)
+        permissions = _parse_permission_output(result.stdout)
+        attempts.append({'tool': command[0], 'exit_code': result.returncode,
+                         'permission_count': len(permissions)})
+        if result.returncode == 0:
+            return {'passed': True, 'permissions': permissions, 'attempts': attempts,
+                    'tool': command[0]}
+    return {'passed': False, 'permissions': [], 'attempts': attempts,
+            'blocker': 'release_permission_inspection_unavailable'}
 
 
 def _launch(adb: str, serial: str, pkg: str) -> subprocess.CompletedProcess:
@@ -77,6 +105,44 @@ def _exercise_permission(adb: str, serial: str, pkg: str, permission: str) -> di
     return {'passed': True, 'permission': permission, 'steps': steps}
 
 
+def _exercise_location(adb: str, serial: str) -> dict:
+    run_command([adb, '-s', serial, 'logcat', '-c'], timeout=30)
+    geo = run_command([adb, '-s', serial, 'emu', 'geo', 'fix', '2.3522', '48.8566'], timeout=30)
+    if geo.returncode:
+        return {'passed': False, 'command_exit': geo.returncode,
+                'blocker': 'location_injection_failed'}
+    time.sleep(2)
+    crashes = _crashes(adb, serial)
+    return {'passed': not crashes, 'command_exit': geo.returncode,
+            'post_callback_crash_count': len(crashes),
+            'blocker': 'location_callback_unstable' if crashes else None}
+
+
+def _exercise_biometric(adb: str, serial: str, pkg: str) -> dict:
+    """Exercise emulator fingerprint input but do not invent app-level auth success.
+
+    A generic harness cannot prove that the application consumed/authenticated the touch.
+    Until the product supplies an explicit biometric acceptance journey, this remains a
+    deliberate fail-closed blocker rather than false passing evidence.
+    """
+    run_command([adb, '-s', serial, 'logcat', '-c'], timeout=30)
+    launch = _launch(adb, serial, pkg)
+    time.sleep(1)
+    finger = run_command([adb, '-s', serial, 'emu', 'finger', 'touch', '1'], timeout=30)
+    time.sleep(2)
+    crashes = _crashes(adb, serial)
+    stable = launch.returncode == 0 and finger.returncode == 0 and not crashes
+    return {
+        'passed': False,
+        'transport_stable': stable,
+        'launch_exit': launch.returncode,
+        'finger_command_exit': finger.returncode,
+        'post_touch_crash_count': len(crashes),
+        'blocker': ('biometric_transport_unstable' if not stable
+                    else 'biometric_outcome_requires_app_contract'),
+    }
+
+
 def validate_native(root: Path, out: Path, adb: str = 'adb') -> dict:
     apk = root / 'build/app/outputs/flutter-apk/app-release.apk'
     if not apk.is_file() or apk.stat().st_size < 1000:
@@ -100,34 +166,46 @@ def validate_native(root: Path, out: Path, adb: str = 'adb') -> dict:
         if install.returncode:
             return {'passed': False, 'blockers': ['release_install_failed']}
 
-        declared = _declared_permissions(root)
-        tested = [permission for permission in declared if permission in RUNTIME_PERMISSIONS]
-        results = [_exercise_permission(adb, serial, pkg, permission) for permission in tested]
-        blockers = [item['blocker'] + ':' + item['permission'] for item in results if not item['passed']]
+        source_permissions = _declared_permissions(root)
+        release_inspection = _release_permissions(apk)
+        blockers = []
+        if not release_inspection['passed']:
+            blockers.append(release_inspection['blocker'])
+            release_permissions = []
+        else:
+            release_permissions = release_inspection['permissions']
 
-        dependencies = (root / 'pubspec.yaml').read_text(errors='replace') if (root / 'pubspec.yaml').is_file() else ''
+        tested = [permission for permission in release_permissions if permission in RUNTIME_PERMISSIONS]
+        results = [_exercise_permission(adb, serial, pkg, permission) for permission in tested]
+        blockers.extend(item['blocker'] + ':' + item['permission']
+                        for item in results if not item['passed'])
+
+        dependencies = ((root / 'pubspec.yaml').read_text(errors='replace')
+                        if (root / 'pubspec.yaml').is_file() else '')
         biometric = 'local_auth:' in dependencies
         biometric_result = None
         if biometric:
-            launch = _launch(adb, serial, pkg)
-            finger = run_command([adb, '-s', serial, 'emu', 'finger', 'touch', '1'], timeout=30)
-            biometric_result = {'launch_exit': launch.returncode, 'finger_command_exit': finger.returncode}
-            if launch.returncode or finger.returncode:
-                blockers.append('biometric_emulation_failed')
+            biometric_result = _exercise_biometric(adb, serial, pkg)
+            blockers.append(biometric_result['blocker'])
 
-        if any(p in tested for p in ('android.permission.ACCESS_FINE_LOCATION', 'android.permission.ACCESS_COARSE_LOCATION')):
-            geo = run_command([adb, '-s', serial, 'emu', 'geo', 'fix', '2.3522', '48.8566'], timeout=30)
-            if geo.returncode:
-                blockers.append('location_injection_failed')
+        location_result = None
+        if any(p in tested for p in ('android.permission.ACCESS_FINE_LOCATION',
+                                     'android.permission.ACCESS_COARSE_LOCATION')):
+            location_result = _exercise_location(adb, serial)
+            if not location_result['passed']:
+                blockers.append(location_result['blocker'])
 
         payload = {
             'passed': not blockers,
             'environment': 'android_emulator',
             'package': pkg,
-            'declared_permissions': declared,
+            'source_manifest_permissions': source_permissions,
+            'release_permissions': release_permissions,
+            'release_permission_inspection': release_inspection,
             'tested_permissions': tested,
             'permission_state_results': results,
             'biometric_emulated': biometric_result,
+            'location_injection': location_result,
             'blockers': blockers,
         }
         out.mkdir(parents=True, exist_ok=True)

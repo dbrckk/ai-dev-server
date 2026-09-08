@@ -27,6 +27,10 @@ SENSITIVE_PERMISSION_DATA = {
     'android.permission.READ_PHONE_STATE': 'device_or_other_ids',
     'android.permission.BLUETOOTH_CONNECT': 'device_or_other_ids',
 }
+ANDROID_SCHEMA_URLS = (
+    'http://schemas.android.com/apk/res/android',
+    'http://schemas.android.com/tools',
+)
 
 
 def _files(root: Path) -> list[Path]:
@@ -52,6 +56,18 @@ def _text(root: Path) -> str:
     if pubspec.is_file():
         chunks.append(pubspec.read_text(errors='replace'))
     return '\n'.join(chunks)
+
+
+def _network_text(root: Path) -> str:
+    """Return source text with declarative Android XML namespaces removed.
+
+    Android manifest namespace URIs are metadata, not reachable network endpoints.
+    Actual INTERNET permission is checked independently below.
+    """
+    source = _text(root)
+    for schema in ANDROID_SCHEMA_URLS:
+        source = source.replace(schema, '')
+    return source
 
 
 def permissions(root: Path) -> list[str]:
@@ -83,9 +99,10 @@ def dependency_names(root: Path) -> list[str]:
 
 def analyze(root: Path) -> dict:
     source = _text(root)
+    network_source = _network_text(root)
     perms = permissions(root)
     deps = dependency_names(root)
-    network_markers = sorted(marker for marker in NETWORK_MARKERS if marker in source)
+    network_markers = sorted(marker for marker in NETWORK_MARKERS if marker in network_source)
     local_markers = sorted(marker for marker in LOCAL_STORAGE_MARKERS if marker in source)
     sensitive = sorted(set(SENSITIVE_PERMISSION_DATA[p] for p in perms if p in SENSITIVE_PERMISSION_DATA))
     internet_permission = 'android.permission.INTERNET' in perms

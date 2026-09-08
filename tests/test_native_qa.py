@@ -4,7 +4,7 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
-from native_qa import _declared_permissions, RUNTIME_PERMISSIONS
+from native_qa import _declared_permissions, _parse_permission_output, RUNTIME_PERMISSIONS
 from stage_registry import get_stage
 
 
@@ -24,6 +24,13 @@ class NativeQATests(unittest.TestCase):
             permissions = _declared_permissions(root)
             self.assertEqual(permissions, ['android.permission.CAMERA', 'android.permission.RECORD_AUDIO'])
             self.assertTrue(set(permissions).issubset(RUNTIME_PERMISSIONS))
+
+    def test_release_permission_output_is_parsed_from_multiple_tool_formats(self):
+        output = """android.permission.CAMERA\nuses-permission: name='android.permission.ACCESS_FINE_LOCATION'\nuses-permission: name='android.permission.CAMERA'\n"""
+        self.assertEqual(
+            _parse_permission_output(output),
+            ['android.permission.ACCESS_FINE_LOCATION', 'android.permission.CAMERA'],
+        )
 
     def test_native_stage_is_registered(self):
         stage = get_stage('native_qa')

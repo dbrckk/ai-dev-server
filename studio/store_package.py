@@ -48,13 +48,16 @@ def _sentence(text: str, limit: int) -> str:
         return ''
     first = re.split(r'(?<=[.!?])\s+', clean)[0]
     if len(first) <= limit:
-        return first.rstrip('. ') + '.'
+        if first.endswith(('.', '!', '?')):
+            return first
+        if len(first) < limit:
+            return first.rstrip() + '.'
     cut = first[:limit - 1].rsplit(' ', 1)[0].rstrip(' ,;:-')
     return (cut or first[:limit - 1]).rstrip('. ') + '…'
 
 
 def _category(text: str) -> str:
-    lower = text.lower()
+    tokens = set(re.findall(r'[a-z0-9]+', text.lower()))
     rules = [
         ('HEALTH_AND_FITNESS', ('fitness', 'workout', 'health', 'wellness', 'sleep')),
         ('EDUCATION', ('learn', 'study', 'school', 'quiz', 'education')),
@@ -66,10 +69,10 @@ def _category(text: str) -> str:
         ('PHOTOGRAPHY', ('photo', 'camera', 'image', 'gallery')),
         ('SPORTS', ('sport', 'score', 'team', 'match')),
         ('BUSINESS', ('business', 'client', 'crm', 'sales', 'work')),
-        ('PRODUCTIVITY', ('task', 'timer', 'focus', 'note', 'habit', 'productivity', 'plan')),
+        ('PRODUCTIVITY', ('task', 'tasks', 'timer', 'focus', 'focused', 'note', 'habit', 'productivity', 'plan')),
     ]
     for category, words in rules:
-        if any(word in lower for word in words):
+        if any(word in tokens for word in words):
             return category
     return 'TOOLS'
 

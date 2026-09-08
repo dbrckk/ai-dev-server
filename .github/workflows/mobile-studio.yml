@@ -2,7 +2,7 @@ name: Autonomous Mobile Studio
 on:
   push:
     branches: [main]
-    paths: ['control/mobile-requests/*.json']
+    paths: ['control/mobile-requests/*.json', 'control/ci.json']
   workflow_dispatch:
   schedule:
     - cron: '3,23,43 * * * *'
@@ -19,7 +19,7 @@ jobs:
         with:
           persist-credentials: false
       - id: queue
-        run: echo "projects=$(python studio/queue.py)" >> "$GITHUB_OUTPUT"
+        run: echo "projects=$(python studio/queue.py --provider github)" >> "$GITHUB_OUTPUT"
   create:
     needs: queue
     if: needs.queue.outputs.projects != '[]'
@@ -39,6 +39,7 @@ jobs:
           persist-credentials: false
       - name: Run bounded studio
         env:
+          STUDIO_CI_PROVIDER: github
           STUDIO_REQUEST: ${{ matrix.project.file }}
           STUDIO_GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
           STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}

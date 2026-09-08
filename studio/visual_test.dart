@@ -23,10 +23,31 @@ Future<void> checkScreen(WidgetTester tester, String filename) async {
   await expectLater(find.byType(StudioApp), matchesGoldenFile('goldens/$filename.png'));
 }
 
+Directory flutterSdkRoot() {
+  final configured = Platform.environment['FLUTTER_ROOT'];
+  if (configured != null && configured.isNotEmpty) {
+    final root = Directory(configured);
+    if (root.existsSync()) return root;
+  }
+  var current = File(Platform.resolvedExecutable).parent;
+  for (var i = 0; i < 8; i++) {
+    if (File('${current.path}/bin/flutter').existsSync() ||
+        File('${current.path}/bin/flutter.bat').existsSync()) {
+      return current;
+    }
+    final parent = current.parent;
+    if (parent.path == current.path) break;
+    current = parent;
+  }
+  throw StateError('Flutter SDK root missing');
+}
+
 Future<void> loadSdkFonts() async {
-  final sdk = Platform.environment['FLUTTER_ROOT'];
-  if (sdk == null) throw StateError('Flutter SDK root missing');
-  final directory = Directory('$sdk/bin/cache/artifacts/material_fonts');
+  final sdk = flutterSdkRoot();
+  final directory = Directory('${sdk.path}/bin/cache/artifacts/material_fonts');
+  if (!directory.existsSync()) {
+    throw StateError('Flutter material font cache missing');
+  }
   final fonts = directory.listSync().whereType<File>().toList();
   final roboto = fonts.where((file) =>
       file.uri.pathSegments.last.startsWith('Roboto') && file.path.endsWith('.ttf')).toList();
@@ -37,6 +58,7 @@ Future<void> loadSdkFonts() async {
   }
   await textLoader.load();
   final icons = File('${directory.path}/MaterialIcons-Regular.otf');
+  if (!icons.isFileSync()) throw StateError('Material Icons font missing');
   final iconLoader = FontLoader('MaterialIcons');
   iconLoader.addFont(Future.value(ByteData.sublistView(icons.readAsBytesSync())));
   await iconLoader.load();

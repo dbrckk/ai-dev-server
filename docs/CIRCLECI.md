@@ -41,3 +41,11 @@ Références officielles :
 - https://circleci.com/docs/guides/security/contexts/
 - https://circleci.com/docs/guides/orchestrate/schedule-triggers/
 - https://circleci.com/docs/guides/orchestrate/controlling-serial-execution-across-your-organization/
+
+## Incidents et rapports progressifs
+
+Le rapport `queue.json` est remplacé atomiquement avant et après chaque demande. Il distingue `pending`, `running`, `finished`, `failed`, `timed_out`, `worker_error` et `deferred`. `finished` signifie que le lanceur a terminé sans erreur ; le statut précis de validation de l'application est dans son propre `report.json`.
+
+À l'expiration du budget, le lanceur arrête le groupe de processus de la demande et supprime uniquement les conteneurs portant l'identifiant de cette exécution. Un échec de nettoyage reste explicite. Les demandes suivantes sont différées. Cela ne remplace pas la reprise depuis les checkpoints distants : les changements non encore sauvegardés peuvent être perdus. Une interruption brutale de la machine peut empêcher l'envoi des artefacts, même si le rapport local avait été écrit.
+
+61 tests Python passent après ces renforcements, incluant erreurs de lancement, rapport progressif, délai dépassé, arrêt ciblé et enveloppes de réponse IA mal formées. Le nettoyage Docker est testé avec des doubles ; sa vérification distante CircleCI reste à effectuer.

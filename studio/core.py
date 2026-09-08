@@ -230,7 +230,11 @@ class Model:
             params.update(chat_template_kwargs={'enable_thinking': True}, reasoning_budget=2048)
         r = self.api.call('POST', '/chat/completions', params)
         try:
+            if not isinstance(r, dict) or not isinstance(r.get('choices'), list) or not r['choices']:
+                raise ProtocolError('Provider returned invalid completion envelope')
             choice = r['choices'][0]
+            if not isinstance(choice, dict) or not isinstance(choice.get('message'), dict):
+                raise ProtocolError('Provider returned invalid completion choice')
             if choice.get('finish_reason') == 'length':
                 raise ProtocolError('Model response truncated')
             raw = choice['message']['content']
@@ -260,6 +264,11 @@ class Sandbox:
                '-e', 'PUB_CACHE=/app/.studio-cache/pub', '-e', 'GRADLE_USER_HOME=/app/.studio-cache/gradle',
                '-v', str(self.root) + ':/app', '-w', '/app', IMAGE, 'bash', '-c',
                '"$@"; rc=$?; chmod -R a+rwX /app 2>/dev/null; exit $rc', '--'] + args
+        run_id = os.environ.get('STUDIO_RUN_ID', '')
+        if run_id:
+            if not re.fullmatch(r'[0-9a-f]{32}', run_id):
+                raise StudioError('Invalid sandbox run identifier')
+            cmd[2:2] = ['--label', 'mobile-studio-run=' + run_id]
         # No inherited credentials, host home, socket, .git or privileged mounts.
         env = {k: os.environ[k] for k in ('PATH', 'HOME', 'DOCKER_HOST') if k in os.environ}
         env.pop('DOCKER_HOST', None)

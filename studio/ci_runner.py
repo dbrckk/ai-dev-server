@@ -2,33 +2,80 @@
 import json
 import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
 import tempfile
 import time
+import uuid
 from ci_provider import enabled
 from core import StudioError, canonical
 from queue import matrix
 
+def bounded_run(args, timeout):
+    run_id = uuid.uuid4().hex
+    env = dict(os.environ, STUDIO_RUN_ID=run_id)
+    process = subprocess.Popen(args, env=env, start_new_session=True)
+    try:
+        return subprocess.CompletedProcess(args, process.wait(timeout=timeout))
+    except subprocess.TimeoutExpired:
+        # Stop host descendants before removing their mounted work directory.
+        try:
+            os.killpg(process.pid, signal.SIGTERM)
+            process.wait(timeout=10)
+        except (ProcessLookupError, subprocess.TimeoutExpired):
+            pass
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        process.wait()
+        # Only this invocation's containers; never sweep unrelated Docker jobs.
+        try:
+            containers = subprocess.run(['docker', 'ps', '-aq', '--filter',
+                'label=mobile-studio-run=' + run_id], capture_output=True, text=True,
+                timeout=15, check=True).stdout.split()
+            if containers:
+                subprocess.run(['docker', 'rm', '-f', *containers],
+                    capture_output=True, timeout=30, check=True)
+        except (OSError, subprocess.SubprocessError):
+            raise StudioError('Timed-out worker stopped but container cleanup failed') from None
+        raise
+
+def save_report(out, results):
+    temporary = out / 'queue.json.tmp'
+    temporary.write_text(canonical({'provider': 'circleci', 'projects': results}))
+    temporary.replace(out / 'queue.json')
+
 def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
-              runner=subprocess.run, clock=time.monotonic):
+              runner=bounded_run, clock=time.monotonic):
     projects = matrix(directory)  # Validate every request before any side effect.
     out.mkdir(parents=True, exist_ok=True)
-    results = []
+    results = [{'id': p['id'], 'status': 'pending'} for p in projects]
+    save_report(out, results)
     deadline = clock() + 70 * 60
-    for project in projects:
+    for index, project in enumerate(projects):
         remaining = deadline - clock()
         if remaining <= 0:
-            results.append({'id': project['id'], 'status': 'deferred'})
+            results[index]['status'] = 'deferred'
+            save_report(out, results)
             continue
+        results[index]['status'] = 'running'
+        save_report(out, results)
         with tempfile.TemporaryDirectory(prefix='studio-ci-') as work:
             try:
                 result = runner([sys.executable, 'studio/run.py', project['file'],
                     '--work', work, '--out', str(out / project['id'])], timeout=remaining)
-                results.append({'id': project['id'], 'status': 'finished' if result.returncode == 0 else 'failed'})
+                results[index]['status'] = 'finished' if result.returncode == 0 else 'failed'
             except subprocess.TimeoutExpired:
-                results.append({'id': project['id'], 'status': 'timed_out'})
-    (out / 'queue.json').write_text(canonical({'provider': 'circleci', 'projects': results}))
+                results[index]['status'] = 'timed_out'
+                deadline = 0
+            except (OSError, StudioError):
+                results[index]['status'] = 'worker_error'
+                deadline = 0
+            finally:
+                save_report(out, results)
+    save_report(out, results)
     return int(any(p['status'] != 'finished' for p in results))
 
 def main():

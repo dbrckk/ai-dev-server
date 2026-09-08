@@ -67,3 +67,57 @@ class QueueRunnerTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             self.assertEqual(run_queue(root, root / 'out'), 0)
+
+class RecoveryTests(unittest.TestCase):
+    def make_queue(self, root):
+        queue = root / 'requests'
+        queue.mkdir()
+        for i in range(2):
+            (queue / f'p{i}.json').write_text(json.dumps({
+                'id': f'p{i}', 'target_repo': f'owner/app{i}', 'app_name': f'app{i}',
+                'brief': 'Build a simple offline timer application.', 'enabled': True}))
+        return queue
+
+    def test_timeout_preserves_progress_and_defers_remaining_work(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            queue = self.make_queue(root)
+            out = root / 'out'
+            calls = []
+            def runner(args, timeout):
+                calls.append(args)
+                report = json.loads((out / 'queue.json').read_text())
+                self.assertEqual([p['status'] for p in report['projects']], ['running', 'pending'])
+                raise subprocess.TimeoutExpired(args, timeout)
+            self.assertEqual(run_queue(queue, out, runner), 1)
+            self.assertEqual(len(calls), 1)
+            report = json.loads((out / 'queue.json').read_text())
+            self.assertEqual([p['status'] for p in report['projects']], ['timed_out', 'deferred'])
+
+    def test_worker_launch_failure_is_reported(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            queue = self.make_queue(root)
+            out = root / 'out'
+            def runner(*args, **kwargs):
+                raise OSError('private detail')
+            self.assertEqual(run_queue(queue, out, runner), 1)
+            text = (out / 'queue.json').read_text()
+            self.assertNotIn('private detail', text)
+            self.assertEqual([p['status'] for p in json.loads(text)['projects']], ['worker_error', 'deferred'])
+
+    def test_timeout_kills_group_and_only_removes_labeled_containers(self):
+        from ci_runner import bounded_run
+        from unittest.mock import Mock
+        process = Mock(pid=12345)
+        process.wait.side_effect = [subprocess.TimeoutExpired('worker', 1), 0, 0]
+        with patch('ci_runner.subprocess.Popen', return_value=process) as popen, patch('ci_runner.os.killpg') as kill, patch('ci_runner.subprocess.run') as docker:
+            docker.return_value.stdout = 'container1\n'
+            with self.assertRaises(subprocess.TimeoutExpired):
+                bounded_run(['worker'], timeout=1)
+            self.assertTrue(popen.call_args.kwargs['start_new_session'])
+            run_id = popen.call_args.kwargs['env']['STUDIO_RUN_ID']
+            self.assertEqual(len(run_id), 32)
+            self.assertEqual(kill.call_count, 2)
+            self.assertIn('label=mobile-studio-run=' + run_id, docker.call_args_list[0].args[0])
+            self.assertEqual(docker.call_args_list[1].args[0], ['docker', 'rm', '-f', 'container1'])

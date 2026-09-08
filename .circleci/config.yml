@@ -13,12 +13,38 @@ jobs:
     steps:
       - checkout
       - run: python -m compileall -q studio tests
-  validate_tests:
+  test_capability:
     docker:
       - image: cimg/python:3.12.11
     steps:
       - checkout
-      - run: python -m unittest discover -s tests -v
+      - run: python tests/test_capability_qa.py -v
+  test_performance:
+    docker:
+      - image: cimg/python:3.12.11
+    steps:
+      - checkout
+      - run: python tests/test_performance_qa.py -v
+  test_native:
+    docker:
+      - image: cimg/python:3.12.11
+    steps:
+      - checkout
+      - run: python tests/test_native_qa.py -v
+  test_rest:
+    docker:
+      - image: cimg/python:3.12.11
+    steps:
+      - checkout
+      - run:
+          command: |
+            set -e
+            for test in tests/test_*.py; do
+              case "$test" in
+                tests/test_capability_qa.py|tests/test_performance_qa.py|tests/test_native_qa.py) continue ;;
+              esac
+              python "$test" -v
+            done
   validate_config:
     docker:
       - image: cimg/python:3.12.11
@@ -74,12 +100,15 @@ workflows:
         equal: ["smoke", << pipeline.parameters.mode >>]
     jobs:
       - validate_compile
-      - validate_tests
+      - test_capability
+      - test_performance
+      - test_native
+      - test_rest
       - validate_config
       - validate_queue
       - validate_shell
       - mobile:
-          requires: [validate_compile, validate_tests, validate_config, validate_queue, validate_shell]
+          requires: [validate_compile, test_capability, test_performance, test_native, test_rest, validate_config, validate_queue, validate_shell]
           context: mobile-studio
           serial-group: << pipeline.project.slug >>/mobile-studio
           filters:
@@ -90,9 +119,12 @@ workflows:
       equal: ["smoke", << pipeline.parameters.mode >>]
     jobs:
       - validate_compile
-      - validate_tests
+      - test_capability
+      - test_performance
+      - test_native
+      - test_rest
       - validate_config
       - validate_queue
       - validate_shell
       - smoke:
-          requires: [validate_compile, validate_tests, validate_config, validate_queue, validate_shell]
+          requires: [validate_compile, test_capability, test_performance, test_native, test_rest, validate_config, validate_queue, validate_shell]

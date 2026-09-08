@@ -7,20 +7,39 @@ parameters:
     default: "smoke"
 
 jobs:
-  validate:
+  validate_compile:
+    docker:
+      - image: cimg/python:3.12.11
+    steps:
+      - checkout
+      - run: python -m compileall -q studio tests
+  validate_tests:
+    docker:
+      - image: cimg/python:3.12.11
+    steps:
+      - checkout
+      - run: python -m unittest discover -s tests -v
+  validate_config:
     docker:
       - image: cimg/python:3.12.11
     steps:
       - checkout
       - run:
-          name: Validate engine and request queue without secrets
           command: |
-            python -m compileall -q studio tests
-            python -m unittest discover -s tests -v
             python -m json.tool .devcontainer/devcontainer.json >/dev/null
             python -m json.tool control/ci.json >/dev/null
-            python studio/queue.py
-            for script in scripts/*.sh; do bash -n "$script"; done
+  validate_queue:
+    docker:
+      - image: cimg/python:3.12.11
+    steps:
+      - checkout
+      - run: python studio/queue.py
+  validate_shell:
+    docker:
+      - image: cimg/python:3.12.11
+    steps:
+      - checkout
+      - run: for script in scripts/*.sh; do bash -n "$script"; done
   mobile:
     machine:
       image: android:current
@@ -54,9 +73,13 @@ workflows:
       not:
         equal: ["smoke", << pipeline.parameters.mode >>]
     jobs:
-      - validate
+      - validate_compile
+      - validate_tests
+      - validate_config
+      - validate_queue
+      - validate_shell
       - mobile:
-          requires: [validate]
+          requires: [validate_compile, validate_tests, validate_config, validate_queue, validate_shell]
           context: mobile-studio
           serial-group: << pipeline.project.slug >>/mobile-studio
           filters:
@@ -66,6 +89,10 @@ workflows:
     when:
       equal: ["smoke", << pipeline.parameters.mode >>]
     jobs:
-      - validate
+      - validate_compile
+      - validate_tests
+      - validate_config
+      - validate_queue
+      - validate_shell
       - smoke:
-          requires: [validate]
+          requires: [validate_compile, validate_tests, validate_config, validate_queue, validate_shell]

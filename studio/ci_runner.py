@@ -11,7 +11,7 @@ import uuid
 
 from ci_provider import enabled
 from core import StudioError, canonical
-from orchestrator import run_project
+from orchestrator import run_project, run_registered_stages as _shared_run_registered_stages
 from queue import matrix
 
 
@@ -48,6 +48,15 @@ def save_report(out, results):
     temporary = out / 'queue.json.tmp'
     temporary.write_text(canonical({'provider': 'circleci', 'projects': results}))
     temporary.replace(out / 'queue.json')
+
+
+def _run_registered_stages(project, project_out, work, report, deadline, runner, clock):
+    """Compatibility wrapper for callers/tests while stage logic lives in orchestrator.py."""
+    result = _shared_run_registered_stages(
+        project['file'], project_out, work, report, deadline, runner, clock,
+        os.environ.get('CIRCLE_SHA1'))
+    status = None if result['status'] == 'complete' else result['status']
+    return result['report'], status
 
 
 def run_queue(directory='control/mobile-requests', out=Path('studio-output'),

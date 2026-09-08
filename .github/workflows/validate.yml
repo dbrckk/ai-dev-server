@@ -1,6 +1,9 @@
 name: Validate AI Dev Server
 
 on:
+  pull_request:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -46,8 +49,11 @@ jobs:
               print('\n'.join(bad))
               sys.exit(1)
           PY
-
+      - name: Compile trusted Python
+        run: python -m compileall -q studio tests
       - name: Test mobile studio orchestration and security boundaries
         run: python -m unittest discover -s tests -v
+      - name: Validate CI provider configuration
+        run: python -m json.tool control/ci.json >/dev/null
       - name: Validate mobile brief queue
         run: python studio/queue.py

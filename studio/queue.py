@@ -23,4 +23,10 @@ def matrix(directory):
     return requests
 
 if __name__ == '__main__':
-    print(json.dumps(matrix('control/mobile-requests')))
+    import argparse
+    from ci_provider import enabled
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--provider', choices=['github', 'circleci'])
+    args = parser.parse_args()
+    projects = matrix('control/mobile-requests')
+    print(json.dumps(projects if not args.provider or enabled(args.provider) else []))

@@ -24,7 +24,10 @@ jobs:
           STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
           STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
           STUDIO_VISION_MODEL: ${{ vars.STUDIO_VISION_MODEL }}
-        run: python studio/provider_probe.py
+        run: |
+          if python studio/ci_provider.py github; then
+            python studio/provider_probe.py
+          fi
       - name: Retain real evidence and generated sources
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

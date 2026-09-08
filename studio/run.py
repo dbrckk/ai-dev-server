@@ -249,6 +249,12 @@ def main():
     parser.add_argument('--out', default='studio-output')
     args = parser.parse_args()
     try:
+        provider = os.environ.get('STUDIO_CI_PROVIDER')
+        if provider:
+            from ci_provider import enabled
+            if not enabled(provider):
+                print('Generation inactive for this CI provider')
+                return 0
         state = execute(json.loads(Path(args.request).read_text()), Path(args.work), Path(args.out))
         print(canonical({'status': state['status'], 'checkpoint_commit': state.get('checkpoint_commit')}))
         return 0 if state['status'] in ('disabled', 'validated_preview', 'awaiting_visual_review') else 1

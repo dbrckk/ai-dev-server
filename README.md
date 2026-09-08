@@ -6,7 +6,7 @@ Studio de création mobile autonome et environnement de développement pour GitH
 
 Le moteur `studio/` reçoit un brief dans `control/mobile-requests/`, enchaîne produit → design → développement → tests/compilation → revues → corrections et sauvegarde les sources dans une branche du dépôt cible. Il livre un APK Android debug et des captures quand les contrôles passent.
 
-**[Configuration, utilisation et limites du studio mobile](docs/MOBILE_STUDIO.md)**. L'exemple est désactivé. Le moteur cible actuellement les nouvelles applications Flutter ; les cycles Jumpy historiques restent séparés.
+**[Configuration, utilisation et limites du studio mobile](docs/MOBILE_STUDIO.md)**. **[Repli CircleCI et activation](docs/CIRCLECI.md)**. L'exemple est désactivé. Le moteur cible actuellement les nouvelles applications Flutter ; les cycles Jumpy historiques restent séparés.
 
 
 ## Objectif

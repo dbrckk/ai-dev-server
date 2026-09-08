@@ -1,0 +1,70 @@
+version: 2.1
+
+parameters:
+  mode:
+    type: enum
+    enum: ["queue", "preview", "smoke"]
+    default: "queue"
+
+jobs:
+  validate:
+    docker:
+      - image: cimg/python:3.12.11
+    steps:
+      - checkout
+      - run:
+          name: Validate engine and request queue without secrets
+          command: |
+            python -m unittest discover -s tests -v
+            python -m json.tool .devcontainer/devcontainer.json >/dev/null
+            python -m json.tool control/ci.json >/dev/null
+            python studio/queue.py
+            for script in scripts/*.sh; do bash -n "$script"; done
+  mobile:
+    machine:
+      image: ubuntu-2404:current
+    resource_class: large
+    steps:
+      - checkout
+      - run:
+          name: Generate with the shared studio engine
+          no_output_timeout: 30m
+          command: python3 studio/ci_runner.py "<< pipeline.parameters.mode >>"
+      - store_artifacts:
+          path: studio-output
+          destination: mobile-studio
+  smoke:
+    machine:
+      image: ubuntu-2404:current
+    resource_class: large
+    steps:
+      - checkout
+      - run:
+          name: Build Android and render actual Flutter screens without secrets
+          no_output_timeout: 30m
+          command: python3 studio/smoke.py
+      - store_artifacts:
+          path: studio-output
+          destination: flutter-smoke
+
+workflows:
+  mobile-generation:
+    when:
+      not:
+        equal: ["smoke", << pipeline.parameters.mode >>]
+    jobs:
+      - validate
+      - mobile:
+          requires: [validate]
+          context: mobile-studio
+          serial-group: << pipeline.project.slug >>/mobile-studio
+          filters:
+            branches:
+              only: main
+  build-verification:
+    when:
+      equal: ["smoke", << pipeline.parameters.mode >>]
+    jobs:
+      - validate
+      - smoke:
+          requires: [validate]

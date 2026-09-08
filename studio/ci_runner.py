@@ -116,6 +116,18 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
                         continue
                     report = json.loads((project_out / 'report.json').read_text())
 
+                if report.get('completion', {}).get('next_stage') == 'security_scan':
+                    remaining = deadline - clock()
+                    if remaining <= 0:
+                        results[index]['status'] = 'deferred_security'
+                        continue
+                    security = runner([sys.executable, 'studio/security_stage.py', project['file'],
+                        '--work', work, '--out', str(project_out)], timeout=remaining)
+                    if security.returncode != 0:
+                        results[index]['status'] = 'security_failed'
+                        continue
+                    report = json.loads((project_out / 'report.json').read_text())
+
                 completion = report.get('completion', {})
                 results[index]['status'] = 'complete' if completion.get('finished') else 'progressed'
                 results[index]['next_stage'] = completion.get('next_stage')

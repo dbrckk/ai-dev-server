@@ -22,12 +22,12 @@ jobs:
             for script in scripts/*.sh; do bash -n "$script"; done
   mobile:
     machine:
-      image: ubuntu-2404:current
-    resource_class: large
+      image: android:current
+    resource_class: large.gen2
     steps:
       - checkout
       - run:
-          name: Generate with the shared studio engine
+          name: Generate, build release and validate on Android emulator
           no_output_timeout: 30m
           command: python3 studio/ci_runner.py "<< pipeline.parameters.mode >>"
       - store_artifacts:

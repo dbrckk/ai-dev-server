@@ -36,6 +36,7 @@ Trusted components are primarily under `studio/`:
 - `privacy_audit.py` — privacy/Data Safety evidence.
 - `security_audit.py` — security/dependency/SBOM evidence.
 - `adaptation.py` — fail-closed capability-gap detection and evolution requests.
+- `project_context.py` — trusted root `PROJECT_CONTEXT.md` generation from factory state for managed applications.
 
 GitHub Actions is currently the primary CI and includes a real Flutter smoke build. CircleCI remains fallback. Never claim CI success without observing it.
 
@@ -43,14 +44,16 @@ GitHub Actions is currently the primary CI and includes a real Flutter smoke bui
 
 - PR #17, `Restore GitHub Actions and add notification QA`, passed both GitHub Actions workflows and merged as `177153db2eb31b4a1a09c7b22cd16ad527065bfc`.
 - PR #18, `Fail closed into autonomous adaptation requests`, passed both workflows and squash-merged as `0fc68b14a71ce335e753c238cda17e9e4d5764eb`.
+- PR #19, `Add durable cross-conversation project context standard`, passed both workflows and squash-merged as `a48b22830a3499c40bd8b4fdf139821a8db7ac46`.
 - Unsupported completion work now becomes `adaptation_required` with `evolution-request.json`; it is no longer accepted as ambiguous progress.
-- Evolution requests describe gaps, bounded research/resource targets, isolated-candidate policy, rollback and promotion gates.
+- The root `PROJECT_CONTEXT.md` convention is mandatory for every project the factory creates or substantially manages.
+- Current branch work wires trusted automatic generation/publication of that context file into every `studio/run.py` checkpoint while keeping it outside the model-editable file scope.
 - Important incomplete areas include the executor that consumes evolution requests, robust billing/platform-view/general native QA, richer networked-app privacy classification, professional graphics automation, stronger dependency/license provenance and authorized Play Console publication.
 - **Jumpy** is the first important target app for exercising the complete factory. Do not describe the factory as 100% autonomous yet.
 
 ## Immediate objective
 
-Implement the **evolution-request executor**:
+Finish and validate automatic per-project context generation, then implement the **evolution-request executor**:
 
 1. consume `evolution-request.json`;
 2. research authoritative and maintained resources for the missing capability;
@@ -80,18 +83,7 @@ External code discovered during research must not become trusted/executable mere
 
 Every repository this factory creates or substantially manages must contain a root **`PROJECT_CONTEXT.md`**. It is a durable handoff for a future ChatGPT conversation/agent with no access to prior chat history.
 
-It must contain at minimum:
-
-1. project/app purpose and target users;
-2. current product scope and implemented features;
-3. architecture, technology and important constraints;
-4. current validation/release status based on evidence;
-5. blockers, risks and technical debt;
-6. immediate next objective;
-7. near-term roadmap;
-8. long-term/final objective;
-9. key decisions/invariants to preserve;
-10. last meaningful update date and useful commit/PR references.
+It must contain at minimum project/app purpose, current scope, architecture/constraints, evidence-based validation/release status, blockers/risks, immediate next objective, roadmap, long-term objective, decisions/invariants to preserve, and last meaningful update metadata.
 
 Create it early, update it after material milestones, and include it in checkpoints. It is not marketing copy and does not replace README/user documentation.
 
@@ -103,4 +95,4 @@ Create it early, update it after material milestones, and include it in checkpoi
 4. Perform the next meaningful implementation rather than only proposing it.
 5. Use branches/PRs and verify CI before merging substantial changes.
 6. Update this file whenever state, architecture or the next objective materially changes.
-7. Report **Objectif court terme** and **Objectif final** to the user.
+7. In user-facing progress updates, state what will be worked on next and the estimated percentage toward the final objective; do not systematically repeat separate short-term/final-objective headings.

@@ -1,45 +1,51 @@
 version: 2.1
 
-parameters:
-  mode:
-    type: enum
-    enum: ["queue", "preview", "smoke"]
-    default: "smoke"
-
 jobs:
-  test_ci:
+  journeys:
     docker: [{image: cimg/python:3.12.11}]
-    steps:
-      - checkout
-      - run: python tests/test_ci.py -v
-  test_stage_registry:
+    steps: [checkout, {run: "python tests/test_journeys.py -v"}]
+  privacy:
     docker: [{image: cimg/python:3.12.11}]
-    steps:
-      - checkout
-      - run: python tests/test_stage_registry.py -v
-  test_completion:
+    steps: [checkout, {run: "python tests/test_privacy.py -v"}]
+  release:
     docker: [{image: cimg/python:3.12.11}]
-    steps:
-      - checkout
-      - run: python tests/test_completion.py -v
-  test_other:
+    steps: [checkout, {run: "python tests/test_release.py -v"}]
+  runtime_journeys:
     docker: [{image: cimg/python:3.12.11}]
-    steps:
-      - checkout
-      - run:
-          command: |
-            set -e
-            for test in tests/test_*.py; do
-              case "$test" in
-                tests/test_ci.py|tests/test_stage_registry.py|tests/test_completion.py) continue ;;
-              esac
-              python "$test" -v
-            done
+    steps: [checkout, {run: "python tests/test_runtime_journeys.py -v"}]
+  security:
+    docker: [{image: cimg/python:3.12.11}]
+    steps: [checkout, {run: "python tests/test_security.py -v"}]
+  store:
+    docker: [{image: cimg/python:3.12.11}]
+    steps: [checkout, {run: "python tests/test_store.py -v"}]
+  studio:
+    docker: [{image: cimg/python:3.12.11}]
+    steps: [checkout, {run: "python tests/test_studio.py -v"}]
+  transport:
+    docker: [{image: cimg/python:3.12.11}]
+    steps: [checkout, {run: "python tests/test_transport.py -v"}]
+  capability:
+    docker: [{image: cimg/python:3.12.11}]
+    steps: [checkout, {run: "python tests/test_capability_qa.py -v"}]
+  performance:
+    docker: [{image: cimg/python:3.12.11}]
+    steps: [checkout, {run: "python tests/test_performance_qa.py -v"}]
+  native:
+    docker: [{image: cimg/python:3.12.11}]
+    steps: [checkout, {run: "python tests/test_native_qa.py -v"}]
 
 workflows:
   diagnose:
     jobs:
-      - test_ci
-      - test_stage_registry
-      - test_completion
-      - test_other
+      - journeys
+      - privacy
+      - release
+      - runtime_journeys
+      - security
+      - store
+      - studio
+      - transport
+      - capability
+      - performance
+      - native

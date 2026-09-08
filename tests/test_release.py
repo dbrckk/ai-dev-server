@@ -21,11 +21,15 @@ class FakeSandbox:
             p = self.root / "build/app/outputs/bundle/release/app-release.aab"
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_bytes(b"a" * 2000)
+        if args[:3] == ["flutter", "build", "apk"]:
+            p = self.root / "build/app/outputs/flutter-apk/app-release.apk"
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_bytes(b"b" * 2500)
         return 0, "ok"
 
 
 class ReleaseBuildTests(unittest.TestCase):
-    def test_release_build_collects_hash_and_size(self):
+    def test_release_build_collects_store_and_installable_evidence(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             result = build_release(root, FakeSandbox(root))
@@ -33,6 +37,9 @@ class ReleaseBuildTests(unittest.TestCase):
             self.assertEqual(result["artifact"], "app-release.aab")
             self.assertEqual(result["bytes"], 2000)
             self.assertEqual(len(result["sha256"]), 64)
+            self.assertEqual(result["installable_artifact"], "app-release.apk")
+            self.assertEqual(result["installable_bytes"], 2500)
+            self.assertEqual(len(result["installable_sha256"]), 64)
 
     def test_release_build_stops_on_first_failure(self):
         with tempfile.TemporaryDirectory() as td:

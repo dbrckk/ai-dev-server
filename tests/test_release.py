@@ -1,4 +1,6 @@
 import sys
+import tempfile
+import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "studio"))
@@ -22,17 +24,25 @@ class FakeSandbox:
         return 0, "ok"
 
 
-def test_release_build_collects_hash_and_size(tmp_path):
-    result = build_release(tmp_path, FakeSandbox(tmp_path))
-    assert result["passed"] is True
-    assert result["artifact"] == "app-release.aab"
-    assert result["bytes"] == 2000
-    assert len(result["sha256"]) == 64
+class ReleaseBuildTests(unittest.TestCase):
+    def test_release_build_collects_hash_and_size(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            result = build_release(root, FakeSandbox(root))
+            self.assertTrue(result["passed"])
+            self.assertEqual(result["artifact"], "app-release.aab")
+            self.assertEqual(result["bytes"], 2000)
+            self.assertEqual(len(result["sha256"]), 64)
+
+    def test_release_build_stops_on_first_failure(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            sandbox = FakeSandbox(root, fail_at=2)
+            result = build_release(root, sandbox)
+            self.assertFalse(result["passed"])
+            self.assertEqual(len(sandbox.calls), 2)
+            self.assertEqual(len(result["logs"]), 2)
 
 
-def test_release_build_stops_on_first_failure(tmp_path):
-    sandbox = FakeSandbox(tmp_path, fail_at=2)
-    result = build_release(tmp_path, sandbox)
-    assert result["passed"] is False
-    assert len(sandbox.calls) == 2
-    assert len(result["logs"]) == 2
+if __name__ == "__main__":
+    unittest.main()

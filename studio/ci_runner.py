@@ -11,6 +11,7 @@ import uuid
 from ci_provider import enabled
 from core import StudioError, canonical
 from queue import matrix
+from stage_registry import get_stage
 
 def bounded_run(args, timeout):
     run_id = uuid.uuid4().hex
@@ -44,6 +45,35 @@ def save_report(out, results):
     temporary = out / 'queue.json.tmp'
     temporary.write_text(canonical({'provider': 'circleci', 'projects': results}))
     temporary.replace(out / 'queue.json')
+
+def _load_report(project_out):
+    return json.loads((project_out / 'report.json').read_text())
+
+def _run_registered_stages(project, project_out, work, report, deadline, runner, clock):
+    seen = set()
+    while True:
+        completion = report.get('completion', {})
+        if completion.get('finished'):
+            return report, None
+        name = completion.get('next_stage')
+        stage = get_stage(name)
+        if stage is None:
+            return report, None
+        if name in seen:
+            raise StudioError('Stage did not advance completion state: ' + name)
+        seen.add(name)
+        remaining = deadline - clock()
+        if remaining <= 0:
+            return report, stage.deferred_status
+        result = runner([sys.executable, stage.script, project['file'],
+            '--work', work, '--out', str(project_out)], timeout=remaining)
+        if result.returncode != 0:
+            return _load_report(project_out), stage.failed_status
+        updated = _load_report(project_out)
+        next_name = updated.get('completion', {}).get('next_stage')
+        if next_name == name and not updated.get('completion', {}).get('finished'):
+            raise StudioError('Successful stage did not advance completion state: ' + name)
+        report = updated
 
 def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
               runner=bounded_run, clock=time.monotonic):
@@ -79,54 +109,11 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
                     results[index]['status'] = 'release_failed'
                     continue
 
-                report = json.loads((project_out / 'report.json').read_text())
-                if report.get('completion', {}).get('next_stage') == 'real_device':
-                    remaining = deadline - clock()
-                    if remaining <= 0:
-                        results[index]['status'] = 'deferred_device'
-                        continue
-                    device = runner([sys.executable, 'studio/device_stage.py', project['file'],
-                        '--work', work, '--out', str(project_out)], timeout=remaining)
-                    if device.returncode != 0:
-                        results[index]['status'] = 'device_failed'
-                        continue
-                    report = json.loads((project_out / 'report.json').read_text())
-
-                if report.get('completion', {}).get('next_stage') == 'store_metadata':
-                    remaining = deadline - clock()
-                    if remaining <= 0:
-                        results[index]['status'] = 'deferred_store'
-                        continue
-                    store = runner([sys.executable, 'studio/store_stage.py', project['file'],
-                        '--work', work, '--out', str(project_out)], timeout=remaining)
-                    if store.returncode != 0:
-                        results[index]['status'] = 'store_failed'
-                        continue
-                    report = json.loads((project_out / 'report.json').read_text())
-
-                if report.get('completion', {}).get('next_stage') == 'privacy_policy':
-                    remaining = deadline - clock()
-                    if remaining <= 0:
-                        results[index]['status'] = 'deferred_privacy'
-                        continue
-                    privacy = runner([sys.executable, 'studio/privacy_stage.py', project['file'],
-                        '--work', work, '--out', str(project_out)], timeout=remaining)
-                    if privacy.returncode != 0:
-                        results[index]['status'] = 'privacy_failed'
-                        continue
-                    report = json.loads((project_out / 'report.json').read_text())
-
-                if report.get('completion', {}).get('next_stage') == 'security_scan':
-                    remaining = deadline - clock()
-                    if remaining <= 0:
-                        results[index]['status'] = 'deferred_security'
-                        continue
-                    security = runner([sys.executable, 'studio/security_stage.py', project['file'],
-                        '--work', work, '--out', str(project_out)], timeout=remaining)
-                    if security.returncode != 0:
-                        results[index]['status'] = 'security_failed'
-                        continue
-                    report = json.loads((project_out / 'report.json').read_text())
+                report, terminal_status = _run_registered_stages(
+                    project, project_out, work, _load_report(project_out), deadline, runner, clock)
+                if terminal_status:
+                    results[index]['status'] = terminal_status
+                    continue
 
                 completion = report.get('completion', {})
                 results[index]['status'] = 'complete' if completion.get('finished') else 'progressed'

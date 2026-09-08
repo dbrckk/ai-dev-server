@@ -82,11 +82,14 @@ def validate_release_on_device(root: Path, out: Path, journeys: list[dict] | Non
         return {'passed': False, 'blockers': ['release_apk_missing'], 'logs': []}
 
     emulator = None
+    owned_emulator = False
+    serial = None
     try:
         if shutil.which(adb) is None:
             return {'passed': False, 'blockers': ['adb_unavailable'], 'logs': []}
         if run_command([adb, 'get-state'], timeout=10).returncode != 0:
             emulator = start_emulator()
+            owned_emulator = True
         boot = wait_for_boot(adb)
         if not boot['passed']:
             return {'passed': False, 'blockers': ['emulator_boot_timeout'], 'logs': [boot]}
@@ -152,12 +155,12 @@ def validate_release_on_device(root: Path, out: Path, journeys: list[dict] | Non
             'logs': logs,
         }
     finally:
-        if shutil.which(adb):
+        if owned_emulator and serial and shutil.which(adb):
             try:
-                run_command([adb, 'emu', 'kill'], timeout=20)
+                run_command([adb, '-s', serial, 'emu', 'kill'], timeout=20)
             except (OSError, subprocess.SubprocessError):
                 pass
-        if emulator is not None:
+        if owned_emulator and emulator is not None:
             try:
                 emulator.wait(timeout=20)
             except subprocess.TimeoutExpired:

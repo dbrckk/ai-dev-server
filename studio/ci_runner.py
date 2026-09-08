@@ -19,7 +19,6 @@ def bounded_run(args, timeout):
     try:
         return subprocess.CompletedProcess(args, process.wait(timeout=timeout))
     except subprocess.TimeoutExpired:
-        # Stop host descendants before removing their mounted work directory.
         try:
             os.killpg(process.pid, signal.SIGTERM)
             process.wait(timeout=10)
@@ -30,7 +29,6 @@ def bounded_run(args, timeout):
         except ProcessLookupError:
             pass
         process.wait()
-        # Only this invocation's containers; never sweep unrelated Docker jobs.
         try:
             containers = subprocess.run(['docker', 'ps', '-aq', '--filter',
                 'label=mobile-studio-run=' + run_id], capture_output=True, text=True,
@@ -49,7 +47,7 @@ def save_report(out, results):
 
 def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
               runner=bounded_run, clock=time.monotonic):
-    projects = matrix(directory)  # Validate every request before any side effect.
+    projects = matrix(directory)
     out.mkdir(parents=True, exist_ok=True)
     results = [{'id': p['id'], 'status': 'pending'} for p in projects]
     save_report(out, results)
@@ -63,23 +61,39 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
         results[index]['status'] = 'running'
         save_report(out, results)
         with tempfile.TemporaryDirectory(prefix='studio-ci-') as work:
+            project_out = out / project['id']
             try:
-                result = runner([sys.executable, 'studio/run.py', project['file'],
-                    '--work', work, '--out', str(out / project['id'])], timeout=remaining)
-                results[index]['status'] = 'finished' if result.returncode == 0 else 'failed'
+                preview = runner([sys.executable, 'studio/run.py', project['file'],
+                    '--work', work, '--out', str(project_out)], timeout=remaining)
+                if preview.returncode != 0:
+                    results[index]['status'] = 'failed'
+                    continue
+                remaining = deadline - clock()
+                if remaining <= 0:
+                    results[index]['status'] = 'deferred_release'
+                    continue
+                release = runner([sys.executable, 'studio/post_preview.py', project['file'],
+                    '--work', work, '--out', str(project_out)], timeout=remaining)
+                if release.returncode != 0:
+                    results[index]['status'] = 'release_failed'
+                    continue
+                report = json.loads((project_out / 'report.json').read_text())
+                completion = report.get('completion', {})
+                results[index]['status'] = 'complete' if completion.get('finished') else 'progressed'
+                results[index]['next_stage'] = completion.get('next_stage')
             except subprocess.TimeoutExpired:
                 results[index]['status'] = 'timed_out'
                 deadline = 0
-            except (OSError, StudioError):
+            except (OSError, StudioError, ValueError, json.JSONDecodeError):
                 results[index]['status'] = 'worker_error'
                 deadline = 0
             finally:
                 save_report(out, results)
     save_report(out, results)
-    return int(any(p['status'] != 'finished' for p in results))
+    acceptable = {'complete', 'progressed'}
+    return int(any(p['status'] not in acceptable for p in results))
 
 def main():
-    # The CircleCI context is also restricted to main in the service configuration.
     if os.environ.get('CIRCLE_BRANCH') != 'main':
         raise StudioError('Privileged CircleCI jobs require main')
     if not enabled('circleci'):
@@ -88,7 +102,6 @@ def main():
     os.environ['STUDIO_CI_PROVIDER'] = 'circleci'
     os.environ['GITHUB_REPOSITORY'] = '/'.join(
         os.environ.get(k, '') for k in ('CIRCLE_PROJECT_USERNAME', 'CIRCLE_PROJECT_REPONAME'))
-    # Project/context variables are independent of GitHub Actions secrets.
     for dest, fallback in [('STUDIO_API_KEY', 'NVIDIA_NIM_API_KEY'), ('STUDIO_GITHUB_TOKEN', 'CODESPACES_PAT')]:
         if not os.environ.get(dest) and os.environ.get(fallback):
             os.environ[dest] = os.environ[fallback]

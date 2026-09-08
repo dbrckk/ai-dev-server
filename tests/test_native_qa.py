@@ -18,7 +18,8 @@ class NativeQATests(unittest.TestCase):
                 '<manifest xmlns:android="http://schemas.android.com/apk/res/android">'
                 '<uses-permission android:name="android.permission.CAMERA"/>'
                 '<uses-permission android:name="android.permission.RECORD_AUDIO"/>'
-                '<application />'</n                '</manifest>'
+                '<application />'
+                '</manifest>'
             )
             permissions = _declared_permissions(root)
             self.assertEqual(permissions, ['android.permission.CAMERA', 'android.permission.RECORD_AUDIO'])

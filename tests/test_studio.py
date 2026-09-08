@@ -212,6 +212,16 @@ class StudioTests(unittest.TestCase):
     def test_disabled_request_no_access(self):
         with tempfile.TemporaryDirectory() as d:
             self.assertEqual(execute(dict(REQUEST, enabled=False), Path(d), Path(d)), {'status': 'disabled'})
+    def test_qa_supplies_missing_implementation_tests(self):
+        class QA(FakeModel):
+            def ask(self, role, context, screenshots=()):
+                if role == 'implementation':
+                    return {'files': [PATCH['files'][0]]}
+                if role == 'tests':
+                    return {'files': [PATCH['files'][1]]}
+                return super().ask(role, context, screenshots)
+        state, _, _ = self.run_fixture(model=QA)
+        self.assertEqual(state['status'], 'validated_preview')
     def test_missing_tests_fails(self):
         class NoTests(FakeModel):
             def ask(self, role, context, screenshots=()):

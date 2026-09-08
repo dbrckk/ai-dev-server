@@ -175,7 +175,10 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             patch = model.ask('implementation', context(req, state, root))
             apply_patch(root, patch)
             if not any(not p.name.startswith('__studio') for p in (root / 'test').rglob('*_test.dart')):
-                raise StudioError('Implementation must supply meaningful tests')
+                qa_patch = model.ask('tests', context(req, state, root))
+                apply_patch(root, qa_patch)
+            if not any(not p.name.startswith('__studio') for p in (root / 'test').rglob('*_test.dart')):
+                raise StudioError('QA must supply test/*_test.dart files')
             try:
                 journeys = validate_journeys(state['product'].get('journeys'))
             except ValueError as e:

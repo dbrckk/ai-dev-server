@@ -102,3 +102,6 @@ Les réponses JSON invalides ou tronquées disposent également d’une reprise 
 
 
 Le banc de rendu charge explicitement les polices Roboto et Material Icons du SDK épinglé. Il refuse de produire des captures avec des glyphes de test en blocs. Cela évite de faire évaluer par le modèle vision une fausse représentation de la typographie. Les polices personnalisées externes ne sont pas encore prises en charge par ce banc.
+
+
+Si l’étape de développement omet les fichiers de tests, un rôle QA dédié les produit à partir du code et des parcours. Ce rôle ne peut retourner que des fichiers `test/*_test.dart`. Son appel reste inclus dans le même budget global ; il ne peut modifier ni le code applicatif ni le banc de parcours imposés.

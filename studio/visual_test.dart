@@ -2,7 +2,10 @@
 library;
 
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:APP_NAME/app.dart';
 
@@ -21,7 +24,28 @@ Future<void> checkScreen(WidgetTester tester, String filename) async {
   await expectLater(find.byType(StudioApp), matchesGoldenFile('goldens/$filename.png'));
 }
 
+Future<void> loadSdkFonts() async {
+  final sdk = Platform.environment['FLUTTER_ROOT'];
+  if (sdk == null) throw StateError('Flutter SDK root missing');
+  final directory = Directory('$sdk/bin/cache/artifacts/material_fonts');
+  final fonts = directory.listSync().whereType<File>().toList();
+  final roboto = fonts.where((file) =>
+      file.uri.pathSegments.last.startsWith('Roboto') && file.path.endsWith('.ttf')).toList();
+  if (roboto.isEmpty) throw StateError('Real Roboto fonts missing; refusing block-glyph screenshots');
+  final textLoader = FontLoader('Roboto');
+  for (final font in roboto) {
+    textLoader.addFont(Future.value(ByteData.sublistView(font.readAsBytesSync())));
+  }
+  await textLoader.load();
+  final icons = File('${directory.path}/MaterialIcons-Regular.otf');
+  final iconLoader = FontLoader('MaterialIcons');
+  iconLoader.addFont(Future.value(ByteData.sublistView(icons.readAsBytesSync())));
+  await iconLoader.load();
+}
+
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(loadSdkFonts);
   final journeys = jsonDecode(utf8.decode(base64Decode('JOURNEYS_BASE64'))) as List<dynamic>;
   for (final variant in [
     ('compact-light', const Size(360, 800), Brightness.light, 1.0),

@@ -99,3 +99,6 @@ Le modèle vision NVIDIA par défaut est documenté ici : https://docs.api.nvidi
 
 
 Les réponses JSON invalides ou tronquées disposent également d’une reprise de protocole. Pour Nemotron 3 sur le endpoint NVIDIA, le budget de raisonnement est borné à 2 048 tokens afin de réserver de la place au livrable ; la réponse totale est limitée à 8 192 tokens pour les rôles documentaires/revues et 16 000 pour le code. Le mécanisme documenté est https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3-super-120b-a12b-infer . Ces paramètres ne sont pas envoyés à d’autres modèles ou fournisseurs.
+
+
+Le banc de rendu charge explicitement les polices Roboto et Material Icons du SDK épinglé. Il refuse de produire des captures avec des glyphes de test en blocs. Cela évite de faire évaluer par le modèle vision une fausse représentation de la typographie. Les polices personnalisées externes ne sont pas encore prises en charge par ce banc.

@@ -1,22 +1,31 @@
 version: 2.1
 
 jobs:
-  visual_no_roboto:
+  roboto_material_cache:
     machine: {image: ubuntu-2404:current}
     resource_class: large
-    steps: [checkout, {run: "python3 studio/smoke_probe.py visual_no_roboto"}]
-  visual_no_icons:
+    steps:
+      - checkout
+      - run: |
+          docker run --rm ghcr.io/cirruslabs/flutter:3.44.0@sha256:0a9de3b70b5b7b921a346eb2793e363dc22280849a4fd690d9dde99ce1c2b1b8 bash -lc 'sdk=$(dirname "$(dirname "$(command -v flutter)")"); find "$sdk/bin/cache/artifacts/material_fonts" -maxdepth 1 -name "Roboto*.ttf" -print -quit | grep -q .'
+  roboto_engine_source:
     machine: {image: ubuntu-2404:current}
     resource_class: large
-    steps: [checkout, {run: "python3 studio/smoke_probe.py visual_no_icons"}]
-  visual_no_fonts:
+    steps:
+      - checkout
+      - run: |
+          docker run --rm ghcr.io/cirruslabs/flutter:3.44.0@sha256:0a9de3b70b5b7b921a346eb2793e363dc22280849a4fd690d9dde99ce1c2b1b8 bash -lc 'sdk=$(dirname "$(dirname "$(command -v flutter)")"); test -f "$sdk/engine/src/flutter/txt/third_party/fonts/Roboto-Regular.ttf"'
+  roboto_any_sdk:
     machine: {image: ubuntu-2404:current}
     resource_class: large
-    steps: [checkout, {run: "python3 studio/smoke_probe.py visual_no_fonts"}]
+    steps:
+      - checkout
+      - run: |
+          docker run --rm ghcr.io/cirruslabs/flutter:3.44.0@sha256:0a9de3b70b5b7b921a346eb2793e363dc22280849a4fd690d9dde99ce1c2b1b8 bash -lc 'sdk=$(dirname "$(dirname "$(command -v flutter)")"); find "$sdk" -type f -name "Roboto-Regular.ttf" -print -quit 2>/dev/null | grep -q .'
 
 workflows:
-  diagnose-fonts:
+  diagnose-roboto:
     jobs:
-      - visual_no_roboto
-      - visual_no_icons
-      - visual_no_fonts
+      - roboto_material_cache
+      - roboto_engine_source
+      - roboto_any_sdk

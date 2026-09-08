@@ -13,6 +13,7 @@ from github_runner import main as github_main, run as github_run
 from orchestrator import run_project
 
 BASELINE = 'a' * 40
+MISSING_STAGE = 'future_capability_qa'
 
 
 class OrchestratorTests(unittest.TestCase):
@@ -65,13 +66,13 @@ class OrchestratorTests(unittest.TestCase):
                 else:
                     report = {
                         'status': 'validated_preview',
-                        'completion': {'finished': False, 'next_stage': 'billing_qa', 'blockers': ['billing_qa_missing']},
+                        'completion': {'finished': False, 'next_stage': MISSING_STAGE, 'blockers': [MISSING_STAGE + '_missing']},
                         'release_evidence': {
                             'capability_qa': {
                                 'passed': True,
-                                'required_qa_stages': ['billing_qa'],
+                                'required_qa_stages': [MISSING_STAGE],
                                 'permissions': [],
-                                'reasons': [{'profile': 'billing_qa', 'source': 'dependency', 'value': 'in_app_purchase'}],
+                                'reasons': [{'profile': MISSING_STAGE, 'source': 'source_marker', 'value': 'future_capability'}],
                             }
                         },
                     }
@@ -84,7 +85,7 @@ class OrchestratorTests(unittest.TestCase):
             self.assertEqual(evolution['status'], 'adaptation_required')
             self.assertEqual(work_order['status'], 'candidate_planned')
             self.assertEqual(work_order['baseline_sha'], BASELINE)
-            self.assertTrue(work_order['candidate_branch'].startswith('evolution/billing-qa-'))
+            self.assertTrue(work_order['candidate_branch'].startswith('evolution/future-capability-qa-'))
 
     def test_adaptation_without_baseline_stays_blocked_without_promotable_work_order(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -96,7 +97,7 @@ class OrchestratorTests(unittest.TestCase):
                 out.mkdir(parents=True, exist_ok=True)
                 report = {'status': 'validated_preview'} if 'studio/run.py' in args else {
                     'status': 'validated_preview',
-                    'completion': {'finished': False, 'next_stage': 'billing_qa'},
+                    'completion': {'finished': False, 'next_stage': MISSING_STAGE},
                 }
                 (out / 'report.json').write_text(json.dumps(report))
                 return subprocess.CompletedProcess(args, 0)

@@ -64,6 +64,20 @@ void main() {
     return sandbox
 
 
+def visual_probe(root: Path, sandbox: Sandbox, stage: str) -> int:
+    probe = Path(__file__).with_name('visual_test.dart').read_text().replace('APP_NAME', 'smoke_app').replace('JOURNEYS_BASE64', encoded_journeys(JOURNEYS))
+    if stage == 'visual_no_guidelines':
+        probe = '\n'.join(line for line in probe.splitlines()
+                          if 'meetsGuideline(' not in line and not line.strip().startswith('reason:')) + '\n'
+    if stage == 'visual_no_fonts':
+        probe = probe.replace('  setUpAll(loadSdkFonts);\n', '')
+    (root / 'test/__studio_visual_test.dart').write_text(probe)
+    (root / 'dart_test.yaml').write_text('tags:\n  studio-visual:\n')
+    rc, output = sandbox.run(['flutter', 'test', '--no-pub', '--update-goldens', 'test/__studio_visual_test.dart'], network=False, timeout=900)
+    print(output)
+    return rc
+
+
 def run(stage: str) -> int:
     root = Path('/tmp/studio-smoke-probe')
     sandbox = prepare(root)
@@ -81,16 +95,10 @@ def run(stage: str) -> int:
             return rc
         if stage == name:
             return 0
-    if stage in ('visual', 'build'):
-        probe = Path(__file__).with_name('visual_test.dart').read_text().replace('APP_NAME', 'smoke_app').replace('JOURNEYS_BASE64', encoded_journeys(JOURNEYS))
-        (root / 'test/__studio_visual_test.dart').write_text(probe)
-        (root / 'dart_test.yaml').write_text('tags:\n  studio-visual:\n')
-        rc, output = sandbox.run(['flutter', 'test', '--no-pub', '--update-goldens', 'test/__studio_visual_test.dart'], network=False, timeout=900)
-        print(output)
-        if rc:
+    if stage in ('visual', 'visual_no_guidelines', 'visual_no_fonts', 'build'):
+        rc = visual_probe(root, sandbox, 'visual' if stage == 'build' else stage)
+        if rc or stage != 'build':
             return rc
-        if stage == 'visual':
-            return 0
     if stage == 'build':
         rc, output = sandbox.run(['flutter', 'build', 'apk', '--debug', '--no-pub'], network=True, timeout=900)
         print(output)
@@ -100,7 +108,8 @@ def run(stage: str) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument('stage', choices=['create', 'pubget', 'analyze', 'test', 'visual', 'build'])
+    parser.add_argument('stage', choices=['create', 'pubget', 'analyze', 'test', 'visual',
+                                          'visual_no_guidelines', 'visual_no_fonts', 'build'])
     return run(parser.parse_args().stage)
 
 

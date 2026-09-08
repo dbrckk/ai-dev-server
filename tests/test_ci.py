@@ -33,26 +33,62 @@ class ProviderTests(unittest.TestCase):
                 main()
 
 class QueueRunnerTests(unittest.TestCase):
-    def test_separate_artifacts_and_continue_after_one_failure(self):
+    def make_requests(self, root, count=2):
+        queue = root / 'requests'
+        queue.mkdir()
+        for i in range(count):
+            (queue / f'p{i}.json').write_text(json.dumps({
+                'id': f'p{i}', 'target_repo': f'owner/app{i}', 'app_name': f'app{i}',
+                'brief': 'Build a simple offline timer application.', 'enabled': True}))
+        return queue
+
+    def test_separate_artifacts_and_continue_after_one_preview_failure(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            queue = root / 'requests'
-            queue.mkdir()
-            for i in range(2):
-                (queue / f'p{i}.json').write_text(json.dumps({
-                    'id': f'p{i}', 'target_repo': f'owner/app{i}', 'app_name': f'app{i}',
-                    'brief': 'Build a simple offline timer application.', 'enabled': True}))
+            queue = self.make_requests(root)
+            out = root / 'out'
             calls = []
             def runner(args, timeout):
                 calls.append(args)
                 self.assertGreater(timeout, 0)
-                return subprocess.CompletedProcess(args, 1 if len(calls) == 1 else 0)
-            out = root / 'out'
+                if 'studio/run.py' in args and args[2].endswith('p0.json'):
+                    return subprocess.CompletedProcess(args, 1)
+                if 'studio/run.py' in args:
+                    project_out = Path(args[-1])
+                    project_out.mkdir(parents=True, exist_ok=True)
+                    (project_out / 'report.json').write_text(json.dumps({
+                        'status': 'validated_preview', 'completion': {'finished': False, 'next_stage': 'release_build'}}))
+                    return subprocess.CompletedProcess(args, 0)
+                project_out = Path(args[-1])
+                (project_out / 'report.json').write_text(json.dumps({
+                    'status': 'validated_preview', 'completion': {'finished': False, 'next_stage': 'real_device'}}))
+                return subprocess.CompletedProcess(args, 0)
             self.assertEqual(run_queue(queue, out, runner), 1)
-            self.assertEqual(len(calls), 2)
-            self.assertNotEqual(calls[0][-1], calls[1][-1])
+            self.assertEqual(len(calls), 3)
             report = json.loads((out / 'queue.json').read_text())
-            self.assertEqual([p['status'] for p in report['projects']], ['failed', 'finished'])
+            self.assertEqual([p['status'] for p in report['projects']], ['failed', 'progressed'])
+            self.assertEqual(report['projects'][1]['next_stage'], 'real_device')
+
+    def test_preview_success_always_chains_post_preview_stage(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            queue = self.make_requests(root, 1)
+            out = root / 'out'
+            calls = []
+            def runner(args, timeout):
+                calls.append(args)
+                project_out = Path(args[-1])
+                project_out.mkdir(parents=True, exist_ok=True)
+                if 'studio/post_preview.py' in args:
+                    payload = {'status': 'validated_preview', 'completion': {'finished': False, 'next_stage': 'real_device'}}
+                else:
+                    payload = {'status': 'validated_preview'}
+                (project_out / 'report.json').write_text(json.dumps(payload))
+                return subprocess.CompletedProcess(args, 0)
+            self.assertEqual(run_queue(queue, out, runner), 0)
+            self.assertEqual(len(calls), 2)
+            self.assertIn('studio/run.py', calls[0])
+            self.assertIn('studio/post_preview.py', calls[1])
 
     def test_entire_queue_validated_before_generation(self):
         with tempfile.TemporaryDirectory() as tmp:

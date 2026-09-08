@@ -171,8 +171,7 @@ class Model:
     def __init__(self, limit):
         self.api = API(os.environ.get('STUDIO_API_BASE', 'https://integrate.api.nvidia.com/v1'), os.environ.get('STUDIO_API_KEY', ''))
         self.model = os.environ.get('STUDIO_MODEL', 'nvidia/nemotron-3-super-120b-a12b')
-        self.code_model = os.environ.get('STUDIO_CODE_MODEL', '') or (
-            'qwen/qwen3-coder-480b-a35b-instruct' if self.api.base == 'https://integrate.api.nvidia.com/v1' else self.model)
+        self.code_model = os.environ.get('STUDIO_CODE_MODEL', '') or self.model
         self.models_used = {}
         self.vision = os.environ.get('STUDIO_VISION_MODEL', '')
         if not self.vision and self.api.base == 'https://integrate.api.nvidia.com/v1':

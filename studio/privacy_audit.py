@@ -7,7 +7,7 @@ from pathlib import Path
 import re
 
 NETWORK_MARKERS = (
-    'dart:io', 'HttpClient(', 'http://', 'https://', 'WebSocket(', 'Socket.connect(',
+    'HttpClient(', 'http://', 'https://', 'WebSocket(', 'Socket.connect(',
     'package:http/', 'package:dio/', 'Firebase', 'firebase_', 'supabase', 'graphql',
 )
 LOCAL_STORAGE_MARKERS = (

@@ -8,10 +8,11 @@ import sys
 import tempfile
 import time
 import uuid
+from adaptation import write_adaptation_request
 from ci_provider import enabled
 from core import StudioError, canonical
 from queue import matrix
-from stage_registry import get_stage
+from stage_registry import STAGES, get_stage
 
 def bounded_run(args, timeout):
     run_id = uuid.uuid4().hex
@@ -58,7 +59,10 @@ def _run_registered_stages(project, project_out, work, report, deadline, runner,
         name = completion.get('next_stage')
         stage = get_stage(name)
         if stage is None:
-            return report, None
+            request = write_adaptation_request(report, project_out, frozenset(STAGES))
+            if request.get('status') == 'adaptation_required':
+                return report, 'adaptation_required'
+            raise StudioError('Unfinished project has no executable next stage')
         if name in seen:
             raise StudioError('Stage did not advance completion state: ' + name)
         seen.add(name)
@@ -113,11 +117,14 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
                     project, project_out, work, _load_report(project_out), deadline, runner, clock)
                 if terminal_status:
                     results[index]['status'] = terminal_status
+                    results[index]['next_stage'] = report.get('completion', {}).get('next_stage')
                     continue
 
                 completion = report.get('completion', {})
-                results[index]['status'] = 'complete' if completion.get('finished') else 'progressed'
-                results[index]['next_stage'] = completion.get('next_stage')
+                if not completion.get('finished'):
+                    raise StudioError('Stage runner stopped before completion')
+                results[index]['status'] = 'complete'
+                results[index]['next_stage'] = None
             except subprocess.TimeoutExpired:
                 results[index]['status'] = 'timed_out'
                 deadline = 0
@@ -127,8 +134,7 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
             finally:
                 save_report(out, results)
     save_report(out, results)
-    acceptable = {'complete', 'progressed'}
-    return int(any(p['status'] not in acceptable for p in results))
+    return int(any(p['status'] != 'complete' for p in results))
 
 def main():
     if os.environ.get('CIRCLE_BRANCH') != 'main':

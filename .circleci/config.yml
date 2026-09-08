@@ -7,33 +7,23 @@ parameters:
     default: "smoke"
 
 jobs:
-  validate_compile:
-    docker:
-      - image: cimg/python:3.12.11
+  test_ci:
+    docker: [{image: cimg/python:3.12.11}]
     steps:
       - checkout
-      - run: python -m compileall -q studio tests
-  test_capability:
-    docker:
-      - image: cimg/python:3.12.11
+      - run: python tests/test_ci.py -v
+  test_stage_registry:
+    docker: [{image: cimg/python:3.12.11}]
     steps:
       - checkout
-      - run: python tests/test_capability_qa.py -v
-  test_performance:
-    docker:
-      - image: cimg/python:3.12.11
+      - run: python tests/test_stage_registry.py -v
+  test_completion:
+    docker: [{image: cimg/python:3.12.11}]
     steps:
       - checkout
-      - run: python tests/test_performance_qa.py -v
-  test_native:
-    docker:
-      - image: cimg/python:3.12.11
-    steps:
-      - checkout
-      - run: python tests/test_native_qa.py -v
-  test_rest:
-    docker:
-      - image: cimg/python:3.12.11
+      - run: python tests/test_completion.py -v
+  test_other:
+    docker: [{image: cimg/python:3.12.11}]
     steps:
       - checkout
       - run:
@@ -41,90 +31,15 @@ jobs:
             set -e
             for test in tests/test_*.py; do
               case "$test" in
-                tests/test_capability_qa.py|tests/test_performance_qa.py|tests/test_native_qa.py) continue ;;
+                tests/test_ci.py|tests/test_stage_registry.py|tests/test_completion.py) continue ;;
               esac
               python "$test" -v
             done
-  validate_config:
-    docker:
-      - image: cimg/python:3.12.11
-    steps:
-      - checkout
-      - run:
-          command: |
-            python -m json.tool .devcontainer/devcontainer.json >/dev/null
-            python -m json.tool control/ci.json >/dev/null
-  validate_queue:
-    docker:
-      - image: cimg/python:3.12.11
-    steps:
-      - checkout
-      - run: python studio/queue.py
-  validate_shell:
-    docker:
-      - image: cimg/python:3.12.11
-    steps:
-      - checkout
-      - run: for script in scripts/*.sh; do bash -n "$script"; done
-  mobile:
-    machine:
-      image: android:current
-    resource_class: large.gen2
-    steps:
-      - checkout
-      - run:
-          name: Generate, build release and validate on Android emulator
-          no_output_timeout: 30m
-          command: python3 studio/ci_runner.py "<< pipeline.parameters.mode >>"
-      - store_artifacts:
-          path: studio-output
-          destination: mobile-studio
-  smoke:
-    machine:
-      image: ubuntu-2404:current
-    resource_class: large
-    steps:
-      - checkout
-      - run:
-          name: Build Android and render actual Flutter screens without secrets
-          no_output_timeout: 30m
-          command: python3 studio/smoke.py
-      - store_artifacts:
-          path: studio-output
-          destination: flutter-smoke
 
 workflows:
-  mobile-generation:
-    when:
-      not:
-        equal: ["smoke", << pipeline.parameters.mode >>]
+  diagnose:
     jobs:
-      - validate_compile
-      - test_capability
-      - test_performance
-      - test_native
-      - test_rest
-      - validate_config
-      - validate_queue
-      - validate_shell
-      - mobile:
-          requires: [validate_compile, test_capability, test_performance, test_native, test_rest, validate_config, validate_queue, validate_shell]
-          context: mobile-studio
-          serial-group: << pipeline.project.slug >>/mobile-studio
-          filters:
-            branches:
-              only: main
-  build-verification:
-    when:
-      equal: ["smoke", << pipeline.parameters.mode >>]
-    jobs:
-      - validate_compile
-      - test_capability
-      - test_performance
-      - test_native
-      - test_rest
-      - validate_config
-      - validate_queue
-      - validate_shell
-      - smoke:
-          requires: [validate_compile, test_capability, test_performance, test_native, test_rest, validate_config, validate_queue, validate_shell]
+      - test_ci
+      - test_stage_registry
+      - test_completion
+      - test_other

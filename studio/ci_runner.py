@@ -92,6 +92,18 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
                         continue
                     report = json.loads((project_out / 'report.json').read_text())
 
+                if report.get('completion', {}).get('next_stage') == 'store_metadata':
+                    remaining = deadline - clock()
+                    if remaining <= 0:
+                        results[index]['status'] = 'deferred_store'
+                        continue
+                    store = runner([sys.executable, 'studio/store_stage.py', project['file'],
+                        '--work', work, '--out', str(project_out)], timeout=remaining)
+                    if store.returncode != 0:
+                        results[index]['status'] = 'store_failed'
+                        continue
+                    report = json.loads((project_out / 'report.json').read_text())
+
                 completion = report.get('completion', {})
                 results[index]['status'] = 'complete' if completion.get('finished') else 'progressed'
                 results[index]['next_stage'] = completion.get('next_stage')

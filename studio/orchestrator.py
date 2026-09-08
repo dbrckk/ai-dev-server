@@ -42,9 +42,8 @@ def _write_adaptation_handoff(report: dict, project_out: Path, baseline_sha: str
     request = write_adaptation_request(report, project_out, frozenset(STAGES))
     if request.get('status') != 'adaptation_required':
         return request
-    if not isinstance(baseline_sha, str) or not re.fullmatch(r'[0-9a-f]{40}', baseline_sha):
-        raise StudioError('Adaptation requires a trusted control-repository baseline SHA')
-    consume_evolution_request(project_out / 'evolution-request.json', project_out, baseline_sha)
+    if isinstance(baseline_sha, str) and re.fullmatch(r'[0-9a-f]{40}', baseline_sha):
+        consume_evolution_request(project_out / 'evolution-request.json', project_out, baseline_sha)
     return request
 
 

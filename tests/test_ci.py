@@ -59,17 +59,19 @@ class QueueRunnerTests(unittest.TestCase):
                     payload = {'status': 'validated_preview', 'completion': {'finished': False, 'next_stage': 'real_device'}}
                 elif 'studio/device_stage.py' in args:
                     payload = {'status': 'validated_preview', 'completion': {'finished': False, 'next_stage': 'store_metadata'}}
+                elif 'studio/store_stage.py' in args:
+                    payload = {'status': 'validated_preview', 'completion': {'finished': False, 'next_stage': 'privacy_policy'}}
                 else:
                     payload = {'status': 'validated_preview'}
                 (project_out / 'report.json').write_text(json.dumps(payload))
                 return subprocess.CompletedProcess(args, 0)
             self.assertEqual(run_queue(queue, out, runner), 1)
-            self.assertEqual(len(calls), 4)
+            self.assertEqual(len(calls), 5)
             report = json.loads((out / 'queue.json').read_text())
             self.assertEqual([p['status'] for p in report['projects']], ['failed', 'progressed'])
-            self.assertEqual(report['projects'][1]['next_stage'], 'store_metadata')
+            self.assertEqual(report['projects'][1]['next_stage'], 'privacy_policy')
 
-    def test_preview_success_chains_release_and_device_stage(self):
+    def test_preview_success_chains_release_device_and_store_stage(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             queue = self.make_requests(root, 1)
@@ -83,17 +85,20 @@ class QueueRunnerTests(unittest.TestCase):
                     payload = {'status': 'validated_preview', 'completion': {'finished': False, 'next_stage': 'real_device'}}
                 elif 'studio/device_stage.py' in args:
                     payload = {'status': 'validated_preview', 'completion': {'finished': False, 'next_stage': 'store_metadata'}}
+                elif 'studio/store_stage.py' in args:
+                    payload = {'status': 'validated_preview', 'completion': {'finished': False, 'next_stage': 'privacy_policy'}}
                 else:
                     payload = {'status': 'validated_preview'}
                 (project_out / 'report.json').write_text(json.dumps(payload))
                 return subprocess.CompletedProcess(args, 0)
             self.assertEqual(run_queue(queue, out, runner), 0)
-            self.assertEqual(len(calls), 3)
+            self.assertEqual(len(calls), 4)
             self.assertIn('studio/run.py', calls[0])
             self.assertIn('studio/post_preview.py', calls[1])
             self.assertIn('studio/device_stage.py', calls[2])
+            self.assertIn('studio/store_stage.py', calls[3])
             report = json.loads((out / 'queue.json').read_text())
-            self.assertEqual(report['projects'][0]['next_stage'], 'store_metadata')
+            self.assertEqual(report['projects'][0]['next_stage'], 'privacy_policy')
 
     def test_entire_queue_validated_before_generation(self):
         with tempfile.TemporaryDirectory() as tmp:

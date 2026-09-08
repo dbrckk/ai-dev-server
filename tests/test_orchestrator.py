@@ -52,7 +52,54 @@ class OrchestratorTests(unittest.TestCase):
             for call, script in zip(calls, expected):
                 self.assertIn(script, call)
 
-    def test_unregistered_stage_creates_adaptation_and_work_order(self):
+    def _billing_report(self):
+        return {
+            'status': 'validated_preview',
+            'completion': {'finished': False, 'next_stage': 'billing_qa', 'blockers': ['billing_qa_missing']},
+            'release_evidence': {
+                'capability_qa': {
+                    'passed': True,
+                    'required_qa_stages': ['billing_qa'],
+                    'permissions': [],
+                    'reasons': [{'profile': 'billing_qa', 'source': 'dependency', 'value': 'in_app_purchase'}],
+                }
+            },
+        }
+
+    def test_unregistered_stage_creates_work_order_and_runs_research(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            out = root / 'out'
+            request = root / 'request.json'
+            request.write_text('{}')
+            calls = []
+            def runner(args, timeout):
+                calls.append(args)
+                out.mkdir(parents=True, exist_ok=True)
+                if 'studio/evolution_research.py' in args:
+                    order = json.loads((out / 'evolution-work-order.json').read_text())
+                    (out / 'evolution-research.json').write_text(json.dumps({
+                        'version': 2,
+                        'candidate_id': order['candidate_id'],
+                        'status': 'research_complete',
+                        'items': [],
+                    }))
+                    return subprocess.CompletedProcess(args, 0)
+                report = {'status': 'validated_preview'} if 'studio/run.py' in args else self._billing_report()
+                (out / 'report.json').write_text(json.dumps(report))
+                return subprocess.CompletedProcess(args, 0)
+            result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)
+            self.assertEqual(result['status'], 'adaptation_required')
+            self.assertEqual(result['research_status'], 'complete')
+            evolution = json.loads((out / 'evolution-request.json').read_text())
+            work_order = json.loads((out / 'evolution-work-order.json').read_text())
+            self.assertEqual(evolution['status'], 'adaptation_required')
+            self.assertEqual(work_order['status'], 'candidate_planned')
+            self.assertEqual(work_order['baseline_sha'], BASELINE)
+            self.assertTrue(work_order['candidate_branch'].startswith('evolution/billing-qa-'))
+            self.assertTrue(any('studio/evolution_research.py' in call for call in calls))
+
+    def test_research_failure_is_explicit_not_worker_success(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             out = root / 'out'
@@ -60,31 +107,18 @@ class OrchestratorTests(unittest.TestCase):
             request.write_text('{}')
             def runner(args, timeout):
                 out.mkdir(parents=True, exist_ok=True)
-                if 'studio/run.py' in args:
-                    report = {'status': 'validated_preview'}
-                else:
-                    report = {
-                        'status': 'validated_preview',
-                        'completion': {'finished': False, 'next_stage': 'billing_qa', 'blockers': ['billing_qa_missing']},
-                        'release_evidence': {
-                            'capability_qa': {
-                                'passed': True,
-                                'required_qa_stages': ['billing_qa'],
-                                'permissions': [],
-                                'reasons': [{'profile': 'billing_qa', 'source': 'dependency', 'value': 'in_app_purchase'}],
-                            }
-                        },
-                    }
+                if 'studio/evolution_research.py' in args:
+                    (out / 'evolution-research-error.json').write_text(json.dumps({
+                        'status': 'research_blocked', 'error': 'trusted_research_failed'}))
+                    return subprocess.CompletedProcess(args, 1)
+                report = {'status': 'validated_preview'} if 'studio/run.py' in args else self._billing_report()
                 (out / 'report.json').write_text(json.dumps(report))
                 return subprocess.CompletedProcess(args, 0)
             result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)
             self.assertEqual(result['status'], 'adaptation_required')
-            evolution = json.loads((out / 'evolution-request.json').read_text())
-            work_order = json.loads((out / 'evolution-work-order.json').read_text())
-            self.assertEqual(evolution['status'], 'adaptation_required')
-            self.assertEqual(work_order['status'], 'candidate_planned')
-            self.assertEqual(work_order['baseline_sha'], BASELINE)
-            self.assertTrue(work_order['candidate_branch'].startswith('evolution/billing-qa-'))
+            self.assertEqual(result['research_status'], 'blocked')
+            self.assertTrue((out / 'evolution-work-order.json').is_file())
+            self.assertTrue((out / 'evolution-research-error.json').is_file())
 
     def test_adaptation_without_baseline_stays_blocked_without_promotable_work_order(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -102,6 +136,7 @@ class OrchestratorTests(unittest.TestCase):
                 return subprocess.CompletedProcess(args, 0)
             result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, None)
             self.assertEqual(result['status'], 'adaptation_required')
+            self.assertEqual(result['research_status'], 'not_planned_without_baseline')
             self.assertTrue((out / 'evolution-request.json').is_file())
             self.assertFalse((out / 'evolution-work-order.json').exists())
 

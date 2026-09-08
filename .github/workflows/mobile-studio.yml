@@ -10,7 +10,7 @@ permissions:
   contents: read
 jobs:
   queue:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 3
     outputs:
       projects: ${{ steps.queue.outputs.projects }}
@@ -31,7 +31,7 @@ jobs:
     concurrency:
       group: mobile-studio-${{ matrix.project.target }}
       cancel-in-progress: false
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262

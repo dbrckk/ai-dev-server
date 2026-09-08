@@ -116,17 +116,48 @@ class API:
         if u.scheme != 'https' or not u.netloc or u.username or u.password or u.query or u.fragment:
             raise StudioError('API endpoint must be an HTTPS URL without credentials/query')
         self.base, self.key = base.rstrip('/'), key
+    def _response(self, req):
+        # A pending inference is polled; never submit a second paid POST.
+        opener = urllib.request.build_opener(NoRedirect)
+        deadline = time.monotonic() + 300
+        for poll in range(61):
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise StudioError('Pending inference timed out')
+            try:
+                response = opener.open(req, timeout=min(180, remaining))
+            except urllib.error.HTTPError as e:
+                if poll:
+                    raise APIError(e.code) from None
+                raise
+            with response as res:
+                if res.status != 202:
+                    raw = res.read(4000001)
+                    if len(raw) > 4000000:
+                        raise StudioError('API response too large')
+                    try:
+                        return json.loads(raw)
+                    except (ValueError, UnicodeError):
+                        raise ProtocolError('API returned non-JSON response') from None
+                request_id = res.headers.get('NVCF-REQID', '')
+                if (self.base != 'https://integrate.api.nvidia.com/v1' or
+                    not re.fullmatch(r'[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}', request_id)):
+                    raise StudioError('Unsupported pending inference response')
+            if poll == 60:
+                break
+            # Documented same-origin endpoint; never trust a remote Location URL.
+            req = urllib.request.Request(self.base + '/status/' + request_id,
+                headers={'Authorization': 'Bearer ' + self.key, 'Accept': 'application/json'})
+            time.sleep(min(2, max(0, deadline - time.monotonic())))
+        raise StudioError('Pending inference polling limit reached')
+
     def call(self, method, path, data=None):
         req = urllib.request.Request(self.base + path, method=method,
             data=None if data is None else canonical(data).encode(),
             headers={'Authorization': 'Bearer ' + self.key, 'Content-Type': 'application/json', 'Accept': 'application/json'})
         for attempt in range(3):
             try:
-                with urllib.request.build_opener(NoRedirect).open(req, timeout=180) as res:
-                    raw = res.read(4000001)
-                    if len(raw) > 4000000:
-                        raise StudioError('API response too large')
-                    return json.loads(raw)
+                return self._response(req)
             except urllib.error.HTTPError as e:
                 # Never print remote bodies: providers may echo secrets or prompts.
                 if method not in ('GET', 'POST') or e.code not in (429, 502, 503, 504) or attempt == 2:
@@ -193,7 +224,7 @@ class Model:
         selected_model = self.vision if screenshots else (self.code_model if role in ('implementation', 'tests') else self.model)
         self.models_used[role] = selected_model
         print('Model role: ' + role + '; model: ' + selected_model, flush=True)
-        params = {'model': selected_model,
+        params = {'model': selected_model, 'stream': False,
             'max_tokens': 16000 if role == 'implementation' else 8192,
             'messages': [{'role': 'system', 'content': ROLES[role] + '\n' + (CONTRACT if role in ('product', 'implementation') else '') + schema}, {'role': 'user', 'content': content if screenshots else context}]}
         if self.api.base == 'https://integrate.api.nvidia.com/v1' and selected_model.startswith('nvidia/nemotron-3-'):
@@ -203,7 +234,10 @@ class Model:
             choice = r['choices'][0]
             if choice.get('finish_reason') == 'length':
                 raise ProtocolError('Model response truncated')
-            raw = choice['message']['content'].strip()
+            raw = choice['message']['content']
+            if not isinstance(raw, str) or not raw.strip():
+                raise ProtocolError('Provider returned empty text content')
+            raw = raw.strip()
             if raw.startswith('```'):
                 raw = raw.split('\n', 1)[1].rsplit('```', 1)[0]
             value = json.loads(raw)

@@ -15,6 +15,7 @@ jobs:
       - run:
           name: Validate engine and request queue without secrets
           command: |
+            python -m compileall -q studio tests
             python -m unittest discover -s tests -v
             python -m json.tool .devcontainer/devcontainer.json >/dev/null
             python -m json.tool control/ci.json >/dev/null

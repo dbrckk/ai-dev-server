@@ -1,4 +1,4 @@
-"""CircleCI queue adapter. Uses the same engine, budgets and remote checkpoints."""
+"""CircleCI queue adapter using the shared autonomous completion pipeline."""
 import json
 import os
 from pathlib import Path
@@ -8,11 +8,12 @@ import sys
 import tempfile
 import time
 import uuid
-from adaptation import write_adaptation_request
+
 from ci_provider import enabled
 from core import StudioError, canonical
+from orchestrator import run_project, run_registered_stages as _shared_run_registered_stages
 from queue import matrix
-from stage_registry import STAGES, get_stage
+
 
 def bounded_run(args, timeout):
     run_id = uuid.uuid4().hex
@@ -42,42 +43,21 @@ def bounded_run(args, timeout):
             raise StudioError('Timed-out worker stopped but container cleanup failed') from None
         raise
 
+
 def save_report(out, results):
     temporary = out / 'queue.json.tmp'
     temporary.write_text(canonical({'provider': 'circleci', 'projects': results}))
     temporary.replace(out / 'queue.json')
 
-def _load_report(project_out):
-    return json.loads((project_out / 'report.json').read_text())
 
 def _run_registered_stages(project, project_out, work, report, deadline, runner, clock):
-    seen = set()
-    while True:
-        completion = report.get('completion', {})
-        if completion.get('finished'):
-            return report, None
-        name = completion.get('next_stage')
-        stage = get_stage(name)
-        if stage is None:
-            request = write_adaptation_request(report, project_out, frozenset(STAGES))
-            if request.get('status') == 'adaptation_required':
-                return report, 'adaptation_required'
-            raise StudioError('Unfinished project has no executable next stage')
-        if name in seen:
-            raise StudioError('Stage did not advance completion state: ' + name)
-        seen.add(name)
-        remaining = deadline - clock()
-        if remaining <= 0:
-            return report, stage.deferred_status
-        result = runner([sys.executable, stage.script, project['file'],
-            '--work', work, '--out', str(project_out)], timeout=remaining)
-        if result.returncode != 0:
-            return _load_report(project_out), stage.failed_status
-        updated = _load_report(project_out)
-        next_name = updated.get('completion', {}).get('next_stage')
-        if next_name == name and not updated.get('completion', {}).get('finished'):
-            raise StudioError('Successful stage did not advance completion state: ' + name)
-        report = updated
+    """Compatibility wrapper for callers/tests while stage logic lives in orchestrator.py."""
+    result = _shared_run_registered_stages(
+        project['file'], project_out, work, report, deadline, runner, clock,
+        os.environ.get('CIRCLE_SHA1'))
+    status = None if result['status'] == 'complete' else result['status']
+    return result['report'], status
+
 
 def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
               runner=bounded_run, clock=time.monotonic):
@@ -86,9 +66,9 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
     results = [{'id': p['id'], 'status': 'pending'} for p in projects]
     save_report(out, results)
     deadline = clock() + 70 * 60
+    baseline_sha = os.environ.get('CIRCLE_SHA1')
     for index, project in enumerate(projects):
-        remaining = deadline - clock()
-        if remaining <= 0:
+        if deadline - clock() <= 0:
             results[index]['status'] = 'deferred'
             save_report(out, results)
             continue
@@ -97,34 +77,9 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
         with tempfile.TemporaryDirectory(prefix='studio-ci-') as work:
             project_out = out / project['id']
             try:
-                preview = runner([sys.executable, 'studio/run.py', project['file'],
-                    '--work', work, '--out', str(project_out)], timeout=remaining)
-                if preview.returncode != 0:
-                    results[index]['status'] = 'failed'
-                    continue
-
-                remaining = deadline - clock()
-                if remaining <= 0:
-                    results[index]['status'] = 'deferred_release'
-                    continue
-                release = runner([sys.executable, 'studio/post_preview.py', project['file'],
-                    '--work', work, '--out', str(project_out)], timeout=remaining)
-                if release.returncode != 0:
-                    results[index]['status'] = 'release_failed'
-                    continue
-
-                report, terminal_status = _run_registered_stages(
-                    project, project_out, work, _load_report(project_out), deadline, runner, clock)
-                if terminal_status:
-                    results[index]['status'] = terminal_status
-                    results[index]['next_stage'] = report.get('completion', {}).get('next_stage')
-                    continue
-
-                completion = report.get('completion', {})
-                if not completion.get('finished'):
-                    raise StudioError('Stage runner stopped before completion')
-                results[index]['status'] = 'complete'
-                results[index]['next_stage'] = None
+                result = run_project(project['file'], project_out, work, runner, deadline, clock, baseline_sha)
+                results[index]['status'] = result['status']
+                results[index]['next_stage'] = result.get('next_stage')
             except subprocess.TimeoutExpired:
                 results[index]['status'] = 'timed_out'
                 deadline = 0
@@ -135,6 +90,7 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
                 save_report(out, results)
     save_report(out, results)
     return int(any(p['status'] != 'complete' for p in results))
+
 
 def main():
     if os.environ.get('CIRCLE_BRANCH') != 'main':
@@ -155,6 +111,7 @@ def main():
         import provider_probe
         return provider_probe.main()
     raise StudioError('Unsupported CircleCI generation mode')
+
 
 if __name__ == '__main__':
     try:

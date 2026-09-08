@@ -10,7 +10,7 @@ permissions:
   contents: read
 jobs:
   queue:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 3
     outputs:
       projects: ${{ steps.queue.outputs.projects }}
@@ -31,13 +31,30 @@ jobs:
     concurrency:
       group: mobile-studio-${{ matrix.project.target }}
       cancel-in-progress: false
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - name: Run bounded studio
+      - name: Bootstrap Android device-QA runtime
+        run: |
+          test -d "$ANDROID_HOME"
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/emulator" >> "$GITHUB_PATH"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "emulator"
+          command -v adb
+          command -v sdkmanager
+          command -v avdmanager
+          command -v emulator
+          test -e /dev/kvm
+          sudo chmod 666 /dev/kvm
+          test -r /dev/kvm
+          test -w /dev/kvm
+          emulator -accel-check
+      - name: Run full autonomous completion pipeline
         env:
           STUDIO_CI_PROVIDER: github
           STUDIO_REQUEST: ${{ matrix.project.file }}
@@ -47,8 +64,8 @@ jobs:
           STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
           STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
           STUDIO_VISION_MODEL: ${{ vars.STUDIO_VISION_MODEL }}
-        run: python studio/run.py "$STUDIO_REQUEST"
-      - name: Retain report, screenshots and actual APK
+        run: python studio/github_runner.py "$STUDIO_REQUEST"
+      - name: Retain reports, release packages and trusted QA evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -63,10 +80,12 @@ jobs:
           import json, os
           from pathlib import Path
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
-              for name in ('report.json', 'error.json'):
+              for name in ('github-pipeline.json', 'report.json', 'evolution-request.json', 'evolution-work-order.json', 'github-pipeline-error.json', 'error.json'):
                   p = Path('studio-output') / name
                   if p.exists():
                       d = json.loads(p.read_text())
-                      out.write('Mobile studio status: ' + str(d.get('status', 'unknown')) + '\n')
-                      out.write('Download the artifact for the report and available evidence.\n')
+                      out.write(name + ': ' + str(d.get('status', 'available')) + '\n')
+                      if d.get('next_stage'):
+                          out.write('Next stage: ' + str(d['next_stage']) + '\n')
+              out.write('Download the artifact for release packages and trusted QA evidence.\n')
           PY

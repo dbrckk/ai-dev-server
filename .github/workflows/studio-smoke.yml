@@ -11,12 +11,31 @@ permissions:
 
 jobs:
   mobile-smoke:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
+      - name: Bootstrap Android device-QA runtime
+        run: |
+          test -d "$ANDROID_HOME"
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/emulator" >> "$GITHUB_PATH"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "emulator"
+      - name: Validate Android device-QA runtime
+        run: |
+          command -v adb
+          command -v sdkmanager
+          command -v avdmanager
+          command -v emulator
+          test -e /dev/kvm
+          sudo chmod 666 /dev/kvm
+          test -r /dev/kvm
+          test -w /dev/kvm
+          emulator -accel-check
       - name: Compile and render a real Flutter fixture in the studio sandbox
         run: python studio/smoke.py
       - name: Preserve smoke diagnostics

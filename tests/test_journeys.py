@@ -126,3 +126,20 @@ class TruncationTests(unittest.TestCase):
         model = AuthError()
         with self.assertRaises(APIError): model.ask('product', 'brief')
         self.assertEqual(model.calls, 1)
+
+class CodingModelTests(unittest.TestCase):
+    def test_specialized_code_model_on_nvidia(self):
+        from core import Model
+        from unittest.mock import patch
+        with patch.dict('os.environ', {'STUDIO_API_KEY': 'test'}, clear=True):
+            self.assertEqual(Model(2).code_model, 'qwen/qwen3-coder-480b-a35b-instruct')
+    def test_code_model_override(self):
+        from core import Model
+        from unittest.mock import patch
+        with patch.dict('os.environ', {'STUDIO_API_KEY': 'test', 'STUDIO_CODE_MODEL': 'chosen'}, clear=True):
+            self.assertEqual(Model(2).code_model, 'chosen')
+    def test_other_provider_keeps_configured_general_model(self):
+        from core import Model
+        from unittest.mock import patch
+        with patch.dict('os.environ', {'STUDIO_API_KEY': 'test', 'STUDIO_API_BASE': 'https://example.com/v1', 'STUDIO_MODEL': 'chosen'}, clear=True):
+            self.assertEqual(Model(2).code_model, 'chosen')

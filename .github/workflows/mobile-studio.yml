@@ -44,6 +44,7 @@ jobs:
           STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
           STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
           STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
+          STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
           STUDIO_VISION_MODEL: ${{ vars.STUDIO_VISION_MODEL }}
         run: python studio/run.py "$STUDIO_REQUEST"
       - name: Retain report, screenshots and actual APK

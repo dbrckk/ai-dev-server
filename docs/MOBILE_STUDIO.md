@@ -105,3 +105,6 @@ Le banc de rendu charge explicitement les polices Roboto et Material Icons du SD
 
 
 Si l’étape de développement omet les fichiers de tests, un rôle QA dédié les produit à partir du code et des parcours. Ce rôle ne peut retourner que des fichiers `test/*_test.dart`. Son appel reste inclus dans le même budget global ; il ne peut modifier ni le code applicatif ni le banc de parcours imposés.
+
+
+Le routage distingue désormais le code et les tests de la planification. Sur NVIDIA, `STUDIO_CODE_MODEL` utilise par défaut `qwen/qwen3-coder-480b-a35b-instruct`, documenté sur https://build.nvidia.com/qwen/qwen3-coder-480b-a35b-instruct . La variable permet de choisir un autre modèle ; sur un autre endpoint, le modèle général est conservé si elle est absente. Les modèles effectivement sollicités figurent dans `models_used` du rapport. Une erreur fournisseur reste un blocage explicite, jamais une validation de l’application.

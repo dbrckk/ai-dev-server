@@ -68,12 +68,11 @@ void main() {
 def visual_probe(root: Path, sandbox: Sandbox, stage: str) -> int:
     probe = Path(__file__).with_name('visual_test.dart').read_text().replace('APP_NAME', 'smoke_app').replace('JOURNEYS_BASE64', encoded_journeys(JOURNEYS))
     if stage == 'visual_no_guidelines':
-        probe = '\n'.join(line for line in probe.splitlines()
-                          if 'meetsGuideline(' not in line and not line.strip().startswith('reason:')) + '\n'
+        probe = '\n'.join(line for line in probe.splitlines() if 'meetsGuideline(' not in line) + '\n'
     if stage == 'visual_no_fonts':
         probe = probe.replace('  setUpAll(loadSdkFonts);\n', '')
     if stage == 'visual_no_roboto':
-        probe = re.sub(r"  final cached = directory\.listSync\(\).*?  await textLoader\.load\(\);\n",
+        probe = re.sub(r"  final bundled = File\('\$\{sdk\.path\}/engine/src/flutter/txt/third_party/fonts/Roboto-Regular\.ttf'\);.*?  await textLoader\.load\(\);\n",
                        '', probe, flags=re.S)
     if stage == 'visual_no_icons':
         probe = re.sub(r"  final icons = File\('\$\{directory\.path\}/MaterialIcons-Regular\.otf'\);.*?  await iconLoader\.load\(\);\n",

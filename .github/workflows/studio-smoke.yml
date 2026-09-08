@@ -1,9 +1,14 @@
 name: Mobile Studio Real Build
+
 on:
+  pull_request:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
+
 jobs:
   mobile-smoke:
     runs-on: ubuntu-latest
@@ -18,6 +23,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: studio-smoke
+          name: studio-smoke-${{ github.run_id }}
           path: studio-output/
           if-no-files-found: warn
+          retention-days: 14

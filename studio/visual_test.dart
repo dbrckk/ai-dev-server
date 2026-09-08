@@ -23,20 +23,40 @@ Future<void> checkScreen(WidgetTester tester, String filename) async {
   await expectLater(find.byType(StudioApp), matchesGoldenFile('goldens/$filename.png'));
 }
 
-Future<void> loadSdkFonts() async {
-  final sdk = Platform.environment['FLUTTER_ROOT'];
-  if (sdk == null) throw StateError('Flutter SDK root missing');
-  final directory = Directory('$sdk/bin/cache/artifacts/material_fonts');
-  final fonts = directory.listSync().whereType<File>().toList();
-  final roboto = fonts.where((file) =>
-      file.uri.pathSegments.last.startsWith('Roboto') && file.path.endsWith('.ttf')).toList();
-  if (roboto.isEmpty) throw StateError('Real Roboto fonts missing; refusing block-glyph screenshots');
-  final textLoader = FontLoader('Roboto');
-  for (final font in roboto) {
-    textLoader.addFont(Future.value(ByteData.sublistView(font.readAsBytesSync())));
+Directory flutterSdkRoot() {
+  final configured = Platform.environment['FLUTTER_ROOT'];
+  if (configured != null && configured.isNotEmpty) {
+    final root = Directory(configured);
+    if (root.existsSync()) return root;
   }
+  var current = File(Platform.resolvedExecutable).parent;
+  for (var i = 0; i < 8; i++) {
+    if (File('${current.path}/bin/flutter').existsSync() ||
+        File('${current.path}/bin/flutter.bat').existsSync()) {
+      return current;
+    }
+    final parent = current.parent;
+    if (parent.path == current.path) break;
+    current = parent;
+  }
+  throw StateError('Flutter SDK root missing');
+}
+
+Future<void> loadSdkFonts() async {
+  final sdk = flutterSdkRoot();
+  final directory = Directory('${sdk.path}/bin/cache/artifacts/material_fonts');
+  if (!directory.existsSync()) {
+    throw StateError('Flutter material font cache missing');
+  }
+  final bundled = File('${sdk.path}/engine/src/flutter/txt/third_party/fonts/Roboto-Regular.ttf');
+  final cached = File('${directory.path}/Roboto-Regular.ttf');
+  final roboto = bundled.existsSync() ? bundled : cached;
+  if (!roboto.existsSync()) throw StateError('Real Roboto font missing; refusing block-glyph screenshots');
+  final textLoader = FontLoader('Roboto');
+  textLoader.addFont(Future.value(ByteData.sublistView(roboto.readAsBytesSync())));
   await textLoader.load();
   final icons = File('${directory.path}/MaterialIcons-Regular.otf');
+  if (!icons.existsSync()) throw StateError('Material Icons font missing');
   final iconLoader = FontLoader('MaterialIcons');
   iconLoader.addFont(Future.value(ByteData.sublistView(icons.readAsBytesSync())));
   await iconLoader.load();

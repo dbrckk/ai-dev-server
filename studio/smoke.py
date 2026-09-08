@@ -13,10 +13,23 @@ apply_patch(root, {'files': [
     {'path': 'lib/app.dart', 'content': """import 'package:flutter/material.dart';
 class StudioApp extends StatelessWidget {
   const StudioApp({super.key});
+
+  ThemeData _theme(Brightness brightness) {
+    final dark = brightness == Brightness.dark;
+    return ThemeData(
+      brightness: brightness,
+      scaffoldBackgroundColor: dark ? Colors.black : Colors.white,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: Colors.blue,
+        brightness: brightness,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => MaterialApp(
-    theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)),
-    darkTheme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark)),
+    theme: _theme(Brightness.light),
+    darkTheme: _theme(Brightness.dark),
     home: const HomeScreen(),
   );
 }
@@ -25,15 +38,16 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Focus')),
-    body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-      const Text('Ready'),
-      FilledButton(key: const ValueKey('settings_button'), onPressed: () {
+    body: Center(child: FilledButton(
+      key: const ValueKey('settings_button'),
+      onPressed: () {
         Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => Scaffold(
           appBar: AppBar(title: const Text('Settings')),
           body: const Center(child: Text('Session duration')),
         )));
-      }, child: const Text('Open settings')),
-    ])),
+      },
+      child: const Text('Open settings'),
+    )),
   );
 }
 """},
@@ -44,7 +58,7 @@ void main() {
   testWidgets('shows the focus screen', (tester) async {
     await tester.pumpWidget(const StudioApp());
     expect(find.text('Focus'), findsOneWidget);
-    expect(find.text('Ready'), findsOneWidget);
+    expect(find.text('Open settings'), findsOneWidget);
     expect(find.byType(Scaffold), findsOneWidget);
   });
 }

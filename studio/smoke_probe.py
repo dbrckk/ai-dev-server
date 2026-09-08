@@ -69,6 +69,14 @@ def visual_probe(root: Path, sandbox: Sandbox, stage: str) -> int:
     probe = Path(__file__).with_name('visual_test.dart').read_text().replace('APP_NAME', 'smoke_app').replace('JOURNEYS_BASE64', encoded_journeys(JOURNEYS))
     if stage == 'visual_no_guidelines':
         probe = '\n'.join(line for line in probe.splitlines() if 'meetsGuideline(' not in line) + '\n'
+    guideline_map = {
+        'visual_no_tap_guideline': 'androidTapTargetGuideline',
+        'visual_no_label_guideline': 'labeledTapTargetGuideline',
+        'visual_no_contrast_guideline': 'textContrastGuideline',
+    }
+    if stage in guideline_map:
+        probe = '\n'.join(line for line in probe.splitlines()
+                          if guideline_map[stage] not in line) + '\n'
     if stage == 'visual_no_fonts':
         probe = probe.replace('  setUpAll(loadSdkFonts);\n', '')
     if stage == 'visual_no_roboto':
@@ -101,8 +109,9 @@ def run(stage: str) -> int:
             return rc
         if stage == name:
             return 0
-    visual_stages = ('visual', 'visual_no_guidelines', 'visual_no_fonts',
-                     'visual_no_roboto', 'visual_no_icons', 'build')
+    visual_stages = ('visual', 'visual_no_guidelines', 'visual_no_tap_guideline',
+                     'visual_no_label_guideline', 'visual_no_contrast_guideline',
+                     'visual_no_fonts', 'visual_no_roboto', 'visual_no_icons', 'build')
     if stage in visual_stages:
         rc = visual_probe(root, sandbox, 'visual' if stage == 'build' else stage)
         if rc or stage != 'build':
@@ -117,8 +126,9 @@ def run(stage: str) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('stage', choices=['create', 'pubget', 'analyze', 'test', 'visual',
-                                          'visual_no_guidelines', 'visual_no_fonts',
-                                          'visual_no_roboto', 'visual_no_icons', 'build'])
+                                          'visual_no_guidelines', 'visual_no_tap_guideline',
+                                          'visual_no_label_guideline', 'visual_no_contrast_guideline',
+                                          'visual_no_fonts', 'visual_no_roboto', 'visual_no_icons', 'build'])
     return run(parser.parse_args().stage)
 
 

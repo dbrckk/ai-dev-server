@@ -36,28 +36,19 @@ class StudioApp extends StatelessWidget {
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
   @override
-  Widget build(BuildContext context) {
-    final foreground = Theme.of(context).brightness == Brightness.dark
-        ? Colors.white
-        : Colors.black;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Focus')),
-      body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Text('Ready', style: TextStyle(color: foreground)),
-        FilledButton(key: const ValueKey('settings_button'), onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => Scaffold(
-            appBar: AppBar(title: const Text('Settings')),
-            body: Center(child: Text(
-              'Session duration',
-              style: TextStyle(color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black),
-            )),
-          )));
-        }, child: const Text('Open settings')),
-      ])),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Focus')),
+    body: Center(child: FilledButton(
+      key: const ValueKey('settings_button'),
+      onPressed: () {
+        Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => Scaffold(
+          appBar: AppBar(title: const Text('Settings')),
+          body: const Center(child: Text('Session duration')),
+        )));
+      },
+      child: const Text('Open settings'),
+    )),
+  );
 }
 """},
     {'path': 'test/app_test.dart', 'content': """import 'package:flutter/material.dart';
@@ -67,7 +58,7 @@ void main() {
   testWidgets('shows the focus screen', (tester) async {
     await tester.pumpWidget(const StudioApp());
     expect(find.text('Focus'), findsOneWidget);
-    expect(find.text('Ready'), findsOneWidget);
+    expect(find.text('Open settings'), findsOneWidget);
     expect(find.byType(Scaffold), findsOneWidget);
   });
 }

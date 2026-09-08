@@ -1,22 +1,22 @@
 version: 2.1
 
 jobs:
-  visual_full:
+  visual_no_roboto:
     machine: {image: ubuntu-2404:current}
     resource_class: large
-    steps: [checkout, {run: "python3 studio/smoke_probe.py visual"}]
-  visual_no_guidelines:
+    steps: [checkout, {run: "python3 studio/smoke_probe.py visual_no_roboto"}]
+  visual_no_icons:
     machine: {image: ubuntu-2404:current}
     resource_class: large
-    steps: [checkout, {run: "python3 studio/smoke_probe.py visual_no_guidelines"}]
+    steps: [checkout, {run: "python3 studio/smoke_probe.py visual_no_icons"}]
   visual_no_fonts:
     machine: {image: ubuntu-2404:current}
     resource_class: large
     steps: [checkout, {run: "python3 studio/smoke_probe.py visual_no_fonts"}]
 
 workflows:
-  diagnose-visual:
+  diagnose-fonts:
     jobs:
-      - visual_full
-      - visual_no_guidelines
+      - visual_no_roboto
+      - visual_no_icons
       - visual_no_fonts

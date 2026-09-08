@@ -1,33 +1,37 @@
 version: 2.1
 
 jobs:
-  docker_info:
-    machine:
-      image: ubuntu-2404:current
+  smoke_create:
+    machine: {image: ubuntu-2404:current}
     resource_class: large
-    steps:
-      - checkout
-      - run: docker version
-  flutter_image:
-    machine:
-      image: ubuntu-2404:current
+    steps: [checkout, {run: "python3 studio/smoke_probe.py create"}]
+  smoke_pubget:
+    machine: {image: ubuntu-2404:current}
     resource_class: large
-    steps:
-      - checkout
-      - run: docker pull ghcr.io/cirruslabs/flutter:3.44.0@sha256:0a9de3b70b5b7b921a346eb2793e363dc22280849a4fd690d9dde99ce1c2b1b8
-  smoke:
-    machine:
-      image: ubuntu-2404:current
+    steps: [checkout, {run: "python3 studio/smoke_probe.py pubget"}]
+  smoke_analyze:
+    machine: {image: ubuntu-2404:current}
     resource_class: large
-    steps:
-      - checkout
-      - run:
-          no_output_timeout: 30m
-          command: python3 studio/smoke.py
+    steps: [checkout, {run: "python3 studio/smoke_probe.py analyze"}]
+  smoke_test:
+    machine: {image: ubuntu-2404:current}
+    resource_class: large
+    steps: [checkout, {run: "python3 studio/smoke_probe.py test"}]
+  smoke_visual:
+    machine: {image: ubuntu-2404:current}
+    resource_class: large
+    steps: [checkout, {run: "python3 studio/smoke_probe.py visual"}]
+  smoke_build:
+    machine: {image: ubuntu-2404:current}
+    resource_class: large
+    steps: [checkout, {run: "python3 studio/smoke_probe.py build"}]
 
 workflows:
   diagnose-smoke:
     jobs:
-      - docker_info
-      - flutter_image
-      - smoke
+      - smoke_create
+      - smoke_pubget
+      - smoke_analyze
+      - smoke_test
+      - smoke_visual
+      - smoke_build

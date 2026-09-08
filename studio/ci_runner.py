@@ -80,6 +80,8 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
                 result = run_project(project['file'], project_out, work, runner, deadline, clock, baseline_sha)
                 results[index]['status'] = result['status']
                 results[index]['next_stage'] = result.get('next_stage')
+                if result.get('research_status') is not None:
+                    results[index]['research_status'] = result['research_status']
             except subprocess.TimeoutExpired:
                 results[index]['status'] = 'timed_out'
                 deadline = 0

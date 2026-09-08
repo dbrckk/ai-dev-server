@@ -30,6 +30,7 @@ Dans les variables Actions :
 | Paramètre | Valeur par défaut |
 |---|---|
 | `STUDIO_API_BASE` | `https://integrate.api.nvidia.com/v1` ; API HTTPS compatible chat/completions |
+| `STUDIO_CODE_MODEL` | Sur NVIDIA : `qwen/qwen3-coder-480b-a35b-instruct`, pour développement et tests. Sinon : modèle général. |
 | `STUDIO_MODEL` | `nvidia/nemotron-3-super-120b-a12b` ; doit être disponible pour la clé configurée |
 | `STUDIO_VISION_MODEL` | Sur le endpoint NVIDIA par défaut : `nvidia/nemotron-nano-12b-v2-vl`. Sur un autre fournisseur : configuration explicite requise. La valeur `disabled` désactive la revue. |
 
@@ -108,3 +109,9 @@ Si l’étape de développement omet les fichiers de tests, un rôle QA dédié 
 
 
 Le routage distingue désormais le code et les tests de la planification. Sur NVIDIA, `STUDIO_CODE_MODEL` utilise par défaut `qwen/qwen3-coder-480b-a35b-instruct`, documenté sur https://build.nvidia.com/qwen/qwen3-coder-480b-a35b-instruct . La variable permet de choisir un autre modèle ; sur un autre endpoint, le modèle général est conservé si elle est absente. Les modèles effectivement sollicités figurent dans `models_used` du rapport. Une erreur fournisseur reste un blocage explicite, jamais une validation de l’application.
+
+## Réponses différées du fournisseur
+
+Les appels de génération demandent explicitement `stream: false`. Une réponse NVIDIA HTTP 202 avec un identifiant UUID valide est suivie sur le endpoint de statut du même fournisseur, sans soumettre à nouveau la génération. La boucle est bornée à 60 interrogations et cinq minutes ; les redirections et identifiants invalides sont refusés. Une erreur pendant ce suivi bloque le cycle et conserve son état.
+
+Références : https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3-super-120b-a12b-infer et https://docs.api.nvidia.com/nim/reference/meta-llama-3_2-90b-vision-instruct-statuspolling .

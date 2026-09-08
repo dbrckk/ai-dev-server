@@ -141,6 +141,24 @@ class Model:
         if not self.api.key:
             raise StudioError('Missing STUDIO_API_KEY (or NVIDIA_NIM_API_KEY workflow fallback)')
     def ask(self, role, context, screenshots=()):
+        # One protocol repair, charged against the same global model-call budget.
+        for attempt in range(2):
+            value = self._ask(role, context, screenshots)
+            try:
+                if role == 'product':
+                    validate_journeys(value.get('journeys'))
+                elif role == 'implementation':
+                    patch_check(value)
+                elif role in ('review', 'visual'):
+                    verdict(value)
+                return value
+            except (ValueError, StudioError) as e:
+                if attempt or self.calls >= self.limit:
+                    raise StudioError('Structured response rejected: ' + str(e)) from None
+                context += '\nYour previous response violated this schema rule: ' + str(e) + '. Return a corrected complete JSON response; preserve the requested scope.'
+        raise StudioError('Protocol repair exhausted')
+
+    def _ask(self, role, context, screenshots=()):
         if self.calls >= self.limit:
             raise StudioError('Model call budget exhausted; checkpoint retained')
         self.calls += 1

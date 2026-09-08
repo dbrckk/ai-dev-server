@@ -46,3 +46,43 @@ class JourneyTests(unittest.TestCase):
         val = copy.deepcopy(VALID)
         val[0]['steps'][0] = {'action': 'enter_text', 'key': 'name_input', 'value': 'Alice'}
         self.assertEqual(validate_journeys(val), val)
+
+class ProtocolRepairTests(unittest.TestCase):
+    def test_underscore_slug_is_valid(self):
+        val = copy.deepcopy(VALID)
+        val[0]['id'] = 'timer_pause'
+        self.assertEqual(validate_journeys(val), val)
+    def test_one_repair_preserves_budget(self):
+        from core import Model
+        class InvalidThenValid(Model):
+            def __init__(self):
+                self.calls, self.limit = 0, 2
+                self.contexts = []
+            def _ask(self, role, context, screenshots=()):
+                self.calls += 1
+                self.contexts.append(context)
+                return {'journeys': [] if self.calls == 1 else VALID}
+        model = InvalidThenValid()
+        self.assertEqual(model.ask('product', 'brief')['journeys'], VALID)
+        self.assertEqual(model.calls, 2)
+        self.assertIn('schema rule', model.contexts[1])
+    def test_bad_schema_does_not_loop_forever(self):
+        from core import Model, StudioError
+        class AlwaysInvalid(Model):
+            def __init__(self): self.calls, self.limit = 0, 9
+            def _ask(self, *args):
+                self.calls += 1
+                return {'journeys': []}
+        model = AlwaysInvalid()
+        with self.assertRaises(StudioError): model.ask('product', 'brief')
+        self.assertEqual(model.calls, 2)
+    def test_no_protocol_retry_when_budget_exhausted(self):
+        from core import Model, StudioError
+        class Limited(Model):
+            def __init__(self): self.calls, self.limit = 0, 1
+            def _ask(self, *args):
+                self.calls += 1
+                return {'journeys': []}
+        model = Limited()
+        with self.assertRaises(StudioError): model.ask('product', 'brief')
+        self.assertEqual(model.calls, 1)

@@ -38,13 +38,13 @@ def main():
     out = Path('studio-output')
     req = {'id': 'focus-provider-preview', 'target_repo': 'preview/focus', 'app_name': 'focus_preview',
            'enabled': True, 'max_rounds': 2, 'max_calls': 12, 'max_cycles': 1,
-           'brief': 'Create a polished French Android focus timer. Use Flutter SDK only. Main screen: functional countdown starting at 25 minutes, start/pause/reset, and settings navigation. Settings: select 5 or 25 minute session duration, return to the main screen. Include light and dark themes, large touch targets, readable large text, clear hierarchy, professional spacing, and no decorative clutter. No backend, ads, account or persistence is required: settings and statistics are session-only. Acceptance journeys must verify the settings screen and start/pause/reset states using stable keys and deterministic text. Include real widget tests. The app must run without external assets, dependencies or services.'}
+           'brief': 'Create a polished French Android focus timer. Use Flutter SDK only. Main screen: functional countdown starting at 25 minutes, start/pause/reset, and settings navigation. Settings: select 5 or 25 minute session duration, return to the main screen. Include light and dark themes, large touch targets, readable large text, clear hierarchy, professional spacing, and no decorative clutter. No backend, ads, account or persistence is required: settings and statistics are session-only. Define exactly two acceptance journeys. Acceptance journeys must verify the settings screen and start/pause/reset states using stable keys and deterministic text. Include real widget tests. The app must run without external assets, dependencies or services.'}
     try:
         state = execute(req, Path('/tmp/provider-preview-app'), out, github=ArtifactProject(out))
         state['delivery_mode'] = 'workflow_artifact_only'
         state['checkpoint_digest'] = state.pop('checkpoint_commit', None)
         (out / 'report.json').write_text(canonical(state))
-        print(canonical({'status': state['status'], 'model_calls': state.get('model_calls_this_cycle')}))
+        print(canonical({'status': state['status'], 'model_calls': state.get('model_calls_this_cycle'), 'blockers': state.get('blockers', [])}))
         return 0 if state['status'] in ('validated_preview', 'awaiting_visual_review') else 1
     except (StudioError, ValueError, OSError) as e:
         out.mkdir(exist_ok=True)

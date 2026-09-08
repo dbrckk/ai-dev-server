@@ -13,6 +13,7 @@ from github_runner import main as github_main, run as github_run
 from orchestrator import run_project
 
 BASELINE = 'a' * 40
+MISSING_STAGE = 'future_capability_qa'
 
 
 class OrchestratorTests(unittest.TestCase):
@@ -30,6 +31,20 @@ class OrchestratorTests(unittest.TestCase):
         if 'studio/security_stage.py' in args:
             return {'status': 'finished', 'completion': {'finished': True, 'next_stage': None}}
         return {'status': 'validated_preview'}
+
+    def _missing_report(self):
+        return {
+            'status': 'validated_preview',
+            'completion': {'finished': False, 'next_stage': MISSING_STAGE, 'blockers': [MISSING_STAGE + '_missing']},
+            'release_evidence': {
+                'capability_qa': {
+                    'passed': True,
+                    'required_qa_stages': [MISSING_STAGE],
+                    'permissions': [],
+                    'reasons': [{'profile': MISSING_STAGE, 'source': 'source_marker', 'value': 'future_capability'}],
+                }
+            },
+        }
 
     def test_full_pipeline_reaches_finished(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -52,20 +67,6 @@ class OrchestratorTests(unittest.TestCase):
             for call, script in zip(calls, expected):
                 self.assertIn(script, call)
 
-    def _billing_report(self):
-        return {
-            'status': 'validated_preview',
-            'completion': {'finished': False, 'next_stage': 'billing_qa', 'blockers': ['billing_qa_missing']},
-            'release_evidence': {
-                'capability_qa': {
-                    'passed': True,
-                    'required_qa_stages': ['billing_qa'],
-                    'permissions': [],
-                    'reasons': [{'profile': 'billing_qa', 'source': 'dependency', 'value': 'in_app_purchase'}],
-                }
-            },
-        }
-
     def test_unregistered_stage_creates_work_order_and_runs_research(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -85,7 +86,7 @@ class OrchestratorTests(unittest.TestCase):
                         'items': [],
                     }))
                     return subprocess.CompletedProcess(args, 0)
-                report = {'status': 'validated_preview'} if 'studio/run.py' in args else self._billing_report()
+                report = {'status': 'validated_preview'} if 'studio/run.py' in args else self._missing_report()
                 (out / 'report.json').write_text(json.dumps(report))
                 return subprocess.CompletedProcess(args, 0)
             result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)
@@ -96,7 +97,7 @@ class OrchestratorTests(unittest.TestCase):
             self.assertEqual(evolution['status'], 'adaptation_required')
             self.assertEqual(work_order['status'], 'candidate_planned')
             self.assertEqual(work_order['baseline_sha'], BASELINE)
-            self.assertTrue(work_order['candidate_branch'].startswith('evolution/billing-qa-'))
+            self.assertTrue(work_order['candidate_branch'].startswith('evolution/future-capability-qa-'))
             self.assertTrue(any('studio/evolution_research.py' in call for call in calls))
 
     def test_research_failure_is_explicit_not_worker_success(self):
@@ -111,7 +112,7 @@ class OrchestratorTests(unittest.TestCase):
                     (out / 'evolution-research-error.json').write_text(json.dumps({
                         'status': 'research_blocked', 'error': 'trusted_research_failed'}))
                     return subprocess.CompletedProcess(args, 1)
-                report = {'status': 'validated_preview'} if 'studio/run.py' in args else self._billing_report()
+                report = {'status': 'validated_preview'} if 'studio/run.py' in args else self._missing_report()
                 (out / 'report.json').write_text(json.dumps(report))
                 return subprocess.CompletedProcess(args, 0)
             result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)
@@ -130,7 +131,7 @@ class OrchestratorTests(unittest.TestCase):
                 out.mkdir(parents=True, exist_ok=True)
                 report = {'status': 'validated_preview'} if 'studio/run.py' in args else {
                     'status': 'validated_preview',
-                    'completion': {'finished': False, 'next_stage': 'billing_qa'},
+                    'completion': {'finished': False, 'next_stage': MISSING_STAGE},
                 }
                 (out / 'report.json').write_text(json.dumps(report))
                 return subprocess.CompletedProcess(args, 0)

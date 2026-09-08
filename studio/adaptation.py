@@ -76,6 +76,10 @@ def build_adaptation_request(report: dict, registered_stages: set[str] | frozens
         seen.add(key)
         gaps.append({'kind': kind, 'value': value, 'reason': reason})
 
+    if isinstance(completion, dict) and not completion.get('finished') and not next_stage:
+        add('invalid_completion_state', 'missing_next_stage',
+            'The project is unfinished but the completion contract supplied no next stage.')
+
     if isinstance(next_stage, str) and next_stage and next_stage not in registered_stages:
         add('missing_stage_executor', next_stage,
             'Completion requires a trusted stage that is not implemented by the current factory.')

@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import time
+import xml.etree.ElementTree as ET
 
 from core import StudioError
 from device_qa import package_name, run_command, start_emulator, wait_for_boot
@@ -15,6 +16,7 @@ from device_qa import package_name, run_command, start_emulator, wait_for_boot
 POST_NOTIFICATIONS = 'android.permission.POST_NOTIFICATIONS'
 CRASH_PATTERNS = ('FATAL EXCEPTION', 'AndroidRuntime: FATAL', 'ANR in ', 'Unhandled Exception')
 NOTIFICATION_DEPENDENCIES = ('firebase_messaging', 'flutter_local_notifications')
+BOUNDS = re.compile(r'^\[(\d+),(\d+)\]\[(\d+),(\d+)\]$')
 
 
 def _serial(adb: str) -> str:
@@ -75,9 +77,72 @@ def _notification_dump(adb: str, serial: str) -> str:
 def _count_package_notifications(text: str, pkg: str) -> int:
     if not text or not pkg:
         return 0
-    # NotificationRecord lines consistently carry pkg=<application id>; count only the target app.
     return sum(1 for line in text.splitlines()
                if 'NotificationRecord' in line and re.search(r'\bpkg=' + re.escape(pkg) + r'(?:\s|$)', line))
+
+
+def _apk_label(apk: Path) -> str | None:
+    aapt = shutil.which('aapt')
+    if not aapt:
+        return None
+    result = run_command([aapt, 'dump', 'badging', str(apk)], timeout=60)
+    if result.returncode:
+        return None
+    match = re.search(r"application-label(?:-[^:]*)?:'([^']+)'", result.stdout)
+    return match.group(1).strip() if match and match.group(1).strip() else None
+
+
+def _tap_notification(adb: str, serial: str, label: str, pkg: str) -> dict:
+    expand = run_command([adb, '-s', serial, 'shell', 'cmd', 'statusbar', 'expand-notifications'], timeout=30)
+    if expand.returncode:
+        return {'passed': False, 'blocker': 'notification_shade_expand_failed'}
+    time.sleep(1)
+    dump = run_command([adb, '-s', serial, 'shell', 'uiautomator', 'dump', '/sdcard/studio-notification.xml'], timeout=30)
+    if dump.returncode:
+        return {'passed': False, 'blocker': 'notification_ui_dump_failed'}
+    xml = run_command([adb, '-s', serial, 'shell', 'cat', '/sdcard/studio-notification.xml'], timeout=30)
+    if xml.returncode or not xml.stdout.strip():
+        return {'passed': False, 'blocker': 'notification_ui_dump_unreadable'}
+    try:
+        root = ET.fromstring(xml.stdout[xml.stdout.find('<hierarchy'):])
+    except (ET.ParseError, ValueError):
+        return {'passed': False, 'blocker': 'notification_ui_dump_invalid'}
+
+    parents = {child: parent for parent in root.iter() for child in parent}
+    target = None
+    for node in root.iter('node'):
+        text = (node.attrib.get('text', '') + ' ' + node.attrib.get('content-desc', '')).strip()
+        if label and label.lower() in text.lower():
+            current = node
+            while current is not None:
+                if current.attrib.get('clickable') == 'true' and BOUNDS.match(current.attrib.get('bounds', '')):
+                    target = current
+                    break
+                current = parents.get(current)
+            if target is not None:
+                break
+    if target is None:
+        return {'passed': False, 'blocker': 'notification_click_target_not_found', 'app_label': label}
+    bounds = BOUNDS.match(target.attrib.get('bounds', ''))
+    if bounds is None:
+        return {'passed': False, 'blocker': 'notification_click_bounds_invalid'}
+    x1, y1, x2, y2 = (int(value) for value in bounds.groups())
+    tap = run_command([adb, '-s', serial, 'shell', 'input', 'tap', str((x1 + x2) // 2), str((y1 + y2) // 2)], timeout=30)
+    time.sleep(2)
+    focus = run_command([adb, '-s', serial, 'shell', 'dumpsys', 'window', 'windows'], timeout=60)
+    foreground = focus.returncode == 0 and any(
+        pkg in line for line in focus.stdout.splitlines()
+        if 'mCurrentFocus' in line or 'mFocusedApp' in line
+    )
+    crashes = _crashes(adb, serial)
+    return {
+        'passed': tap.returncode == 0 and foreground and not crashes,
+        'tap_exit': tap.returncode,
+        'returned_to_app': foreground,
+        'post_tap_crash_count': len(crashes),
+        'app_label': label,
+        'blocker': None if tap.returncode == 0 and foreground and not crashes else 'notification_tap_did_not_resume_stably',
+    }
 
 
 def validate_notifications(root: Path, out: Path, adb: str = 'adb') -> dict:
@@ -111,51 +176,46 @@ def validate_notifications(root: Path, out: Path, adb: str = 'adb') -> dict:
         }
         blockers: list[str] = []
         states = []
-
-        # Android 13+ notification permission path. Apps targeting older SDKs may not expose this permission;
-        # dependency evidence still keeps observation requirements fail-closed.
         if POST_NOTIFICATIONS in declared:
             for state, verb in (('denied', 'revoke'), ('granted', 'grant')):
                 run_command([adb, '-s', serial, 'logcat', '-c'], timeout=30)
                 command = run_command([adb, '-s', serial, 'shell', 'pm', verb, pkg, POST_NOTIFICATIONS], timeout=30)
                 launch = _launch(adb, serial, pkg)
                 time.sleep(2)
-                # Exercise background / resume because notification handling frequently crosses lifecycle states.
                 run_command([adb, '-s', serial, 'shell', 'input', 'keyevent', '3'], timeout=30)
                 time.sleep(1)
                 resume = _launch(adb, serial, pkg)
                 time.sleep(2)
                 crash_lines = _crashes(adb, serial)
-                states.append({
-                    'state': state,
-                    'permission_exit': command.returncode,
-                    'launch_exit': launch.returncode,
-                    'resume_exit': resume.returncode,
-                    'crash_count': len(crash_lines),
-                })
+                states.append({'state': state, 'permission_exit': command.returncode,
+                               'launch_exit': launch.returncode, 'resume_exit': resume.returncode,
+                               'crash_count': len(crash_lines)})
                 if command.returncode:
                     blockers.append('notification_permission_state_control_failed:' + state)
                 if launch.returncode or resume.returncode or crash_lines:
                     blockers.append('notification_lifecycle_unstable:' + state)
 
-        # Observe only app-originated notifications. We deliberately do not use `cmd notification post`
-        # because that would prove the shell can notify, not that the release APK can.
         before = _count_package_notifications(_notification_dump(adb, serial), pkg)
         run_command([adb, '-s', serial, 'shell', 'monkey', '-p', pkg,
                      '--throttle', '100', '--pct-syskeys', '0', '80'], timeout=120)
         run_command([adb, '-s', serial, 'shell', 'input', 'keyevent', '3'], timeout=30)
         time.sleep(5)
-        after_dump = _notification_dump(adb, serial)
-        after = _count_package_notifications(after_dump, pkg)
+        after = _count_package_notifications(_notification_dump(adb, serial), pkg)
         observed = after > before or after > 0
-
         if _crashes(adb, serial):
             blockers.append('notification_runtime_crash_or_anr_detected')
         if not observed:
             blockers.append('no_app_originated_notification_observed')
 
-        # Push delivery cannot be claimed without a trusted sender / credential. Local-notification apps can pass
-        # when the release APK itself posts one; Firebase-only apps remain blocked rather than fabricating evidence.
+        tap_result = None
+        if observed:
+            label = _apk_label(apk)
+            if not label:
+                blockers.append('notification_app_label_unavailable')
+            else:
+                tap_result = _tap_notification(adb, serial, label, pkg)
+                if not tap_result.get('passed'):
+                    blockers.append(tap_result.get('blocker') or 'notification_tap_not_verified')
         if 'firebase_messaging' in deps and not observed:
             blockers.append('external_push_delivery_not_exercised')
 
@@ -169,7 +229,8 @@ def validate_notifications(root: Path, out: Path, adb: str = 'adb') -> dict:
             'notifications_before': before,
             'notifications_after': after,
             'app_originated_notification_observed': observed,
-            'notification_tap_verified': False,
+            'notification_tap_verified': bool(tap_result and tap_result.get('passed')),
+            'notification_tap': tap_result,
             'blockers': sorted(set(blockers)),
         }
         out.mkdir(parents=True, exist_ok=True)

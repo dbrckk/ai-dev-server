@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import re
 import shutil
 
 from core import Sandbox, StudioError, apply_patch
@@ -71,6 +72,12 @@ def visual_probe(root: Path, sandbox: Sandbox, stage: str) -> int:
                           if 'meetsGuideline(' not in line and not line.strip().startswith('reason:')) + '\n'
     if stage == 'visual_no_fonts':
         probe = probe.replace('  setUpAll(loadSdkFonts);\n', '')
+    if stage == 'visual_no_roboto':
+        probe = re.sub(r"  final cached = directory\.listSync\(\).*?  await textLoader\.load\(\);\n",
+                       '', probe, flags=re.S)
+    if stage == 'visual_no_icons':
+        probe = re.sub(r"  final icons = File\('\$\{directory\.path\}/MaterialIcons-Regular\.otf'\);.*?  await iconLoader\.load\(\);\n",
+                       '', probe, flags=re.S)
     (root / 'test/__studio_visual_test.dart').write_text(probe)
     (root / 'dart_test.yaml').write_text('tags:\n  studio-visual:\n')
     rc, output = sandbox.run(['flutter', 'test', '--no-pub', '--update-goldens', 'test/__studio_visual_test.dart'], network=False, timeout=900)
@@ -95,7 +102,9 @@ def run(stage: str) -> int:
             return rc
         if stage == name:
             return 0
-    if stage in ('visual', 'visual_no_guidelines', 'visual_no_fonts', 'build'):
+    visual_stages = ('visual', 'visual_no_guidelines', 'visual_no_fonts',
+                     'visual_no_roboto', 'visual_no_icons', 'build')
+    if stage in visual_stages:
         rc = visual_probe(root, sandbox, 'visual' if stage == 'build' else stage)
         if rc or stage != 'build':
             return rc
@@ -109,7 +118,8 @@ def run(stage: str) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('stage', choices=['create', 'pubget', 'analyze', 'test', 'visual',
-                                          'visual_no_guidelines', 'visual_no_fonts', 'build'])
+                                          'visual_no_guidelines', 'visual_no_fonts',
+                                          'visual_no_roboto', 'visual_no_icons', 'build'])
     return run(parser.parse_args().stage)
 
 

@@ -8,13 +8,37 @@ from __future__ import annotations
 PREVIEW_STATUS = "validated_preview"
 FINISHED_STATUS = "finished"
 
-RELEASE_STAGES = (
+BASE_RELEASE_STAGES = (
     "release_build",
     "real_device",
+    "capability_qa",
+)
+POST_QA_STAGES = (
     "store_metadata",
     "privacy_policy",
     "security_scan",
 )
+ALLOWED_DYNAMIC_QA = {
+    "performance_qa",
+    "native_qa",
+    "notification_qa",
+    "billing_qa",
+    "platform_view_qa",
+}
+
+
+def required_release_stages(state: dict) -> tuple[str, ...]:
+    """Return trusted stages in order, including capability-derived QA gates."""
+    release = state.get("release_evidence", {})
+    capability = release.get("capability_qa")
+    dynamic: list[str] = []
+    if isinstance(capability, dict) and capability.get("passed"):
+        requested = capability.get("required_qa_stages", [])
+        if isinstance(requested, list):
+            for stage in requested:
+                if stage in ALLOWED_DYNAMIC_QA and stage not in dynamic:
+                    dynamic.append(stage)
+    return BASE_RELEASE_STAGES + tuple(dynamic) + POST_QA_STAGES
 
 
 def completion_report(state: dict) -> dict:
@@ -32,7 +56,7 @@ def completion_report(state: dict) -> dict:
         blockers.append("validated_apk_not_exported")
 
     release = state.get("release_evidence", {})
-    for key in RELEASE_STAGES:
+    for key in required_release_stages(state):
         evidence = release.get(key)
         if not evidence or (isinstance(evidence, dict) and evidence.get("passed") is False):
             blockers.append(key + "_missing")
@@ -52,7 +76,7 @@ def next_stage(state: dict) -> str | None:
     if "preview_not_validated" in report["blockers"]:
         return "preview"
     release = state.get("release_evidence", {})
-    for stage in RELEASE_STAGES:
+    for stage in required_release_stages(state):
         evidence = release.get(stage)
         if not evidence or (isinstance(evidence, dict) and evidence.get("passed") is False):
             return stage
@@ -61,6 +85,7 @@ def next_stage(state: dict) -> str | None:
 
 def apply_completion(state: dict) -> dict:
     report = completion_report(state)
+    report["required_stages"] = list(required_release_stages(state))
     report["next_stage"] = next_stage(state)
     state["completion"] = report
     state["release_status"] = "store_ready" if report["finished"] else "not_store_ready"

@@ -22,6 +22,7 @@ class CompletionTests(unittest.TestCase):
         self.assertFalse(report["finished"])
         self.assertIn("release_build_missing", report["blockers"])
         self.assertIn("real_device_missing", report["blockers"])
+        self.assertIn("capability_qa_missing", report["blockers"])
         self.assertEqual(next_stage(preview_state()), "release_build")
 
     def test_scheduler_advances_in_strict_order(self):
@@ -29,6 +30,8 @@ class CompletionTests(unittest.TestCase):
         state["release_evidence"] = {"release_build": {"passed": True, "sha256": "abc"}}
         self.assertEqual(next_stage(state), "real_device")
         state["release_evidence"]["real_device"] = True
+        self.assertEqual(next_stage(state), "capability_qa")
+        state["release_evidence"]["capability_qa"] = {"passed": True, "required_qa_stages": []}
         self.assertEqual(next_stage(state), "store_metadata")
         state["release_evidence"]["store_metadata"] = True
         self.assertEqual(next_stage(state), "privacy_policy")
@@ -45,6 +48,7 @@ class CompletionTests(unittest.TestCase):
         state["release_evidence"] = {
             "release_build": {"passed": True, "sha256": "abc"},
             "real_device": True,
+            "capability_qa": {"passed": True, "required_qa_stages": []},
             "store_metadata": True,
             "privacy_policy": True,
             "security_scan": True,
@@ -60,7 +64,7 @@ class CompletionTests(unittest.TestCase):
         state = preview_state()
         state["code_review"] = {"passed": False, "blockers": ["defect"]}
         state["release_evidence"] = {k: True for k in (
-            "release_build", "real_device", "store_metadata", "privacy_policy", "security_scan"
+            "release_build", "real_device", "capability_qa", "store_metadata", "privacy_policy", "security_scan"
         )}
         self.assertFalse(completion_report(state)["finished"])
 

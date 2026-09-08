@@ -4,13 +4,14 @@ jobs:
   visual_full:
     machine: {image: ubuntu-2404:current}
     resource_class: large
-    steps:
-      - checkout
-      - run:
-          no_output_timeout: 30m
-          command: python3 studio/smoke_probe.py visual
+    steps: [checkout, {run: "python3 studio/smoke_probe.py visual"}]
+  visual_no_guidelines:
+    machine: {image: ubuntu-2404:current}
+    resource_class: large
+    steps: [checkout, {run: "python3 studio/smoke_probe.py visual_no_guidelines"}]
 
 workflows:
-  validate-visual:
+  diagnose-guidelines:
     jobs:
       - visual_full
+      - visual_no_guidelines

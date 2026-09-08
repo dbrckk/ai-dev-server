@@ -86,7 +86,7 @@ class OrchestratorTests(unittest.TestCase):
             self.assertEqual(work_order['baseline_sha'], BASELINE)
             self.assertTrue(work_order['candidate_branch'].startswith('evolution/billing-qa-'))
 
-    def test_adaptation_refuses_missing_baseline(self):
+    def test_adaptation_without_baseline_stays_blocked_without_promotable_work_order(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             out = root / 'out'
@@ -100,8 +100,10 @@ class OrchestratorTests(unittest.TestCase):
                 }
                 (out / 'report.json').write_text(json.dumps(report))
                 return subprocess.CompletedProcess(args, 0)
-            with self.assertRaisesRegex(StudioError, 'baseline SHA'):
-                run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, None)
+            result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, None)
+            self.assertEqual(result['status'], 'adaptation_required')
+            self.assertTrue((out / 'evolution-request.json').is_file())
+            self.assertFalse((out / 'evolution-work-order.json').exists())
 
     def test_successful_stage_must_advance(self):
         with tempfile.TemporaryDirectory() as tmp:

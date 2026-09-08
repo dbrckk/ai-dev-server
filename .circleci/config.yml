@@ -1,37 +1,22 @@
 version: 2.1
 
 jobs:
-  smoke_create:
-    machine: {image: ubuntu-2404:current}
-    resource_class: large
-    steps: [checkout, {run: "python3 studio/smoke_probe.py create"}]
-  smoke_pubget:
-    machine: {image: ubuntu-2404:current}
-    resource_class: large
-    steps: [checkout, {run: "python3 studio/smoke_probe.py pubget"}]
-  smoke_analyze:
-    machine: {image: ubuntu-2404:current}
-    resource_class: large
-    steps: [checkout, {run: "python3 studio/smoke_probe.py analyze"}]
-  smoke_test:
-    machine: {image: ubuntu-2404:current}
-    resource_class: large
-    steps: [checkout, {run: "python3 studio/smoke_probe.py test"}]
-  smoke_visual:
+  visual_full:
     machine: {image: ubuntu-2404:current}
     resource_class: large
     steps: [checkout, {run: "python3 studio/smoke_probe.py visual"}]
-  smoke_build:
+  visual_no_guidelines:
     machine: {image: ubuntu-2404:current}
     resource_class: large
-    steps: [checkout, {run: "python3 studio/smoke_probe.py build"}]
+    steps: [checkout, {run: "python3 studio/smoke_probe.py visual_no_guidelines"}]
+  visual_no_fonts:
+    machine: {image: ubuntu-2404:current}
+    resource_class: large
+    steps: [checkout, {run: "python3 studio/smoke_probe.py visual_no_fonts"}]
 
 workflows:
-  diagnose-smoke:
+  diagnose-visual:
     jobs:
-      - smoke_create
-      - smoke_pubget
-      - smoke_analyze
-      - smoke_test
-      - smoke_visual
-      - smoke_build
+      - visual_full
+      - visual_no_guidelines
+      - visual_no_fonts

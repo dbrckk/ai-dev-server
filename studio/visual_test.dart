@@ -48,9 +48,10 @@ Future<void> loadSdkFonts() async {
   if (!directory.existsSync()) {
     throw StateError('Flutter material font cache missing');
   }
-  final fonts = directory.listSync().whereType<File>().toList();
-  final roboto = fonts.where((file) =>
+  final cached = directory.listSync().whereType<File>().where((file) =>
       file.uri.pathSegments.last.startsWith('Roboto') && file.path.endsWith('.ttf')).toList();
+  final bundled = File('${sdk.path}/engine/src/flutter/txt/third_party/fonts/Roboto-Regular.ttf');
+  final roboto = cached.isNotEmpty ? cached : (bundled.existsSync() ? <File>[bundled] : <File>[]);
   if (roboto.isEmpty) throw StateError('Real Roboto fonts missing; refusing block-glyph screenshots');
   final textLoader = FontLoader('Roboto');
   for (final font in roboto) {

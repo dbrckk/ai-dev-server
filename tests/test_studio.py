@@ -155,6 +155,14 @@ class StudioTests(unittest.TestCase):
             self.fail('Completed run must not start model or sandbox')
         resumed, _, _ = self.run_fixture(model=forbidden, sandbox=forbidden, gh=gh)
         self.assertEqual(resumed['status'], 'validated_preview')
+    def test_old_validation_contract_is_revalidated(self):
+        _, _, gh = self.run_fixture()
+        gh.state.pop('validation_contract')
+        previous_rounds = gh.state['rounds']
+        state, _, _ = self.run_fixture(gh=gh)
+        self.assertEqual(state['status'], 'validated_preview')
+        self.assertEqual(state['validation_contract'], 2)
+        self.assertEqual(state['rounds'], previous_rounds + 1)
     def test_changed_brief_rejected(self):
         _, _, gh = self.run_fixture()
         gh.state['request_hash'] = 'changed'

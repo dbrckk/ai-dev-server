@@ -48,14 +48,15 @@ class PrivacyAuditTests(unittest.TestCase):
             self.assertEqual(audit['sensitive_data_classes'], ['photos_or_videos'])
             self.assertFalse(audit['can_assert_no_external_collection'])
 
-    def test_local_storage_is_reported_without_becoming_collection(self):
+    def test_local_storage_is_not_misclassified_as_network_collection(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             self.make_app(root, '<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application /></manifest>', "import 'dart:io';\nvoid main(){ File('x').writeAsStringSync('y'); }")
             audit = analyze(root)
             self.assertTrue(audit['local_storage_detected'])
-            self.assertTrue(audit['network_capable'])
-            self.assertFalse(audit['can_assert_no_external_collection'])
+            self.assertFalse(audit['network_capable'])
+            self.assertTrue(audit['can_assert_no_external_collection'])
+            self.assertTrue(build_data_safety(audit)['local_processing_only'])
 
     def test_package_writes_policy_and_data_safety_evidence(self):
         with tempfile.TemporaryDirectory() as tmp:

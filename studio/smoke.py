@@ -13,10 +13,27 @@ apply_patch(root, {'files': [
     {'path': 'lib/app.dart', 'content': """import 'package:flutter/material.dart';
 class StudioApp extends StatelessWidget {
   const StudioApp({super.key});
+
+  ThemeData _theme(Brightness brightness) {
+    final dark = brightness == Brightness.dark;
+    return ThemeData(
+      brightness: brightness,
+      scaffoldBackgroundColor: dark ? Colors.black : Colors.white,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: Colors.blue,
+        brightness: brightness,
+      ),
+      textTheme: ThemeData(brightness: brightness).textTheme.apply(
+        bodyColor: dark ? Colors.white : Colors.black,
+        displayColor: dark ? Colors.white : Colors.black,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => MaterialApp(
-    theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)),
-    darkTheme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark)),
+    theme: _theme(Brightness.light),
+    darkTheme: _theme(Brightness.dark),
     home: const HomeScreen(),
   );
 }

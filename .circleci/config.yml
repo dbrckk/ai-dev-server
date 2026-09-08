@@ -1,17 +1,22 @@
 version: 2.1
 
 jobs:
-  visual_full:
+  no_tap:
     machine: {image: ubuntu-2404:current}
     resource_class: large
-    steps: [checkout, {run: "python3 studio/smoke_probe.py visual"}]
-  visual_no_guidelines:
+    steps: [checkout, {run: "python3 studio/smoke_probe.py visual_no_tap_guideline"}]
+  no_label:
     machine: {image: ubuntu-2404:current}
     resource_class: large
-    steps: [checkout, {run: "python3 studio/smoke_probe.py visual_no_guidelines"}]
+    steps: [checkout, {run: "python3 studio/smoke_probe.py visual_no_label_guideline"}]
+  no_contrast:
+    machine: {image: ubuntu-2404:current}
+    resource_class: large
+    steps: [checkout, {run: "python3 studio/smoke_probe.py visual_no_contrast_guideline"}]
 
 workflows:
-  diagnose-guidelines:
+  diagnose-guideline:
     jobs:
-      - visual_full
-      - visual_no_guidelines
+      - no_tap
+      - no_label
+      - no_contrast

@@ -86,3 +86,43 @@ class ProtocolRepairTests(unittest.TestCase):
         model = Limited()
         with self.assertRaises(StudioError): model.ask('product', 'brief')
         self.assertEqual(model.calls, 1)
+
+class VisionDefaultsTests(unittest.TestCase):
+    def test_nvidia_default(self):
+        from unittest.mock import patch
+        from core import Model
+        with patch.dict('os.environ', {'STUDIO_API_KEY': 'test'}, clear=True):
+            self.assertEqual(Model(2).vision, 'nvidia/nemotron-nano-12b-v2-vl')
+    def test_other_provider_never_receives_nvidia_model_implicitly(self):
+        from unittest.mock import patch
+        from core import Model
+        with patch.dict('os.environ', {'STUDIO_API_KEY': 'test', 'STUDIO_API_BASE': 'https://example.com/v1'}, clear=True):
+            self.assertEqual(Model(2).vision, '')
+    def test_explicit_disable(self):
+        from unittest.mock import patch
+        from core import Model
+        with patch.dict('os.environ', {'STUDIO_API_KEY': 'test', 'STUDIO_VISION_MODEL': 'disabled'}, clear=True):
+            self.assertEqual(Model(2).vision, '')
+
+class TruncationTests(unittest.TestCase):
+    def test_truncated_output_gets_one_budgeted_retry(self):
+        from core import Model, ProtocolError
+        class Truncated(Model):
+            def __init__(self): self.calls, self.limit = 0, 2
+            def _ask(self, *args):
+                self.calls += 1
+                if self.calls == 1: raise ProtocolError('Model response truncated')
+                return {'journeys': VALID}
+        model = Truncated()
+        self.assertEqual(model.ask('product', 'brief')['journeys'], VALID)
+        self.assertEqual(model.calls, 2)
+    def test_auth_errors_are_not_protocol_retried(self):
+        from core import Model, APIError
+        class AuthError(Model):
+            def __init__(self): self.calls, self.limit = 0, 10
+            def _ask(self, *args):
+                self.calls += 1
+                raise APIError(401)
+        model = AuthError()
+        with self.assertRaises(APIError): model.ask('product', 'brief')
+        self.assertEqual(model.calls, 1)

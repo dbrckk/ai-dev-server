@@ -31,7 +31,7 @@ Dans les variables Actions :
 |---|---|
 | `STUDIO_API_BASE` | `https://integrate.api.nvidia.com/v1` ; API HTTPS compatible chat/completions |
 | `STUDIO_MODEL` | `nvidia/nemotron-3-super-120b-a12b` ; doit être disponible pour la clé configurée |
-| `STUDIO_VISION_MODEL` | Aucun ; configurer un modèle supportant les images sur le même fournisseur pour activer la revue graphique. |
+| `STUDIO_VISION_MODEL` | Sur le endpoint NVIDIA par défaut : `nvidia/nemotron-nano-12b-v2-vl`. Sur un autre fournisseur : configuration explicite requise. La valeur `disabled` désactive la revue. |
 
 Les noms de modèles/configurations fournisseurs ne prouvent pas leur disponibilité. Un fournisseur absent, un quota ou une réponse invalide bloque explicitement. Aucun abonnement ChatGPT n'est converti en clé API par ce moteur. Le fournisseur IA et GitHub Actions peuvent consommer des quotas ou être facturés selon votre compte ; le code ne garantit pas un fonctionnement gratuit illimité.
 
@@ -91,3 +91,11 @@ Chaque parcours s’exécute dans les quatre configurations d’affichage. Les c
 Le workflow `Real Provider Mobile Preview` exécute une génération réelle et bornée d’un minuteur de concentration, via `studio/provider_probe.py`. Il livre `source.zip`, le rapport, les captures et l’APK si les contrôles réussissent. Ce mode ne crée ni ne modifie un dépôt cible ; le champ de cible `preview/focus` est un identifiant local. Il ne prouve donc pas les permissions d’écriture du jeton GitHub.
 
 Le contrôle `control/provider-probe.json` active/désactive cet essai. Il n’a aucune planification récurrente. Le budget est de 12 appels logiques et deux essais d’implémentation maximum. Aucun jeton GitHub cible n’est transmis au job. Sans clé fournisseur, le moteur s’arrête avant de démarrer Docker.
+
+
+La réponse d’un modèle qui enfreint le schéma produit, fichiers ou verdict reçoit une demande de correction unique, comptabilisée dans le budget global. Les anciennes validations sans parcours ne sont plus considérées comme validées par le contrat actuel ; une nouvelle validation est nécessaire, dans le budget de cycles restant.
+
+Le modèle vision NVIDIA par défaut est documenté ici : https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-nano-12b-v2-vl . Sa disponibilité effective et les quotas restent ceux de la clé configurée. Aucun autre fournisseur n’est sélectionné silencieusement.
+
+
+Les réponses JSON invalides ou tronquées disposent également d’une reprise de protocole. Pour Nemotron 3 sur le endpoint NVIDIA, le budget de raisonnement est borné à 2 048 tokens afin de réserver de la place au livrable ; la réponse totale est limitée à 8 192 tokens pour les rôles documentaires/revues et 16 000 pour le code. Le mécanisme documenté est https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3-super-120b-a12b-infer . Ces paramètres ne sont pas envoyés à d’autres modèles ou fournisseurs.

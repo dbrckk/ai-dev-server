@@ -32,7 +32,8 @@ class ArtifactProject:
 
 def main():
     config = json.loads(Path('control/provider-probe.json').read_text())
-    if config != {'enabled': True, 'revision': 1}:
+    if (set(config) != {'enabled', 'revision'} or config.get('enabled') is not True
+            or type(config.get('revision')) is not int or not 1 <= config['revision'] <= 1000):
         print('Provider preview disabled or unexpected control payload')
         return 0
     out = Path('studio-output')

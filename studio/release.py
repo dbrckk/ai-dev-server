@@ -12,10 +12,11 @@ from core import Sandbox, StudioError
 
 
 def build_release(root: Path, sandbox: Sandbox | None = None) -> dict:
-    """Build a release AAB and return verifiable evidence.
+    """Build release AAB + APK and return verifiable evidence.
 
-    This proves that the generated source can produce a release-mode bundle. It
-    intentionally does not claim Play signing, store submission, or device QA.
+    The AAB is the store-oriented artifact. The APK is produced from the same
+    source/release mode so trusted Android emulator QA can install exactly the
+    release configuration instead of falling back to a debug build.
     """
     sandbox = sandbox or Sandbox(root)
     commands = [
@@ -23,6 +24,7 @@ def build_release(root: Path, sandbox: Sandbox | None = None) -> dict:
         (['flutter', 'analyze', '--no-pub'], False),
         (['flutter', 'test', '--no-pub', '--exclude-tags=studio-visual'], False),
         (['flutter', 'build', 'appbundle', '--release', '--no-pub'], True),
+        (['flutter', 'build', 'apk', '--release', '--no-pub'], True),
     ]
     logs = []
     for args, network in commands:
@@ -32,13 +34,21 @@ def build_release(root: Path, sandbox: Sandbox | None = None) -> dict:
             return {'passed': False, 'logs': logs}
 
     bundle = root / 'build/app/outputs/bundle/release/app-release.aab'
+    apk = root / 'build/app/outputs/flutter-apk/app-release.apk'
     if not bundle.is_file() or bundle.stat().st_size <= 1000:
         raise StudioError('Release build reported success but no valid AAB was produced')
-    raw = bundle.read_bytes()
+    if not apk.is_file() or apk.stat().st_size <= 1000:
+        raise StudioError('Release build reported success but no valid APK was produced')
+
+    bundle_raw = bundle.read_bytes()
+    apk_raw = apk.read_bytes()
     return {
         'passed': True,
         'artifact': 'app-release.aab',
-        'bytes': len(raw),
-        'sha256': hashlib.sha256(raw).hexdigest(),
+        'bytes': len(bundle_raw),
+        'sha256': hashlib.sha256(bundle_raw).hexdigest(),
+        'installable_artifact': 'app-release.apk',
+        'installable_bytes': len(apk_raw),
+        'installable_sha256': hashlib.sha256(apk_raw).hexdigest(),
         'logs': logs,
     }

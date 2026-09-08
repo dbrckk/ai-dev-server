@@ -37,7 +37,16 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - name: Run bounded studio
+      - name: Enable Android emulator acceleration when available
+        run: |
+          if [ -e /dev/kvm ]; then
+            sudo chmod 666 /dev/kvm
+          fi
+          command -v adb
+          command -v sdkmanager
+          command -v avdmanager
+          command -v emulator
+      - name: Run full autonomous completion pipeline
         env:
           STUDIO_CI_PROVIDER: github
           STUDIO_REQUEST: ${{ matrix.project.file }}
@@ -47,8 +56,8 @@ jobs:
           STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
           STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
           STUDIO_VISION_MODEL: ${{ vars.STUDIO_VISION_MODEL }}
-        run: python studio/run.py "$STUDIO_REQUEST"
-      - name: Retain report, screenshots and actual APK
+        run: python studio/github_runner.py "$STUDIO_REQUEST"
+      - name: Retain reports, screenshots, release artifacts and QA evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -63,10 +72,12 @@ jobs:
           import json, os
           from pathlib import Path
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
-              for name in ('report.json', 'error.json'):
+              for name in ('github-pipeline.json', 'report.json', 'github-pipeline-error.json', 'error.json'):
                   p = Path('studio-output') / name
                   if p.exists():
                       d = json.loads(p.read_text())
-                      out.write('Mobile studio status: ' + str(d.get('status', 'unknown')) + '\n')
-                      out.write('Download the artifact for the report and available evidence.\n')
+                      out.write(name + ': ' + str(d.get('status', 'unknown')) + '\n')
+                      if d.get('next_stage'):
+                          out.write('Next stage: ' + str(d['next_stage']) + '\n')
+              out.write('Download the artifact for release packages and trusted QA evidence.\n')
           PY

@@ -65,13 +65,13 @@ class OrchestratorTests(unittest.TestCase):
                 else:
                     report = {
                         'status': 'validated_preview',
-                        'completion': {'finished': False, 'next_stage': 'billing_qa', 'blockers': ['billing_qa_missing']},
+                        'completion': {'finished': False, 'next_stage': 'platform_view_qa', 'blockers': ['platform_view_qa_missing']},
                         'release_evidence': {
                             'capability_qa': {
                                 'passed': True,
-                                'required_qa_stages': ['billing_qa'],
+                                'required_qa_stages': ['platform_view_qa'],
                                 'permissions': [],
-                                'reasons': [{'profile': 'billing_qa', 'source': 'dependency', 'value': 'in_app_purchase'}],
+                                'reasons': [{'profile': 'platform_view_qa', 'source': 'dependency', 'value': 'webview_flutter'}],
                             }
                         },
                     }
@@ -84,7 +84,7 @@ class OrchestratorTests(unittest.TestCase):
             self.assertEqual(evolution['status'], 'adaptation_required')
             self.assertEqual(work_order['status'], 'candidate_planned')
             self.assertEqual(work_order['baseline_sha'], BASELINE)
-            self.assertTrue(work_order['candidate_branch'].startswith('evolution/billing-qa-'))
+            self.assertTrue(work_order['candidate_branch'].startswith('evolution/platform-view-qa-'))
 
     def test_adaptation_without_baseline_stays_blocked_without_promotable_work_order(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -96,7 +96,7 @@ class OrchestratorTests(unittest.TestCase):
                 out.mkdir(parents=True, exist_ok=True)
                 report = {'status': 'validated_preview'} if 'studio/run.py' in args else {
                     'status': 'validated_preview',
-                    'completion': {'finished': False, 'next_stage': 'billing_qa'},
+                    'completion': {'finished': False, 'next_stage': 'platform_view_qa'},
                 }
                 (out / 'report.json').write_text(json.dumps(report))
                 return subprocess.CompletedProcess(args, 0)

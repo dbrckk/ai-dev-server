@@ -85,7 +85,9 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
     state.setdefault('release_evidence', {})['release_build'] = evidence
     if evidence.get('passed'):
         bundle = root / 'build/app/outputs/bundle/release/app-release.aab'
+        apk = root / 'build/app/outputs/flutter-apk/app-release.apk'
         shutil.copyfile(bundle, out / 'app-release.aab')
+        shutil.copyfile(apk, out / 'app-release.apk')
     apply_completion(state)
     state['status'] = 'validated_preview' if not state['completion']['finished'] else 'finished'
     sha = github.publish(branch, parent, root, state)

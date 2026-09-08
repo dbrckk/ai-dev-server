@@ -68,6 +68,7 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
                 if preview.returncode != 0:
                     results[index]['status'] = 'failed'
                     continue
+
                 remaining = deadline - clock()
                 if remaining <= 0:
                     results[index]['status'] = 'deferred_release'
@@ -77,7 +78,20 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
                 if release.returncode != 0:
                     results[index]['status'] = 'release_failed'
                     continue
+
                 report = json.loads((project_out / 'report.json').read_text())
+                if report.get('completion', {}).get('next_stage') == 'real_device':
+                    remaining = deadline - clock()
+                    if remaining <= 0:
+                        results[index]['status'] = 'deferred_device'
+                        continue
+                    device = runner([sys.executable, 'studio/device_stage.py', project['file'],
+                        '--work', work, '--out', str(project_out)], timeout=remaining)
+                    if device.returncode != 0:
+                        results[index]['status'] = 'device_failed'
+                        continue
+                    report = json.loads((project_out / 'report.json').read_text())
+
                 completion = report.get('completion', {})
                 results[index]['status'] = 'complete' if completion.get('finished') else 'progressed'
                 results[index]['next_stage'] = completion.get('next_stage')

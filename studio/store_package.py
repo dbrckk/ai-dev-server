@@ -7,7 +7,6 @@ import json
 import math
 from pathlib import Path
 import re
-import shutil
 import struct
 import zlib
 
@@ -41,6 +40,78 @@ def validate_store_listing(value: dict) -> dict:
     if value['category'] not in CATEGORIES:
         raise ValueError('Unsupported Play category')
     return value
+
+
+def _sentence(text: str, limit: int) -> str:
+    clean = re.sub(r'\s+', ' ', text).strip()
+    if not clean:
+        return ''
+    first = re.split(r'(?<=[.!?])\s+', clean)[0]
+    if len(first) <= limit:
+        return first.rstrip('. ') + '.'
+    cut = first[:limit - 1].rsplit(' ', 1)[0].rstrip(' ,;:-')
+    return (cut or first[:limit - 1]).rstrip('. ') + '…'
+
+
+def _category(text: str) -> str:
+    lower = text.lower()
+    rules = [
+        ('HEALTH_AND_FITNESS', ('fitness', 'workout', 'health', 'wellness', 'sleep')),
+        ('EDUCATION', ('learn', 'study', 'school', 'quiz', 'education')),
+        ('FINANCE', ('budget', 'finance', 'money', 'expense', 'invoice')),
+        ('TRAVEL_AND_LOCAL', ('travel', 'trip', 'route', 'itinerary', 'nearby')),
+        ('SHOPPING', ('shop', 'shopping', 'cart', 'price', 'product')),
+        ('SOCIAL', ('social', 'friends', 'community', 'chat')),
+        ('MUSIC_AND_AUDIO', ('music', 'audio', 'podcast', 'sound')),
+        ('PHOTOGRAPHY', ('photo', 'camera', 'image', 'gallery')),
+        ('SPORTS', ('sport', 'score', 'team', 'match')),
+        ('BUSINESS', ('business', 'client', 'crm', 'sales', 'work')),
+        ('PRODUCTIVITY', ('task', 'timer', 'focus', 'note', 'habit', 'productivity', 'plan')),
+    ]
+    for category, words in rules:
+        if any(word in lower for word in words):
+            return category
+    return 'TOOLS'
+
+
+def listing_from_state(req: dict, state: dict) -> dict:
+    title = re.sub(r'[_-]+', ' ', req['app_name']).strip().title()[:30] or 'Mobile App'
+    brief = re.sub(r'\s+', ' ', req.get('brief', '')).strip()
+    short = _sentence(brief, 80)
+    if len(short) < 10:
+        short = f'{title} helps you complete the app’s core workflow simply and reliably.'[:80]
+
+    product = state.get('product', {})
+    features: list[str] = []
+    if isinstance(product, dict):
+        for key, value in product.items():
+            if key == 'journeys':
+                continue
+            if isinstance(value, list) and any(token in key.lower() for token in ('accept', 'feature', 'scope', 'goal')):
+                for item in value:
+                    if isinstance(item, str) and 8 <= len(item.strip()) <= 180:
+                        features.append(re.sub(r'\s+', ' ', item).strip())
+            if len(features) >= 5:
+                break
+
+    intro = _sentence(brief, 360)
+    body = [intro or f'{title} is designed around a focused, reliable mobile experience.']
+    if features:
+        body.append('Key capabilities:\n' + '\n'.join('• ' + item for item in features[:5]))
+    journeys = product.get('journeys', []) if isinstance(product, dict) else []
+    if isinstance(journeys, list) and journeys:
+        body.append(f'Validated around {len(journeys)} critical user journey' + ('s.' if len(journeys) != 1 else '.'))
+    body.append('Built for a clear mobile experience with validated interaction, layout, accessibility and runtime checks.')
+    full = '\n\n'.join(body)
+    if len(full) < 80:
+        full += ' The application is designed to keep its primary workflow simple, dependable and easy to understand.'
+    full = full[:4000].rstrip()
+    return validate_store_listing({
+        'title': title,
+        'short_description': short,
+        'full_description': full,
+        'category': _category(brief + ' ' + json.dumps(product, ensure_ascii=False)),
+    })
 
 
 def permissions(root: Path) -> list[str]:
@@ -223,9 +294,11 @@ def build_store_package(root: Path, out: Path, state: dict, listing: dict) -> di
     return {
         'passed': True,
         'package': 'play-store',
+        'listing': listing,
         'manifest_sha256': hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
         'screenshot_count': len(screenshot_evidence),
         'permissions': perms,
         'sensitive_permissions': manifest['sensitive_permissions_requiring_data_safety_review'],
+        'account_fields_required_at_submission': manifest['account_fields_required_at_submission'],
         'assets': manifest['assets'],
     }

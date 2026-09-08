@@ -12,9 +12,7 @@ It is not merely a code generator. The target is a reusable expert mobile engine
 
 `ChatGPT conversation -> high-level brief -> ai-dev-server -> autonomous research/planning/design/code/assets/tests/repair -> app-specific QA -> release -> Play Store publication -> finished professional application`
 
-The factory should handle essentially any reasonable mobile project within platform/policy constraints. If a project needs a capability the factory lacks, it must detect the gap, research/acquire appropriate resources, implement the missing capability on an isolated candidate branch, benchmark it against trusted regression/quality gates, promote only a non-regressing reversible improvement, and then resume the blocked project.
-
-Human intervention is reserved for genuinely irreducible external actions such as legal attestations, identity/payment/store agreements, or credentials that cannot safely be generated/delegated. Never fabricate these prerequisites.
+If a project needs a capability the factory lacks, it must detect the gap, research/acquire appropriate resources, implement the missing capability on an isolated candidate branch, benchmark it against trusted regression/quality gates, promote only a non-regressing reversible improvement, and then resume the blocked project. Human intervention is reserved for genuinely irreducible legal, identity, payment, store-agreement or credential actions.
 
 ## Non-negotiable quality contract
 
@@ -29,63 +27,59 @@ Trusted components are primarily under `studio/`:
 - `core.py` — bounded Flutter generation sandbox and trusted gates.
 - `run.py` — product/design/implementation/review/visual loop and checkpoints.
 - `completion.py` — machine-readable definition of done and dynamic stages.
-- `stage_registry.py` / `ci_runner.py` — trusted post-preview orchestration.
+- `stage_registry.py` — trusted post-preview stage registry.
+- `ci_runner.py` — CircleCI adapter.
 - `capability_qa.py` — capability classification and specialized-QA requirements.
-- Android runtime/device QA plus specialized performance and notification QA.
+- Android runtime/device QA plus specialized performance, native and notification QA.
 - `store_package.py` — Play Store listing/assets package.
 - `privacy_audit.py` — privacy/Data Safety evidence.
 - `security_audit.py` — security/dependency/SBOM evidence.
-- `adaptation.py` — fail-closed capability-gap detection and evolution requests.
+- `adaptation.py` — fail-closed capability-gap detection and `evolution-request.json` generation.
+- `evolution_executor.py` — validates adaptation requests and creates deterministic isolated `evolution-work-order.json` candidates tied to a baseline SHA and rollback policy.
+- `evolution_evidence.py` — trusted boundary for research metadata from official/allowlisted sources; arbitrary discovered code is not accepted as evidence.
 - `project_context.py` — trusted root `PROJECT_CONTEXT.md` generation from factory state for managed applications.
+- Current branch adds `orchestrator.py` and `github_runner.py` so GitHub Actions and CircleCI share the same full completion semantics.
 
-GitHub Actions is currently the primary CI and includes a real Flutter smoke build. CircleCI remains fallback. Never claim CI success without observing it.
+GitHub Actions is the primary CI; CircleCI remains fallback. Never claim CI success without observing it.
 
 ## Current state — 2026-09-08
 
-- PR #17, `Restore GitHub Actions and add notification QA`, passed both GitHub Actions workflows and merged as `177153db2eb31b4a1a09c7b22cd16ad527065bfc`.
-- PR #18, `Fail closed into autonomous adaptation requests`, passed both workflows and squash-merged as `0fc68b14a71ce335e753c238cda17e9e4d5764eb`.
-- PR #19, `Add durable cross-conversation project context standard`, passed both workflows and squash-merged as `a48b22830a3499c40bd8b4fdf139821a8db7ac46`.
-- Unsupported completion work now becomes `adaptation_required` with `evolution-request.json`; it is no longer accepted as ambiguous progress.
-- The root `PROJECT_CONTEXT.md` convention is mandatory for every project the factory creates or substantially manages.
-- Current branch work wires trusted automatic generation/publication of that context file into every `studio/run.py` checkpoint while keeping it outside the model-editable file scope.
-- Important incomplete areas include the executor that consumes evolution requests, robust billing/platform-view/general native QA, richer networked-app privacy classification, professional graphics automation, stronger dependency/license provenance and authorized Play Console publication.
-- **Jumpy** is the first important target app for exercising the complete factory. Do not describe the factory as 100% autonomous yet.
+- PR #17 merged as `177153db2eb31b4a1a09c7b22cd16ad527065bfc`: GitHub Actions restored; notification QA added.
+- PR #18 merged as `0fc68b14a71ce335e753c238cda17e9e4d5764eb`: unsupported work becomes `adaptation_required` with an evolution request.
+- PR #19 merged as `a48b22830a3499c40bd8b4fdf139821a8db7ac46`: durable root `PROJECT_CONTEXT.md` standard established.
+- PR #20 merged as `2ff07231b7eac692c564d465e4ea7514d8843e58`: generated applications now receive trusted `PROJECT_CONTEXT.md` files at studio checkpoints, outside model-editable scope.
+- PR #21 merged as `ab24ae71f67d6dfba1c43e39444cfb8268b87c28`: evolution requests become deterministic candidate work orders and research evidence has an allowlisted trusted schema.
+- Current branch is converting GitHub Actions from preview-only generation to the full preview -> release -> device/capability QA -> specialized QA -> store/privacy/security -> adaptation pipeline, while making CircleCI reuse the same stage orchestrator.
+- Important incomplete areas include actual research-task execution/candidate synthesis/benchmark promotion, `billing_qa`, `platform_view_qa`, broader native QA, richer networked-app privacy classification, professional graphics automation, stronger dependency/license provenance and authorized Play Console publication.
+- **Jumpy** remains the first important target app for exercising the complete factory.
 
-## Immediate objective
+## Immediate next objective
 
-Finish and validate automatic per-project context generation, then implement the **evolution-request executor**:
+Validate and merge the provider-neutral full pipeline. Then implement the next evolution layer:
 
-1. consume `evolution-request.json`;
-2. research authoritative and maintained resources for the missing capability;
-3. assess compatibility, security, licensing and maintenance;
-4. create an isolated candidate implementation;
-5. add trusted capability tests and benchmark cases;
-6. run all existing regression gates and real Flutter smoke;
-7. reject regressions or any weakening of the completion contract;
-8. promote only a passing, reversible candidate;
-9. resume the blocked application automatically.
-
-External code discovered during research must not become trusted/executable merely because it was found. Dependencies/actions must be reviewed, pinned where applicable, policy-compatible and validated.
+1. execute `evolution-work-order.json` research tasks through trusted adapters / orchestrating ChatGPT;
+2. store allowlisted research evidence;
+3. synthesize the missing factory capability on the isolated evolution branch;
+4. require new trusted tests and a capability benchmark;
+5. compare the candidate with the pinned baseline;
+6. reject regressions or weakened gates;
+7. promote a passing candidate and automatically resume the blocked application.
 
 ## Near-term roadmap
 
-- Evolution executor and benchmark/promotion engine.
+- Full GitHub Actions completion pipeline and adaptation handoff.
+- Research execution + candidate synthesis + benchmark/promotion engine.
 - Complete `billing_qa`, `platform_view_qa` and broad `native_qa`.
 - Stronger semantic capability detection.
-- Rich but conservative privacy/Data Safety classification for networked apps.
+- Rich conservative privacy/Data Safety classification for networked apps.
 - Professional graphics/asset factory with provenance and visual-consistency QA.
 - Stronger license/dependency/provenance/security analysis.
 - Autonomous signing and Play Console publication when authorized credentials exist.
-- Diverse fixed benchmark suite for measuring factory changes.
-- End-to-end Jumpy completion, followed by increasingly diverse applications.
+- Diverse fixed benchmark suite and end-to-end Jumpy completion.
 
 ## Mandatory context-file convention for every project
 
-Every repository this factory creates or substantially manages must contain a root **`PROJECT_CONTEXT.md`**. It is a durable handoff for a future ChatGPT conversation/agent with no access to prior chat history.
-
-It must contain at minimum project/app purpose, current scope, architecture/constraints, evidence-based validation/release status, blockers/risks, immediate next objective, roadmap, long-term objective, decisions/invariants to preserve, and last meaningful update metadata.
-
-Create it early, update it after material milestones, and include it in checkpoints. It is not marketing copy and does not replace README/user documentation.
+Every repository this factory creates or substantially manages must contain a root **`PROJECT_CONTEXT.md`** describing purpose, current scope, architecture/constraints, evidence-based validation/release status, blockers/risks, immediate next objective, roadmap, long-term objective, decisions/invariants and useful update metadata. Create it early, refresh it after material milestones, and never use it to claim evidence that the machine state does not contain.
 
 ## Instructions to any future ChatGPT/agent
 

@@ -22,6 +22,8 @@ def _result(value, label):
             raise DifferentialRejected(label + ' test counts invalid')
     if value['tests_collected'] < 1 or not isinstance(value.get('passed'), bool):
         raise DifferentialRejected(label + ' differential result invalid')
+    if value['failures'] + value['errors'] > value['tests_collected']:
+        raise DifferentialRejected(label + ' failed test count exceeds collection')
     if value['passed'] != (value['failures'] == 0 and value['errors'] == 0):
         raise DifferentialRejected(label + ' pass flag inconsistent')
     return out
@@ -47,10 +49,27 @@ def evaluate(work_order, validated_candidate, baseline, candidate):
         raise DifferentialRejected('Differential evidence test file mismatch')
     if baseline['tests_collected'] != candidate['tests_collected']:
         raise DifferentialRejected('Differential test collection changed between baseline and candidate')
-    baseline_failed = (not baseline['passed']) and baseline['failures'] + baseline['errors'] > 0
+    baseline_failed_all = (
+        not baseline['passed']
+        and baseline['failures'] + baseline['errors'] == baseline['tests_collected']
+    )
     candidate_passed = candidate['passed']
-    improved = baseline_failed and candidate_passed
+    improved = baseline_failed_all and candidate_passed
     blockers = []
-    if not baseline_failed: blockers.append('candidate_test_did_not_fail_on_baseline')
-    if not candidate_passed: blockers.append('candidate_test_did_not_pass_on_candidate')
-    return {'version':1,'status':'differential_proved' if improved else 'differential_rejected','candidate_id':work_order.get('candidate_id'),'baseline_sha':baseline_sha,'candidate_sha':candidate['commit_sha'],'test_file':expected,'tests_collected':candidate['tests_collected'],'baseline_failed':baseline_failed,'candidate_passed':candidate_passed,'improvement_proved':improved,'blockers':blockers}
+    if not baseline_failed_all:
+        blockers.append('not_every_candidate_test_failed_on_baseline')
+    if not candidate_passed:
+        blockers.append('candidate_test_did_not_pass_on_candidate')
+    return {
+        'version':1,
+        'status':'differential_proved' if improved else 'differential_rejected',
+        'candidate_id':work_order.get('candidate_id'),
+        'baseline_sha':baseline_sha,
+        'candidate_sha':candidate['commit_sha'],
+        'test_file':expected,
+        'tests_collected':candidate['tests_collected'],
+        'baseline_failed_all':baseline_failed_all,
+        'candidate_passed':candidate_passed,
+        'improvement_proved':improved,
+        'blockers':blockers,
+    }

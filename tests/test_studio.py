@@ -85,6 +85,32 @@ class StudioTests(unittest.TestCase):
         for files in [[PATCH['files'][0]] * 2, [{'path': 'lib/a.dart', 'content': 'ghp_abcd'}]]:
             with self.assertRaises(StudioError):
                 patch_check({'files': files})
+    def test_patch_filesystem_conflicts_leave_existing_source_unchanged(self):
+        for conflict in ('directory', 'parent_file', 'batch_parent', 'unicode'):
+            with self.subTest(conflict=conflict), tempfile.TemporaryDirectory() as d:
+                root = Path(d)
+                (root / 'lib').mkdir()
+                source = root / 'lib/app.dart'
+                source.write_text('original')
+                files = [{'path': 'lib/app.dart', 'content': 'replacement'}]
+                if conflict == 'directory':
+                    (root / 'lib/conflict.dart').mkdir()
+                    files.append({'path': 'lib/conflict.dart', 'content': 'x'})
+                elif conflict == 'parent_file':
+                    (root / 'lib/parent').write_text('original parent')
+                    files.append({'path': 'lib/parent/child.dart', 'content': 'x'})
+                elif conflict == 'batch_parent':
+                    files.extend([{'path': 'lib/new.dart', 'content': 'x'},
+                                  {'path': 'lib/new.dart/child.dart', 'content': 'y'}])
+                else:
+                    files.append({'path': 'lib/invalid.dart', 'content': '\ud800'})
+                with self.assertRaises(StudioError):
+                    apply_patch(root, {'files': files})
+                self.assertEqual(source.read_text(), 'original')
+                self.assertFalse((root / 'lib/new.dart').exists())
+    def test_paths_reject_control_characters_and_surrogates(self):
+        for char in ('\x00', '\n', '\r', '\t', '\x7f', '\ud800'):
+            self.assertFalse(allowed('lib/a' + char + '.dart'))
     def test_symlink(self):
         with tempfile.TemporaryDirectory() as d, tempfile.TemporaryDirectory() as outside:
             root = Path(d)

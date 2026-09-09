@@ -121,12 +121,15 @@ def _run_adaptation_persistence(project_out,deadline,runner,clock):
 def _run_adaptation_automerge(project_out,deadline,runner,clock):
     if os.environ.get('STUDIO_CI_PROVIDER')!='github': return 'not_applicable'
     order=project_out/'evolution-work-order.json'; persisted=project_out/'evolution-persisted.json'
-    if not order.is_file() or not persisted.is_file(): return 'not_ready'
+    if not order.is_file(): return 'not_ready'
     try: remaining=_remaining(deadline,clock)
     except TimeoutError: return 'deferred'
     wait_seconds=max(0,min(int(remaining)-5,20*60))
     if wait_seconds<=0: return 'deferred'
-    result=runner([sys.executable,'studio/evolution_automerge.py',str(order),str(persisted),'--out',str(project_out),'--wait-seconds',str(wait_seconds)],timeout=remaining)
+    args=[sys.executable,'studio/evolution_automerge.py',str(order)]
+    if persisted.is_file(): args.append(str(persisted))
+    args.extend(['--out',str(project_out),'--wait-seconds',str(wait_seconds)])
+    result=runner(args,timeout=remaining)
     if result.returncode!=0: return 'blocked'
     path=project_out/'evolution-automerge.json'
     if not path.is_file(): raise StudioError('Successful auto-merge produced no evidence')
@@ -153,8 +156,11 @@ def run_registered_stages(request_path,project_out,work,report,deadline,runner,c
             request=_write_adaptation_handoff(report,project_out,baseline_sha)
             if request.get('status')=='adaptation_required':
                 pending_status=_run_adaptation_pending(project_out,deadline,runner,clock)
-                if pending_status in {'pending_merge','restart_required','blocked','deferred'}:
-                    return {'status':'adaptation_required','report':report,'next_stage':name,'pending_status':pending_status,'research_status':'not_started','synthesis_status':'not_ready','benchmark_status':'not_ready','promotion_status':'not_ready','persistence_status':'awaiting_merge' if pending_status in {'pending_merge','restart_required'} else pending_status,'automerge_status':'not_available_after_restart'}
+                if pending_status=='pending_merge':
+                    automerge_status=_run_adaptation_automerge(project_out,deadline,runner,clock)
+                    return {'status':'adaptation_required','report':report,'next_stage':name,'pending_status':'restart_required' if automerge_status=='merged' else 'pending_merge','research_status':'not_started','synthesis_status':'not_ready','benchmark_status':'not_ready','promotion_status':'not_ready','persistence_status':'awaiting_merge','automerge_status':automerge_status}
+                if pending_status in {'restart_required','blocked','deferred'}:
+                    return {'status':'adaptation_required','report':report,'next_stage':name,'pending_status':pending_status,'research_status':'not_started','synthesis_status':'not_ready','benchmark_status':'not_ready','promotion_status':'not_ready','persistence_status':'awaiting_merge' if pending_status=='restart_required' else pending_status,'automerge_status':'already_merged' if pending_status=='restart_required' else pending_status}
                 research_status=_run_adaptation_research(project_out,deadline,runner,clock); synthesis_status='not_ready'; benchmark_status='not_ready'; promotion_status='not_ready'; persistence_status='not_ready'; automerge_status='not_ready'
                 if research_status=='complete': synthesis_status=_run_adaptation_synthesis(project_out,deadline,runner,clock)
                 if synthesis_status=='validated': benchmark_status=_run_adaptation_benchmark(project_out,deadline,runner,clock)

@@ -1,9 +1,11 @@
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
 from ci_runner import run_queue
@@ -11,7 +13,11 @@ from ci_runner import run_queue
 
 class QueueAdaptationTests(unittest.TestCase):
     def test_unknown_future_stage_becomes_adaptation_request_not_success(self):
-        with tempfile.TemporaryDirectory() as tmp:
+        # This test covers the no-baseline adaptation handoff. CircleCI exports
+        # CIRCLE_SHA1, which intentionally enables one additional research call;
+        # isolate that separate production path so the assertion is deterministic.
+        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ):
+            os.environ.pop('CIRCLE_SHA1', None)
             root = Path(tmp)
             queue = root / 'requests'
             queue.mkdir()

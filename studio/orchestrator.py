@@ -27,6 +27,22 @@ def _write_adaptation_handoff(report,project_out,baseline_sha):
     if request.get('status')!='adaptation_required': return request
     if isinstance(baseline_sha,str) and re.fullmatch(r'[0-9a-f]{40}',baseline_sha): consume_evolution_request(project_out/'evolution-request.json',project_out,baseline_sha)
     return request
+def _run_adaptation_pending(project_out,deadline,runner,clock):
+    if os.environ.get('STUDIO_CI_PROVIDER')!='github': return 'not_applicable'
+    order=project_out/'evolution-work-order.json'
+    if not order.is_file(): return 'not_ready'
+    try: remaining=_remaining(deadline,clock)
+    except TimeoutError: return 'deferred'
+    result=runner([sys.executable,'studio/evolution_pending.py',str(order),'--out',str(project_out)],timeout=remaining)
+    if result.returncode!=0: return 'blocked'
+    path=project_out/'evolution-pending.json'
+    if not path.is_file(): raise StudioError('Successful pending-promotion check produced no evidence')
+    try: value=json.loads(path.read_text())
+    except (OSError,json.JSONDecodeError): raise StudioError('Pending-promotion check produced invalid evidence') from None
+    status=value.get('status')
+    mapping={'no_pending_promotion':'none','promotion_pending_merge':'pending_merge','promotion_merged_restart_required':'restart_required','promotion_orphaned':'blocked','promotion_closed_without_merge':'blocked'}
+    if status not in mapping: raise StudioError('Pending-promotion check returned invalid status')
+    return mapping[status]
 def _run_adaptation_research(project_out,deadline,runner,clock):
     order=project_out/'evolution-work-order.json'
     if not order.is_file(): return 'not_planned_without_baseline'
@@ -81,8 +97,7 @@ def _run_adaptation_promotion(project_out,deadline,runner,clock):
     except (OSError,json.JSONDecodeError): raise StudioError('Promotion produced invalid application evidence') from None
     return 'promoted' if value.get('status') in {'promoted','already_promoted'} else 'blocked'
 def _run_adaptation_persistence(project_out,deadline,runner,clock):
-    if os.environ.get('STUDIO_CI_PROVIDER') != 'github':
-        return 'not_applicable'
+    if os.environ.get('STUDIO_CI_PROVIDER')!='github': return 'not_applicable'
     applied=project_out/'evolution-applied.json'
     if not applied.is_file(): return 'not_ready'
     try: remaining=_remaining(deadline,clock)
@@ -108,6 +123,9 @@ def run_registered_stages(request_path,project_out,work,report,deadline,runner,c
         if stage is None:
             request=_write_adaptation_handoff(report,project_out,baseline_sha)
             if request.get('status')=='adaptation_required':
+                pending_status=_run_adaptation_pending(project_out,deadline,runner,clock)
+                if pending_status in {'pending_merge','restart_required','blocked','deferred'}:
+                    return {'status':'adaptation_required','report':report,'next_stage':name,'pending_status':pending_status,'research_status':'not_started','synthesis_status':'not_ready','benchmark_status':'not_ready','promotion_status':'not_ready','persistence_status':'awaiting_merge' if pending_status in {'pending_merge','restart_required'} else pending_status}
                 research_status=_run_adaptation_research(project_out,deadline,runner,clock); synthesis_status='not_ready'; benchmark_status='not_ready'; promotion_status='not_ready'; persistence_status='not_ready'
                 if research_status=='complete': synthesis_status=_run_adaptation_synthesis(project_out,deadline,runner,clock)
                 if synthesis_status=='validated': benchmark_status=_run_adaptation_benchmark(project_out,deadline,runner,clock)
@@ -117,7 +135,7 @@ def run_registered_stages(request_path,project_out,work,report,deadline,runner,c
                     stage=get_stage(name)
                     if stage is None: raise StudioError('Promoted stage was not registered')
                 else:
-                    return {'status':'adaptation_required','report':report,'next_stage':name,'research_status':research_status,'synthesis_status':synthesis_status,'benchmark_status':benchmark_status,'promotion_status':promotion_status,'persistence_status':persistence_status}
+                    return {'status':'adaptation_required','report':report,'next_stage':name,'pending_status':pending_status,'research_status':research_status,'synthesis_status':synthesis_status,'benchmark_status':benchmark_status,'promotion_status':promotion_status,'persistence_status':persistence_status}
             else: raise StudioError('Unfinished project has no executable next stage')
         if name in seen: raise StudioError('Stage did not advance completion state: '+name)
         seen.add(name)

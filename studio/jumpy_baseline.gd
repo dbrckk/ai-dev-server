@@ -45,11 +45,26 @@ func run_checks() -> void:
 	check(game.state == "DEAD" and game.ui.retry.visible, "Death must offer retry")
 	game.restart_pressed()
 	check(game.state == "PLAYING" and game.score == 0, "Retry must reset score and start")
-	var report = FileAccess.open("user://baseline-result.json", FileAccess.WRITE)
+
+	var count: int = 8
+	if "--finance" in OS.get_cmdline_user_args():
+		count += 4
+		profile.data.coins = 10
+		check(not profile.spend_coins(-5) and int(profile.data.coins) == 10, "Negative spending must preserve balance")
+		profile.data.coins = 10
+		check(not profile.spend_coins(0) and int(profile.data.coins) == 10, "Zero spending must be refused")
+		profile.data.coins = 10
+		check(not profile.spend_coins(11) and int(profile.data.coins) == 10, "Insufficient funds must preserve balance")
+		profile.data.coins = 10
+		check(profile.spend_coins(4) and int(profile.data.coins) == 6, "Valid spending must debit exactly once")
+	var report_path = OS.get_environment("STUDIO_BASELINE_REPORT")
+	if report_path.is_empty():
+		report_path = "user://baseline-result.json"
+	var report = FileAccess.open(report_path, FileAccess.WRITE)
 	if report == null:
 		quit(1)
 		return
-	report.store_string(JSON.stringify({"passed": failures.is_empty(), "failures": failures, "checks": 8}))
+	report.store_string(JSON.stringify({"passed": failures.is_empty(), "failures": failures, "checks": count}))
 	report.close()
 	print("JUMPY_BASELINE_PASS" if failures.is_empty() else "JUMPY_BASELINE_FAIL")
 	quit(0 if failures.is_empty() else 1)

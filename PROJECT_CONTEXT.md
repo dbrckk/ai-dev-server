@@ -6,13 +6,13 @@
 
 `ai-dev-server` is an autonomous mobile-application factory intended to be invoked from a normal ChatGPT conversation. A high-level brief should be enough for the factory to own product definition, research, UX/UI, implementation, graphics/assets, testing, repair, Android QA, performance/accessibility, privacy/security, release engineering and Play Store preparation.
 
-The target is not a code generator but a reusable expert mobile engineering organization implemented as software.
+The target is a reusable expert mobile engineering organization implemented as software, not a one-shot code generator.
 
 ## Final objective
 
 `ChatGPT conversation -> high-level brief -> ai-dev-server -> autonomous research/planning/design/code/assets/tests/repair -> app-specific QA -> release -> Play Store publication -> finished professional application`
 
-If a project requires a capability the factory lacks, it must detect the gap, research appropriate resources, create an isolated evolution candidate, benchmark it against the current factory, promote only a non-regressing reversible improvement, and resume the blocked app. Human intervention is limited to genuinely irreducible legal, identity, payment, store-agreement or credential actions.
+If a project requires a capability the factory lacks, it must detect the gap, research appropriate resources, synthesize an isolated evolution candidate, benchmark it against the current factory, promote only a non-regressing reversible improvement, and resume the blocked app. Human intervention is limited to genuinely irreducible legal, identity, payment, store-agreement or credential actions.
 
 ## Non-negotiable quality contract
 
@@ -31,19 +31,21 @@ Trusted components live primarily under `studio/`:
 - `orchestrator.py` — provider-neutral preview -> release -> QA -> completion/adaptation orchestration.
 - `github_runner.py` / `ci_runner.py` — GitHub Actions and CircleCI adapters.
 - `capability_qa.py` — capability classification and specialized-QA requirements.
-- Android runtime/device QA plus performance, native, notification and Play Billing QA.
+- Android runtime/device QA plus performance, native, notification, Play Billing and platform-view QA.
 - `store_package.py` — Play Store listing/assets package.
 - `privacy_audit.py` — privacy/Data Safety evidence.
 - `security_audit.py` — security/dependency/SBOM evidence.
 - `adaptation.py` — fail-closed capability-gap detection and `evolution-request.json`.
 - `evolution_executor.py` — deterministic `evolution-work-order.json`, isolated candidate identity, baseline and rollback contract.
-- `evolution_evidence.py` — allowlisted research-evidence boundary; current work adds hash-bound evidence v2.
-- `evolution_research.py` — current branch adds bounded official-doc/package/GitHub/runtime research adapters that never execute discovered code.
+- `evolution_evidence.py` / `evolution_research.py` — allowlisted, hash-bound trusted research evidence; discovered code is never executed.
+- `evolution_candidate.py` — strict synthesized-candidate file scope and dangerous-code rejection.
+- `evolution_benchmark.py` — deterministic baseline/candidate promotion evaluator.
+- Current branch adds `evolution_synthesis.py` and orchestration that turns completed trusted research into a validated candidate artifact without executing it.
 - `project_context.py` — trusted generated root `PROJECT_CONTEXT.md` for managed apps.
 
 GitHub Actions is the primary CI; CircleCI remains fallback. GitHub Android jobs use Ubuntu 24.04, explicitly install the Android emulator, and verify KVM acceleration. Never claim CI success without observing it.
 
-## Current state — 2026-09-08
+## Current state — 2026-09-09
 
 - PR #17 `177153db2eb31b4a1a09c7b22cd16ad527065bfc`: GitHub Actions restored; notification QA.
 - PR #18 `0fc68b14a71ce335e753c238cda17e9e4d5764eb`: unsupported work becomes `adaptation_required`.
@@ -51,31 +53,25 @@ GitHub Actions is the primary CI; CircleCI remains fallback. GitHub Android jobs
 - PR #20 `2ff07231b7eac692c564d465e4ea7514d8843e58`: generated apps receive trusted context files at checkpoints.
 - PR #21 `ab24ae71f67d6dfba1c43e39444cfb8268b87c28`: deterministic evolution work orders and research-evidence boundary.
 - PR #22 `d973269253ba90dfbd3fdc257376071cf8760108`: GitHub Actions runs the full provider-neutral completion pipeline; Android emulator/KVM bootstrap verified.
-- PR #23 `94250b982113cf222f0b3a238e6ffd8400f934b2`: fail-closed `billing_qa`; Play purchase success requires matching Google Play tester/sandbox evidence bound to exact package and release APK hash.
-- Current branch `codex/evolution-research-rebased` adds automatic trusted research after an evolution work order: official documentation, bounded `pub.dev` metadata, bounded GitHub repository metadata and local Android runtime fingerprints. Responses are allowlisted, size/time bounded, provenance-recorded and hash-bound. Discovered code is never executed.
-- PR #25 separately implements `platform_view_qa` for WebView/maps/video and must be rebased after current work before merge.
+- PR #23 `94250b982113cf222f0b3a238e6ffd8400f934b2`: fail-closed `billing_qa`.
+- PR #27 `3b06636aaa194a547b1730608d8659df90dcbb96`: automatic trusted evolution research execution.
+- PR #30 `f671ba2500d8025f8d5ab64e63a8566400a3adec`: `platform_view_qa` for WebView/maps/video release runtime validation.
+- PR #31 `568ba372225dbbac34b78b7617f92719013f9053`: synthesized candidate scope and benchmark/promotion safety gates.
+- Current branch implements bounded candidate synthesis. Model output is JSON data only and must pass `validate_candidate()` before persistence. Research must be complete first; rejected output never reaches execution.
 - **Jumpy** remains the first major end-to-end target application.
 
 ## Immediate next objective
 
-1. Validate and merge trusted research execution on top of the billing-enabled main branch.
-2. Rebase and merge `platform_view_qa`.
-3. Implement candidate synthesis + benchmark/promotion:
-   - consume `evolution-work-order.json` and `evolution-research.json`;
-   - create the isolated candidate from the pinned baseline;
-   - synthesize only the missing factory capability;
-   - run candidate work without production secrets;
-   - require new trusted unit tests and a capability-specific benchmark;
-   - compare with baseline across regression/security/smoke gates;
-   - reject gate weakening or test removal;
-   - promote only a passing reversible candidate;
-   - resume the blocked application automatically.
+1. Validate and merge bounded evolution synthesis.
+2. Materialize a validated candidate on its isolated `evolution/<candidate>` branch from the pinned baseline.
+3. Run baseline and candidate benchmarks without production secrets.
+4. Feed machine evidence into `evolution_benchmark.py`.
+5. Promote only an approved candidate, register the new trusted stage through a trusted promotion step, retain rollback metadata, then resume the blocked application automatically.
 
 ## Near-term roadmap
 
-- Candidate synthesis, benchmark, promotion/rollback and automatic resume.
-- Complete platform-view and broader native/hardware QA.
-- Stronger semantic capability detection, including built artifacts.
+- Isolated candidate materialization + execution + promotion/rollback + automatic resume.
+- Broader native/hardware QA and stronger semantic capability detection.
 - Rich conservative privacy/Data Safety classification for networked apps.
 - Professional graphics/asset factory with provenance and visual-consistency QA.
 - Stronger license/dependency/provenance/security analysis.

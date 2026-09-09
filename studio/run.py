@@ -223,22 +223,23 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             break
     except StudioError as e:
         state.update(status='blocked', blockers=[str(e)])
-    finally:
-        state['model_calls_this_cycle'] = model.calls
-        state['models_used'] = getattr(model, 'models_used', {})
-        state['limits'] = {'max_cycles': req['max_cycles'], 'max_calls_per_cycle': req['max_calls'], 'max_rounds_per_cycle': req['max_rounds']}
-        state['release_status'] = 'not_store_ready'
-        state['coverage'] = {'variants_per_path': 4, 'journeys': [j['id'] for j in state.get('product', {}).get('journeys', [])], 'scope': 'Initial screen and final screen of each declared journey; not all possible states or real-device testing.'}
-        for p in (root / 'test/goldens').glob('*.png'):
-            shutil.copyfile(p, out / p.name)
-        apk = root / 'build/app/outputs/flutter-apk/app-debug.apk'
-        if state['status'] in ('validated_preview', 'awaiting_visual_review') and apk.is_file():
-            shutil.copyfile(apk, out / 'app-debug.apk')
-            state['apk_sha256'] = hashlib.sha256(apk.read_bytes()).hexdigest()
-        (out / 'report.json').write_text(canonical(state))
-        sha = checkpoint(parent)
-        state['checkpoint_commit'] = sha
-        (out / 'report.json').write_text(canonical(state))
+    # Publish only completed or explicitly handled failures. An unexpected fatal
+    # error (especially failed patch rollback) leaves workspace integrity unknown.
+    state['model_calls_this_cycle'] = model.calls
+    state['models_used'] = getattr(model, 'models_used', {})
+    state['limits'] = {'max_cycles': req['max_cycles'], 'max_calls_per_cycle': req['max_calls'], 'max_rounds_per_cycle': req['max_rounds']}
+    state['release_status'] = 'not_store_ready'
+    state['coverage'] = {'variants_per_path': 4, 'journeys': [j['id'] for j in state.get('product', {}).get('journeys', [])], 'scope': 'Initial screen and final screen of each declared journey; not all possible states or real-device testing.'}
+    for p in (root / 'test/goldens').glob('*.png'):
+        shutil.copyfile(p, out / p.name)
+    apk = root / 'build/app/outputs/flutter-apk/app-debug.apk'
+    if state['status'] in ('validated_preview', 'awaiting_visual_review') and apk.is_file():
+        shutil.copyfile(apk, out / 'app-debug.apk')
+        state['apk_sha256'] = hashlib.sha256(apk.read_bytes()).hexdigest()
+    (out / 'report.json').write_text(canonical(state))
+    sha = checkpoint(parent)
+    state['checkpoint_commit'] = sha
+    (out / 'report.json').write_text(canonical(state))
     return state
 
 def main():

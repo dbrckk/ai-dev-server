@@ -6,7 +6,9 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import re
+import shutil
 import subprocess
+import tempfile
 import time
 import uuid
 import urllib.error
@@ -92,10 +94,64 @@ def apply_patch(root, value):
             raise StudioError('Symlink or path escape')
         if (p.exists() and not p.is_file()) or any(x.exists() and not x.is_dir() for x in p.parents):
             raise StudioError('Patch conflicts with existing filesystem entries')
-    for f in files:
-        p = root / f['path']
-        p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(f['content'], encoding='utf-8')
+    # Stage on the same filesystem, retaining originals until every replacement
+    # succeeds. This handles synchronous I/O failures, not process/power loss or
+    # concurrent writers (the workspace must remain exclusively owned).
+    created_dirs, committed = [], []
+    staging = None
+    retain_recovery = False
+
+    def ensure_directory(path):
+        missing = []
+        while not path.exists():
+            missing.append(path)
+            path = path.parent
+        for directory in reversed(missing):
+            directory.mkdir()
+            created_dirs.append(directory)
+
+    try:
+        ensure_directory(root)
+        staging = Path(tempfile.mkdtemp(prefix='.__studio-patch-', dir=root))
+        (staging / 'manifest.json').write_text(canonical({
+            'files': [{'path': f['path'], 'backup': str(i) + '.backup',
+                       'existed': (root / f['path']).exists()}
+                      for i, f in enumerate(files)]}), encoding='utf-8')
+        for index, f in enumerate(files):
+            target = root / f['path']
+            staged = staging / str(index)
+            staged.write_text(f['content'], encoding='utf-8')
+            if target.exists():
+                shutil.copy2(target, staging / (str(index) + '.backup'))
+                shutil.copymode(target, staged)
+        for index, f in enumerate(files):
+            target = root / f['path']
+            ensure_directory(target.parent)
+            os.replace(staging / str(index), target)
+            committed.append((index, target))
+    except OSError:
+        for index, target in reversed(committed):
+            try:
+                backup = staging / (str(index) + '.backup')
+                if backup.exists():
+                    os.replace(backup, target)
+                else:
+                    target.unlink()
+            except OSError:
+                retain_recovery = True
+        if retain_recovery:
+            # Deliberately not StudioError: the normal blocked-run handler must
+            # not publish a checkpoint from an incompletely restored workspace.
+            raise RuntimeError('Patch rollback incomplete; do not publish workspace. Recovery files: ' + str(staging)) from None
+        raise StudioError('Patch write failed; original source restored') from None
+    finally:
+        if staging is not None and not retain_recovery:
+            shutil.rmtree(staging, ignore_errors=True)
+        for directory in reversed(created_dirs):
+            try:
+                directory.rmdir()  # Only remove empty directories we created.
+            except OSError:
+                pass
 
 def verdict(value):
     if (not isinstance(value, dict) or set(value) != {'passed', 'blockers'} or

@@ -85,6 +85,68 @@ class StudioTests(unittest.TestCase):
         for files in [[PATCH['files'][0]] * 2, [{'path': 'lib/a.dart', 'content': 'ghp_abcd'}]]:
             with self.assertRaises(StudioError):
                 patch_check({'files': files})
+    def test_patch_replacement_failure_restores_bytes_mode_and_directories(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 'lib').mkdir()
+            source = root / 'lib/app.dart'
+            source.write_bytes(b'original\r\n')
+            source.chmod(0o640)
+            replace = os.replace
+            count = 0
+            def fail_third(src, dst):
+                nonlocal count
+                count += 1
+                if count == 3:
+                    raise OSError('disk failure')
+                return replace(src, dst)
+            value = {'files': [PATCH['files'][0],
+                {'path': 'lib/new/created.dart', 'content': 'new'},
+                {'path': 'test/failure.dart', 'content': 'fail'}]}
+            with patch('core.os.replace', side_effect=fail_third), self.assertRaises(StudioError):
+                apply_patch(root, value)
+            self.assertEqual(source.read_bytes(), b'original\r\n')
+            self.assertEqual(source.stat().st_mode & 0o777, 0o640)
+            self.assertEqual(sorted(p.relative_to(root).as_posix() for p in root.rglob('*')),
+                             ['lib', 'lib/app.dart'])
+    def test_patch_staging_failure_never_replaces_source(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            apply_patch(root, PATCH)
+            with patch('core.shutil.copy2', side_effect=OSError('disk full')), self.assertRaises(StudioError):
+                apply_patch(root, {'files': [{'path': 'lib/app.dart', 'content': 'replacement'}]})
+            self.assertEqual((root / 'lib/app.dart').read_text(), 'source')
+            self.assertFalse(list(root.glob('.__studio-patch-*')))
+    def test_patch_failed_rollback_is_fatal_and_retains_backup(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            apply_patch(root, PATCH)
+            replace = os.replace
+            calls = 0
+            def fail_after_first(src, dst):
+                nonlocal calls
+                calls += 1
+                if calls > 1:
+                    raise OSError('persistent failure')
+                return replace(src, dst)
+            with patch('core.os.replace', side_effect=fail_after_first), self.assertRaises(RuntimeError):
+                apply_patch(root, PATCH)
+            recovery = list(root.glob('.__studio-patch-*'))
+            self.assertEqual(len(recovery), 1)
+            self.assertEqual((recovery[0] / '0.backup').read_text(), 'source')
+            manifest = json.loads((recovery[0] / 'manifest.json').read_text())
+            self.assertEqual(manifest['files'][0],
+                {'path': 'lib/app.dart', 'backup': '0.backup', 'existed': True})
+    def test_patch_utf8_success_preserves_existing_mode(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d) / 'new-root'
+            apply_patch(root, PATCH)
+            source = root / 'lib/app.dart'
+            source.chmod(0o640)
+            apply_patch(root, {'files': [{'path': 'lib/app.dart', 'content': 'été ☀'}]})
+            self.assertEqual(source.read_bytes(), 'été ☀'.encode('utf-8'))
+            self.assertEqual(source.stat().st_mode & 0o777, 0o640)
+            self.assertFalse(list(root.glob('.__studio-patch-*')))
     def test_patch_filesystem_conflicts_leave_existing_source_unchanged(self):
         for conflict in ('directory', 'parent_file', 'batch_parent', 'unicode'):
             with self.subTest(conflict=conflict), tempfile.TemporaryDirectory() as d:
@@ -175,6 +237,16 @@ class StudioTests(unittest.TestCase):
         state, _, gh = self.run_fixture(model=Broken)
         self.assertEqual(state['status'], 'blocked')
         self.assertTrue(gh.published)
+    def test_fatal_patch_recovery_never_publishes_checkpoint(self):
+        gh = FakeGitHub()
+        prior_checkpoints = []
+        def fail_patch(*args):
+            prior_checkpoints.extend(copy.deepcopy(gh.published))
+            raise RuntimeError('Patch rollback incomplete')
+        with patch('run.apply_patch', side_effect=fail_patch):
+            with self.assertRaises(RuntimeError):
+                self.run_fixture(gh=gh)
+        self.assertEqual(gh.published, prior_checkpoints)
     def test_completed_resume_skips_model_and_build(self):
         state, _, gh = self.run_fixture()
         def forbidden(*args):

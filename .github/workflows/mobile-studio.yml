@@ -83,6 +83,7 @@ jobs:
               for name in (
                   'github-pipeline.json', 'report.json', 'evolution-request.json',
                   'evolution-work-order.json', 'evolution-pending.json', 'evolution-pending-error.json',
+                  'evolution-automerge.json', 'evolution-automerge-error.json',
                   'evolution-research.json', 'evolution-research-provenance.json', 'evolution-research-error.json',
                   'evolution-candidate.json', 'evolution-isolated-benchmark.json',
                   'evolution-promotion.json', 'evolution-applied.json',
@@ -93,7 +94,7 @@ jobs:
                       d = json.loads(p.read_text())
                       out.write(name + ': ' + str(d.get('status', 'available')) + '\n')
                       if d.get('next_stage'): out.write('Next stage: ' + str(d['next_stage']) + '\n')
-                      for key in ('pending_status','research_status','synthesis_status','benchmark_status','promotion_status','persistence_status'):
+                      for key in ('pending_status','automerge_status','research_status','synthesis_status','benchmark_status','promotion_status','persistence_status'):
                           if d.get(key): out.write(key + ': ' + str(d[key]) + '\n')
                       if d.get('pull_request'): out.write('Promotion PR: #' + str(d['pull_request']) + '\n')
               out.write('Download the artifact for release packages and trusted QA/evolution evidence.\n')

@@ -33,34 +33,15 @@ def bounded_run(args, timeout):
         raise
 
 
-def _finish_persisted_evolution(out,runner,deadline,clock):
-    order=out/'evolution-work-order.json'; persisted=out/'evolution-persisted.json'
-    if not order.is_file() or not persisted.is_file(): return None
-    remaining=int(deadline-clock())
-    if remaining<=0: return 'deferred'
-    result=runner([sys.executable,'studio/evolution_automerge.py',str(order),str(persisted),'--out',str(out),'--wait-seconds',str(max(0,remaining-10))],timeout=remaining)
-    if result.returncode!=0: return 'blocked'
-    path=out/'evolution-automerge.json'
-    if not path.is_file(): raise StudioError('Successful evolution auto-merge produced no evidence')
-    try: value=json.loads(path.read_text())
-    except (OSError,json.JSONDecodeError): raise StudioError('Evolution auto-merge produced invalid evidence') from None
-    status=value.get('status')
-    if status in {'promotion_merged','promotion_already_merged'}: return 'merged_restart_required'
-    if status in {'awaiting_required_checks','awaiting_clean_merge_state'}: return 'awaiting_checks'
-    raise StudioError('Evolution auto-merge returned invalid state')
-
-
 def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=time.monotonic,budget_seconds=85*60,baseline_sha:str|None=None)->dict:
     request=request_check(json.loads(request_path.read_text()))
     if not request['enabled']:
         result={'status':'disabled','next_stage':None,'finished':False}; out.mkdir(parents=True,exist_ok=True); (out/'github-pipeline.json').write_text(canonical(result)); return result
     deadline=clock()+budget_seconds
     with tempfile.TemporaryDirectory(prefix='studio-github-') as work: result=run_project(str(request_path),out,work,runner,deadline,clock,baseline_sha)
-    automerge_status=_finish_persisted_evolution(out,runner,deadline,clock)
     summary={'status':result['status'],'next_stage':result.get('next_stage'),'finished':bool(result.get('report',{}).get('completion',{}).get('finished'))}
-    for key in ('pending_status','research_status','synthesis_status','benchmark_status','promotion_status','persistence_status'):
+    for key in ('pending_status','research_status','synthesis_status','benchmark_status','promotion_status','persistence_status','automerge_status'):
         if result.get(key) is not None: summary[key]=result[key]
-    if automerge_status is not None: summary['automerge_status']=automerge_status
     out.mkdir(parents=True,exist_ok=True); (out/'github-pipeline.json').write_text(canonical(summary)); return summary
 
 

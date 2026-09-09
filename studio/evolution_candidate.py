@@ -24,7 +24,7 @@ PROTECTED_PATHS = {
     'studio/smoke.py','studio/adaptation.py','studio/evolution_executor.py','studio/evolution_evidence.py',
     'studio/evolution_research.py','studio/evolution_synthesis.py','studio/evolution_candidate.py',
     'studio/evolution_benchmark.py','studio/evolution_differential.py','studio/evolution_isolated_runner.py',
-    'studio/evolution_promotion.py','studio/evolution_rollback.py',
+    'studio/evolution_promotion.py','studio/evolution_rollback.py','studio/evolution_stage_runner.py',
     '.github/workflows/validate.yml','.github/workflows/studio-smoke.yml','.github/workflows/mobile-studio.yml',
     '.circleci/config.yml',
 }

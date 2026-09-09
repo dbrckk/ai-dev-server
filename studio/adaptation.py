@@ -50,6 +50,7 @@ PROMOTION_GATES = [
     'security_boundaries_not_weakened',
     'definition_of_done_not_weakened',
     'candidate_is_reversible',
+    'differential_improvement_proved',
 ]
 
 

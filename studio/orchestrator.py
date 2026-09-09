@@ -67,6 +67,18 @@ def _run_adaptation_benchmark(project_out,deadline,runner,clock):
     if promotion.get('status')=='promotion_approved' and promotion.get('promotion_decision')=='approve': return 'approved'
     if promotion.get('status')=='promotion_rejected' and promotion.get('promotion_decision')=='reject': return 'rejected'
     raise StudioError('Promotion evidence has invalid decision state')
+def _run_adaptation_promotion(project_out,deadline,runner,clock):
+    paths=[project_out/name for name in ('evolution-work-order.json','evolution-candidate.json','evolution-isolated-benchmark.json','evolution-promotion.json')]
+    if not all(path.is_file() for path in paths): return 'not_ready'
+    try: remaining=_remaining(deadline,clock)
+    except TimeoutError: return 'deferred'
+    result=runner([sys.executable,'studio/evolution_promotion.py',str(paths[0]),str(paths[1]),str(paths[2]),str(paths[3]),'--repo-root','.','--out',str(project_out)],timeout=remaining)
+    if result.returncode!=0: return 'blocked'
+    applied=project_out/'evolution-applied.json'
+    if not applied.is_file(): raise StudioError('Successful promotion produced no application evidence')
+    try: value=json.loads(applied.read_text())
+    except (OSError,json.JSONDecodeError): raise StudioError('Promotion produced invalid application evidence') from None
+    return 'promoted' if value.get('status') in {'promoted','already_promoted'} else 'blocked'
 def run_registered_stages(request_path,project_out,work,report,deadline,runner,clock=time.monotonic,baseline_sha=None):
     seen=set()
     while True:
@@ -77,11 +89,16 @@ def run_registered_stages(request_path,project_out,work,report,deadline,runner,c
         if stage is None:
             request=_write_adaptation_handoff(report,project_out,baseline_sha)
             if request.get('status')=='adaptation_required':
-                research_status=_run_adaptation_research(project_out,deadline,runner,clock); synthesis_status='not_ready'; benchmark_status='not_ready'
+                research_status=_run_adaptation_research(project_out,deadline,runner,clock); synthesis_status='not_ready'; benchmark_status='not_ready'; promotion_status='not_ready'
                 if research_status=='complete': synthesis_status=_run_adaptation_synthesis(project_out,deadline,runner,clock)
                 if synthesis_status=='validated': benchmark_status=_run_adaptation_benchmark(project_out,deadline,runner,clock)
-                return {'status':'adaptation_required','report':report,'next_stage':name,'research_status':research_status,'synthesis_status':synthesis_status,'benchmark_status':benchmark_status}
-            raise StudioError('Unfinished project has no executable next stage')
+                if benchmark_status=='approved': promotion_status=_run_adaptation_promotion(project_out,deadline,runner,clock)
+                if promotion_status=='promoted':
+                    stage=get_stage(name)
+                    if stage is None: raise StudioError('Promoted stage was not registered')
+                else:
+                    return {'status':'adaptation_required','report':report,'next_stage':name,'research_status':research_status,'synthesis_status':synthesis_status,'benchmark_status':benchmark_status,'promotion_status':promotion_status}
+            else: raise StudioError('Unfinished project has no executable next stage')
         if name in seen: raise StudioError('Stage did not advance completion state: '+name)
         seen.add(name)
         try: remaining=_remaining(deadline,clock)

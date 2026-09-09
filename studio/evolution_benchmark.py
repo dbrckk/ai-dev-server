@@ -50,14 +50,14 @@ def _capability(value, expected_gap):
 def _differential(value, candidate_id, baseline_sha, candidate_sha):
     if value is None:
         return False
-    required = {'version','status','candidate_id','baseline_sha','candidate_sha','test_file','tests_collected','baseline_failed','candidate_passed','improvement_proved','blockers'}
+    required = {'version','status','candidate_id','baseline_sha','candidate_sha','test_file','tests_collected','baseline_failed_all','candidate_passed','improvement_proved','blockers'}
     if not isinstance(value, dict) or set(value) != required or value.get('version') != 1:
         raise BenchmarkRejected('Differential proof malformed')
     if value.get('candidate_id') != candidate_id or value.get('baseline_sha') != baseline_sha or value.get('candidate_sha') != candidate_sha:
         raise BenchmarkRejected('Differential proof identity mismatch')
     if not isinstance(value.get('blockers'), list) or any(not isinstance(x, str) for x in value['blockers']):
         raise BenchmarkRejected('Differential blockers malformed')
-    proved = (value.get('status') == 'differential_proved' and value.get('baseline_failed') is True
+    proved = (value.get('status') == 'differential_proved' and value.get('baseline_failed_all') is True
               and value.get('candidate_passed') is True and value.get('improvement_proved') is True
               and value.get('blockers') == [])
     return proved

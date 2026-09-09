@@ -39,8 +39,7 @@ def bounded_run(args, timeout):
                 'docker', 'ps', '-aq', '--filter', 'label=mobile-studio-run=' + run_id,
             ], capture_output=True, text=True, timeout=15, check=True).stdout.split()
             if containers:
-                subprocess.run(['docker', 'rm', '-f', *containers],
-                    capture_output=True, timeout=30, check=True)
+                subprocess.run(['docker', 'rm', '-f', *containers], capture_output=True, timeout=30, check=True)
         except (OSError, subprocess.SubprocessError):
             raise StudioError('Timed-out worker stopped but container cleanup failed') from None
         raise
@@ -62,8 +61,9 @@ def run(request_path: Path, out=Path('studio-output'), runner=bounded_run,
         'next_stage': result.get('next_stage'),
         'finished': bool(result.get('report', {}).get('completion', {}).get('finished')),
     }
-    if result.get('research_status') is not None:
-        summary['research_status'] = result['research_status']
+    for key in ('research_status','synthesis_status','benchmark_status','promotion_status','persistence_status'):
+        if result.get(key) is not None:
+            summary[key] = result[key]
     out.mkdir(parents=True, exist_ok=True)
     (out / 'github-pipeline.json').write_text(canonical(summary))
     return summary

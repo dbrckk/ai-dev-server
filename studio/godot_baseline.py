@@ -53,6 +53,7 @@ def finance_fix(project):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--verify-finance-fix', action='store_true')
+    parser.add_argument('--verify-save-fix', action='store_true')
     options = parser.parse_args()
     out = Path('studio-output/jumpy-baseline').resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -114,7 +115,7 @@ def main():
                 if not gate_ok(code, log, marker):
                     raise StudioError('Jumpy ' + label + ' gate failed')
             report['status'] = 'baseline_passed'
-            if options.verify_finance_fix:
+            if options.verify_finance_fix or options.verify_save_fix:
                 command = [str(binary), '--headless', '--path', str(project),
                            '--script', 'res://__studio_baseline.gd', '--', '--finance']
                 evidence = out / 'gameplay.json'
@@ -136,6 +137,50 @@ def main():
                 (out / 'finance-fix.patch').write_text(patch)
                 report.update(status='candidate_passed', defect_reproduced=True,
                               candidate_checks=12, candidate_patch='finance-fix.patch')
+            if options.verify_save_fix:
+                profile = project / 'scripts/profile.gd'
+                original = profile.read_bytes()
+                if hashlib.sha256(original).hexdigest() != 'dd584318f42f6d4d1583d1ba9fb987a03426178bad2cabe0fa8439b82c0fb98a':
+                    raise StudioError('Save candidate requires the reviewed post-finance profile')
+                shutil.copyfile(Path(__file__).with_name('jumpy_save_checks.gd'), project / '__studio_saves.gd')
+                command = [str(binary), '--headless', '--path', str(project),
+                           '--script', 'res://__studio_saves.gd']
+                evidence = out / 'gameplay.json'
+                evidence.unlink(missing_ok=True)
+                code, log = run(command)
+                (out / 'saves-before.log').write_text(log)
+                before = json.loads(evidence.read_text())
+                expected = [
+                    'Invalid save fields must fall back safely',
+                    'Valid JSON numbers must normalize without losing preferences',
+                    'Skins must be unique valid indices and selected skin unlocked',
+                    'Numeric bounds and calendar dates must be validated',
+                    'Missing save must restore defaults']
+                if code == 0 or before.get('failures') != expected or before.get('checks') != 8:
+                    raise StudioError('Save defects were not reproduced exactly')
+                (out / 'saves-before.json').write_text(canonical(before))
+                candidate = Path(__file__).with_name('candidates') / 'jumpy_profile_save.gd'
+                profile.write_bytes(candidate.read_bytes())
+                evidence.unlink()
+                code, log = run(command)
+                (out / 'saves-after.log').write_text(log)
+                after = json.loads(evidence.read_text())
+                if not gate_ok(code, log, 'JUMPY_SAVE_PASS') or after != {'passed': True, 'failures': [], 'checks': 8}:
+                    raise StudioError('Save candidate regression gate failed')
+                (out / 'saves-after.json').write_text(canonical(after))
+                evidence.unlink()
+                code, log = run([str(binary), '--headless', '--path', str(project),
+                    '--script', 'res://__studio_baseline.gd', '--', '--finance'])
+                (out / 'saves-gameplay.log').write_text(log)
+                gameplay = json.loads(evidence.read_text())
+                if not gate_ok(code, log, 'JUMPY_BASELINE_PASS') or gameplay != {'passed': True, 'failures': [], 'checks': 12}:
+                    raise StudioError('Save candidate broke gameplay or spending')
+                patch = ''.join(difflib.unified_diff(original.decode().splitlines(True),
+                    candidate.read_text().splitlines(True),
+                    fromfile='a/scripts/profile.gd', tofile='b/scripts/profile.gd'))
+                (out / 'save-fix.patch').write_text(patch)
+                report.update(status='candidate_passed', save_defects_reproduced=True,
+                              candidate_checks=20, candidate_patch='save-fix.patch')
     except (StudioError, OSError, ValueError, KeyError, zipfile.BadZipFile, subprocess.SubprocessError) as e:
         report['status'] = 'blocked'
         report['error'] = str(e) if isinstance(e, StudioError) else type(e).__name__

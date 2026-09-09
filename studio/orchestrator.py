@@ -79,6 +79,10 @@ def _run_adaptation_promotion(project_out,deadline,runner,clock):
     try: value=json.loads(applied.read_text())
     except (OSError,json.JSONDecodeError): raise StudioError('Promotion produced invalid application evidence') from None
     return 'promoted' if value.get('status') in {'promoted','already_promoted'} else 'blocked'
+def _stage_command(name,stage,request_path,work,project_out):
+    args=[request_path,'--work',work,'--out',str(project_out)]
+    if name in STAGES: return [sys.executable,stage.script,*args]
+    return [sys.executable,'studio/evolution_stage_runner.py',stage.script,*args]
 def run_registered_stages(request_path,project_out,work,report,deadline,runner,clock=time.monotonic,baseline_sha=None):
     seen=set()
     while True:
@@ -103,7 +107,7 @@ def run_registered_stages(request_path,project_out,work,report,deadline,runner,c
         seen.add(name)
         try: remaining=_remaining(deadline,clock)
         except TimeoutError: return {'status':stage.deferred_status,'report':report,'next_stage':name}
-        result=runner([sys.executable,stage.script,request_path,'--work',work,'--out',str(project_out)],timeout=remaining)
+        result=runner(_stage_command(name,stage,request_path,work,project_out),timeout=remaining)
         if result.returncode!=0: return {'status':stage.failed_status,'report':load_report(project_out),'next_stage':name}
         updated=load_report(project_out); updated_completion=updated.get('completion',{}); next_name=updated_completion.get('next_stage') if isinstance(updated_completion,dict) else None
         if next_name==name and not updated_completion.get('finished'): raise StudioError('Successful stage did not advance completion state: '+name)

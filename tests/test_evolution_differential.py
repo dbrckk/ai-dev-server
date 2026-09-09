@@ -28,12 +28,18 @@ class EvolutionDifferentialTests(unittest.TestCase):
                 'protected_hashes':{'studio/core.py':'1'*64,'studio/completion.py':'2'*64},
                 'capability_benchmark':{'gap':'future_capability_qa','passed':True,'assertions_total':3,'assertions_passed':3},
                 'reversible':True}
-    def test_promotion_contract_requires_differential_improvement(self):
+    def test_promotion_contract_requires_every_candidate_test_red_then_green(self):
         self.assertIn('differential_improvement_proved', PROMOTION_GATES)
-        proof = evaluate(self.order(), self.validated(), self.diff_result('a'*40, failures=2, passed=False), self.diff_result('b'*40))
+        proof = evaluate(self.order(), self.validated(), self.diff_result('a'*40, failures=3, passed=False), self.diff_result('b'*40))
         decision = evaluate_promotion(self.order(), self.benchmark_result('a'*40), self.benchmark_result('b'*40), proof)
         self.assertEqual(decision['promotion_decision'], 'approve')
         self.assertTrue(decision['gates']['differential_improvement_proved'])
+    def test_partially_red_baseline_blocks_promotion(self):
+        proof = evaluate(self.order(), self.validated(), self.diff_result('a'*40, failures=1, passed=False), self.diff_result('b'*40))
+        self.assertFalse(proof['improvement_proved'])
+        self.assertIn('not_every_candidate_test_failed_on_baseline', proof['blockers'])
+        decision = evaluate_promotion(self.order(), self.benchmark_result('a'*40), self.benchmark_result('b'*40), proof)
+        self.assertEqual(decision['promotion_decision'], 'reject')
     def test_trivial_baseline_green_test_blocks_promotion(self):
         proof = evaluate(self.order(), self.validated(), self.diff_result('a'*40), self.diff_result('b'*40))
         decision = evaluate_promotion(self.order(), self.benchmark_result('a'*40), self.benchmark_result('b'*40), proof)
@@ -45,7 +51,7 @@ class EvolutionDifferentialTests(unittest.TestCase):
         self.assertFalse(decision['gates']['differential_improvement_proved'])
     def test_pinned_baseline_is_required(self):
         with self.assertRaisesRegex(DifferentialRejected, 'pinned SHA'):
-            evaluate(self.order(), self.validated(), self.diff_result('c'*40, failures=1, passed=False), self.diff_result('b'*40))
+            evaluate(self.order(), self.validated(), self.diff_result('c'*40, failures=3, passed=False), self.diff_result('b'*40))
 
 
 if __name__ == '__main__':

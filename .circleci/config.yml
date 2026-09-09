@@ -15,6 +15,7 @@ jobs:
       - run:
           name: Validate engine and request queue without secrets
           command: |
+            python -m compileall -q studio tests
             python -m unittest discover -s tests -v
             python -m json.tool .devcontainer/devcontainer.json >/dev/null
             python -m json.tool control/ci.json >/dev/null
@@ -35,12 +36,12 @@ jobs:
           destination: jumpy-baseline
   mobile:
     machine:
-      image: ubuntu-2404:current
-    resource_class: large
+      image: android:current
+    resource_class: large.gen2
     steps:
       - checkout
       - run:
-          name: Generate with the shared studio engine
+          name: Generate, build release and validate on Android emulator
           no_output_timeout: 30m
           command: python3 studio/ci_runner.py "<< pipeline.parameters.mode >>"
       - store_artifacts:

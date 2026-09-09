@@ -109,13 +109,16 @@ def apply(repo_root, work_order, candidate, benchmark, supplied_promotion):
         raise PromotionError('Promotion would overwrite existing trusted files')
 
     previous_registry = canonical(registry) + '\n'
+    file_hashes = {path: hashlib.sha256(content.encode()).hexdigest() for path, content in sorted(by_path.items())}
     rollback = {
-        'version': 1,
+        'version': 2,
         'candidate_id': candidate_id,
         'gap': gap,
         'baseline_sha': baseline_sha,
         'candidate_sha': candidate_sha,
         'created_paths': sorted(expected.values()),
+        'created_sha256': file_hashes,
+        'registry_before': registry,
         'registry_sha256_before': hashlib.sha256(previous_registry.encode()).hexdigest(),
     }
 

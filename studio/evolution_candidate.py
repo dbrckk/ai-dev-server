@@ -27,6 +27,7 @@ PROTECTED_PATHS = {
     'studio/orchestrator.py',
     'studio/github_runner.py',
     'studio/ci_runner.py',
+    'studio/smoke.py',
     'studio/adaptation.py',
     'studio/evolution_executor.py',
     'studio/evolution_evidence.py',
@@ -34,6 +35,8 @@ PROTECTED_PATHS = {
     'studio/evolution_synthesis.py',
     'studio/evolution_candidate.py',
     'studio/evolution_benchmark.py',
+    'studio/evolution_differential.py',
+    'studio/evolution_isolated_runner.py',
     '.github/workflows/validate.yml',
     '.github/workflows/studio-smoke.yml',
     '.github/workflows/mobile-studio.yml',
@@ -44,6 +47,7 @@ FORBIDDEN_CALLS = {
     'eval', 'exec', 'compile', '__import__',
     'os.system', 'os.popen',
     'subprocess.call', 'subprocess.check_call', 'subprocess.check_output',
+    'unittest.skip', 'unittest.skipIf', 'unittest.skipUnless', 'pytest.skip',
 }
 
 SECRET_PATTERNS = (
@@ -102,14 +106,39 @@ def _call_name(node: ast.Call) -> str:
     return ''
 
 
-def _validate_python(path: str, content: str) -> None:
+def _decorator_name(node: ast.expr) -> str:
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        parts = []
+        target: ast.expr = node
+        while isinstance(target, ast.Attribute):
+            parts.append(target.attr)
+            target = target.value
+        if isinstance(target, ast.Name):
+            parts.append(target.id)
+            return '.'.join(reversed(parts))
+    if isinstance(node, ast.Call):
+        return _decorator_name(node.func)
+    return ''
+
+
+def _python_tree(path: str, content: str) -> ast.AST:
     try:
-        tree = ast.parse(content, filename=path)
+        return ast.parse(content, filename=path)
     except SyntaxError:
         raise CandidateRejected('Candidate Python does not parse') from None
+
+
+def _validate_python(path: str, content: str) -> None:
+    tree = _python_tree(path, content)
     for node in ast.walk(tree):
         if isinstance(node, (ast.Global, ast.Nonlocal)):
             raise CandidateRejected('Candidate global/nonlocal mutation rejected')
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            for decorator in node.decorator_list:
+                if _decorator_name(decorator) in {'unittest.skip', 'unittest.skipIf', 'unittest.skipUnless', 'pytest.mark.skip', 'pytest.mark.skipif'}:
+                    raise CandidateRejected('Candidate skipped tests rejected')
         if isinstance(node, ast.Call):
             name = _call_name(node)
             if name in FORBIDDEN_CALLS:
@@ -144,7 +173,18 @@ def _validate_benchmark(content: str, gap: str) -> dict:
     if (not isinstance(assertions, list) or not 1 <= len(assertions) <= 20
             or any(not isinstance(item, str) or not item.strip() or len(item) > 300 for item in assertions)):
         raise CandidateRejected('Candidate benchmark assertions invalid')
+    if len(set(assertions)) != len(assertions):
+        raise CandidateRejected('Candidate benchmark assertions must be distinct')
     return value
+
+
+def _test_method_count(content: str) -> int:
+    tree = _python_tree('candidate_test.py', content)
+    names = [node.name for node in ast.walk(tree)
+             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name.startswith('test_')]
+    if len(names) != len(set(names)):
+        raise CandidateRejected('Candidate test method names must be unique')
+    return len(names)
 
 
 def validate_candidate(work_order: dict, research: dict, candidate: dict) -> dict:
@@ -171,6 +211,8 @@ def validate_candidate(work_order: dict, research: dict, candidate: dict) -> dic
     normalized = []
     seen = set()
     total = 0
+    benchmark_value = None
+    test_content = None
     for item in files:
         if not isinstance(item, dict) or set(item) != {'path', 'content'}:
             raise CandidateRejected('Candidate file entry malformed')
@@ -193,13 +235,21 @@ def validate_candidate(work_order: dict, research: dict, candidate: dict) -> dic
             raise CandidateRejected('Candidate contains credential-like material')
         if path.endswith('.py'):
             _validate_python(path, content)
+            if path == expected['tests']:
+                test_content = content
         else:
-            _validate_benchmark(content, gap)
+            benchmark_value = _validate_benchmark(content, gap)
         normalized.append({'path': path, 'content': content})
 
     missing = [role for role, path in expected.items() if path not in seen]
     if missing:
         raise CandidateRejected('Candidate missing required artifacts: ' + ','.join(missing))
+    if not isinstance(test_content, str) or not isinstance(benchmark_value, dict):
+        raise CandidateRejected('Candidate test/benchmark evidence missing')
+    test_count = _test_method_count(test_content)
+    assertion_count = len(benchmark_value['assertions'])
+    if test_count < 1 or test_count != assertion_count:
+        raise CandidateRejected('Candidate requires exactly one concrete test per benchmark assertion')
 
     digest_payload = {
         'candidate_id': candidate_id,
@@ -217,6 +267,8 @@ def validate_candidate(work_order: dict, research: dict, candidate: dict) -> dic
         'gap': gap,
         'files': normalized,
         'candidate_sha256': digest,
+        'benchmark_assertions': assertion_count,
+        'differential_tests': test_count,
         'protected_paths_enforced': True,
         'registry_change_reserved_for_promotion': True,
     }

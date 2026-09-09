@@ -1,11 +1,12 @@
 """Validate research evidence supplied to a factory-evolution work order.
 
-The orchestrating ChatGPT/Work layer may research the web, but only compact
-metadata/evidence enters the trusted factory. This module rejects untrusted source
-classes and never accepts executable code as research evidence.
+The orchestrating ChatGPT/Work layer or trusted research adapters may gather
+external metadata, but only compact allowlisted evidence enters the trusted
+factory. Executable code is never accepted as research evidence.
 """
 from __future__ import annotations
 
+import re
 from urllib.parse import urlsplit
 
 OFFICIAL_HOSTS = {
@@ -29,6 +30,8 @@ def _https_host(source: str) -> str:
     parsed = urlsplit(source)
     if parsed.scheme != 'https' or not parsed.hostname or parsed.username or parsed.password or parsed.fragment:
         raise ValueError('Research source must be a safe HTTPS URL')
+    if parsed.port not in (None, 443):
+        raise ValueError('Research source must use standard HTTPS')
     return parsed.hostname.lower()
 
 
@@ -42,7 +45,8 @@ def validate_evidence(work_order: dict, evidence: dict) -> dict:
 
     if not isinstance(evidence, dict) or set(evidence) != {'version', 'candidate_id', 'items'}:
         raise ValueError('Malformed research evidence envelope')
-    if evidence.get('version') != 1 or evidence.get('candidate_id') != work_order.get('candidate_id'):
+    version = evidence.get('version')
+    if version not in (1, 2) or evidence.get('candidate_id') != work_order.get('candidate_id'):
         raise ValueError('Research evidence does not match candidate')
     items = evidence.get('items')
     if not isinstance(items, list) or len(items) != len(tasks):
@@ -52,6 +56,8 @@ def validate_evidence(work_order: dict, evidence: dict) -> dict:
     normalized = []
     for item in items:
         required = {'task_id', 'kind', 'source', 'version_or_revision', 'license', 'maintenance_signal', 'risks', 'notes'}
+        if version == 2:
+            required.add('content_sha256')
         if not isinstance(item, dict) or set(item) != required:
             raise ValueError('Malformed research evidence item')
         task_id = item.get('task_id')
@@ -69,6 +75,8 @@ def validate_evidence(work_order: dict, evidence: dict) -> dict:
             raise ValueError('Research risks invalid')
         if len(item['notes']) > 4000 or any(len(item[key]) > 500 for key in ('source', 'version_or_revision', 'license', 'maintenance_signal')):
             raise ValueError('Research evidence field too large')
+        if version == 2 and not re.fullmatch(r'[0-9a-f]{64}', item.get('content_sha256', '')):
+            raise ValueError('Research evidence content hash invalid')
 
         kind = item['kind']
         source = item['source']
@@ -93,7 +101,7 @@ def validate_evidence(work_order: dict, evidence: dict) -> dict:
         normalized.append(dict(item))
 
     return {
-        'version': 1,
+        'version': version,
         'candidate_id': evidence['candidate_id'],
         'status': 'research_complete',
         'items': normalized,

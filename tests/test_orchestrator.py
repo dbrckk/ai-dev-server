@@ -13,6 +13,7 @@ from github_runner import main as github_main, run as github_run
 from orchestrator import run_project
 
 BASELINE = 'a' * 40
+MISSING_STAGE = 'future_capability_qa'
 
 
 class OrchestratorTests(unittest.TestCase):
@@ -31,94 +32,80 @@ class OrchestratorTests(unittest.TestCase):
             return {'status': 'finished', 'completion': {'finished': True, 'next_stage': None}}
         return {'status': 'validated_preview'}
 
+    def missing_report(self):
+        return {
+            'status': 'validated_preview',
+            'completion': {'finished': False, 'next_stage': MISSING_STAGE, 'blockers': [MISSING_STAGE + '_missing']},
+            'release_evidence': {'capability_qa': {'passed': True, 'required_qa_stages': [MISSING_STAGE],
+                'permissions': [], 'reasons': [{'profile': MISSING_STAGE, 'source': 'source_marker', 'value': 'future_capability'}]}},
+        }
+
     def test_full_pipeline_reaches_finished(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            out = root / 'out'
-            request = root / 'request.json'
-            request.write_text('{}')
+            root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}')
             calls = []
             def runner(args, timeout):
-                calls.append(args)
-                out.mkdir(parents=True, exist_ok=True)
+                calls.append(args); out.mkdir(parents=True, exist_ok=True)
                 (out / 'report.json').write_text(json.dumps(self.payload_for(args)))
                 return subprocess.CompletedProcess(args, 0)
             result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)
             self.assertEqual(result['status'], 'complete')
-            expected = ['studio/run.py', 'studio/post_preview.py', 'studio/device_stage.py',
-                        'studio/capability_stage.py', 'studio/store_stage.py',
-                        'studio/privacy_stage.py', 'studio/security_stage.py']
+            expected = ['studio/run.py', 'studio/post_preview.py', 'studio/device_stage.py', 'studio/capability_stage.py',
+                        'studio/store_stage.py', 'studio/privacy_stage.py', 'studio/security_stage.py']
             self.assertEqual(len(calls), len(expected))
-            for call, script in zip(calls, expected):
-                self.assertIn(script, call)
+            for call, script in zip(calls, expected): self.assertIn(script, call)
 
-    def test_unregistered_stage_creates_adaptation_and_work_order(self):
+    def test_unregistered_stage_creates_work_order_and_runs_research(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            out = root / 'out'
-            request = root / 'request.json'
-            request.write_text('{}')
+            root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}'); calls = []
             def runner(args, timeout):
-                out.mkdir(parents=True, exist_ok=True)
-                if 'studio/run.py' in args:
-                    report = {'status': 'validated_preview'}
-                else:
-                    report = {
-                        'status': 'validated_preview',
-                        'completion': {'finished': False, 'next_stage': 'platform_view_qa', 'blockers': ['platform_view_qa_missing']},
-                        'release_evidence': {
-                            'capability_qa': {
-                                'passed': True,
-                                'required_qa_stages': ['platform_view_qa'],
-                                'permissions': [],
-                                'reasons': [{'profile': 'platform_view_qa', 'source': 'dependency', 'value': 'webview_flutter'}],
-                            }
-                        },
-                    }
-                (out / 'report.json').write_text(json.dumps(report))
-                return subprocess.CompletedProcess(args, 0)
+                calls.append(args); out.mkdir(parents=True, exist_ok=True)
+                if 'studio/evolution_research.py' in args:
+                    order = json.loads((out / 'evolution-work-order.json').read_text())
+                    (out / 'evolution-research.json').write_text(json.dumps({'version': 2, 'candidate_id': order['candidate_id'],
+                        'status': 'research_complete', 'items': []}))
+                    return subprocess.CompletedProcess(args, 0)
+                report = {'status': 'validated_preview'} if 'studio/run.py' in args else self.missing_report()
+                (out / 'report.json').write_text(json.dumps(report)); return subprocess.CompletedProcess(args, 0)
             result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)
-            self.assertEqual(result['status'], 'adaptation_required')
-            evolution = json.loads((out / 'evolution-request.json').read_text())
-            work_order = json.loads((out / 'evolution-work-order.json').read_text())
-            self.assertEqual(evolution['status'], 'adaptation_required')
-            self.assertEqual(work_order['status'], 'candidate_planned')
-            self.assertEqual(work_order['baseline_sha'], BASELINE)
-            self.assertTrue(work_order['candidate_branch'].startswith('evolution/platform-view-qa-'))
+            self.assertEqual(result['status'], 'adaptation_required'); self.assertEqual(result['research_status'], 'complete')
+            order = json.loads((out / 'evolution-work-order.json').read_text())
+            self.assertEqual(order['baseline_sha'], BASELINE)
+            self.assertTrue(order['candidate_branch'].startswith('evolution/future-capability-qa-'))
+            self.assertTrue(any('studio/evolution_research.py' in call for call in calls))
 
-    def test_adaptation_without_baseline_stays_blocked_without_promotable_work_order(self):
+    def test_research_failure_is_explicit(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            out = root / 'out'
-            request = root / 'request.json'
-            request.write_text('{}')
+            root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}')
             def runner(args, timeout):
                 out.mkdir(parents=True, exist_ok=True)
-                report = {'status': 'validated_preview'} if 'studio/run.py' in args else {
-                    'status': 'validated_preview',
-                    'completion': {'finished': False, 'next_stage': 'platform_view_qa'},
-                }
-                (out / 'report.json').write_text(json.dumps(report))
-                return subprocess.CompletedProcess(args, 0)
+                if 'studio/evolution_research.py' in args:
+                    (out / 'evolution-research-error.json').write_text(json.dumps({'status': 'research_blocked'}))
+                    return subprocess.CompletedProcess(args, 1)
+                report = {'status': 'validated_preview'} if 'studio/run.py' in args else self.missing_report()
+                (out / 'report.json').write_text(json.dumps(report)); return subprocess.CompletedProcess(args, 0)
+            result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)
+            self.assertEqual(result['status'], 'adaptation_required'); self.assertEqual(result['research_status'], 'blocked')
+
+    def test_adaptation_without_baseline_has_no_promotable_work_order(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}')
+            def runner(args, timeout):
+                out.mkdir(parents=True, exist_ok=True)
+                report = {'status': 'validated_preview'} if 'studio/run.py' in args else self.missing_report()
+                (out / 'report.json').write_text(json.dumps(report)); return subprocess.CompletedProcess(args, 0)
             result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, None)
-            self.assertEqual(result['status'], 'adaptation_required')
-            self.assertTrue((out / 'evolution-request.json').is_file())
-            self.assertFalse((out / 'evolution-work-order.json').exists())
+            self.assertEqual(result['research_status'], 'not_planned_without_baseline')
+            self.assertTrue((out / 'evolution-request.json').is_file()); self.assertFalse((out / 'evolution-work-order.json').exists())
 
     def test_successful_stage_must_advance(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            out = root / 'out'
-            request = root / 'request.json'
-            request.write_text('{}')
+            root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}')
             def runner(args, timeout):
                 out.mkdir(parents=True, exist_ok=True)
-                report = {'status': 'validated_preview'} if 'studio/run.py' in args else {
-                    'status': 'validated_preview',
-                    'completion': {'finished': False, 'next_stage': 'real_device'},
-                }
-                (out / 'report.json').write_text(json.dumps(report))
-                return subprocess.CompletedProcess(args, 0)
+                report = {'status': 'validated_preview'} if 'studio/run.py' in args else {'status': 'validated_preview',
+                    'completion': {'finished': False, 'next_stage': 'real_device'}}
+                (out / 'report.json').write_text(json.dumps(report)); return subprocess.CompletedProcess(args, 0)
             with self.assertRaisesRegex(StudioError, 'did not advance'):
                 run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)
 
@@ -126,40 +113,23 @@ class OrchestratorTests(unittest.TestCase):
 class GitHubRunnerTests(unittest.TestCase):
     def request(self, root):
         path = root / 'request.json'
-        path.write_text(json.dumps({
-            'id': 'app-one',
-            'target_repo': 'owner/app-one',
-            'app_name': 'app_one',
-            'brief': 'Build a polished offline focus timer mobile application.',
-            'enabled': True,
-        }))
+        path.write_text(json.dumps({'id': 'app-one', 'target_repo': 'owner/app-one', 'app_name': 'app_one',
+            'brief': 'Build a polished offline focus timer mobile application.', 'enabled': True}))
         return path
 
     def test_non_main_is_rejected_before_generation(self):
         with patch.dict('os.environ', {'GITHUB_REF': 'refs/heads/feature'}, clear=True):
-            with self.assertRaisesRegex(StudioError, 'requires main'):
-                github_main(['request.json'])
+            with self.assertRaisesRegex(StudioError, 'requires main'): github_main(['request.json'])
 
     def test_adapter_reports_complete_only_after_machine_completion(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            request = self.request(root)
-            out = root / 'out'
+            root = Path(tmp); request = self.request(root); out = root / 'out'
             def runner(args, timeout):
                 out.mkdir(parents=True, exist_ok=True)
-                if 'studio/post_preview.py' in args:
-                    report = {'status': 'finished', 'completion': {'finished': True, 'next_stage': None}}
-                else:
-                    report = {'status': 'validated_preview'}
-                (out / 'report.json').write_text(json.dumps(report))
-                return subprocess.CompletedProcess(args, 0)
-            result = github_run(request, out, runner=runner, clock=lambda: 0,
-                                budget_seconds=1000, baseline_sha=BASELINE)
-            self.assertEqual(result['status'], 'complete')
-            self.assertTrue(result['finished'])
-            persisted = json.loads((out / 'github-pipeline.json').read_text())
-            self.assertEqual(persisted['status'], 'complete')
+                report = {'status': 'finished', 'completion': {'finished': True, 'next_stage': None}} if 'studio/post_preview.py' in args else {'status': 'validated_preview'}
+                (out / 'report.json').write_text(json.dumps(report)); return subprocess.CompletedProcess(args, 0)
+            result = github_run(request, out, runner=runner, clock=lambda: 0, budget_seconds=1000, baseline_sha=BASELINE)
+            self.assertEqual(result['status'], 'complete'); self.assertTrue(result['finished'])
 
 
-if __name__ == '__main__':
-    unittest.main()
+if __name__ == '__main__': unittest.main()

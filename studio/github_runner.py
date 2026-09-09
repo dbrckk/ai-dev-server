@@ -62,6 +62,8 @@ def run(request_path: Path, out=Path('studio-output'), runner=bounded_run,
         'next_stage': result.get('next_stage'),
         'finished': bool(result.get('report', {}).get('completion', {}).get('finished')),
     }
+    if result.get('research_status') is not None:
+        summary['research_status'] = result['research_status']
     out.mkdir(parents=True, exist_ok=True)
     (out / 'github-pipeline.json').write_text(canonical(summary))
     return summary

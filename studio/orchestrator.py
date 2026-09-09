@@ -47,6 +47,34 @@ def _write_adaptation_handoff(report: dict, project_out: Path, baseline_sha: str
     return request
 
 
+def _run_adaptation_research(project_out: Path, deadline: float, runner, clock) -> str:
+    work_order = project_out / 'evolution-work-order.json'
+    if not work_order.is_file():
+        return 'not_planned_without_baseline'
+    try:
+        remaining = _remaining(deadline, clock)
+    except TimeoutError:
+        return 'deferred'
+    result = runner([
+        sys.executable, 'studio/evolution_research.py', str(work_order),
+        '--out', str(project_out),
+    ], timeout=remaining)
+    if result.returncode != 0:
+        return 'blocked'
+    evidence_path = project_out / 'evolution-research.json'
+    if not evidence_path.is_file():
+        raise StudioError('Successful evolution research produced no evidence')
+    try:
+        evidence = json.loads(evidence_path.read_text())
+        order = json.loads(work_order.read_text())
+    except (OSError, json.JSONDecodeError):
+        raise StudioError('Evolution research produced invalid evidence') from None
+    if (not isinstance(evidence, dict) or evidence.get('status') != 'research_complete'
+            or evidence.get('candidate_id') != order.get('candidate_id')):
+        raise StudioError('Evolution research evidence does not match work order')
+    return 'complete'
+
+
 def run_registered_stages(request_path: str, project_out: Path, work: str,
                           report: dict, deadline: float, runner, clock=time.monotonic,
                           baseline_sha: str | None = None) -> dict:
@@ -63,7 +91,13 @@ def run_registered_stages(request_path: str, project_out: Path, work: str,
         if stage is None:
             request = _write_adaptation_handoff(report, project_out, baseline_sha)
             if request.get('status') == 'adaptation_required':
-                return {'status': 'adaptation_required', 'report': report, 'next_stage': name}
+                research_status = _run_adaptation_research(project_out, deadline, runner, clock)
+                return {
+                    'status': 'adaptation_required',
+                    'report': report,
+                    'next_stage': name,
+                    'research_status': research_status,
+                }
             raise StudioError('Unfinished project has no executable next stage')
         if name in seen:
             raise StudioError('Stage did not advance completion state: ' + name)
@@ -90,7 +124,7 @@ def run_registered_stages(request_path: str, project_out: Path, work: str,
 
 def run_project(request_path: str, project_out: Path, work: str, runner,
                 deadline: float, clock=time.monotonic, baseline_sha: str | None = None) -> dict:
-    """Run preview, release build, then every dynamically required trusted stage."""
+    """Run preview, release build, every required trusted stage, then adaptation research."""
     project_out.mkdir(parents=True, exist_ok=True)
     try:
         remaining = _remaining(deadline, clock)

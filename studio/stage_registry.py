@@ -19,6 +19,7 @@ STAGES = {
     'native_qa': Stage('native_qa', 'studio/native_stage.py', 'deferred_native', 'native_failed'),
     'notification_qa': Stage('notification_qa', 'studio/notification_stage.py', 'deferred_notification', 'notification_failed'),
     'billing_qa': Stage('billing_qa', 'studio/billing_stage.py', 'deferred_billing', 'billing_failed'),
+    'platform_view_qa': Stage('platform_view_qa', 'studio/platform_view_stage.py', 'deferred_platform_view', 'platform_view_failed'),
     'store_metadata': Stage('store_metadata', 'studio/store_stage.py', 'deferred_store', 'store_failed'),
     'privacy_policy': Stage('privacy_policy', 'studio/privacy_stage.py', 'deferred_privacy', 'privacy_failed'),
     'security_scan': Stage('security_scan', 'studio/security_stage.py', 'deferred_security', 'security_failed'),

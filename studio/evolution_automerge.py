@@ -1,4 +1,4 @@
-"""Merge a durable autonomous evolution only from the runner that persisted it."""
+"""Merge durable autonomous evolution from immutable content-bound GitHub proof."""
 from __future__ import annotations
 
 import json
@@ -34,15 +34,25 @@ def _trusted_check(run, repository):
     return parsed.scheme=='https' and parsed.netloc=='github.com' and parsed.path.startswith(prefix)
 
 
-def attempt(work_order:dict,persisted:dict,token:str,repository:str)->dict:
-    if not isinstance(persisted,dict) or persisted.get('status') not in {'promotion_persisted','already_persisted'}: raise AutoMergeError('Local persistence proof missing')
+def _proof(pending, persisted):
+    if pending.get('proof')!='branch_name_sha_v1': raise AutoMergeError('Durable promotion proof missing')
+    proof={'pull_request':pending.get('pull_request'),'commit_sha':pending.get('commit_sha'),'branch':pending.get('branch')}
+    if not isinstance(proof['pull_request'],int) or not isinstance(proof['commit_sha'],str) or len(proof['commit_sha'])!=40 or not isinstance(proof['branch'],str):
+        raise AutoMergeError('Durable promotion proof incomplete')
+    if persisted:
+        if not isinstance(persisted,dict) or persisted.get('status') not in {'promotion_persisted','already_persisted'}:
+            raise AutoMergeError('Local persistence proof malformed')
+        for key in proof:
+            if persisted.get(key)!=proof[key]: raise AutoMergeError('Local persistence proof does not match durable proof')
+    return proof
+
+
+def attempt(work_order:dict,persisted:dict|None,token:str,repository:str)->dict:
     pending=check_pending(work_order,token,repository); status=pending.get('status')
     if status=='promotion_merged_restart_required': return {'status':'promotion_already_merged','pull_request':pending.get('pull_request')}
     if status!='promotion_pending_merge': raise AutoMergeError('Pending promotion is not safely mergeable')
     candidate_id=work_order.get('candidate_id'); gap=(work_order.get('primary_gap') or {}).get('value')
-    number=persisted.get('pull_request'); head_sha=persisted.get('commit_sha'); branch=persisted.get('branch')
-    if pending.get('pull_request')!=number or pending.get('branch')!=branch: raise AutoMergeError('Pending promotion does not match local persistence proof')
-    if not isinstance(number,int) or not isinstance(head_sha,str) or len(head_sha)!=40 or not isinstance(branch,str): raise AutoMergeError('Local persistence proof incomplete')
+    proof=_proof(pending,persisted or {}); number=proof['pull_request']; head_sha=proof['commit_sha']; branch=proof['branch']
     api='https://api.github.com/repos/'+repository
     pr=_request(api+'/pulls/'+str(number),token)
     if not isinstance(pr,dict) or pr.get('state')!='open' or pr.get('draft') is True: raise AutoMergeError('Promotion pull request is not open and ready')
@@ -62,7 +72,7 @@ def attempt(work_order:dict,persisted:dict,token:str,repository:str)->dict:
         if run.get('status')!='completed': return {'status':'awaiting_required_checks','missing_checks':[],'pull_request':number}
         if run.get('conclusion')!='success': raise AutoMergeError('Required promotion check failed: '+name)
     pr=_request(api+'/pulls/'+str(number),token)
-    if pr.get('head',{}).get('sha')!=head_sha: raise AutoMergeError('Promotion pull request head changed during verification')
+    if pr.get('head',{}).get('sha')!=head_sha or pr.get('head',{}).get('ref')!=branch: raise AutoMergeError('Promotion pull request head changed during verification')
     if pr.get('mergeable') is not True or pr.get('mergeable_state')!='clean': return {'status':'awaiting_clean_merge_state','pull_request':number}
     merged=_request(api+'/pulls/'+str(number)+'/merge',token,'PUT',{'sha':head_sha,'merge_method':'merge','commit_title':'Promote autonomous capability: '+gap})
     if not isinstance(merged,dict) or merged.get('merged') is not True: raise AutoMergeError('GitHub refused autonomous promotion merge')
@@ -81,10 +91,10 @@ def wait_and_attempt(work_order,persisted,token,repository,wait_seconds,poll_sec
 
 def main(argv=None):
     import argparse
-    parser=argparse.ArgumentParser(); parser.add_argument('work_order'); parser.add_argument('persisted'); parser.add_argument('--out',default='studio-output'); parser.add_argument('--wait-seconds',type=int,default=0)
+    parser=argparse.ArgumentParser(); parser.add_argument('work_order'); parser.add_argument('persisted',nargs='?'); parser.add_argument('--out',default='studio-output'); parser.add_argument('--wait-seconds',type=int,default=0)
     args=parser.parse_args(argv); out=Path(args.out); out.mkdir(parents=True,exist_ok=True)
     try:
-        order=json.loads(Path(args.work_order).read_text()); persisted=json.loads(Path(args.persisted).read_text())
+        order=json.loads(Path(args.work_order).read_text()); persisted=json.loads(Path(args.persisted).read_text()) if args.persisted else {}
         result=wait_and_attempt(order,persisted,os.environ.get('STUDIO_GITHUB_TOKEN',''),os.environ.get('GITHUB_REPOSITORY',''),args.wait_seconds)
         (out/'evolution-automerge.json').write_text(canonical(result)+'\n'); print(canonical(result)); return 0
     except (OSError,ValueError,json.JSONDecodeError,PersistenceError,PendingError,AutoMergeError):

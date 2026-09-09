@@ -11,6 +11,7 @@ Do not modify completion/security/privacy/orchestration/CI policy. Do not includ
 Do not use eval, exec, compile, shell=True, os.system, os.popen, socket or ctypes.
 Do not skip tests. Every benchmark assertion must have exactly one concrete test method.
 Every candidate test must fail against the pinned baseline because the capability is genuinely missing, and every candidate test must pass only when the candidate implementation is present.
+Do not import the new candidate QA module at test-file top level. Import it inside each individual test method so the same tests are collected on the baseline and candidate.
 The implementation must fail closed when real evidence is unavailable and must never fabricate successful QA evidence.'''
 def _context(order,research):
     primary=order.get('primary_gap',{}); gap=primary.get('value') if isinstance(primary,dict) else None
@@ -18,7 +19,7 @@ def _context(order,research):
     paths=expected_paths(gap); compact=[]
     for item in research.get('items',[]) if isinstance(research,dict) else []:
         if isinstance(item,dict): compact.append({k:item.get(k) for k in ('kind','source','version_or_revision','license','maintenance_signal','risks','notes','content_sha256') if k in item})
-    return canonical({'task':'Implement the missing trusted factory QA capability.','candidate_id':order.get('candidate_id'),'gap':gap,'reason':primary.get('reason'),'required_files':paths,'research_evidence':compact,'requirements':['return full contents for all required files','unit tests must prove fail-closed behavior and positive evidence validation','benchmark assertions must prove the missing capability rather than compilation only','create exactly one concrete test method for every benchmark assertion','every candidate test must fail on the baseline and pass on the candidate','no skipped tests, placeholders, fake success or external code execution'],'schema':{'version':1,'candidate_id':order.get('candidate_id'),'gap':gap,'files':[{'path':'<required path>','content':'<full file content>'}]}})
+    return canonical({'task':'Implement the missing trusted factory QA capability.','candidate_id':order.get('candidate_id'),'gap':gap,'reason':primary.get('reason'),'required_files':paths,'research_evidence':compact,'requirements':['return full contents for all required files','unit tests must prove fail-closed behavior and positive evidence validation','benchmark assertions must prove the missing capability rather than compilation only','create exactly one concrete test method for every benchmark assertion','every candidate test must fail on the baseline and pass on the candidate','import the candidate QA module only inside each test method so baseline collection cardinality stays identical','no skipped tests, placeholders, fake success or external code execution'],'schema':{'version':1,'candidate_id':order.get('candidate_id'),'gap':gap,'files':[{'path':'<required path>','content':'<full file content>'}]}})
 def synthesize(order,research,api=None,model=None):
     if not isinstance(research,dict) or research.get('status')!='research_complete': raise CandidateRejected('Synthesis requires completed trusted research')
     api=api or API(os.environ.get('STUDIO_API_BASE','https://integrate.api.nvidia.com/v1'),os.environ.get('STUDIO_API_KEY',''))

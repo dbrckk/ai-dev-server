@@ -64,20 +64,6 @@ GitHub Actions is the primary CI; CircleCI remains fallback. GitHub Android jobs
 
 ## Immediate next objective
 
-### PR #42 reliability follow-up (2026-09-09, not merged)
-
-Generated patch batches are fully validated and staged before source replacement.
-Synchronous write failures restore original files and remove newly created files;
-failed rollback retains backups plus a path manifest and raises a fatal error.
-The preview runner no longer publishes from its `finally` block after unexpected
-errors, preventing an incompletely restored workspace from becoming a checkpoint.
-This is not power-loss recovery or concurrent-writer isolation. The workspace
-must be exclusively owned; interrupted-process recovery remains future work.
-Regression coverage includes staging failure, replacement failure, byte/mode
-restoration, new-directory cleanup and publication suppression after fatal errors.
-Continue by verifying this PR's fresh CI before considering integration; do not
-duplicate the separate engine-profile and evolution-promotion PRs.
-
 1. Validate and merge the mandatory differential-improvement gate.
 2. Materialize a validated candidate on its isolated `evolution/<candidate>` branch from the pinned baseline.
 3. Run the candidate-specific differential test on baseline and candidate with production credentials removed and network isolated.

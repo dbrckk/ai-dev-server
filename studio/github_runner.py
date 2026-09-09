@@ -35,67 +35,36 @@ def bounded_run(args, timeout):
             pass
         process.wait()
         try:
-            containers = subprocess.run([
-                'docker', 'ps', '-aq', '--filter', 'label=mobile-studio-run=' + run_id,
-            ], capture_output=True, text=True, timeout=15, check=True).stdout.split()
-            if containers:
-                subprocess.run(['docker', 'rm', '-f', *containers],
-                    capture_output=True, timeout=30, check=True)
+            containers = subprocess.run(['docker','ps','-aq','--filter','label=mobile-studio-run='+run_id], capture_output=True, text=True, timeout=15, check=True).stdout.split()
+            if containers: subprocess.run(['docker','rm','-f',*containers], capture_output=True, timeout=30, check=True)
         except (OSError, subprocess.SubprocessError):
             raise StudioError('Timed-out worker stopped but container cleanup failed') from None
         raise
 
 
-def run(request_path: Path, out=Path('studio-output'), runner=bounded_run,
-        clock=time.monotonic, budget_seconds=85 * 60, baseline_sha: str | None = None) -> dict:
-    request = request_check(json.loads(request_path.read_text()))
+def run(request_path: Path, out=Path('studio-output'), runner=bounded_run, clock=time.monotonic, budget_seconds=85*60, baseline_sha: str|None=None) -> dict:
+    request=request_check(json.loads(request_path.read_text()))
     if not request['enabled']:
-        result = {'status': 'disabled', 'next_stage': None, 'finished': False}
-        out.mkdir(parents=True, exist_ok=True)
-        (out / 'github-pipeline.json').write_text(canonical(result))
-        return result
-    deadline = clock() + budget_seconds
+        result={'status':'disabled','next_stage':None,'finished':False}; out.mkdir(parents=True,exist_ok=True); (out/'github-pipeline.json').write_text(canonical(result)); return result
+    deadline=clock()+budget_seconds
     with tempfile.TemporaryDirectory(prefix='studio-github-') as work:
-        result = run_project(str(request_path), out, work, runner, deadline, clock, baseline_sha)
-    summary = {
-        'status': result['status'],
-        'next_stage': result.get('next_stage'),
-        'finished': bool(result.get('report', {}).get('completion', {}).get('finished')),
-    }
-    if result.get('research_status') is not None:
-        summary['research_status'] = result['research_status']
-    out.mkdir(parents=True, exist_ok=True)
-    (out / 'github-pipeline.json').write_text(canonical(summary))
-    return summary
+        result=run_project(str(request_path),out,work,runner,deadline,clock,baseline_sha)
+    summary={'status':result['status'],'next_stage':result.get('next_stage'),'finished':bool(result.get('report',{}).get('completion',{}).get('finished'))}
+    for key in ('pending_status','research_status','synthesis_status','benchmark_status','promotion_status','persistence_status'):
+        if result.get(key) is not None: summary[key]=result[key]
+    out.mkdir(parents=True,exist_ok=True); (out/'github-pipeline.json').write_text(canonical(summary)); return summary
 
 
 def main(argv=None) -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument('request')
-    parser.add_argument('--out', default='studio-output')
-    args = parser.parse_args(argv)
-    if os.environ.get('GITHUB_REF') != 'refs/heads/main':
-        raise StudioError('Privileged GitHub generation requires main')
-    if not enabled('github'):
-        print('GitHub generation inactive')
-        return 0
-    baseline_sha = os.environ.get('GITHUB_SHA', '')
-    if len(baseline_sha) != 40:
-        raise StudioError('GitHub generation requires a full baseline commit SHA')
-    os.environ['STUDIO_CI_PROVIDER'] = 'github'
-    result = run(Path(args.request), Path(args.out), baseline_sha=baseline_sha)
-    print(canonical(result))
-    return 0 if result['status'] in ('complete', 'disabled') else 1
+    parser=argparse.ArgumentParser(); parser.add_argument('request'); parser.add_argument('--out',default='studio-output'); args=parser.parse_args(argv)
+    if os.environ.get('GITHUB_REF')!='refs/heads/main': raise StudioError('Privileged GitHub generation requires main')
+    if not enabled('github'): print('GitHub generation inactive'); return 0
+    baseline_sha=os.environ.get('GITHUB_SHA','')
+    if len(baseline_sha)!=40: raise StudioError('GitHub generation requires a full baseline commit SHA')
+    os.environ['STUDIO_CI_PROVIDER']='github'; result=run(Path(args.request),Path(args.out),baseline_sha=baseline_sha); print(canonical(result)); return 0 if result['status'] in ('complete','disabled') else 1
 
 
-if __name__ == '__main__':
-    try:
-        sys.exit(main())
-    except (StudioError, ValueError, OSError, json.JSONDecodeError) as exc:
-        Path('studio-output').mkdir(exist_ok=True)
-        Path('studio-output/github-pipeline-error.json').write_text(canonical({
-            'status': 'blocked',
-            'error': str(exc) if isinstance(exc, StudioError) else type(exc).__name__,
-        }))
-        print('GitHub autonomous pipeline blocked; see artifact evidence.', file=sys.stderr)
-        sys.exit(1)
+if __name__=='__main__':
+    try: sys.exit(main())
+    except (StudioError,ValueError,OSError,json.JSONDecodeError) as exc:
+        Path('studio-output').mkdir(exist_ok=True); Path('studio-output/github-pipeline-error.json').write_text(canonical({'status':'blocked','error':str(exc) if isinstance(exc,StudioError) else type(exc).__name__})); print('GitHub autonomous pipeline blocked; see artifact evidence.',file=sys.stderr); sys.exit(1)

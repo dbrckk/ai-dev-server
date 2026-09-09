@@ -3,8 +3,8 @@ version: 2.1
 parameters:
   mode:
     type: enum
-    enum: ["queue", "preview", "smoke"]
-    default: "smoke"
+    enum: ["queue", "preview", "smoke", "jumpy-baseline"]
+    default: "jumpy-baseline"
 
 jobs:
   validate:
@@ -21,6 +21,19 @@ jobs:
             python -m json.tool control/ci.json >/dev/null
             python studio/queue.py
             for script in scripts/*.sh; do bash -n "$script"; done
+  jumpy-baseline:
+    machine:
+      image: ubuntu-2404:current
+    resource_class: medium
+    steps:
+      - checkout
+      - run:
+          name: Verify pinned Jumpy without provider secrets
+          no_output_timeout: 15m
+          command: python3 studio/godot_baseline.py
+      - store_artifacts:
+          path: studio-output/jumpy-baseline
+          destination: jumpy-baseline
   mobile:
     machine:
       image: android:current
@@ -51,8 +64,9 @@ jobs:
 workflows:
   mobile-generation:
     when:
-      not:
-        equal: ["smoke", << pipeline.parameters.mode >>]
+      or:
+        - equal: ["queue", << pipeline.parameters.mode >>]
+        - equal: ["preview", << pipeline.parameters.mode >>]
     jobs:
       - validate
       - mobile:
@@ -68,4 +82,12 @@ workflows:
     jobs:
       - validate
       - smoke:
+          requires: [validate]
+
+  jumpy-reference:
+    when:
+      equal: ["jumpy-baseline", << pipeline.parameters.mode >>]
+    jobs:
+      - validate
+      - jumpy-baseline:
           requires: [validate]

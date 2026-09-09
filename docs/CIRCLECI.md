@@ -8,11 +8,11 @@ Les contrôles sans secrets passent sur les branches. La génération est limit�
 
 ## Activation unique dans CircleCI
 
-1. Connecter le dépôt GitHub `dbrckk/ai-dev-server` à un projet CircleCI, avec sa configuration `.circleci/config.yml` sur `main` et un déclencheur de push. Le mode par défaut `smoke` compile le témoin sans contexte secret.
+1. Connecter le dépôt GitHub `dbrckk/ai-dev-server` à un projet CircleCI, avec sa configuration `.circleci/config.yml` sur `main` et un déclencheur de push. Le mode par défaut `jumpy-baseline` contrôle la référence Godot sans contexte secret.
 2. Créer le contexte `mobile-studio`. Le restreindre à ce projet et à la branche `main` dans CircleCI. Ne pas mettre les secrets de génération dans les variables globales du projet, qui pourraient être accessibles aux jobs de validation.
 3. Ajouter au contexte `STUDIO_API_KEY` et `STUDIO_GITHUB_TOKEN` (Contents lecture/écriture sur les dépôts cibles). Les noms de repli `NVIDIA_NIM_API_KEY` et `CODESPACES_PAT` sont acceptés. Les secrets Actions ne sont pas transférés automatiquement. Ne pas coller les clés dans une conversation ni dans Git.
 4. Ajouter si nécessaire `STUDIO_API_BASE`, `STUDIO_MODEL`, `STUDIO_CODE_MODEL` et `STUDIO_VISION_MODEL`. Les valeurs par défaut restent celles du moteur.
-5. Exécuter la pipeline par défaut, `mode=smoke`, pour vérifier Docker, Flutter, les captures et l'APK sans contexte secret.
+5. Exécuter la pipeline par défaut, `mode=jumpy-baseline`, pour vérifier la référence Godot. Utiliser explicitement `mode=smoke` pour le témoin Flutter, ses captures et son APK.
 6. Exécuter explicitement `mode=queue` pour traiter les briefs activés. Une file vide produit un rapport vide et ne sollicite pas le fournisseur IA.
 7. Configurer dans l'interface CircleCI un déclencheur planifié sur `main`, avec `mode=queue`, pour reprendre les checkpoints. Choisir la fréquence selon les crédits disponibles. Aucun cron YAML n'est imposé : les anciens scheduled workflows ne fonctionnent pas avec toutes les intégrations GitHub App.
 
@@ -54,8 +54,12 @@ Le rapport `queue.json` est remplacé atomiquement avant et après chaque demand
 
 Les configurations de `dbrckk/Who-are-you`, `dbrckk/deadline-zero` et `dbrckk/zero-to-empire` ont été consultées. Who-are-you compile un APK debug sans secrets de signature et garde les workflows GitHub correspondants en déclenchement manuel. Deadline-zero limite son pipeline CircleCI à des branches dédiées. Zero-to-empire vérifie ses propres identifiants Kaggle : ceux-ci ne constituent pas un accès CircleCI réutilisable.
 
-Le studio reprend le principe utile de Who-are-you : son mode CircleCI par défaut est désormais `smoke`, sans contexte de génération. Les workflows GitHub `validate` et `studio-smoke` deviennent manuels pour éviter leur duplication systématique. Le workflow de demandes GitHub conserve son sélecteur de fournisseur.
+Le studio reprend le principe utile de Who-are-you : son premier mode CircleCI par défaut était `smoke` ; il est maintenant `jumpy-baseline` pour le premier projet, sans contexte de génération. Les workflows GitHub `validate` et `studio-smoke` deviennent manuels pour éviter leur duplication systématique. Le workflow de demandes GitHub conserve son sélecteur de fournisseur.
 
 La génération IA nécessite toujours `mode=queue` et le contexte configuré. Après validation du premier build et configuration des clés, on peut remettre la valeur par défaut de `mode` à `queue` pour traiter les demandes aux pushes ; les déclencheurs planifiés doivent aussi utiliser ce mode explicitement. Un push sans paramétrage supplémentaire exécute pour l'instant le témoin, pas la génération IA.
 
 La présence d'un fichier CircleCI ne prouve pas que le projet est raccordé ou que ses builds réussissent. Les derniers commits consultés des trois dépôts n'exposaient pas de statut CircleCI permettant de confirmer cette réussite. Leur configuration ne permet pas de récupérer une session, un jeton CircleCI ou les secrets d'un autre projet.
+
+## Premier projet : Jumpy
+
+Le mode par défaut `jumpy-baseline`, sans secrets, audite le jeu Godot existant. Le mode `smoke` reste disponible explicitement pour le témoin Flutter. Voir [le profil Jumpy et ses limites](JUMPY_ONBOARDING.md).

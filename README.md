@@ -9,6 +9,8 @@ Le moteur `studio/` reçoit un brief dans `control/mobile-requests/`, enchaîne 
 **[Configuration, utilisation et limites du studio mobile](docs/MOBILE_STUDIO.md)**. **[Repli CircleCI et activation](docs/CIRCLECI.md)**. L'exemple est désactivé. Le moteur cible actuellement les nouvelles applications Flutter ; les cycles Jumpy historiques restent séparés.
 
 
+**[Prise en charge de Jumpy : référence Godot](docs/JUMPY_ONBOARDING.md)**
+
 ## Objectif
 
 Depuis un smartphone, utiliser un Codespace comme machine Linux distante avec :

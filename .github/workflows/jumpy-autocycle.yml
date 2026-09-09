@@ -36,7 +36,10 @@ jobs:
       - name: Run hardened autonomous Jumpy studio cycle v7
         env:
           GH_TOKEN: ${{ secrets.CODESPACES_PAT }}
-        run: bash scripts/jumpy-studio-cycle-v7.sh
+        run: |
+          if python studio/ci_provider.py github; then
+            bash scripts/jumpy-studio-cycle-v7.sh
+          fi
       - name: Summary
         if: always()
         run: |
@@ -44,3 +47,4 @@ jobs:
           echo 'Cadence: every 20 minutes (:07 / :27 / :47), best effort.' >> "$GITHUB_STEP_SUMMARY"
           echo 'Agent routing: FCC health probe → client-compatible FCC catalog routing → empirical file-edit benchmark → productive agent → validated deterministic fallback.' >> "$GITHUB_STEP_SUMMARY"
           echo 'Security: no provider/GitHub secrets passed to coding agents; strict scope, secret scan and Godot validation precede deterministic pushes.' >> "$GITHUB_STEP_SUMMARY"
+

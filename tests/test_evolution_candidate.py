@@ -24,6 +24,9 @@ class EvolutionCandidateTests(unittest.TestCase):
     def test_skipped_tests_are_rejected(self):
         candidate=self.candidate(); candidate['files'][2]['content']='import unittest\nclass BillingCandidateTests(unittest.TestCase):\n    @unittest.skip("no")\n    def test_one(self):\n        pass\n    def test_two(self):\n        pass\n'
         with self.assertRaisesRegex(CandidateRejected,'skipped tests'): validate_candidate(self.work_order(),self.research(),candidate)
+    def test_candidate_module_cannot_be_imported_at_collection_time(self):
+        candidate=self.candidate(); candidate['files'][2]['content']='import unittest\nfrom billing_qa import validate_billing\nclass BillingCandidateTests(unittest.TestCase):\n    def test_one(self): self.assertTrue(True)\n    def test_two(self): self.assertTrue(True)\n'
+        with self.assertRaisesRegex(CandidateRejected,'inside each test'): validate_candidate(self.work_order(),self.research(),candidate)
     def test_shell_true_eval_and_secret_are_rejected(self):
         for bad in ['import subprocess\nsubprocess.run(["echo", "x"], shell=True)\n','value = eval("1 + 1")\n','TOKEN = "ghp_abcdefghijklmnopqrstuvwxyz123456"\n']:
             candidate=self.candidate(); candidate['files'][0]['content']=bad

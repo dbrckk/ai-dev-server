@@ -55,7 +55,7 @@ class OrchestratorTests(unittest.TestCase):
             self.assertEqual(len(calls), len(expected))
             for call, script in zip(calls, expected): self.assertIn(script, call)
 
-    def test_unregistered_stage_creates_work_order_and_runs_research(self):
+    def test_unregistered_stage_research_then_synthesis(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}'); calls = []
             def runner(args, timeout):
@@ -65,27 +65,38 @@ class OrchestratorTests(unittest.TestCase):
                     (out / 'evolution-research.json').write_text(json.dumps({'version': 2, 'candidate_id': order['candidate_id'],
                         'status': 'research_complete', 'items': []}))
                     return subprocess.CompletedProcess(args, 0)
+                if 'studio/evolution_synthesis.py' in args:
+                    order = json.loads((out / 'evolution-work-order.json').read_text())
+                    (out / 'evolution-candidate.json').write_text(json.dumps({
+                        'status': 'candidate_validated', 'candidate_id': order['candidate_id']}))
+                    return subprocess.CompletedProcess(args, 0)
                 report = {'status': 'validated_preview'} if 'studio/run.py' in args else self.missing_report()
                 (out / 'report.json').write_text(json.dumps(report)); return subprocess.CompletedProcess(args, 0)
             result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)
-            self.assertEqual(result['status'], 'adaptation_required'); self.assertEqual(result['research_status'], 'complete')
+            self.assertEqual(result['status'], 'adaptation_required')
+            self.assertEqual(result['research_status'], 'complete')
+            self.assertEqual(result['synthesis_status'], 'validated')
             order = json.loads((out / 'evolution-work-order.json').read_text())
             self.assertEqual(order['baseline_sha'], BASELINE)
             self.assertTrue(order['candidate_branch'].startswith('evolution/future-capability-qa-'))
             self.assertTrue(any('studio/evolution_research.py' in call for call in calls))
+            self.assertTrue(any('studio/evolution_synthesis.py' in call for call in calls))
 
-    def test_research_failure_is_explicit(self):
+    def test_research_failure_prevents_synthesis(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}')
+            root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}'); calls=[]
             def runner(args, timeout):
-                out.mkdir(parents=True, exist_ok=True)
+                calls.append(args); out.mkdir(parents=True, exist_ok=True)
                 if 'studio/evolution_research.py' in args:
                     (out / 'evolution-research-error.json').write_text(json.dumps({'status': 'research_blocked'}))
                     return subprocess.CompletedProcess(args, 1)
                 report = {'status': 'validated_preview'} if 'studio/run.py' in args else self.missing_report()
                 (out / 'report.json').write_text(json.dumps(report)); return subprocess.CompletedProcess(args, 0)
             result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)
-            self.assertEqual(result['status'], 'adaptation_required'); self.assertEqual(result['research_status'], 'blocked')
+            self.assertEqual(result['status'], 'adaptation_required')
+            self.assertEqual(result['research_status'], 'blocked')
+            self.assertEqual(result['synthesis_status'], 'not_ready')
+            self.assertFalse(any('studio/evolution_synthesis.py' in call for call in calls))
 
     def test_adaptation_without_baseline_has_no_promotable_work_order(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -96,6 +107,7 @@ class OrchestratorTests(unittest.TestCase):
                 (out / 'report.json').write_text(json.dumps(report)); return subprocess.CompletedProcess(args, 0)
             result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, None)
             self.assertEqual(result['research_status'], 'not_planned_without_baseline')
+            self.assertEqual(result['synthesis_status'], 'not_ready')
             self.assertTrue((out / 'evolution-request.json').is_file()); self.assertFalse((out / 'evolution-work-order.json').exists())
 
     def test_successful_stage_must_advance(self):

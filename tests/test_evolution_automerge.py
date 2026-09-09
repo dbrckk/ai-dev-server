@@ -1,5 +1,8 @@
+import json
 from pathlib import Path
+import subprocess
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -7,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
 
 from evolution_automerge import AutoMergeError, attempt
 from evolution_candidate import expected_paths
+from orchestrator import _run_adaptation_automerge
 
 CANDIDATE = 'future-capability-qa-123456789abc'
 GAP = 'future_capability_qa'
@@ -82,6 +86,16 @@ class EvolutionAutoMergeTests(unittest.TestCase):
         self.assertEqual(result['status'], 'promotion_merged')
         self.assertEqual(result['merge_sha'], 'c' * 40)
         self.assertTrue(any(url.endswith('/pulls/12/merge') and method == 'PUT' for url, method, _ in calls))
+
+    def test_orchestrator_maps_successful_auto_merge_to_restart(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp); (out / 'evolution-work-order.json').write_text(json.dumps(order()))
+            def runner(args, timeout):
+                (out / 'evolution-automerge.json').write_text(json.dumps({'status': 'promotion_merged', 'pull_request': 12}))
+                return subprocess.CompletedProcess(args, 0)
+            with patch.dict('os.environ', {'STUDIO_CI_PROVIDER': 'github'}, clear=True):
+                status = _run_adaptation_automerge(out, 100, runner, lambda: 0)
+            self.assertEqual(status, 'merged')
 
 
 if __name__ == '__main__': unittest.main()

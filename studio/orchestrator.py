@@ -75,6 +75,35 @@ def _run_adaptation_research(project_out: Path, deadline: float, runner, clock) 
     return 'complete'
 
 
+def _run_adaptation_synthesis(project_out: Path, deadline: float, runner, clock) -> str:
+    order = project_out / 'evolution-work-order.json'
+    research = project_out / 'evolution-research.json'
+    if not order.is_file() or not research.is_file():
+        return 'not_ready'
+    try:
+        remaining = _remaining(deadline, clock)
+    except TimeoutError:
+        return 'deferred'
+    result = runner([
+        sys.executable, 'studio/evolution_synthesis.py', str(order), str(research),
+        '--out', str(project_out),
+    ], timeout=remaining)
+    if result.returncode != 0:
+        return 'rejected'
+    candidate_path = project_out / 'evolution-candidate.json'
+    if not candidate_path.is_file():
+        raise StudioError('Successful evolution synthesis produced no candidate')
+    try:
+        candidate = json.loads(candidate_path.read_text())
+        work_order = json.loads(order.read_text())
+    except (OSError, json.JSONDecodeError):
+        raise StudioError('Evolution synthesis produced invalid candidate evidence') from None
+    if (not isinstance(candidate, dict) or candidate.get('status') != 'candidate_validated'
+            or candidate.get('candidate_id') != work_order.get('candidate_id')):
+        raise StudioError('Evolution candidate does not match work order')
+    return 'validated'
+
+
 def run_registered_stages(request_path: str, project_out: Path, work: str,
                           report: dict, deadline: float, runner, clock=time.monotonic,
                           baseline_sha: str | None = None) -> dict:
@@ -92,11 +121,15 @@ def run_registered_stages(request_path: str, project_out: Path, work: str,
             request = _write_adaptation_handoff(report, project_out, baseline_sha)
             if request.get('status') == 'adaptation_required':
                 research_status = _run_adaptation_research(project_out, deadline, runner, clock)
+                synthesis_status = 'not_ready'
+                if research_status == 'complete':
+                    synthesis_status = _run_adaptation_synthesis(project_out, deadline, runner, clock)
                 return {
                     'status': 'adaptation_required',
                     'report': report,
                     'next_stage': name,
                     'research_status': research_status,
+                    'synthesis_status': synthesis_status,
                 }
             raise StudioError('Unfinished project has no executable next stage')
         if name in seen:
@@ -124,7 +157,7 @@ def run_registered_stages(request_path: str, project_out: Path, work: str,
 
 def run_project(request_path: str, project_out: Path, work: str, runner,
                 deadline: float, clock=time.monotonic, baseline_sha: str | None = None) -> dict:
-    """Run preview, release build, every required trusted stage, then adaptation research."""
+    """Run preview, release build, every required trusted stage, then adaptation research/synthesis."""
     project_out.mkdir(parents=True, exist_ok=True)
     try:
         remaining = _remaining(deadline, clock)

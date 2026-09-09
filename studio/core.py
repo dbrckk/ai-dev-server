@@ -50,7 +50,8 @@ def request_check(data):
     return data
 
 def allowed(path):
-    if not isinstance(path, str) or not path or '\\' in path or len(path) > 180:
+    if (not isinstance(path, str) or not path or '\\' in path or len(path) > 180 or
+        any(ord(c) < 32 or ord(c) == 127 or 0xD800 <= ord(c) <= 0xDFFF for c in path)):
         return False
     parts = path.split('/')
     if any(p in ('', '.', '..') or p.startswith('.') or p.startswith('__studio') for p in parts):
@@ -72,9 +73,14 @@ def patch_check(value):
         if f['path'] in seen or not isinstance(f['content'], str) or '\x00' in f['content']:
             raise StudioError('Duplicate path or invalid content')
         seen.add(f['path'])
-        total += len(f['content'].encode())
+        try:
+            total += len(f['content'].encode('utf-8'))
+        except UnicodeEncodeError:
+            raise StudioError('Patch content must be valid UTF-8') from None
         if total > 600000 or SECRET.search(f['content']):
             raise StudioError('Patch too large or contains a credential pattern')
+    if any(parent.as_posix() in seen for path in seen for parent in PurePosixPath(path).parents):
+        raise StudioError('Patch file conflicts with a parent directory')
     return value['files']
 
 def apply_patch(root, value):
@@ -84,10 +90,12 @@ def apply_patch(root, value):
         p = root / f['path']
         if not p.resolve().is_relative_to(root.resolve()) or any(x.is_symlink() for x in [p, *p.parents]):
             raise StudioError('Symlink or path escape')
+        if (p.exists() and not p.is_file()) or any(x.exists() and not x.is_dir() for x in p.parents):
+            raise StudioError('Patch conflicts with existing filesystem entries')
     for f in files:
         p = root / f['path']
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(f['content'])
+        p.write_text(f['content'], encoding='utf-8')
 
 def verdict(value):
     if (not isinstance(value, dict) or set(value) != {'passed', 'blockers'} or

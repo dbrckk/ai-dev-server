@@ -1,11 +1,12 @@
 """Real Docker/Flutter smoke test with a deterministic app; no model or GitHub secrets."""
 import json
+import os
 from pathlib import Path
 import sys
 from core import Sandbox, apply_patch
 
-root = Path('/tmp/studio-smoke')
-root.mkdir()
+root = Path(os.environ.get('STUDIO_SMOKE_ROOT', '/tmp/studio-smoke'))
+root.mkdir(parents=True, exist_ok=False)
 sandbox = Sandbox(root)
 sandbox.create('smoke_app')
 apply_patch(root, {'files': [

@@ -2,7 +2,7 @@ name: Autonomous Mobile Studio
 on:
   push:
     branches: [main]
-    paths: ['control/mobile-requests/*.json', 'control/ci.json']
+    paths: ['control/mobile-requests/*.json', 'control/ci.json', 'control/promoted_stages.json']
   workflow_dispatch:
   schedule:
     - cron: '3,23,43 * * * *'
@@ -87,13 +87,14 @@ jobs:
                   'evolution-candidate.json', 'evolution-isolated-benchmark.json',
                   'evolution-promotion.json', 'evolution-applied.json',
                   'evolution-persisted.json', 'evolution-persist-error.json',
+                  'evolution-automerge.json', 'evolution-automerge-error.json',
                   'evolution-apply-error.json', 'github-pipeline-error.json', 'error.json'):
                   p = Path('studio-output') / name
                   if p.exists():
                       d = json.loads(p.read_text())
                       out.write(name + ': ' + str(d.get('status', 'available')) + '\n')
                       if d.get('next_stage'): out.write('Next stage: ' + str(d['next_stage']) + '\n')
-                      for key in ('pending_status','research_status','synthesis_status','benchmark_status','promotion_status','persistence_status'):
+                      for key in ('pending_status','research_status','synthesis_status','benchmark_status','promotion_status','persistence_status','automerge_status'):
                           if d.get(key): out.write(key + ': ' + str(d[key]) + '\n')
                       if d.get('pull_request'): out.write('Promotion PR: #' + str(d['pull_request']) + '\n')
               out.write('Download the artifact for release packages and trusted QA/evolution evidence.\n')

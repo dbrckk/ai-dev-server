@@ -1,0 +1,93 @@
+"""Differential proof for autonomous factory-evolution candidates.
+
+A candidate capability must demonstrate behavior that is absent from the pinned
+baseline and present in the candidate. This module validates machine evidence only;
+it never executes candidate code itself.
+"""
+from __future__ import annotations
+
+import re
+
+
+class DifferentialRejected(ValueError):
+    pass
+
+
+def _sha(value: object, label: str) -> str:
+    if not isinstance(value, str) or not re.fullmatch(r'[0-9a-f]{40}', value):
+        raise DifferentialRejected(label + ' SHA invalid')
+    return value
+
+
+def _result(value: object, label: str) -> dict:
+    required = {'commit_sha', 'test_file', 'tests_collected', 'failures', 'errors', 'passed'}
+    if not isinstance(value, dict) or set(value) != required:
+        raise DifferentialRejected(label + ' differential evidence malformed')
+    result = dict(value)
+    result['commit_sha'] = _sha(value.get('commit_sha'), label)
+    path = value.get('test_file')
+    if (not isinstance(path, str) or not re.fullmatch(r'tests/test_[a-z0-9_]+\.py', path)
+            or '..' in path or '\\' in path):
+        raise DifferentialRejected(label + ' test path invalid')
+    for key in ('tests_collected', 'failures', 'errors'):
+        if not isinstance(value.get(key), int) or value[key] < 0:
+            raise DifferentialRejected(label + ' test counts invalid')
+    if value['tests_collected'] < 1:
+        raise DifferentialRejected(label + ' collected no candidate tests')
+    if not isinstance(value.get('passed'), bool):
+        raise DifferentialRejected(label + ' pass flag invalid')
+    expected_pass = value['failures'] == 0 and value['errors'] == 0
+    if value['passed'] != expected_pass:
+        raise DifferentialRejected(label + ' pass flag inconsistent')
+    return result
+
+
+def evaluate(work_order: dict, validated_candidate: dict, baseline: dict, candidate: dict) -> dict:
+    if not isinstance(work_order, dict) or work_order.get('status') != 'candidate_planned':
+        raise DifferentialRejected('Differential proof requires planned work order')
+    if not isinstance(validated_candidate, dict) or validated_candidate.get('status') != 'candidate_validated':
+        raise DifferentialRejected('Differential proof requires validated candidate')
+    if validated_candidate.get('candidate_id') != work_order.get('candidate_id'):
+        raise DifferentialRejected('Candidate identity mismatch')
+    baseline_sha = _sha(work_order.get('baseline_sha'), 'Baseline')
+    expected_test = None
+    for item in validated_candidate.get('files', []):
+        if isinstance(item, dict) and isinstance(item.get('path'), str) and item['path'].startswith('tests/test_'):
+            if expected_test is not None:
+                raise DifferentialRejected('Candidate has multiple primary differential tests')
+            expected_test = item['path']
+    if expected_test is None:
+        raise DifferentialRejected('Candidate differential test missing')
+
+    baseline = _result(baseline, 'Baseline')
+    candidate = _result(candidate, 'Candidate')
+    if baseline['commit_sha'] != baseline_sha:
+        raise DifferentialRejected('Baseline evidence does not match pinned SHA')
+    if candidate['commit_sha'] == baseline_sha:
+        raise DifferentialRejected('Candidate evidence points to baseline')
+    if baseline['test_file'] != expected_test or candidate['test_file'] != expected_test:
+        raise DifferentialRejected('Differential evidence test file mismatch')
+    if baseline['tests_collected'] != candidate['tests_collected']:
+        raise DifferentialRejected('Differential test collection changed between baseline and candidate')
+
+    baseline_failed = not baseline['passed'] and (baseline['failures'] + baseline['errors'] > 0)
+    candidate_passed = candidate['passed']
+    improved = baseline_failed and candidate_passed
+    blockers = []
+    if not baseline_failed:
+        blockers.append('candidate_test_did_not_fail_on_baseline')
+    if not candidate_passed:
+        blockers.append('candidate_test_did_not_pass_on_candidate')
+    return {
+        'version': 1,
+        'status': 'differential_proved' if improved else 'differential_rejected',
+        'candidate_id': work_order.get('candidate_id'),
+        'baseline_sha': baseline_sha,
+        'candidate_sha': candidate['commit_sha'],
+        'test_file': expected_test,
+        'tests_collected': candidate['tests_collected'],
+        'baseline_failed': baseline_failed,
+        'candidate_passed': candidate_passed,
+        'improvement_proved': improved,
+        'blockers': blockers,
+    }

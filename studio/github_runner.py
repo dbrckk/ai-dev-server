@@ -50,7 +50,7 @@ def run(request_path: Path, out=Path('studio-output'), runner=bounded_run, clock
     with tempfile.TemporaryDirectory(prefix='studio-github-') as work:
         result=run_project(str(request_path),out,work,runner,deadline,clock,baseline_sha)
     summary={'status':result['status'],'next_stage':result.get('next_stage'),'finished':bool(result.get('report',{}).get('completion',{}).get('finished'))}
-    for key in ('pending_status','research_status','synthesis_status','benchmark_status','promotion_status','persistence_status'):
+    for key in ('pending_status','automerge_status','research_status','synthesis_status','benchmark_status','promotion_status','persistence_status'):
         if result.get(key) is not None: summary[key]=result[key]
     out.mkdir(parents=True,exist_ok=True); (out/'github-pipeline.json').write_text(canonical(summary)); return summary
 

@@ -2,8 +2,8 @@ name: Jumpy Godot Baseline and Regression
 on:
   workflow_dispatch:
   push:
-    branches: [main, codex/jumpy-finance-regression]
-    paths: ['studio/godot_baseline.py', 'studio/jumpy_baseline.gd', 'control/existing-projects/jumpy.json', '.github/workflows/jumpy-baseline.yml']
+    branches: [main, codex/jumpy-finance-regression, codex/jumpy-save-regression]
+    paths: ['studio/godot_baseline.py', 'studio/jumpy_baseline.gd', 'studio/jumpy_save_checks.gd', 'studio/candidates/**', 'control/existing-projects/jumpy.json', '.github/workflows/jumpy-baseline.yml']
 permissions:
   contents: read
 jobs:
@@ -15,7 +15,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Reproduce baseline defect and validate candidate
-        run: python3 studio/godot_baseline.py --verify-finance-fix
+        run: python3 studio/godot_baseline.py --verify-save-fix
       - name: Show diagnostics from the secret-free test process
         if: always()
         run: |

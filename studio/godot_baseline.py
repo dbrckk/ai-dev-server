@@ -1,4 +1,6 @@
 """Read-only, pinned Jumpy baseline. No model calls or repository writes."""
+import argparse
+import difflib
 import hashlib
 import json
 import os
@@ -33,7 +35,25 @@ def gate_ok(code, log, marker=None):
         r'SCRIPT ERROR|Parse Error|Cannot parse|Failed loading resource|ERROR:', log
     ) and (marker is None or marker in log)
 
+def finance_fix(project):
+    path = project / 'scripts/profile.gd'
+    original = path.read_bytes()
+    blob = hashlib.sha1(b'blob ' + str(len(original)).encode() + b'\0' + original).hexdigest()
+    if blob != '554b20a239587a2f2592c0cb4ffa6dafe1defd5b':
+        raise StudioError('Finance fix requires the reviewed profile revision')
+    before = original.decode()
+    needle = 'func spend_coins(amount: int) -> bool:\n\tif int(data.coins) < amount:'
+    if before.count(needle) != 1:
+        raise StudioError('Finance fix anchor mismatch')
+    after = before.replace(needle, needle.replace('if int', 'if amount <= 0 or int'), 1)
+    path.write_text(after)
+    return ''.join(difflib.unified_diff(before.splitlines(True), after.splitlines(True),
+                                      fromfile='a/scripts/profile.gd', tofile='b/scripts/profile.gd'))
+
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--verify-finance-fix', action='store_true')
+    options = parser.parse_args()
     out = Path('studio-output/jumpy-baseline').resolve()
     out.mkdir(parents=True, exist_ok=True)
     report = {'status': 'blocked', 'mode': 'baseline_only',
@@ -49,7 +69,7 @@ def main():
             # No inherited API keys, checkout SSH key, Git config, profile or user saves.
             env = {'PATH': os.environ['PATH'], 'HOME': str(home), 'XDG_DATA_HOME': str(home / 'data'),
                    'XDG_CONFIG_HOME': str(home / 'config'), 'LANG': 'C.UTF-8',
-                   'GIT_TERMINAL_PROMPT': '0'}
+                   'GIT_TERMINAL_PROMPT': '0', 'STUDIO_BASELINE_REPORT': str(out / 'gameplay.json')}
             project = root / 'project'
             def run(args, timeout=180):
                 p = subprocess.run(args, env=env, cwd=root, timeout=timeout,
@@ -94,11 +114,34 @@ def main():
                 if not gate_ok(code, log, marker):
                     raise StudioError('Jumpy ' + label + ' gate failed')
             report['status'] = 'baseline_passed'
+            if options.verify_finance_fix:
+                command = [str(binary), '--headless', '--path', str(project),
+                           '--script', 'res://__studio_baseline.gd', '--', '--finance']
+                evidence = out / 'gameplay.json'
+                evidence.unlink(missing_ok=True)
+                code, log = run(command)
+                (out / 'finance-before.log').write_text(log)
+                before = json.loads(evidence.read_text())
+                expected = ['Negative spending must preserve balance', 'Zero spending must be refused']
+                if code == 0 or before.get('failures') != expected or before.get('checks') != 12:
+                    raise StudioError('Finance defect was not reproduced exactly')
+                (out / 'finance-before.json').write_text(canonical(before))
+                patch = finance_fix(project)
+                evidence.unlink()
+                code, log = run(command)
+                (out / 'finance-after.log').write_text(log)
+                after = json.loads(evidence.read_text())
+                if not gate_ok(code, log, 'JUMPY_BASELINE_PASS') or after != {'passed': True, 'failures': [], 'checks': 12}:
+                    raise StudioError('Finance candidate regression gate failed')
+                (out / 'finance-fix.patch').write_text(patch)
+                report.update(status='candidate_passed', defect_reproduced=True,
+                              candidate_checks=12, candidate_patch='finance-fix.patch')
     except (StudioError, OSError, ValueError, KeyError, zipfile.BadZipFile, subprocess.SubprocessError) as e:
+        report['status'] = 'blocked'
         report['error'] = str(e) if isinstance(e, StudioError) else type(e).__name__
     (out / 'report.json').write_text(canonical(report))
     print(canonical(report))
-    return 0 if report['status'] == 'baseline_passed' else 1
+    return 0 if report['status'] in ('baseline_passed', 'candidate_passed') else 1
 
 if __name__ == '__main__':
     raise SystemExit(main())

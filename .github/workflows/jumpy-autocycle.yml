@@ -15,6 +15,7 @@ on:
       - 'scripts/jumpy-studio-cycle-v5.sh'
       - 'scripts/jumpy-studio-cycle-v6.sh'
       - 'scripts/jumpy-studio-cycle-v7.sh'
+      - 'scripts/jumpy-studio-cycle-v8.sh'
       - 'scripts/fcc-agent-benchmark.sh'
       - 'docs/EXTERNAL_SOURCE_POLICY.md'
 
@@ -33,18 +34,18 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - name: Run hardened autonomous Jumpy studio cycle v7
+      - name: Run credential-scrubbed autonomous Jumpy studio cycle v8
         env:
           GH_TOKEN: ${{ secrets.CODESPACES_PAT }}
         run: |
           if python studio/ci_provider.py github; then
-            bash scripts/jumpy-studio-cycle-v7.sh
+            bash scripts/jumpy-studio-cycle-v8.sh
           fi
       - name: Summary
         if: always()
         run: |
-          echo '## Jumpy autonomous studio cycle v7' >> "$GITHUB_STEP_SUMMARY"
+          echo '## Jumpy autonomous studio cycle v8' >> "$GITHUB_STEP_SUMMARY"
           echo 'Cadence: every 20 minutes (:07 / :27 / :47), best effort.' >> "$GITHUB_STEP_SUMMARY"
           echo 'Agent routing: FCC health probe → client-compatible FCC catalog routing → empirical file-edit benchmark → productive agent → validated deterministic fallback.' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Security: no provider/GitHub secrets passed to coding agents; strict scope, secret scan and Godot validation precede deterministic pushes.' >> "$GITHUB_STEP_SUMMARY"
-
+          echo 'Security: coding agents and Godot validation receive no GitHub/provider secrets; strict scope and secret scan precede the legacy deterministic push.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Migration: this legacy path is temporary and will be replaced by the generic multi-engine PR/promotion pipeline.' >> "$GITHUB_STEP_SUMMARY"

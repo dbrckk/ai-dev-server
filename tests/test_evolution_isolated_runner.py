@@ -6,7 +6,10 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
 
-from evolution_isolated_runner import _docker_python, _parse_unittest, IsolatedRunError
+from evolution_isolated_runner import (
+    _capability_result, _docker_python, _parse_unittest, _trusted_flutter_smoke,
+    IsolatedRunError,
+)
 
 
 class IsolatedEvolutionRunnerTests(unittest.TestCase):
@@ -38,6 +41,25 @@ class IsolatedEvolutionRunnerTests(unittest.TestCase):
         joined = ' '.join(command)
         self.assertNotIn('GITHUB_TOKEN', joined)
         self.assertNotIn('STUDIO_API_KEY', joined)
+
+    @patch('evolution_isolated_runner._run')
+    def test_trusted_smoke_uses_unique_scrubbed_root(self, run):
+        run.return_value = subprocess.CompletedProcess([], 0, '', '')
+        smoke_root = Path('/tmp/evolution-smoke-never-created')
+        self.assertTrue(_trusted_flutter_smoke(Path('/repo'), smoke_root))
+        env = run.call_args.kwargs['env']
+        self.assertEqual(env['STUDIO_SMOKE_ROOT'], str(smoke_root))
+        self.assertNotIn('GITHUB_TOKEN', env)
+        self.assertNotIn('STUDIO_API_KEY', env)
+        self.assertEqual(run.call_args.args[0], ['python3', 'studio/smoke.py'])
+
+    def test_capability_evidence_is_counted_not_invented(self):
+        failed = _capability_result('future_qa', 4, False)
+        self.assertEqual(failed['assertions_passed'], 0)
+        passed = _capability_result('future_qa', 4, True)
+        self.assertEqual(passed['assertions_passed'], 4)
+        with self.assertRaises(IsolatedRunError):
+            _capability_result('future_qa', 0, True)
 
     @patch('evolution_isolated_runner.shutil.which', return_value=None)
     def test_missing_docker_fails_closed(self, which):

@@ -70,17 +70,27 @@ class OrchestratorTests(unittest.TestCase):
                     (out / 'evolution-candidate.json').write_text(json.dumps({
                         'status': 'candidate_validated', 'candidate_id': order['candidate_id']}))
                     return subprocess.CompletedProcess(args, 0)
+                if 'studio/evolution_isolated_runner.py' in args:
+                    order = json.loads((out / 'evolution-work-order.json').read_text())
+                    (out / 'evolution-isolated-benchmark.json').write_text(json.dumps({
+                        'version': 1, 'candidate_id': order['candidate_id'], 'status': 'benchmark_complete'}))
+                    (out / 'evolution-promotion.json').write_text(json.dumps({
+                        'version': 1, 'candidate_id': order['candidate_id'], 'status': 'promotion_rejected',
+                        'promotion_decision': 'reject', 'reasons': ['fixture_rejection']}))
+                    return subprocess.CompletedProcess(args, 0)
                 report = {'status': 'validated_preview'} if 'studio/run.py' in args else self.missing_report()
                 (out / 'report.json').write_text(json.dumps(report)); return subprocess.CompletedProcess(args, 0)
             result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)
             self.assertEqual(result['status'], 'adaptation_required')
             self.assertEqual(result['research_status'], 'complete')
             self.assertEqual(result['synthesis_status'], 'validated')
+            self.assertEqual(result['benchmark_status'], 'rejected')
             order = json.loads((out / 'evolution-work-order.json').read_text())
             self.assertEqual(order['baseline_sha'], BASELINE)
             self.assertTrue(order['candidate_branch'].startswith('evolution/future-capability-qa-'))
             self.assertTrue(any('studio/evolution_research.py' in call for call in calls))
             self.assertTrue(any('studio/evolution_synthesis.py' in call for call in calls))
+            self.assertTrue(any('studio/evolution_isolated_runner.py' in call for call in calls))
 
     def test_research_failure_prevents_synthesis(self):
         with tempfile.TemporaryDirectory() as tmp:

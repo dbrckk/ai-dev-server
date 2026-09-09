@@ -28,3 +28,11 @@ Commande : `python3 studio/godot_baseline.py`. Elle nécessite Linux x86_64, Pyt
 Les observations statiques à vérifier ensuite incluent la validation des valeurs chargées depuis la sauvegarde, le refus des dépenses négatives dans `spend_coins`, et le comportement d'un tap hors bouton lorsque les réglages sont ouverts. Elles ne sont pas présentées comme des défauts reproduits sur appareil.
 
 La suite nécessaire est de faire passer cette référence, reproduire un défaut ciblé par un test, préparer un correctif sur une branche Jumpy, puis vérifier tests, captures réelles et build Android avant livraison. La mutation autonome de projets Godot existants, les comparaisons visuelles et le build Android Godot restent à développer.
+
+## Première correction vérifiée — dépenses invalides
+
+Le contrôle initial a réussi sur CircleCI (job 450). L'option `--verify-finance-fix` reproduit ensuite deux échecs précis sur la référence non modifiée : dépense négative et dépense nulle. Elle applique une correction uniquement si le blob de `scripts/profile.gd` correspond à la version auditée, puis exige la réussite des douze assertions. Le patch n'est conservé qu'après cette validation.
+
+Preuve Godot réelle : https://github.com/dbrckk/ai-dev-server/actions/runs/34317183392 ; le même commit `39a1d39a06c7065552d9525d781d03464a9e419a` a aussi passé le contrôle CircleCI. Les tests avant/après sont dans les artefacts. Le défaut a été reproduit et le candidat a passé les douze assertions.
+
+La commande CircleCI par défaut exécute désormais ce contrôle avant/après. Le workflow GitHub `jumpy-baseline.yml` fournit une seconde exécution sans secrets et des diagnostics consultables. La référence reste fixée à l'ancien commit pour conserver une reproduction du défaut ; elle ne représente pas automatiquement les futures versions de Jumpy. La publication du correctif reste une étape distincte, via une PR sur Jumpy.

@@ -1,6 +1,7 @@
 """Provider-neutral autonomous completion pipeline."""
 from __future__ import annotations
 import json
+import os
 from pathlib import Path
 import re
 import sys
@@ -79,6 +80,20 @@ def _run_adaptation_promotion(project_out,deadline,runner,clock):
     try: value=json.loads(applied.read_text())
     except (OSError,json.JSONDecodeError): raise StudioError('Promotion produced invalid application evidence') from None
     return 'promoted' if value.get('status') in {'promoted','already_promoted'} else 'blocked'
+def _run_adaptation_persistence(project_out,deadline,runner,clock):
+    if os.environ.get('STUDIO_CI_PROVIDER') != 'github':
+        return 'not_applicable'
+    applied=project_out/'evolution-applied.json'
+    if not applied.is_file(): return 'not_ready'
+    try: remaining=_remaining(deadline,clock)
+    except TimeoutError: return 'deferred'
+    result=runner([sys.executable,'studio/evolution_persist.py',str(applied),'--repo-root','.','--out',str(project_out)],timeout=remaining)
+    if result.returncode!=0: return 'blocked'
+    persisted=project_out/'evolution-persisted.json'
+    if not persisted.is_file(): raise StudioError('Successful persistence produced no evidence')
+    try: value=json.loads(persisted.read_text())
+    except (OSError,json.JSONDecodeError): raise StudioError('Persistence produced invalid evidence') from None
+    return 'persisted' if value.get('status') in {'promotion_persisted','already_persisted'} else 'blocked'
 def _stage_command(name,stage,request_path,work,project_out):
     args=[request_path,'--work',work,'--out',str(project_out)]
     if name in STAGES: return [sys.executable,stage.script,*args]
@@ -93,15 +108,16 @@ def run_registered_stages(request_path,project_out,work,report,deadline,runner,c
         if stage is None:
             request=_write_adaptation_handoff(report,project_out,baseline_sha)
             if request.get('status')=='adaptation_required':
-                research_status=_run_adaptation_research(project_out,deadline,runner,clock); synthesis_status='not_ready'; benchmark_status='not_ready'; promotion_status='not_ready'
+                research_status=_run_adaptation_research(project_out,deadline,runner,clock); synthesis_status='not_ready'; benchmark_status='not_ready'; promotion_status='not_ready'; persistence_status='not_ready'
                 if research_status=='complete': synthesis_status=_run_adaptation_synthesis(project_out,deadline,runner,clock)
                 if synthesis_status=='validated': benchmark_status=_run_adaptation_benchmark(project_out,deadline,runner,clock)
                 if benchmark_status=='approved': promotion_status=_run_adaptation_promotion(project_out,deadline,runner,clock)
-                if promotion_status=='promoted':
+                if promotion_status=='promoted': persistence_status=_run_adaptation_persistence(project_out,deadline,runner,clock)
+                if promotion_status=='promoted' and persistence_status in {'persisted','not_applicable'}:
                     stage=get_stage(name)
                     if stage is None: raise StudioError('Promoted stage was not registered')
                 else:
-                    return {'status':'adaptation_required','report':report,'next_stage':name,'research_status':research_status,'synthesis_status':synthesis_status,'benchmark_status':benchmark_status,'promotion_status':promotion_status}
+                    return {'status':'adaptation_required','report':report,'next_stage':name,'research_status':research_status,'synthesis_status':synthesis_status,'benchmark_status':benchmark_status,'promotion_status':promotion_status,'persistence_status':persistence_status}
             else: raise StudioError('Unfinished project has no executable next stage')
         if name in seen: raise StudioError('Stage did not advance completion state: '+name)
         seen.add(name)

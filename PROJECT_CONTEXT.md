@@ -35,12 +35,13 @@ Trusted components live primarily under `studio/`:
 - `store_package.py` — Play Store listing/assets package.
 - `privacy_audit.py` — privacy/Data Safety evidence.
 - `security_audit.py` — security/dependency/SBOM evidence.
-- `adaptation.py` — fail-closed capability-gap detection and `evolution-request.json`.
+- `adaptation.py` — fail-closed capability-gap detection and promotion-gate contract.
 - `evolution_executor.py` — deterministic `evolution-work-order.json`, isolated candidate identity, baseline and rollback contract.
 - `evolution_evidence.py` / `evolution_research.py` — allowlisted, hash-bound trusted research evidence; discovered code is never executed.
 - `evolution_candidate.py` — strict synthesized-candidate file scope and dangerous-code rejection.
+- `evolution_synthesis.py` — converts completed trusted research into a candidate artifact; model output remains data until validation.
 - `evolution_benchmark.py` — deterministic baseline/candidate promotion evaluator.
-- Current branch adds `evolution_synthesis.py` and orchestration that turns completed trusted research into a validated candidate artifact without executing it.
+- Current branch adds `evolution_differential.py` and makes `differential_improvement_proved` a mandatory promotion gate: candidate tests must fail on the pinned baseline and pass on the candidate before promotion can succeed.
 - `project_context.py` — trusted generated root `PROJECT_CONTEXT.md` for managed apps.
 
 GitHub Actions is the primary CI; CircleCI remains fallback. GitHub Android jobs use Ubuntu 24.04, explicitly install the Android emulator, and verify KVM acceleration. Never claim CI success without observing it.
@@ -57,16 +58,18 @@ GitHub Actions is the primary CI; CircleCI remains fallback. GitHub Android jobs
 - PR #27 `3b06636aaa194a547b1730608d8659df90dcbb96`: automatic trusted evolution research execution.
 - PR #30 `f671ba2500d8025f8d5ab64e63a8566400a3adec`: `platform_view_qa` for WebView/maps/video release runtime validation.
 - PR #31 `568ba372225dbbac34b78b7617f92719013f9053`: synthesized candidate scope and benchmark/promotion safety gates.
-- Current branch implements bounded candidate synthesis. Model output is JSON data only and must pass `validate_candidate()` before persistence. Research must be complete first; rejected output never reaches execution.
+- PR #33 `be2164d114d8467d0f541c50fe2ad17f1b00d996`: bounded candidate synthesis is merged; research can now produce a validated candidate artifact without executing it.
+- Current branch hardens promotion against vacuous candidate tests by requiring baseline-red/candidate-green differential evidence.
 - **Jumpy** remains the first major end-to-end target application.
 
 ## Immediate next objective
 
-1. Validate and merge bounded evolution synthesis.
+1. Validate and merge the mandatory differential-improvement gate.
 2. Materialize a validated candidate on its isolated `evolution/<candidate>` branch from the pinned baseline.
-3. Run baseline and candidate benchmarks without production secrets.
-4. Feed machine evidence into `evolution_benchmark.py`.
-5. Promote only an approved candidate, register the new trusted stage through a trusted promotion step, retain rollback metadata, then resume the blocked application automatically.
+3. Run the candidate-specific differential test on baseline and candidate with production credentials removed and network isolated.
+4. Run the full trusted regression suite + Flutter smoke + capability benchmark on both sides.
+5. Feed all machine evidence into `evolution_benchmark.py`.
+6. Promote only an approved candidate, register the new trusted stage through a trusted promotion step, retain rollback metadata, then resume the blocked application automatically.
 
 ## Near-term roadmap
 

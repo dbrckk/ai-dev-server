@@ -53,7 +53,7 @@ def finance_fix(project):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--verify-finance-fix', action='store_true')
-    args = parser.parse_args()
+    options = parser.parse_args()
     out = Path('studio-output/jumpy-baseline').resolve()
     out.mkdir(parents=True, exist_ok=True)
     report = {'status': 'blocked', 'mode': 'baseline_only',
@@ -114,7 +114,7 @@ def main():
                 if not gate_ok(code, log, marker):
                     raise StudioError('Jumpy ' + label + ' gate failed')
             report['status'] = 'baseline_passed'
-            if args.verify_finance_fix:
+            if options.verify_finance_fix:
                 command = [str(binary), '--headless', '--path', str(project),
                            '--script', 'res://__studio_baseline.gd', '--', '--finance']
                 evidence = out / 'gameplay.json'

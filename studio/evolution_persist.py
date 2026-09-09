@@ -1,4 +1,4 @@
-"""Persist an approved local promotion as a dedicated GitHub branch and pull request."""
+"""Persist an approved local promotion as a content-bound GitHub branch and PR."""
 from __future__ import annotations
 
 import base64
@@ -39,23 +39,38 @@ def _request(url, token, method='GET', payload=None, allow_404=False):
         raise PersistenceError('GitHub persistence request failed') from exc
 
 
-def _branch_name(gap, candidate_id):
+def _branch_prefix(gap, candidate_id):
     slug = re.sub(r'[^a-z0-9-]+', '-', gap.replace('_', '-')).strip('-')
-    suffix = hashlib.sha256(candidate_id.encode()).hexdigest()[:12]
-    return 'evolution/promote-' + slug + '-' + suffix
+    identity = hashlib.sha256(candidate_id.encode()).hexdigest()[:12]
+    return 'evolution/promote-' + slug + '-' + identity + '-'
+
+
+def _branch_name(gap, candidate_id, commit_sha):
+    if not isinstance(commit_sha, str) or not re.fullmatch(r'[0-9a-f]{40}', commit_sha):
+        raise PersistenceError('Promotion commit SHA invalid')
+    return _branch_prefix(gap, candidate_id) + commit_sha
+
+
+def _matching_refs(api, token, prefix):
+    url = api + '/git/matching-refs/heads/' + urllib.parse.quote(prefix, safe='/')
+    refs = _request(url, token)
+    if not isinstance(refs, list):
+        raise PersistenceError('GitHub promotion ref lookup malformed')
+    expected_prefix = 'refs/heads/' + prefix
+    return [ref for ref in refs if isinstance(ref, dict) and isinstance(ref.get('ref'), str)
+            and ref['ref'].startswith(expected_prefix)]
 
 
 def _existing_pr(api, token, owner, branch, commit_sha):
-    query = urllib.parse.urlencode({'state': 'all', 'head': owner + ':' + branch, 'base': 'main', 'per_page': 10})
+    query = urllib.parse.urlencode({'state': 'all', 'head': owner + ':' + branch, 'base': 'main', 'per_page': 20})
     pulls = _request(api + '/pulls?' + query, token)
     if not isinstance(pulls, list):
         raise PersistenceError('GitHub pull request lookup malformed')
-    for pr in pulls:
-        if not isinstance(pr, dict):
-            continue
-        if pr.get('head', {}).get('sha') == commit_sha and isinstance(pr.get('number'), int):
-            return pr['number']
-    return None
+    matches = [pr for pr in pulls if isinstance(pr, dict) and pr.get('head', {}).get('sha') == commit_sha
+               and pr.get('head', {}).get('ref') == branch and isinstance(pr.get('number'), int)]
+    if len(matches) > 1:
+        raise PersistenceError('Multiple pull requests claim the same promotion branch')
+    return matches[0]['number'] if matches else None
 
 
 def _verify_local_promotion(root, applied, baseline_sha):
@@ -88,20 +103,15 @@ def _verify_local_promotion(root, applied, baseline_sha):
 
 
 def persist(repo_root: Path, applied: dict, token: str, repository: str, baseline_sha: str):
-    if not token:
-        raise PersistenceError('GitHub persistence token missing')
-    if not re.fullmatch(r'[^/]+/[^/]+', repository):
-        raise PersistenceError('GitHub repository identity invalid')
-    if not re.fullmatch(r'[0-9a-f]{40}', baseline_sha):
-        raise PersistenceError('Baseline SHA invalid')
-    if applied.get('status') not in {'promoted', 'already_promoted'}:
-        raise PersistenceError('Only an applied promotion may be persisted')
+    if not token: raise PersistenceError('GitHub persistence token missing')
+    if not re.fullmatch(r'[^/]+/[^/]+', repository): raise PersistenceError('GitHub repository identity invalid')
+    if not re.fullmatch(r'[0-9a-f]{40}', baseline_sha): raise PersistenceError('Baseline SHA invalid')
+    if applied.get('status') not in {'promoted', 'already_promoted'}: raise PersistenceError('Only an applied promotion may be persisted')
     candidate_id = applied.get('candidate_id'); gap = applied.get('gap')
     if not isinstance(candidate_id, str) or not candidate_id or not isinstance(gap, str) or not gap.endswith('_qa'):
         raise PersistenceError('Promotion identity invalid')
 
-    root = repo_root.resolve()
-    rollback, registry = _verify_local_promotion(root, applied, baseline_sha)
+    root = repo_root.resolve(); rollback, registry = _verify_local_promotion(root, applied, baseline_sha)
     stage = root / f'studio/{gap[:-3]}_stage.py'; implementation = root / f'studio/{gap}.py'
     tests = root / f'tests/test_{gap}.py'; benchmark = root / f'tests/benchmarks/{gap}.json'
     files = [registry, rollback, stage, implementation, tests, benchmark]
@@ -119,39 +129,41 @@ def persist(repo_root: Path, applied: dict, token: str, repository: str, baselin
         sha = blob.get('sha') if isinstance(blob, dict) else None
         if not isinstance(sha, str): raise PersistenceError('GitHub blob creation failed')
         tree_entries.append({'path': rel, 'mode': '100644', 'type': 'blob', 'sha': sha})
-
     tree = _request(api + '/git/trees', token, 'POST', {'base_tree': base_tree, 'tree': tree_entries})
     tree_sha = tree.get('sha') if isinstance(tree, dict) else None
     if not isinstance(tree_sha, str): raise PersistenceError('GitHub tree creation failed')
 
-    branch = _branch_name(gap, candidate_id); ref_url = api + '/git/ref/heads/' + urllib.parse.quote(branch, safe='/')
-    existing_ref = _request(ref_url, token, allow_404=True)
-    if existing_ref is not None:
-        existing_sha = existing_ref.get('object', {}).get('sha') if isinstance(existing_ref, dict) else None
-        if not isinstance(existing_sha, str): raise PersistenceError('Existing promotion branch malformed')
-        existing_commit = _request(api + '/git/commits/' + existing_sha, token)
+    prefix = _branch_prefix(gap, candidate_id); refs = _matching_refs(api, token, prefix)
+    if len(refs) > 1: raise PersistenceError('Multiple promotion branches exist for one candidate')
+    if refs:
+        branch = refs[0]['ref'][len('refs/heads/'):]
+        encoded_sha = branch[len(prefix):]
+        current_sha = refs[0].get('object', {}).get('sha')
+        if not re.fullmatch(r'[0-9a-f]{40}', encoded_sha or '') or current_sha != encoded_sha:
+            raise PersistenceError('Promotion branch head no longer matches its approved SHA')
+        existing_commit = _request(api + '/git/commits/' + encoded_sha, token)
         existing_tree = existing_commit.get('tree', {}).get('sha') if isinstance(existing_commit, dict) else None
         parents = existing_commit.get('parents') if isinstance(existing_commit, dict) else None
         parent_shas = [item.get('sha') for item in parents] if isinstance(parents, list) else []
         if existing_tree != tree_sha or parent_shas != [baseline_sha]: raise PersistenceError('Promotion branch already exists with different content')
-        number = _existing_pr(api, token, owner, branch, existing_sha)
+        number = _existing_pr(api, token, owner, branch, encoded_sha)
         if number is None: raise PersistenceError('Existing promotion branch has no matching pull request')
-        return {'status': 'already_persisted', 'candidate_id': candidate_id, 'gap': gap, 'branch': branch, 'commit_sha': existing_sha, 'pull_request': number}
+        return {'status':'already_persisted','candidate_id':candidate_id,'gap':gap,'branch':branch,'commit_sha':encoded_sha,'pull_request':number}
 
     commit = _request(api + '/git/commits', token, 'POST', {'message': f'Promote autonomous capability {gap}', 'tree': tree_sha, 'parents': [baseline_sha]})
     commit_sha = commit.get('sha') if isinstance(commit, dict) else None
-    if not isinstance(commit_sha, str): raise PersistenceError('GitHub promotion commit creation failed')
-    _request(api + '/git/refs', token, 'POST', {'ref': 'refs/heads/' + branch, 'sha': commit_sha})
-
+    if not isinstance(commit_sha, str) or not re.fullmatch(r'[0-9a-f]{40}', commit_sha): raise PersistenceError('GitHub promotion commit creation failed')
+    branch = _branch_name(gap, candidate_id, commit_sha)
+    _request(api + '/git/refs', token, 'POST', {'ref':'refs/heads/' + branch,'sha':commit_sha})
     existing_number = _existing_pr(api, token, owner, branch, commit_sha)
     if existing_number is not None:
-        return {'status': 'already_persisted', 'candidate_id': candidate_id, 'gap': gap, 'branch': branch, 'commit_sha': commit_sha, 'pull_request': existing_number}
+        return {'status':'already_persisted','candidate_id':candidate_id,'gap':gap,'branch':branch,'commit_sha':commit_sha,'pull_request':existing_number}
     pr = _request(api + '/pulls', token, 'POST', {
         'title': f'Promote autonomous capability: {gap}', 'head': branch, 'base': 'main',
-        'body': 'Machine-approved autonomous factory evolution. Generated from isolated differential, regression, smoke, integrity and rollback evidence. Merge only through normal repository checks.'})
+        'body': 'Machine-approved autonomous factory evolution. The branch name cryptographically binds this PR to the exact approved commit SHA. Generated from isolated differential, regression, smoke, integrity and rollback evidence.'})
     number = pr.get('number') if isinstance(pr, dict) else None
     if not isinstance(number, int): raise PersistenceError('GitHub promotion pull request creation failed')
-    return {'status': 'promotion_persisted', 'candidate_id': candidate_id, 'gap': gap, 'branch': branch, 'commit_sha': commit_sha, 'pull_request': number}
+    return {'status':'promotion_persisted','candidate_id':candidate_id,'gap':gap,'branch':branch,'commit_sha':commit_sha,'pull_request':number}
 
 
 def main(argv=None):

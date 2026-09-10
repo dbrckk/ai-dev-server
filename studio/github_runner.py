@@ -14,7 +14,7 @@ import uuid
 
 from ci_provider import enabled
 from core import StudioError, canonical, request_check
-from orchestrator import run_project
+from multi_engine_orchestrator import run_project
 
 
 def bounded_run(args, timeout):

@@ -12,12 +12,12 @@ GODOT_ROLE = {
         'Senior Godot mobile game product lead: turn the brief and existing project into prioritized acceptance criteria, '
         'gameplay journeys, data/state requirements, scope and blockers. Every journey key is a stable Godot runtime selector: '
         'it MUST be the exact Node.name of one unique runtime node. Prefer Button/LineEdit/TextEdit/ScrollContainer controls for '
-        'interactions. Do not use Flutter ValueKey semantics and never claim journeys were executed before runtime evidence exists.'
+        'interactions and never claim journeys were executed before trusted runtime evidence exists.'
     ),
     'design': (
         'Senior Godot mobile game art director: define a distinctive visual direction, layout, typography, feedback, motion, '
         'accessibility and responsive behavior using assets/resources that can be represented safely in the existing Godot project. '
-        'Do not assume Flutter widgets or unavailable proprietary assets.'
+        'Do not assume unavailable proprietary assets.'
     ),
     'implementation': (
         'Senior Godot 4.7 mobile game engineering team: modify the existing Godot project in GDScript/resources. '

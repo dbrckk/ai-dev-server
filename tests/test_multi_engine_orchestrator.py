@@ -74,6 +74,10 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                 if fail_stage=='privacy': return subprocess.CompletedProcess(args,1)
                 report={'engine':'godot','status':'godot_privacy_security_validated','release_status':'not_store_ready','completion':{'finished':False,'next_stage':'godot_final_review_qa'},'coverage':{'release_artifact':True,'release_signed':True,'store_metadata':True,'privacy_qa':True,'security_qa':True}}
                 (out/'report.json').write_text(json.dumps(report))
+            elif script=='studio/godot_final_review_stage.py':
+                if fail_stage=='final': return subprocess.CompletedProcess(args,1)
+                report={'engine':'godot','status':'godot_technical_store_ready','release_status':'technical_store_ready','completion':{'finished':False,'next_stage':'godot_play_submission'},'coverage':{'release_artifact':True,'release_signed':True,'store_metadata':True,'privacy_qa':True,'security_qa':True,'final_review':True}}
+                (out/'report.json').write_text(json.dumps(report))
             return subprocess.CompletedProcess(args,0)
         return runner,calls
 
@@ -84,12 +88,12 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
         self.assertEqual(result['status'],'human_action_required'); self.assertEqual(result['next_stage'],'godot_release_qa')
         self.assertTrue(any('studio/godot_release_stage.py' in call for call in calls)); self.assertFalse(any('studio/post_preview.py' in call for call in calls))
 
-    def test_release_chain_advances_through_privacy_security(self):
+    def test_release_chain_reaches_human_play_submission_only(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td); out=root/'out'; req=self.request(root); runner,calls=self._runner(out,release_ready=True)
             result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
-        self.assertEqual(result['status'],'godot_privacy_security_ready'); self.assertEqual(result['next_stage'],'godot_final_review_qa')
-        self.assertTrue(any('studio/godot_privacy_security_stage.py' in call for call in calls))
+        self.assertEqual(result['status'],'human_action_required'); self.assertEqual(result['next_stage'],'godot_play_submission')
+        self.assertTrue(any('studio/godot_final_review_stage.py' in call for call in calls))
 
     def test_credentials_lost_between_preflight_and_signing_return_to_human_action(self):
         with tempfile.TemporaryDirectory() as td:
@@ -98,10 +102,10 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
         self.assertEqual(result['status'],'human_action_required'); self.assertEqual(result['next_stage'],'godot_release_qa')
 
     def test_each_failed_godot_stage_stays_on_itself(self):
-        expected={'android':'godot_android_export_qa','device':'godot_device_qa','journey':'godot_runtime_journey_qa','visual':'godot_visual_qa','release':'godot_release_qa','artifact':'godot_release_artifact_qa','store':'godot_store_metadata_qa','privacy':'godot_privacy_security_qa'}
+        expected={'android':'godot_android_export_qa','device':'godot_device_qa','journey':'godot_runtime_journey_qa','visual':'godot_visual_qa','release':'godot_release_qa','artifact':'godot_release_artifact_qa','store':'godot_store_metadata_qa','privacy':'godot_privacy_security_qa','final':'godot_final_review_qa'}
         for failed,next_stage in expected.items():
             with self.subTest(failed=failed), tempfile.TemporaryDirectory() as td:
-                root=Path(td); out=root/'out'; req=self.request(root); runner,_=self._runner(out,fail_stage=failed,release_ready=failed in {'artifact','store','privacy'})
+                root=Path(td); out=root/'out'; req=self.request(root); runner,_=self._runner(out,fail_stage=failed,release_ready=failed in {'artifact','store','privacy','final'})
                 result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
                 self.assertEqual(result['status'],'failed'); self.assertEqual(result['next_stage'],next_stage)
 

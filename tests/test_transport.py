@@ -58,6 +58,25 @@ class TransportTests(unittest.TestCase):
         self.assertIs(m.api.call.call_args.args[2]['stream'], False)
 
 class MalformedEnvelopeTests(unittest.TestCase):
+    def test_duplicate_json_keys_cannot_hide_review_failure(self):
+        raw = '{"passed":false,"passed":true,"blockers":[]}'
+        with patch.dict('os.environ', {'STUDIO_API_KEY': 'test'}, clear=True):
+            model = Model(2)
+            envelope = lambda text: {'choices': [{'message': {'content': text}}]}
+            corrected = {'passed': False, 'blockers': ['Missing behavior']}
+            model.api.call = Mock(side_effect=[envelope(raw), envelope(json.dumps(corrected))])
+            self.assertEqual(model.ask('review', 'brief'), corrected)
+            self.assertEqual(model.calls, 2)
+
+    def test_nested_duplicate_keys_exhaust_budget_without_acceptance(self):
+        raw = '{"screens":[{"label":"A","label":"B"}]}'
+        with patch.dict('os.environ', {'STUDIO_API_KEY': 'test'}, clear=True):
+            model = Model(1)
+            model.api.call = Mock(return_value={'choices': [{'message': {'content': raw}}]})
+            with self.assertRaisesRegex(StudioError, 'Structured response rejected'):
+                model.ask('design', 'brief')
+            self.assertEqual(model.calls, 1)
+
     def test_non_finite_numbers_use_bounded_repair(self):
         for number in ('NaN', 'Infinity', '-Infinity', '1e999'):
             with self.subTest(number=number), patch.dict('os.environ', {'STUDIO_API_KEY': 'test'}, clear=True):

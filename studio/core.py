@@ -307,7 +307,14 @@ class Model:
             raw = raw.strip()
             if raw.startswith('```'):
                 raw = raw.split('\n', 1)[1].rsplit('```', 1)[0]
-            value = json.loads(raw)
+            def unique_object(pairs):
+                result = {}
+                for key, item in pairs:
+                    if key in result:
+                        raise ValueError('Duplicate model JSON key')
+                    result[key] = item
+                return result
+            value = json.loads(raw, object_pairs_hook=unique_object)
             if not isinstance(value, dict):
                 raise ValueError()
             pending = [(value, 0)]

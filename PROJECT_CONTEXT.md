@@ -111,3 +111,8 @@ Non-finite model numbers (NaN, infinities, numeric overflow) are rejected before
 checkpoint persistence and use the existing call-limited repair. Four failing
 regression cases reproduced; 205 local tests passed after the fix. Fresh GitHub
 Actions validation remains required for this commit.
+
+Duplicate model JSON keys are rejected at every object depth, preventing silent
+last-value overrides (including review verdicts). Existing bounded repair and
+call limits apply. Two regressions reproduced; 207 local tests passed after fix.
+Fresh GitHub Actions validation is required for this follow-up.

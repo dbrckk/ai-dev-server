@@ -127,3 +127,13 @@ other than stop (or omitted for compatible providers) cannot count as review
 success. Six new tests cover failures plus valid Unicode checkpoint publication;
 213 local tests passed, compileall and diff whitespace checks passed. New GitHub
 Actions validation is pending; no merge or deployment is authorized by this work.
+
+### Interrupted patch protection (2026-09-10)
+
+Catchable interruption now attempts rollback and propagates cancellation; a second
+interruption during rollback retains recovery evidence. Targets are registered
+before replacement to cover cancellation immediately after rename. Leftover patch
+staging blocks new edits and checkpoint publication. A subprocess using os._exit
+confirms abrupt-exit evidence survives and unsafe publication is refused.
+217 local tests passed. This is detection and containment after abrupt exit, NOT
+automatic recovery or power-loss durability; use a fresh trusted checkpoint.

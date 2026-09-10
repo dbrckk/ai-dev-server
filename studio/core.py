@@ -86,7 +86,12 @@ def patch_check(value):
         raise StudioError('Patch file conflicts with a parent directory')
     return value['files']
 
+def require_clean_patch_workspace(root):
+    if any(root.glob('.__studio-patch-*')):
+        raise RuntimeError('Unresolved patch recovery files; restore from a trusted checkpoint before reuse or publication')
+
 def apply_patch(root, value):
+    require_clean_patch_workspace(root)
     files = patch_check(value)
     # Validate the entire batch, including filesystem paths, before writing any file.
     for f in files:
@@ -128,23 +133,30 @@ def apply_patch(root, value):
         for index, f in enumerate(files):
             target = root / f['path']
             ensure_directory(target.parent)
-            os.replace(staging / str(index), target)
             committed.append((index, target))
-    except OSError:
+            os.replace(staging / str(index), target)
+    except BaseException as error:
+        # Preserve backups if cancellation also interrupts recovery. Register a
+        # target before replacement to cover interruption immediately afterward.
+        retain_recovery = True
+        rollback_failed = False
         for index, target in reversed(committed):
             try:
                 backup = staging / (str(index) + '.backup')
                 if backup.exists():
                     os.replace(backup, target)
                 else:
-                    target.unlink()
-            except OSError:
-                retain_recovery = True
-        if retain_recovery:
+                    target.unlink(missing_ok=True)
+            except BaseException:
+                rollback_failed = True
+        if rollback_failed:
             # Deliberately not StudioError: the normal blocked-run handler must
             # not publish a checkpoint from an incompletely restored workspace.
             raise RuntimeError('Patch rollback incomplete; do not publish workspace. Recovery files: ' + str(staging)) from None
-        raise StudioError('Patch write failed; original source restored') from None
+        retain_recovery = False
+        if isinstance(error, OSError):
+            raise StudioError('Patch write failed; original source restored') from None
+        raise
     finally:
         if staging is not None and not retain_recovery:
             shutil.rmtree(staging, ignore_errors=True)

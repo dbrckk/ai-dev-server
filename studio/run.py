@@ -14,6 +14,7 @@ import urllib.error
 from journeys import validate_journeys
 from core import API, APIError, Model, Sandbox, StudioError, allowed, apply_patch, canonical, request_check, verdict, SECRET
 from project_context import write as write_project_context
+from core import require_clean_patch_workspace
 
 class GitHub(API):
     def __init__(self, repo):
@@ -69,6 +70,7 @@ class GitHub(API):
             raise StudioError('Existing studio branch has no checkpoint; refusing overwrite')
         return state, parent
     def publish(self, branch, parent, root, state):
+        require_clean_patch_workspace(root)
         # Metadata is published too: validate it before any remote operation.
         try:
             state_json = json.dumps(state, sort_keys=True, ensure_ascii=False,
@@ -166,6 +168,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     state['cycles'] += 1
 
     def checkpoint(parent_sha):
+        require_clean_patch_workspace(root)
         write_project_context(root, req, state)
         return github.publish(branch, parent_sha, root, state)
 

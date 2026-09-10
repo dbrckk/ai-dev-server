@@ -137,3 +137,8 @@ staging blocks new edits and checkpoint publication. A subprocess using os._exit
 confirms abrupt-exit evidence survives and unsafe publication is refused.
 217 local tests passed. This is detection and containment after abrupt exit, NOT
 automatic recovery or power-loss durability; use a fresh trusted checkpoint.
+
+Preview evidence is cleared on active resume and before each new implementation
+round: a failed build cannot retain an old APK hash or passing review/validation
+contract. Completed checkpoints still return without regeneration. Regression
+reproduced on a resumed cycle; 219 local tests passed after the fix.

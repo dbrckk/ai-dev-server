@@ -222,6 +222,23 @@ class StudioTests(unittest.TestCase):
         state, root, _ = self.run_fixture(sandbox=Failed)
         self.assertEqual(state['status'], 'repair_needed')
         self.assertFalse((root / 'out/app-debug.apk').exists())
+    def test_failed_resume_drops_previous_cycle_validation_evidence(self):
+        class NoVision(FakeModel):
+            vision = ''
+        _, _, gh = self.run_fixture(model=NoVision)
+        self.assertIn('apk_sha256', gh.state)
+        self.assertTrue(gh.state['code_review']['passed'])
+        gh.state['visual_review'] = {'passed': True, 'blockers': []}
+        gh.state['visual_reviews'] = {'initial': {'passed': True, 'blockers': []}}
+        class Failed(FakeSandbox):
+            def gates(self, name, journeys):
+                return False, [{'exit_code': 1}]
+        state, root, _ = self.run_fixture(gh=gh, sandbox=Failed)
+        self.assertEqual(state['status'], 'repair_needed')
+        for key in ('apk_sha256', 'validation_contract', 'code_review', 'visual_review', 'visual_reviews'):
+            self.assertNotIn(key, state)
+            self.assertNotIn(key, gh.published[-1])
+        self.assertFalse((root / 'out/app-debug.apk').exists())
     def test_visual_rejection_repairs(self):
         class Reject(FakeModel):
             def ask(self, role, context, screenshots=()):
@@ -230,6 +247,21 @@ class StudioTests(unittest.TestCase):
         state, root, _ = self.run_fixture(model=Reject)
         self.assertEqual(state['status'], 'repair_needed')
         self.assertFalse((root / 'out/app-debug.apk').exists())
+    def test_later_failed_round_drops_earlier_passed_review(self):
+        class RejectVisual(FakeModel):
+            def ask(self, role, context, screenshots=()):
+                if role == 'visual':
+                    return {'passed': False, 'blockers': ['clipping']}
+                return super().ask(role, context, screenshots)
+        class FirstBuildOnly(FakeSandbox):
+            def gates(self, name, journeys):
+                passed, logs = super().gates(name, journeys)
+                return self.attempt == 1, logs
+        state, _, gh = self.run_fixture(model=RejectVisual, sandbox=FirstBuildOnly)
+        self.assertEqual(state['status'], 'repair_needed')
+        self.assertTrue(any(p.get('code_review', {}).get('passed') for p in gh.published))
+        for key in ('validation_contract', 'code_review', 'visual_review', 'visual_reviews'):
+            self.assertNotIn(key, gh.published[-1])
     def test_provider_error_checkpoints(self):
         class Broken(FakeModel):
             def ask(self, role, context, screenshots=()):

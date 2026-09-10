@@ -131,6 +131,10 @@ def context(req, state, root):
                       'previous_blockers': state.get('blockers', []), 'files': files})
 
 def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sandbox):
+    def clear_preview_evidence(state):
+        for key in ('apk_sha256', 'validation_contract', 'code_review', 'visual_review', 'visual_reviews'):
+            state.pop(key, None)
+
     req = request_check(req)
     if not req['enabled']:
         return {'status': 'disabled'}
@@ -156,6 +160,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         if state['status'] == 'validated_preview' or state['cycles'] >= req['max_cycles']:
             (out / 'report.json').write_text(canonical(state))
             return state
+        clear_preview_evidence(state)
         model = model_factory(req['max_calls'])
         sandbox = sandbox_factory(root)
         sandbox.create(req['app_name'])
@@ -186,6 +191,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                 parent = checkpoint(parent)
         for _ in range(req['max_rounds']):
             state['rounds'] += 1
+            clear_preview_evidence(state)
             patch = model.ask('implementation', context(req, state, root))
             apply_patch(root, patch)
             if not any(not p.name.startswith('__studio') for p in (root / 'test').rglob('*_test.dart')):

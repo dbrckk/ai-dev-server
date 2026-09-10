@@ -28,7 +28,7 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
             result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
         self.assertEqual(result['status'],'complete'); legacy.assert_called_once()
 
-    def _runner(self,out,fail_stage=None,bad_journey=False):
+    def _runner(self,out,fail_stage=None,bad_journey=False,bad_visual=False):
         calls=[]
         def runner(args,timeout):
             calls.append(args); out.mkdir(parents=True,exist_ok=True)
@@ -47,18 +47,22 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                 if fail_stage=='journey': return subprocess.CompletedProcess(args,1)
                 coverage={'android_export':True,'device_qa':True,'journeys_executed':not bad_journey,'visual_qa':False}
                 (out/'report.json').write_text(json.dumps({'engine':'godot','status':'godot_runtime_journeys_validated','completion':{'finished':False,'next_stage':'godot_visual_qa'},'coverage':coverage}))
+            elif script=='studio/godot_visual_stage.py':
+                if fail_stage=='visual': return subprocess.CompletedProcess(args,1)
+                coverage={'android_export':True,'device_qa':True,'journeys_executed':True,'visual_qa':not bad_visual}
+                (out/'report.json').write_text(json.dumps({'engine':'godot','status':'godot_visual_validated','completion':{'finished':False,'next_stage':'godot_release_qa'},'coverage':coverage}))
             return subprocess.CompletedProcess(args,0)
         return runner,calls
 
-    def test_godot_chains_through_real_journeys_then_stops_at_visual(self):
+    def test_godot_chains_through_visual_then_stops_at_release(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td); out=root/'out'; req=self.request(root); runner,calls=self._runner(out)
             result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
-        self.assertEqual(result['status'],'godot_journeys_ready'); self.assertEqual(result['next_stage'],'godot_visual_qa')
-        self.assertTrue(any('studio/godot_runtime_journey_stage.py' in call for call in calls)); self.assertFalse(any('studio/post_preview.py' in call for call in calls))
+        self.assertEqual(result['status'],'godot_visual_ready'); self.assertEqual(result['next_stage'],'godot_release_qa')
+        self.assertTrue(any('studio/godot_visual_stage.py' in call for call in calls)); self.assertFalse(any('studio/post_preview.py' in call for call in calls))
 
     def test_each_failed_godot_stage_stays_on_itself(self):
-        expected={'android':'godot_android_export_qa','device':'godot_device_qa','journey':'godot_runtime_journey_qa'}
+        expected={'android':'godot_android_export_qa','device':'godot_device_qa','journey':'godot_runtime_journey_qa','visual':'godot_visual_qa'}
         for failed,next_stage in expected.items():
             with self.subTest(failed=failed), tempfile.TemporaryDirectory() as td:
                 root=Path(td); out=root/'out'; req=self.request(root); runner,_=self._runner(out,fail_stage=failed)
@@ -69,6 +73,12 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td); out=root/'out'; req=self.request(root); runner,_=self._runner(out,bad_journey=True)
             with self.assertRaisesRegex(StudioError,'journey stage returned invalid coverage'):
+                run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
+
+    def test_visual_stage_cannot_fake_visual_coverage(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); out=root/'out'; req=self.request(root); runner,_=self._runner(out,bad_visual=True)
+            with self.assertRaisesRegex(StudioError,'visual stage returned invalid coverage'):
                 run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
 
     def test_missing_detection_evidence_fails_closed(self):

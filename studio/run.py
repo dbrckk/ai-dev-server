@@ -69,6 +69,15 @@ class GitHub(API):
             raise StudioError('Existing studio branch has no checkpoint; refusing overwrite')
         return state, parent
     def publish(self, branch, parent, root, state):
+        # Metadata is published too: validate it before any remote operation.
+        try:
+            state_json = json.dumps(state, sort_keys=True, ensure_ascii=False,
+                                    separators=(',', ':'), allow_nan=False)
+            state_json.encode('utf-8')
+        except (TypeError, ValueError, RecursionError):
+            raise StudioError('Checkpoint metadata is not valid JSON') from None
+        if SECRET.search(state_json):
+            raise StudioError('Checkpoint metadata contains a credential pattern')
         entries = []
         previous = {}
         if parent:
@@ -99,7 +108,7 @@ class GitHub(API):
                 blob = self.call('POST', self.repo + '/git/blobs', {'encoding': 'base64', 'content': base64.b64encode(content).decode()})
                 entry['sha'] = blob['sha']
             entries.append(entry)
-        entries.append({'path': '.studio/state.json', 'mode': '100644', 'type': 'blob', 'content': canonical(state)})
+        entries.append({'path': '.studio/state.json', 'mode': '100644', 'type': 'blob', 'content': state_json})
         data = {'tree': entries}
         if parent:
             data['base_tree'] = self.get('/git/commits/' + parent)['tree']['sha']

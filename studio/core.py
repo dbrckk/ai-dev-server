@@ -2,6 +2,7 @@
 from __future__ import annotations
 import base64
 import hashlib
+import http.client
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -201,7 +202,7 @@ class API:
                         raise StudioError('API response too large')
                     try:
                         return json.loads(raw)
-                    except (ValueError, UnicodeError):
+                    except (ValueError, UnicodeError, RecursionError):
                         raise ProtocolError('API returned non-JSON response') from None
                 request_id = res.headers.get('NVCF-REQID', '')
                 if (self.base != 'https://integrate.api.nvidia.com/v1' or
@@ -227,7 +228,7 @@ class API:
                 if method not in ('GET', 'POST') or e.code not in (429, 502, 503, 504) or attempt == 2:
                     raise APIError(e.code) from None
                 time.sleep(2 ** attempt)
-            except (urllib.error.URLError, TimeoutError):
+            except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.HTTPException):
                 raise StudioError('API unavailable or timed out') from None
         raise StudioError('Retry limit reached')
 
@@ -301,6 +302,8 @@ class Model:
                 raise ProtocolError('Provider returned invalid completion choice')
             if choice.get('finish_reason') == 'length':
                 raise ProtocolError('Model response truncated')
+            if choice.get('finish_reason') not in (None, 'stop'):
+                raise ProtocolError('Model response did not complete normally')
             raw = choice['message']['content']
             if not isinstance(raw, str) or not raw.strip():
                 raise ProtocolError('Provider returned empty text content')
@@ -329,7 +332,10 @@ class Model:
             # JSON permits escaped lone surrogates; checkpoints and the next
             # model context must be encodable as UTF-8, including nested keys.
             # Reject NaN/Infinity (including numeric overflow) before persistence.
-            json.dumps(value, ensure_ascii=False, allow_nan=False).encode('utf-8')
+            serialized = json.dumps(value, ensure_ascii=False, allow_nan=False)
+            serialized.encode('utf-8')
+            if SECRET.search(serialized):
+                raise ProtocolError('Model response contains a credential pattern')
             return value
         except (KeyError, IndexError, TypeError, ValueError, RecursionError):
             raise ProtocolError('Provider returned invalid structured output') from None

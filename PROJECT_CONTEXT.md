@@ -116,3 +116,14 @@ Duplicate model JSON keys are rejected at every object depth, preventing silent
 last-value overrides (including review verdicts). Existing bounded repair and
 call limits apply. Two regressions reproduced; 207 local tests passed after fix.
 Fresh GitHub Actions validation is required for this follow-up.
+
+### Checkpoint and transport safety (2026-09-10)
+
+Model metadata is scanned for credential patterns before use or bounded repair.
+Checkpoint metadata is independently checked for credentials and JSON/UTF-8
+validity before any GitHub operation. HTTP disconnects and incomplete bodies
+produce sanitized handled errors without resubmitting a POST. Completion reasons
+other than stop (or omitted for compatible providers) cannot count as review
+success. Six new tests cover failures plus valid Unicode checkpoint publication;
+213 local tests passed, compileall and diff whitespace checks passed. New GitHub
+Actions validation is pending; no merge or deployment is authorized by this work.

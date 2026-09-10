@@ -1,0 +1,76 @@
+name: Godot Runtime Smoke
+
+on:
+  pull_request:
+    paths:
+      - 'studio/godot_runtime.py'
+      - 'studio/project_engine.py'
+      - 'studio/existing_project.py'
+      - 'studio/evolution_candidate.py'
+      - 'tests/test_godot_runtime.py'
+      - '.github/workflows/godot-runtime-smoke.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'studio/godot_runtime.py'
+      - 'studio/project_engine.py'
+      - 'studio/existing_project.py'
+      - 'studio/evolution_candidate.py'
+      - 'tests/test_godot_runtime.py'
+      - '.github/workflows/godot-runtime-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  godot-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, immutable SHA
+        with:
+          persist-credentials: false
+      - name: Build minimal Godot fixture
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/studio-godot-fixture/scripts
+          cat > /tmp/studio-godot-fixture/project.godot <<'EOF'
+          [application]
+          config/name="StudioGodotSmoke"
+          run/main_scene="res://main.tscn"
+
+          [rendering]
+          renderer/rendering_method="gl_compatibility"
+          EOF
+          cat > /tmp/studio-godot-fixture/main.tscn <<'EOF'
+          [gd_scene load_steps=2 format=3]
+
+          [ext_resource path="res://scripts/smoke.gd" type="Script" id="1"]
+
+          [node name="Main" type="Node"]
+          script = ExtResource("1")
+          EOF
+          cat > /tmp/studio-godot-fixture/scripts/smoke.gd <<'EOF'
+          extends Node
+
+          func _ready() -> void:
+              print("studio-godot-smoke")
+          EOF
+      - name: Verify and execute pinned Godot headless runtime
+        env:
+          PYTHONPATH: studio
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          from godot_runtime import install, validate
+
+          binary = install(Path('/tmp/studio-godot-runtime'))
+          result = validate(Path('/tmp/studio-godot-fixture'), binary, timeout=420)
+          print(result['engine_version'], result['archive_sha256'], result['binary_sha256'])
+          print(result['source_project'], result['sandbox_project'], result['network'])
+          if not result['passed']:
+              print(result['output'])
+              raise SystemExit('Godot smoke failed')
+          PY

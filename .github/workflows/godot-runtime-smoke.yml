@@ -4,19 +4,27 @@ on:
   pull_request:
     paths:
       - 'studio/godot_runtime.py'
+      - 'studio/godot_session.py'
+      - 'studio/godot_repository_probe.py'
       - 'studio/project_engine.py'
       - 'studio/existing_project.py'
       - 'studio/evolution_candidate.py'
       - 'tests/test_godot_runtime.py'
+      - 'tests/test_godot_session.py'
+      - 'tests/test_godot_repository_probe.py'
       - '.github/workflows/godot-runtime-smoke.yml'
   push:
     branches: [main]
     paths:
       - 'studio/godot_runtime.py'
+      - 'studio/godot_session.py'
+      - 'studio/godot_repository_probe.py'
       - 'studio/project_engine.py'
       - 'studio/existing_project.py'
       - 'studio/evolution_candidate.py'
       - 'tests/test_godot_runtime.py'
+      - 'tests/test_godot_session.py'
+      - 'tests/test_godot_repository_probe.py'
       - '.github/workflows/godot-runtime-smoke.yml'
   workflow_dispatch:
 
@@ -26,7 +34,7 @@ permissions:
 jobs:
   godot-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 16
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, immutable SHA
         with:
@@ -74,3 +82,10 @@ jobs:
               print(result['output'])
               raise SystemExit('Godot smoke failed')
           PY
+      - name: Import and validate pinned real Jumpy repository
+        env:
+          PYTHONPATH: studio
+        run: |
+          set -euo pipefail
+          python studio/godot_repository_probe.py dbrckk/Jumpy f32cc45e2e1b8713c3aa41961810bcbc90ab97c0 --out /tmp/jumpy-godot-probe.json
+          python -m json.tool /tmp/jumpy-godot-probe.json

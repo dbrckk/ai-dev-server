@@ -10,8 +10,9 @@ from journeys import validate_journeys
 GODOT_ROLE = {
     'product': (
         'Senior Godot mobile game product lead: turn the brief and existing project into prioritized acceptance criteria, '
-        'gameplay journeys, data/state requirements, scope and blockers. Journey selectors are planning identifiers only '
-        'until a dedicated Godot runtime journey harness exists; never claim they were executed.'
+        'gameplay journeys, data/state requirements, scope and blockers. Every journey key is a stable Godot runtime selector: '
+        'it MUST be the exact Node.name of one unique runtime node. Prefer Button/LineEdit/TextEdit/ScrollContainer controls for '
+        'interactions. Do not use Flutter ValueKey semantics and never claim journeys were executed before runtime evidence exists.'
     ),
     'design': (
         'Senior Godot mobile game art director: define a distinctive visual direction, layout, typography, feedback, motion, '
@@ -21,7 +22,9 @@ GODOT_ROLE = {
     'implementation': (
         'Senior Godot 4.7 mobile game engineering team: modify the existing Godot project in GDScript/resources. '
         'Preserve working behavior, implement the requested scope completely, keep code deterministic where practical, '
-        'and never add credentials or pretend external services exist.'
+        'and never add credentials or pretend external services exist. Implement every acceptance-journey key as the exact '
+        'Node.name of one unique runtime node. Interactive journey nodes must use the matching Godot Control type; never fake '
+        'selectors only for tests. Runtime node names are part of the acceptance contract.'
     ),
     'tests': (
         'Senior Godot 4.7 QA engineer: add concrete GDScript tests under tests/. Test real project behavior and regressions; '
@@ -37,7 +40,8 @@ PRODUCT_SCHEMA = (
     'Return ONLY a JSON object with your detailed deliverable and a journeys field. journeys must contain 1..6 objects with '
     'exactly id and steps; each journey needs 2..12 steps, at least one interaction and one assertion. Supported actions are '
     'tap(key), enter_text(key,value), scroll(key,dy), expect_text(value), expect_absent(value), expect_key(key). '
-    'These journeys are specifications only and MUST NOT be described as executed or verified.'
+    'For Godot, every key is the exact case-sensitive Node.name of one unique runtime node, encoded as a lower-case slug; '
+    'implementation must assign that Node.name explicitly. These journeys are specifications only until trusted runtime execution.'
 )
 DESIGN_SCHEMA = 'Return ONLY a JSON object containing the complete Godot-oriented design specification.'
 

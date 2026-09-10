@@ -31,6 +31,7 @@ PROTECTED_PATHS = {
     'studio/godot_android_export.py','studio/godot_android_stage.py','studio/godot_device_qa.py',
     'studio/godot_device_stage.py','studio/godot_runtime_journeys.py','studio/godot_runtime_journey_stage.py',
     'studio/godot_visual_qa.py','studio/godot_visual_stage.py','studio/godot_release_qa.py','studio/godot_release_stage.py',
+    'studio/godot_release_artifact.py','studio/godot_release_artifact_stage.py','studio/godot_store_metadata_qa.py','studio/godot_store_metadata_stage.py',
     'studio/godot_release_artifact.py','studio/godot_release_artifact_stage.py',
     'studio/engine_entry.py','studio/engine_detect.py','studio/multi_engine_orchestrator.py',
     '.github/workflows/validate.yml','.github/workflows/studio-smoke.yml','.github/workflows/mobile-studio.yml',

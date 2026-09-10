@@ -56,7 +56,7 @@ class GodotDeviceQATests(unittest.TestCase):
         self.assertEqual(result['network'],'airplane_mode')
         self.assertFalse(result['journeys_executed'])
         self.assertFalse(result['visual_reviewed'])
-        self.assertTrue(any('AIRPLANE_MODE' in call for call in calls))
+        self.assertTrue(any(any('AIRPLANE_MODE' in part for part in call) for call in calls))
 
     def test_safe_env_drops_ci_credentials(self):
         with patch.dict('os.environ',{'PATH':'/bin','HOME':'/tmp','GITHUB_TOKEN':'secret','STUDIO_GITHUB_TOKEN':'secret'},clear=True):

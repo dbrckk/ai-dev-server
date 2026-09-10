@@ -6,6 +6,7 @@ on:
       - 'studio/godot_runtime.py'
       - 'studio/project_engine.py'
       - 'studio/existing_project.py'
+      - 'studio/evolution_candidate.py'
       - 'tests/test_godot_runtime.py'
       - '.github/workflows/godot-runtime-smoke.yml'
   push:
@@ -14,6 +15,7 @@ on:
       - 'studio/godot_runtime.py'
       - 'studio/project_engine.py'
       - 'studio/existing_project.py'
+      - 'studio/evolution_candidate.py'
       - 'tests/test_godot_runtime.py'
       - '.github/workflows/godot-runtime-smoke.yml'
   workflow_dispatch:
@@ -67,6 +69,7 @@ jobs:
           binary = install(Path('/tmp/studio-godot-runtime'))
           result = validate(Path('/tmp/studio-godot-fixture'), binary, timeout=420)
           print(result['engine_version'], result['archive_sha256'], result['binary_sha256'])
+          print(result['source_project'], result['sandbox_project'], result['network'])
           if not result['passed']:
               print(result['output'])
               raise SystemExit('Godot smoke failed')

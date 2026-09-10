@@ -12,7 +12,7 @@ The target is a reusable expert mobile engineering organization implemented as s
 
 `ChatGPT conversation -> high-level brief -> ai-dev-server -> autonomous research/planning/design/code/assets/tests/repair -> app-specific QA -> release -> Play Store publication -> finished professional application`
 
-If a project requires a capability the factory lacks, it must detect the gap, research appropriate resources, synthesize an isolated evolution candidate, benchmark it against the current factory, promote only a non-regressing reversible improvement, and resume the blocked app. Human intervention is limited to genuinely irreducible legal, identity, payment, store-agreement or credential actions.
+If a project requires a capability the factory lacks, it must detect the gap, research appropriate resources, synthesize an isolated evolution candidate, benchmark it against the current factory, promote only a non-regressing reversible improvement, persist that improvement safely, and resume the blocked app. Human intervention is limited to genuinely irreducible legal, identity, payment, store-agreement or credential actions.
 
 ## Non-negotiable quality contract
 
@@ -24,56 +24,58 @@ Fail closed. Self-improvement must never weaken tests, security, privacy, access
 
 Trusted components live primarily under `studio/`:
 
-- `core.py` — bounded Flutter generation sandbox and trusted gates.
-- `run.py` — product/design/implementation/review/visual loop and checkpoints.
-- `completion.py` — machine-readable definition of done and dynamic stages.
-- `stage_registry.py` — trusted post-preview stage registry.
-- `orchestrator.py` — provider-neutral preview -> release -> QA -> completion/adaptation orchestration.
-- `github_runner.py` / `ci_runner.py` — GitHub Actions and CircleCI adapters.
-- `capability_qa.py` — capability classification and specialized-QA requirements.
-- Android runtime/device QA plus performance, native, notification, Play Billing and platform-view QA.
-- `store_package.py` — Play Store listing/assets package.
-- `privacy_audit.py` — privacy/Data Safety evidence.
-- `security_audit.py` — security/dependency/SBOM evidence.
-- `adaptation.py` — fail-closed capability-gap detection and promotion-gate contract.
-- `evolution_executor.py` — deterministic `evolution-work-order.json`, isolated candidate identity, baseline and rollback contract.
-- `evolution_evidence.py` / `evolution_research.py` — allowlisted, hash-bound trusted research evidence; discovered code is never executed.
-- `evolution_candidate.py` — strict synthesized-candidate file scope and dangerous-code rejection.
-- `evolution_synthesis.py` — converts completed trusted research into a candidate artifact; model output remains data until validation.
-- `evolution_benchmark.py` — deterministic baseline/candidate promotion evaluator.
-- Current branch adds `evolution_differential.py` and makes `differential_improvement_proved` a mandatory promotion gate: candidate tests must fail on the pinned baseline and pass on the candidate before promotion can succeed.
+- `core.py` / `run.py` — bounded Flutter-first generation, product/design/implementation/review/visual loops and trusted patch gates.
+- `completion.py` / `stage_registry.py` / `orchestrator.py` — machine-readable definition of done, dynamic trusted stages and provider-neutral completion/adaptation orchestration.
+- `github_runner.py` / `ci_runner.py` — GitHub Actions primary runner and CircleCI fallback.
+- capability-specific QA includes Android runtime/device, performance, native, notification, Play Billing and platform-view QA.
+- `store_package.py`, `privacy_audit.py`, `security_audit.py` — Play Store package, privacy/Data Safety and security/dependency/SBOM evidence.
+- `adaptation.py` / `evolution_executor.py` / `evolution_research.py` / `evolution_synthesis.py` — fail-closed gap detection, deterministic work orders, trusted research and bounded synthesis.
+- `evolution_candidate.py` — strict generated-file scope plus dangerous-code and protected-policy rejection.
+- `evolution_differential.py` / `evolution_isolated_runner.py` / `evolution_benchmark.py` — baseline-red/candidate-green differential evidence, isolated execution, full regression/smoke/integrity/reversibility benchmarking and deterministic promotion decisions.
+- `evolution_promotion.py` / `evolution_rollback.py` — trusted dynamic-stage promotion plus hash-bound rollback metadata.
+- `evolution_stage_runner.py` — executes promoted code only after stripping production tokens/API keys/secrets.
+- `evolution_persist.py` — validates local promotion integrity and persists exactly the approved files to a dedicated GitHub branch + PR; never writes directly to `main`.
+- `evolution_pending.py` — detects durable promotion state across runner restarts and prevents duplicate candidate regeneration.
+- PR #46 adds `evolution_automerge.py`: immutable local persistence proof, authenticated GitHub Actions checks, exact six-file scope, second head-SHA verification and merge of only the approved commit.
 - `project_context.py` — trusted generated root `PROJECT_CONTEXT.md` for managed apps.
 
-GitHub Actions is the primary CI; CircleCI remains fallback. GitHub Android jobs use Ubuntu 24.04, explicitly install the Android emulator, and verify KVM acceleration. Never claim CI success without observing it.
+GitHub Actions is the primary CI. Android jobs use Ubuntu 24.04, install the Android emulator explicitly and verify KVM acceleration. Never claim CI success without observing it.
 
 ## Current state — 2026-09-09
 
-- PR #17 `177153db2eb31b4a1a09c7b22cd16ad527065bfc`: GitHub Actions restored; notification QA.
-- PR #18 `0fc68b14a71ce335e753c238cda17e9e4d5764eb`: unsupported work becomes `adaptation_required`.
-- PR #19 `a48b22830a3499c40bd8b4fdf139821a8db7ac46`: durable project-context convention.
-- PR #20 `2ff07231b7eac692c564d465e4ea7514d8843e58`: generated apps receive trusted context files at checkpoints.
-- PR #21 `ab24ae71f67d6dfba1c43e39444cfb8268b87c28`: deterministic evolution work orders and research-evidence boundary.
-- PR #22 `d973269253ba90dfbd3fdc257376071cf8760108`: GitHub Actions runs the full provider-neutral completion pipeline; Android emulator/KVM bootstrap verified.
-- PR #23 `94250b982113cf222f0b3a238e6ffd8400f934b2`: fail-closed `billing_qa`.
-- PR #27 `3b06636aaa194a547b1730608d8659df90dcbb96`: automatic trusted evolution research execution.
-- PR #30 `f671ba2500d8025f8d5ab64e63a8566400a3adec`: `platform_view_qa` for WebView/maps/video release runtime validation.
-- PR #31 `568ba372225dbbac34b78b7617f92719013f9053`: synthesized candidate scope and benchmark/promotion safety gates.
-- PR #33 `be2164d114d8467d0f541c50fe2ad17f1b00d996`: bounded candidate synthesis is merged; research can now produce a validated candidate artifact without executing it.
-- Current branch hardens promotion against vacuous candidate tests by requiring baseline-red/candidate-green differential evidence.
-- **Jumpy** remains the first major end-to-end target application.
+Key completed milestones:
+
+- #17 Actions restore + notification QA.
+- #18 unsupported work -> `adaptation_required`.
+- #19/#20 durable project-context convention.
+- #21 deterministic evolution work orders and research boundary.
+- #22 full GitHub provider-neutral completion pipeline + Android emulator/KVM.
+- #23 billing QA.
+- #27 trusted evolution research.
+- #30 platform-view QA.
+- #31 candidate scope and benchmark safety gates.
+- #33 bounded candidate synthesis.
+- #40 differential promotion evidence finalized.
+- #43 trusted promotion + dynamic registration + rollback + same-run resume logic merged.
+- #44 secure persistence merged: promoted-stage credential scrubbing, integrity-bound GitHub branch/PR persistence, pending-promotion detection and restart-safe duplicate suppression.
+- #46 is the current PR: immutable-proof autonomous merge. The orchestrator owns `persist -> wait authenticated CI -> merge exact approved SHA -> stop`; a fresh `main` checkout resumes after the promotion merge. Newly promoted code is not executed from the ephemeral pre-merge checkout.
+
+**Jumpy** remains the first major end-to-end target. Repository `dbrckk/Jumpy` is an existing Godot 4.x/GDScript portrait hybrid-casual game, while the current factory generation core remains Flutter-first. This engine mismatch is now the next architectural blocker.
 
 ## Immediate next objective
 
-1. Validate and merge the mandatory differential-improvement gate.
-2. Materialize a validated candidate on its isolated `evolution/<candidate>` branch from the pinned baseline.
-3. Run the candidate-specific differential test on baseline and candidate with production credentials removed and network isolated.
-4. Run the full trusted regression suite + Flutter smoke + capability benchmark on both sides.
-5. Feed all machine evidence into `evolution_benchmark.py`.
-6. Promote only an approved candidate, register the new trusted stage through a trusted promotion step, retain rollback metadata, then resume the blocked application automatically.
+1. Finish CI and merge #46 only if both trusted validation and real mobile smoke pass on its exact head SHA.
+2. Add an explicit engine/project-type abstraction instead of assuming Flutter globally.
+3. Add safe detection/support for existing Godot 4.x projects without weakening the Flutter sandbox.
+4. Add Godot-specific edit scope, static validation, headless test/build/export smoke and Android release evidence.
+5. Create a durable enabled Jumpy request targeting `dbrckk/Jumpy` only after the factory can safely manage an existing Godot repository.
+6. Run Jumpy end-to-end and let real missing capabilities drive the next self-evolution cycle.
 
 ## Near-term roadmap
 
-- Isolated candidate materialization + execution + promotion/rollback + automatic resume.
+- Multi-engine project abstraction: Flutter + Godot first.
+- Existing-repository checkout/update path with strict branch/PR boundaries.
+- Godot headless/runtime/export QA and Android artifact verification.
 - Broader native/hardware QA and stronger semantic capability detection.
 - Rich conservative privacy/Data Safety classification for networked apps.
 - Professional graphics/asset factory with provenance and visual-consistency QA.

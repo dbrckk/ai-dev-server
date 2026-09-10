@@ -25,7 +25,7 @@ PROTECTED_PATHS = {
     'studio/evolution_research.py','studio/evolution_synthesis.py','studio/evolution_candidate.py',
     'studio/evolution_benchmark.py','studio/evolution_differential.py','studio/evolution_isolated_runner.py',
     'studio/evolution_promotion.py','studio/evolution_rollback.py','studio/evolution_stage_runner.py',
-    'studio/evolution_persist.py','studio/evolution_pending.py',
+    'studio/evolution_persist.py','studio/evolution_pending.py','studio/evolution_automerge.py',
     '.github/workflows/validate.yml','.github/workflows/studio-smoke.yml','.github/workflows/mobile-studio.yml',
     '.circleci/config.yml',
 }
@@ -101,13 +101,11 @@ def _test_method_count(content):
     if len(names)!=len(set(names)): raise CandidateRejected('Candidate test method names must be unique')
     return len(names)
 def _reject_top_level_candidate_import(test_content,gap):
-    tree=_python_tree('candidate_test.py',test_content)
-    targets={gap,'studio.'+gap}
+    tree=_python_tree('candidate_test.py',test_content); targets={gap,'studio.'+gap}
     for node in tree.body:
         if isinstance(node,ast.Import):
             if any(alias.name in targets for alias in node.names): raise CandidateRejected('Candidate capability import must occur inside each test')
-        elif isinstance(node,ast.ImportFrom) and node.module in targets:
-            raise CandidateRejected('Candidate capability import must occur inside each test')
+        elif isinstance(node,ast.ImportFrom) and node.module in targets: raise CandidateRejected('Candidate capability import must occur inside each test')
 def validate_candidate(work_order,research,candidate):
     if not isinstance(work_order,dict) or work_order.get('status')!='candidate_planned': raise CandidateRejected('Candidate requires a planned work order')
     if not isinstance(research,dict) or research.get('status')!='research_complete': raise CandidateRejected('Candidate requires completed trusted research')

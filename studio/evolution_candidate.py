@@ -26,12 +26,13 @@ PROTECTED_PATHS = {
     'studio/evolution_benchmark.py','studio/evolution_differential.py','studio/evolution_isolated_runner.py',
     'studio/evolution_promotion.py','studio/evolution_rollback.py','studio/evolution_stage_runner.py',
     'studio/evolution_persist.py','studio/evolution_pending.py','studio/evolution_automerge.py',
+    'studio/project_engine.py','studio/existing_project.py',
     '.github/workflows/validate.yml','.github/workflows/studio-smoke.yml','.github/workflows/mobile-studio.yml',
     '.circleci/config.yml',
 }
 FORBIDDEN_CALLS = {'eval','exec','compile','__import__','os.system','os.popen','subprocess.call',
     'subprocess.check_call','subprocess.check_output','unittest.skip','unittest.skipIf','unittest.skipUnless','pytest.skip'}
-SECRET_PATTERNS = (re.compile(r'gh[pousr]_[A-Za-z0-9_]{20,}'),re.compile(r'AIza[0-9A-Za-z_-]{20,}'),re.compile(r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----'))
+SECRET_PATTERNS = (re.compile(r'gh[pousr]_[A-Za-z0-9_]{20,}'),re.compile(r'AIza[0-9A-Za-z0-9_-]{20,}'),re.compile(r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----'))
 
 class CandidateRejected(ValueError): pass
 

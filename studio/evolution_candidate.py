@@ -28,7 +28,8 @@ PROTECTED_PATHS = {
     'studio/evolution_persist.py','studio/evolution_pending.py','studio/evolution_automerge.py',
     'studio/project_engine.py','studio/existing_project.py','studio/godot_runtime.py','studio/engine_patch.py',
     'studio/godot_session.py','studio/godot_repository_probe.py','studio/godot_model.py','studio/godot_preview.py',
-    'studio/godot_android_export.py',
+    'studio/godot_android_export.py','studio/godot_android_stage.py','studio/godot_device_qa.py',
+    'studio/godot_device_stage.py','studio/engine_entry.py','studio/engine_detect.py','studio/multi_engine_orchestrator.py',
     '.github/workflows/validate.yml','.github/workflows/studio-smoke.yml','.github/workflows/mobile-studio.yml',
     '.circleci/config.yml',
 }

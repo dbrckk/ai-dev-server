@@ -6,8 +6,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
-
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'studio'))
 from core import StudioError
 from multi_engine_orchestrator import run_project
 
@@ -29,48 +28,47 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
             result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
         self.assertEqual(result['status'],'complete'); legacy.assert_called_once()
 
-    def _runner(self,out,android_ok=True,device_ok=True,device_completion=None):
+    def _runner(self,out,fail_stage=None,bad_journey=False):
         calls=[]
         def runner(args,timeout):
             calls.append(args); out.mkdir(parents=True,exist_ok=True)
-            if 'studio/engine_detect.py' in args:
+            script=next((x for x in args if isinstance(x,str) and x.startswith('studio/')),None)
+            if script=='studio/engine_detect.py':
                 (out/'engine-detection.json').write_text(json.dumps({'status':'detected','engine':'godot'}))
-            elif 'studio/engine_entry.py' in args:
-                (out/'report.json').write_text(json.dumps({'engine':'godot','status':'godot_preview_validated','completion':{'finished':False,'next_stage':'godot_android_export_qa'}}))
-            elif 'studio/godot_android_stage.py' in args:
-                if not android_ok: return subprocess.CompletedProcess(args,1)
+            elif script=='studio/engine_entry.py':
+                (out/'report.json').write_text(json.dumps({'engine':'godot','status':'godot_preview_validated','completion':{'finished':False,'next_stage':'godot_android_export_qa'},'coverage':{}}))
+            elif script=='studio/godot_android_stage.py':
+                if fail_stage=='android': return subprocess.CompletedProcess(args,1)
                 (out/'report.json').write_text(json.dumps({'engine':'godot','status':'godot_android_export_validated','completion':{'finished':False,'next_stage':'godot_device_qa'},'coverage':{'android_export':True,'device_qa':False}}))
-            elif 'studio/godot_device_stage.py' in args:
-                if not device_ok: return subprocess.CompletedProcess(args,1)
-                completion=device_completion or {'finished':False,'next_stage':'godot_runtime_journey_qa'}
-                (out/'report.json').write_text(json.dumps({'engine':'godot','status':'godot_device_validated','completion':completion,'coverage':{'android_export':True,'device_qa':True,'journeys_executed':False,'visual_qa':False}}))
+            elif script=='studio/godot_device_stage.py':
+                if fail_stage=='device': return subprocess.CompletedProcess(args,1)
+                (out/'report.json').write_text(json.dumps({'engine':'godot','status':'godot_device_validated','completion':{'finished':False,'next_stage':'godot_runtime_journey_qa'},'coverage':{'android_export':True,'device_qa':True,'journeys_executed':False,'visual_qa':False}}))
+            elif script=='studio/godot_runtime_journey_stage.py':
+                if fail_stage=='journey': return subprocess.CompletedProcess(args,1)
+                coverage={'android_export':True,'device_qa':True,'journeys_executed':not bad_journey,'visual_qa':False}
+                (out/'report.json').write_text(json.dumps({'engine':'godot','status':'godot_runtime_journeys_validated','completion':{'finished':False,'next_stage':'godot_visual_qa'},'coverage':coverage}))
             return subprocess.CompletedProcess(args,0)
         return runner,calls
 
-    def test_godot_chains_through_device_then_stops_at_journey_qa(self):
+    def test_godot_chains_through_real_journeys_then_stops_at_visual(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td); out=root/'out'; req=self.request(root); runner,calls=self._runner(out)
             result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
-        self.assertEqual(result['status'],'godot_device_ready'); self.assertEqual(result['next_stage'],'godot_runtime_journey_qa')
-        self.assertTrue(any('studio/godot_device_stage.py' in call for call in calls))
-        self.assertFalse(any('studio/post_preview.py' in call for call in calls))
+        self.assertEqual(result['status'],'godot_journeys_ready'); self.assertEqual(result['next_stage'],'godot_visual_qa')
+        self.assertTrue(any('studio/godot_runtime_journey_stage.py' in call for call in calls)); self.assertFalse(any('studio/post_preview.py' in call for call in calls))
 
-    def test_android_failure_stays_on_android_stage(self):
-        with tempfile.TemporaryDirectory() as td:
-            root=Path(td); out=root/'out'; req=self.request(root); runner,_=self._runner(out,android_ok=False)
-            result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
-        self.assertEqual(result['next_stage'],'godot_android_export_qa')
+    def test_each_failed_godot_stage_stays_on_itself(self):
+        expected={'android':'godot_android_export_qa','device':'godot_device_qa','journey':'godot_runtime_journey_qa'}
+        for failed,next_stage in expected.items():
+            with self.subTest(failed=failed), tempfile.TemporaryDirectory() as td:
+                root=Path(td); out=root/'out'; req=self.request(root); runner,_=self._runner(out,fail_stage=failed)
+                result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
+                self.assertEqual(result['status'],'failed'); self.assertEqual(result['next_stage'],next_stage)
 
-    def test_device_failure_stays_on_device_stage(self):
+    def test_journey_stage_cannot_fake_execution_coverage(self):
         with tempfile.TemporaryDirectory() as td:
-            root=Path(td); out=root/'out'; req=self.request(root); runner,_=self._runner(out,device_ok=False)
-            result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
-        self.assertEqual(result['status'],'failed'); self.assertEqual(result['next_stage'],'godot_device_qa')
-
-    def test_device_cannot_claim_finished(self):
-        with tempfile.TemporaryDirectory() as td:
-            root=Path(td); out=root/'out'; req=self.request(root); runner,_=self._runner(out,device_completion={'finished':True,'next_stage':None})
-            with self.assertRaisesRegex(StudioError,'advance only to runtime journey QA'):
+            root=Path(td); out=root/'out'; req=self.request(root); runner,_=self._runner(out,bad_journey=True)
+            with self.assertRaisesRegex(StudioError,'journey stage returned invalid coverage'):
                 run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
 
     def test_missing_detection_evidence_fails_closed(self):

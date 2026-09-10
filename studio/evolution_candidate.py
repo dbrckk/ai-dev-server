@@ -27,6 +27,7 @@ PROTECTED_PATHS = {
     'studio/evolution_promotion.py','studio/evolution_rollback.py','studio/evolution_stage_runner.py',
     'studio/evolution_persist.py','studio/evolution_pending.py','studio/evolution_automerge.py',
     'studio/project_engine.py','studio/existing_project.py','studio/godot_runtime.py','studio/engine_patch.py',
+    'studio/godot_session.py','studio/godot_repository_probe.py','studio/godot_model.py','studio/godot_preview.py',
     '.github/workflows/validate.yml','.github/workflows/studio-smoke.yml','.github/workflows/mobile-studio.yml',
     '.circleci/config.yml',
 }

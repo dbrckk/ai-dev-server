@@ -44,7 +44,7 @@ Trusted components live primarily under `studio/`:
 - Current branch adds `evolution_differential.py` and makes `differential_improvement_proved` a mandatory promotion gate: candidate tests must fail on the pinned baseline and pass on the candidate before promotion can succeed.
 - `project_context.py` — trusted generated root `PROJECT_CONTEXT.md` for managed apps.
 
-GitHub Actions is the primary CI; CircleCI remains fallback. GitHub Android jobs use Ubuntu 24.04, explicitly install the Android emulator, and verify KVM acceleration. Never claim CI success without observing it.
+GitHub Actions is the only active CI (owner decision, 2026-09-10). CircleCI is not a fallback: do not trigger it, maintain it, or treat its statuses as project blockers. Legacy CircleCI files may remain until a separate cleanup removes them. GitHub Android jobs use Ubuntu 24.04, explicitly install the Android emulator, and verify KVM acceleration. Never claim CI success without observing it.
 
 ## Current state — 2026-09-09
 

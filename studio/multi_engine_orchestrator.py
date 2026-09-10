@@ -113,4 +113,15 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
             or completion.get('next_stage')!='godot_privacy_security_qa'
             or coverage.get('store_metadata') is not True):
         raise StudioError('Godot store metadata stage returned invalid transition')
-    return {'status':'godot_store_metadata_ready','report':report,'next_stage':'godot_privacy_security_qa'}
+    privacy_work=str(Path(work).with_name(Path(work).name+'-privacy-security'))
+    result=_run_stage('studio/godot_privacy_security_stage.py',request_path,project_out,privacy_work,runner,deadline,clock)
+    if result is None: return {'status':'deferred','report':report,'next_stage':'godot_privacy_security_qa'}
+    report=load_report(project_out) if (project_out/'report.json').is_file() else {}
+    if result.returncode!=0: return {'status':'failed','report':report,'next_stage':'godot_privacy_security_qa'}
+    completion=report.get('completion'); coverage=report.get('coverage') or {}
+    if (report.get('engine')!='godot' or report.get('status')!='godot_privacy_security_validated'
+            or not isinstance(completion,dict) or completion.get('finished') is not False
+            or completion.get('next_stage')!='godot_final_review_qa'
+            or coverage.get('privacy_qa') is not True or coverage.get('security_qa') is not True):
+        raise StudioError('Godot privacy/security stage returned invalid transition')
+    return {'status':'godot_privacy_security_ready','report':report,'next_stage':'godot_final_review_qa'}

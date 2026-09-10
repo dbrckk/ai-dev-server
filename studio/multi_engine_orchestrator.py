@@ -102,4 +102,15 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
             or coverage.get('release_artifact') is not True or coverage.get('release_signed') is not True
             or not isinstance(evidence,dict) or evidence.get('project_code_had_signing_material') is not False):
         raise StudioError('Godot release artifact stage returned invalid transition')
-    return {'status':'godot_release_artifact_ready','report':report,'next_stage':'godot_store_metadata_qa'}
+    metadata_work=str(Path(work).with_name(Path(work).name+'-store-metadata'))
+    result=_run_stage('studio/godot_store_metadata_stage.py',request_path,project_out,metadata_work,runner,deadline,clock)
+    if result is None: return {'status':'deferred','report':report,'next_stage':'godot_store_metadata_qa'}
+    report=load_report(project_out) if (project_out/'report.json').is_file() else {}
+    if result.returncode!=0: return {'status':'failed','report':report,'next_stage':'godot_store_metadata_qa'}
+    completion=report.get('completion'); coverage=report.get('coverage') or {}
+    if (report.get('engine')!='godot' or report.get('status')!='godot_store_metadata_validated'
+            or not isinstance(completion,dict) or completion.get('finished') is not False
+            or completion.get('next_stage')!='godot_privacy_security_qa'
+            or coverage.get('store_metadata') is not True):
+        raise StudioError('Godot store metadata stage returned invalid transition')
+    return {'status':'godot_store_metadata_ready','report':report,'next_stage':'godot_privacy_security_qa'}

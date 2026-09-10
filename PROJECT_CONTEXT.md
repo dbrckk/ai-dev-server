@@ -106,3 +106,8 @@ Fresh GitHub Actions validation is required for this follow-up commit.
 Model JSON nesting is now bounded to 64 levels before state serialization; parser
 recursion failures also use bounded repair. Regression reproduced before fix;
 204 local tests passed afterward. GitHub Actions must validate the new commit.
+
+Non-finite model numbers (NaN, infinities, numeric overflow) are rejected before
+checkpoint persistence and use the existing call-limited repair. Four failing
+regression cases reproduced; 205 local tests passed after the fix. Fresh GitHub
+Actions validation remains required for this commit.

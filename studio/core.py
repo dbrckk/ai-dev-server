@@ -321,7 +321,8 @@ class Model:
                     pending.extend((child, depth + 1) for child in item)
             # JSON permits escaped lone surrogates; checkpoints and the next
             # model context must be encodable as UTF-8, including nested keys.
-            canonical(value).encode('utf-8')
+            # Reject NaN/Infinity (including numeric overflow) before persistence.
+            json.dumps(value, ensure_ascii=False, allow_nan=False).encode('utf-8')
             return value
         except (KeyError, IndexError, TypeError, ValueError, RecursionError):
             raise ProtocolError('Provider returned invalid structured output') from None

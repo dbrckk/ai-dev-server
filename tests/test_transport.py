@@ -58,6 +58,21 @@ class TransportTests(unittest.TestCase):
         self.assertIs(m.api.call.call_args.args[2]['stream'], False)
 
 class MalformedEnvelopeTests(unittest.TestCase):
+    def test_non_finite_numbers_use_bounded_repair(self):
+        for number in ('NaN', 'Infinity', '-Infinity', '1e999'):
+            with self.subTest(number=number), patch.dict('os.environ', {'STUDIO_API_KEY': 'test'}, clear=True):
+                envelope = lambda raw: {'choices': [{'message': {'content': raw}}]}
+                invalid = envelope('{"nested":[{"value":' + number + '}]}')
+                model = Model(2)
+                model.api.call = Mock(side_effect=[invalid, envelope('{"value":1.5}')])
+                self.assertEqual(model.ask('design', 'brief'), {'value': 1.5})
+                self.assertEqual(model.calls, 2)
+                model = Model(1)
+                model.api.call = Mock(return_value=invalid)
+                with self.assertRaisesRegex(StudioError, 'Structured response rejected'):
+                    model.ask('design', 'brief')
+                self.assertEqual(model.calls, 1)
+
     def test_excessive_json_nesting_uses_bounded_repair(self):
         depth = sys.getrecursionlimit() * 2
         raw = '{"nested":' + '[' * depth + '0' + ']' * depth + '}'

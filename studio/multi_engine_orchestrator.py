@@ -27,8 +27,6 @@ def _detect(request_path, project_out, runner, deadline, clock):
         raise StudioError('Project engine detection failed')
     path = project_out/'engine-detection.json'
     if not path.is_file():
-        # Backwards-compatible only for injected legacy test runners. A real tokened CI run
-        # must always produce authenticated detection evidence; missing evidence fails closed.
         if not os.environ.get('STUDIO_GITHUB_TOKEN') and (project_out/'report.json').is_file():
             return 'flutter'
         raise StudioError('Engine detection produced no evidence')
@@ -42,11 +40,6 @@ def _detect(request_path, project_out, runner, deadline, clock):
 
 
 def run_project(request_path, project_out, work, runner, deadline, clock, baseline_sha=None):
-    """Keep Flutter on the mature pipeline; route existing Godot to its dedicated preview.
-
-    Godot intentionally stops at godot_android_export_qa until that trusted stage exists.
-    It must never fall through into Flutter post_preview/release/device stages.
-    """
     project_out.mkdir(parents=True, exist_ok=True)
     engine = _detect(request_path, project_out, runner, deadline, clock)
     if engine is None:
@@ -55,6 +48,7 @@ def run_project(request_path, project_out, work, runner, deadline, clock, baseli
         return run_flutter_project(request_path, project_out, work, runner, deadline, clock, baseline_sha)
     if engine != 'godot':
         raise StudioError('Unsupported project engine')
+
     try:
         remaining = _remaining(deadline, clock)
     except TimeoutError:
@@ -68,7 +62,21 @@ def run_project(request_path, project_out, work, runner, deadline, clock, baseli
     completion = report.get('completion')
     if not isinstance(completion, dict) or completion.get('finished') is not False:
         raise StudioError('Godot preview must remain unfinished before Android/device QA')
-    next_stage = completion.get('next_stage')
-    if next_stage != 'godot_android_export_qa':
+    if completion.get('next_stage') != 'godot_android_export_qa':
         raise StudioError('Godot preview returned unexpected next stage')
-    return {'status':'godot_preview_ready','report':report,'next_stage':next_stage}
+
+    try:
+        remaining = _remaining(deadline, clock)
+    except TimeoutError:
+        return {'status':'deferred','report':report,'next_stage':'godot_android_export_qa'}
+    android_work = str(Path(work).with_name(Path(work).name + '-android'))
+    android = runner([sys.executable,'studio/godot_android_stage.py',request_path,'--work',android_work,'--out',str(project_out)], timeout=remaining)
+    report = load_report(project_out) if (project_out/'report.json').is_file() else {}
+    if android.returncode != 0:
+        return {'status':'failed','report':report,'next_stage':'godot_android_export_qa'}
+    completion = report.get('completion')
+    if report.get('engine') != 'godot' or report.get('status') != 'godot_android_export_validated':
+        raise StudioError('Godot Android stage returned invalid report')
+    if not isinstance(completion, dict) or completion.get('finished') is not False or completion.get('next_stage') != 'godot_device_qa':
+        raise StudioError('Godot Android stage must advance only to device QA')
+    return {'status':'godot_android_ready','report':report,'next_stage':'godot_device_qa'}

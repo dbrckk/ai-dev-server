@@ -68,3 +68,17 @@ class MalformedEnvelopeTests(unittest.TestCase):
                 with self.assertRaisesRegex(StudioError, 'Structured response rejected'):
                     model.ask('design', 'brief')
                 self.assertEqual(model.calls, 2)
+
+    def test_invalid_unicode_is_repaired_within_call_budget(self):
+        for invalid in [{'nested': ['\ud800']}, {'\udfff': 'value'}]:
+            with self.subTest(invalid=ascii(invalid)), patch.dict('os.environ', {'STUDIO_API_KEY': 'test'}, clear=True):
+                model = Model(2)
+                envelope = lambda value: {'choices': [{'message': {'content': json.dumps(value)}}]}
+                model.api.call = Mock(side_effect=[envelope(invalid), envelope({'design': 'valid'})])
+                self.assertEqual(model.ask('design', 'brief'), {'design': 'valid'})
+                self.assertEqual(model.calls, 2)
+                model = Model(1)
+                model.api.call = Mock(return_value=envelope(invalid))
+                with self.assertRaisesRegex(StudioError, 'Structured response rejected'):
+                    model.ask('design', 'brief')
+                self.assertEqual(model.calls, 1)

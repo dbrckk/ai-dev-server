@@ -94,3 +94,11 @@ Every repository this factory creates or substantially manages must contain a ro
 5. Use branches/PRs and verify CI before substantial merges.
 6. Update this file whenever state, architecture or the next objective materially changes.
 7. In user-facing updates, state what will be worked on next and the estimated percentage toward the final objective; do not systematically repeat separate short-term/final-objective headings.
+
+### Model-response reliability follow-up (2026-09-10)
+
+Decoded model JSON is checked for UTF-8 encodability before entering state or
+checkpoint publication. Lone surrogate characters, including nested object keys,
+use the existing bounded structured-response repair and consume the same call
+budget. Regression reproduced before the fix; 203 local tests passed afterward.
+Fresh GitHub Actions validation is required for this follow-up commit.

@@ -66,6 +66,10 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                 else:
                     report={'engine':'godot','status':'godot_release_artifact_validated','release_status':'not_store_ready','completion':{'finished':False,'next_stage':'godot_store_metadata_qa'},'coverage':{'visual_qa':True,'release_artifact':True,'release_signed':True},'release_artifact':{'project_code_had_signing_material':False}}
                 (out/'report.json').write_text(json.dumps(report))
+            elif script=='studio/godot_store_metadata_stage.py':
+                if fail_stage=='store': return subprocess.CompletedProcess(args,1)
+                report={'engine':'godot','status':'godot_store_metadata_validated','release_status':'not_store_ready','completion':{'finished':False,'next_stage':'godot_privacy_security_qa'},'coverage':{'release_artifact':True,'release_signed':True,'store_metadata':True}}
+                (out/'report.json').write_text(json.dumps(report))
             return subprocess.CompletedProcess(args,0)
         return runner,calls
 
@@ -76,12 +80,12 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
         self.assertEqual(result['status'],'human_action_required'); self.assertEqual(result['next_stage'],'godot_release_qa')
         self.assertTrue(any('studio/godot_release_stage.py' in call for call in calls)); self.assertFalse(any('studio/post_preview.py' in call for call in calls))
 
-    def test_release_inputs_and_signed_aab_advance_to_store_metadata(self):
+    def test_release_inputs_and_signed_aab_advance_through_store_metadata(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td); out=root/'out'; req=self.request(root); runner,calls=self._runner(out,release_ready=True)
             result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
-        self.assertEqual(result['status'],'godot_release_artifact_ready'); self.assertEqual(result['next_stage'],'godot_store_metadata_qa')
-        self.assertTrue(any('studio/godot_release_artifact_stage.py' in call for call in calls))
+        self.assertEqual(result['status'],'godot_store_metadata_ready'); self.assertEqual(result['next_stage'],'godot_privacy_security_qa')
+        self.assertTrue(any('studio/godot_store_metadata_stage.py' in call for call in calls))
 
     def test_credentials_lost_between_preflight_and_signing_return_to_human_action(self):
         with tempfile.TemporaryDirectory() as td:
@@ -90,10 +94,10 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
         self.assertEqual(result['status'],'human_action_required'); self.assertEqual(result['next_stage'],'godot_release_qa')
 
     def test_each_failed_godot_stage_stays_on_itself(self):
-        expected={'android':'godot_android_export_qa','device':'godot_device_qa','journey':'godot_runtime_journey_qa','visual':'godot_visual_qa','release':'godot_release_qa','artifact':'godot_release_artifact_qa'}
+        expected={'android':'godot_android_export_qa','device':'godot_device_qa','journey':'godot_runtime_journey_qa','visual':'godot_visual_qa','release':'godot_release_qa','artifact':'godot_release_artifact_qa','store':'godot_store_metadata_qa'}
         for failed,next_stage in expected.items():
             with self.subTest(failed=failed), tempfile.TemporaryDirectory() as td:
-                root=Path(td); out=root/'out'; req=self.request(root); runner,_=self._runner(out,fail_stage=failed,release_ready=failed=='artifact')
+                root=Path(td); out=root/'out'; req=self.request(root); runner,_=self._runner(out,fail_stage=failed,release_ready=failed in {'artifact','store'})
                 result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
                 self.assertEqual(result['status'],'failed'); self.assertEqual(result['next_stage'],next_stage)
 

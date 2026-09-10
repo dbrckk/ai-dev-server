@@ -310,11 +310,20 @@ class Model:
             value = json.loads(raw)
             if not isinstance(value, dict):
                 raise ValueError()
+            pending = [(value, 0)]
+            while pending:
+                item, depth = pending.pop()
+                if depth > 64:
+                    raise ValueError('Model JSON nesting exceeds limit')
+                if isinstance(item, dict):
+                    pending.extend((child, depth + 1) for child in item.values())
+                elif isinstance(item, list):
+                    pending.extend((child, depth + 1) for child in item)
             # JSON permits escaped lone surrogates; checkpoints and the next
             # model context must be encodable as UTF-8, including nested keys.
             canonical(value).encode('utf-8')
             return value
-        except (KeyError, IndexError, TypeError, ValueError):
+        except (KeyError, IndexError, TypeError, ValueError, RecursionError):
             raise ProtocolError('Provider returned invalid structured output') from None
 
 class Sandbox:

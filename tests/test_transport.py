@@ -58,6 +58,21 @@ class TransportTests(unittest.TestCase):
         self.assertIs(m.api.call.call_args.args[2]['stream'], False)
 
 class MalformedEnvelopeTests(unittest.TestCase):
+    def test_excessive_json_nesting_uses_bounded_repair(self):
+        depth = sys.getrecursionlimit() * 2
+        raw = '{"nested":' + '[' * depth + '0' + ']' * depth + '}'
+        envelope = lambda text: {'choices': [{'message': {'content': text}}]}
+        with patch.dict('os.environ', {'STUDIO_API_KEY': 'test'}, clear=True):
+            model = Model(2)
+            model.api.call = Mock(side_effect=[envelope(raw), envelope('{"design":"valid"}')])
+            self.assertEqual(model.ask('design', 'brief'), {'design': 'valid'})
+            self.assertEqual(model.calls, 2)
+            model = Model(1)
+            model.api.call = Mock(return_value=envelope(raw))
+            with self.assertRaisesRegex(StudioError, 'Structured response rejected'):
+                model.ask('design', 'brief')
+            self.assertEqual(model.calls, 1)
+
     def test_bad_choices_trigger_bounded_repair_without_attribute_crash(self):
         invalid = [None, [], {}, {'choices': []}, {'choices': [None]},
                    {'choices': ['invalid']}, {'choices': [{'message': None}]}]

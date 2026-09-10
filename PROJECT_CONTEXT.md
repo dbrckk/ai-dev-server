@@ -102,3 +102,7 @@ checkpoint publication. Lone surrogate characters, including nested object keys,
 use the existing bounded structured-response repair and consume the same call
 budget. Regression reproduced before the fix; 203 local tests passed afterward.
 Fresh GitHub Actions validation is required for this follow-up commit.
+
+Model JSON nesting is now bounded to 64 levels before state serialization; parser
+recursion failures also use bounded repair. Regression reproduced before fix;
+204 local tests passed afterward. GitHub Actions must validate the new commit.

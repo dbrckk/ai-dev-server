@@ -36,7 +36,7 @@ class GodotModel(Model):
                 value = self._ask_godot(role, context)
                 validate_patch(value, 'godot', role)
                 return value
-            except (ProtocolError, PatchPolicyError, StudioError) as exc:
+            except (ProtocolError, PatchPolicyError) as exc:
                 error = str(exc)
             if attempt or self.calls >= self.limit:
                 raise StudioError('Structured response rejected: ' + error) from None
@@ -81,5 +81,5 @@ class GodotModel(Model):
             if not isinstance(value, dict):
                 raise ValueError()
             return value
-        except (KeyError, IndexError, TypeError, ValueError, json.JSONDecodeError):
+        except (KeyError, IndexError, TypeError, ValueError):
             raise ProtocolError('Provider returned invalid structured output') from None

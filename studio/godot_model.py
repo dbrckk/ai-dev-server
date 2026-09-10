@@ -5,8 +5,19 @@ import json
 
 from core import Model, ProtocolError, StudioError
 from engine_patch import PatchPolicyError, validate as validate_patch
+from journeys import validate_journeys
 
 GODOT_ROLE = {
+    'product': (
+        'Senior Godot mobile game product lead: turn the brief and existing project into prioritized acceptance criteria, '
+        'gameplay journeys, data/state requirements, scope and blockers. Journey selectors are planning identifiers only '
+        'until a dedicated Godot runtime journey harness exists; never claim they were executed.'
+    ),
+    'design': (
+        'Senior Godot mobile game art director: define a distinctive visual direction, layout, typography, feedback, motion, '
+        'accessibility and responsive behavior using assets/resources that can be represented safely in the existing Godot project. '
+        'Do not assume Flutter widgets or unavailable proprietary assets.'
+    ),
     'implementation': (
         'Senior Godot 4.7 mobile game engineering team: modify the existing Godot project in GDScript/resources. '
         'Preserve working behavior, implement the requested scope completely, keep code deterministic where practical, '
@@ -17,16 +28,23 @@ GODOT_ROLE = {
         'do not weaken production code, skip tests, or replace behavior with vacuous mocks.'
     ),
 }
-SCHEMA = (
+PATCH_SCHEMA = (
     'Editable implementation scope: project.godot, export_presets.cfg, scripts/**, scenes/**, assets/**, tests/**, docs/** '
     'using only the trusted text extensions. QA role may write only tests/*.gd (including subdirectories). '
     'Return ONLY JSON {"files":[{"path":"scripts/main.gd","content":"full file"}]}.'
 )
+PRODUCT_SCHEMA = (
+    'Return ONLY a JSON object with your detailed deliverable and a journeys field. journeys must contain 1..6 objects with '
+    'exactly id and steps; each journey needs 2..12 steps, at least one interaction and one assertion. Supported actions are '
+    'tap(key), enter_text(key,value), scroll(key,dy), expect_text(value), expect_absent(value), expect_key(key). '
+    'These journeys are specifications only and MUST NOT be described as executed or verified.'
+)
+DESIGN_SCHEMA = 'Return ONLY a JSON object containing the complete Godot-oriented design specification.'
 
 
 class GodotModel(Model):
     def ask(self, role, context, screenshots=()):
-        if role not in ('implementation', 'tests'):
+        if role not in GODOT_ROLE:
             return super().ask(role, context, screenshots)
         if screenshots:
             raise StudioError('Godot source generation does not accept screenshots')
@@ -34,9 +52,12 @@ class GodotModel(Model):
         for attempt in range(2):
             try:
                 value = self._ask_godot(role, context)
-                validate_patch(value, 'godot', role)
+                if role in ('implementation', 'tests'):
+                    validate_patch(value, 'godot', role)
+                elif role == 'product':
+                    validate_journeys(value.get('journeys'))
                 return value
-            except (ProtocolError, PatchPolicyError) as exc:
+            except (ProtocolError, PatchPolicyError, ValueError) as exc:
                 error = str(exc)
             if attempt or self.calls >= self.limit:
                 raise StudioError('Structured response rejected: ' + error) from None
@@ -49,14 +70,15 @@ class GodotModel(Model):
         if len(context.encode()) > 500000:
             raise StudioError('Context exceeds configured safety limit')
         self.calls += 1
-        selected_model = self.code_model
+        selected_model = self.code_model if role in ('implementation', 'tests') else self.model
         self.models_used[role] = selected_model
+        schema = PATCH_SCHEMA if role in ('implementation', 'tests') else PRODUCT_SCHEMA if role == 'product' else DESIGN_SCHEMA
         params = {
             'model': selected_model,
             'stream': False,
             'max_tokens': 16000 if role == 'implementation' else 8192,
             'messages': [
-                {'role': 'system', 'content': GODOT_ROLE[role] + '\n' + SCHEMA},
+                {'role': 'system', 'content': GODOT_ROLE[role] + '\n' + schema},
                 {'role': 'user', 'content': context},
             ],
         }

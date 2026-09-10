@@ -10,7 +10,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'studio'))
 from core import StudioError
 from godot_android_stage import execute
 
-REQ={'id':'jumpy','target_repo':'dbrckk/Jumpy','app_name':'Jumpy','brief':'Build a polished mobile game.','enabled':True,'max_rounds':2,'max_calls':8,'max_cycles':3}
+REQ={'id':'jumpy','target_repo':'dbrckk/Jumpy','app_name':'jumpy','brief':'Build a polished mobile game.','enabled':True,'max_rounds':2,'max_calls':8,'max_cycles':3}
 
 class FakeGitHub: pass
 

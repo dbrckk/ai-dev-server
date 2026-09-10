@@ -35,7 +35,22 @@ def model(responses, limit=4):
     return obj
 
 
+def product_value():
+    return {'acceptance_criteria':['game starts'], 'journeys':[{'id':'play','steps':[
+        {'action':'tap','key':'play_button'}, {'action':'expect_text','value':'Score'}]}]}
+
+
 class GodotModelTests(unittest.TestCase):
+    def test_product_uses_godot_planning_contract_not_flutter_execution_claims(self):
+        subject = model([completion(product_value())])
+        result = subject.ask('product', 'plan game')
+        self.assertEqual(result['journeys'][0]['id'], 'play')
+        system = subject.api.calls[0][2]['messages'][0]['content']
+        self.assertIn('Godot mobile game product lead', system)
+        self.assertIn('specifications only', system)
+        self.assertNotIn('Flutter ValueKey', system)
+        self.assertEqual(subject.models_used['product'], 'general')
+
     def test_implementation_uses_godot_prompt_and_scope(self):
         subject = model([completion({'files':[{'path':'scripts/main.gd','content':'extends Node\n'}]})])
         result = subject.ask('implementation', 'improve game')

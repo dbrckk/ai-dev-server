@@ -18,14 +18,17 @@ import zipfile
 
 from core import IMAGE, StudioError
 from godot_android_export import (MAX_TEMPLATE_ARCHIVE_BYTES, TEMPLATE_ASSET,
-                                  TEMPLATE_SHA256, TEMPLATE_URL, _archive_ok,
-                                  _preset_name)
+                                  TEMPLATE_SHA256, TEMPLATE_URL, _preset_name)
 from godot_runtime import GODOT_VERSION, _copy_project, _host_env, _trusted_binary_hash
 
 SOURCE_MEMBER='templates/android_source.zip'
 MAX_SOURCE_TEMPLATE_BYTES=900_000_000
 AAB_MAX_BYTES=1_500_000_000
 CERT_RE=re.compile(r'SHA256:\s*([0-9A-Fa-f:]{59,95})')
+
+
+def _archive_ok(path:Path)->bool:
+    return path.is_file() and path.stat().st_size<=MAX_TEMPLATE_ARCHIVE_BYTES and hashlib.sha256(path.read_bytes()).hexdigest()==TEMPLATE_SHA256
 
 
 def _download_archive(cache_dir:Path,opener=urllib.request.urlopen)->Path:

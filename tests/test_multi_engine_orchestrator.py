@@ -28,7 +28,7 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
             result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
         self.assertEqual(result['status'],'complete'); legacy.assert_called_once()
 
-    def _runner(self,out,fail_stage=None,bad_journey=False,bad_visual=False):
+    def _runner(self,out,fail_stage=None,bad_journey=False,bad_visual=False,release_ready=False):
         calls=[]
         def runner(args,timeout):
             calls.append(args); out.mkdir(parents=True,exist_ok=True)
@@ -51,18 +51,32 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                 if fail_stage=='visual': return subprocess.CompletedProcess(args,1)
                 coverage={'android_export':True,'device_qa':True,'journeys_executed':True,'visual_qa':not bad_visual}
                 (out/'report.json').write_text(json.dumps({'engine':'godot','status':'godot_visual_validated','completion':{'finished':False,'next_stage':'godot_release_qa'},'coverage':coverage}))
+            elif script=='studio/godot_release_stage.py':
+                if fail_stage=='release': return subprocess.CompletedProcess(args,1)
+                coverage={'android_export':True,'device_qa':True,'journeys_executed':True,'visual_qa':True}
+                if release_ready:
+                    report={'engine':'godot','status':'godot_release_preflight_validated','release_status':'not_store_ready','completion':{'finished':False,'next_stage':'godot_release_artifact_qa'},'coverage':coverage}
+                else:
+                    report={'engine':'godot','status':'godot_release_credentials_required','release_status':'human_action_required','completion':{'finished':False,'next_stage':'godot_release_qa'},'coverage':coverage}
+                (out/'report.json').write_text(json.dumps(report))
             return subprocess.CompletedProcess(args,0)
         return runner,calls
 
-    def test_godot_chains_through_visual_then_stops_at_release(self):
+    def test_godot_stops_cleanly_when_release_keystore_is_missing(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td); out=root/'out'; req=self.request(root); runner,calls=self._runner(out)
             result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
-        self.assertEqual(result['status'],'godot_visual_ready'); self.assertEqual(result['next_stage'],'godot_release_qa')
-        self.assertTrue(any('studio/godot_visual_stage.py' in call for call in calls)); self.assertFalse(any('studio/post_preview.py' in call for call in calls))
+        self.assertEqual(result['status'],'human_action_required'); self.assertEqual(result['next_stage'],'godot_release_qa')
+        self.assertTrue(any('studio/godot_release_stage.py' in call for call in calls)); self.assertFalse(any('studio/post_preview.py' in call for call in calls))
+
+    def test_release_inputs_advance_only_to_aab_artifact_qa(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); out=root/'out'; req=self.request(root); runner,_=self._runner(out,release_ready=True)
+            result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
+        self.assertEqual(result['status'],'godot_release_preflight_ready'); self.assertEqual(result['next_stage'],'godot_release_artifact_qa')
 
     def test_each_failed_godot_stage_stays_on_itself(self):
-        expected={'android':'godot_android_export_qa','device':'godot_device_qa','journey':'godot_runtime_journey_qa','visual':'godot_visual_qa'}
+        expected={'android':'godot_android_export_qa','device':'godot_device_qa','journey':'godot_runtime_journey_qa','visual':'godot_visual_qa','release':'godot_release_qa'}
         for failed,next_stage in expected.items():
             with self.subTest(failed=failed), tempfile.TemporaryDirectory() as td:
                 root=Path(td); out=root/'out'; req=self.request(root); runner,_=self._runner(out,fail_stage=failed)

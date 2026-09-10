@@ -83,4 +83,23 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
         return {'status':'human_action_required','report':report,'next_stage':'godot_release_qa'}
     if report.get('status')!='godot_release_preflight_validated' or completion.get('next_stage')!='godot_release_artifact_qa':
         raise StudioError('Godot release stage returned invalid transition')
-    return {'status':'godot_release_preflight_ready','report':report,'next_stage':'godot_release_artifact_qa'}
+
+    artifact_work=str(Path(work).with_name(Path(work).name+'-release-artifact'))
+    result=_run_stage('studio/godot_release_artifact_stage.py',request_path,project_out,artifact_work,runner,deadline,clock)
+    if result is None: return {'status':'deferred','report':report,'next_stage':'godot_release_artifact_qa'}
+    report=load_report(project_out) if (project_out/'report.json').is_file() else {}
+    if result.returncode!=0: return {'status':'failed','report':report,'next_stage':'godot_release_artifact_qa'}
+    completion=report.get('completion')
+    if report.get('engine')!='godot' or not isinstance(completion,dict) or completion.get('finished') is not False:
+        raise StudioError('Godot release artifact stage returned invalid report')
+    if report.get('status')=='godot_release_credentials_required':
+        if completion.get('next_stage')!='godot_release_qa' or report.get('release_status')!='human_action_required':
+            raise StudioError('Godot artifact credential state invalid')
+        return {'status':'human_action_required','report':report,'next_stage':'godot_release_qa'}
+    coverage=report.get('coverage') or {}
+    evidence=report.get('release_artifact')
+    if (report.get('status')!='godot_release_artifact_validated' or completion.get('next_stage')!='godot_store_metadata_qa'
+            or coverage.get('release_artifact') is not True or coverage.get('release_signed') is not True
+            or not isinstance(evidence,dict) or evidence.get('project_code_had_signing_material') is not False):
+        raise StudioError('Godot release artifact stage returned invalid transition')
+    return {'status':'godot_release_artifact_ready','report':report,'next_stage':'godot_store_metadata_qa'}

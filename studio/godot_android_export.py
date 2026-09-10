@@ -93,7 +93,7 @@ def _preset_name(export_presets: str) -> str:
     return android[0]
 
 
-def export_debug_apk(project_root: Path, binary: Path, templates: Path, runner=subprocess.run, timeout=900) -> dict:
+def export_debug_apk(project_root: Path, binary: Path, templates: Path, runner=subprocess.run, timeout=900, artifact_path: Path | None=None) -> dict:
     source = project_root.resolve(); binary = binary.resolve(); templates = templates.resolve()
     binary_hash = _trusted_binary_hash(binary)
     preset_path = source/'export_presets.cfg'
@@ -119,6 +119,14 @@ def export_debug_apk(project_root: Path, binary: Path, templates: Path, runner=s
         text = result.stdout.decode(errors='replace')[-32000:] if isinstance(result.stdout,bytes) else str(result.stdout or '')[-32000:]
         passed = result.returncode == 0 and apk.is_file() and apk.stat().st_size > 0 and not any(m in text for m in EXPORT_ERROR_MARKERS)
         apk_hash = hashlib.sha256(apk.read_bytes()).hexdigest() if passed else None
+        preserved = None
+        if passed and artifact_path is not None:
+            target = artifact_path.resolve(); target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(apk, target)
+            if hashlib.sha256(target.read_bytes()).hexdigest() != apk_hash:
+                target.unlink(missing_ok=True)
+                raise StudioError('Preserved Godot APK hash mismatch')
+            preserved = str(target)
         return {'passed':passed,'exit_code':result.returncode,'output':text,'preset':preset,'apk_sha256':apk_hash,
-                'engine_version':GODOT_VERSION,'binary_sha256':binary_hash,'templates_sha256':TEMPLATE_SHA256,
+                'apk_artifact':preserved,'engine_version':GODOT_VERSION,'binary_sha256':binary_hash,'templates_sha256':TEMPLATE_SHA256,
                 'network':'none','source_project':'not_mounted','release_signed':False}

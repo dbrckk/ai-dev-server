@@ -49,6 +49,7 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
         ('studio/godot_android_stage.py',str(Path(work).with_name(Path(work).name+'-android')),'godot_android_export_qa','godot_android_export_validated','godot_device_qa'),
         ('studio/godot_device_stage.py',str(Path(work).with_name(Path(work).name+'-device')),'godot_device_qa','godot_device_validated','godot_runtime_journey_qa'),
         ('studio/godot_runtime_journey_stage.py',str(Path(work).with_name(Path(work).name+'-journeys')),'godot_runtime_journey_qa','godot_runtime_journeys_validated','godot_visual_qa'),
+        ('studio/godot_visual_stage.py',str(Path(work).with_name(Path(work).name+'-visual')),'godot_visual_qa','godot_visual_validated','godot_release_qa'),
     ]
     report={}
     for script,stage_work,current_stage,expected_status,next_stage in stages:
@@ -65,4 +66,6 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
             raise StudioError('Godot device stage returned invalid coverage evidence')
         if current_stage=='godot_runtime_journey_qa' and (coverage.get('device_qa') is not True or coverage.get('journeys_executed') is not True or coverage.get('visual_qa') is not False):
             raise StudioError('Godot journey stage returned invalid coverage evidence')
-    return {'status':'godot_journeys_ready','report':report,'next_stage':'godot_visual_qa'}
+        if current_stage=='godot_visual_qa' and (coverage.get('device_qa') is not True or coverage.get('journeys_executed') is not True or coverage.get('visual_qa') is not True):
+            raise StudioError('Godot visual stage returned invalid coverage evidence')
+    return {'status':'godot_visual_ready','report':report,'next_stage':'godot_release_qa'}

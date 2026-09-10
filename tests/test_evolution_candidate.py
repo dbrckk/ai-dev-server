@@ -11,7 +11,7 @@ class EvolutionCandidateTests(unittest.TestCase):
     def test_accepts_only_complete_scoped_candidate(self):
         result=validate_candidate(self.work_order(),self.research(),self.candidate()); self.assertEqual(result['status'],'candidate_validated'); self.assertEqual(result['benchmark_assertions'],2); self.assertEqual(result['differential_tests'],2); self.assertEqual(set(expected_paths('billing_qa').values()),{f['path'] for f in result['files']})
     def test_completion_registry_smoke_and_evolution_judges_are_protected(self):
-        for path in ('studio/completion.py','studio/stage_registry.py','studio/smoke.py','studio/evolution_differential.py','studio/evolution_isolated_runner.py','studio/godot_android_export.py','studio/godot_android_stage.py','studio/godot_device_qa.py','studio/godot_device_stage.py','studio/engine_entry.py','studio/engine_detect.py','studio/multi_engine_orchestrator.py'): self.assertIn(path,PROTECTED_PATHS)
+        for path in ('studio/completion.py','studio/stage_registry.py','studio/smoke.py','studio/evolution_differential.py','studio/evolution_isolated_runner.py','studio/godot_android_export.py','studio/godot_android_stage.py','studio/godot_device_qa.py','studio/godot_device_stage.py','studio/godot_runtime_journeys.py','studio/godot_runtime_journey_stage.py','studio/godot_visual_qa.py','studio/godot_visual_stage.py','studio/engine_entry.py','studio/engine_detect.py','studio/multi_engine_orchestrator.py'): self.assertIn(path,PROTECTED_PATHS)
         candidate=self.candidate(); candidate['files'][0]['path']='studio/completion.py'
         with self.assertRaises(CandidateRejected): validate_candidate(self.work_order(),self.research(),candidate)
     def test_missing_test_or_benchmark_is_rejected(self):

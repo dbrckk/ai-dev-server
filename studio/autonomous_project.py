@@ -9,12 +9,14 @@ try:
     from .capability_registry import new_registry, save as save_registry
     from .goal_engine import new_goal, save as save_goal
     from .goal_loop import run_goal
+    from .promoted_capabilities import sync_into_registry
     from .project_memory import new_memory, load as load_memory, save as save_memory
     from .goal_learning import context_for_goal, learn_from_cycle
 except ImportError:
     from capability_registry import new_registry, save as save_registry
     from goal_engine import new_goal, save as save_goal
     from goal_loop import run_goal
+    from promoted_capabilities import sync_into_registry
     from project_memory import new_memory, load as load_memory, save as save_memory
     from goal_learning import context_for_goal, learn_from_cycle
 
@@ -37,7 +39,16 @@ def ensure_project_goal(project_out: Path, goal_id: str, objective: str, *, max_
             max_attempts=max_attempts,
         ))
     if not registry_path.exists():
-        save_registry(registry_path, new_registry())
+        save_registry(registry_path, sync_into_registry(new_registry()))
+    else:
+        try:
+            from .capability_registry import load as load_registry
+        except ImportError:
+            from capability_registry import load as load_registry
+        current_registry = load_registry(registry_path)
+        promoted_registry = sync_into_registry(current_registry)
+        if promoted_registry != current_registry:
+            save_registry(registry_path, promoted_registry)
     if not memory_path.exists():
         save_memory(memory_path, new_memory())
     return goal_path, registry_path, memory_path

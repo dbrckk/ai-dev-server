@@ -2,11 +2,14 @@
 from __future__ import annotations
 import base64
 import hashlib
+import http.client
 import json
 import os
 from pathlib import Path, PurePosixPath
 import re
+import shutil
 import subprocess
+import tempfile
 import time
 import uuid
 import urllib.error
@@ -50,7 +53,8 @@ def request_check(data):
     return data
 
 def allowed(path):
-    if not isinstance(path, str) or not path or '\\' in path or len(path) > 180:
+    if (not isinstance(path, str) or not path or '\\' in path or len(path) > 180 or
+        any(ord(ch) < 32 or ord(ch) == 127 or 0xD800 <= ord(ch) <= 0xDFFF for ch in path)):
         return False
     parts = path.split('/')
     if any(p in ('', '.', '..') or p.startswith('.') or p.startswith('__studio') for p in parts):
@@ -72,22 +76,91 @@ def patch_check(value):
         if f['path'] in seen or not isinstance(f['content'], str) or '\x00' in f['content']:
             raise StudioError('Duplicate path or invalid content')
         seen.add(f['path'])
-        total += len(f['content'].encode())
+        try:
+            total += len(f['content'].encode('utf-8'))
+        except UnicodeEncodeError:
+            raise StudioError('Patch content must be valid UTF-8') from None
         if total > 600000 or SECRET.search(f['content']):
             raise StudioError('Patch too large or contains a credential pattern')
+    if any(parent.as_posix() in seen for path in seen for parent in PurePosixPath(path).parents):
+        raise StudioError('Patch file conflicts with a parent directory')
     return value['files']
 
+def require_clean_patch_workspace(root):
+    root = Path(root)
+    if root.exists() and any(root.glob('.__studio-patch-*')):
+        raise RuntimeError('Unresolved patch recovery files; restore from a trusted checkpoint before reuse or publication')
+
 def apply_patch(root, value):
+    root = Path(root)
+    require_clean_patch_workspace(root)
     files = patch_check(value)
-    # Validate the entire batch, including filesystem paths, before writing any file.
     for f in files:
         p = root / f['path']
         if not p.resolve().is_relative_to(root.resolve()) or any(x.is_symlink() for x in [p, *p.parents]):
             raise StudioError('Symlink or path escape')
-    for f in files:
-        p = root / f['path']
-        p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(f['content'])
+        if (p.exists() and not p.is_file()) or any(x.exists() and not x.is_dir() for x in p.parents):
+            raise StudioError('Patch conflicts with existing filesystem entries')
+
+    created_dirs, committed = [], []
+    staging = None
+    retain_recovery = False
+
+    def ensure_directory(path):
+        missing = []
+        while not path.exists():
+            missing.append(path)
+            path = path.parent
+        for directory in reversed(missing):
+            directory.mkdir()
+            created_dirs.append(directory)
+
+    try:
+        ensure_directory(root)
+        staging = Path(tempfile.mkdtemp(prefix='.__studio-patch-', dir=root))
+        (staging / 'manifest.json').write_text(canonical({
+            'files': [{'path': f['path'], 'backup': str(i) + '.backup',
+                       'existed': (root / f['path']).exists()}
+                      for i, f in enumerate(files)]}), encoding='utf-8')
+        for index, f in enumerate(files):
+            target = root / f['path']
+            staged = staging / str(index)
+            staged.write_text(f['content'], encoding='utf-8')
+            if target.exists():
+                shutil.copy2(target, staging / (str(index) + '.backup'))
+                shutil.copymode(target, staged)
+        for index, f in enumerate(files):
+            target = root / f['path']
+            ensure_directory(target.parent)
+            committed.append((index, target))
+            os.replace(staging / str(index), target)
+    except BaseException as error:
+        retain_recovery = True
+        rollback_failed = False
+        if staging is not None:
+            for index, target in reversed(committed):
+                try:
+                    backup = staging / (str(index) + '.backup')
+                    if backup.exists():
+                        os.replace(backup, target)
+                    else:
+                        target.unlink(missing_ok=True)
+                except BaseException:
+                    rollback_failed = True
+        if rollback_failed:
+            raise RuntimeError('Patch rollback incomplete; do not publish workspace. Recovery files: ' + str(staging)) from None
+        retain_recovery = False
+        if isinstance(error, OSError):
+            raise StudioError('Patch write failed; original source restored') from None
+        raise
+    finally:
+        if staging is not None and not retain_recovery:
+            shutil.rmtree(staging, ignore_errors=True)
+        for directory in reversed(created_dirs):
+            try:
+                directory.rmdir()
+            except OSError:
+                pass
 
 def verdict(value):
     if (not isinstance(value, dict) or set(value) != {'passed', 'blockers'} or
@@ -137,7 +210,7 @@ class API:
                         raise StudioError('API response too large')
                     try:
                         return json.loads(raw)
-                    except (ValueError, UnicodeError):
+                    except (ValueError, UnicodeError, RecursionError):
                         raise ProtocolError('API returned non-JSON response') from None
                 request_id = res.headers.get('NVCF-REQID', '')
                 if (self.base != 'https://integrate.api.nvidia.com/v1' or
@@ -163,7 +236,7 @@ class API:
                 if method not in ('GET', 'POST') or e.code not in (429, 502, 503, 504) or attempt == 2:
                     raise APIError(e.code) from None
                 time.sleep(2 ** attempt)
-            except (urllib.error.URLError, TimeoutError):
+            except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.HTTPException):
                 raise StudioError('API unavailable or timed out') from None
         raise StudioError('Retry limit reached')
 
@@ -239,17 +312,39 @@ class Model:
                 raise ProtocolError('Provider returned invalid completion choice')
             if choice.get('finish_reason') == 'length':
                 raise ProtocolError('Model response truncated')
+            if choice.get('finish_reason') not in (None, 'stop'):
+                raise ProtocolError('Model response did not complete normally')
             raw = choice['message']['content']
             if not isinstance(raw, str) or not raw.strip():
                 raise ProtocolError('Provider returned empty text content')
             raw = raw.strip()
             if raw.startswith('```'):
                 raw = raw.split('\n', 1)[1].rsplit('```', 1)[0]
-            value = json.loads(raw)
+            def unique_object(pairs):
+                result = {}
+                for key, item in pairs:
+                    if key in result:
+                        raise ValueError('Duplicate model JSON key')
+                    result[key] = item
+                return result
+            value = json.loads(raw, object_pairs_hook=unique_object)
             if not isinstance(value, dict):
                 raise ValueError()
+            pending = [(value, 0)]
+            while pending:
+                item, depth = pending.pop()
+                if depth > 64:
+                    raise ValueError('Model JSON nesting exceeds limit')
+                if isinstance(item, dict):
+                    pending.extend((child, depth + 1) for child in item.values())
+                elif isinstance(item, list):
+                    pending.extend((child, depth + 1) for child in item)
+            serialized = json.dumps(value, ensure_ascii=False, allow_nan=False)
+            serialized.encode('utf-8')
+            if SECRET.search(serialized):
+                raise ProtocolError('Model response contains a credential pattern')
             return value
-        except (KeyError, IndexError, TypeError, ValueError):
+        except (KeyError, IndexError, TypeError, ValueError, UnicodeError, RecursionError):
             raise ProtocolError('Provider returned invalid structured output') from None
 
 class Sandbox:

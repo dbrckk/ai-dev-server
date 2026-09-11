@@ -7,6 +7,7 @@ import unittest
 from studio.capability_registry import new_registry
 from studio.github_goal_store import RemoteStateError, load, persist_local, restore_local, save
 from studio.goal_engine import new_goal
+from studio.project_memory import new_memory
 
 
 class FakeGitHub:
@@ -68,11 +69,12 @@ def goal():
 class GitHubGoalStoreTests(unittest.TestCase):
     def test_save_and_load_round_trip(self):
         gh=FakeGitHub()
-        sha=save(gh,"demo",goal(),new_registry())
+        sha=save(gh,"demo",goal(),new_registry(),new_memory())
         self.assertEqual(sha,gh.ref)
         restored=load(gh,"demo")
         self.assertEqual(restored["goal"]["goal_id"],"demo")
         self.assertEqual(restored["registry"]["capabilities"],{})
+        self.assertEqual(restored["memory"]["entries"],[])
 
     def test_missing_remote_state_returns_none(self):
         self.assertIsNone(load(FakeGitHub(),"demo"))
@@ -82,11 +84,12 @@ class GitHubGoalStoreTests(unittest.TestCase):
             load(FakeGitHub(),"../escape")
 
     def test_local_restore_and_persist(self):
-        gh=FakeGitHub(); save(gh,"demo",goal(),new_registry())
+        gh=FakeGitHub(); save(gh,"demo",goal(),new_registry(),new_memory())
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)
             self.assertTrue(restore_local(gh,"demo",out))
             self.assertTrue((out/".autonomy/goal.json").is_file())
+            self.assertTrue((out/".autonomy/memory.json").is_file())
             persist_local(gh,"demo",out)
             self.assertIsNotNone(gh.ref)
 

@@ -12,6 +12,11 @@ VERIFIER_CAPABILITIES={
     "repeated_failure":"improvement.verify.repeated_failure",
     "capability_churn":"improvement.verify.capability_churn",
 }
+APPLICATOR_CAPABILITIES={
+    "repeated_failure":"improvement.apply.repeated_failure",
+    "capability_churn":"improvement.apply.capability_churn",
+    "persistent_warning":"improvement.apply.persistent_warning",
+}
 
 
 class ImprovementDispatchError(ValueError):
@@ -32,22 +37,40 @@ def required_verifier_capability(candidate):
 
 def dispatch(candidate,registry):
     validate_registry(registry)
-    capability=required_verifier_capability(candidate)
-    if capability is None:
+    if not isinstance(candidate,dict) or not isinstance(candidate.get("kind"),str):
+        raise ImprovementDispatchError("candidate invalid")
+    kind=candidate["kind"]
+    applicator=APPLICATOR_CAPABILITIES.get(kind)
+    if applicator is None:
+        raise ImprovementDispatchError("unsupported improvement kind")
+    if not has_capability(registry,applicator):
+        return {
+            "decision":"adapt",
+            "applicator":None,
+            "verifier":None,
+            "missing_capability":applicator,
+        }
+
+    applicator_provider=registry["capabilities"][applicator]["provider"]
+    verifier_capability=required_verifier_capability(candidate)
+    if verifier_capability is None:
         return {
             "decision":"execute",
+            "applicator":applicator_provider,
             "verifier":"builtin",
             "missing_capability":None,
         }
-    if has_capability(registry,capability):
-        item=registry["capabilities"][capability]
+    if has_capability(registry,verifier_capability):
+        verifier_provider=registry["capabilities"][verifier_capability]["provider"]
         return {
             "decision":"execute",
-            "verifier":item["provider"],
+            "applicator":applicator_provider,
+            "verifier":verifier_provider,
             "missing_capability":None,
         }
     return {
         "decision":"adapt",
+        "applicator":applicator_provider,
         "verifier":None,
-        "missing_capability":capability,
+        "missing_capability":verifier_capability,
     }

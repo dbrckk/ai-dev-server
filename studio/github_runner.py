@@ -13,6 +13,7 @@ import time
 import uuid
 
 from autonomous_project import run_persistent_project
+from capability_adaptation_state import new_state as new_capability_adaptation_state
 from ci_provider import enabled
 from continuous_improvement import assess as assess_improvements
 from core import StudioError, canonical, request_check
@@ -146,7 +147,17 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
         summary['improvement_candidate']=improvement_run['candidate_id']
         summary['improvement_goal_status']=improvement_run['goal_status']
         if improvement_run.get('missing_capability'):
-            summary['improvement_missing_capability']=improvement_run['missing_capability']
+            missing=improvement_run['missing_capability']
+            summary['improvement_missing_capability']=missing
+            adaptation_state=new_capability_adaptation_state(
+                request['id'],
+                missing,
+                improvement_run['candidate_id'],
+            )
+            adaptation_path=out/'.autonomy/capability-adaptation.json'
+            adaptation_path.write_text(canonical(adaptation_state))
+            summary['capability_adaptation_status']=adaptation_state['status']
+            summary['capability_adaptation_candidate']=adaptation_state['adaptation_candidate_id']
     if status=='human_action_required':
         summary['next_stage']=state.get('human_action')
     elif status=='blocked':

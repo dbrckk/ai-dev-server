@@ -92,3 +92,18 @@ def record_research(value, research_status):
         "synthesis_status":synthesis_status,
     })
     return _seal(out)
+
+
+def record_synthesis(value, candidate_sha256):
+    validate(value)
+    if value["status"]!="synthesis_required" or value["research_status"]!="research_complete":
+        raise CapabilityAdaptationStateError("synthesis transition invalid")
+    if not isinstance(candidate_sha256,str) or not re.fullmatch(r"[0-9a-f]{64}",candidate_sha256):
+        raise CapabilityAdaptationStateError("candidate digest invalid")
+    out=dict(value)
+    out.update({
+        "status":"validation_required",
+        "synthesis_status":"candidate_synthesized:"+candidate_sha256,
+        "validation_status":"required",
+    })
+    return _seal(out)

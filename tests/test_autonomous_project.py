@@ -1,6 +1,7 @@
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from studio.autonomous_project import (
     ensure_project_goal,
@@ -104,6 +105,29 @@ class AutonomousProjectTests(unittest.TestCase):
             )
             self.assertEqual(state["status"], "human_action_required")
             self.assertEqual(state["human_action"], "approve_release")
+
+
+    def test_existing_project_registry_syncs_new_promoted_capability(self):
+        from studio.capability_registry import load as load_registry, register
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "out"
+            goal_path, registry_path = ensure_project_goal(root, "demo", "Complete demo")
+            before = load_registry(registry_path)
+
+            def sync(registry):
+                return register(
+                    registry,
+                    "improvement.apply.persistent_warning",
+                    "studio.capabilities.improvement_apply_persistent_warning",
+                    {"source": "promoted_factory_capability", "candidate_sha": "b" * 40},
+                )
+
+            with patch("studio.autonomous_project.sync_into_registry", side_effect=sync):
+                ensure_project_goal(root, "demo", "Complete demo")
+            after = load_registry(registry_path)
+            self.assertEqual(before["capabilities"], {})
+            self.assertIn("improvement.apply.persistent_warning", after["capabilities"])
+            self.assertEqual(goal_path, root / ".autonomy" / "goal.json")
 
 
 if __name__ == "__main__":

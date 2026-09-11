@@ -9,6 +9,7 @@ import tempfile
 import time
 import uuid
 
+from autonomous_project import run_persistent_project
 from ci_provider import enabled
 from core import StudioError, canonical
 from orchestrator import run_project, run_registered_stages as _shared_run_registered_stages
@@ -59,6 +60,26 @@ def _run_registered_stages(project, project_out, work, report, deadline, runner,
     return result['report'], status
 
 
+def _run_project_for_queue(project, project_out, work, runner, deadline, clock, baseline_sha):
+    if os.environ.get('STUDIO_PERSISTENT_GOALS') != '1':
+        return run_project(project['file'], project_out, work, runner, deadline, clock, baseline_sha)
+
+    state = run_persistent_project(
+        project['file'], project_out, work, runner, deadline, clock, baseline_sha,
+        goal_id=project['id'],
+        objective='Complete project ' + project['id'] + ' with verified release evidence',
+        max_cycles=4,
+    )
+    status = state.get('status')
+    if status == 'complete':
+        return {'status': 'complete', 'next_stage': None}
+    if status == 'human_action_required':
+        return {'status': 'human_action_required', 'next_stage': state.get('human_action')}
+    if status == 'blocked':
+        return {'status': 'blocked', 'next_stage': state.get('blocked_reason')}
+    return {'status': 'deferred', 'next_stage': None}
+
+
 def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
               runner=bounded_run, clock=time.monotonic):
     projects = matrix(directory)
@@ -77,7 +98,7 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
         with tempfile.TemporaryDirectory(prefix='studio-ci-') as work:
             project_out = out / project['id']
             try:
-                result = run_project(project['file'], project_out, work, runner, deadline, clock, baseline_sha)
+                result = _run_project_for_queue(project, project_out, work, runner, deadline, clock, baseline_sha)
                 results[index]['status'] = result['status']
                 results[index]['next_stage'] = result.get('next_stage')
                 if result.get('research_status') is not None:
@@ -108,6 +129,7 @@ def main():
             os.environ[dest] = os.environ[fallback]
     mode = sys.argv[1] if len(sys.argv) == 2 else 'queue'
     if mode == 'queue':
+        os.environ.setdefault('STUDIO_PERSISTENT_GOALS', '1')
         return run_queue()
     if mode == 'preview':
         import provider_probe

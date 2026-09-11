@@ -131,6 +131,25 @@ class QueueRunnerTests(unittest.TestCase):
             root = Path(tmp)
             self.assertEqual(run_queue(root, root / 'out'), 0)
 
+
+    def test_persistent_mode_uses_goal_wrapper(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            queue = self.make_requests(root, 1)
+            out = root / 'out'
+            with patch.dict('os.environ', {'STUDIO_PERSISTENT_GOALS': '1'}, clear=False), \
+                    patch('ci_runner.run_persistent_project') as persistent:
+                persistent.return_value = {
+                    'status': 'complete',
+                    'human_action': None,
+                    'blocked_reason': None,
+                }
+                self.assertEqual(run_queue(queue, out, runner=lambda *a, **k: None), 0)
+                persistent.assert_called_once()
+            report = json.loads((out / 'queue.json').read_text())
+            self.assertEqual(report['projects'][0]['status'], 'complete')
+            self.assertIsNone(report['projects'][0]['next_stage'])
+
 class RecoveryTests(unittest.TestCase):
     def make_queue(self, root):
         queue = root / 'requests'

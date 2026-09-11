@@ -15,7 +15,9 @@ import uuid
 from autonomous_project import run_persistent_project
 from ci_provider import enabled
 from core import StudioError, canonical, request_check
+from github_goal_store import RemoteStateError, persist_local, restore_local
 from multi_engine_orchestrator import run_project as run_multi_engine_project
+from run import GitHub as RepoGitHub
 
 
 def bounded_run(args, timeout):
@@ -39,6 +41,16 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
     if not request['enabled']:
         result={'status':'disabled','next_stage':None,'finished':False}; out.mkdir(parents=True,exist_ok=True); (out/'github-pipeline.json').write_text(canonical(result)); return result
     deadline=clock()+budget_seconds
+    remote_github=None
+    if os.environ.get('STUDIO_PERSIST_REMOTE')=='1':
+        control_repo=os.environ.get('GITHUB_REPOSITORY','')
+        if not control_repo or '/' not in control_repo:
+            raise StudioError('Remote autonomous persistence requires GITHUB_REPOSITORY')
+        remote_github=RepoGitHub(control_repo)
+        try:
+            restore_local(remote_github,request['id'],out)
+        except RemoteStateError as exc:
+            raise StudioError('Remote autonomous state restore failed: '+str(exc)) from None
     last_result={}
     def run_once(*args):
         result=run_multi_engine_project(*args)
@@ -52,6 +64,11 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             max_cycles=4,
             run_once=run_once,
         )
+    if remote_github is not None:
+        try:
+            persist_local(remote_github,request['id'],out)
+        except RemoteStateError as exc:
+            raise StudioError('Remote autonomous state persistence failed: '+str(exc)) from None
     status=state.get('status')
     summary={
         'status':status,
@@ -73,7 +90,7 @@ def main(argv=None)->int:
     if not enabled('github'): print('GitHub generation inactive'); return 0
     baseline_sha=os.environ.get('GITHUB_SHA','')
     if len(baseline_sha)!=40: raise StudioError('GitHub generation requires a full baseline commit SHA')
-    os.environ['STUDIO_CI_PROVIDER']='github'; result=run(Path(args.request),Path(args.out),baseline_sha=baseline_sha); print(canonical(result)); return 0 if result['status'] in ('complete','disabled') else 1
+    os.environ['STUDIO_CI_PROVIDER']='github'; os.environ['STUDIO_PERSIST_REMOTE']='1'; result=run(Path(args.request),Path(args.out),baseline_sha=baseline_sha); print(canonical(result)); return 0 if result['status'] in ('complete','disabled') else 1
 
 
 if __name__=='__main__':

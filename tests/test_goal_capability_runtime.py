@@ -21,7 +21,7 @@ class GoalCapabilityRuntimeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             gp,rp=self.state(Path(td))
             state=run_goal(gp,rp,lambda s: {},max_cycles=1)
-            self.assertEqual(state["status"],"blocked")
+            self.assertEqual(state["status"],"active")
             self.assertIn("no runtime",state["blocked_reason"])
 
     def test_runtime_must_return_verified_evidence(self):

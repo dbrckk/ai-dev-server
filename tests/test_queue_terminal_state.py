@@ -9,9 +9,14 @@ from studio.queue import matrix
 class QueueTerminalStateTests(unittest.TestCase):
     def request(self, root, project_id, target):
         value={
-            "id":project_id,"enabled":True,"target_repo":target,
-            "name":"Demo","description":"Demo app","platforms":["android"],
-            "requirements":["works"],"acceptance_criteria":["verified"],
+            "id":project_id,
+            "target_repo":target,
+            "app_name":"demo_app",
+            "brief":"Create a complete working demo mobile app.",
+            "enabled":True,
+            "max_rounds":3,
+            "max_calls":12,
+            "max_cycles":5,
         }
         path=Path(root)/(project_id+".json")
         path.write_text(json.dumps(value))

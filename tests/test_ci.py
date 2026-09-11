@@ -50,6 +50,8 @@ class QueueRunnerTests(unittest.TestCase):
         if 'studio/capability_stage.py' in args:
             return {'status': 'validated_preview', 'completion': {'finished': False, 'next_stage': 'store_metadata'}}
         if 'studio/store_stage.py' in args:
+            return {'status': 'validated_preview', 'completion': {'finished': False, 'next_stage': 'artwork_qa'}}
+        if 'studio/artwork_stage.py' in args:
             return {'status': 'validated_preview', 'completion': {'finished': False, 'next_stage': 'privacy_policy'}}
         if 'studio/privacy_stage.py' in args:
             return {'status': 'validated_preview', 'completion': {'finished': False, 'next_stage': 'security_scan'}}
@@ -73,7 +75,7 @@ class QueueRunnerTests(unittest.TestCase):
                 (project_out / 'report.json').write_text(json.dumps(self.payload_for(args)))
                 return subprocess.CompletedProcess(args, 0)
             self.assertEqual(run_queue(queue, out, runner), 1)
-            self.assertEqual(len(calls), 8)
+            self.assertEqual(len(calls), 9)
             report = json.loads((out / 'queue.json').read_text())
             self.assertEqual([p['status'] for p in report['projects']], ['failed', 'complete'])
             self.assertIsNone(report['projects'][1]['next_stage'])
@@ -91,10 +93,10 @@ class QueueRunnerTests(unittest.TestCase):
                 (project_out / 'report.json').write_text(json.dumps(self.payload_for(args)))
                 return subprocess.CompletedProcess(args, 0)
             self.assertEqual(run_queue(queue, out, runner), 0)
-            self.assertEqual(len(calls), 7)
+            self.assertEqual(len(calls), 8)
             expected = ['studio/run.py', 'studio/post_preview.py', 'studio/device_stage.py',
                         'studio/capability_stage.py', 'studio/store_stage.py',
-                        'studio/privacy_stage.py', 'studio/security_stage.py']
+                        'studio/artwork_stage.py', 'studio/privacy_stage.py', 'studio/security_stage.py']
             for call, script in zip(calls, expected):
                 self.assertIn(script, call)
             report = json.loads((out / 'queue.json').read_text())

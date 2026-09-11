@@ -34,6 +34,8 @@ class CompletionTests(unittest.TestCase):
         state["release_evidence"]["capability_qa"] = {"passed": True, "required_qa_stages": []}
         self.assertEqual(next_stage(state), "store_metadata")
         state["release_evidence"]["store_metadata"] = True
+        self.assertEqual(next_stage(state), "artwork_qa")
+        state["release_evidence"]["artwork_qa"] = True
         self.assertEqual(next_stage(state), "privacy_policy")
         state["release_evidence"]["privacy_policy"] = True
         self.assertEqual(next_stage(state), "security_scan")
@@ -50,6 +52,7 @@ class CompletionTests(unittest.TestCase):
             "real_device": True,
             "capability_qa": {"passed": True, "required_qa_stages": []},
             "store_metadata": True,
+            "artwork_qa": True,
             "privacy_policy": True,
             "security_scan": True,
         }
@@ -64,7 +67,7 @@ class CompletionTests(unittest.TestCase):
         state = preview_state()
         state["code_review"] = {"passed": False, "blockers": ["defect"]}
         state["release_evidence"] = {k: True for k in (
-            "release_build", "real_device", "capability_qa", "store_metadata", "privacy_policy", "security_scan"
+            "release_build", "real_device", "capability_qa", "store_metadata", "artwork_qa", "privacy_policy", "security_scan"
         )}
         self.assertFalse(completion_report(state)["finished"])
 

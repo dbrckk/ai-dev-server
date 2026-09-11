@@ -15,6 +15,7 @@ BASE_RELEASE_STAGES = (
 )
 POST_QA_STAGES = (
     "store_metadata",
+    "artwork_qa",
     "privacy_policy",
     "security_scan",
 )

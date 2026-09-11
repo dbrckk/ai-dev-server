@@ -12,9 +12,10 @@ import tempfile
 import time
 import uuid
 
+from autonomous_project import run_persistent_project
 from ci_provider import enabled
 from core import StudioError, canonical, request_check
-from multi_engine_orchestrator import run_project
+from multi_engine_orchestrator import run_project as run_multi_engine_project
 
 
 def bounded_run(args, timeout):
@@ -38,10 +39,31 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
     if not request['enabled']:
         result={'status':'disabled','next_stage':None,'finished':False}; out.mkdir(parents=True,exist_ok=True); (out/'github-pipeline.json').write_text(canonical(result)); return result
     deadline=clock()+budget_seconds
-    with tempfile.TemporaryDirectory(prefix='studio-github-') as work: result=run_project(str(request_path),out,work,runner,deadline,clock,baseline_sha)
-    summary={'status':result['status'],'next_stage':result.get('next_stage'),'finished':bool(result.get('report',{}).get('completion',{}).get('finished'))}
+    last_result={}
+    def run_once(*args):
+        result=run_multi_engine_project(*args)
+        last_result.clear(); last_result.update(result)
+        return result
+    with tempfile.TemporaryDirectory(prefix='studio-github-') as work:
+        state=run_persistent_project(
+            str(request_path),out,work,runner,deadline,clock,baseline_sha,
+            goal_id=request['id'],
+            objective='Complete project '+request['id']+' with verified release evidence',
+            max_cycles=4,
+            run_once=run_once,
+        )
+    status=state.get('status')
+    summary={
+        'status':status,
+        'next_stage':last_result.get('next_stage'),
+        'finished':status=='complete',
+    }
+    if status=='human_action_required':
+        summary['next_stage']=state.get('human_action')
+    elif status=='blocked':
+        summary['next_stage']=state.get('blocked_reason')
     for key in ('pending_status','research_status','synthesis_status','benchmark_status','promotion_status','persistence_status','automerge_status'):
-        if result.get(key) is not None: summary[key]=result[key]
+        if last_result.get(key) is not None: summary[key]=last_result[key]
     out.mkdir(parents=True,exist_ok=True); (out/'github-pipeline.json').write_text(canonical(summary)); return summary
 
 

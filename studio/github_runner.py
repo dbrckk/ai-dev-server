@@ -13,7 +13,9 @@ import time
 import uuid
 
 from autonomous_project import run_persistent_project
-from capability_adaptation_state import new_state as new_capability_adaptation_state
+from capability_adaptation_state import new_state as new_capability_adaptation_state, record_research as record_capability_research
+from adaptation_research import research_missing_capability
+from repository_research_provider import build_repository_providers
 from ci_provider import enabled
 from continuous_improvement import assess as assess_improvements
 from core import StudioError, canonical, request_check
@@ -80,6 +82,39 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             raise StudioError('Remote autonomous state restore failed: '+str(exc)) from None
         except GitHubMemoryError as exc:
             raise StudioError('Remote project memory restore failed: '+str(exc)) from None
+    adaptation_path=out/'.autonomy/capability-adaptation.json'
+    memory_path=out/'.memory/memory.json'
+    registry_path=out/'.autonomy/capabilities.json'
+    if adaptation_path.is_file():
+        from capability_adaptation_state import validate as validate_capability_adaptation
+        adaptation_state=validate_capability_adaptation(json.loads(adaptation_path.read_text()))
+        if adaptation_state['status']=='research_required':
+            if not isinstance(baseline_sha,str) or len(baseline_sha)!=40:
+                raise StudioError('Capability research requires a pinned baseline SHA')
+            memory=load_project_memory(memory_path)
+            from capability_registry import load as load_capability_registry
+            registry=load_capability_registry(registry_path)
+            search_provider,fetch_provider=build_repository_providers(
+                Path('.'),
+                os.environ.get('GITHUB_REPOSITORY',''),
+                baseline_sha,
+                adaptation_state['capability'],
+            )
+            memory,_,research_state=research_missing_capability(
+                memory,
+                registry,
+                request['id'],
+                adaptation_state['capability'],
+                search_provider,
+                fetch_provider,
+                min_sources=2,
+            )
+            save_project_memory(memory_path,memory)
+            normalized=research_state.get('research_status')
+            if normalized not in {'research_complete','research_incomplete'}:
+                normalized='research_incomplete'
+            adaptation_state=record_capability_research(adaptation_state,normalized)
+            adaptation_path.write_text(canonical(adaptation_state))
     last_result={}
     def run_once(*args):
         result=run_multi_engine_project(*args)
@@ -121,7 +156,6 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
     if remote_github is not None:
         try:
             persist_local(remote_github,request['id'],out)
-            memory_path=out/'.memory/memory.json'
             memory=load_project_memory(memory_path)
             memory=ingest_run(memory,request['id'],out)
             save_project_memory(memory_path,memory)
@@ -154,7 +188,6 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
                 missing,
                 improvement_run['candidate_id'],
             )
-            adaptation_path=out/'.autonomy/capability-adaptation.json'
             adaptation_path.write_text(canonical(adaptation_state))
             summary['capability_adaptation_status']=adaptation_state['status']
             summary['capability_adaptation_candidate']=adaptation_state['adaptation_candidate_id']

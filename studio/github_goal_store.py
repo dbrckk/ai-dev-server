@@ -33,7 +33,7 @@ def _safe_project_id(value):
 def _paths(project_id):
     project_id = _safe_project_id(project_id)
     prefix = f"{ROOT}/{project_id}"
-    return prefix + "/goal.json", prefix + "/capabilities.json", prefix + "/improvement-backlog.json"
+    return prefix + "/goal.json", prefix + "/capabilities.json", prefix + "/improvement-backlog.json", prefix + "/improvement-goal.json"
 
 
 def _exact_ref(github):
@@ -61,7 +61,7 @@ def _decode_blob(github, sha):
 
 
 def load(github, project_id):
-    goal_path, registry_path, backlog_path = _paths(project_id)
+    goal_path, registry_path, backlog_path, improvement_goal_path = _paths(project_id)
     ref = _exact_ref(github)
     if ref is None:
         return None
@@ -75,6 +75,7 @@ def load(github, project_id):
     goal_item = matches.get(goal_path)
     registry_item = matches.get(registry_path)
     backlog_item = matches.get(backlog_path)
+    improvement_goal_item = matches.get(improvement_goal_path)
     if goal_item is None and registry_item is None:
         return None
     if goal_item is None or registry_item is None:
@@ -82,14 +83,17 @@ def load(github, project_id):
     goal = validate_goal(_decode_blob(github, goal_item.get("sha")))
     registry = validate_registry(_decode_blob(github, registry_item.get("sha")))
     backlog = new_backlog() if backlog_item is None else validate_backlog(_decode_blob(github, backlog_item.get("sha")))
-    return {"goal": goal, "registry": registry, "backlog": backlog, "head_sha": head}
+    improvement_goal = None if improvement_goal_item is None else validate_goal(_decode_blob(github, improvement_goal_item.get("sha")))
+    return {"goal": goal, "registry": registry, "backlog": backlog, "improvement_goal": improvement_goal, "head_sha": head}
 
 
-def save(github, project_id, goal, registry, backlog=None):
-    goal_path, registry_path, backlog_path = _paths(project_id)
+def save(github, project_id, goal, registry, backlog=None, improvement_goal=None):
+    goal_path, registry_path, backlog_path, improvement_goal_path = _paths(project_id)
     validate_goal(goal)
     validate_registry(registry)
     backlog = new_backlog() if backlog is None else validate_backlog(backlog)
+    if improvement_goal is not None:
+        improvement_goal = validate_goal(improvement_goal)
     ref = _exact_ref(github)
     if ref is None:
         meta = github.get("")
@@ -113,6 +117,8 @@ def save(github, project_id, goal, registry, backlog=None):
         {"path": registry_path, "mode": "100644", "type": "blob", "content": json.dumps(registry, sort_keys=True, ensure_ascii=False)},
         {"path": backlog_path, "mode": "100644", "type": "blob", "content": json.dumps(backlog, sort_keys=True, ensure_ascii=False)},
     ]
+    if improvement_goal is not None:
+        entries.append({"path": improvement_goal_path, "mode": "100644", "type": "blob", "content": json.dumps(improvement_goal, sort_keys=True, ensure_ascii=False)})
     tree = github.call("POST", github.repo + "/git/trees", {"base_tree": base_tree, "tree": entries})
     tree_sha = tree.get("sha") if isinstance(tree, dict) else None
     if not isinstance(tree_sha, str) or len(tree_sha) != 40:
@@ -147,6 +153,8 @@ def restore_local(github, project_id, project_out):
     (root / "goal.json").write_text(json.dumps(remote["goal"], sort_keys=True, ensure_ascii=False, indent=2) + "\n")
     (root / "capabilities.json").write_text(json.dumps(remote["registry"], sort_keys=True, ensure_ascii=False, indent=2) + "\n")
     (root / "improvement-backlog.json").write_text(json.dumps(remote["backlog"], sort_keys=True, ensure_ascii=False, indent=2) + "\n")
+    if remote["improvement_goal"] is not None:
+        (root / "improvement-goal.json").write_text(json.dumps(remote["improvement_goal"], sort_keys=True, ensure_ascii=False, indent=2) + "\n")
     return True
 
 
@@ -157,13 +165,18 @@ def persist_local(github, project_id, project_out):
         registry = json.loads((root / "capabilities.json").read_text())
         backlog_path = root / "improvement-backlog.json"
         backlog = json.loads(backlog_path.read_text()) if backlog_path.is_file() else new_backlog()
+        improvement_goal_path = root / "improvement-goal.json"
+        improvement_goal = json.loads(improvement_goal_path.read_text()) if improvement_goal_path.is_file() else None
     except (OSError, json.JSONDecodeError):
         raise RemoteStateError("local autonomous state unavailable") from None
     validate_goal(goal)
     validate_registry(registry)
     validate_backlog(backlog)
+    if improvement_goal is not None:
+        validate_goal(improvement_goal)
     remote = load(github, project_id)
     if (remote is not None and remote["goal"] == goal and remote["registry"] == registry
-            and remote["backlog"] == backlog):
+            and remote["backlog"] == backlog
+            and (improvement_goal is None or remote.get("improvement_goal") == improvement_goal)):
         return remote["head_sha"]
-    return save(github, project_id, goal, registry, backlog)
+    return save(github, project_id, goal, registry, backlog, improvement_goal)

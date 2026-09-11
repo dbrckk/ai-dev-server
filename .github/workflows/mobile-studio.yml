@@ -25,27 +25,59 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           python - <<'PY'
-          import json, os, urllib.request
+          import base64, json, os, urllib.error, urllib.request
+          from studio.goal_engine import validate as validate_goal
+
           repo=os.environ['GITHUB_REPOSITORY']
-          req=urllib.request.Request(
-              'https://api.github.com/repos/'+repo+'/git/trees/studio-autonomy-state?recursive=1',
-              headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'},
-          )
-          terminal=[]
-          try:
+          headers={
+              'Authorization':'Bearer '+os.environ['GH_TOKEN'],
+              'Accept':'application/vnd.github+json',
+          }
+
+          def get_json(url):
+              req=urllib.request.Request(url,headers=headers)
               with urllib.request.urlopen(req,timeout=20) as response:
-                  data=json.load(response)
-              for item in data.get('tree',[]):
-                  path=item.get('path','')
-                  if path.startswith('.studio-autonomy/') and path.endswith('/goal.json'):
-                      parts=path.split('/')
-                      if len(parts)==3:
-                          terminal.append(parts[1])
-          except Exception:
-              terminal=[]
-          print('ids='+json.dumps(sorted(set(terminal)),separators=(',',':')))
+                  return json.load(response)
+
+          tree_url='https://api.github.com/repos/'+repo+'/git/trees/studio-autonomy-state?recursive=1'
+          try:
+              data=get_json(tree_url)
+          except urllib.error.HTTPError as exc:
+              if exc.code == 404:
+                  data={'tree':[]}
+              else:
+                  raise
+
+          if not isinstance(data,dict) or data.get('truncated') or not isinstance(data.get('tree'),list):
+              raise RuntimeError('Autonomous state tree is invalid or truncated')
+
+          terminal=[]
+          for item in data['tree']:
+              if not isinstance(item,dict) or item.get('type')!='blob':
+                  continue
+              path=item.get('path','')
+              if not (path.startswith('.studio-autonomy/') and path.endswith('/goal.json')):
+                  continue
+              parts=path.split('/')
+              if len(parts)!=3:
+                  raise RuntimeError('Autonomous goal path is invalid')
+              sha=item.get('sha')
+              if not isinstance(sha,str) or len(sha)!=40:
+                  raise RuntimeError('Autonomous goal blob identity is invalid')
+              blob=get_json('https://api.github.com/repos/'+repo+'/git/blobs/'+sha)
+              if not isinstance(blob,dict) or blob.get('encoding')!='base64':
+                  raise RuntimeError('Autonomous goal blob is invalid')
+              raw=base64.b64decode(blob.get('content',''),validate=False)
+              if len(raw)>512*1024:
+                  raise RuntimeError('Autonomous goal blob is too large')
+              goal=validate_goal(json.loads(raw.decode('utf-8')))
+              if goal['status'] in {'complete','blocked','human_action_required'}:
+                  terminal.append(parts[1])
+
+          encoded=json.dumps(sorted(set(terminal)),separators=(',',':'))
+          print('ids='+encoded)
           with open(os.environ['GITHUB_OUTPUT'],'a') as out:
-              out.write('ids='+json.dumps(sorted(set(terminal)),separators=(',',':'))+'\n')
+              out.write('ids='+encoded+'\n')
           PY
       - id: queue
         env:

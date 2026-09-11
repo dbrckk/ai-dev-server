@@ -4,16 +4,20 @@ from __future__ import annotations
 from pathlib import Path
 
 try:
+    from .capability_registry import load as load_registry
     from .continuous_improvement import improvement_goal
     from .goal_engine import load as load_goal, save as save_goal
     from .goal_loop import run_goal
     from .improvement_backlog import load as load_backlog, prove, save as save_backlog
+    from .improvement_dispatch import dispatch
     from .improvement_verifier import verify_improvement_result
 except ImportError:
+    from capability_registry import load as load_registry
     from continuous_improvement import improvement_goal
     from goal_engine import load as load_goal, save as save_goal
     from goal_loop import run_goal
     from improvement_backlog import load as load_backlog, prove, save as save_backlog
+    from improvement_dispatch import dispatch
     from improvement_verifier import verify_improvement_result
 
 
@@ -76,6 +80,16 @@ def run_active_improvement(
 
     candidate=item["candidate"]
     candidate_id=candidate["id"]
+    registry=load_registry(registry_path)
+    route=dispatch(candidate,registry)
+    if route["decision"]=="adapt":
+        return {
+            "status":"adaptation_required",
+            "candidate_id":candidate_id,
+            "goal_status":None,
+            "proved":False,
+            "missing_capability":route["missing_capability"],
+        }
     if goal_path.is_file():
         goal=load_goal(goal_path)
         if goal["goal_id"]!=candidate_id:

@@ -87,7 +87,7 @@ def build_repository_providers(repo_root, repo_full_name, commit_sha, capability
             raise RepositoryResearchError("research URL invalid")
         encoded_path=url[len(prefix):]
         rel=unquote(encoded_path)
-        if not rel or "\" in rel:
+        if not rel or "\\" in rel:
             raise RepositoryResearchError("research path invalid")
         target=(root/rel).resolve()
         if not target.is_relative_to(root):

@@ -63,7 +63,7 @@ class CapabilityQATests(unittest.TestCase):
         state['release_evidence']['capability_qa'] = {
             'passed': True, 'required_qa_stages': ['performance_qa']}
         state['release_evidence'].update({
-            'store_metadata': {'passed': True}, 'privacy_policy': {'passed': True},
+            'store_metadata': {'passed': True}, 'artwork_qa': {'passed': True}, 'privacy_policy': {'passed': True},
             'security_scan': {'passed': True},
         })
         self.assertEqual(next_stage(state), 'performance_qa')

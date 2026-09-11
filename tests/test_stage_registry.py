@@ -15,7 +15,7 @@ class StageRegistryTests(unittest.TestCase):
     def test_registry_contains_required_trusted_stages(self):
         required = {
             'real_device', 'capability_qa', 'performance_qa',
-            'store_metadata', 'privacy_policy', 'security_scan',
+            'store_metadata', 'artwork_qa', 'privacy_policy', 'security_scan',
         }
         self.assertTrue(required.issubset(set(STAGES)))
         self.assertEqual(get_stage('security_scan').failed_status, 'security_failed')
@@ -26,7 +26,7 @@ class StageRegistryTests(unittest.TestCase):
             out = Path(tmp) / 'out'
             out.mkdir()
             project = {'file': 'control/mobile-requests/demo.json'}
-            sequence = ['real_device', 'capability_qa', 'store_metadata', 'privacy_policy', 'security_scan']
+            sequence = ['real_device', 'capability_qa', 'store_metadata', 'artwork_qa', 'privacy_policy', 'security_scan']
             state = {'completion': {'finished': False, 'next_stage': sequence[0]}}
             (out / 'report.json').write_text(json.dumps(state))
             calls = []

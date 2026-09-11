@@ -5,6 +5,8 @@ from studio.capability_adaptation_state import (
     new_state,
     validate,
     record_research,
+    record_synthesis,
+    record_validation,
 )
 
 

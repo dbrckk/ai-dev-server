@@ -9,7 +9,7 @@ except ImportError:
     from capability_registry import has_capability,load as load_registry,register,save as save_registry
     from goal_engine import decide,finalize,load as load_goal,record_cycle,resolve_capability,save as save_goal
 
-def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_cycles=100):
+def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_cycles=100,context_provider=None,cycle_observer=None):
     if not isinstance(max_cycles,int) or isinstance(max_cycles,bool) or not 1<=max_cycles<=1000:
         raise ValueError("max_cycles invalid")
     goal_path=Path(goal_path); registry_path=Path(registry_path)
@@ -35,7 +35,12 @@ def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_c
             save_registry(registry_path,registry)
             state=resolve_capability(state,capability,result["evidence"])
             save_goal(goal_path,state); continue
-        result=execute_cycle(dict(state))
+        cycle_state=dict(state)
+        if context_provider is not None:
+            context=context_provider(dict(state))
+            if not isinstance(context,list): raise ValueError("goal context invalid")
+            cycle_state["learned_context"]=context
+        result=execute_cycle(cycle_state)
         if not isinstance(result,dict):
             state=record_cycle(state,failure="cycle returned invalid result")
         else:
@@ -43,4 +48,6 @@ def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_c
                 missing_capability=result.get("missing_capability"),human_action=result.get("human_action"),
                 blocked_reason=result.get("blocked_reason"))
         save_goal(goal_path,state)
+        if cycle_observer is not None:
+            cycle_observer(dict(state), result if isinstance(result,dict) else {})
     return state

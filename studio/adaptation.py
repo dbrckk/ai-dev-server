@@ -7,7 +7,11 @@ an isolated branch, benchmarked, and either promoted or rejected.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
+
+from capability_memory import attach_capability_hints
+from project_memory import load as load_project_memory
 
 VERSION = 1
 
@@ -138,6 +142,11 @@ def write_adaptation_request(report: dict, out: Path, registered_stages: set[str
     request = build_adaptation_request(report, registered_stages)
     if request['status'] != 'adaptation_required':
         return request
+    memory_path = out / '.memory' / 'memory.json'
+    project_id = os.environ.get('STUDIO_PROJECT_ID')
+    if memory_path.is_file() and isinstance(project_id, str) and project_id:
+        memory = load_project_memory(memory_path)
+        request = attach_capability_hints(request, memory, project_id)
     out.mkdir(parents=True, exist_ok=True)
     path = out / 'evolution-request.json'
     path.write_text(json.dumps(request, ensure_ascii=False, sort_keys=True, indent=2) + '\n')

@@ -3,6 +3,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
 from adaptation import build_adaptation_request, write_adaptation_request
@@ -75,6 +76,33 @@ class AdaptationTests(unittest.TestCase):
             result = write_adaptation_request(complete, out, frozenset())
             self.assertEqual(result['status'], 'no_adaptation_required')
             self.assertFalse(path.exists())
+
+
+    def test_validated_cross_project_memory_is_attached_as_hint_only(self):
+        from project_memory import add_entry, new_memory, save as save_memory
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            memory = add_entry(
+                new_memory(),
+                entry_id='experience:c1',
+                kind='experience',
+                project_id='app-a',
+                summary='Validated autonomous capability promotion for billing_qa.',
+                tags=['capability','billing_qa','autonomous-promotion'],
+                evidence={'tests_passed':True,'regression_suite_passed':True,'commit_sha':'a'*40,'gap':'billing_qa'},
+                provenance={'source':'validated_project_execution'},
+                reusable=True,
+                confidence=95,
+            )
+            save_memory(out/'.memory/memory.json', memory)
+            report = {'completion': {'finished': False, 'next_stage': 'billing_qa', 'blockers': ['billing_qa_missing']}}
+            with patch.dict('os.environ', {'STUDIO_PROJECT_ID':'app-b'}, clear=False):
+                result = write_adaptation_request(report, out, frozenset())
+            self.assertIn('billing_qa', result['prior_validated_experience'])
+            self.assertEqual(result['memory_policy']['authority'], 'hint_only')
+            self.assertFalse(result['memory_policy']['may_skip_validation'])
+            self.assertTrue(result['memory_policy']['must_revalidate_locally'])
+
 
 
 if __name__ == '__main__':

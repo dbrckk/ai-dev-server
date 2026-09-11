@@ -43,6 +43,7 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
     request=request_check(json.loads(request_path.read_text()))
     if not request['enabled']:
         result={'status':'disabled','next_stage':None,'finished':False}; out.mkdir(parents=True,exist_ok=True); (out/'github-pipeline.json').write_text(canonical(result)); return result
+    os.environ['STUDIO_PROJECT_ID']=request['id']
     deadline=clock()+budget_seconds
     remote_github=None
     if os.environ.get('STUDIO_PERSIST_REMOTE')=='1':

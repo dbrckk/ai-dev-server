@@ -94,5 +94,24 @@ class GitHubGoalStoreTests(unittest.TestCase):
             self.assertIsNotNone(gh.ref)
 
 
+    def test_improvement_goal_round_trip_and_restore(self):
+        gh=FakeGitHub()
+        improvement=new_goal(
+            "improvement:test",
+            "Prove improvement",
+            [{"name":"proved","required_evidence":["regression"]}],
+            max_attempts=4,
+        )
+        save(gh,"demo",goal(),new_registry(),new_backlog(),improvement)
+        restored=load(gh,"demo")
+        self.assertEqual(restored["improvement_goal"]["goal_id"],"improvement:test")
+        with tempfile.TemporaryDirectory() as td:
+            out=Path(td)
+            self.assertTrue(restore_local(gh,"demo",out))
+            path=out/".autonomy/improvement-goal.json"
+            self.assertTrue(path.is_file())
+            self.assertEqual(json.loads(path.read_text())["goal_id"],"improvement:test")
+
+
 if __name__=="__main__":
     unittest.main()

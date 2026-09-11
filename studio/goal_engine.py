@@ -62,12 +62,12 @@ def missing_evidence(state):
             if key not in found and key not in out: out.append(key)
     return out
 
-def record_cycle(state,evidence=None,failure=None,missing_capability=None,human_action=None,blocked_reason=None):
+def record_cycle(state,evidence=None,failure=None,missing_capability=None,human_action=None,blocked_reason=None,*,count_attempt=True):
     validate(state)
     if state["status"]!="active": raise GoalStateError("terminal state immutable")
-    if state["attempt"]>=state["max_attempts"]: raise GoalStateError("attempt budget exhausted")
+    if state["attempt"]>=state["max_attempts"] and count_attempt: raise GoalStateError("attempt budget exhausted")
     x={**state,"evidence":dict(state["evidence"]),"failures":list(state["failures"]),"missing_capabilities":list(state["missing_capabilities"]),"history":list(state["history"])}
-    x["attempt"]+=1
+    if count_attempt: x["attempt"]+=1
     if evidence:
         if not isinstance(evidence,dict) or any(not isinstance(k,str) or not k or v is None or v is False for k,v in evidence.items()): raise GoalStateError("evidence invalid")
         x["evidence"].update(evidence)

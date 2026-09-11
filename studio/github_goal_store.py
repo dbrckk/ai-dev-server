@@ -150,4 +150,9 @@ def persist_local(github, project_id, project_out):
         registry = json.loads((root / "capabilities.json").read_text())
     except (OSError, json.JSONDecodeError):
         raise RemoteStateError("local autonomous state unavailable") from None
+    validate_goal(goal)
+    validate_registry(registry)
+    remote = load(github, project_id)
+    if remote is not None and remote["goal"] == goal and remote["registry"] == registry:
+        return remote["head_sha"]
     return save(github, project_id, goal, registry)

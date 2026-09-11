@@ -9,11 +9,11 @@ from pathlib import Path
 try:
     from .capability_registry import validate as validate_registry
     from .goal_engine import validate as validate_goal
-    from .project_memory import validate as validate_memory, new_memory
+    from .improvement_backlog import new_backlog, validate as validate_backlog
 except ImportError:
     from capability_registry import validate as validate_registry
     from goal_engine import validate as validate_goal
-    from project_memory import validate as validate_memory, new_memory
+    from improvement_backlog import new_backlog, validate as validate_backlog
 
 STATE_BRANCH = "studio-autonomy-state"
 ROOT = ".studio-autonomy"
@@ -33,7 +33,7 @@ def _safe_project_id(value):
 def _paths(project_id):
     project_id = _safe_project_id(project_id)
     prefix = f"{ROOT}/{project_id}"
-    return prefix + "/goal.json", prefix + "/capabilities.json", prefix + "/memory.json"
+    return prefix + "/goal.json", prefix + "/capabilities.json", prefix + "/improvement-backlog.json"
 
 
 def _exact_ref(github):
@@ -61,7 +61,7 @@ def _decode_blob(github, sha):
 
 
 def load(github, project_id):
-    goal_path, registry_path, memory_path = _paths(project_id)
+    goal_path, registry_path, backlog_path = _paths(project_id)
     ref = _exact_ref(github)
     if ref is None:
         return None
@@ -74,22 +74,22 @@ def load(github, project_id):
     matches = {item.get("path"): item for item in tree["tree"] if isinstance(item, dict) and item.get("type") == "blob"}
     goal_item = matches.get(goal_path)
     registry_item = matches.get(registry_path)
-    memory_item = matches.get(memory_path)
-    if goal_item is None and registry_item is None and memory_item is None:
+    backlog_item = matches.get(backlog_path)
+    if goal_item is None and registry_item is None:
         return None
     if goal_item is None or registry_item is None:
         raise RemoteStateError("remote autonomous state incomplete")
     goal = validate_goal(_decode_blob(github, goal_item.get("sha")))
     registry = validate_registry(_decode_blob(github, registry_item.get("sha")))
-    memory = validate_memory(_decode_blob(github, memory_item.get("sha"))) if memory_item is not None else new_memory()
-    return {"goal": goal, "registry": registry, "memory": memory, "head_sha": head}
+    backlog = new_backlog() if backlog_item is None else validate_backlog(_decode_blob(github, backlog_item.get("sha")))
+    return {"goal": goal, "registry": registry, "backlog": backlog, "head_sha": head}
 
 
-def save(github, project_id, goal, registry, memory):
-    goal_path, registry_path, memory_path = _paths(project_id)
+def save(github, project_id, goal, registry, backlog=None):
+    goal_path, registry_path, backlog_path = _paths(project_id)
     validate_goal(goal)
     validate_registry(registry)
-    validate_memory(memory)
+    backlog = new_backlog() if backlog is None else validate_backlog(backlog)
     ref = _exact_ref(github)
     if ref is None:
         meta = github.get("")
@@ -111,7 +111,7 @@ def save(github, project_id, goal, registry, memory):
     entries = [
         {"path": goal_path, "mode": "100644", "type": "blob", "content": json.dumps(goal, sort_keys=True, ensure_ascii=False)},
         {"path": registry_path, "mode": "100644", "type": "blob", "content": json.dumps(registry, sort_keys=True, ensure_ascii=False)},
-        {"path": memory_path, "mode": "100644", "type": "blob", "content": json.dumps(memory, sort_keys=True, ensure_ascii=False)},
+        {"path": backlog_path, "mode": "100644", "type": "blob", "content": json.dumps(backlog, sort_keys=True, ensure_ascii=False)},
     ]
     tree = github.call("POST", github.repo + "/git/trees", {"base_tree": base_tree, "tree": entries})
     tree_sha = tree.get("sha") if isinstance(tree, dict) else None
@@ -146,7 +146,7 @@ def restore_local(github, project_id, project_out):
     root.mkdir(parents=True, exist_ok=True)
     (root / "goal.json").write_text(json.dumps(remote["goal"], sort_keys=True, ensure_ascii=False, indent=2) + "\n")
     (root / "capabilities.json").write_text(json.dumps(remote["registry"], sort_keys=True, ensure_ascii=False, indent=2) + "\n")
-    (root / "memory.json").write_text(json.dumps(remote["memory"], sort_keys=True, ensure_ascii=False, indent=2) + "\n")
+    (root / "improvement-backlog.json").write_text(json.dumps(remote["backlog"], sort_keys=True, ensure_ascii=False, indent=2) + "\n")
     return True
 
 
@@ -155,14 +155,15 @@ def persist_local(github, project_id, project_out):
     try:
         goal = json.loads((root / "goal.json").read_text())
         registry = json.loads((root / "capabilities.json").read_text())
-        memory_path = root / "memory.json"
-        memory = json.loads(memory_path.read_text()) if memory_path.exists() else new_memory()
+        backlog_path = root / "improvement-backlog.json"
+        backlog = json.loads(backlog_path.read_text()) if backlog_path.is_file() else new_backlog()
     except (OSError, json.JSONDecodeError):
         raise RemoteStateError("local autonomous state unavailable") from None
     validate_goal(goal)
     validate_registry(registry)
-    validate_memory(memory)
+    validate_backlog(backlog)
     remote = load(github, project_id)
-    if remote is not None and remote["goal"] == goal and remote["registry"] == registry and remote["memory"] == memory:
+    if (remote is not None and remote["goal"] == goal and remote["registry"] == registry
+            and remote["backlog"] == backlog):
         return remote["head_sha"]
-    return save(github, project_id, goal, registry, memory)
+    return save(github, project_id, goal, registry, backlog)

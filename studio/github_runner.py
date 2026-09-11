@@ -13,9 +13,10 @@ import time
 import uuid
 
 from autonomous_project import run_persistent_project
-from capability_adaptation_state import new_state as new_capability_adaptation_state, record_research as record_capability_research
+from capability_adaptation_state import new_state as new_capability_adaptation_state, record_research as record_capability_research, record_synthesis as record_capability_synthesis
 from adaptation_research import research_missing_capability
 from repository_research_provider import build_repository_providers
+from generic_capability_synthesis import synthesize_from_memory
 from ci_provider import enabled
 from continuous_improvement import assess as assess_improvements
 from core import StudioError, canonical, request_check
@@ -114,6 +115,20 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             if normalized not in {'research_complete','research_incomplete'}:
                 normalized='research_incomplete'
             adaptation_state=record_capability_research(adaptation_state,normalized)
+            adaptation_path.write_text(canonical(adaptation_state))
+        if adaptation_state['status']=='synthesis_required':
+            memory=load_project_memory(memory_path)
+            candidate=synthesize_from_memory(
+                memory,
+                request['id'],
+                adaptation_state['capability'],
+            )
+            candidate_path=out/'.autonomy/capability-candidate.json'
+            candidate_path.write_text(canonical(candidate))
+            adaptation_state=record_capability_synthesis(
+                adaptation_state,
+                candidate['candidate_sha256'],
+            )
             adaptation_path.write_text(canonical(adaptation_state))
     last_result={}
     def run_once(*args):

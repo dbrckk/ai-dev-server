@@ -24,6 +24,7 @@ STAGES = {
     'billing_qa': Stage('billing_qa', 'studio/billing_stage.py', 'deferred_billing', 'billing_failed'),
     'platform_view_qa': Stage('platform_view_qa', 'studio/platform_view_stage.py', 'deferred_platform_view', 'platform_view_failed'),
     'store_metadata': Stage('store_metadata', 'studio/store_stage.py', 'deferred_store', 'store_failed'),
+    'artwork_qa': Stage('artwork_qa', 'studio/artwork_stage.py', 'deferred_artwork', 'artwork_failed'),
     'privacy_policy': Stage('privacy_policy', 'studio/privacy_stage.py', 'deferred_privacy', 'privacy_failed'),
     'security_scan': Stage('security_scan', 'studio/security_stage.py', 'deferred_security', 'security_failed'),
 }

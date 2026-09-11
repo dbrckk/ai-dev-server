@@ -42,6 +42,7 @@ def bounded_run(args, timeout):
 
 
 def _update_improvements(out: Path, goal_state: dict, project_state: dict) -> dict:
+    out.mkdir(parents=True,exist_ok=True)
     assessment=assess_improvements(goal_state,project_state)
     (out/'continuous-improvement.json').write_text(canonical(assessment))
     backlog_path=out/'.autonomy/improvement-backlog.json'

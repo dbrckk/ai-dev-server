@@ -10,6 +10,7 @@ try:
     from .goal_engine import new_goal, save as save_goal
     from .goal_loop import run_goal
     from .promoted_capabilities import sync_into_registry
+    from .capability_runtime import execute_capability
     from .project_memory import new_memory, load as load_memory, save as save_memory
     from .goal_learning import context_for_goal, learn_from_cycle
 except ImportError:
@@ -17,6 +18,7 @@ except ImportError:
     from goal_engine import new_goal, save as save_goal
     from goal_loop import run_goal
     from promoted_capabilities import sync_into_registry
+    from capability_runtime import execute_capability
     from project_memory import new_memory, load as load_memory, save as save_memory
     from goal_learning import context_for_goal, learn_from_cycle
 
@@ -190,6 +192,14 @@ def run_persistent_project(
         learned = learn_from_cycle(memory, goal_id, goal_state, result, str(baseline_sha))
         if learned != memory: save_memory(memory_path, learned)
 
+    def execute_registered_capability(registry, capability, goal_state):
+        return execute_capability(
+            registry,
+            capability,
+            {"goal_id": goal_id, "objective": objective, "goal_state": goal_state},
+            repo_root=Path("."),
+        )
+
     return run_goal(
         goal_path,
         registry_path,
@@ -197,4 +207,5 @@ def run_persistent_project(
         max_cycles=max_cycles,
         context_provider=context_provider,
         cycle_observer=cycle_observer,
+        execute_registered_capability=execute_registered_capability,
     )

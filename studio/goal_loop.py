@@ -9,7 +9,7 @@ except ImportError:
     from capability_registry import has_capability,load as load_registry,register,save as save_registry
     from goal_engine import decide,finalize,load as load_goal,record_cycle,resolve_capability,save as save_goal
 
-def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_cycles=100,context_provider=None,cycle_observer=None):
+def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_cycles=100,context_provider=None,cycle_observer=None,execute_registered_capability=None):
     if not isinstance(max_cycles,int) or isinstance(max_cycles,bool) or not 1<=max_cycles<=1000:
         raise ValueError("max_cycles invalid")
     goal_path=Path(goal_path); registry_path=Path(registry_path)
@@ -22,7 +22,15 @@ def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_c
             capability=decision["next_action"].removeprefix("adapt:")
             if has_capability(registry,capability):
                 item=registry["capabilities"][capability]
-                state=resolve_capability(state,capability,{"registry_provider":item["provider"],"registry_evidence":item["evidence"]})
+                if execute_registered_capability is None:
+                    state=record_cycle(state,blocked_reason="registered capability has no runtime:"+capability)
+                    save_goal(goal_path,state); continue
+                result=execute_registered_capability(registry,capability,dict(state))
+                if not isinstance(result,dict) or result.get("passed") is not True or not isinstance(result.get("evidence"),dict) or not result["evidence"]:
+                    state=record_cycle(state,failure="registered capability execution unverified:"+capability)
+                    save_goal(goal_path,state); continue
+                evidence={"registry_provider":item["provider"],"registry_evidence":item["evidence"],"runtime_evidence":result["evidence"]}
+                state=resolve_capability(state,capability,evidence)
                 save_goal(goal_path,state); continue
             if adapt_capability is None:
                 state=record_cycle(state,blocked_reason="no adapter for capability:"+capability)

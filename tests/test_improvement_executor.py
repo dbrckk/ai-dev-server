@@ -27,6 +27,12 @@ class ImprovementExecutorTests(unittest.TestCase):
         save_backlog(backlog_path,backlog)
         registry=register(
             new_registry(),
+            "improvement.apply.repeated_failure",
+            "studio.failure_improver",
+            {"tests":"passed","regression":"passed"},
+        )
+        registry=register(
+            registry,
             "improvement.verify.repeated_failure",
             "studio.repeated_failure_verifier",
             {"tests":"passed","regression":"passed"},
@@ -51,7 +57,13 @@ class ImprovementExecutorTests(unittest.TestCase):
             registry_path=root/"capabilities.json"
             backlog=activate_next(merge_assessment(new_backlog(),candidate_assessment()))
             save_backlog(backlog_path,backlog)
-            save_registry(registry_path,new_registry())
+            registry=register(
+                new_registry(),
+                "improvement.apply.repeated_failure",
+                "studio.failure_improver",
+                {"tests":"passed","regression":"passed"},
+            )
+            save_registry(registry_path,registry)
             calls={"n":0}
             def execute(state):
                 calls["n"]+=1

@@ -27,6 +27,7 @@ jobs:
           python - <<'PY'
           import base64, json, os, urllib.error, urllib.request
           from studio.goal_engine import validate as validate_goal
+          from studio.improvement_backlog import validate as validate_backlog
 
           repo=os.environ['GITHUB_REPOSITORY']
           headers={
@@ -51,28 +52,49 @@ jobs:
           if not isinstance(data,dict) or data.get('truncated') or not isinstance(data.get('tree'),list):
               raise RuntimeError('Autonomous state tree is invalid or truncated')
 
-          terminal=[]
+          blobs={}
           for item in data['tree']:
-              if not isinstance(item,dict) or item.get('type')!='blob':
-                  continue
-              path=item.get('path','')
+              if isinstance(item,dict) and item.get('type')=='blob' and isinstance(item.get('path'),str):
+                  blobs[item['path']]=item
+
+          def read_blob(path, validator):
+              item=blobs.get(path)
+              if item is None:
+                  return None
+              sha=item.get('sha')
+              if not isinstance(sha,str) or len(sha)!=40:
+                  raise RuntimeError('Autonomous state blob identity is invalid')
+              blob=get_json('https://api.github.com/repos/'+repo+'/git/blobs/'+sha)
+              if not isinstance(blob,dict) or blob.get('encoding')!='base64':
+                  raise RuntimeError('Autonomous state blob is invalid')
+              raw=base64.b64decode(blob.get('content',''),validate=False)
+              if len(raw)>512*1024:
+                  raise RuntimeError('Autonomous state blob is too large')
+              return validator(json.loads(raw.decode('utf-8')))
+
+          terminal=[]
+          for path in sorted(blobs):
               if not (path.startswith('.studio-autonomy/') and path.endswith('/goal.json')):
                   continue
               parts=path.split('/')
               if len(parts)!=3:
                   raise RuntimeError('Autonomous goal path is invalid')
-              sha=item.get('sha')
-              if not isinstance(sha,str) or len(sha)!=40:
-                  raise RuntimeError('Autonomous goal blob identity is invalid')
-              blob=get_json('https://api.github.com/repos/'+repo+'/git/blobs/'+sha)
-              if not isinstance(blob,dict) or blob.get('encoding')!='base64':
-                  raise RuntimeError('Autonomous goal blob is invalid')
-              raw=base64.b64decode(blob.get('content',''),validate=False)
-              if len(raw)>512*1024:
-                  raise RuntimeError('Autonomous goal blob is too large')
-              goal=validate_goal(json.loads(raw.decode('utf-8')))
-              if goal['status'] in {'complete','blocked','human_action_required'}:
-                  terminal.append(parts[1])
+              project_id=parts[1]
+              goal=read_blob(path,validate_goal)
+              if goal['status'] in {'blocked','human_action_required'}:
+                  terminal.append(project_id)
+                  continue
+              if goal['status']!='complete':
+                  continue
+              backlog=read_blob(
+                  '.studio-autonomy/'+project_id+'/improvement-backlog.json',
+                  validate_backlog,
+              )
+              pending=False
+              if backlog is not None:
+                  pending=any(item['status'] in {'queued','active'} for item in backlog['items'])
+              if not pending:
+                  terminal.append(project_id)
 
           encoded=json.dumps(sorted(set(terminal)),separators=(',',':'))
           print('ids='+encoded)

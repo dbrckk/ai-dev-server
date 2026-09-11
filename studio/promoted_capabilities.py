@@ -56,13 +56,27 @@ def load(path=DEFAULT_REGISTRY):
     return value
 
 
-def sync_into_registry(registry, path=DEFAULT_REGISTRY):
+def _provider_file(provider: str, repo_root: Path) -> Path:
+    if not isinstance(provider, str) or not provider.startswith("studio.capabilities."):
+        raise PromotedCapabilityError("promoted capability provider invalid")
+    module = provider.removeprefix("studio.capabilities.")
+    if not re.fullmatch(r"[a-z][a-z0-9_]{2,120}", module):
+        raise PromotedCapabilityError("promoted capability provider invalid")
+    return Path(repo_root) / "studio" / "capabilities" / (module + ".py")
+
+
+def sync_into_registry(registry, path=DEFAULT_REGISTRY, *, repo_root=None):
     validate_registry(registry)
+    path = Path(path)
     promoted = load(path)
+    root = Path(repo_root) if repo_root is not None else path.resolve().parents[1]
     result = registry
     for name in sorted(promoted["capabilities"]):
         entry = promoted["capabilities"][name]
         provider = entry["provider"]
+        provider_file = _provider_file(provider, root)
+        if not provider_file.is_file() or provider_file.is_symlink():
+            raise PromotedCapabilityError("promoted capability provider implementation missing")
         if has_capability(result, name):
             current = result["capabilities"][name]
             if current.get("provider") != provider:

@@ -8,6 +8,7 @@ on:
     - cron: '3,23,43 * * * *'
 permissions:
   contents: read
+  actions: read
 jobs:
   queue:
     runs-on: ubuntu-24.04
@@ -18,8 +19,38 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
+      - id: terminal
+        name: Read terminal autonomous goal ids
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request
+          repo=os.environ['GITHUB_REPOSITORY']
+          req=urllib.request.Request(
+              'https://api.github.com/repos/'+repo+'/git/trees/studio-autonomy-state?recursive=1',
+              headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'},
+          )
+          terminal=[]
+          try:
+              with urllib.request.urlopen(req,timeout=20) as response:
+                  data=json.load(response)
+              for item in data.get('tree',[]):
+                  path=item.get('path','')
+                  if path.startswith('.studio-autonomy/') and path.endswith('/goal.json'):
+                      parts=path.split('/')
+                      if len(parts)==3:
+                          terminal.append(parts[1])
+          except Exception:
+              terminal=[]
+          print('ids='+json.dumps(sorted(set(terminal)),separators=(',',':')))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:
+              out.write('ids='+json.dumps(sorted(set(terminal)),separators=(',',':'))+'\n')
+          PY
       - id: queue
-        run: echo "projects=$(python studio/queue.py --provider github)" >> "$GITHUB_OUTPUT"
+        env:
+          TERMINAL_IDS: ${{ steps.terminal.outputs.ids }}
+        run: echo "projects=$(python studio/queue.py --provider github --terminal-ids-json "$TERMINAL_IDS")" >> "$GITHUB_OUTPUT"
   create:
     needs: queue
     if: needs.queue.outputs.projects != '[]'

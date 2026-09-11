@@ -84,7 +84,7 @@ class GitHubGoalStoreTests(unittest.TestCase):
             load(FakeGitHub(),"../escape")
 
     def test_local_restore_and_persist(self):
-        gh=FakeGitHub(); save(gh,"demo",goal(),new_registry(),new_memory())
+        gh=FakeGitHub(); save(gh,"demo",goal(),new_registry(),new_backlog())
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)
             self.assertTrue(restore_local(gh,"demo",out))

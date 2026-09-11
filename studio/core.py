@@ -182,6 +182,8 @@ class Model:
         if not self.api.key:
             raise StudioError('Missing STUDIO_API_KEY (or NVIDIA_NIM_API_KEY workflow fallback)')
     def ask(self, role, context, screenshots=()):
+        from learning_context import augment
+        context = augment(context)
         # One schema/truncation repair, charged against the global model-call budget.
         for attempt in range(2):
             try:

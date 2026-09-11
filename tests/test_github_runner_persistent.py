@@ -8,6 +8,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 from github_runner import run
+from goal_engine import finalize, new_goal, record_cycle
 
 
 class GithubRunnerPersistentTests(unittest.TestCase):
@@ -26,7 +27,9 @@ class GithubRunnerPersistentTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td); request=self.request(root); out=root/"out"
             with patch("github_runner.run_persistent_project") as persistent:
-                persistent.return_value={"status":"complete","human_action":None,"blocked_reason":None}
+                goal=new_goal("demo","Complete demo",[{"name":"done","required_evidence":["project_completion"]}])
+                goal=record_cycle(goal,evidence={"project_completion":{"finished":True}})
+                persistent.return_value=finalize(goal)
                 result=run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha="a"*40)
                 self.assertEqual(result["status"],"complete")
                 self.assertTrue(result["finished"])

@@ -14,9 +14,11 @@ import uuid
 
 from autonomous_project import run_persistent_project
 from ci_provider import enabled
+from continuous_improvement import assess as assess_improvements
 from core import StudioError, canonical, request_check
 from github_goal_store import RemoteStateError, persist_local, restore_local
 from github_memory_store import GitHubMemoryError, persist_local as persist_memory_local, restore_local as restore_memory_local
+from improvement_backlog import activate_next, load as load_improvement_backlog, merge_assessment, new_backlog, save as save_improvement_backlog
 from memory_lifecycle import ingest_run
 from project_memory import load as load_project_memory, save as save_project_memory
 from multi_engine_orchestrator import run_project as run_multi_engine_project
@@ -37,6 +39,24 @@ def bounded_run(args, timeout):
             if containers: subprocess.run(['docker','rm','-f',*containers],capture_output=True,timeout=30,check=True)
         except (OSError,subprocess.SubprocessError): raise StudioError('Timed-out worker stopped but container cleanup failed') from None
         raise
+
+
+def _update_improvements(out: Path, goal_state: dict, project_state: dict) -> dict:
+    out.mkdir(parents=True,exist_ok=True)
+    assessment=assess_improvements(goal_state,project_state)
+    (out/'continuous-improvement.json').write_text(canonical(assessment))
+    backlog_path=out/'.autonomy/improvement-backlog.json'
+    backlog=load_improvement_backlog(backlog_path) if backlog_path.is_file() else new_backlog()
+    backlog=merge_assessment(backlog,assessment)
+    backlog=activate_next(backlog)
+    save_improvement_backlog(backlog_path,backlog)
+    active=next((item for item in backlog['items'] if item['status']=='active'),None)
+    return {
+        'status':assessment['status'],
+        'active_candidate':active['candidate']['id'] if active else None,
+        'queued':sum(item['status']=='queued' for item in backlog['items']),
+        'proved':sum(item['status']=='proved' for item in backlog['items']),
+    }
 
 
 def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=time.monotonic,budget_seconds=85*60,baseline_sha:str|None=None)->dict:
@@ -71,6 +91,11 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             max_cycles=4,
             run_once=run_once,
         )
+    improvement=None
+    status=state.get('status')
+    if status=='complete':
+        project_state=last_result.get('report') if isinstance(last_result.get('report'),dict) else {}
+        improvement=_update_improvements(out,state,project_state)
     if remote_github is not None:
         try:
             persist_local(remote_github,request['id'],out)
@@ -85,12 +110,16 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             raise StudioError('Remote project memory persistence failed: '+str(exc)) from None
         except ValueError as exc:
             raise StudioError('Project memory ingestion failed: '+str(exc)) from None
-    status=state.get('status')
     summary={
         'status':status,
         'next_stage':last_result.get('next_stage'),
         'finished':status=='complete',
     }
+    if improvement is not None:
+        summary['improvement_status']=improvement['status']
+        summary['improvement_next']=improvement['active_candidate']
+        summary['improvement_queued']=improvement['queued']
+        summary['improvement_proved']=improvement['proved']
     if status=='human_action_required':
         summary['next_stage']=state.get('human_action')
     elif status=='blocked':

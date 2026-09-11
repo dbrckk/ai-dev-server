@@ -8,11 +8,13 @@ try:
     from .goal_engine import load as load_goal, save as save_goal
     from .goal_loop import run_goal
     from .improvement_backlog import load as load_backlog, prove, save as save_backlog
+    from .improvement_verifier import verify_improvement_result
 except ImportError:
     from continuous_improvement import improvement_goal
     from goal_engine import load as load_goal, save as save_goal
     from goal_loop import run_goal
     from improvement_backlog import load as load_backlog, prove, save as save_backlog
+    from improvement_verifier import verify_improvement_result
 
 
 class ImprovementExecutionError(ValueError):
@@ -25,6 +27,31 @@ def _active(backlog):
         raise ImprovementExecutionError("multiple active improvements")
     return active[0] if active else None
 
+
+
+def verified_project_cycle(candidate, run_project_cycle):
+    if not callable(run_project_cycle):
+        raise ImprovementExecutionError("project cycle runner invalid")
+
+    def execute(goal_state):
+        result=run_project_cycle(goal_state)
+        evidence=verify_improvement_result(candidate,result)
+        out={}
+        if evidence:
+            out["evidence"]=evidence
+        if not isinstance(result,dict):
+            out["failure"]="improvement project cycle returned invalid result"
+            return out
+        status=result.get("status")
+        if status=="human_action_required":
+            out["human_action"]=result.get("next_stage") or "external_human_action"
+        elif status=="blocked":
+            out["blocked_reason"]=result.get("next_stage") or "improvement blocked"
+        elif status not in {"complete","human_action_required","blocked"}:
+            out["failure"]="improvement cycle incomplete:"+str(status)
+        return out
+
+    return execute
 
 def run_active_improvement(
     backlog_path,

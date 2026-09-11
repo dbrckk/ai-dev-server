@@ -107,3 +107,24 @@ def record_synthesis(value, candidate_sha256):
         "validation_status":"required",
     })
     return _seal(out)
+
+
+def record_validation(value, validation_status):
+    validate(value)
+    if value["status"]!="validation_required" or value["validation_status"]!="required":
+        raise CapabilityAdaptationStateError("validation transition invalid")
+    if validation_status=="candidate_validated":
+        status="promotion_required"
+        promotion_status="eligible"
+    elif validation_status=="candidate_rejected":
+        status="blocked"
+        promotion_status="not_ready"
+    else:
+        raise CapabilityAdaptationStateError("validation result invalid")
+    out=dict(value)
+    out.update({
+        "status":status,
+        "validation_status":validation_status,
+        "promotion_status":promotion_status,
+    })
+    return _seal(out)

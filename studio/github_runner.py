@@ -16,6 +16,9 @@ from autonomous_project import run_persistent_project
 from ci_provider import enabled
 from core import StudioError, canonical, request_check
 from github_goal_store import RemoteStateError, persist_local, restore_local
+from github_memory_store import GitHubMemoryError, persist_local as persist_memory_local, restore_local as restore_memory_local
+from memory_lifecycle import ingest_run
+from project_memory import load as load_project_memory, save as save_project_memory
 from multi_engine_orchestrator import run_project as run_multi_engine_project
 from run import GitHub as RepoGitHub
 
@@ -49,8 +52,11 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
         remote_github=RepoGitHub(control_repo)
         try:
             restore_local(remote_github,request['id'],out)
+            restore_memory_local(remote_github,out/'.memory/memory.json')
         except RemoteStateError as exc:
             raise StudioError('Remote autonomous state restore failed: '+str(exc)) from None
+        except GitHubMemoryError as exc:
+            raise StudioError('Remote project memory restore failed: '+str(exc)) from None
     last_result={}
     def run_once(*args):
         result=run_multi_engine_project(*args)
@@ -67,8 +73,17 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
     if remote_github is not None:
         try:
             persist_local(remote_github,request['id'],out)
+            memory_path=out/'.memory/memory.json'
+            memory=load_project_memory(memory_path)
+            memory=ingest_run(memory,request['id'],out)
+            save_project_memory(memory_path,memory)
+            persist_memory_local(remote_github,memory_path)
         except RemoteStateError as exc:
             raise StudioError('Remote autonomous state persistence failed: '+str(exc)) from None
+        except GitHubMemoryError as exc:
+            raise StudioError('Remote project memory persistence failed: '+str(exc)) from None
+        except ValueError as exc:
+            raise StudioError('Project memory ingestion failed: '+str(exc)) from None
     status=state.get('status')
     summary={
         'status':status,

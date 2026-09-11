@@ -48,6 +48,8 @@ DESIGN_SCHEMA = 'Return ONLY a JSON object containing the complete Godot-oriente
 
 class GodotModel(Model):
     def ask(self, role, context, screenshots=()):
+        from learning_context import augment
+        context = augment(context)
         if role not in GODOT_ROLE:
             return super().ask(role, context, screenshots)
         if screenshots:

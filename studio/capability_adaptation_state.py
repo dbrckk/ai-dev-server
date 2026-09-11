@@ -71,3 +71,24 @@ def validate(value):
         if not isinstance(value[key],str) or not value[key]:
             raise CapabilityAdaptationStateError(key+" invalid")
     return value
+
+
+def record_research(value, research_status):
+    validate(value)
+    if value["status"]!="research_required":
+        raise CapabilityAdaptationStateError("research transition invalid")
+    if research_status=="research_complete":
+        status="synthesis_required"
+        synthesis_status="required"
+    elif research_status in {"research_incomplete","insufficient_sources","insufficient_valid_sources"}:
+        status="research_required"
+        synthesis_status="not_started"
+    else:
+        raise CapabilityAdaptationStateError("research status invalid")
+    out=dict(value)
+    out.update({
+        "status":status,
+        "research_status":research_status,
+        "synthesis_status":synthesis_status,
+    })
+    return _seal(out)

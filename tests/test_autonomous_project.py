@@ -77,8 +77,9 @@ class AutonomousProjectTests(unittest.TestCase):
             )
             self.assertEqual(state["status"], "complete")
             self.assertEqual(calls["n"], 2)
-            goal_path, _ = ensure_project_goal(root / "out", "project", "ignored")
+            goal_path, _, memory_path = ensure_project_goal(root / "out", "project", "ignored")
             self.assertEqual(load_goal(goal_path)["status"], "complete")
+            self.assertTrue(memory_path.is_file())
 
     def test_human_action_persists_terminal_state(self):
         with tempfile.TemporaryDirectory() as td:

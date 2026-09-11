@@ -138,7 +138,10 @@ class AutonomousProjectTests(unittest.TestCase):
             with patch("studio.autonomous_project.sync_into_registry", side_effect=sync):
                 ensure_project_goal(root, "demo", "Complete demo")
             after = load_registry(registry_path)
-            self.assertEqual(before["capabilities"], {})
+            self.assertEqual(
+                {k: v for k, v in after["capabilities"].items() if k != "improvement.apply.persistent_warning"},
+                before["capabilities"],
+            )
             self.assertIn("improvement.apply.persistent_warning", after["capabilities"])
             self.assertEqual(goal_path, root / ".autonomy" / "goal.json")
             self.assertEqual(memory_path, root / ".autonomy" / "memory.json")

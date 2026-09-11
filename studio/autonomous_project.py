@@ -6,13 +6,13 @@ import json
 import os
 
 try:
-    from .capability_registry import new_registry, save as save_registry
+    from .capability_registry import new_registry, save as save_registry, load as load_registry, register, has_capability
     from .goal_engine import new_goal, save as save_goal
     from .goal_loop import run_goal
     from .project_memory import new_memory, load as load_memory, save as save_memory
     from .goal_learning import context_for_goal, learn_from_cycle
 except ImportError:
-    from capability_registry import new_registry, save as save_registry
+    from capability_registry import new_registry, save as save_registry, load as load_registry, register, has_capability
     from goal_engine import new_goal, save as save_goal
     from goal_loop import run_goal
     from project_memory import new_memory, load as load_memory, save as save_memory
@@ -73,7 +73,19 @@ def translate_orchestrator_result(result: dict) -> dict:
     if status == "adaptation_required":
         detail = next_stage if isinstance(next_stage, str) and next_stage else "unknown_capability"
         phase = result.get("pending_status") or result.get("promotion_status") or result.get("research_status") or "in_progress"
-        return {"failure": f"adaptation_required:{detail}:{phase}"}
+        return {
+            "yield_run": True,
+            "evidence": {
+                "adaptation_progress": {
+                    "capability": detail,
+                    "phase": phase,
+                    "research_status": result.get("research_status"),
+                    "promotion_status": result.get("promotion_status"),
+                    "persistence_status": result.get("persistence_status"),
+                    "automerge_status": result.get("automerge_status"),
+                }
+            }
+        }
 
     if isinstance(status, str) and status:
         suffix = f":{next_stage}" if isinstance(next_stage, str) and next_stage else ""

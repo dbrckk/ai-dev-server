@@ -2,7 +2,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from studio.capability_registry import new_registry, save as save_registry
+from studio.capability_registry import new_registry, register, save as save_registry
 from studio.continuous_improvement import assess
 from studio.goal_engine import finalize, new_goal, record_cycle
 from studio.improvement_backlog import activate_next, load as load_backlog, merge_assessment, new_backlog, save as save_backlog
@@ -25,7 +25,13 @@ class ImprovementExecutorTests(unittest.TestCase):
         registry_path=root/"capabilities.json"
         backlog=activate_next(merge_assessment(new_backlog(),candidate_assessment()))
         save_backlog(backlog_path,backlog)
-        save_registry(registry_path,new_registry())
+        registry=register(
+            new_registry(),
+            "improvement.verify.repeated_failure",
+            "studio.repeated_failure_verifier",
+            {"tests":"passed","regression":"passed"},
+        )
+        save_registry(registry_path,registry)
         return backlog_path,goal_path,registry_path
 
     def test_no_active_improvement_is_idle(self):
@@ -35,6 +41,26 @@ class ImprovementExecutorTests(unittest.TestCase):
             save_backlog(backlog,new_backlog()); save_registry(registry,new_registry())
             result=run_active_improvement(backlog,root/"goal.json",registry,lambda state:{},max_cycles=1)
             self.assertEqual(result["status"],"idle")
+
+
+    def test_missing_verifier_requests_adaptation_without_running_cycles(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            backlog_path=root/"backlog.json"
+            goal_path=root/"improvement-goal.json"
+            registry_path=root/"capabilities.json"
+            backlog=activate_next(merge_assessment(new_backlog(),candidate_assessment()))
+            save_backlog(backlog_path,backlog)
+            save_registry(registry_path,new_registry())
+            calls={"n":0}
+            def execute(state):
+                calls["n"]+=1
+                return {}
+            result=run_active_improvement(backlog_path,goal_path,registry_path,execute,max_cycles=2)
+            self.assertEqual(result["status"],"adaptation_required")
+            self.assertEqual(result["missing_capability"],"improvement.verify.repeated_failure")
+            self.assertEqual(calls["n"],0)
+            self.assertFalse(goal_path.exists())
 
     def test_active_improvement_relaunches_until_proved(self):
         with tempfile.TemporaryDirectory() as td:

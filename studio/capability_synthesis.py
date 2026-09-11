@@ -103,3 +103,31 @@ def synthesize_candidate(memory, project_id, capability, synthesizer):
         "promotion_status": "not_ready",
         "capability_registered": False,
     }
+
+
+def validate_candidate_envelope(envelope):
+    if not isinstance(envelope,dict):
+        raise CapabilitySynthesisError("candidate envelope invalid")
+    required={
+        "status","candidate_id","candidate_sha256","candidate",
+        "benchmark_status","regression_status","promotion_status","capability_registered",
+    }
+    if set(envelope)!=required or envelope.get("status")!="candidate_synthesized":
+        raise CapabilitySynthesisError("candidate envelope fields invalid")
+    candidate=envelope.get("candidate")
+    digest=envelope.get("candidate_sha256")
+    if not isinstance(candidate,dict) or not isinstance(digest,str) or not re.fullmatch(r"[0-9a-f]{64}",digest):
+        raise CapabilitySynthesisError("candidate envelope payload invalid")
+    if hashlib.sha256(_canon(candidate)).hexdigest()!=digest:
+        raise CapabilitySynthesisError("candidate envelope integrity failure")
+    capability=candidate.get("capability")
+    if not isinstance(capability,str) or not NAME_RE.fullmatch(capability):
+        raise CapabilitySynthesisError("candidate capability invalid")
+    expected_id="capability-candidate:"+capability+":"+digest[:16]
+    if envelope.get("candidate_id")!=expected_id:
+        raise CapabilitySynthesisError("candidate envelope identity mismatch")
+    if envelope.get("benchmark_status")!="required" or envelope.get("regression_status")!="required":
+        raise CapabilitySynthesisError("candidate validation gates invalid")
+    if envelope.get("promotion_status")!="not_ready" or envelope.get("capability_registered") is not False:
+        raise CapabilitySynthesisError("candidate trust state invalid")
+    return envelope

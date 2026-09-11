@@ -11,11 +11,13 @@ try:
     from .goal_engine import validate as validate_goal
     from .improvement_backlog import new_backlog, validate as validate_backlog
     from .capability_adaptation_state import validate as validate_adaptation_state
+    from .capability_synthesis import validate_candidate_envelope
 except ImportError:
     from capability_registry import validate as validate_registry
     from goal_engine import validate as validate_goal
     from improvement_backlog import new_backlog, validate as validate_backlog
     from capability_adaptation_state import validate as validate_adaptation_state
+    from capability_synthesis import validate_candidate_envelope
 
 STATE_BRANCH = "studio-autonomy-state"
 ROOT = ".studio-autonomy"
@@ -41,6 +43,7 @@ def _paths(project_id):
         prefix + "/improvement-backlog.json",
         prefix + "/improvement-goal.json",
         prefix + "/capability-adaptation.json",
+        prefix + "/capability-candidate.json",
     )
 
 
@@ -69,7 +72,7 @@ def _decode_blob(github, sha):
 
 
 def load(github, project_id):
-    goal_path, registry_path, backlog_path, improvement_goal_path, adaptation_path = _paths(project_id)
+    goal_path, registry_path, backlog_path, improvement_goal_path, adaptation_path, candidate_path = _paths(project_id)
     ref = _exact_ref(github)
     if ref is None:
         return None
@@ -85,6 +88,7 @@ def load(github, project_id):
     backlog_item = matches.get(backlog_path)
     improvement_goal_item = matches.get(improvement_goal_path)
     adaptation_item = matches.get(adaptation_path)
+    candidate_item = matches.get(candidate_path)
     if goal_item is None and registry_item is None:
         return None
     if goal_item is None or registry_item is None:
@@ -94,18 +98,20 @@ def load(github, project_id):
     backlog = new_backlog() if backlog_item is None else validate_backlog(_decode_blob(github, backlog_item.get("sha")))
     improvement_goal = None if improvement_goal_item is None else validate_goal(_decode_blob(github, improvement_goal_item.get("sha")))
     adaptation = None if adaptation_item is None else validate_adaptation_state(_decode_blob(github, adaptation_item.get("sha")))
+    candidate = None if candidate_item is None else validate_candidate_envelope(_decode_blob(github, candidate_item.get("sha")))
     return {
         "goal": goal,
         "registry": registry,
         "backlog": backlog,
         "improvement_goal": improvement_goal,
         "capability_adaptation": adaptation,
+        "capability_candidate": candidate,
         "head_sha": head,
     }
 
 
-def save(github, project_id, goal, registry, backlog=None, improvement_goal=None, capability_adaptation=None):
-    goal_path, registry_path, backlog_path, improvement_goal_path, adaptation_path = _paths(project_id)
+def save(github, project_id, goal, registry, backlog=None, improvement_goal=None, capability_adaptation=None, capability_candidate=None):
+    goal_path, registry_path, backlog_path, improvement_goal_path, adaptation_path, candidate_path = _paths(project_id)
     validate_goal(goal)
     validate_registry(registry)
     backlog = new_backlog() if backlog is None else validate_backlog(backlog)
@@ -113,6 +119,8 @@ def save(github, project_id, goal, registry, backlog=None, improvement_goal=None
         improvement_goal = validate_goal(improvement_goal)
     if capability_adaptation is not None:
         capability_adaptation = validate_adaptation_state(capability_adaptation)
+    if capability_candidate is not None:
+        capability_candidate = validate_candidate_envelope(capability_candidate)
     ref = _exact_ref(github)
     if ref is None:
         meta = github.get("")
@@ -140,6 +148,8 @@ def save(github, project_id, goal, registry, backlog=None, improvement_goal=None
         entries.append({"path": improvement_goal_path, "mode": "100644", "type": "blob", "content": json.dumps(improvement_goal, sort_keys=True, ensure_ascii=False)})
     if capability_adaptation is not None:
         entries.append({"path": adaptation_path, "mode": "100644", "type": "blob", "content": json.dumps(capability_adaptation, sort_keys=True, ensure_ascii=False)})
+    if capability_candidate is not None:
+        entries.append({"path": candidate_path, "mode": "100644", "type": "blob", "content": json.dumps(capability_candidate, sort_keys=True, ensure_ascii=False)})
     tree = github.call("POST", github.repo + "/git/trees", {"base_tree": base_tree, "tree": entries})
     tree_sha = tree.get("sha") if isinstance(tree, dict) else None
     if not isinstance(tree_sha, str) or len(tree_sha) != 40:
@@ -178,6 +188,8 @@ def restore_local(github, project_id, project_out):
         (root / "improvement-goal.json").write_text(json.dumps(remote["improvement_goal"], sort_keys=True, ensure_ascii=False, indent=2) + "\n")
     if remote["capability_adaptation"] is not None:
         (root / "capability-adaptation.json").write_text(json.dumps(remote["capability_adaptation"], sort_keys=True, ensure_ascii=False, indent=2) + "\n")
+    if remote["capability_candidate"] is not None:
+        (root / "capability-candidate.json").write_text(json.dumps(remote["capability_candidate"], sort_keys=True, ensure_ascii=False, indent=2) + "\n")
     return True
 
 
@@ -192,6 +204,8 @@ def persist_local(github, project_id, project_out):
         improvement_goal = json.loads(improvement_goal_path.read_text()) if improvement_goal_path.is_file() else None
         adaptation_path = root / "capability-adaptation.json"
         capability_adaptation = json.loads(adaptation_path.read_text()) if adaptation_path.is_file() else None
+        candidate_path = root / "capability-candidate.json"
+        capability_candidate = json.loads(candidate_path.read_text()) if candidate_path.is_file() else None
     except (OSError, json.JSONDecodeError):
         raise RemoteStateError("local autonomous state unavailable") from None
     validate_goal(goal)
@@ -201,10 +215,13 @@ def persist_local(github, project_id, project_out):
         validate_goal(improvement_goal)
     if capability_adaptation is not None:
         validate_adaptation_state(capability_adaptation)
+    if capability_candidate is not None:
+        validate_candidate_envelope(capability_candidate)
     remote = load(github, project_id)
     if (remote is not None and remote["goal"] == goal and remote["registry"] == registry
             and remote["backlog"] == backlog
             and remote.get("improvement_goal") == improvement_goal
-            and remote.get("capability_adaptation") == capability_adaptation):
+            and remote.get("capability_adaptation") == capability_adaptation
+            and remote.get("capability_candidate") == capability_candidate):
         return remote["head_sha"]
-    return save(github, project_id, goal, registry, backlog, improvement_goal, capability_adaptation)
+    return save(github, project_id, goal, registry, backlog, improvement_goal, capability_adaptation, capability_candidate)

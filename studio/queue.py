@@ -4,13 +4,16 @@ from pathlib import Path
 from core import request_check, StudioError
 
 
-def matrix(directory):
+def matrix(directory, terminal_ids=()):
     requests, targets, ids = [], set(), set()
+    terminal_ids = set(terminal_ids)
+    if any(not isinstance(x, str) or not x for x in terminal_ids):
+        raise StudioError('Invalid terminal project id')
     for p in sorted(Path(directory).glob('*.json')):
         if not p.name.replace('-', '').replace('_', '').replace('.', '').isalnum():
             raise StudioError('Unsafe request filename')
         req = request_check(json.loads(p.read_text()))
-        if not req['enabled']:
+        if not req['enabled'] or req['id'] in terminal_ids:
             continue
         target = req['target_repo'].lower()
         if target in targets or req['id'] in ids:
@@ -27,6 +30,13 @@ if __name__ == '__main__':
     from ci_provider import enabled
     parser = argparse.ArgumentParser()
     parser.add_argument('--provider', choices=['github', 'circleci'])
+    parser.add_argument('--terminal-ids-json', default='[]')
     args = parser.parse_args()
-    projects = matrix('control/mobile-requests')
+    try:
+        terminal_ids = json.loads(args.terminal_ids_json)
+    except json.JSONDecodeError:
+        raise StudioError('Invalid terminal project id JSON') from None
+    if not isinstance(terminal_ids, list):
+        raise StudioError('Invalid terminal project id JSON')
+    projects = matrix('control/mobile-requests', terminal_ids)
     print(json.dumps(projects if not args.provider or enabled(args.provider) else []))

@@ -7,12 +7,10 @@ try:
     from .capability_registry import new_registry, save as save_registry
     from .goal_engine import new_goal, save as save_goal
     from .goal_loop import run_goal
-    from .multi_engine_orchestrator import run_project as run_multi_engine_project
 except ImportError:
     from capability_registry import new_registry, save as save_registry
     from goal_engine import new_goal, save as save_goal
     from goal_loop import run_goal
-    from multi_engine_orchestrator import run_project as run_multi_engine_project
 
 
 AUTONOMY_DIR = ".autonomy"
@@ -88,13 +86,18 @@ def run_persistent_project(
     objective="Complete project with verified release evidence",
     max_attempts=20,
     max_cycles=20,
-    run_once=run_multi_engine_project,
+    run_once=None,
 ):
     project_out = Path(project_out)
     project_out.mkdir(parents=True, exist_ok=True)
     goal_path, registry_path = ensure_project_goal(
         project_out, goal_id, objective, max_attempts=max_attempts
     )
+    if run_once is None:
+        try:
+            from .multi_engine_orchestrator import run_project as run_once
+        except ImportError:
+            from multi_engine_orchestrator import run_project as run_once
 
     def execute_cycle(_goal_state):
         result = run_once(

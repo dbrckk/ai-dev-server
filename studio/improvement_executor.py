@@ -80,17 +80,14 @@ def run_active_improvement(
 
     candidate=item["candidate"]
     candidate_id=candidate["id"]
+    goal=None
     if goal_path.is_file():
         goal=load_goal(goal_path)
         if goal["goal_id"]!=candidate_id:
             if goal.get("status") in {"complete","blocked","human_action_required"}:
-                goal=improvement_goal(candidate)
-                save_goal(goal_path,goal)
+                goal=None
             else:
                 raise ImprovementExecutionError("active improvement goal mismatch")
-    else:
-        goal=improvement_goal(candidate)
-        save_goal(goal_path,goal)
 
     registry=load_registry(registry_path)
     route=dispatch(candidate,registry)
@@ -98,10 +95,14 @@ def run_active_improvement(
         return {
             "status":"adaptation_required",
             "candidate_id":candidate_id,
-            "goal_status":goal.get("status"),
+            "goal_status":goal.get("status") if goal is not None else None,
             "proved":False,
             "missing_capability":route["missing_capability"],
         }
+
+    if goal is None:
+        goal=improvement_goal(candidate)
+        save_goal(goal_path,goal)
 
     state=run_goal(
         goal_path,

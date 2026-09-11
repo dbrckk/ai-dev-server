@@ -6,6 +6,7 @@ from studio.autonomous_project import (
     ensure_project_goal,
     run_persistent_project,
     translate_orchestrator_result,
+    _sync_promoted_capabilities,
 )
 from studio.goal_engine import load as load_goal
 
@@ -35,7 +36,7 @@ class AutonomousProjectTests(unittest.TestCase):
         })
         self.assertEqual(translated, {"human_action": "godot_play_submission"})
 
-    def test_adaptation_is_not_claimed_as_success(self):
+    def test_adaptation_yields_without_claiming_completion(self):
         translated = translate_orchestrator_result({
             "status": "adaptation_required",
             "report": {},
@@ -43,8 +44,21 @@ class AutonomousProjectTests(unittest.TestCase):
             "research_status": "complete",
             "promotion_status": "not_ready",
         })
-        self.assertIn("adaptation_required:billing_qa", translated["failure"])
-        self.assertNotIn("evidence", translated)
+        self.assertTrue(translated["yield_run"])
+        self.assertEqual(translated["evidence"]["adaptation_progress"]["capability"], "billing_qa")
+        self.assertNotIn("project_completion", translated["evidence"])
+
+    def test_promoted_stage_syncs_into_capability_registry(self):
+        from studio.capability_registry import load as load_registry
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); out=root/"out"
+            _,registry_path,_=ensure_project_goal(out,"project","goal")
+            control=root/"control"; control.mkdir()
+            (control/"promoted_stages.json").write_text('{"version":1,"stages":{"billing_qa":{"script":"studio/billing_stage.py","candidate_id":"billing-x","baseline_sha":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","candidate_sha":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}}}')
+            _sync_promoted_capabilities(registry_path,root)
+            registry=load_registry(registry_path)
+            self.assertIn("billing_qa",registry["capabilities"])
+            self.assertEqual(registry["capabilities"]["billing_qa"]["provider"],"studio/billing_stage.py")
 
     def test_persistent_wrapper_relaunches_until_proved_complete(self):
         with tempfile.TemporaryDirectory() as td:

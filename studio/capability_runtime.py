@@ -4,7 +4,6 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
-import queue
 import re
 import threading
 
@@ -78,13 +77,13 @@ def execute_capability(registry, capability, context, *, repo_root=Path("."), ti
     provider = registry["capabilities"][capability].get("provider")
     run = _load_provider(provider, Path(repo_root))
 
-    result_queue = queue.Queue(maxsize=1)
+    result_box = {}
 
     def invoke():
         try:
-            result_queue.put(("ok", run(context)))
+            result_box["value"] = ("ok", run(context))
         except BaseException as exc:
-            result_queue.put(("error", type(exc).__name__))
+            result_box["value"] = ("error", type(exc).__name__)
 
     thread = threading.Thread(target=invoke, daemon=True)
     thread.start()
@@ -92,10 +91,9 @@ def execute_capability(registry, capability, context, *, repo_root=Path("."), ti
     if thread.is_alive():
         raise CapabilityRuntimeError("capability execution timed out")
 
-    try:
-        status, payload = result_queue.get_nowait()
-    except queue.Empty:
-        raise CapabilityRuntimeError("capability produced no result") from None
+    if "value" not in result_box:
+        raise CapabilityRuntimeError("capability produced no result")
+    status, payload = result_box["value"]
     if status != "ok":
         raise CapabilityRuntimeError("capability execution failed: " + str(payload))
     if not isinstance(payload, dict):

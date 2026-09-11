@@ -80,16 +80,6 @@ def run_active_improvement(
 
     candidate=item["candidate"]
     candidate_id=candidate["id"]
-    registry=load_registry(registry_path)
-    route=dispatch(candidate,registry)
-    if route["decision"]=="adapt":
-        return {
-            "status":"adaptation_required",
-            "candidate_id":candidate_id,
-            "goal_status":None,
-            "proved":False,
-            "missing_capability":route["missing_capability"],
-        }
     if goal_path.is_file():
         goal=load_goal(goal_path)
         if goal["goal_id"]!=candidate_id:
@@ -101,6 +91,17 @@ def run_active_improvement(
     else:
         goal=improvement_goal(candidate)
         save_goal(goal_path,goal)
+
+    registry=load_registry(registry_path)
+    route=dispatch(candidate,registry)
+    if route["decision"]=="adapt":
+        return {
+            "status":"adaptation_required",
+            "candidate_id":candidate_id,
+            "goal_status":goal.get("status"),
+            "proved":False,
+            "missing_capability":route["missing_capability"],
+        }
 
     state=run_goal(
         goal_path,

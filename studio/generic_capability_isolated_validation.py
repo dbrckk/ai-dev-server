@@ -165,3 +165,36 @@ def validate_in_isolation(envelope,repo_root=Path(".")):
         "network":"disabled",
         "capabilities":"dropped",
     }
+
+
+def validate_isolated_validation_result(value):
+    if not isinstance(value,dict):
+        raise IsolatedCapabilityValidationError("validation report invalid")
+    required={
+        "status","candidate_id","candidate_sha256","targeted_test","benchmark",
+        "regression","validation","candidate_materialized_in_trusted_repo",
+        "network","capabilities",
+    }
+    if set(value)!=required or value.get("status")!="isolated_validation_complete":
+        raise IsolatedCapabilityValidationError("validation report fields invalid")
+    sha=value.get("candidate_sha256")
+    if not isinstance(sha,str) or not re.fullmatch(r"[0-9a-f]{64}",sha):
+        raise IsolatedCapabilityValidationError("validation candidate digest invalid")
+    for key in ("targeted_test","benchmark","regression"):
+        proof=value.get(key)
+        if not isinstance(proof,dict) or proof.get("candidate_sha256")!=sha:
+            raise IsolatedCapabilityValidationError("validation proof mismatch")
+        digest=proof.get("evidence_sha256")
+        unsigned=dict(proof); unsigned.pop("evidence_sha256",None)
+        if not isinstance(digest,str) or digest!=_seal(unsigned):
+            raise IsolatedCapabilityValidationError("validation proof integrity failure")
+    validation=value.get("validation")
+    if not isinstance(validation,dict) or validation.get("candidate_sha256")!=sha:
+        raise IsolatedCapabilityValidationError("validation decision mismatch")
+    if validation.get("status") not in {"candidate_validated","candidate_rejected"}:
+        raise IsolatedCapabilityValidationError("validation decision invalid")
+    if value.get("candidate_materialized_in_trusted_repo") is not False:
+        raise IsolatedCapabilityValidationError("trusted repository mutation claimed")
+    if value.get("network")!="disabled" or value.get("capabilities")!="dropped":
+        raise IsolatedCapabilityValidationError("isolation evidence invalid")
+    return value

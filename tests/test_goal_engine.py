@@ -51,3 +51,16 @@ def test_terminal_state_is_immutable():
 
 def test_false_evidence_rejected():
     with pytest.raises(GoalStateError,match="evidence invalid"): record_cycle(goal(),evidence={"build_sha":False})
+
+
+def test_attempt_budget_cannot_be_overrun():
+    s=record_cycle(goal(max_attempts=1),failure="failed")
+    with pytest.raises(GoalStateError,match="attempt budget exhausted"):
+        record_cycle(s,failure="again")
+
+def test_resolve_capability_removes_pending_requirement():
+    from studio.goal_engine import resolve_capability
+    s=record_cycle(goal(),missing_capability="unity.qa")
+    s=resolve_capability(s,"unity.qa",{"registry":"verified"})
+    assert "unity.qa" not in s["missing_capabilities"]
+    assert decide(s)["decision"]=="relaunch"

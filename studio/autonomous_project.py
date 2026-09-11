@@ -6,13 +6,13 @@ import json
 import os
 
 try:
-    from .capability_registry import new_registry, save as save_registry
+    from .capability_registry import new_registry, save as save_registry, load as load_registry, register, has_capability
     from .goal_engine import new_goal, save as save_goal
     from .goal_loop import run_goal
     from .project_memory import new_memory, load as load_memory, save as save_memory
     from .goal_learning import context_for_goal, learn_from_cycle
 except ImportError:
-    from capability_registry import new_registry, save as save_registry
+    from capability_registry import new_registry, save as save_registry, load as load_registry, register, has_capability
     from goal_engine import new_goal, save as save_goal
     from goal_loop import run_goal
     from project_memory import new_memory, load as load_memory, save as save_memory
@@ -41,6 +41,38 @@ def ensure_project_goal(project_out: Path, goal_id: str, objective: str, *, max_
     if not memory_path.exists():
         save_memory(memory_path, new_memory())
     return goal_path, registry_path, memory_path
+
+
+def _sync_promoted_capabilities(registry_path: Path, repo_root: Path = Path(".")):
+    path = repo_root / "control" / "promoted_stages.json"
+    if not path.is_file():
+        return
+    try:
+        value = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return
+    stages = value.get("stages") if isinstance(value, dict) else None
+    if not isinstance(stages, dict):
+        return
+    registry = load_registry(registry_path)
+    changed = False
+    for name, item in sorted(stages.items()):
+        if has_capability(registry, name) or not isinstance(item, dict):
+            continue
+        script = item.get("script")
+        candidate_id = item.get("candidate_id")
+        candidate_sha = item.get("candidate_sha")
+        if not all(isinstance(x, str) and x for x in (script, candidate_id, candidate_sha)):
+            continue
+        registry = register(registry, name, script, {
+            "source": "promoted_stage_registry",
+            "candidate_id": candidate_id,
+            "candidate_sha": candidate_sha,
+            "baseline_sha": item.get("baseline_sha"),
+        })
+        changed = True
+    if changed:
+        save_registry(registry_path, registry)
 
 
 def translate_orchestrator_result(result: dict) -> dict:
@@ -73,7 +105,19 @@ def translate_orchestrator_result(result: dict) -> dict:
     if status == "adaptation_required":
         detail = next_stage if isinstance(next_stage, str) and next_stage else "unknown_capability"
         phase = result.get("pending_status") or result.get("promotion_status") or result.get("research_status") or "in_progress"
-        return {"failure": f"adaptation_required:{detail}:{phase}"}
+        return {
+            "yield_run": True,
+            "evidence": {
+                "adaptation_progress": {
+                    "capability": detail,
+                    "phase": phase,
+                    "research_status": result.get("research_status"),
+                    "promotion_status": result.get("promotion_status"),
+                    "persistence_status": result.get("persistence_status"),
+                    "automerge_status": result.get("automerge_status"),
+                }
+            }
+        }
 
     if isinstance(status, str) and status:
         suffix = f":{next_stage}" if isinstance(next_stage, str) and next_stage else ""
@@ -101,6 +145,7 @@ def run_persistent_project(
     goal_path, registry_path, memory_path = ensure_project_goal(
         project_out, goal_id, objective, max_attempts=max_attempts
     )
+    _sync_promoted_capabilities(registry_path)
     if run_once is None:
         try:
             from .multi_engine_orchestrator import run_project as run_once

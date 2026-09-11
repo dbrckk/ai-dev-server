@@ -73,6 +73,15 @@ class GoalLoopTests(unittest.TestCase):
             self.assertTrue(any("capability adaptation unverified:x" in x for x in state["failures"]))
             self.assertNotIn("x", load_registry(registry_path)["capabilities"])
 
+    def test_yield_run_preserves_attempt_budget_and_returns_active(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            goal_path,registry_path=self.make_paths(root)
+            state=run_goal(goal_path,registry_path,lambda state: {"yield_run":True,"evidence":{"adaptation_progress":{"phase":"pending_merge"}}},max_cycles=3)
+            self.assertEqual(state["status"],"active")
+            self.assertEqual(state["attempt"],0)
+            self.assertIn("adaptation_progress",state["evidence"])
+
     def test_human_action_stops_and_persists_terminal_state(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

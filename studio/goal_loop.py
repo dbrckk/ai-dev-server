@@ -43,6 +43,14 @@ def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_c
         result=execute_cycle(cycle_state)
         if not isinstance(result,dict):
             state=record_cycle(state,failure="cycle returned invalid result")
+        elif result.get("yield_run") is True:
+            state=record_cycle(state,evidence=result.get("evidence"),failure=result.get("failure"),
+                missing_capability=result.get("missing_capability"),human_action=result.get("human_action"),
+                blocked_reason=result.get("blocked_reason"),count_attempt=False)
+            save_goal(goal_path,state)
+            if cycle_observer is not None:
+                cycle_observer(dict(state),result)
+            return state
         else:
             state=record_cycle(state,evidence=result.get("evidence"),failure=result.get("failure"),
                 missing_capability=result.get("missing_capability"),human_action=result.get("human_action"),

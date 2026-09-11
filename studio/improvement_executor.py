@@ -79,7 +79,11 @@ def run_active_improvement(
     if goal_path.is_file():
         goal=load_goal(goal_path)
         if goal["goal_id"]!=candidate_id:
-            raise ImprovementExecutionError("active improvement goal mismatch")
+            if goal.get("status") in {"complete","blocked","human_action_required"}:
+                goal=improvement_goal(candidate)
+                save_goal(goal_path,goal)
+            else:
+                raise ImprovementExecutionError("active improvement goal mismatch")
     else:
         goal=improvement_goal(candidate)
         save_goal(goal_path,goal)

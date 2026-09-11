@@ -124,4 +124,16 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
             or completion.get('next_stage')!='godot_final_review_qa'
             or coverage.get('privacy_qa') is not True or coverage.get('security_qa') is not True):
         raise StudioError('Godot privacy/security stage returned invalid transition')
-    return {'status':'godot_privacy_security_ready','report':report,'next_stage':'godot_final_review_qa'}
+    final_work=str(Path(work).with_name(Path(work).name+'-final-review'))
+    result=_run_stage('studio/godot_final_review_stage.py',request_path,project_out,final_work,runner,deadline,clock)
+    if result is None: return {'status':'deferred','report':report,'next_stage':'godot_final_review_qa'}
+    report=load_report(project_out) if (project_out/'report.json').is_file() else {}
+    if result.returncode!=0: return {'status':'failed','report':report,'next_stage':'godot_final_review_qa'}
+    completion=report.get('completion'); coverage=report.get('coverage') or {}
+    if (report.get('engine')!='godot' or report.get('status')!='godot_technical_store_ready'
+            or report.get('release_status')!='technical_store_ready'
+            or not isinstance(completion,dict) or completion.get('finished') is not False
+            or completion.get('next_stage')!='godot_play_submission'
+            or coverage.get('final_review') is not True):
+        raise StudioError('Godot final review stage returned invalid transition')
+    return {'status':'human_action_required','report':report,'next_stage':'godot_play_submission'}

@@ -33,6 +33,7 @@ PROTECTED_PATHS = {
     'studio/godot_visual_qa.py','studio/godot_visual_stage.py','studio/godot_release_qa.py','studio/godot_release_stage.py',
     'studio/godot_release_artifact.py','studio/godot_release_artifact_stage.py','studio/godot_store_metadata_qa.py','studio/godot_store_metadata_stage.py',
     'studio/godot_privacy_security_qa.py','studio/godot_privacy_security_stage.py',
+    'studio/godot_final_review_qa.py','studio/godot_final_review_stage.py',
     'studio/godot_release_artifact.py','studio/godot_release_artifact_stage.py',
     'studio/engine_entry.py','studio/engine_detect.py','studio/multi_engine_orchestrator.py',
     '.github/workflows/validate.yml','.github/workflows/studio-smoke.yml','.github/workflows/mobile-studio.yml',

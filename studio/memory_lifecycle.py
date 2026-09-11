@@ -22,7 +22,17 @@ def ingest_run(memory, project_id, out):
     out=Path(out)
     research=_read(out/"evolution-research.json")
     if research is not None:
-        memory=remember_research(memory,project_id,research)
+        candidate_id=research.get("candidate_id")
+        items=research.get("items")
+        if not isinstance(candidate_id,str) or not isinstance(items,list):
+            raise ValueError("research evidence invalid")
+        expected={"research:"+candidate_id+":"+str(i) for i in range(len(items))}
+        existing={item.get("id") for item in memory.get("entries",[]) if isinstance(item,dict)}
+        overlap=expected & existing
+        if overlap and overlap != expected:
+            raise ValueError("research memory partially recorded")
+        if not overlap:
+            memory=remember_research(memory,project_id,research)
 
     persisted=_read(out/"evolution-persisted.json")
     promotion=_read(out/"evolution-promotion.json")

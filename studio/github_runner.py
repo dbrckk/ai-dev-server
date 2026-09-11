@@ -19,6 +19,7 @@ from core import StudioError, canonical, request_check
 from github_goal_store import RemoteStateError, persist_local, restore_local
 from github_memory_store import GitHubMemoryError, persist_local as persist_memory_local, restore_local as restore_memory_local
 from improvement_backlog import activate_next, load as load_improvement_backlog, merge_assessment, new_backlog, save as save_improvement_backlog
+from improvement_executor import run_active_improvement, verified_project_cycle
 from memory_lifecycle import ingest_run
 from project_memory import load as load_project_memory, save as save_project_memory
 from multi_engine_orchestrator import run_project as run_multi_engine_project
@@ -92,10 +93,30 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             run_once=run_once,
         )
     improvement=None
+    improvement_run=None
     status=state.get('status')
     if status=='complete':
         project_state=last_result.get('report') if isinstance(last_result.get('report'),dict) else {}
         improvement=_update_improvements(out,state,project_state)
+        backlog_path=out/'.autonomy/improvement-backlog.json'
+        improvement_goal_path=out/'.autonomy/improvement-goal.json'
+        registry_path=out/'.autonomy/capabilities.json'
+        backlog=load_improvement_backlog(backlog_path)
+        active=next((item for item in backlog['items'] if item['status']=='active'),None)
+        if active is not None:
+            candidate=active['candidate']
+            def improvement_project_cycle(_goal_state):
+                with tempfile.TemporaryDirectory(prefix='studio-improvement-') as improve_work:
+                    return run_multi_engine_project(
+                        str(request_path),out,improve_work,runner,deadline,clock,baseline_sha
+                    )
+            improvement_run=run_active_improvement(
+                backlog_path,
+                improvement_goal_path,
+                registry_path,
+                verified_project_cycle(candidate,improvement_project_cycle),
+                max_cycles=2,
+            )
     if remote_github is not None:
         try:
             persist_local(remote_github,request['id'],out)
@@ -120,6 +141,12 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
         summary['improvement_next']=improvement['active_candidate']
         summary['improvement_queued']=improvement['queued']
         summary['improvement_proved']=improvement['proved']
+    if improvement_run is not None:
+        summary['improvement_run_status']=improvement_run['status']
+        summary['improvement_candidate']=improvement_run['candidate_id']
+        summary['improvement_goal_status']=improvement_run['goal_status']
+        if improvement_run.get('missing_capability'):
+            summary['improvement_missing_capability']=improvement_run['missing_capability']
     if status=='human_action_required':
         summary['next_stage']=state.get('human_action')
     elif status=='blocked':

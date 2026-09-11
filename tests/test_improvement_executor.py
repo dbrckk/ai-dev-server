@@ -6,7 +6,7 @@ from studio.capability_registry import new_registry, save as save_registry
 from studio.continuous_improvement import assess
 from studio.goal_engine import finalize, new_goal, record_cycle
 from studio.improvement_backlog import activate_next, load as load_backlog, merge_assessment, new_backlog, save as save_backlog
-from studio.improvement_executor import ImprovementExecutionError, run_active_improvement
+from studio.improvement_executor import ImprovementExecutionError, run_active_improvement, verified_project_cycle
 
 
 def candidate_assessment():
@@ -77,6 +77,47 @@ class ImprovementExecutorTests(unittest.TestCase):
             save_goal(goal,wrong)
             with self.assertRaisesRegex(ImprovementExecutionError,"mismatch"):
                 run_active_improvement(backlog,goal,registry,lambda state:{},max_cycles=1)
+
+
+    def test_verified_project_cycle_only_emits_trusted_evidence(self):
+        candidate={
+            "kind":"repeated_failure",
+            "source":{"failure":"flaky emulator"},
+        }
+        wrapped=verified_project_cycle(
+            candidate,
+            lambda state:{
+                "status":"complete",
+                "report":{"completion":{"finished":True}},
+                "improvement_verification":{
+                    "kind":"repeated_failure",
+                    "failure":"flaky emulator",
+                    "passed":True,
+                    "targeted_test_passed":True,
+                },
+            },
+        )
+        result=wrapped({})
+        self.assertEqual(result["evidence"],{
+            "full_regression_passed":True,
+            "targeted_regression_passed":True,
+        })
+
+    def test_verified_project_cycle_does_not_invent_targeted_proof(self):
+        candidate={
+            "kind":"repeated_failure",
+            "source":{"failure":"flaky emulator"},
+        }
+        wrapped=verified_project_cycle(
+            candidate,
+            lambda state:{
+                "status":"complete",
+                "report":{"completion":{"finished":True}},
+            },
+        )
+        result=wrapped({})
+        self.assertEqual(result["evidence"],{"full_regression_passed":True})
+        self.assertNotIn("targeted_regression_passed",result["evidence"])
 
 
 if __name__=="__main__":

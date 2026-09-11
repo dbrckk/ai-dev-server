@@ -65,6 +65,7 @@ def missing_evidence(state):
 def record_cycle(state,evidence=None,failure=None,missing_capability=None,human_action=None,blocked_reason=None):
     validate(state)
     if state["status"]!="active": raise GoalStateError("terminal state immutable")
+    if state["attempt"]>=state["max_attempts"]: raise GoalStateError("attempt budget exhausted")
     x={**state,"evidence":dict(state["evidence"]),"failures":list(state["failures"]),"missing_capabilities":list(state["missing_capabilities"]),"history":list(state["history"])}
     x["attempt"]+=1
     if evidence:
@@ -79,6 +80,19 @@ def record_cycle(state,evidence=None,failure=None,missing_capability=None,human_
     if human_action: x["human_action"]=str(human_action); event["human_action"]=x["human_action"]
     if blocked_reason: x["blocked_reason"]=str(blocked_reason); event["blocked_reason"]=x["blocked_reason"]
     x["history"].append(event)
+    return _seal(x)
+
+def resolve_capability(state,name,evidence=None):
+    validate(state)
+    if state["status"]!="active": raise GoalStateError("terminal state immutable")
+    if not isinstance(name,str) or not name.strip(): raise GoalStateError("capability name invalid")
+    if name not in state["missing_capabilities"]: raise GoalStateError("capability not pending")
+    x={**state,"evidence":dict(state["evidence"]),"missing_capabilities":list(state["missing_capabilities"]),"history":list(state["history"])}
+    x["missing_capabilities"].remove(name)
+    if evidence is not None:
+        if not isinstance(evidence,dict) or not evidence: raise GoalStateError("capability evidence invalid")
+        x["evidence"]["capability:"+name]=evidence
+    x["history"].append({"attempt":x["attempt"],"resolved_capability":name})
     return _seal(x)
 
 def decide(state):

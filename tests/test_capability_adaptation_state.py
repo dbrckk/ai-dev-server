@@ -4,6 +4,7 @@ from studio.capability_adaptation_state import (
     CapabilityAdaptationStateError,
     new_state,
     validate,
+    record_research,
 )
 
 
@@ -21,6 +22,14 @@ class CapabilityAdaptationStateTests(unittest.TestCase):
         state["status"]="complete"
         with self.assertRaisesRegex(CapabilityAdaptationStateError,"integrity"):
             validate(state)
+
+    def test_research_completion_advances_to_synthesis(self):
+        state=new_state("project-a","improvement.apply.repeated_failure","improvement:abc")
+        state=record_research(state,"research_complete")
+        self.assertEqual(state["status"],"synthesis_required")
+        self.assertEqual(state["research_status"],"research_complete")
+        self.assertEqual(state["synthesis_status"],"required")
+        validate(state)
 
     def test_invalid_capability_rejected(self):
         with self.assertRaisesRegex(CapabilityAdaptationStateError,"capability"):

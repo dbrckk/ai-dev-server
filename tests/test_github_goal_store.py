@@ -8,6 +8,7 @@ from studio.capability_registry import new_registry
 from studio.github_goal_store import (
     RemoteStateError,
     _validate_candidate_validation_link,
+    _validate_candidate_review_link,
     load,
     persist_local,
     restore_local,
@@ -105,6 +106,37 @@ class GitHubGoalStoreTests(unittest.TestCase):
         candidate={"candidate_id":"candidate:a","candidate_sha256":"a"*64}
         validation={"candidate_id":"candidate:a","candidate_sha256":"a"*64}
         self.assertIsNone(_validate_candidate_validation_link(candidate,validation))
+
+    def test_awaiting_merge_requires_review_identity(self):
+        adaptation={"status":"awaiting_merge","capability":"image_assets"}
+        candidate={"candidate_id":"candidate:a","candidate_sha256":"a"*64,"candidate":{"capability":"image_assets"}}
+        validation={"candidate_id":"candidate:a","candidate_sha256":"a"*64}
+        with self.assertRaisesRegex(RemoteStateError,"missing candidate review"):
+            _validate_candidate_review_link(adaptation,candidate,validation,None)
+
+    def test_review_must_match_candidate_and_capability(self):
+        adaptation={"status":"awaiting_merge","capability":"image_assets"}
+        candidate={"candidate_id":"candidate:a","candidate_sha256":"a"*64,"candidate":{"capability":"image_assets"}}
+        validation={"candidate_id":"candidate:a","candidate_sha256":"a"*64}
+        review={
+            "status":"candidate_persisted","candidate_id":"candidate:b","candidate_sha256":"a"*64,
+            "capability":"image_assets","branch":"capability/candidate-image_assets-x",
+            "commit_sha":"b"*40,"pull_request":12,
+        }
+        with self.assertRaisesRegex(RemoteStateError,"identity mismatch"):
+            _validate_candidate_review_link(adaptation,candidate,validation,review)
+
+    def test_review_without_awaiting_merge_state_fails_closed(self):
+        adaptation={"status":"promotion_required","capability":"image_assets"}
+        candidate={"candidate_id":"candidate:a","candidate_sha256":"a"*64,"candidate":{"capability":"image_assets"}}
+        validation={"candidate_id":"candidate:a","candidate_sha256":"a"*64}
+        review={
+            "status":"candidate_persisted","candidate_id":"candidate:a","candidate_sha256":"a"*64,
+            "capability":"image_assets","branch":"capability/candidate-image_assets-x",
+            "commit_sha":"b"*40,"pull_request":12,
+        }
+        with self.assertRaisesRegex(RemoteStateError,"without awaiting merge"):
+            _validate_candidate_review_link(adaptation,candidate,validation,review)
 
     def test_local_restore_and_persist(self):
         gh=FakeGitHub(); save(gh,"demo",goal(),new_registry(),new_backlog())

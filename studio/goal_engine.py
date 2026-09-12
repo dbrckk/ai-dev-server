@@ -109,3 +109,14 @@ def finalize(state):
     d=decide(state)
     if d["decision"] not in TERMINAL: raise GoalStateError("work remains")
     x=dict(state); x["status"]=d["decision"]; return _seal(x)
+
+
+def resume_human_action(state):
+    validate(state)
+    if state.get("status")!="human_action_required":
+        raise GoalStateError("goal is not waiting for human action")
+    x={**state,"history":list(state["history"])}
+    x["status"]="active"
+    x["human_action"]=None
+    x["history"].append({"attempt":x["attempt"],"human_action_resumed":True})
+    return _seal(x)

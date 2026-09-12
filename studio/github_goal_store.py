@@ -30,6 +30,16 @@ class RemoteStateError(RuntimeError):
     pass
 
 
+def _validate_candidate_validation_link(candidate, validation):
+    if validation is None:
+        return
+    if candidate is None:
+        raise RemoteStateError("capability validation missing candidate")
+    if (validation.get("candidate_id") != candidate.get("candidate_id")
+            or validation.get("candidate_sha256") != candidate.get("candidate_sha256")):
+        raise RemoteStateError("capability validation candidate mismatch")
+
+
 def _safe_project_id(value):
     if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9_.-]{1,80}", value):
         raise RemoteStateError("project id invalid")
@@ -104,6 +114,7 @@ def load(github, project_id):
     adaptation = None if adaptation_item is None else validate_adaptation_state(_decode_blob(github, adaptation_item.get("sha")))
     candidate = None if candidate_item is None else validate_candidate_envelope(_decode_blob(github, candidate_item.get("sha")))
     validation = None if validation_item is None else validate_isolated_validation_result(_decode_blob(github, validation_item.get("sha")))
+    _validate_candidate_validation_link(candidate, validation)
     return {
         "goal": goal,
         "registry": registry,
@@ -129,6 +140,7 @@ def save(github, project_id, goal, registry, backlog=None, improvement_goal=None
         capability_candidate = validate_candidate_envelope(capability_candidate)
     if capability_validation is not None:
         capability_validation = validate_isolated_validation_result(capability_validation)
+    _validate_candidate_validation_link(capability_candidate, capability_validation)
     ref = _exact_ref(github)
     if ref is None:
         meta = github.get("")
@@ -233,6 +245,7 @@ def persist_local(github, project_id, project_out):
         validate_candidate_envelope(capability_candidate)
     if capability_validation is not None:
         validate_isolated_validation_result(capability_validation)
+    _validate_candidate_validation_link(capability_candidate, capability_validation)
     remote = load(github, project_id)
     if (remote is not None and remote["goal"] == goal and remote["registry"] == registry
             and remote["backlog"] == backlog

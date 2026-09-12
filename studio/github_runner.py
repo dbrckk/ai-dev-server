@@ -14,7 +14,7 @@ import time
 import uuid
 
 from autonomous_project import run_persistent_project
-from capability_adaptation_state import new_state as new_capability_adaptation_state, record_research as record_capability_research, record_synthesis as record_capability_synthesis, record_validation as record_capability_validation, record_candidate_persistence as record_capability_candidate_persistence
+from capability_adaptation_state import new_state as new_capability_adaptation_state, record_research as record_capability_research, record_synthesis as record_capability_synthesis, record_validation as record_capability_validation, record_candidate_persistence as record_capability_candidate_persistence, record_registry_promotion_persistence as record_capability_registry_promotion_persistence
 from adaptation_research import research_missing_capability
 from repository_research_provider import build_repository_providers
 from generic_capability_synthesis import synthesize_from_memory
@@ -273,6 +273,39 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
                         summary['registry_promotion_pull_request']=registry_promotion['pull_request']
                     if registry_promotion.get('commit_sha') is not None:
                         summary['registry_promotion_commit_sha']=registry_promotion['commit_sha']
+                    if registry_promotion['status'] in {'registry_promotion_persisted','registry_promotion_already_persisted'}:
+                        waiting=record_capability_registry_promotion_persistence(
+                            waiting,registry_promotion['status']
+                        )
+                        adaptation_path.write_text(canonical(waiting))
+                        registry_review={
+                            'status':registry_promotion['status'],
+                            'candidate_id':registry_promotion['candidate_id'],
+                            'candidate_sha256':registry_promotion['candidate_sha256'],
+                            'capability':registry_promotion['capability'],
+                            'candidate_merge_sha':registry_promotion['candidate_merge_sha'],
+                            'branch':registry_promotion['branch'],
+                            'commit_sha':registry_promotion['commit_sha'],
+                            'pull_request':registry_promotion['pull_request'],
+                        }
+                        (out/'.autonomy/capability-registry-review.json').write_text(canonical(registry_review))
+                        persist_local(remote_github,request['id'],out)
+                        summary['capability_adaptation_status']='awaiting_registry_merge'
+                        summary['promotion_status']='registry_review_required'
+            out.mkdir(parents=True,exist_ok=True)
+            (out/'github-pipeline.json').write_text(canonical(summary))
+            return summary
+    if adaptation_path.is_file():
+        from capability_adaptation_state import validate as validate_capability_adaptation
+        registry_waiting=validate_capability_adaptation(json.loads(adaptation_path.read_text()))
+        if registry_waiting['status']=='awaiting_registry_merge':
+            summary={
+                'status':'adaptation_required',
+                'next_stage':registry_waiting['capability'],
+                'finished':False,
+                'capability_adaptation_status':'awaiting_registry_merge',
+                'promotion_status':'registry_review_required',
+            }
             out.mkdir(parents=True,exist_ok=True)
             (out/'github-pipeline.json').write_text(canonical(summary))
             return summary

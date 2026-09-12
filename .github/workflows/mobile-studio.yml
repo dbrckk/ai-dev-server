@@ -182,5 +182,9 @@ jobs:
                       for key in ('pending_status','research_status','synthesis_status','benchmark_status','promotion_status','persistence_status','automerge_status'):
                           if d.get(key): out.write(key + ': ' + str(d[key]) + '\n')
                       if d.get('pull_request'): out.write('Promotion PR: #' + str(d['pull_request']) + '\n')
+              request = Path('studio-output/USER_INPUT_REQUIRED.txt')
+              if request.exists():
+                  out.write('\n### User input required\n\n')
+                  out.write(request.read_text()[:8000] + '\n')
               out.write('Download the artifact for release packages and trusted QA/evolution evidence.\n')
           PY

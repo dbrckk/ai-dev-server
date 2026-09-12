@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import tempfile
+import os
 import unittest
 from unittest.mock import patch
 
@@ -62,6 +63,43 @@ class GithubRunnerPersistentTests(unittest.TestCase):
                 self.assertEqual(result["status"],"blocked")
                 self.assertFalse(result["finished"])
                 self.assertEqual(result["next_stage"],"attempt_budget_exhausted")
+
+
+    def test_remote_checkpoint_ingests_memory_before_state_persistence(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); request=self.request(root); out=root/"out"
+            out.mkdir(parents=True,exist_ok=True)
+            order=[]
+            state={"status":"blocked","human_action":None,"blocked_reason":"test-stop"}
+            with patch.dict(os.environ,{"STUDIO_PERSIST_REMOTE":"1","GITHUB_REPOSITORY":"owner/control"},clear=False), \
+                 patch("github_runner.RepoGitHub"), \
+                 patch("github_runner.restore_local"), \
+                 patch("github_runner.restore_memory_local"), \
+                 patch("github_runner.run_persistent_project",return_value=state), \
+                 patch("github_runner.load_project_memory",return_value={"memory":"before"}), \
+                 patch("github_runner.ingest_run",side_effect=lambda *a,**k:(order.append("ingest") or {"memory":"after"})), \
+                 patch("github_runner.save_project_memory"), \
+                 patch("github_runner.persist_local",side_effect=lambda *a,**k:order.append("state")), \
+                 patch("github_runner.persist_memory_local",side_effect=lambda *a,**k:order.append("memory")):
+                run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha="d"*40)
+            self.assertEqual(order,["ingest","state","memory"])
+
+    def test_invalid_memory_ingestion_blocks_state_checkpoint(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); request=self.request(root); out=root/"out"
+            out.mkdir(parents=True,exist_ok=True)
+            state={"status":"blocked","human_action":None,"blocked_reason":"test-stop"}
+            with patch.dict(os.environ,{"STUDIO_PERSIST_REMOTE":"1","GITHUB_REPOSITORY":"owner/control"},clear=False), \
+                 patch("github_runner.RepoGitHub"), \
+                 patch("github_runner.restore_local"), \
+                 patch("github_runner.restore_memory_local"), \
+                 patch("github_runner.run_persistent_project",return_value=state), \
+                 patch("github_runner.load_project_memory",return_value={"memory":"before"}), \
+                 patch("github_runner.ingest_run",side_effect=ValueError("invalid learning")), \
+                 patch("github_runner.persist_local") as persist_state:
+                with self.assertRaisesRegex(Exception,"Project memory ingestion failed"):
+                    run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha="e"*40)
+                persist_state.assert_not_called()
 
 
 if __name__=="__main__":

@@ -24,3 +24,13 @@ def bonus(data:dict,agent:str,role:str)->float:
     runs=max(1,int(row["runs"])); rate=float(row.get("successes",0))/runs
     # bounded empirical adjustment: enough to learn, never enough to erase capability fit
     return max(-25.0,min(25.0,(rate-0.5)*50.0))
+
+
+def eligible(data:dict,agent:str,role:str)->bool:
+    row=data.get(agent+":"+role)
+    if not isinstance(row,dict): return True
+    runs=int(row.get("runs",0)); successes=int(row.get("successes",0))
+    if runs<3: return True
+    # Cool down agents that have repeatedly produced changes that fail the
+    # trusted verifier. Fresh evidence can re-enable them once statistics improve.
+    return (successes/runs)>=0.34

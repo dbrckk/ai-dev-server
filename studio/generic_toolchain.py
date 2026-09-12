@@ -22,6 +22,10 @@ def detect(root: Path) -> dict:
     if (root/"Gemfile").is_file(): markers.append("ruby")
     if (root/"mix.exs").is_file(): markers.append("elixir")
     if (root/"Package.swift").is_file(): markers.append("swift")
+    if (root/"deno.json").is_file() or (root/"deno.jsonc").is_file(): markers.append("deno")
+    if (root/"bun.lock").is_file() or (root/"bun.lockb").is_file(): markers.append("bun")
+    if (root/"CMakeLists.txt").is_file(): markers.append("cmake")
+    if (root/"Makefile").is_file(): markers.append("make")
     return {"stacks":markers}
 
 def bootstrap_commands(root: Path) -> list[list[str]]:
@@ -46,4 +50,8 @@ def bootstrap_commands(root: Path) -> list[list[str]]:
         commands.append(["composer","install","--no-interaction","--no-scripts","--no-plugins"])
     if (root/"Gemfile").is_file() and (root/"Gemfile.lock").is_file() and shutil.which("bundle"):
         commands.append(["bundle","install","--deployment"])
+    if (root/"mix.exs").is_file() and (root/"mix.lock").is_file() and shutil.which("mix"):
+        commands.append(["mix","deps.get"])
+    if (root/"Package.swift").is_file() and (root/"Package.resolved").is_file() and shutil.which("swift"):
+        commands.append(["swift","package","resolve"])
     return commands

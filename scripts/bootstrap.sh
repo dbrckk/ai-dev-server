@@ -6,7 +6,10 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # Core coding-agent CLIs. Keep multiple independent harnesses so the autonomous router
 # can select the strongest working agent and fail over without waiting for a rebuild.
-npm install -g opencode-ai @anthropic-ai/claude-code @openai/codex
+npm install -g opencode-ai @openai/codex
+# Claude Code remains optional because the autonomous router prefers free agents.
+# Install it only when explicitly enabled to avoid making a paid dependency mandatory.
+if [[ "${STUDIO_ENABLE_CLAUDE_CODE:-0}" == "1" ]]; then npm install -g @anthropic-ai/claude-code; fi
 
 # Python tooling and sprite post-processing.
 python -m pip install --user --upgrade uv pillow rembg

@@ -36,6 +36,23 @@ Depuis un smartphone, utiliser un Codespace comme machine Linux distante avec :
 
 Les ports 8082, 3080 et 3000 sont prévus pour être forwardés par Codespaces.
 
+## Meta-router multi-agent
+
+Le dépôt contient désormais une première couche de routage par capacités :
+
+- registre d'agents interchangeable dans `studio/agents/` ;
+- scoring selon capacités, disponibilité, gratuité et tâches longues ;
+- sélection OpenCode / Codex / Claude Code / DeepSeek Harness / Hermes / OpenHands ;
+- scanner automatique de `dbrckk/star-list` pour rechercher des dépôts utiles à chaque nouvelle phase de projet.
+
+Commande rapide :
+
+```bash
+python studio/meta_router.py --capability code_editing --capability tests
+```
+
+Documentation : **[Meta-router et star-list](docs/META_ROUTER.md)**.
+
 ## Sécurité
 
 Les clés API, jetons et fichiers `.env` sont ignorés par Git. Ne jamais les committer dans le dépôt.

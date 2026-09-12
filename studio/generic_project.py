@@ -254,7 +254,17 @@ Objective and current plan:
                                 "repository":item["repository"],
                             } for item in viable],
                         }
-                        candidate_review,candidate_review_model=ask(CANDIDATE_REVIEW_SYSTEM,canonical(review_payload),code=False)
+                        avoided_models={
+                            item.get("model",{}).get("model")
+                            for item in viable
+                            if isinstance(item.get("model"),dict) and isinstance(item.get("model",{}).get("model"),str)
+                        }
+                        candidate_review,candidate_review_model=ask(
+                            CANDIDATE_REVIEW_SYSTEM,
+                            canonical(review_payload),
+                            code=False,
+                            avoid_models=avoided_models,
+                        )
                         winner_id=candidate_review.get("winner")
                         if winner_id not in {item["id"] for item in viable}:
                             verified=[item for item in viable if item["verification"].get("passed") is True]

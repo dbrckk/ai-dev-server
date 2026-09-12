@@ -22,11 +22,12 @@ def _opencode_runtime(prompt:str)->tuple[list[str],dict[str,str]]:
                 "studio":{
                     "npm":"@ai-sdk/openai-compatible",
                     "name":"AI Dev Server provider",
-                    "options":{"baseURL":"{env:STUDIO_API_BASE}","apiKey":"{env:STUDIO_API_KEY}"},
+                    "options":{"baseURL":base,"apiKey":"{env:OPENCODE_STUDIO_API_KEY}"},
                     "models":{model:{}},
                 }
             },
         }
+        env["OPENCODE_STUDIO_API_KEY"]=key
         env["OPENCODE_CONFIG_CONTENT"]=json.dumps(config,separators=(",",":"))
         argv.extend(["--model","studio/"+model])
     argv.append(prompt)

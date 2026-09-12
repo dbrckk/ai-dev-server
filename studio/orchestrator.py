@@ -10,6 +10,7 @@ from adaptation import write_adaptation_request
 from core import StudioError
 from evolution_executor import consume as consume_evolution_request
 from stage_registry import STAGES,get_stage
+from project_recommendations import recommend
 
 def load_report(project_out):
     path=project_out/'report.json'
@@ -153,6 +154,7 @@ def run_registered_stages(request_path,project_out,work,report,deadline,runner,c
         if completion.get('finished'): return {'status':'complete','report':report,'next_stage':None}
         name=completion.get('next_stage'); stage=get_stage(name) if isinstance(name,str) else None
         if stage is None:
+            recommend('adaptation',project_out)
             request=_write_adaptation_handoff(report,project_out,baseline_sha)
             if request.get('status')=='adaptation_required':
                 pending_status=_run_adaptation_pending(project_out,deadline,runner,clock)
@@ -187,6 +189,7 @@ def run_registered_stages(request_path,project_out,work,report,deadline,runner,c
 
 def run_project(request_path,project_out,work,runner,deadline,clock=time.monotonic,baseline_sha=None):
     project_out.mkdir(parents=True,exist_ok=True)
+    recommend('planning',project_out)
     try: remaining=_remaining(deadline,clock)
     except TimeoutError: return {'status':'deferred','report':{},'next_stage':'preview'}
     preview=runner([sys.executable,'studio/run.py',request_path,'--work',work,'--out',str(project_out)],timeout=remaining)
@@ -194,6 +197,7 @@ def run_project(request_path,project_out,work,runner,deadline,clock=time.monoton
         report=load_report(project_out) if (project_out/'report.json').is_file() else {}; return {'status':'failed','report':report,'next_stage':'preview'}
     try: remaining=_remaining(deadline,clock)
     except TimeoutError: return {'status':'deferred_release','report':load_report(project_out),'next_stage':'release_build'}
+    recommend('testing',project_out)
     release=runner([sys.executable,'studio/post_preview.py',request_path,'--work',work,'--out',str(project_out)],timeout=remaining)
     if release.returncode!=0: return {'status':'release_failed','report':load_report(project_out),'next_stage':'release_build'}
     return run_registered_stages(request_path,project_out,work,load_report(project_out),deadline,runner,clock,baseline_sha)

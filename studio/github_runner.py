@@ -22,6 +22,7 @@ from generic_capability_isolated_validation import validate_in_isolation, valida
 from capability_synthesis import validate_candidate_envelope
 from generic_capability_persist import persist as persist_generic_capability_candidate, GenericCapabilityPersistError
 from capability_review import inspect as inspect_capability_review, CapabilityReviewError
+from capability_registry_promotion_persist import persist as persist_capability_registry_promotion, CapabilityRegistryPromotionPersistError
 from ci_provider import enabled
 from continuous_improvement import assess as assess_improvements
 from core import StudioError, canonical, request_check
@@ -257,6 +258,21 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
                 summary['candidate_pull_request']=review_status['pull_request']
                 if review_status.get('merge_commit_sha') is not None:
                     summary['candidate_merge_commit_sha']=review_status['merge_commit_sha']
+                if review_status.get('status')=='candidate_merged':
+                    try:
+                        candidate=json.loads((out/'.autonomy/capability-candidate.json').read_text())
+                        validation=json.loads((out/'.autonomy/capability-validation.json').read_text())
+                        review=json.loads((out/'.autonomy/capability-review.json').read_text())
+                        registry_promotion=persist_capability_registry_promotion(
+                            remote_github,candidate,validation,review,review_status,baseline_sha
+                        )
+                    except CapabilityRegistryPromotionPersistError as exc:
+                        raise StudioError('Capability registry promotion persistence failed: '+str(exc)) from None
+                    summary['registry_promotion_status']=registry_promotion['status']
+                    if registry_promotion.get('pull_request') is not None:
+                        summary['registry_promotion_pull_request']=registry_promotion['pull_request']
+                    if registry_promotion.get('commit_sha') is not None:
+                        summary['registry_promotion_commit_sha']=registry_promotion['commit_sha']
             out.mkdir(parents=True,exist_ok=True)
             (out/'github-pipeline.json').write_text(canonical(summary))
             return summary

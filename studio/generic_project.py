@@ -18,7 +18,7 @@ from project_recommendations import recommend
 from learning_context import load_context
 from agents.router import rank_agents
 from agents.performance import load as load_agent_performance, bonus as agent_bonus, record as record_agent_performance
-from agents.orchestrator import execute as execute_agent
+from agents.orchestrator import execute as execute_agent, execute_named as execute_named_agent, ranked_agent_names
 from agents.workspace import snapshot as snapshot_agent_workspace, validate_delta as validate_agent_delta, restore as restore_agent_workspace
 
 PLAN_SYSTEM = """You are the senior autonomous maintainer of an existing software repository.
@@ -36,6 +36,13 @@ PROGRESS_SYSTEM = """You are the autonomous engineering progress controller.
 After each implementation batch, inspect the updated repository and decide whether another implementation batch is clearly needed before testing, or whether the project has reached a useful verification point.
 Return ONLY JSON {"action":"work"|"verify","reason":"...","next_work":["..."]}.
 Choose "verify" when tests/build/runtime evidence can now resolve uncertainty. Never claim completion here."""
+
+CANDIDATE_REVIEW_SYSTEM = """You are an independent engineering reviewer comparing implementation candidates.
+Use only the project objective, changed-file summaries, repository snapshots, and trusted verification results.
+Prefer a candidate that passes verification. If multiple pass, choose the one that most completely satisfies the objective with the smallest justified change surface.
+If none pass, choose the candidate that makes the strongest concrete progress and has the most actionable failure evidence.
+Return ONLY JSON {"winner":"candidate-id","reason":"...","scores":{"candidate-id":0}}.
+The winner MUST exactly match one provided candidate id."""
 
 REVIEW_SYSTEM = """You are the verification-driven senior reviewer.
 Judge whether the user's objective is complete from the repository snapshot and actual verification results.
@@ -170,29 +177,111 @@ Objective and current plan:
                     "plan": current_plan,
                     "previous_verification": last_verification,
                 })
-                agent_result = execute_agent(
-                    agent_prompt,
+
+                candidate_records = []
+                ranked_names = ranked_agent_names(
                     {"code_editing","repo_analysis"},
                     role="implementation",
-                    cwd=work,
                     memory_path=out/".autonomy/agent-performance.json",
-                    timeout=1200,
+                    limit=2,
                 )
-                agent_trace.append(agent_result)
-                if agent_result.get("status") == "passed":
+                for candidate_name in ranked_names:
+                    restore_agent_workspace(work, before_agent)
+                    agent_result = execute_named_agent(candidate_name, agent_prompt, cwd=work, timeout=1200)
+                    agent_trace.append(agent_result)
+                    if agent_result.get("status") != "passed":
+                        continue
                     try:
                         delta = validate_agent_delta(work, before_agent)
                     except ValueError as exc:
                         restore_agent_workspace(work, before_agent)
-                        agent_trace.append({"status":"rejected_delta","error":str(exc)})
-                    else:
-                        if delta["changed"]:
-                            changed.extend(delta["changed"])
-                            agent_used = agent_result.get("selected")
-                            implementation_models.append({"agent":agent_used})
-                            used_external_agent = True
+                        agent_trace.append({"status":"rejected_delta","agent":candidate_name,"error":str(exc)})
+                        continue
+                    if not delta["changed"]:
+                        continue
+                    candidate_verification = verify(work, commands=adaptive_recipe["commands"] if adaptive_recipe else None)
+                    duration = 0.0
+                    for attempt in agent_result.get("attempts",[]):
+                        if isinstance(attempt,dict) and attempt.get("agent")==candidate_name:
+                            try: duration=float(attempt.get("duration_seconds",0.0))
+                            except (TypeError,ValueError): duration=0.0
+                            break
+                    record_agent_performance(
+                        out/".autonomy/agent-performance.json",
+                        candidate_name,
+                        "implementation",
+                        success=candidate_verification.get("passed") is True,
+                        duration=duration,
+                    )
+                    candidate_records.append({
+                        "id":"agent:"+candidate_name,
+                        "agent":candidate_name,
+                        "files":delta["files"],
+                        "changed":delta["changed"],
+                        "verification":candidate_verification,
+                        "repository":_snapshot(work,260_000),
+                    })
 
-            if not used_external_agent:
+                restore_agent_workspace(work, before_agent)
+                model_patch, model_impl = ask(IMPLEMENT_SYSTEM, canonical(implementation_context), code=True)
+                model_changed = _apply(work, model_patch)
+                model_verification = verify(work, commands=adaptive_recipe["commands"] if adaptive_recipe else None)
+                candidate_records.append({
+                    "id":"model",
+                    "agent":None,
+                    "files":validate_patch(model_patch),
+                    "changed":model_changed,
+                    "verification":model_verification,
+                    "repository":_snapshot(work,260_000),
+                    "model":model_impl,
+                })
+
+                restore_agent_workspace(work, before_agent)
+                viable=[x for x in candidate_records if x.get("changed")]
+                if viable:
+                    if len(viable)==1:
+                        winner_id=viable[0]["id"]
+                        candidate_review={"winner":winner_id,"reason":"single viable candidate","scores":{winner_id:100}}
+                        candidate_review_model=None
+                    else:
+                        review_payload={
+                            "brief":req["brief"],
+                            "plan":current_plan,
+                            "candidates":[{
+                                "id":item["id"],
+                                "changed_files":item["changed"],
+                                "verification":item["verification"],
+                                "repository":item["repository"],
+                            } for item in viable],
+                        }
+                        candidate_review,candidate_review_model=ask(CANDIDATE_REVIEW_SYSTEM,canonical(review_payload),code=False)
+                        winner_id=candidate_review.get("winner")
+                        if winner_id not in {item["id"] for item in viable}:
+                            verified=[item for item in viable if item["verification"].get("passed") is True]
+                            winner_id=(verified[0] if verified else viable[0])["id"]
+                    winner=next(item for item in viable if item["id"]==winner_id)
+                    changed.extend(_apply(work,{"files":winner["files"]}))
+                    if winner.get("agent"):
+                        agent_used=winner["agent"]
+                        implementation_models.append({"agent":agent_used})
+                        used_external_agent=True
+                    else:
+                        implementation_models.append(winner.get("model"))
+                    agent_trace.append({
+                        "status":"candidate_selection",
+                        "winner":winner_id,
+                        "review":candidate_review,
+                        "review_model":candidate_review_model,
+                        "candidates":[{
+                            "id":item["id"],
+                            "changed_files":item["changed"],
+                            "verification":item["verification"],
+                        } for item in viable],
+                    })
+                else:
+                    restore_agent_workspace(work, before_agent)
+
+            if not used_external_agent and not changed:
                 patch, impl_model = ask(IMPLEMENT_SYSTEM, canonical(implementation_context), code=True)
                 changed.extend(_apply(work, patch))
                 implementation_models.append(impl_model)
@@ -234,21 +323,6 @@ Objective and current plan:
                 "reason": adaptive_recipe["reason"],
             }
         last_verification = verification
-        if agent_used:
-            duration = 0.0
-            for attempt in agent_trace[-1].get("attempts",[]) if agent_trace and isinstance(agent_trace[-1],dict) else []:
-                if isinstance(attempt,dict) and attempt.get("agent")==agent_used:
-                    try: duration=float(attempt.get("duration_seconds",0.0))
-                    except (TypeError,ValueError): duration=0.0
-                    break
-            record_agent_performance(
-                out/".autonomy/agent-performance.json",
-                agent_used,
-                "implementation",
-                success=verification.get("passed") is True,
-                duration=duration,
-            )
-
         review_context = {
             "brief": req["brief"],
             "plan": plan,

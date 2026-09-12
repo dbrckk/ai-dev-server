@@ -6,7 +6,7 @@ import json
 import re
 
 VERSION=1
-STATUSES={"research_required","research_complete","synthesis_required","validation_required","promotion_required","awaiting_merge","complete","blocked"}
+STATUSES={"research_required","research_complete","synthesis_required","validation_required","promotion_required","awaiting_merge","awaiting_registry_merge","complete","blocked"}
 CAP_RE=re.compile(r"[a-z][a-z0-9_.-]{2,120}")
 
 
@@ -119,6 +119,20 @@ def record_candidate_persistence(value, persistence_status):
     out.update({
         "status":"awaiting_merge",
         "promotion_status":"candidate_review_required",
+    })
+    return _seal(out)
+
+
+def record_registry_promotion_persistence(value, persistence_status):
+    validate(value)
+    if value["status"]!="awaiting_merge" or value["promotion_status"]!="candidate_review_required":
+        raise CapabilityAdaptationStateError("registry promotion transition invalid")
+    if persistence_status not in {"registry_promotion_persisted","registry_promotion_already_persisted"}:
+        raise CapabilityAdaptationStateError("registry promotion persistence status invalid")
+    out=dict(value)
+    out.update({
+        "status":"awaiting_registry_merge",
+        "promotion_status":"registry_review_required",
     })
     return _seal(out)
 

@@ -176,6 +176,33 @@ def run_persistent_project(
     def context_provider(_goal_state):
         memory = load_memory(memory_path)
         items = context_for_goal(memory, goal_id)
+        portfolio_path=project_out/"portfolio-research.json"
+        if portfolio_path.is_file():
+            try:
+                portfolio=json.loads(portfolio_path.read_text())
+            except (OSError,json.JSONDecodeError):
+                portfolio={}
+            for candidate in portfolio.get("similar",[])[:6] if isinstance(portfolio,dict) else []:
+                if not isinstance(candidate,dict) or not isinstance(candidate.get("repo"),str):
+                    continue
+                profile=candidate.get("deep_profile") if isinstance(candidate.get("deep_profile"),dict) else {}
+                summary="Similar owned repository: "+candidate["repo"]
+                description=candidate.get("description")
+                if isinstance(description,str) and description.strip():
+                    summary+=" — "+description.strip()
+                markers=profile.get("markers") if isinstance(profile.get("markers"),list) else []
+                if markers:
+                    summary+="; markers: "+", ".join(str(x) for x in markers[:10])
+                excerpt=profile.get("readme_excerpt")
+                if isinstance(excerpt,str) and excerpt.strip():
+                    summary+="; README: "+excerpt.strip()[:700]
+                items.append({
+                    "summary":summary[:1200],
+                    "tags":["portfolio","similar-project"],
+                    "same_project":False,
+                    "provenance":{"source":candidate["repo"],"kind":"owned_repository"},
+                })
+        items=items[:20]
         context_path.write_text(json.dumps(items, ensure_ascii=False, sort_keys=True, indent=2) + "\n")
         return items
 

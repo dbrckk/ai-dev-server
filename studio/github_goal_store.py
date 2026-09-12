@@ -57,6 +57,32 @@ def _validate_candidate_review_link(adaptation, candidate, validation, review):
         raise RemoteStateError("candidate review pull request invalid")
 
 
+def _validate_registry_review_link(adaptation, candidate, review, registry_review):
+    if registry_review is None:
+        if adaptation is not None and adaptation.get("status")=="awaiting_registry_merge":
+            raise RemoteStateError("awaiting registry merge state missing registry review")
+        return
+    if adaptation is None or adaptation.get("status")!="awaiting_registry_merge":
+        raise RemoteStateError("registry review without awaiting registry merge state")
+    if candidate is None or review is None or not isinstance(registry_review,dict):
+        raise RemoteStateError("registry review missing candidate evidence")
+    required={"status","candidate_id","candidate_sha256","capability","candidate_merge_sha","branch","commit_sha","pull_request"}
+    if set(registry_review)!=required or registry_review.get("status") not in {"registry_promotion_persisted","registry_promotion_already_persisted"}:
+        raise RemoteStateError("registry review invalid")
+    if registry_review.get("candidate_id")!=candidate.get("candidate_id") or registry_review.get("candidate_sha256")!=candidate.get("candidate_sha256"):
+        raise RemoteStateError("registry review identity mismatch")
+    if registry_review.get("capability")!=adaptation.get("capability") or registry_review.get("capability")!=candidate.get("candidate",{}).get("capability"):
+        raise RemoteStateError("registry review capability mismatch")
+    if not isinstance(registry_review.get("candidate_merge_sha"),str) or not re.fullmatch(r"[0-9a-f]{40}",registry_review["candidate_merge_sha"]):
+        raise RemoteStateError("registry review candidate merge invalid")
+    if not isinstance(registry_review.get("branch"),str) or not registry_review["branch"].startswith("capability/promote-"):
+        raise RemoteStateError("registry review branch invalid")
+    if not isinstance(registry_review.get("commit_sha"),str) or not re.fullmatch(r"[0-9a-f]{40}",registry_review["commit_sha"]):
+        raise RemoteStateError("registry review commit invalid")
+    if not isinstance(registry_review.get("pull_request"),int) or registry_review["pull_request"]<1:
+        raise RemoteStateError("registry review pull request invalid")
+
+
 def _validate_candidate_validation_link(candidate, validation):
     if validation is None:
         return
@@ -85,6 +111,7 @@ def _paths(project_id):
         prefix + "/capability-candidate.json",
         prefix + "/capability-validation.json",
         prefix + "/capability-review.json",
+        prefix + "/capability-registry-review.json",
     )
 
 
@@ -113,7 +140,7 @@ def _decode_blob(github, sha):
 
 
 def load(github, project_id):
-    goal_path, registry_path, backlog_path, improvement_goal_path, adaptation_path, candidate_path, validation_path, review_path = _paths(project_id)
+    goal_path, registry_path, backlog_path, improvement_goal_path, adaptation_path, candidate_path, validation_path, review_path, registry_review_path = _paths(project_id)
     ref = _exact_ref(github)
     if ref is None:
         return None
@@ -132,6 +159,7 @@ def load(github, project_id):
     candidate_item = matches.get(candidate_path)
     validation_item = matches.get(validation_path)
     review_item = matches.get(review_path)
+    registry_review_item = matches.get(registry_review_path)
     if goal_item is None and registry_item is None:
         return None
     if goal_item is None or registry_item is None:
@@ -144,8 +172,10 @@ def load(github, project_id):
     candidate = None if candidate_item is None else validate_candidate_envelope(_decode_blob(github, candidate_item.get("sha")))
     validation = None if validation_item is None else validate_isolated_validation_result(_decode_blob(github, validation_item.get("sha")))
     review = None if review_item is None else _decode_blob(github, review_item.get("sha"))
+    registry_review = None if registry_review_item is None else _decode_blob(github, registry_review_item.get("sha"))
     _validate_candidate_validation_link(candidate, validation)
     _validate_candidate_review_link(adaptation, candidate, validation, review)
+    _validate_registry_review_link(adaptation, candidate, review, registry_review)
     return {
         "goal": goal,
         "registry": registry,
@@ -155,12 +185,13 @@ def load(github, project_id):
         "capability_candidate": candidate,
         "capability_validation": validation,
         "capability_review": review,
+        "capability_registry_review": registry_review,
         "head_sha": head,
     }
 
 
-def save(github, project_id, goal, registry, backlog=None, improvement_goal=None, capability_adaptation=None, capability_candidate=None, capability_validation=None, capability_review=None):
-    goal_path, registry_path, backlog_path, improvement_goal_path, adaptation_path, candidate_path, validation_path, review_path = _paths(project_id)
+def save(github, project_id, goal, registry, backlog=None, improvement_goal=None, capability_adaptation=None, capability_candidate=None, capability_validation=None, capability_review=None, capability_registry_review=None):
+    goal_path, registry_path, backlog_path, improvement_goal_path, adaptation_path, candidate_path, validation_path, review_path, registry_review_path = _paths(project_id)
     validate_goal(goal)
     validate_registry(registry)
     backlog = new_backlog() if backlog is None else validate_backlog(backlog)
@@ -174,6 +205,7 @@ def save(github, project_id, goal, registry, backlog=None, improvement_goal=None
         capability_validation = validate_isolated_validation_result(capability_validation)
     _validate_candidate_validation_link(capability_candidate, capability_validation)
     _validate_candidate_review_link(capability_adaptation, capability_candidate, capability_validation, capability_review)
+    _validate_registry_review_link(capability_adaptation, capability_candidate, capability_review, capability_registry_review)
     ref = _exact_ref(github)
     if ref is None:
         meta = github.get("")
@@ -207,6 +239,8 @@ def save(github, project_id, goal, registry, backlog=None, improvement_goal=None
         entries.append({"path": validation_path, "mode": "100644", "type": "blob", "content": json.dumps(capability_validation, sort_keys=True, ensure_ascii=False)})
     if capability_review is not None:
         entries.append({"path": review_path, "mode": "100644", "type": "blob", "content": json.dumps(capability_review, sort_keys=True, ensure_ascii=False)})
+    if capability_registry_review is not None:
+        entries.append({"path": registry_review_path, "mode": "100644", "type": "blob", "content": json.dumps(capability_registry_review, sort_keys=True, ensure_ascii=False)})
     tree = github.call("POST", github.repo + "/git/trees", {"base_tree": base_tree, "tree": entries})
     tree_sha = tree.get("sha") if isinstance(tree, dict) else None
     if not isinstance(tree_sha, str) or len(tree_sha) != 40:
@@ -251,6 +285,8 @@ def restore_local(github, project_id, project_out):
         (root / "capability-validation.json").write_text(json.dumps(remote["capability_validation"], sort_keys=True, ensure_ascii=False, indent=2) + "\n")
     if remote["capability_review"] is not None:
         (root / "capability-review.json").write_text(json.dumps(remote["capability_review"], sort_keys=True, ensure_ascii=False, indent=2) + "\n")
+    if remote["capability_registry_review"] is not None:
+        (root / "capability-registry-review.json").write_text(json.dumps(remote["capability_registry_review"], sort_keys=True, ensure_ascii=False, indent=2) + "\n")
     return True
 
 
@@ -271,6 +307,8 @@ def persist_local(github, project_id, project_out):
         capability_validation = json.loads(validation_path.read_text()) if validation_path.is_file() else None
         review_path = root / "capability-review.json"
         capability_review = json.loads(review_path.read_text()) if review_path.is_file() else None
+        registry_review_path = root / "capability-registry-review.json"
+        capability_registry_review = json.loads(registry_review_path.read_text()) if registry_review_path.is_file() else None
     except (OSError, json.JSONDecodeError):
         raise RemoteStateError("local autonomous state unavailable") from None
     validate_goal(goal)
@@ -286,6 +324,7 @@ def persist_local(github, project_id, project_out):
         validate_isolated_validation_result(capability_validation)
     _validate_candidate_validation_link(capability_candidate, capability_validation)
     _validate_candidate_review_link(capability_adaptation, capability_candidate, capability_validation, capability_review)
+    _validate_registry_review_link(capability_adaptation, capability_candidate, capability_review, capability_registry_review)
     remote = load(github, project_id)
     if (remote is not None and remote["goal"] == goal and remote["registry"] == registry
             and remote["backlog"] == backlog
@@ -293,6 +332,7 @@ def persist_local(github, project_id, project_out):
             and remote.get("capability_adaptation") == capability_adaptation
             and remote.get("capability_candidate") == capability_candidate
             and remote.get("capability_validation") == capability_validation
-            and remote.get("capability_review") == capability_review):
+            and remote.get("capability_review") == capability_review
+            and remote.get("capability_registry_review") == capability_registry_review):
         return remote["head_sha"]
-    return save(github, project_id, goal, registry, backlog, improvement_goal, capability_adaptation, capability_candidate, capability_validation, capability_review)
+    return save(github, project_id, goal, registry, backlog, improvement_goal, capability_adaptation, capability_candidate, capability_validation, capability_review, capability_registry_review)

@@ -22,7 +22,8 @@ class EngineProfile:
 
 FLUTTER = EngineProfile('flutter', 'pubspec.yaml', '_test.dart')
 GODOT = EngineProfile('godot', 'project.godot', '.gd')
-PROFILES = {profile.name: profile for profile in (FLUTTER, GODOT)}
+GENERIC = EngineProfile('generic', '*', '')
+PROFILES = {profile.name: profile for profile in (FLUTTER, GODOT, GENERIC)}
 
 _GODOT_ROOT_EDITABLE = {'project.godot', 'export_presets.cfg'}
 _GODOT_TEXT_EXTENSIONS = {'.gd', '.tscn', '.tres', '.svg', '.json', '.md', '.txt'}
@@ -47,12 +48,12 @@ def infer(paths) -> EngineProfile:
     for value in paths:
         parsed = _safe(value)
         values.add(parsed.as_posix())
-    markers = [profile for profile in PROFILES.values() if profile.marker in values]
-    if len(markers) != 1:
-        if not markers:
-            raise EngineError('Unsupported project engine: no trusted marker found')
+    specialized = [profile for profile in (FLUTTER, GODOT) if profile.marker in values]
+    if len(specialized) > 1:
         raise EngineError('Ambiguous project engine markers')
-    return markers[0]
+    if specialized:
+        return specialized[0]
+    return GENERIC
 
 
 def editable(path: str, engine: str) -> bool:
@@ -72,6 +73,9 @@ def editable(path: str, engine: str) -> bool:
         if len(parsed.parts) < 2 or parsed.parts[0] not in _GODOT_EDITABLE_ROOTS:
             return False
         return parsed.suffix.lower() in _GODOT_TEXT_EXTENSIONS
+    if engine == 'generic':
+        from generic_policy import editable as generic_editable
+        return generic_editable(path)
     raise EngineError('Unsupported project engine')
 
 
@@ -88,6 +92,9 @@ def restorable(path: str, engine: str) -> bool:
         if parsed.parts and parsed.parts[0] in _GODOT_EDITABLE_ROOTS:
             return parsed.suffix.lower() in _GODOT_TEXT_EXTENSIONS
         return False
+    if engine == 'generic':
+        from generic_policy import editable as generic_editable
+        return generic_editable(path) or path in {'PROJECT_CONTEXT.md', '.studio/state.json'}
     raise EngineError('Unsupported project engine')
 
 

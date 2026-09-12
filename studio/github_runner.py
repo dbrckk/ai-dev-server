@@ -182,10 +182,13 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             )
     if remote_github is not None:
         try:
-            persist_local(remote_github,request['id'],out)
+            # Memory ingestion must happen before autonomous-state persistence so
+            # every validated artifact produced during this run is durably
+            # checkpointed before the runner exits.
             memory=load_project_memory(memory_path)
             memory=ingest_run(memory,request['id'],out)
             save_project_memory(memory_path,memory)
+            persist_local(remote_github,request['id'],out)
             persist_memory_local(remote_github,memory_path)
         except RemoteStateError as exc:
             raise StudioError('Remote autonomous state persistence failed: '+str(exc)) from None

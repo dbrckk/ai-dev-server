@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from studio.generic_capability_persist import GenericCapabilityPersistError, persist
+from studio.generic_capability_persist import GenericCapabilityPersistError, _prefix, persist
 
 
 class FakeGitHub:
@@ -122,7 +122,7 @@ class GenericCapabilityPersistTests(unittest.TestCase):
     @patch("studio.generic_capability_persist.validate_isolated_validation_result",side_effect=lambda x:x)
     def test_existing_branch_must_match_content_and_parent(self,_validation,_candidate):
         gh=FakeGitHub()
-        prefix="capability/candidate-image_assets-"
+        prefix=_prefix("image_assets","capability-candidate:image_assets:abc")
         gh.refs=[{"ref":"refs/heads/"+prefix+"4"*40,"object":{"sha":"4"*40}}]
         gh.commits["4"*40]={"tree":{"sha":"f"*40},"parents":[{"sha":"1"*40}]}
         with self.assertRaisesRegex(GenericCapabilityPersistError,"content changed"):

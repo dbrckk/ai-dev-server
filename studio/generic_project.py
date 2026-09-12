@@ -11,6 +11,8 @@ from generic_policy import validate_patch
 from generic_repository import GenericRepository
 from generic_verify import run as verify
 from generic_verifier_adaptation import save_recipe, synthesize as synthesize_verifier, validate_recipe
+from generic_toolchain import bootstrap_commands, detect as detect_toolchain
+from generic_sandbox import run as run_command
 from run import GitHub
 from project_recommendations import recommend
 from learning_context import load_context
@@ -77,6 +79,19 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         "rounds": [],
         "restore": restore,
         "portfolio_research": (portfolio or {}).get("similar", [])[:8],
+        "toolchain": detect_toolchain(work),
+    }
+
+    bootstrap_evidence = []
+    for command in bootstrap_commands(work):
+        result = run_command(command, work, timeout=900, network=True)
+        bootstrap_evidence.append(result)
+        if not result.get("passed"):
+            break
+    state["bootstrap"] = {
+        "attempted": bool(bootstrap_evidence),
+        "passed": all(item.get("passed") for item in bootstrap_evidence) if bootstrap_evidence else True,
+        "results": bootstrap_evidence,
     }
 
     last_verification = None
@@ -102,6 +117,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             "similar_projects": state["portfolio_research"],
             "star_repositories": star_context.get("matches",[])[:12] if isinstance(star_context,dict) else [],
             "previous_verification": last_verification,
+            "bootstrap": state["bootstrap"],
             "previous_rounds": state["rounds"][-3:],
         }
         plan, plan_model = ask(PLAN_SYSTEM, canonical(plan_payload), code=False)
@@ -111,6 +127,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             "repository": snapshot,
             "validated_engineering_memory": learned_context,
             "previous_verification": last_verification,
+            "bootstrap": state["bootstrap"],
         }
         patch, impl_model = ask(IMPLEMENT_SYSTEM, canonical(implementation_context), code=True)
         changed = _apply(work, patch)

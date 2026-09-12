@@ -81,7 +81,7 @@ jobs:
                   raise RuntimeError('Autonomous goal path is invalid')
               project_id=parts[1]
               goal=read_blob(path,validate_goal)
-              if goal['status'] in {'blocked','human_action_required'}:
+              if goal['status']=='blocked':
                   terminal.append(project_id)
                   continue
               if goal['status']!='complete':

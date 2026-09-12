@@ -23,6 +23,7 @@ from capability_synthesis import validate_candidate_envelope
 from generic_capability_persist import persist as persist_generic_capability_candidate, GenericCapabilityPersistError
 from capability_review import inspect as inspect_capability_review, CapabilityReviewError
 from capability_registry_promotion_persist import persist as persist_capability_registry_promotion, CapabilityRegistryPromotionPersistError
+from capability_registry_review import inspect as inspect_capability_registry_review, CapabilityRegistryReviewError
 from ci_provider import enabled
 from continuous_improvement import assess as assess_improvements
 from core import StudioError, canonical, request_check
@@ -299,6 +300,17 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
         from capability_adaptation_state import validate as validate_capability_adaptation
         registry_waiting=validate_capability_adaptation(json.loads(adaptation_path.read_text()))
         if registry_waiting['status']=='awaiting_registry_merge':
+            registry_review_status=None
+            if remote_github is not None:
+                registry_review_path=out/'.autonomy/capability-registry-review.json'
+                if not registry_review_path.is_file():
+                    raise StudioError('Awaiting registry review requires persisted review identity')
+                try:
+                    registry_review_status=inspect_capability_registry_review(
+                        remote_github,json.loads(registry_review_path.read_text())
+                    )
+                except CapabilityRegistryReviewError as exc:
+                    raise StudioError('Capability registry review verification failed: '+str(exc)) from None
             summary={
                 'status':'adaptation_required',
                 'next_stage':registry_waiting['capability'],
@@ -306,6 +318,11 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
                 'capability_adaptation_status':'awaiting_registry_merge',
                 'promotion_status':'registry_review_required',
             }
+            if registry_review_status is not None:
+                summary['registry_review_status']=registry_review_status['status']
+                summary['registry_promotion_pull_request']=registry_review_status['pull_request']
+                if registry_review_status.get('merge_commit_sha') is not None:
+                    summary['registry_promotion_merge_commit_sha']=registry_review_status['merge_commit_sha']
             out.mkdir(parents=True,exist_ok=True)
             (out/'github-pipeline.json').write_text(canonical(summary))
             return summary

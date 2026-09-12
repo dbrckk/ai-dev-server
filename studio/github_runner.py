@@ -27,10 +27,11 @@ from ci_provider import enabled
 from continuous_improvement import assess as assess_improvements
 from core import StudioError, canonical, request_check
 from github_goal_store import RemoteStateError, persist_local, restore_local
+from goal_engine import load as load_goal_state, resume_human_action, save as save_goal_state
 from github_memory_store import GitHubMemoryError, persist_local as persist_memory_local, restore_local as restore_memory_local
 from improvement_backlog import activate_next, load as load_improvement_backlog, merge_assessment, new_backlog, save as save_improvement_backlog
 from improvement_executor import run_active_improvement, verified_project_cycle
-from human_input_request import requires_human_input, write_request as write_human_input_request
+from human_input_request import prerequisite_satisfied, requires_human_input, write_request as write_human_input_request
 from memory_lifecycle import ingest_run
 from project_memory import load as load_project_memory, save as save_project_memory
 from portfolio_scan import scan as scan_portfolio
@@ -144,6 +145,16 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             raise StudioError('Remote autonomous state restore failed: '+str(exc)) from None
         except GitHubMemoryError as exc:
             raise StudioError('Remote project memory restore failed: '+str(exc)) from None
+    goal_path=out/'.autonomy/goal.json'
+    if goal_path.is_file():
+        try:
+            goal_state=load_goal_state(goal_path)
+            if goal_state.get('status')=='human_action_required' and prerequisite_satisfied(str(goal_state.get('human_action') or '')):
+                save_goal_state(goal_path,resume_human_action(goal_state))
+                (out/'USER_INPUT_REQUIRED.txt').unlink(missing_ok=True)
+                (out/'user-input-required.json').unlink(missing_ok=True)
+        except ValueError as exc:
+            raise StudioError('Autonomous goal resume check failed: '+str(exc)) from None
     adaptation_path=out/'.autonomy/capability-adaptation.json'
     memory_path=out/'.memory/memory.json'
     registry_path=out/'.autonomy/capabilities.json'

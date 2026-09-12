@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import time
 from pathlib import Path
 
 from core import StudioError, canonical
@@ -63,7 +64,7 @@ def _apply(root: Path, patch: dict) -> list[str]:
     return changed
 
 
-def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6) -> dict:
+def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict:
     github = GitHub(req["target_repo"])
     repo = GenericRepository(github, req["target_repo"], req["id"])
     base_sha, restore = repo.restore(work)
@@ -78,6 +79,8 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
 
     last_verification = None
     for round_index in range(1, max_rounds + 1):
+        if deadline is not None and clock() >= deadline - 60:
+            break
         star_context=recommend('implementation',out)
         snapshot = _snapshot(work)
         plan_payload = {

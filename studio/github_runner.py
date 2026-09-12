@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -17,7 +18,8 @@ from capability_adaptation_state import new_state as new_capability_adaptation_s
 from adaptation_research import research_missing_capability
 from repository_research_provider import build_repository_providers
 from generic_capability_synthesis import synthesize_from_memory
-from generic_capability_isolated_validation import validate_in_isolation
+from generic_capability_isolated_validation import validate_in_isolation, validate_isolated_validation_result
+from capability_synthesis import validate_candidate_envelope
 from ci_provider import enabled
 from continuous_improvement import assess as assess_improvements
 from core import StudioError, canonical, request_check
@@ -29,6 +31,46 @@ from memory_lifecycle import ingest_run
 from project_memory import load as load_project_memory, save as save_project_memory
 from multi_engine_orchestrator import run_project as run_multi_engine_project
 from run import GitHub as RepoGitHub
+
+
+def _prepare_capability_promotion_handoff(out: Path, adaptation_state: dict, baseline_sha: str) -> dict:
+    if adaptation_state.get('status')!='promotion_required' or adaptation_state.get('promotion_status')!='eligible':
+        raise StudioError('Capability promotion handoff requires eligible promotion state')
+    if not isinstance(baseline_sha,str) or len(baseline_sha)!=40 or any(ch not in '0123456789abcdef' for ch in baseline_sha):
+        raise StudioError('Capability promotion handoff requires pinned baseline SHA')
+    candidate_path=out/'.autonomy/capability-candidate.json'
+    validation_path=out/'.autonomy/capability-validation.json'
+    if not candidate_path.is_file() or not validation_path.is_file():
+        raise StudioError('Capability promotion handoff requires persisted candidate and validation')
+    candidate=validate_candidate_envelope(json.loads(candidate_path.read_text()))
+    validation=validate_isolated_validation_result(json.loads(validation_path.read_text()))
+    candidate_id=candidate.get('candidate_id')
+    candidate_sha=candidate.get('candidate_sha256')
+    if validation.get('candidate_id')!=candidate_id or validation.get('candidate_sha256')!=candidate_sha:
+        raise StudioError('Capability promotion handoff candidate mismatch')
+    if validation.get('validation',{}).get('status')!='candidate_validated':
+        raise StudioError('Capability promotion handoff requires validated candidate')
+    if adaptation_state.get('synthesis_status')!='candidate_synthesized:'+candidate_sha:
+        raise StudioError('Capability promotion handoff adaptation mismatch')
+    payload=candidate.get('candidate',{})
+    if payload.get('capability')!=adaptation_state.get('capability'):
+        raise StudioError('Capability promotion handoff capability mismatch')
+    handoff={
+        'status':'promotion_required',
+        'capability':adaptation_state['capability'],
+        'candidate_id':candidate_id,
+        'candidate_sha256':candidate_sha,
+        'provider':payload.get('provider'),
+        'baseline_sha':baseline_sha,
+        'validation_report_sha256':validation.get('report_sha256'),
+        'candidate_materialized_in_trusted_repo':False,
+        'capability_registered':False,
+        'next_action':'persist_candidate_on_dedicated_branch_then_prepare_promotion',
+    }
+    handoff['handoff_sha256']=hashlib.sha256(canonical(handoff).encode()).hexdigest()
+    path=out/'.autonomy/capability-promotion-handoff.json'
+    path.write_text(canonical(handoff))
+    return handoff
 
 
 def bounded_run(args, timeout):
@@ -142,6 +184,24 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             decision=validation_report.get('validation',{}).get('status')
             adaptation_state=record_capability_validation(adaptation_state,decision)
             adaptation_path.write_text(canonical(adaptation_state))
+        if adaptation_state['status']=='promotion_required':
+            handoff=_prepare_capability_promotion_handoff(out,adaptation_state,baseline_sha)
+            if remote_github is not None:
+                try:
+                    persist_local(remote_github,request['id'],out)
+                except RemoteStateError as exc:
+                    raise StudioError('Remote autonomous state persistence failed: '+str(exc)) from None
+            summary={
+                'status':'adaptation_required',
+                'next_stage':adaptation_state['capability'],
+                'finished':False,
+                'capability_adaptation_status':'promotion_required',
+                'promotion_status':'eligible',
+                'promotion_handoff_sha256':handoff['handoff_sha256'],
+            }
+            out.mkdir(parents=True,exist_ok=True)
+            (out/'github-pipeline.json').write_text(canonical(summary))
+            return summary
     last_result={}
     def run_once(*args):
         result=run_multi_engine_project(*args)

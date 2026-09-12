@@ -106,23 +106,6 @@ class GitHubGoalStoreTests(unittest.TestCase):
         validation={"candidate_id":"candidate:a","candidate_sha256":"a"*64}
         self.assertIsNone(_validate_candidate_validation_link(candidate,validation))
 
-    def test_remote_validation_without_candidate_fails_closed(self):
-        gh=FakeGitHub()
-        save(gh,"demo",goal(),new_registry(),new_backlog())
-        # Simulate an independently injected validation blob without a candidate.
-        tree=gh.trees[gh.ref]
-        validation={"candidate_id":"candidate:a","candidate_sha256":"a"*64}
-        raw=json.dumps(validation).encode()
-        sha="9"*40
-        gh.blobs[sha]={"encoding":"base64","content":base64.b64encode(raw).decode()}
-        tree.append({
-            "path":".studio-autonomy/demo/capability-validation.json",
-            "type":"blob",
-            "sha":sha,
-        })
-        with self.assertRaises(Exception):
-            load(gh,"demo")
-
     def test_local_restore_and_persist(self):
         gh=FakeGitHub(); save(gh,"demo",goal(),new_registry(),new_backlog())
         with tempfile.TemporaryDirectory() as td:

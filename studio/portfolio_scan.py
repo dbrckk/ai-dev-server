@@ -46,7 +46,11 @@ def _list_owned(api: API, owner: str) -> list[dict]:
             break
         if not isinstance(batch, list):
             raise StudioError("GitHub portfolio listing returned invalid data")
-        repos.extend(x for x in batch if isinstance(x, dict) and x.get("owner", {}).get("login", "").lower() == owner.lower())
+        # affiliation=owner already scopes to repositories owned by the
+        # authenticated GitHub user. Do not re-filter by the target repo owner:
+        # the target may live in another namespace while the user's own
+        # portfolio still contains useful prior work.
+        repos.extend(x for x in batch if isinstance(x, dict))
         if len(batch) < 100:
             return repos
     if repos:

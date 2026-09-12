@@ -2,7 +2,7 @@
 from __future__ import annotations
 from pathlib import Path
 from .adapters import AgentAdapter
-from .performance import bonus,load,record
+from .performance import bonus,load
 from .registry import DEFAULT_REGISTRY
 from .router import rank_agents
 
@@ -26,7 +26,6 @@ def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,ti
         try:
             run=AgentAdapter(decision.agent).run(argv,cwd=cwd,timeout=timeout)
             ok=run.returncode==0
-            record(memory_path,decision.agent.name,role,success=ok,duration=run.duration_seconds)
             evidence={"agent":run.agent,"status":"passed" if ok else "failed","returncode":run.returncode,
                 "duration_seconds":run.duration_seconds,"stdout_tail":run.stdout_tail,"stderr_tail":run.stderr_tail}
             attempts.append(evidence)

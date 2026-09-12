@@ -36,6 +36,16 @@ Depuis un smartphone, utiliser un Codespace comme machine Linux distante avec :
 
 Les ports 8082, 3080 et 3000 sont prévus pour être forwardés par Codespaces.
 
+## Mode autonome jusqu'à la fin
+
+AI Dev Server vise désormais à prendre en charge **un nouveau projet ou un projet existant supporté**, à travailler dessus sans intervention de routine et à continuer jusqu'à satisfaction de la définition de fini vérifiée.
+
+Les échecs de tests, erreurs de modèle, quotas temporaires, défauts de code ou capacités internes manquantes doivent déclencher réparation, reroutage, reprise ou adaptation automatique — pas un transfert du travail à l'utilisateur.
+
+Une intervention humaine n'est demandée que pour un prérequis externe réellement non automatisable (clé API/token à placer dans un secret manager, identité/KYC, paiement, accord légal, action propriétaire sur un store, etc.). Dans ce cas le pipeline produit `USER_INPUT_REQUIRED.txt` et `user-input-required.json`, sans jamais écrire le secret lui-même.
+
+Documentation : **[Autonomous project ownership](docs/AUTONOMOUS_PROJECTS.md)**.
+
 ## Meta-router multi-agent
 
 Le dépôt contient désormais une première couche de routage par capacités :

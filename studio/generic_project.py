@@ -10,6 +10,7 @@ from generic_model import ask
 from generic_policy import validate_patch
 from generic_repository import GenericRepository
 from generic_verify import run as verify
+from generic_verifier_adaptation import save_recipe, synthesize as synthesize_verifier, validate_recipe
 from run import GitHub
 from project_recommendations import recommend
 
@@ -78,6 +79,15 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     }
 
     last_verification = None
+    adaptive_recipe = None
+    adaptive_path = out / "generic-verifier.json"
+    if adaptive_path.is_file():
+        try:
+            saved = json.loads(adaptive_path.read_text())
+            if isinstance(saved, dict) and isinstance(saved.get("recipe"), dict):
+                adaptive_recipe = validate_recipe(saved["recipe"], work)
+        except (OSError, json.JSONDecodeError, ValueError):
+            adaptive_recipe = None
     for round_index in range(1, max_rounds + 1):
         if deadline is not None and clock() >= deadline - 60:
             break
@@ -102,7 +112,25 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         changed = _apply(work, patch)
 
         recommend('testing',out)
-        verification = verify(work)
+        verification = verify(work, commands=adaptive_recipe["commands"] if adaptive_recipe else None)
+        if verification.get("status") == "no_verifier":
+            adaptive_recipe, verifier_model = synthesize_verifier(
+                work,
+                req["brief"],
+                previous=last_verification,
+            )
+            save_recipe(adaptive_path, adaptive_recipe, verifier_model)
+            verification = verify(work, commands=adaptive_recipe["commands"])
+            verification["adaptive"] = {
+                "used": True,
+                "reason": adaptive_recipe["reason"],
+                "model": verifier_model,
+            }
+        elif adaptive_recipe:
+            verification["adaptive"] = {
+                "used": True,
+                "reason": adaptive_recipe["reason"],
+            }
         last_verification = verification
 
         review_context = {

@@ -4,7 +4,7 @@ from pathlib import Path
 import json
 import os
 from .adapters import AgentAdapter
-from .performance import bonus,load
+from .performance import bonus,eligible,load
 from .registry import DEFAULT_REGISTRY
 from .router import rank_agents
 
@@ -45,6 +45,8 @@ def invocation_for(name:str,prompt:str)->tuple[list[str],dict[str,str]]|None:
     # Only invocation contracts verified against upstream CLIs are enabled.
     if name=="opencode":
         return _opencode_runtime(prompt)
+    if name=="hermes":
+        return (["hermes","chat","--toolsets","file","-q",prompt],{"HERMES_YOLO_MODE":"1"})
     return None
 
 def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,timeout:int=1800)->dict:
@@ -54,6 +56,9 @@ def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,ti
     attempts=[]
     for decision in ranked:
         if not decision.agent.available(): continue
+        if not eligible(perf,decision.agent.name,role):
+            attempts.append({"agent":decision.agent.name,"status":"cooldown"})
+            continue
         invocation=invocation_for(decision.agent.name,prompt)
         if invocation is None:
             attempts.append({"agent":decision.agent.name,"status":"unsupported_adapter"})

@@ -48,6 +48,28 @@ def discover(root: Path) -> list[list[str]]:
     if any(root.glob("*.sln")) or any(root.glob("*.csproj")):
         if shutil.which("dotnet"):
             commands.append(["dotnet", "test", "--nologo"])
+    if (root/"deno.json").is_file() or (root/"deno.jsonc").is_file():
+        if shutil.which("deno"):
+            commands.append(["deno","test","--no-prompt"])
+    if (root/"bun.lock").is_file() or (root/"bun.lockb").is_file():
+        if shutil.which("bun"):
+            commands.append(["bun","test"])
+    if (root/"composer.json").is_file() and shutil.which("php"):
+        if (root/"vendor/bin/phpunit").is_file():
+            commands.append(["php","vendor/bin/phpunit"])
+    if (root/"Gemfile").is_file() and shutil.which("bundle"):
+        if (root/"Rakefile").is_file():
+            commands.append(["bundle","exec","rake","test"])
+    if (root/"mix.exs").is_file() and shutil.which("mix"):
+        commands.append(["mix","test"])
+    if (root/"Package.swift").is_file() and shutil.which("swift"):
+        commands.append(["swift","test"])
+    if (root/"CMakeLists.txt").is_file() and shutil.which("cmake") and shutil.which("ctest"):
+        commands.append(["cmake","-S",".","-B",".studio-cmake-build"])
+        commands.append(["cmake","--build",".studio-cmake-build"])
+        commands.append(["ctest","--test-dir",".studio-cmake-build","--output-on-failure"])
+    elif (root/"Makefile").is_file() and shutil.which("make"):
+        commands.append(["make","test"])
     return commands
 
 

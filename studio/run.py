@@ -40,11 +40,39 @@ class GitHub(API):
         if not exact:
             if metadata.get('size', 0) > 0:
                 default = metadata['default_branch']
-                tree = self.get('/git/trees/' + default + '?recursive=1')
-                paths = {x['path'] for x in tree['tree'] if x['type'] == 'blob'}
-                if paths - {'README.md', 'LICENSE', '.gitignore'}:
-                    raise StudioError('Initial target must be empty or contain only README/LICENSE/.gitignore')
-                return None, self.get('/branches/' + default)['commit']['sha']
+                branch_info = self.get('/branches/' + default)
+                parent = branch_info['commit']['sha']
+                tree = self.get('/git/trees/' + parent + '?recursive=1')
+                if tree.get('truncated') or len(tree.get('tree', [])) > 2000:
+                    raise StudioError('Target tree exceeds supported size')
+                paths = {x['path'] for x in tree['tree'] if x.get('type') == 'blob'}
+                bootstrap_only = paths <= {'README.md', 'LICENSE', '.gitignore'}
+                existing_flutter = 'pubspec.yaml' in paths and any(
+                    path.startswith('lib/') and path.endswith('.dart') for path in paths
+                )
+                if bootstrap_only:
+                    return None, parent
+                if not existing_flutter:
+                    raise StudioError('Existing target is not a supported Flutter source repository')
+                self.existing_project = True
+                # Import only the trusted editable Flutter source surface. The default
+                # branch remains the base tree, so unrelated/native files are preserved
+                # on the studio branch rather than deleted.
+                for item in tree['tree']:
+                    path = item.get('path')
+                    if item.get('type') != 'blob' or not isinstance(path, str):
+                        continue
+                    if not (allowed(path) or path == 'pubspec.lock'):
+                        continue
+                    if item.get('mode') != '100644' or item.get('size', 0) > 600000:
+                        raise StudioError('Unsupported existing project source file')
+                    blob = self.get('/git/blobs/' + item['sha'])
+                    content = base64.b64decode(blob['content']).decode()
+                    if path == 'pubspec.lock':
+                        (root / path).write_text(content)
+                    else:
+                        apply_patch(root, {'files': [{'path': path, 'content': content}]})
+                return None, parent
             return None, None
         parent = exact[0]['object']['sha']
         tree = self.get('/git/trees/' + parent + '?recursive=1')

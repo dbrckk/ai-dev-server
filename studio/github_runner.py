@@ -20,6 +20,7 @@ from repository_research_provider import build_repository_providers
 from generic_capability_synthesis import synthesize_from_memory
 from generic_capability_isolated_validation import validate_in_isolation, validate_isolated_validation_result
 from capability_synthesis import validate_candidate_envelope
+from generic_capability_persist import persist as persist_generic_capability_candidate, GenericCapabilityPersistError
 from ci_provider import enabled
 from continuous_improvement import assess as assess_improvements
 from core import StudioError, canonical, request_check
@@ -186,9 +187,17 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             adaptation_path.write_text(canonical(adaptation_state))
         if adaptation_state['status']=='promotion_required':
             handoff=_prepare_capability_promotion_handoff(out,adaptation_state,baseline_sha)
+            candidate_persistence=None
             if remote_github is not None:
                 try:
+                    candidate=json.loads((out/'.autonomy/capability-candidate.json').read_text())
+                    validation=json.loads((out/'.autonomy/capability-validation.json').read_text())
+                    candidate_persistence=persist_generic_capability_candidate(
+                        remote_github,candidate,validation,handoff,baseline_sha
+                    )
                     persist_local(remote_github,request['id'],out)
+                except GenericCapabilityPersistError as exc:
+                    raise StudioError('Capability candidate persistence failed: '+str(exc)) from None
                 except RemoteStateError as exc:
                     raise StudioError('Remote autonomous state persistence failed: '+str(exc)) from None
             summary={
@@ -199,6 +208,10 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
                 'promotion_status':'eligible',
                 'promotion_handoff_sha256':handoff['handoff_sha256'],
             }
+            if candidate_persistence is not None:
+                summary['candidate_persistence_status']=candidate_persistence['status']
+                summary['candidate_pull_request']=candidate_persistence['pull_request']
+                summary['candidate_commit_sha']=candidate_persistence['commit_sha']
             out.mkdir(parents=True,exist_ok=True)
             (out/'github-pipeline.json').write_text(canonical(summary))
             return summary

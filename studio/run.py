@@ -242,6 +242,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
 
     state['model_calls_this_cycle'] = model.calls
     state['models_used'] = getattr(model, 'models_used', {})
+    state['providers_used'] = getattr(model, 'providers_used', {})
     state['limits'] = {'max_cycles': req['max_cycles'], 'max_calls_per_cycle': req['max_calls'], 'max_rounds_per_cycle': req['max_rounds']}
     state['release_status'] = 'not_store_ready'
     state['coverage'] = {'variants_per_path': 4, 'journeys': [j['id'] for j in state.get('product', {}).get('journeys', [])], 'scope': 'Initial screen and final screen of each declared journey; not all possible states or real-device testing.'}

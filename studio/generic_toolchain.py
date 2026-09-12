@@ -35,6 +35,9 @@ def bootstrap_commands(root: Path) -> list[list[str]]:
             commands.append(["yarn","install","--immutable","--ignore-scripts"])
     if (root/"pyproject.toml").is_file() and (root/"uv.lock").is_file() and shutil.which("uv"):
         commands.append(["uv","sync","--frozen"])
+    elif (root/"requirements.txt").is_file() and shutil.which("python"):
+        commands.append(["python","-m","venv",".studio-venv"])
+        commands.append([".studio-venv/bin/pip","install","--disable-pip-version-check","-r","requirements.txt"])
     if (root/"go.mod").is_file() and shutil.which("go"):
         commands.append(["go","mod","download"])
     if (root/"Cargo.toml").is_file() and (root/"Cargo.lock").is_file() and shutil.which("cargo"):

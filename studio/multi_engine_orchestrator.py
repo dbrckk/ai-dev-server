@@ -54,7 +54,7 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
         if portfolio_path.is_file():
             try: portfolio=json.loads(portfolio_path.read_text())
             except (OSError,json.JSONDecodeError): portfolio={}
-        return run_generic_project(req,project_out,Path(work),portfolio=portfolio,max_rounds=6)
+        return run_generic_project(req,project_out,Path(work),portfolio=portfolio,max_rounds=6,deadline=deadline,clock=clock)
     if engine!='godot': raise StudioError('Unsupported project engine')
 
     stages=[

@@ -8,7 +8,7 @@ STUDIO = ROOT / "studio"
 if str(STUDIO) not in sys.path:
     sys.path.insert(0, str(STUDIO))
 
-from human_input_request import requires_human_input, write_request
+from human_input_request import prerequisite_satisfied, requires_human_input, write_request
 
 
 class HumanInputRequestTests(unittest.TestCase):
@@ -24,6 +24,13 @@ class HumanInputRequestTests(unittest.TestCase):
         self.assertIn("STUDIO_API_KEY", text)
         self.assertIn("Do NOT paste API keys", text)
         self.assertIn("owner/repo", text)
+
+    def test_prerequisite_satisfied_when_named_secret_exists(self):
+        from unittest.mock import patch
+        with patch.dict("os.environ", {"STUDIO_API_KEY":"present"}, clear=True):
+            self.assertTrue(prerequisite_satisfied("Missing STUDIO_API_KEY"))
+        with patch.dict("os.environ", {}, clear=True):
+            self.assertFalse(prerequisite_satisfied("Missing STUDIO_API_KEY"))
 
 
 if __name__ == "__main__":

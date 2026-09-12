@@ -29,7 +29,14 @@ class GenericRepository:
         else:
             default=metadata.get("default_branch")
             if metadata.get("size",0)==0:
-                raise StudioError("Generic new project requires an initialized repository")
+                init=self.github.call("PUT",self.github.repo+"/contents/README.md",{
+                    "message":"Initialize autonomous project target",
+                    "content":base64.b64encode(b"# Autonomous project\n").decode(),
+                })
+                source=init.get("commit",{}).get("sha") if isinstance(init,dict) else None
+                root.mkdir(parents=True,exist_ok=True)
+                (root/"README.md").write_text("# Autonomous project\n",encoding="utf-8")
+                return source,{"source_sha":source,"files":1,"bytes":21,"initialized":True}
             if not isinstance(default,str) or not default:
                 raise StudioError("Generic repository default branch missing")
             source=self.github.get("/branches/"+default).get("commit",{}).get("sha")

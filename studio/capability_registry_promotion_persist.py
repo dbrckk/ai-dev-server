@@ -104,19 +104,31 @@ def _verify_materialized_provider(github,main_sha,candidate):
     return path
 
 
-def persist(github,candidate_envelope,validation_report,review_status,baseline_sha,main_sha):
+def persist(github,candidate_envelope,validation_report,review,review_status,main_sha):
     candidate=validate_candidate_envelope(candidate_envelope)
     report=validate_isolated_validation_result(validation_report)
+    if not isinstance(review,dict):
+        raise CapabilityRegistryPromotionPersistError("candidate review identity required")
     if not isinstance(review_status,dict) or review_status.get("status")!="candidate_merged":
         raise CapabilityRegistryPromotionPersistError("candidate merge proof required")
     merge_sha=review_status.get("merge_commit_sha")
     if not isinstance(merge_sha,str) or not SHA40.fullmatch(merge_sha):
         raise CapabilityRegistryPromotionPersistError("candidate merge sha invalid")
-    if not isinstance(baseline_sha,str) or not SHA40.fullmatch(baseline_sha):
-        raise CapabilityRegistryPromotionPersistError("baseline sha invalid")
+    candidate_commit=review.get("commit_sha")
+    if not isinstance(candidate_commit,str) or not SHA40.fullmatch(candidate_commit):
+        raise CapabilityRegistryPromotionPersistError("candidate commit sha invalid")
+    commit=github.get("/git/commits/"+candidate_commit)
+    parents=[x.get("sha") for x in commit.get("parents",[])] if isinstance(commit,dict) else []
+    if len(parents)!=1 or not isinstance(parents[0],str) or not SHA40.fullmatch(parents[0]):
+        raise CapabilityRegistryPromotionPersistError("candidate baseline parent invalid")
+    baseline_sha=parents[0]
     if not isinstance(main_sha,str) or not SHA40.fullmatch(main_sha):
         raise CapabilityRegistryPromotionPersistError("main sha invalid")
     cid=candidate.get("candidate_id")
+    if review.get("candidate_id")!=cid or review.get("candidate_sha256")!=candidate.get("candidate_sha256"):
+        raise CapabilityRegistryPromotionPersistError("candidate review identity mismatch")
+    if review_status.get("pull_request")!=review.get("pull_request"):
+        raise CapabilityRegistryPromotionPersistError("candidate review pull request mismatch")
     digest=candidate.get("candidate_sha256")
     payload=candidate.get("candidate",{})
     capability=payload.get("capability")

@@ -8,7 +8,7 @@ from unittest.mock import patch
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from github_runner import run
+from github_runner import run, _prepare_capability_promotion_handoff
 from goal_engine import finalize, new_goal, record_cycle
 
 
@@ -100,6 +100,67 @@ class GithubRunnerPersistentTests(unittest.TestCase):
                 with self.assertRaisesRegex(Exception,"Project memory ingestion failed"):
                     run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha="e"*40)
                 persist_state.assert_not_called()
+
+
+    def test_promotion_required_handoff_is_sealed_and_non_promoting(self):
+        with tempfile.TemporaryDirectory() as td:
+            out=Path(td)
+            root=out/".autonomy"; root.mkdir(parents=True)
+            (root/"capability-candidate.json").write_text("{}")
+            (root/"capability-validation.json").write_text("{}")
+            state={
+                "status":"promotion_required",
+                "promotion_status":"eligible",
+                "capability":"image_assets",
+                "synthesis_status":"candidate_synthesized:"+"a"*64,
+            }
+            candidate={
+                "candidate_id":"candidate:1",
+                "candidate_sha256":"a"*64,
+                "candidate":{"capability":"image_assets","provider":"studio.capabilities.image_assets"},
+            }
+            validation={
+                "candidate_id":"candidate:1",
+                "candidate_sha256":"a"*64,
+                "report_sha256":"b"*64,
+                "validation":{"status":"candidate_validated"},
+            }
+            with patch("github_runner.validate_candidate_envelope",return_value=candidate), \
+                 patch("github_runner.validate_isolated_validation_result",return_value=validation):
+                handoff=_prepare_capability_promotion_handoff(out,state,"c"*40)
+            self.assertEqual(handoff["status"],"promotion_required")
+            self.assertFalse(handoff["capability_registered"])
+            self.assertFalse(handoff["candidate_materialized_in_trusted_repo"])
+            self.assertEqual(len(handoff["handoff_sha256"]),64)
+            self.assertTrue((root/"capability-promotion-handoff.json").is_file())
+
+    def test_promotion_handoff_rejects_cross_candidate_validation(self):
+        with tempfile.TemporaryDirectory() as td:
+            out=Path(td)
+            root=out/".autonomy"; root.mkdir(parents=True)
+            (root/"capability-candidate.json").write_text("{}")
+            (root/"capability-validation.json").write_text("{}")
+            state={
+                "status":"promotion_required",
+                "promotion_status":"eligible",
+                "capability":"image_assets",
+                "synthesis_status":"candidate_synthesized:"+"a"*64,
+            }
+            candidate={
+                "candidate_id":"candidate:1",
+                "candidate_sha256":"a"*64,
+                "candidate":{"capability":"image_assets","provider":"studio.capabilities.image_assets"},
+            }
+            validation={
+                "candidate_id":"candidate:2",
+                "candidate_sha256":"a"*64,
+                "report_sha256":"b"*64,
+                "validation":{"status":"candidate_validated"},
+            }
+            with patch("github_runner.validate_candidate_envelope",return_value=candidate), \
+                 patch("github_runner.validate_isolated_validation_result",return_value=validation):
+                with self.assertRaisesRegex(Exception,"candidate mismatch"):
+                    _prepare_capability_promotion_handoff(out,state,"c"*40)
 
 
 if __name__=="__main__":

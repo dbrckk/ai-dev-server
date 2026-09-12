@@ -153,7 +153,7 @@ def validate_in_isolation(envelope,repo_root=Path(".")):
         tests_collected=_test_count(regression_output),
     )
     validation=validate_candidate(envelope,targeted,benchmark,regression)
-    return {
+    report={
         "status":"isolated_validation_complete",
         "candidate_id":envelope["candidate_id"],
         "candidate_sha256":candidate_sha,
@@ -165,6 +165,8 @@ def validate_in_isolation(envelope,repo_root=Path(".")):
         "network":"disabled",
         "capabilities":"dropped",
     }
+    report["report_sha256"]=_seal(report)
+    return report
 
 
 def validate_isolated_validation_result(value):
@@ -173,26 +175,84 @@ def validate_isolated_validation_result(value):
     required={
         "status","candidate_id","candidate_sha256","targeted_test","benchmark",
         "regression","validation","candidate_materialized_in_trusted_repo",
-        "network","capabilities",
+        "network","capabilities","report_sha256",
     }
     if set(value)!=required or value.get("status")!="isolated_validation_complete":
         raise IsolatedCapabilityValidationError("validation report fields invalid")
+    report_digest=value.get("report_sha256")
+    unsigned_report=dict(value); unsigned_report.pop("report_sha256",None)
+    if not isinstance(report_digest,str) or report_digest!=_seal(unsigned_report):
+        raise IsolatedCapabilityValidationError("validation report integrity failure")
+    candidate_id=value.get("candidate_id")
+    if not isinstance(candidate_id,str) or not candidate_id:
+        raise IsolatedCapabilityValidationError("validation candidate id invalid")
     sha=value.get("candidate_sha256")
     if not isinstance(sha,str) or not re.fullmatch(r"[0-9a-f]{64}",sha):
         raise IsolatedCapabilityValidationError("validation candidate digest invalid")
+
+    proofs={}
     for key in ("targeted_test","benchmark","regression"):
         proof=value.get(key)
         if not isinstance(proof,dict) or proof.get("candidate_sha256")!=sha:
             raise IsolatedCapabilityValidationError("validation proof mismatch")
+        if proof.get("passed") not in {True,False}:
+            raise IsolatedCapabilityValidationError("validation proof result invalid")
         digest=proof.get("evidence_sha256")
         unsigned=dict(proof); unsigned.pop("evidence_sha256",None)
         if not isinstance(digest,str) or digest!=_seal(unsigned):
             raise IsolatedCapabilityValidationError("validation proof integrity failure")
+        proofs[key]=proof
+
+    benchmark=proofs["benchmark"]
+    score=benchmark.get("score")
+    baseline_score=benchmark.get("baseline_score")
+    if (not isinstance(score,(int,float)) or isinstance(score,bool)
+            or not isinstance(baseline_score,(int,float)) or isinstance(baseline_score,bool)):
+        raise IsolatedCapabilityValidationError("validation benchmark score invalid")
+
     validation=value.get("validation")
-    if not isinstance(validation,dict) or validation.get("candidate_sha256")!=sha:
+    if (not isinstance(validation,dict)
+            or validation.get("candidate_id")!=candidate_id
+            or validation.get("candidate_sha256")!=sha):
         raise IsolatedCapabilityValidationError("validation decision mismatch")
-    if validation.get("status") not in {"candidate_validated","candidate_rejected"}:
+    decision=validation.get("status")
+    if decision not in {"candidate_validated","candidate_rejected"}:
         raise IsolatedCapabilityValidationError("validation decision invalid")
+    if validation.get("capability_registered") is not False:
+        raise IsolatedCapabilityValidationError("validation trust state invalid")
+
+    expected_evidence={
+        "targeted_test_sha256":proofs["targeted_test"]["evidence_sha256"],
+        "benchmark_sha256":proofs["benchmark"]["evidence_sha256"],
+        "regression_sha256":proofs["regression"]["evidence_sha256"],
+    }
+    all_passed=all(proof.get("passed") is True for proof in proofs.values())
+    if decision=="candidate_validated":
+        if not all_passed or score<baseline_score:
+            raise IsolatedCapabilityValidationError("validated decision lacks passing proof")
+        if (validation.get("benchmark_status")!="passed"
+                or validation.get("regression_status")!="passed"
+                or validation.get("promotion_status")!="eligible"
+                or validation.get("evidence")!=expected_evidence):
+            raise IsolatedCapabilityValidationError("validated decision evidence mismatch")
+    else:
+        if validation.get("promotion_status")!="not_ready":
+            raise IsolatedCapabilityValidationError("rejected decision trust state invalid")
+        failed_gate=validation.get("failed_gate")
+        if failed_gate in proofs:
+            if proofs[failed_gate].get("passed") is not False:
+                raise IsolatedCapabilityValidationError("rejected decision gate mismatch")
+        elif failed_gate=="benchmark_regression":
+            if not all_passed or score>=baseline_score:
+                raise IsolatedCapabilityValidationError("rejected benchmark decision mismatch")
+        else:
+            raise IsolatedCapabilityValidationError("rejected decision gate invalid")
+        expected_benchmark="passed" if proofs["benchmark"].get("passed") is True else "failed"
+        expected_regression="passed" if proofs["regression"].get("passed") is True else "failed"
+        if (validation.get("benchmark_status")!=expected_benchmark
+                or validation.get("regression_status")!=expected_regression):
+            raise IsolatedCapabilityValidationError("rejected decision status mismatch")
+
     if value.get("candidate_materialized_in_trusted_repo") is not False:
         raise IsolatedCapabilityValidationError("trusted repository mutation claimed")
     if value.get("network")!="disabled" or value.get("capabilities")!="dropped":

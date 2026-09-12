@@ -20,6 +20,43 @@ def _read(path):
 
 def ingest_run(memory, project_id, out):
     out=Path(out)
+
+    # Generic-project learning: only retain experience backed by a real verifier
+    # and a persisted Git commit. This global memory is later reusable by other
+    # projects through the existing project-memory bridge.
+    generic=_read(out/"generic-report.json")
+    if isinstance(generic,dict):
+        rounds=generic.get("rounds")
+        commit=generic.get("checkpoint_commit")
+        if isinstance(rounds,list) and rounds and isinstance(commit,str) and len(commit)==40:
+            last=rounds[-1] if isinstance(rounds[-1],dict) else {}
+            verification=last.get("verification") if isinstance(last,dict) else {}
+            if isinstance(verification,dict) and verification.get("passed") is True:
+                entry_id="generic:"+project_id+":"+commit[:16]
+                existing={item.get("id") for item in memory.get("entries",[]) if isinstance(item,dict)}
+                if entry_id not in existing:
+                    review=last.get("review") if isinstance(last.get("review"),dict) else {}
+                    changed=last.get("changed_files") if isinstance(last.get("changed_files"),list) else []
+                    summary="Verified generic-project cycle; changed "+str(len(changed))+" files."
+                    reason=review.get("reason")
+                    if isinstance(reason,str) and reason.strip():
+                        summary=(summary+" "+reason.strip())[:4000]
+                    memory=remember_experience(
+                        memory,
+                        project_id,
+                        entry_id=entry_id,
+                        summary=summary,
+                        tags=["generic-project","verified-cycle"],
+                        proof={
+                            "tests_passed":True,
+                            "regression_suite_passed":True,
+                            "commit_sha":commit,
+                            "engine":"generic",
+                            "changed_files":changed[:80],
+                        },
+                        reusable=True,
+                        confidence=90,
+                    )
     research=_read(out/"evolution-research.json")
     if research is not None:
         candidate_id=research.get("candidate_id")

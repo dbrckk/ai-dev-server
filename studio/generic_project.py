@@ -189,7 +189,7 @@ Objective and current plan:
                     memory_path=out/".autonomy/agent-performance.json",
                     limit=2,
                 )
-                for candidate_name in ranked_names if before_agent is not None else []:
+                for candidate_name in (ranked_names if before_agent is not None else []):
                     restore_agent_workspace(work, before_agent)
                     agent_result = execute_named_agent(candidate_name, agent_prompt, cwd=work, timeout=1200)
                     agent_trace.append(agent_result)

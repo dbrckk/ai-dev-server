@@ -9,6 +9,7 @@ from studio.github_goal_store import (
     RemoteStateError,
     _validate_candidate_validation_link,
     _validate_candidate_review_link,
+    _validate_registry_review_link,
     load,
     persist_local,
     restore_local,
@@ -137,6 +138,25 @@ class GitHubGoalStoreTests(unittest.TestCase):
         }
         with self.assertRaisesRegex(RemoteStateError,"without awaiting merge"):
             _validate_candidate_review_link(adaptation,candidate,validation,review)
+
+    def test_awaiting_registry_merge_requires_registry_review(self):
+        adaptation={"status":"awaiting_registry_merge","capability":"image_assets"}
+        candidate={"candidate_id":"candidate:a","candidate_sha256":"a"*64,"candidate":{"capability":"image_assets"}}
+        review={"candidate_id":"candidate:a"}
+        with self.assertRaisesRegex(RemoteStateError,"missing registry review"):
+            _validate_registry_review_link(adaptation,candidate,review,None)
+
+    def test_registry_review_identity_must_match_candidate(self):
+        adaptation={"status":"awaiting_registry_merge","capability":"image_assets"}
+        candidate={"candidate_id":"candidate:a","candidate_sha256":"a"*64,"candidate":{"capability":"image_assets"}}
+        review={"candidate_id":"candidate:a"}
+        registry_review={
+            "status":"registry_promotion_persisted","candidate_id":"candidate:b","candidate_sha256":"a"*64,
+            "capability":"image_assets","candidate_merge_sha":"b"*40,
+            "branch":"capability/promote-image-assets-x","commit_sha":"c"*40,"pull_request":24,
+        }
+        with self.assertRaisesRegex(RemoteStateError,"identity mismatch"):
+            _validate_registry_review_link(adaptation,candidate,review,registry_review)
 
     def test_local_restore_and_persist(self):
         gh=FakeGitHub(); save(gh,"demo",goal(),new_registry(),new_backlog())

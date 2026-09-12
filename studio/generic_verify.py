@@ -43,8 +43,8 @@ def discover(root: Path) -> list[list[str]]:
     return commands
 
 
-def run(root: Path, *, timeout_per_command: int = 900) -> dict:
-    commands = discover(root)
+def run(root: Path, *, timeout_per_command: int = 900, commands: list[list[str]] | None = None) -> dict:
+    commands = discover(root) if commands is None else commands
     if not commands:
         return {"status": "no_verifier", "passed": False, "commands": [], "results": []}
     results = []

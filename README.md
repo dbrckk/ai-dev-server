@@ -36,6 +36,14 @@ Depuis un smartphone, utiliser un Codespace comme machine Linux distante avec :
 
 Les ports 8082, 3080 et 3000 sont prévus pour être forwardés par Codespaces.
 
+## Generic autonomous engine
+
+Les projets qui ne sont ni Flutter ni Godot passent maintenant par un moteur générique : analyse du repo, recherche de projets similaires dans le portefeuille GitHub du propriétaire, planification, modifications, vérifications réelles, revue, checkpoint Git puis nouvelle itération jusqu'à validation.
+
+Stacks de vérification détectées actuellement : Node/npm, Python, Go, Rust, Maven, Gradle et .NET.
+
+Documentation : **[Generic autonomous project engine](docs/GENERIC_ENGINE.md)**.
+
 ## Mode autonome jusqu'à la fin
 
 AI Dev Server vise désormais à prendre en charge **un nouveau projet ou un projet existant supporté**, à travailler dessus sans intervention de routine et à continuer jusqu'à satisfaction de la définition de fini vérifiée.

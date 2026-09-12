@@ -109,6 +109,20 @@ def record_synthesis(value, candidate_sha256):
     return _seal(out)
 
 
+def record_candidate_persistence(value, persistence_status):
+    validate(value)
+    if value["status"]!="promotion_required" or value["promotion_status"]!="eligible":
+        raise CapabilityAdaptationStateError("candidate persistence transition invalid")
+    if persistence_status not in {"candidate_persisted","candidate_already_persisted"}:
+        raise CapabilityAdaptationStateError("candidate persistence status invalid")
+    out=dict(value)
+    out.update({
+        "status":"awaiting_merge",
+        "promotion_status":"candidate_review_required",
+    })
+    return _seal(out)
+
+
 def record_validation(value, validation_status):
     validate(value)
     if value["status"]!="validation_required" or value["validation_status"]!="required":

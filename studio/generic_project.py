@@ -28,6 +28,11 @@ Never write secrets, credentials, CI workflows, generated binaries or dependency
 Return ONLY JSON {"files":[{"path":"relative/text/file","content":"complete file content"}]}.
 Do real work. Do not return explanations."""
 
+PROGRESS_SYSTEM = """You are the autonomous engineering progress controller.
+After each implementation batch, inspect the updated repository and decide whether another implementation batch is clearly needed before testing, or whether the project has reached a useful verification point.
+Return ONLY JSON {"action":"work"|"verify","reason":"...","next_work":["..."]}.
+Choose "verify" when tests/build/runtime evidence can now resolve uncertainty. Never claim completion here."""
+
 REVIEW_SYSTEM = """You are the verification-driven senior reviewer.
 Judge whether the user's objective is complete from the repository snapshot and actual verification results.
 Compilation/tests alone are not enough if requested functionality remains missing.
@@ -121,16 +126,39 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             "previous_rounds": state["rounds"][-3:],
         }
         plan, plan_model = ask(PLAN_SYSTEM, canonical(plan_payload), code=False)
-        implementation_context = {
-            "brief": req["brief"],
-            "plan": plan,
-            "repository": snapshot,
-            "validated_engineering_memory": learned_context,
-            "previous_verification": last_verification,
-            "bootstrap": state["bootstrap"],
-        }
-        patch, impl_model = ask(IMPLEMENT_SYSTEM, canonical(implementation_context), code=True)
-        changed = _apply(work, patch)
+        changed = []
+        implementation_models = []
+        progress_trace = []
+        current_plan = plan
+        for work_pass in range(1, 3):
+            implementation_context = {
+                "brief": req["brief"],
+                "plan": current_plan,
+                "repository": _snapshot(work),
+                "validated_engineering_memory": learned_context,
+                "previous_verification": last_verification,
+                "bootstrap": state["bootstrap"],
+                "work_pass": work_pass,
+            }
+            patch, impl_model = ask(IMPLEMENT_SYSTEM, canonical(implementation_context), code=True)
+            changed.extend(_apply(work, patch))
+            implementation_models.append(impl_model)
+            progress, progress_model = ask(PROGRESS_SYSTEM, canonical({
+                "brief": req["brief"],
+                "plan": current_plan,
+                "changed_files": changed,
+                "repository": _snapshot(work, 320_000),
+                "previous_verification": last_verification,
+            }), code=False)
+            action = progress.get("action")
+            if action not in {"work", "verify"}:
+                action = "verify"
+            progress_trace.append({"pass":work_pass,"decision":progress,"model":progress_model})
+            if action == "verify" or work_pass == 2:
+                break
+            next_work = progress.get("next_work")
+            if isinstance(next_work, list) and next_work:
+                current_plan = {**current_plan, "controller_next_work": next_work}
 
         recommend('testing',out)
         verification = verify(work, commands=adaptive_recipe["commands"] if adaptive_recipe else None)
@@ -170,7 +198,8 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             "changed_files": changed,
             "verification": verification,
             "review": review,
-            "models": {"plan": plan_model, "implementation": impl_model, "review": review_model},
+            "progress_trace": progress_trace,
+            "models": {"plan": plan_model, "implementation": implementation_models, "review": review_model},
         }
         state["rounds"].append(round_state)
         state["status"] = "complete" if complete else "work_remaining"

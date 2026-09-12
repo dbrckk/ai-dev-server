@@ -166,7 +166,11 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
 
             used_external_agent = False
             if work_pass == 1 and agent_candidates:
-                before_agent = snapshot_agent_workspace(work)
+                try:
+                    before_agent = snapshot_agent_workspace(work)
+                except ValueError as exc:
+                    agent_trace.append({"status":"ab_skipped","reason":str(exc)})
+                    before_agent = None
                 agent_prompt = """Work autonomously on this repository. Implement the requested objective directly in the files.
 Do not modify .github, credentials, environment files, generated dependency folders, or binary assets.
 Do not publish, deploy, push, commit, or ask the user questions. Work only on source/config/tests needed for the objective.
@@ -185,7 +189,7 @@ Objective and current plan:
                     memory_path=out/".autonomy/agent-performance.json",
                     limit=2,
                 )
-                for candidate_name in ranked_names:
+                for candidate_name in ranked_names if before_agent is not None else []:
                     restore_agent_workspace(work, before_agent)
                     agent_result = execute_named_agent(candidate_name, agent_prompt, cwd=work, timeout=1200)
                     agent_trace.append(agent_result)
@@ -222,21 +226,31 @@ Objective and current plan:
                         "repository":_snapshot(work,260_000),
                     })
 
-                restore_agent_workspace(work, before_agent)
-                model_patch, model_impl = ask(IMPLEMENT_SYSTEM, canonical(implementation_context), code=True)
-                model_changed = _apply(work, model_patch)
-                model_verification = verify(work, commands=adaptive_recipe["commands"] if adaptive_recipe else None)
-                candidate_records.append({
-                    "id":"model",
-                    "agent":None,
-                    "files":validate_patch(model_patch),
-                    "changed":model_changed,
-                    "verification":model_verification,
-                    "repository":_snapshot(work,260_000),
-                    "model":model_impl,
-                })
+                if before_agent is not None:
+                    restore_agent_workspace(work, before_agent)
+                try:
+                    model_patch, model_impl = ask(IMPLEMENT_SYSTEM, canonical(implementation_context), code=True)
+                    model_files = validate_patch(model_patch)
+                    model_changed = _apply(work, {"files":model_files})
+                except (StudioError, ValueError) as exc:
+                    agent_trace.append({"status":"model_candidate_failed","error":str(exc)[:1000]})
+                    model_patch = None
+                    model_impl = None
+                    model_changed = []
+                if model_changed:
+                    model_verification = verify(work, commands=adaptive_recipe["commands"] if adaptive_recipe else None)
+                    candidate_records.append({
+                        "id":"model",
+                        "agent":None,
+                        "files":model_files,
+                        "changed":model_changed,
+                        "verification":model_verification,
+                        "repository":_snapshot(work,260_000),
+                        "model":model_impl,
+                    })
 
-                restore_agent_workspace(work, before_agent)
+                if before_agent is not None:
+                    restore_agent_workspace(work, before_agent)
                 viable=[x for x in candidate_records if x.get("changed")]
                 if viable:
                     if len(viable)==1:
@@ -289,7 +303,8 @@ Objective and current plan:
                         } for item in viable],
                     })
                 else:
-                    restore_agent_workspace(work, before_agent)
+                    if before_agent is not None:
+                        restore_agent_workspace(work, before_agent)
 
             if not used_external_agent and not changed:
                 patch, impl_model = ask(IMPLEMENT_SYSTEM, canonical(implementation_context), code=True)

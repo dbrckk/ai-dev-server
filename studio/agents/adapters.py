@@ -48,7 +48,7 @@ class AgentAdapter:
         # Coding agents do not need repository-write credentials: publishing is
         # performed later by the trusted GitHub adapter after validation.
         for key in list(env):
-            if key.startswith(("GITHUB_","GH_")) or key in {"STUDIO_GITHUB_TOKEN","CODESPACES_PAT"}:
+            if key.startswith(("GITHUB_","GH_","STUDIO_")) or key=="CODESPACES_PAT":
                 env.pop(key,None)
         # Never let an autonomous prompt override process-critical variables.
         if extra_env:
@@ -72,10 +72,16 @@ class AgentAdapter:
         except subprocess.TimeoutExpired as exc:
             raise RuntimeError(f"Agent timed out: {self.spec.name}") from exc
         duration = time.monotonic() - started
+        stdout=result.stdout[-24000:]
+        stderr=result.stderr[-24000:]
+        for key,value in (extra_env or {}).items():
+            if value and any(mark in key.upper() for mark in ("KEY","TOKEN","SECRET","PASSWORD")):
+                stdout=stdout.replace(value,"[REDACTED]")
+                stderr=stderr.replace(value,"[REDACTED]")
         return AgentRun(
             agent=self.spec.name,
             returncode=result.returncode,
             duration_seconds=round(duration, 3),
-            stdout_tail=result.stdout[-24000:],
-            stderr_tail=result.stderr[-24000:],
+            stdout_tail=stdout,
+            stderr_tail=stderr,
         )

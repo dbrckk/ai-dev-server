@@ -32,7 +32,9 @@ def detect_engine(req: dict, github: GitHub) -> str:
     if not isinstance(metadata, dict) or metadata.get('archived'):
         raise StudioError('Target repository is unavailable or archived')
     if metadata.get('size', 0) == 0:
-        return 'flutter'
+        brief = str(req.get('brief', '')).lower()
+        mobile_hints = ('flutter', 'android', 'application mobile', 'mobile app', 'apk')
+        return 'flutter' if any(hint in brief for hint in mobile_hints) else 'generic'
     branch = 'studio/' + req['id']
     exact = _exact_branch_ref(github, branch)
     if exact:
@@ -51,7 +53,9 @@ def detect_engine(req: dict, github: GitHub) -> str:
     paths = [item.get('path') for item in tree['tree'] if isinstance(item, dict) and item.get('type') == 'blob' and isinstance(item.get('path'), str)]
     # Preserve legacy Flutter bootstrap repositories containing only documentation files.
     if set(paths) <= {'README.md', 'LICENSE', '.gitignore'}:
-        return 'flutter'
+        brief = str(req.get('brief', '')).lower()
+        mobile_hints = ('flutter', 'android', 'application mobile', 'mobile app', 'apk')
+        return 'flutter' if any(hint in brief for hint in mobile_hints) else 'generic'
     try:
         return infer(paths).name
     except EngineError as exc:
@@ -68,6 +72,8 @@ def execute(req: dict, root: Path, out: Path, github=None) -> dict:
         return execute_godot(req, root, out, github)
     if engine == 'flutter':
         return execute_flutter(req, root, out, github)
+    if engine == 'generic':
+        raise StudioError('Generic projects are executed by the multi-engine orchestrator')
     raise StudioError('Unsupported project engine')
 
 

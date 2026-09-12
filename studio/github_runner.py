@@ -33,6 +33,7 @@ from improvement_executor import run_active_improvement, verified_project_cycle
 from human_input_request import requires_human_input, write_request as write_human_input_request
 from memory_lifecycle import ingest_run
 from project_memory import load as load_project_memory, save as save_project_memory
+from portfolio_scan import scan as scan_portfolio
 from multi_engine_orchestrator import run_project as run_multi_engine_project
 from run import GitHub as RepoGitHub
 
@@ -117,6 +118,19 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
         result={'status':'disabled','next_stage':None,'finished':False}; out.mkdir(parents=True,exist_ok=True); (out/'github-pipeline.json').write_text(canonical(result)); return result
     os.environ['STUDIO_PROJECT_ID']=request['id']
     deadline=clock()+budget_seconds
+    # Every autonomous project starts by examining the owner's portfolio for
+    # related work that can accelerate architecture, implementation or testing.
+    try:
+        portfolio_api=RepoGitHub(request['target_repo'])
+        scan_portfolio(request['target_repo'],request['brief'],out,portfolio_api)
+    except (StudioError,ValueError,OSError) as exc:
+        out.mkdir(parents=True,exist_ok=True)
+        (out/'portfolio-research.json').write_text(canonical({
+            'status':'unavailable',
+            'target_repo':request['target_repo'],
+            'error':type(exc).__name__,
+            'similar':[],
+        }))
     remote_github=None
     if os.environ.get('STUDIO_PERSIST_REMOTE')=='1':
         control_repo=os.environ.get('GITHUB_REPOSITORY','')

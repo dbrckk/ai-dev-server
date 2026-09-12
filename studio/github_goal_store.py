@@ -160,7 +160,7 @@ def load(github, project_id):
 
 
 def save(github, project_id, goal, registry, backlog=None, improvement_goal=None, capability_adaptation=None, capability_candidate=None, capability_validation=None, capability_review=None):
-    goal_path, registry_path, backlog_path, improvement_goal_path, adaptation_path, candidate_path, validation_path = _paths(project_id)
+    goal_path, registry_path, backlog_path, improvement_goal_path, adaptation_path, candidate_path, validation_path, review_path = _paths(project_id)
     validate_goal(goal)
     validate_registry(registry)
     backlog = new_backlog() if backlog is None else validate_backlog(backlog)

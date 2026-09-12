@@ -49,3 +49,22 @@ Verified generic cycles are written to persistent project memory only when:
 - the evidence is structurally valid.
 
 Those experiences are marked reusable and can inform future projects. Current project evidence always overrides prior memory.
+
+
+## Adaptive verifier synthesis
+
+If the built-in verifier does not recognize the stack, the generic engine does not stop. It asks the configured model to synthesize a **declarative verifier recipe** from:
+
+- repository files;
+- locally available trusted toolchains;
+- the project brief;
+- previous verification evidence;
+- validated engineering memory from earlier projects.
+
+The recipe is constrained to argument-vector commands. Shell command strings, remote installers, deployment/publishing operations, secret access and arbitrary executables are rejected. The recipe is saved as `generic-verifier.json`, executed, and its result feeds the next work/analyse cycle.
+
+A verifier recipe becomes reusable learning only after a real verification passes and the corresponding project checkpoint is persisted to Git. Future projects can then reuse that validated experience.
+
+## Resuming after required user input
+
+A missing secret remains the exceptional pause path. The project produces `USER_INPUT_REQUIRED.txt` and stays schedulable. Scheduled runs check whether the specifically requested secret is now available. Once it appears, the persisted goal is reactivated automatically and work resumes from the previous checkpoint.

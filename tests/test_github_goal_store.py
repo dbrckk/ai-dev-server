@@ -5,7 +5,14 @@ import tempfile
 import unittest
 
 from studio.capability_registry import new_registry
-from studio.github_goal_store import RemoteStateError, load, persist_local, restore_local, save
+from studio.github_goal_store import (
+    RemoteStateError,
+    _validate_candidate_validation_link,
+    load,
+    persist_local,
+    restore_local,
+    save,
+)
 from studio.goal_engine import new_goal
 from studio.improvement_backlog import new_backlog
 
@@ -82,6 +89,22 @@ class GitHubGoalStoreTests(unittest.TestCase):
     def test_invalid_project_id_rejected(self):
         with self.assertRaisesRegex(RemoteStateError,"project id"):
             load(FakeGitHub(),"../escape")
+
+    def test_validation_requires_persisted_candidate(self):
+        validation={"candidate_id":"candidate:a","candidate_sha256":"a"*64}
+        with self.assertRaisesRegex(RemoteStateError,"missing candidate"):
+            _validate_candidate_validation_link(None,validation)
+
+    def test_validation_must_match_persisted_candidate(self):
+        candidate={"candidate_id":"candidate:a","candidate_sha256":"a"*64}
+        validation={"candidate_id":"candidate:b","candidate_sha256":"a"*64}
+        with self.assertRaisesRegex(RemoteStateError,"candidate mismatch"):
+            _validate_candidate_validation_link(candidate,validation)
+
+    def test_validation_link_accepts_exact_candidate_identity(self):
+        candidate={"candidate_id":"candidate:a","candidate_sha256":"a"*64}
+        validation={"candidate_id":"candidate:a","candidate_sha256":"a"*64}
+        self.assertIsNone(_validate_candidate_validation_link(candidate,validation))
 
     def test_local_restore_and_persist(self):
         gh=FakeGitHub(); save(gh,"demo",goal(),new_registry(),new_backlog())

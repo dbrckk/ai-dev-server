@@ -8,6 +8,7 @@ from pathlib import Path
 
 from core import StudioError, canonical
 from generic_model import ask
+from learning_context import load_context
 
 SYSTEM = """You design verification commands for an autonomous software repository.
 Return ONLY JSON:
@@ -91,6 +92,7 @@ def synthesize(root: Path, brief: str, previous: dict | None = None) -> tuple[di
         "available_tools": tools,
         "repository_files": _file_hints(root),
         "previous_verification": previous,
+        "validated_engineering_memory": load_context(),
     }
     recipe, model = ask(SYSTEM, canonical(context), code=False)
     try:

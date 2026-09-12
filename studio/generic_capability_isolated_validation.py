@@ -195,7 +195,7 @@ def validate_isolated_validation_result(value):
         proof=value.get(key)
         if not isinstance(proof,dict) or proof.get("candidate_sha256")!=sha:
             raise IsolatedCapabilityValidationError("validation proof mismatch")
-        if proof.get("passed") not in {True,False}:
+        if proof.get("passed") is not True and proof.get("passed") is not False:
             raise IsolatedCapabilityValidationError("validation proof result invalid")
         digest=proof.get("evidence_sha256")
         unsigned=dict(proof); unsigned.pop("evidence_sha256",None)

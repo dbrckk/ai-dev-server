@@ -21,6 +21,7 @@ from generic_capability_synthesis import synthesize_from_memory
 from generic_capability_isolated_validation import validate_in_isolation, validate_isolated_validation_result
 from capability_synthesis import validate_candidate_envelope
 from generic_capability_persist import persist as persist_generic_capability_candidate, GenericCapabilityPersistError
+from capability_review import inspect as inspect_capability_review, CapabilityReviewError
 from ci_provider import enabled
 from continuous_improvement import assess as assess_improvements
 from core import StudioError, canonical, request_check
@@ -233,6 +234,17 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
         from capability_adaptation_state import validate as validate_capability_adaptation
         waiting=validate_capability_adaptation(json.loads(adaptation_path.read_text()))
         if waiting['status']=='awaiting_merge':
+            review_status=None
+            if remote_github is not None:
+                review_path=out/'.autonomy/capability-review.json'
+                if not review_path.is_file():
+                    raise StudioError('Awaiting capability review requires persisted review identity')
+                try:
+                    review_status=inspect_capability_review(
+                        remote_github,json.loads(review_path.read_text())
+                    )
+                except CapabilityReviewError as exc:
+                    raise StudioError('Capability candidate review verification failed: '+str(exc)) from None
             summary={
                 'status':'adaptation_required',
                 'next_stage':waiting['capability'],
@@ -240,6 +252,11 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
                 'capability_adaptation_status':'awaiting_merge',
                 'promotion_status':'candidate_review_required',
             }
+            if review_status is not None:
+                summary['candidate_review_status']=review_status['status']
+                summary['candidate_pull_request']=review_status['pull_request']
+                if review_status.get('merge_commit_sha') is not None:
+                    summary['candidate_merge_commit_sha']=review_status['merge_commit_sha']
             out.mkdir(parents=True,exist_ok=True)
             (out/'github-pipeline.json').write_text(canonical(summary))
             return summary

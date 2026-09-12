@@ -116,6 +116,16 @@ class GenericCapabilityValidationReportTests(unittest.TestCase):
         with self.assertRaisesRegex(IsolatedCapabilityValidationError,"lacks passing proof"):
             validate_isolated_validation_result(value)
 
+    def test_non_boolean_proof_result_fails_closed(self):
+        value=report()
+        proof=value["targeted_test"]
+        proof["passed"]=1
+        proof["evidence_sha256"]=seal({k:v for k,v in proof.items() if k!="evidence_sha256"})
+        value["validation"]["evidence"]["targeted_test_sha256"]=proof["evidence_sha256"]
+        reseal(value)
+        with self.assertRaisesRegex(IsolatedCapabilityValidationError,"proof result"):
+            validate_isolated_validation_result(value)
+
     def test_trust_boundary_claim_fails_closed(self):
         value=report()
         value["candidate_materialized_in_trusted_repo"]=True

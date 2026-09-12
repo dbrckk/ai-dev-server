@@ -45,8 +45,12 @@ class AgentAdapter:
         if timeout < 1 or timeout > 7200:
             raise ValueError("Agent timeout outside allowed range")
         env = os.environ.copy()
+        # Never let an autonomous prompt override process-critical variables.
         if extra_env:
-            env.update(extra_env)
+            for key,value in extra_env.items():
+                if key in {"PATH","HOME","PYTHONPATH","LD_PRELOAD"} or key.startswith(("GITHUB_","GH_")):
+                    continue
+                env[key]=value
         started = time.monotonic()
         try:
             result = subprocess.run(

@@ -62,6 +62,34 @@ def _list_owned(api: API, owner: str) -> list[dict]:
     return repos
 
 
+
+def _deep_profile(api: API, repo: dict) -> dict:
+    full=repo.get("full_name")
+    default=repo.get("default_branch")
+    if not isinstance(full,str) or not isinstance(default,str) or not default:
+        return {}
+    try:
+        branch=api.call("GET","/repos/"+full+"/branches/"+quote(default))
+        sha=branch.get("commit",{}).get("sha") if isinstance(branch,dict) else None
+        if not isinstance(sha,str):
+            return {}
+        tree=api.call("GET","/repos/"+full+"/git/trees/"+sha+"?recursive=1")
+        if not isinstance(tree,dict) or tree.get("truncated") or not isinstance(tree.get("tree"),list):
+            return {}
+        paths=[item.get("path") for item in tree["tree"] if isinstance(item,dict) and item.get("type")=="blob" and isinstance(item.get("path"),str)]
+        markers=[x for x in ("pubspec.yaml","project.godot","package.json","pyproject.toml","requirements.txt","Cargo.toml","go.mod","pom.xml","build.gradle","build.gradle.kts") if x in paths]
+        readme=next((item for item in tree["tree"] if isinstance(item,dict) and str(item.get("path","")).lower()=="readme.md" and item.get("type")=="blob"),None)
+        excerpt=""
+        if isinstance(readme,dict) and isinstance(readme.get("sha"),str):
+            blob=api.call("GET","/repos/"+full+"/git/blobs/"+readme["sha"])
+            if isinstance(blob,dict) and blob.get("encoding")=="base64":
+                import base64
+                try: excerpt=base64.b64decode(blob.get("content","")).decode("utf-8")[:3000]
+                except Exception: excerpt=""
+        return {"default_branch":default,"head_sha":sha,"markers":markers,"file_count":len(paths),"readme_excerpt":excerpt}
+    except StudioError:
+        return {}
+
 def scan(target_repo: str, brief: str, out: Path, api: API) -> dict:
     if "/" not in target_repo:
         raise StudioError("Target repository identity invalid")
@@ -92,11 +120,17 @@ def scan(target_repo: str, brief: str, out: Path, api: API) -> dict:
             "score": score,
         })
     ranked.sort(key=lambda x: (-x["score"], x["repo"].lower()))
+    by_name={repo.get("full_name"):repo for repo in repos if isinstance(repo,dict)}
+    selected=ranked[:12]
+    for item in selected[:6]:
+        source=by_name.get(item["repo"])
+        if isinstance(source,dict):
+            item["deep_profile"]=_deep_profile(api,source)
     result = {
         "status": "ok",
         "target_repo": target_repo,
         "repositories_scanned": len(repos),
-        "similar": ranked[:12],
+        "similar": selected,
     }
     out.mkdir(parents=True, exist_ok=True)
     (out / "portfolio-research.json").write_text(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n")

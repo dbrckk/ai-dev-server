@@ -1,6 +1,6 @@
 """Persist a validated generic capability candidate to a dedicated GitHub PR."""
 from __future__ import annotations
-import hashlib,json,re
+import hashlib,json,re,urllib.parse
 from pathlib import Path
 
 from core import canonical
@@ -37,7 +37,10 @@ def _exact_refs(github,prefix):
     return [x for x in refs if isinstance(x,dict) and isinstance(x.get("ref"),str) and x["ref"].startswith(expected)]
 
 def _existing_pr(github,branch,commit_sha):
-    pulls=github.get("/pulls?state=all&head="+branch+"&base=main&per_page=20")
+    parts=github.repo.strip("/").split("/")
+    if len(parts)!=3 or parts[0]!="repos": raise GenericCapabilityPersistError("repository identity invalid")
+    query=urllib.parse.urlencode({"state":"all","head":parts[1]+":"+branch,"base":"main","per_page":20})
+    pulls=github.get("/pulls?"+query)
     if not isinstance(pulls,list): raise GenericCapabilityPersistError("candidate pull request lookup invalid")
     matches=[p for p in pulls if isinstance(p,dict) and p.get("head",{}).get("ref")==branch and p.get("head",{}).get("sha")==commit_sha]
     if len(matches)>1: raise GenericCapabilityPersistError("multiple candidate pull requests found")
@@ -69,7 +72,7 @@ def persist(github,candidate_envelope,validation_report,handoff,baseline_sha):
     base=github.get("/git/commits/"+baseline_sha)
     base_tree=base.get("tree",{}).get("sha") if isinstance(base,dict) else None
     if not isinstance(base_tree,str): raise GenericCapabilityPersistError("baseline tree missing")
-    baseline_tree=github.get("/git/trees/"+baseline_sha+"?recursive=1")
+    baseline_tree=github.get("/git/trees/"+base_tree+"?recursive=1")
     existing_paths={x.get("path") for x in baseline_tree.get("tree",[]) if isinstance(x,dict)} if isinstance(baseline_tree,dict) else set()
     if paths["provider"] in existing_paths or paths["tests"] in existing_paths or paths["evidence"] in existing_paths:
         raise GenericCapabilityPersistError("candidate target path already exists")

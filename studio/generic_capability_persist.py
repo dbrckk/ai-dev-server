@@ -104,7 +104,7 @@ def persist(github,candidate_envelope,validation_report,handoff,baseline_sha):
             raise GenericCapabilityPersistError("candidate branch content changed")
         number=_existing_pr(github,branch,head)
         if not isinstance(number,int): raise GenericCapabilityPersistError("candidate branch has no matching pull request")
-        return {"status":"candidate_already_persisted","branch":branch,"commit_sha":head,"pull_request":number,**evidence}
+        return {**evidence,"status":"candidate_already_persisted","branch":branch,"commit_sha":head,"pull_request":number}
     commit=github.call("POST",github.repo+"/git/commits",{"message":"Persist validated capability candidate: "+capability,"tree":tree_sha,"parents":[baseline_sha]})
     commit_sha=commit.get("sha") if isinstance(commit,dict) else None
     if not isinstance(commit_sha,str) or not SHA40.fullmatch(commit_sha): raise GenericCapabilityPersistError("candidate commit creation failed")
@@ -117,4 +117,4 @@ def persist(github,candidate_envelope,validation_report,handoff,baseline_sha):
     })
     number=pr.get("number") if isinstance(pr,dict) else None
     if not isinstance(number,int): raise GenericCapabilityPersistError("candidate pull request creation failed")
-    return {"status":"candidate_persisted","branch":branch,"commit_sha":commit_sha,"pull_request":number,**evidence}
+    return {**evidence,"status":"candidate_persisted","branch":branch,"commit_sha":commit_sha,"pull_request":number}

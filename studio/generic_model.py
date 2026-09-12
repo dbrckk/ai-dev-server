@@ -23,7 +23,7 @@ def _decode(response: dict) -> dict:
     return value
 
 
-def ask(system: str, user: str, *, code: bool = False) -> tuple[dict, dict]:
+def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | None = None, avoid_providers: set[str] | None = None) -> tuple[dict, dict]:
     try:
         providers = load_providers(prefer_free=True)
     except ValueError as exc:
@@ -32,8 +32,16 @@ def ask(system: str, user: str, *, code: bool = False) -> tuple[dict, dict]:
     providers = candidates_for(role, providers=providers)
     if not providers:
         raise StudioError("No configured provider available for generic project")
+    avoid_models = avoid_models or set()
+    avoid_providers = avoid_providers or set()
+    preferred = [
+        provider for provider in providers
+        if provider.name not in avoid_providers and provider.model_for(role) not in avoid_models
+    ]
+    fallback = [provider for provider in providers if provider not in preferred]
+    ordered = [*preferred, *fallback]
     last = None
-    for provider in providers:
+    for provider in ordered:
         model = provider.model_for(role)
         api = API(provider.base, provider.key)
         params = {
@@ -49,7 +57,11 @@ def ask(system: str, user: str, *, code: bool = False) -> tuple[dict, dict]:
             params.update(chat_template_kwargs={"enable_thinking": True}, reasoning_budget=2048)
         try:
             response = api.call("POST", "/chat/completions", params)
-            return _decode(response), {"provider": provider.name, "model": model}
+            return _decode(response), {
+                "provider": provider.name,
+                "model": model,
+                "independent_preference_met": provider.name not in avoid_providers and model not in avoid_models,
+            }
         except (APIError, StudioError, ProtocolError) as exc:
             last = exc
             continue

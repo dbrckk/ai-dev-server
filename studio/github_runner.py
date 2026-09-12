@@ -199,6 +199,16 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
                         adaptation_state,candidate_persistence['status']
                     )
                     adaptation_path.write_text(canonical(adaptation_state))
+                    review={
+                        'status':candidate_persistence['status'],
+                        'candidate_id':candidate_persistence['candidate_id'],
+                        'candidate_sha256':candidate_persistence['candidate_sha256'],
+                        'capability':candidate_persistence['capability'],
+                        'branch':candidate_persistence['branch'],
+                        'commit_sha':candidate_persistence['commit_sha'],
+                        'pull_request':candidate_persistence['pull_request'],
+                    }
+                    (out/'.autonomy/capability-review.json').write_text(canonical(review))
                     persist_local(remote_github,request['id'],out)
                 except GenericCapabilityPersistError as exc:
                     raise StudioError('Capability candidate persistence failed: '+str(exc)) from None

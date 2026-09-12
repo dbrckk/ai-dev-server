@@ -20,7 +20,7 @@ class FakeGitHub:
     def get(self,path):
         if path=="/git/commits/"+self.base:
             return self.commits[self.base]
-        if path=="/git/trees/"+self.base+"?recursive=1":
+        if path=="/git/trees/"+self.base_tree+"?recursive=1":
             return {"tree":self.trees[self.base],"truncated":False}
         if path.startswith("/git/matching-refs/heads/"):
             prefix="refs/heads/"+path.split("/git/matching-refs/heads/",1)[1]

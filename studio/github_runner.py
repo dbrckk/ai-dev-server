@@ -29,6 +29,7 @@ from core import StudioError, canonical, request_check
 from github_goal_store import RemoteStateError, persist_local, restore_local
 from goal_engine import load as load_goal_state, resume_human_action, save as save_goal_state
 from github_memory_store import GitHubMemoryError, persist_local as persist_memory_local, restore_local as restore_memory_local
+from github_agent_performance_store import AgentPerformanceStoreError, persist_local as persist_agent_performance_local, restore_local as restore_agent_performance_local
 from improvement_backlog import activate_next, load as load_improvement_backlog, merge_assessment, new_backlog, save as save_improvement_backlog
 from improvement_executor import run_active_improvement, verified_project_cycle
 from human_input_request import prerequisite_satisfied, requires_human_input, write_request as write_human_input_request
@@ -141,10 +142,13 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
         try:
             restore_local(remote_github,request['id'],out)
             restore_memory_local(remote_github,out/'.memory/memory.json')
+            restore_agent_performance_local(remote_github,out/'.autonomy/agent-performance.json')
         except RemoteStateError as exc:
             raise StudioError('Remote autonomous state restore failed: '+str(exc)) from None
         except GitHubMemoryError as exc:
             raise StudioError('Remote project memory restore failed: '+str(exc)) from None
+        except AgentPerformanceStoreError as exc:
+            raise StudioError('Remote agent performance restore failed: '+str(exc)) from None
     goal_path=out/'.autonomy/goal.json'
     if goal_path.is_file():
         try:
@@ -383,10 +387,13 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             save_project_memory(memory_path,memory)
             persist_local(remote_github,request['id'],out)
             persist_memory_local(remote_github,memory_path)
+            persist_agent_performance_local(remote_github,out/'.autonomy/agent-performance.json')
         except RemoteStateError as exc:
             raise StudioError('Remote autonomous state persistence failed: '+str(exc)) from None
         except GitHubMemoryError as exc:
             raise StudioError('Remote project memory persistence failed: '+str(exc)) from None
+        except AgentPerformanceStoreError as exc:
+            raise StudioError('Remote agent performance persistence failed: '+str(exc)) from None
         except ValueError as exc:
             raise StudioError('Project memory ingestion failed: '+str(exc)) from None
     summary={

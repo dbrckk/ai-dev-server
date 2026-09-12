@@ -14,7 +14,7 @@ import time
 import uuid
 
 from autonomous_project import run_persistent_project
-from capability_adaptation_state import new_state as new_capability_adaptation_state, record_research as record_capability_research, record_synthesis as record_capability_synthesis, record_validation as record_capability_validation
+from capability_adaptation_state import new_state as new_capability_adaptation_state, record_research as record_capability_research, record_synthesis as record_capability_synthesis, record_validation as record_capability_validation, record_candidate_persistence as record_capability_candidate_persistence
 from adaptation_research import research_missing_capability
 from repository_research_provider import build_repository_providers
 from generic_capability_synthesis import synthesize_from_memory
@@ -195,6 +195,10 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
                     candidate_persistence=persist_generic_capability_candidate(
                         remote_github,candidate,validation,handoff,baseline_sha
                     )
+                    adaptation_state=record_capability_candidate_persistence(
+                        adaptation_state,candidate_persistence['status']
+                    )
+                    adaptation_path.write_text(canonical(adaptation_state))
                     persist_local(remote_github,request['id'],out)
                 except GenericCapabilityPersistError as exc:
                     raise StudioError('Capability candidate persistence failed: '+str(exc)) from None
@@ -204,14 +208,28 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
                 'status':'adaptation_required',
                 'next_stage':adaptation_state['capability'],
                 'finished':False,
-                'capability_adaptation_status':'promotion_required',
-                'promotion_status':'eligible',
+                'capability_adaptation_status':adaptation_state['status'],
+                'promotion_status':adaptation_state['promotion_status'],
                 'promotion_handoff_sha256':handoff['handoff_sha256'],
             }
             if candidate_persistence is not None:
                 summary['candidate_persistence_status']=candidate_persistence['status']
                 summary['candidate_pull_request']=candidate_persistence['pull_request']
                 summary['candidate_commit_sha']=candidate_persistence['commit_sha']
+            out.mkdir(parents=True,exist_ok=True)
+            (out/'github-pipeline.json').write_text(canonical(summary))
+            return summary
+    if adaptation_path.is_file():
+        from capability_adaptation_state import validate as validate_capability_adaptation
+        waiting=validate_capability_adaptation(json.loads(adaptation_path.read_text()))
+        if waiting['status']=='awaiting_merge':
+            summary={
+                'status':'adaptation_required',
+                'next_stage':waiting['capability'],
+                'finished':False,
+                'capability_adaptation_status':'awaiting_merge',
+                'promotion_status':'candidate_review_required',
+            }
             out.mkdir(parents=True,exist_ok=True)
             (out/'github-pipeline.json').write_text(canonical(summary))
             return summary

@@ -13,11 +13,19 @@ def _opencode_runtime(prompt:str)->tuple[list[str],dict[str,str]]:
     base=os.environ.get("STUDIO_API_BASE","")
     key=os.environ.get("STUDIO_API_KEY","")
     env={"OPENCODE_DISABLE_MODELS_FETCH":"1"}
-    argv=["opencode","run","--format","json"]
+    argv=["opencode","run","--auto","--format","json"]
     if model and base and key:
         config={
             "$schema":"https://opencode.ai/config.json",
             "share":"disabled",
+            "permission":{
+                "*":"deny",
+                "read":"allow",
+                "edit":"allow",
+                "glob":"allow",
+                "grep":"allow",
+                "lsp":"allow"
+            },
             "provider":{
                 "studio":{
                     "npm":"@ai-sdk/openai-compatible",

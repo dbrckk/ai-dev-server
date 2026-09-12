@@ -10,6 +10,7 @@ if str(STUDIO) not in sys.path:
 
 from agents.registry import AgentRegistry, AgentSpec
 from agents.router import choose_agent, rank_agents
+from agents.orchestrator import invocation_for
 
 
 class AgentRouterTests(unittest.TestCase):
@@ -36,6 +37,19 @@ class AgentRouterTests(unittest.TestCase):
         with patch("shutil.which", side_effect=which):
             decision = choose_agent({"research"}, registry=self.registry)
         self.assertEqual(decision.agent.name, "research")
+
+    def test_opencode_invocation_uses_secret_alias(self):
+        env={
+            "STUDIO_API_BASE":"https://example.invalid/v1",
+            "STUDIO_API_KEY":"super-secret",
+            "STUDIO_CODE_MODEL":"coder/model",
+        }
+        with patch.dict("os.environ",env,clear=True):
+            argv,extra=invocation_for("opencode","do work")
+        self.assertIn("--model",argv)
+        self.assertEqual(extra["OPENCODE_STUDIO_API_KEY"],"super-secret")
+        self.assertNotIn("super-secret",extra["OPENCODE_CONFIG_CONTENT"])
+        self.assertIn("OPENCODE_STUDIO_API_KEY",extra["OPENCODE_CONFIG_CONTENT"])
 
 
 if __name__ == "__main__":

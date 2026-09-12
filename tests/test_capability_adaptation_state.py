@@ -5,6 +5,8 @@ from studio.capability_adaptation_state import (
     new_state,
     validate,
     record_research,
+    record_synthesis,
+    record_validation,
 )
 
 
@@ -29,6 +31,24 @@ class CapabilityAdaptationStateTests(unittest.TestCase):
         self.assertEqual(state["status"],"synthesis_required")
         self.assertEqual(state["research_status"],"research_complete")
         self.assertEqual(state["synthesis_status"],"required")
+        validate(state)
+
+    def test_validated_candidate_advances_to_promotion_required(self):
+        state=new_state("project-a","improvement.apply.repeated_failure","improvement:abc")
+        state=record_research(state,"research_complete")
+        state=record_synthesis(state,"a"*64)
+        state=record_validation(state,"candidate_validated")
+        self.assertEqual(state["status"],"promotion_required")
+        self.assertEqual(state["promotion_status"],"eligible")
+        validate(state)
+
+    def test_rejected_candidate_blocks_adaptation(self):
+        state=new_state("project-a","improvement.apply.repeated_failure","improvement:abc")
+        state=record_research(state,"research_complete")
+        state=record_synthesis(state,"a"*64)
+        state=record_validation(state,"candidate_rejected")
+        self.assertEqual(state["status"],"blocked")
+        self.assertEqual(state["promotion_status"],"not_ready")
         validate(state)
 
     def test_invalid_capability_rejected(self):

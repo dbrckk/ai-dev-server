@@ -1,5 +1,6 @@
 """Prepare a registry-only PR after a validated capability candidate was human-merged."""
 from __future__ import annotations
+import base64
 import hashlib
 import json
 import re
@@ -72,6 +73,37 @@ def _load_registry(github,main_sha):
         raise CapabilityRegistryPromotionPersistError("promotion registry unreadable") from None
     return registry, tree_sha
 
+def _verify_materialized_provider(github,main_sha,candidate):
+    payload=candidate.get("candidate",{})
+    capability=payload.get("capability")
+    provider=payload.get("provider")
+    module=provider.removeprefix("studio.capabilities.") if isinstance(provider,str) else ""
+    if not re.fullmatch(r"[a-z][a-z0-9_]{2,120}",module):
+        raise CapabilityRegistryPromotionPersistError("provider path invalid")
+    path="studio/capabilities/"+module+".py"
+    commit=github.get("/git/commits/"+main_sha)
+    tree_sha=commit.get("tree",{}).get("sha") if isinstance(commit,dict) else None
+    if not isinstance(tree_sha,str):
+        raise CapabilityRegistryPromotionPersistError("main tree missing")
+    tree=github.get("/git/trees/"+tree_sha+"?recursive=1")
+    items=tree.get("tree") if isinstance(tree,dict) else None
+    if not isinstance(items,list) or tree.get("truncated"):
+        raise CapabilityRegistryPromotionPersistError("main tree invalid")
+    entry=next((x for x in items if isinstance(x,dict) and x.get("path")==path and x.get("type")=="blob"),None)
+    if entry is None:
+        raise CapabilityRegistryPromotionPersistError("merged candidate provider missing")
+    blob=github.get("/git/blobs/"+str(entry.get("sha")))
+    if not isinstance(blob,dict) or blob.get("encoding")!="base64":
+        raise CapabilityRegistryPromotionPersistError("merged candidate provider blob invalid")
+    try:
+        materialized=base64.b64decode(blob["content"]).decode("utf-8")
+    except Exception:
+        raise CapabilityRegistryPromotionPersistError("merged candidate provider unreadable") from None
+    if materialized!=payload.get("implementation"):
+        raise CapabilityRegistryPromotionPersistError("merged candidate provider content mismatch")
+    return path
+
+
 def persist(github,candidate_envelope,validation_report,review_status,baseline_sha,main_sha):
     candidate=validate_candidate_envelope(candidate_envelope)
     report=validate_isolated_validation_result(validation_report)
@@ -96,6 +128,7 @@ def persist(github,candidate_envelope,validation_report,review_status,baseline_s
     decision=report.get("validation",{})
     if decision.get("status")!="candidate_validated":
         raise CapabilityRegistryPromotionPersistError("candidate not validated")
+    _verify_materialized_provider(github,main_sha,candidate)
     registry,base_tree=_load_registry(github,main_sha)
     try:
         updated,promotion=promote_candidate(registry,candidate,decision,baseline_sha,merge_sha)

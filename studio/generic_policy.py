@@ -8,7 +8,7 @@ MAX_FILE_BYTES = 400_000
 MAX_PATCH_BYTES = 1_500_000
 BLOCKED_PARTS = {
     ".git", ".github", ".idea", ".vscode", "node_modules", "vendor",
-    "build", "dist", ".next", ".gradle", "target", "__pycache__",
+    "build", "dist", ".next", ".gradle", "target", "__pycache__", ".studio-venv",
 }
 BLOCKED_NAMES = {
     ".env", ".env.local", ".env.production", "id_rsa", "id_ed25519",

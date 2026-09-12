@@ -21,6 +21,7 @@ except ImportError:
     from capability_runtime import execute_capability
     from project_memory import new_memory, load as load_memory, save as save_memory
     from goal_learning import context_for_goal, learn_from_cycle
+    from human_input_request import requires_human_input
 
 
 AUTONOMY_DIR = ".autonomy"
@@ -129,8 +130,17 @@ def translate_orchestrator_result(result: dict) -> dict:
         }
 
     if isinstance(status, str) and status:
-        suffix = f":{next_stage}" if isinstance(next_stage, str) and next_stage else ""
-        return {"failure": status + suffix}
+        details = [status]
+        if isinstance(next_stage, str) and next_stage:
+            details.append(next_stage)
+        if isinstance(report, dict):
+            blockers = report.get("blockers")
+            if isinstance(blockers, list):
+                details.extend(str(item) for item in blockers)
+        detail = ":".join(details)
+        if requires_human_input(detail):
+            return {"human_action": detail}
+        return {"failure": detail}
     return {"failure": "orchestrator result missing status"}
 
 

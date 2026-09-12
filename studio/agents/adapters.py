@@ -45,6 +45,11 @@ class AgentAdapter:
         if timeout < 1 or timeout > 7200:
             raise ValueError("Agent timeout outside allowed range")
         env = os.environ.copy()
+        # Coding agents do not need repository-write credentials: publishing is
+        # performed later by the trusted GitHub adapter after validation.
+        for key in list(env):
+            if key.startswith(("GITHUB_","GH_")) or key in {"STUDIO_GITHUB_TOKEN","CODESPACES_PAT"}:
+                env.pop(key,None)
         # Never let an autonomous prompt override process-critical variables.
         if extra_env:
             for key,value in extra_env.items():

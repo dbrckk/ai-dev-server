@@ -1,9 +1,11 @@
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
 from ci_runner import run_queue
@@ -59,7 +61,8 @@ class QueueAdaptationTests(unittest.TestCase):
                 (project_out / 'report.json').write_text(json.dumps(payload(args)))
                 return subprocess.CompletedProcess(args, 0)
 
-            self.assertEqual(run_queue(queue, out, runner), 1)
+            with mock.patch.dict(os.environ, {'CIRCLE_SHA1': ''}, clear=False):
+                self.assertEqual(run_queue(queue, out, runner), 1)
             self.assertEqual(len(calls), 4)
             queue_report = json.loads((out / 'queue.json').read_text())
             project = queue_report['projects'][0]

@@ -139,6 +139,9 @@ jobs:
           test -r /dev/kvm
           test -w /dev/kvm
           emulator -accel-check
+      - name: Install autonomous coding agent
+        run: npm install -g opencode-ai
+
       - name: Run full autonomous completion pipeline
         env:
           STUDIO_CI_PROVIDER: github

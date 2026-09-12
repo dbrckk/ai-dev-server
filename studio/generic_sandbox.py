@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import subprocess
 import time
+import shutil
 
 _SECRET_PREFIXES=("STUDIO_","GITHUB_","GH_","OPENAI_","ANTHROPIC_","NVIDIA_","GEMINI_")
 _ALLOWED_ENV={"PATH","HOME","LANG","LC_ALL","TMPDIR"}
@@ -26,11 +27,23 @@ def run(command:list[str],root:Path,*,timeout:int=900,network:bool=False)->dict:
         raise ValueError("Sandbox timeout invalid")
     started=time.monotonic()
     env=safe_env()
-    # Host execution is intentionally credential-stripped. Network-capable
-    # bootstrap commands are allowed only when their argv came from the trusted
-    # toolchain registry, never from model output.
+    argv=list(command)
+    network_isolated=False
+    if not network and shutil.which("unshare"):
+        try:
+            probe=subprocess.run(["unshare","--net","true"],env=env,stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=5,check=False)
+            if probe.returncode==0:
+                argv=["unshare","--net","--",*command]
+                network_isolated=True
+        except (OSError,subprocess.TimeoutExpired):
+            pass
+    # Commands never inherit provider/GitHub secrets. When the host permits an
+    # unprivileged network namespace, verification is also executed without
+    # network access; otherwise the evidence explicitly records that only
+    # credential isolation was enforced.
     try:
-        p=subprocess.run(command,cwd=root,env=env,stdin=subprocess.DEVNULL,
+        p=subprocess.run(argv,cwd=root,env=env,stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,
             timeout=timeout,check=False)
         rc=p.returncode; log=p.stdout[-24000:]
@@ -40,4 +53,7 @@ def run(command:list[str],root:Path,*,timeout:int=900,network:bool=False)->dict:
         rc=127; log=type(exc).__name__
     return {"command":command,"returncode":rc,"passed":rc==0,
             "duration_seconds":round(time.monotonic()-started,3),
-            "network_allowed":bool(network),"log_tail":log}
+            "network_allowed":bool(network),
+            "network_isolated":network_isolated,
+            "credential_isolated":True,
+            "log_tail":log}

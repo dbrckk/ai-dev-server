@@ -24,6 +24,7 @@ def ingest_run(memory, project_id, out):
     # Generic-project learning: only retain experience backed by a real verifier
     # and a persisted Git commit. This global memory is later reusable by other
     # projects through the existing project-memory bridge.
+    verifier=_read(out/"generic-verifier.json")
     generic=_read(out/"generic-report.json")
     if isinstance(generic,dict):
         rounds=generic.get("rounds")
@@ -41,12 +42,19 @@ def ingest_run(memory, project_id, out):
                     reason=review.get("reason")
                     if isinstance(reason,str) and reason.strip():
                         summary=(summary+" "+reason.strip())[:4000]
+                    tags=["generic-project","verified-cycle"]
+                    if isinstance(verifier,dict) and verifier.get("status")=="validated_recipe":
+                        recipe=verifier.get("recipe") if isinstance(verifier.get("recipe"),dict) else {}
+                        commands=recipe.get("commands") if isinstance(recipe.get("commands"),list) else []
+                        if commands:
+                            summary=(summary+" Adaptive verifier recipe: "+json.dumps(commands,ensure_ascii=False))[:4000]
+                            tags.append("adaptive-verifier")
                     memory=remember_experience(
                         memory,
                         project_id,
                         entry_id=entry_id,
                         summary=summary,
-                        tags=["generic-project","verified-cycle"],
+                        tags=tags,
                         proof={
                             "tests_passed":True,
                             "regression_suite_passed":True,

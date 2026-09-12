@@ -25,11 +25,18 @@ def discover(root: Path) -> list[list[str]]:
         if isinstance(scripts, dict) and "build" in scripts and shutil.which("npm"):
             commands.append(["npm", "run", "build"])
     if (root / "pyproject.toml").is_file() or (root / "requirements.txt").is_file():
-        if shutil.which("python"):
-            if shutil.which("pytest"):
-                commands.append(["pytest", "-q"])
-            else:
-                commands.append(["python", "-m", "unittest", "discover"])
+        venv_pytest=root/".studio-venv/bin/pytest"
+        venv_python=root/".studio-venv/bin/python"
+        if venv_pytest.is_file():
+            commands.append([str(venv_pytest), "-q"])
+        elif venv_python.is_file():
+            commands.append([str(venv_python), "-m", "unittest", "discover"])
+        elif (root/"uv.lock").is_file() and shutil.which("uv"):
+            commands.append(["uv","run","pytest","-q"])
+        elif shutil.which("pytest"):
+            commands.append(["pytest", "-q"])
+        elif shutil.which("python"):
+            commands.append(["python", "-m", "unittest", "discover"])
     if (root / "go.mod").is_file() and shutil.which("go"):
         commands.append(["go", "test", "./..."])
     if (root / "Cargo.toml").is_file() and shutil.which("cargo"):

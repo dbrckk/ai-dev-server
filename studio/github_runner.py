@@ -30,6 +30,7 @@ from github_goal_store import RemoteStateError, persist_local, restore_local
 from github_memory_store import GitHubMemoryError, persist_local as persist_memory_local, restore_local as restore_memory_local
 from improvement_backlog import activate_next, load as load_improvement_backlog, merge_assessment, new_backlog, save as save_improvement_backlog
 from improvement_executor import run_active_improvement, verified_project_cycle
+from human_input_request import requires_human_input, write_request as write_human_input_request
 from memory_lifecycle import ingest_run
 from project_memory import load as load_project_memory, save as save_project_memory
 from multi_engine_orchestrator import run_project as run_multi_engine_project
@@ -390,6 +391,12 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             summary['capability_adaptation_candidate']=adaptation_state['adaptation_candidate_id']
     if status=='human_action_required':
         summary['next_stage']=state.get('human_action')
+        write_human_input_request(
+            out,
+            request['id'],
+            str(state.get('human_action') or 'external_human_action'),
+            target_repo=request.get('target_repo'),
+        )
     elif status=='blocked':
         summary['next_stage']=state.get('blocked_reason')
     for key in ('pending_status','research_status','synthesis_status','benchmark_status','promotion_status','persistence_status','automerge_status'):
@@ -409,4 +416,19 @@ def main(argv=None)->int:
 if __name__=='__main__':
     try: sys.exit(main())
     except (StudioError,ValueError,OSError,json.JSONDecodeError) as exc:
-        Path('studio-output').mkdir(exist_ok=True); Path('studio-output/github-pipeline-error.json').write_text(canonical({'status':'blocked','error':str(exc) if isinstance(exc,StudioError) else type(exc).__name__})); print('GitHub autonomous pipeline blocked; see artifact evidence.',file=sys.stderr); sys.exit(1)
+        out=Path('studio-output'); out.mkdir(exist_ok=True)
+        detail=str(exc) if isinstance(exc,StudioError) else type(exc).__name__
+        Path(out/'github-pipeline-error.json').write_text(canonical({'status':'blocked','error':detail}))
+        if requires_human_input(detail):
+            project_id=os.environ.get('STUDIO_PROJECT_ID','unknown-project')
+            target_repo=None
+            request_path=os.environ.get('STUDIO_REQUEST')
+            if request_path:
+                try:
+                    request=json.loads(Path(request_path).read_text())
+                    project_id=str(request.get('id') or project_id)
+                    target_repo=request.get('target_repo')
+                except (OSError,json.JSONDecodeError,TypeError):
+                    pass
+            write_human_input_request(out,project_id,detail,target_repo=target_repo)
+        print('GitHub autonomous pipeline blocked; see artifact evidence.',file=sys.stderr); sys.exit(1)

@@ -8,6 +8,7 @@ import sys
 
 from core import StudioError
 from orchestrator import load_report, run_project as run_flutter_project
+from generic_project import run_project as run_generic_project
 
 
 def _remaining(deadline, clock):
@@ -27,7 +28,7 @@ def _detect(request_path,project_out,runner,deadline,clock):
         raise StudioError('Engine detection produced no evidence')
     try: evidence=json.loads(path.read_text())
     except (OSError,json.JSONDecodeError): raise StudioError('Engine detection evidence is invalid') from None
-    if not isinstance(evidence,dict) or evidence.get('status')!='detected' or evidence.get('engine') not in {'flutter','godot'}: raise StudioError('Engine detection evidence is invalid')
+    if not isinstance(evidence,dict) or evidence.get('status')!='detected' or evidence.get('engine') not in {'flutter','godot','generic'}: raise StudioError('Engine detection evidence is invalid')
     return evidence['engine']
 
 
@@ -41,7 +42,19 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
     project_out.mkdir(parents=True,exist_ok=True)
     engine=_detect(request_path,project_out,runner,deadline,clock)
     if engine is None: return {'status':'deferred','report':{},'next_stage':'preview'}
-    if engine=='flutter': return run_flutter_project(request_path,project_out,work,runner,deadline,clock,baseline_sha)
+    if engine=='flutter':
+        return run_flutter_project(request_path,project_out,work,runner,deadline,clock,baseline_sha)
+    if engine=='generic':
+        try:
+            req=json.loads(Path(request_path).read_text())
+        except (OSError,json.JSONDecodeError):
+            raise StudioError('Generic project request is unreadable') from None
+        portfolio={}
+        portfolio_path=project_out/'portfolio-research.json'
+        if portfolio_path.is_file():
+            try: portfolio=json.loads(portfolio_path.read_text())
+            except (OSError,json.JSONDecodeError): portfolio={}
+        return run_generic_project(req,project_out,Path(work),portfolio=portfolio,max_rounds=6)
     if engine!='godot': raise StudioError('Unsupported project engine')
 
     stages=[

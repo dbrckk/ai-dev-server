@@ -10,6 +10,9 @@ npm install -g opencode-ai @openai/codex
 # Claude Code remains optional because the autonomous router prefers free agents.
 # Install it only when explicitly enabled to avoid making a paid dependency mandatory.
 if [[ "${STUDIO_ENABLE_CLAUDE_CODE:-0}" == "1" ]]; then npm install -g @anthropic-ai/claude-code; fi
+if [[ "${STUDIO_ENABLE_HERMES:-0}" == "1" ]]; then
+  uv tool install hermes-agent || uv tool upgrade hermes-agent || true
+fi
 
 # Python tooling and sprite post-processing.
 python -m pip install --user --upgrade uv pillow rembg

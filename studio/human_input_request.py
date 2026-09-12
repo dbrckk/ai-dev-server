@@ -69,7 +69,7 @@ def render(project_id: str, detail: str, *, target_repo: str | None = None) -> s
         "- Do NOT paste API keys, passwords, private keys, tokens, or recovery codes into this file.",
         "- Put secrets in GitHub repository/environment secrets (or the external service's secure secret manager).",
         "- Keep the secret name requested above exactly unchanged when one is specified.",
-        "- After the prerequisite is supplied, rerun/re-enable the project. The autonomous worker should resume from its persisted checkpoint.",
+        "- After the prerequisite is supplied, the scheduled autonomous worker can resume from its persisted checkpoint.",
         "",
         "Original blocking detail:",
         detail.strip() or "unspecified external prerequisite",
@@ -95,3 +95,15 @@ def write_request(out: Path, project_id: str, detail: str, *, target_repo: str |
         encoding="utf-8",
     )
     return text_path
+
+
+def prerequisite_satisfied(detail: str) -> bool:
+    import os
+    text=str(detail or "")
+    matched=False
+    for name in SECRET_HINTS:
+        if name.lower() in text.lower():
+            matched=True
+            if not os.environ.get(name):
+                return False
+    return matched

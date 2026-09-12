@@ -4,8 +4,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import shutil
-import subprocess
 import time
+
+from generic_sandbox import run as run_command
 
 
 def discover(root: Path) -> list[list[str]]:
@@ -49,33 +50,11 @@ def run(root: Path, *, timeout_per_command: int = 900, commands: list[list[str]]
         return {"status": "no_verifier", "passed": False, "commands": [], "results": []}
     results = []
     all_passed = True
-    safe_env = {
-        "PATH": __import__("os").environ.get("PATH", ""),
-        "HOME": __import__("os").environ.get("HOME", "/tmp"),
-        "CI": "true",
-    }
     for command in commands:
-        started = time.monotonic()
-        try:
-            p = subprocess.run(
-                command, cwd=root, env=safe_env, stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
-                timeout=timeout_per_command, check=False,
-            )
-            rc = p.returncode
-            log = p.stdout[-20000:]
-        except (OSError, subprocess.TimeoutExpired) as exc:
-            rc = 124
-            log = type(exc).__name__
-        passed = rc == 0
+        result = run_command(command, root, timeout=timeout_per_command, network=False)
+        passed = result["passed"]
         all_passed = all_passed and passed
-        results.append({
-            "command": command,
-            "returncode": rc,
-            "passed": passed,
-            "duration_seconds": round(time.monotonic() - started, 3),
-            "log_tail": log,
-        })
+        results.append(result)
         if not passed:
             break
     return {

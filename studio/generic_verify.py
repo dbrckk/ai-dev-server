@@ -18,8 +18,6 @@ def discover(root: Path) -> list[list[str]]:
         except (OSError, json.JSONDecodeError):
             data = {}
         scripts = data.get("scripts") if isinstance(data, dict) else {}
-        if (root / "package-lock.json").is_file() and shutil.which("npm"):
-            commands.append(["npm", "ci", "--ignore-scripts"])
         if isinstance(scripts, dict) and "test" in scripts and shutil.which("npm"):
             commands.append(["npm", "test", "--", "--runInBand"])
         if isinstance(scripts, dict) and "build" in scripts and shutil.which("npm"):

@@ -30,7 +30,7 @@ def _decode(response: dict) -> dict:
     return value
 
 
-def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | None = None, avoid_providers: set[str] | None = None) -> tuple[dict, dict]:
+def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | None = None, avoid_providers: set[str] | None = None, timeout_seconds: int | float = 300) -> tuple[dict, dict]:
     try:
         providers = load_providers(prefer_free=True)
     except ValueError as exc:
@@ -91,7 +91,7 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
             params.update(chat_template_kwargs={"enable_thinking": True}, reasoning_budget=2048)
         started = time.monotonic()
         try:
-            response = api.call("POST", "/chat/completions", params)
+            response = api.call("POST", "/chat/completions", params, timeout_seconds=timeout_seconds)
             elapsed = time.monotonic() - started
             if metrics_path is not None:
                 record_provider_latency(metrics_path, provider.name, role, elapsed)

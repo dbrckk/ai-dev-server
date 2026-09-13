@@ -95,3 +95,52 @@ def record(path:Path,context:str,strategy:str,*,success:bool,cost_seconds:float)
 def rows_for(data:dict,context:str)->dict:
     rows=data.get(context,{})
     return rows if isinstance(rows,dict) else {}
+
+
+def blend_rows(data: dict, weighted: list[tuple[str, float]]) -> dict:
+    """Blend contextual rows into synthetic strategy evidence.
+
+    Samples are used as confidence mass while the caller-provided context
+    weights determine relevance. The result preserves the global strategy row
+    schema so existing risk/efficiency scoring can consume it unchanged.
+    """
+    accum = {}
+    for context, context_weight in weighted:
+        weight = max(0.0, float(context_weight))
+        if weight <= 0:
+            continue
+        rows = rows_for(data, context)
+        for strategy, row in rows.items():
+            samples = max(0, int(row.get("samples", 0)))
+            if samples <= 0:
+                continue
+            mass = weight * samples
+            target = accum.setdefault(strategy, {
+                "mass": 0.0,
+                "successes": 0.0,
+                "cost": 0.0,
+                "recent": 0.0,
+            })
+            success_rate = max(0.0, min(1.0, int(row.get("successes", 0)) / samples))
+            recent = max(0.0, min(1.0, float(row.get("ema_success_rate", success_rate))))
+            cost = max(0.0, float(row.get("ema_cost_seconds", 0.0)))
+            target["mass"] += mass
+            target["successes"] += mass * success_rate
+            target["cost"] += mass * cost
+            target["recent"] += mass * recent
+
+    blended = {}
+    for strategy, values in accum.items():
+        mass = values["mass"]
+        if mass <= 0:
+            continue
+        effective_samples = max(1, int(round(mass)))
+        cumulative_rate = max(0.0, min(1.0, values["successes"] / mass))
+        successes = max(0, min(effective_samples, int(round(cumulative_rate * effective_samples))))
+        blended[strategy] = {
+            "samples": effective_samples,
+            "successes": successes,
+            "ema_cost_seconds": values["cost"] / mass,
+            "ema_success_rate": values["recent"] / mass,
+        }
+    return blended

@@ -13,6 +13,7 @@ from pathlib import Path
 
 DEFAULT_THRESHOLD = 3
 DEFAULT_COOLDOWN_SECONDS = 300
+MAX_COOLDOWN_SECONDS = 3600
 MAX_ROWS = 64
 
 
@@ -104,7 +105,23 @@ def record_failure(
     row["consecutive_failures"] += 1
     if row["consecutive_failures"] >= threshold:
         current = time.time() if now is None else float(now)
-        row["opened_until"] = current + cooldown_seconds
+        exponent = row["consecutive_failures"] - threshold
+        cooldown = min(MAX_COOLDOWN_SECONDS, cooldown_seconds * (2 ** exponent))
+        row["opened_until"] = current + cooldown
     data[provider] = row
     _save(path, data)
     return data
+
+
+def reliability_bonus(data: dict, provider: str) -> float:
+    """Return a bounded empirical routing bonus from observed success history."""
+    row = data.get(provider)
+    if not isinstance(row, dict):
+        return 0.0
+    successes = int(row.get("successes", 0))
+    failures = int(row.get("failures", 0))
+    runs = successes + failures
+    if runs < 2:
+        return 0.0
+    rate = successes / runs
+    return max(-30.0, min(30.0, (rate - 0.5) * 60.0))

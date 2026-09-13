@@ -193,10 +193,11 @@ class API:
         if u.scheme != 'https' or not u.netloc or u.username or u.password or u.query or u.fragment:
             raise StudioError('API endpoint must be an HTTPS URL without credentials/query')
         self.base, self.key = base.rstrip('/'), key
-    def _response(self, req):
+    def _response(self, req, timeout_seconds=300):
         # A pending inference is polled; never submit a second paid POST.
+        timeout_seconds = max(1.0, min(300.0, float(timeout_seconds)))
         opener = urllib.request.build_opener(NoRedirect)
-        deadline = time.monotonic() + 300
+        deadline = time.monotonic() + timeout_seconds
         for poll in range(61):
             remaining = deadline - time.monotonic()
             if remaining <= 0:
@@ -228,13 +229,13 @@ class API:
             time.sleep(min(2, max(0, deadline - time.monotonic())))
         raise StudioError('Pending inference polling limit reached')
 
-    def call(self, method, path, data=None):
+    def call(self, method, path, data=None, timeout_seconds=300):
         req = urllib.request.Request(self.base + path, method=method,
             data=None if data is None else canonical(data).encode(),
             headers={'Authorization': 'Bearer ' + self.key, 'Content-Type': 'application/json', 'Accept': 'application/json'})
         for attempt in range(3):
             try:
-                return self._response(req)
+                return self._response(req, timeout_seconds=timeout_seconds)
             except urllib.error.HTTPError as e:
                 # Never print remote bodies: providers may echo secrets or prompts.
                 if method not in ('GET', 'POST') or e.code not in (429, 502, 503, 504) or attempt == 2:

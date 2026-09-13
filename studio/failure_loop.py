@@ -87,7 +87,7 @@ def decide(rounds: list[dict], *, prior: dict | None = None, switch_after: int =
         repeated += 1
         matched_rounds.append(item)
 
-    if signature is None and prior_signature is not None and prior_repeated > 0:
+    if signature is None and not rounds and prior_signature is not None and prior_repeated > 0:
         signature = prior_signature
         repeated = prior_repeated
     elif signature is not None and signature == prior_signature:

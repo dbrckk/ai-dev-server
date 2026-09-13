@@ -24,7 +24,7 @@ def _validate(events):
     for event in events:
         if not isinstance(event, dict):
             raise RoutingHistoryStoreError("routing history entry invalid")
-        if event.get("kind") not in {"provider", "agent"}:
+        if event.get("kind") not in {"provider", "agent", "model_candidate"}:
             raise RoutingHistoryStoreError("routing history kind invalid")
         if not isinstance(event.get("name"), str) or not event["name"]:
             raise RoutingHistoryStoreError("routing history name invalid")

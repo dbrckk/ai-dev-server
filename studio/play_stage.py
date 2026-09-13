@@ -54,7 +54,7 @@ def _human_action(state: dict, action: str, detail: str) -> dict:
     return state
 
 
-def _ensure_signed_aab(root: Path, out: Path, state: dict) -> Path | None:
+def _ensure_signed_aab(root: Path, out: Path, state: dict, env: dict | None = None) -> Path | None:
     release = state.setdefault('release_evidence', {}).setdefault('release_build', {})
     artifact = out / 'app-release.aab'
     signing = release.get('production_signing')
@@ -66,7 +66,7 @@ def _ensure_signed_aab(root: Path, out: Path, state: dict) -> Path | None:
     ):
         return artifact
 
-    credentials = signing_credentials(project_root=root)
+    credentials = signing_credentials(env, project_root=root)
     if not credentials.get('available'):
         return None
 
@@ -122,7 +122,7 @@ def advance(
             raise StudioError('Play publication prerequisite missing: ' + prerequisite)
 
     current = os.environ if env is None else env
-    artifact = _ensure_signed_aab(root, out, state)
+    artifact = _ensure_signed_aab(root, out, state, current)
     if artifact is None:
         _human_action(
             state,

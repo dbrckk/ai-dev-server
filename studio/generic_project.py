@@ -18,8 +18,9 @@ from project_recommendations import recommend
 from learning_context import load_context
 from agents.router import rank_agents
 from agents.performance import load as load_agent_performance, bonus as agent_bonus, record as record_agent_performance
-from agents.orchestrator import execute as execute_agent, execute_named as execute_named_agent, ranked_agent_names
+from agents.orchestrator import execute as execute_agent, execute_named as execute_named_agent, ranked_agent_names, routing_trace_for
 from agents.workspace import snapshot as snapshot_agent_workspace, validate_delta as validate_agent_delta, restore as restore_agent_workspace
+from routing_history import record as record_routing_event
 from execution_checkpoint import advance as advance_checkpoint, load as load_checkpoint, new as new_checkpoint, save as save_checkpoint, ExecutionCheckpointError
 
 PLAN_SYSTEM = """You are the senior autonomous maintainer of an existing software repository.
@@ -228,13 +229,30 @@ Objective and current plan:
                             try: duration=float(attempt.get("duration_seconds",0.0))
                             except (TypeError,ValueError): duration=0.0
                             break
+                    success = candidate_verification.get("passed") is True
                     record_agent_performance(
                         out/".autonomy/agent-performance.json",
                         candidate_name,
                         "implementation",
-                        success=candidate_verification.get("passed") is True,
+                        success=success,
                         duration=duration,
                     )
+                    route_trace = routing_trace_for(
+                        candidate_name,
+                        {"code_editing","repo_analysis"},
+                        role="implementation",
+                        memory_path=out/".autonomy/agent-performance.json",
+                    )
+                    if route_trace is not None:
+                        record_routing_event(
+                            out/".autonomy/routing-history.json",
+                            kind="agent",
+                            name=candidate_name,
+                            role="implementation",
+                            score=route_trace,
+                            success=success,
+                            duration_seconds=duration,
+                        )
                     candidate_records.append({
                         "id":"agent:"+candidate_name,
                         "agent":candidate_name,

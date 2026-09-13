@@ -37,7 +37,7 @@ class MetaRouterTests(unittest.TestCase):
             events.append({"kind":"agent","role":"implementation","success":True})
             events.append({"kind":"model_candidate","role":"implementation","success":True})
         strategy_data={
-            "model_only":{"samples":4,"successes":4,"ema_cost_seconds":80.0},
+            "model_only":{"samples":5,"successes":5,"ema_cost_seconds":80.0},
             "dual":{"samples":4,"successes":4,"ema_cost_seconds":240.0},
         }
         decision=choose_execution_mode(

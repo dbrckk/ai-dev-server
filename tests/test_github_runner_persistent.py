@@ -3,6 +3,7 @@ from pathlib import Path
 import tempfile
 import os
 import unittest
+from contextlib import ExitStack
 from unittest.mock import patch
 
 import sys
@@ -71,26 +72,24 @@ class GithubRunnerPersistentTests(unittest.TestCase):
             out.mkdir(parents=True,exist_ok=True)
             order=[]
             state={"status":"blocked","human_action":None,"blocked_reason":"test-stop"}
-            with patch.dict(os.environ,{"STUDIO_PERSIST_REMOTE":"1","GITHUB_REPOSITORY":"owner/control"},clear=False), \
-                 patch("github_runner.RepoGitHub"), \
-                 patch("github_runner.restore_local"), \
-                 patch("github_runner.restore_memory_local"), \
-                 patch("github_runner.restore_agent_performance_local"), \
-                 patch("github_runner.restore_provider_health_local"), \
-                 patch("github_runner.restore_provider_metrics_local"), \
-                 patch("github_runner.restore_routing_history_local"), \
-                 patch("github_runner.restore_execution_checkpoint_local"), \
-                 patch("github_runner.run_persistent_project",return_value=state), \
-                 patch("github_runner.load_project_memory",return_value={"memory":"before"}), \
-                 patch("github_runner.ingest_run",side_effect=lambda *a,**k:(order.append("ingest") or {"memory":"after"})), \
-                 patch("github_runner.save_project_memory"), \
-                 patch("github_runner.persist_local",side_effect=lambda *a,**k:order.append("state")), \
-                 patch("github_runner.persist_memory_local",side_effect=lambda *a,**k:order.append("memory")), \
-                 patch("github_runner.persist_agent_performance_local",side_effect=lambda *a,**k:order.append("agent-performance")), \
-                 patch("github_runner.persist_provider_health_local",side_effect=lambda *a,**k:order.append("provider-health")), \
-                 patch("github_runner.persist_provider_metrics_local",side_effect=lambda *a,**k:order.append("provider-metrics")), \
-                 patch("github_runner.persist_routing_history_local",side_effect=lambda *a,**k:order.append("routing-history")), \
-                 patch("github_runner.persist_execution_checkpoint_local",side_effect=lambda *a,**k:order.append("execution-checkpoint")):
+            with ExitStack() as stack:
+                stack.enter_context(patch.dict(os.environ,{"STUDIO_PERSIST_REMOTE":"1","GITHUB_REPOSITORY":"owner/control"},clear=False))
+                for name in (
+                    "RepoGitHub","restore_local","restore_memory_local","restore_agent_performance_local",
+                    "restore_provider_health_local","restore_provider_metrics_local","restore_routing_history_local",
+                    "restore_execution_checkpoint_local","save_project_memory",
+                ):
+                    stack.enter_context(patch("github_runner."+name))
+                stack.enter_context(patch("github_runner.run_persistent_project",return_value=state))
+                stack.enter_context(patch("github_runner.load_project_memory",return_value={"memory":"before"}))
+                stack.enter_context(patch("github_runner.ingest_run",side_effect=lambda *a,**k:(order.append("ingest") or {"memory":"after"})))
+                stack.enter_context(patch("github_runner.persist_local",side_effect=lambda *a,**k:order.append("state")))
+                stack.enter_context(patch("github_runner.persist_memory_local",side_effect=lambda *a,**k:order.append("memory")))
+                stack.enter_context(patch("github_runner.persist_agent_performance_local",side_effect=lambda *a,**k:order.append("agent-performance")))
+                stack.enter_context(patch("github_runner.persist_provider_health_local",side_effect=lambda *a,**k:order.append("provider-health")))
+                stack.enter_context(patch("github_runner.persist_provider_metrics_local",side_effect=lambda *a,**k:order.append("provider-metrics")))
+                stack.enter_context(patch("github_runner.persist_routing_history_local",side_effect=lambda *a,**k:order.append("routing-history")))
+                stack.enter_context(patch("github_runner.persist_execution_checkpoint_local",side_effect=lambda *a,**k:order.append("execution-checkpoint")))
                 run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha="d"*40)
             self.assertEqual(order,["ingest","state","memory","agent-performance","provider-health","provider-metrics","routing-history","execution-checkpoint"])
 

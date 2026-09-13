@@ -144,6 +144,12 @@ def assess(graph:dict,focus_files:list[str]|None=None)->dict:
     reverse=graph.get("reverse",{}) if isinstance(graph,dict) else {}
     tests=set(graph.get("tests",[])) if isinstance(graph,dict) else set()
     focus=[f for f in (focus_files or []) if f in edges or f in reverse]
+    if not focus:
+        candidates=sorted(
+            set(edges)|set(reverse),
+            key=lambda rel:(-(len(edges.get(rel,[]))+len(reverse.get(rel,[]))),rel),
+        )
+        focus=candidates[:8]
 
     impacted=set(focus)
     frontier=list(focus)

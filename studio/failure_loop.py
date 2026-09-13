@@ -37,13 +37,8 @@ def failure_signature(verification: dict | None) -> str | None:
 
 
 def _model_identities(round_state: dict) -> tuple[set[str], set[str]]:
-    if signature is None and prior_signature is not None and prior_repeated > 0:
-        signature = prior_signature
-        repeated = prior_repeated
-    elif signature is not None and signature == prior_signature:
-        repeated += prior_repeated
-    providers: set[str] = set(prior_providers if signature == prior_signature else set())
-    models: set[str] = set(prior_models if signature == prior_signature else set())
+    providers: set[str] = set()
+    models: set[str] = set()
     model_groups = round_state.get("models", {}) if isinstance(round_state, dict) else {}
     values = []
     if isinstance(model_groups, dict):
@@ -61,7 +56,6 @@ def _model_identities(round_state: dict) -> tuple[set[str], set[str]]:
         if isinstance(model, str) and model:
             models.add(model)
     return providers, models
-
 
 def decide(rounds: list[dict], *, prior: dict | None = None, switch_after: int = 2, stop_after: int = 4) -> dict:
     if switch_after < 2 or stop_after < switch_after:
@@ -93,8 +87,14 @@ def decide(rounds: list[dict], *, prior: dict | None = None, switch_after: int =
         repeated += 1
         matched_rounds.append(item)
 
-    providers: set[str] = set()
-    models: set[str] = set()
+    if signature is None and prior_signature is not None and prior_repeated > 0:
+        signature = prior_signature
+        repeated = prior_repeated
+    elif signature is not None and signature == prior_signature:
+        repeated += prior_repeated
+
+    providers: set[str] = set(prior_providers if signature == prior_signature else set())
+    models: set[str] = set(prior_models if signature == prior_signature else set())
     for item in matched_rounds:
         p, m = _model_identities(item)
         providers.update(p)

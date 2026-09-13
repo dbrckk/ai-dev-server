@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from repository_progress import compare, snapshot
+from repository_progress import compare, should_reject_before_publish, snapshot
 
 
 def failed(log="AssertionError: expected 1 got 2"):
@@ -70,6 +70,11 @@ class RepositoryProgressTests(unittest.TestCase):
                 current_verification={"status":"passed","passed":True,"results":[]},
             )
             self.assertEqual(result["status"],"verified_progress")
+
+    def test_only_regression_is_rejected_before_publish(self):
+        self.assertTrue(should_reject_before_publish({"status":"regression"}))
+        for status in ("no_progress","churn_without_verified_progress","progress_unverified","verified_progress","verified_stable"):
+            self.assertFalse(should_reject_before_publish({"status":status}))
 
     def test_passed_to_failed_is_regression(self):
         with tempfile.TemporaryDirectory() as td:

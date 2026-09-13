@@ -75,3 +75,7 @@ def compare(before:dict,after:dict,*,previous_verification:dict|None,current_ver
         "previous_failure_signature":prev_sig,
         "current_failure_signature":cur_sig,
     }
+
+
+def should_reject_before_publish(progress:dict|None)->bool:
+    return isinstance(progress,dict) and progress.get("status")=="regression"

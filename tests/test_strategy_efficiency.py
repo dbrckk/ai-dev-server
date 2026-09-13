@@ -90,6 +90,47 @@ class StrategyEfficiencyTests(unittest.TestCase):
         }
         self.assertIsNone(select_strategy(data,allowed={"model_only","dual"}))
 
+    def test_recent_failures_can_dethrone_historical_winner(self):
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"strategy-efficiency.json"
+            for _ in range(20):
+                record(path,"model_only",success=True,cost_seconds=60)
+            for _ in range(4):
+                record(path,"dual",success=True,cost_seconds=90)
+            for _ in range(8):
+                record(path,"model_only",success=False,cost_seconds=60)
+            best=best_strategy(load(path))
+            self.assertEqual(best[0],"dual")
+
+    def test_regime_shift_increases_exploration_frequency(self):
+        data={
+            "model_only":{
+                "samples":20,
+                "successes":18,
+                "ema_cost_seconds":60.0,
+                "ema_success_rate":0.45,
+            },
+            "dual":{
+                "samples":20,
+                "successes":15,
+                "ema_cost_seconds":80.0,
+                "ema_success_rate":0.75,
+            },
+        }
+        self.assertEqual(
+            exploration_cadence(data,allowed={"model_only","dual"}),
+            4,
+        )
+
+    def test_legacy_strategy_rows_migrate_recent_success_from_cumulative_rate(self):
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"strategy-efficiency.json"
+            path.write_text(
+                '{"model_only":{"samples":4,"successes":3,"ema_cost_seconds":50.0}}'
+            )
+            row=load(path)["model_only"]
+            self.assertAlmostEqual(row["ema_success_rate"],0.75)
+
     def test_failure_rate_reduces_efficiency(self):
         with tempfile.TemporaryDirectory() as td:
             path=Path(td)/"strategy-efficiency.json"

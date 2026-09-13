@@ -233,14 +233,22 @@ class API:
         req = urllib.request.Request(self.base + path, method=method,
             data=None if data is None else canonical(data).encode(),
             headers={'Authorization': 'Bearer ' + self.key, 'Content-Type': 'application/json', 'Accept': 'application/json'})
+        timeout_seconds = max(1.0, min(300.0, float(timeout_seconds)))
+        deadline = time.monotonic() + timeout_seconds
         for attempt in range(3):
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise StudioError('API unavailable or timed out')
             try:
-                return self._response(req, timeout_seconds=timeout_seconds)
+                return self._response(req, timeout_seconds=remaining)
             except urllib.error.HTTPError as e:
                 # Never print remote bodies: providers may echo secrets or prompts.
                 if method not in ('GET', 'POST') or e.code not in (429, 502, 503, 504) or attempt == 2:
                     raise APIError(e.code) from None
-                time.sleep(2 ** attempt)
+                delay = min(float(2 ** attempt), max(0.0, deadline - time.monotonic()))
+                if delay <= 0:
+                    raise StudioError('API unavailable or timed out') from None
+                time.sleep(delay)
             except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.HTTPException):
                 raise StudioError('API unavailable or timed out') from None
         raise StudioError('Retry limit reached')

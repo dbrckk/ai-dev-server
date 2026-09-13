@@ -1,0 +1,31 @@
+name: Fault Injection Gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fault-injection:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Run fail-closed resilience scenarios
+        env:
+          PYTHONPATH: studio
+        run: python studio/fault_injection_smoke.py
+      - name: Preserve resilience evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fault-injection-${{ github.run_id }}
+          path: studio-output/fault-injection/
+          if-no-files-found: error
+          retention-days: 14

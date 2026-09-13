@@ -50,6 +50,22 @@ class MetaRouterTests(unittest.TestCase):
         self.assertEqual(decision.mode,"model_only")
         self.assertEqual(decision.agent_limit,0)
 
+    def test_meta_router_surfaces_exploration_strategy(self):
+        strategy_data={
+            "model_only":{"samples":6,"successes":6,"ema_cost_seconds":80.0},
+            "agent_only":{"samples":0,"successes":0,"ema_cost_seconds":0.0},
+            "dual":{"samples":0,"successes":0,"ema_cost_seconds":0.0},
+        }
+        decision=choose_execution_mode(
+            [],
+            role="implementation",
+            agent_available=True,
+            strategy_data=strategy_data,
+        )
+        self.assertEqual(decision.strategy,"agent_only")
+        self.assertEqual(decision.mode,"agent_focus")
+        self.assertIn("explore",decision.reason)
+
     def test_agent_advantage_keeps_agent_focus(self):
         events = []
         for _ in range(6):

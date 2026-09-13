@@ -27,6 +27,7 @@ STAGES = {
     'artwork_qa': Stage('artwork_qa', 'studio/artwork_stage.py', 'deferred_artwork', 'artwork_failed'),
     'privacy_policy': Stage('privacy_policy', 'studio/privacy_stage.py', 'deferred_privacy', 'privacy_failed'),
     'security_scan': Stage('security_scan', 'studio/security_stage.py', 'deferred_security', 'security_failed'),
+    'play_publish': Stage('play_publish', 'studio/play_stage.py', 'deferred_play_publish', 'play_publish_failed'),
 }
 
 PROMOTED_REGISTRY = Path(__file__).resolve().parents[1] / 'control' / 'promoted_stages.json'

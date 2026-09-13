@@ -51,10 +51,14 @@ def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_c
         try:
             result=execute_cycle(cycle_state)
         except Exception as exc:
-            # Worker/provider failures are retryable goal attempts. Keep the
-            # persisted state valid and avoid leaking exception details that
-            # may contain credentials or remote response bodies.
-            result={"failure":"cycle_exception:"+type(exc).__name__}
+            # Transient worker/provider failures are retryable. Programming
+            # errors are deterministic internal defects: fail closed instead
+            # of burning the entire attempt budget on the same broken code.
+            kind=type(exc).__name__
+            if isinstance(exc,(AssertionError,AttributeError,NameError,SyntaxError,TypeError)):
+                result={"blocked_reason":"internal_cycle_error:"+kind}
+            else:
+                result={"failure":"cycle_exception:"+kind}
         if not isinstance(result,dict):
             state=record_cycle(state,failure="cycle returned invalid result")
         elif result.get("yield_run") is True:

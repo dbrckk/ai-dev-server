@@ -31,6 +31,25 @@ class MetaRouterTests(unittest.TestCase):
         self.assertEqual(decision.mode, "model_focus")
         self.assertEqual(decision.agent_limit, 1)
 
+    def test_strategy_efficiency_can_override_rate_only_policy(self):
+        events=[]
+        for _ in range(6):
+            events.append({"kind":"agent","role":"implementation","success":True})
+            events.append({"kind":"model_candidate","role":"implementation","success":True})
+        strategy_data={
+            "model_only":{"samples":4,"successes":4,"ema_cost_seconds":80.0},
+            "dual":{"samples":4,"successes":4,"ema_cost_seconds":240.0},
+        }
+        decision=choose_execution_mode(
+            events,
+            role="implementation",
+            agent_available=True,
+            strategy_data=strategy_data,
+        )
+        self.assertEqual(decision.strategy,"model_only")
+        self.assertEqual(decision.mode,"model_only")
+        self.assertEqual(decision.agent_limit,0)
+
     def test_agent_advantage_keeps_agent_focus(self):
         events = []
         for _ in range(6):

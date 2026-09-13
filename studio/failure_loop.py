@@ -36,7 +36,7 @@ def failure_signature(verification: dict | None) -> str | None:
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
-def _model_identities(round_state: dict) -> tuple[set[str], set[str]]:
+def model_identities(round_state: dict) -> tuple[set[str], set[str]]:
     providers: set[str] = set()
     models: set[str] = set()
     model_groups = round_state.get("models", {}) if isinstance(round_state, dict) else {}
@@ -96,7 +96,7 @@ def decide(rounds: list[dict], *, prior: dict | None = None, switch_after: int =
     providers: set[str] = set(prior_providers if signature == prior_signature else set())
     models: set[str] = set(prior_models if signature == prior_signature else set())
     for item in matched_rounds:
-        p, m = _model_identities(item)
+        p, m = model_identities(item)
         providers.update(p)
         models.update(m)
 

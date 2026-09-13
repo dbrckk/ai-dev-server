@@ -4,7 +4,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from phase_budget import allocate, reallocate_unused
+from phase_budget import allocate, reallocate_unused, phase_remaining, bounded_timeout
 
 
 class PhaseBudgetTests(unittest.TestCase):
@@ -41,6 +41,27 @@ class PhaseBudgetTests(unittest.TestCase):
         self.assertEqual(updated.planning, quotas.planning - 30)
         self.assertGreater(updated.implementation, quotas.implementation)
         self.assertGreater(updated.verification, quotas.verification)
+
+    def test_phase_remaining_never_goes_negative(self):
+        quotas = allocate(
+            available_seconds=900,
+            verification_reserve_seconds=180,
+            difficulty_band="medium",
+        )
+        self.assertEqual(
+            phase_remaining(quotas, phase="implementation", elapsed_seconds=10),
+            max(0, quotas.implementation - 10),
+        )
+        self.assertEqual(
+            phase_remaining(quotas, phase="implementation", elapsed_seconds=10_000),
+            0,
+        )
+
+    def test_bounded_timeout_respects_remaining_quota(self):
+        self.assertEqual(bounded_timeout(0, minimum=30, maximum=1200), 0)
+        self.assertEqual(bounded_timeout(20, minimum=30, maximum=1200), 30)
+        self.assertEqual(bounded_timeout(3000, minimum=30, maximum=1200), 1200)
+        self.assertEqual(bounded_timeout(180, minimum=30, maximum=1200), 180)
 
     def test_unknown_phase_is_rejected(self):
         quotas = allocate(

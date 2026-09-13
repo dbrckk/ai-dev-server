@@ -44,6 +44,77 @@ class ArtworkCapabilityTests(unittest.TestCase):
             self.assertTrue(evidence["passed"])
             self.assertRegex(evidence["assets"]["icon"]["sha256"],r"^[0-9a-f]{64}$")
 
+    def test_promoted_official_provider_has_studio_generated_provenance(self):
+        registry=register(
+            new_registry(),
+            "store.artwork.generate",
+            "studio.capabilities.asset_artwork",
+            {
+                "source":"promoted_factory_capability",
+                "candidate_id":"capability-candidate:asset_artwork:x",
+                "baseline_sha":"a"*40,
+                "candidate_sha":"b"*40,
+            },
+        )
+        selected=select_provider(registry)
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); icon=root/"icon.png"; feature=root/"feature.png"
+            pixels=lambda w,h: b"".join(
+                bytes((x%256,y%256,(x+y)%256,255))
+                for y in range(h) for x in range(w)
+            )
+            icon.write_bytes(encode_rgba(512,512,pixels(512,512)))
+            feature.write_bytes(encode_rgba(1024,500,pixels(1024,500)))
+            evidence=validate_artwork_set(
+                icon,feature,
+                provider_selection=selected,
+                visual_qa={"passed":True},
+            )
+        self.assertEqual(evidence["provenance"]["origin"],"studio_generated")
+        self.assertFalse(evidence["provenance"]["external_sources"])
+        self.assertEqual(evidence["provenance"]["provider_identity"],"b"*40)
+
+    def test_third_party_provider_without_provenance_fails_closed(self):
+        registry=register(
+            new_registry(),
+            "store.artwork.generate",
+            "vendor.artwork",
+            {"tests":"passed"},
+        )
+        selected=select_provider(registry)
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); icon=root/"icon.png"; feature=root/"feature.png"
+            self.png(icon,512,512); self.png(feature,1024,500)
+            with self.assertRaisesRegex(ArtworkError,"provenance missing"):
+                validate_artwork_set(
+                    icon,feature,
+                    provider_selection=selected,
+                    visual_qa={"passed":True},
+                )
+
+    def test_verified_external_provider_requires_permissive_digest_provenance(self):
+        registry=register(
+            new_registry(),
+            "store.artwork.generate",
+            "vendor.artwork",
+            {"provenance":{
+                "origin":"verified_external",
+                "external_sources":True,
+                "license_status":"permissive_verified",
+                "provider_identity":"c"*64,
+            }},
+        )
+        selected=select_provider(registry)
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); icon=root/"icon.png"; feature=root/"feature.png"
+            self.png(icon,512,512); self.png(feature,1024,500)
+            evidence=validate_artwork_set(
+                icon,feature,
+                provider_selection=selected,
+                visual_qa={"passed":True},
+            )
+        self.assertEqual(evidence["provenance"]["license_status"],"permissive_verified")
+
     def test_wrong_dimensions_fail_closed(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td)

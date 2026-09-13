@@ -49,6 +49,24 @@ class AutonomousProjectTests(unittest.TestCase):
         self.assertEqual(translated["evidence"]["adaptation_progress"]["capability"], "billing_qa")
         self.assertNotIn("project_completion", translated["evidence"])
 
+    def test_status_detail_that_requires_external_secret_becomes_human_action(self):
+        translated = translate_orchestrator_result({
+            "status": "blocked",
+            "report": {"blockers": ["missing STUDIO_API_KEY"]},
+            "next_stage": "provider_setup",
+        })
+        self.assertIn("human_action", translated)
+        self.assertIn("STUDIO_API_KEY", translated["human_action"])
+
+    def test_ordinary_failure_remains_autonomous_failure(self):
+        translated = translate_orchestrator_result({
+            "status": "failed",
+            "report": {"blockers": ["unit tests failed"]},
+            "next_stage": "verify",
+        })
+        self.assertIn("failure", translated)
+        self.assertNotIn("human_action", translated)
+
     def test_promoted_stage_syncs_into_capability_registry(self):
         from studio.capability_registry import load as load_registry
         with tempfile.TemporaryDirectory() as td:

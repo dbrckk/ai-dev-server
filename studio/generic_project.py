@@ -677,20 +677,20 @@ Objective and current plan:
                         restore_agent_workspace(work, before_agent)
 
                 fallback_elapsed = max(0, int(clock() - fallback_started))
-        fallback_history = load_phase_cost_baselines(phase_baseline_path)
-        fallback_baseline = phase_cost_baseline(fallback_history, state["toolchain"], "fallback")
-        drift_detector.record(
-            phase="fallback",
-            expected_seconds=phase_quotas.fallback,
-            observed_seconds=fallback_elapsed,
-            baseline=fallback_baseline,
-        )
-        record_phase_cost_baseline(
-            phase_baseline_path,
-            state["toolchain"],
-            "fallback",
-            fallback_elapsed,
-        )
+                fallback_history = load_phase_cost_baselines(phase_baseline_path)
+                fallback_baseline = phase_cost_baseline(fallback_history, state["toolchain"], "fallback")
+                drift_detector.record(
+                    phase="fallback",
+                    expected_seconds=phase_quotas.fallback,
+                    observed_seconds=fallback_elapsed,
+                    baseline=fallback_baseline,
+                )
+                record_phase_cost_baseline(
+                    phase_baseline_path,
+                    state["toolchain"],
+                    "fallback",
+                    fallback_elapsed,
+                )
                 if fallback_elapsed < phase_quotas.fallback:
                     phase_quotas = reallocate_phase_quota(
                         phase_quotas,

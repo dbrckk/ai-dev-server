@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Iterable
 
 from .registry import AgentRegistry, AgentSpec, DEFAULT_REGISTRY
+from adaptive_scoring import score_agent
 
 
 @dataclass(frozen=True)
@@ -19,16 +20,18 @@ def _score(spec: AgentSpec, required: set[str], prefer_free: bool, long_task: bo
     matched = sorted(required & set(spec.capabilities))
     missing = sorted(required - set(spec.capabilities))
     coverage = len(matched) / max(1, len(required))
-    score = coverage * 100.0 + spec.priority
-    if missing:
-        score -= 35.0 * len(missing)
-    if prefer_free:
-        # Free-first is a routing policy, not a weak hint. Keep priority
-        # relevant inside the same cost class while ensuring a fully capable
-        # free agent wins over an otherwise comparable paid agent.
-        score += 30.0 if spec.free_preferred else -30.0
-    if long_task:
-        score += 20.0 if spec.long_running else -10.0
+    capability_fit = coverage * 100.0 - (35.0 * len(missing))
+    free_adjustment = (30.0 if spec.free_preferred else -30.0) if prefer_free else 0.0
+    long_task_adjustment = (20.0 if spec.long_running else -10.0) if long_task else 0.0
+    trace = score_agent(
+        name=spec.name,
+        capability_fit=capability_fit,
+        priority=spec.priority,
+        free_adjustment=free_adjustment,
+        long_task_adjustment=long_task_adjustment,
+        reliability=0.0,
+    )
+    score = trace.total
     if not spec.available():
         score -= 1000.0
     return RouteDecision(spec, score, tuple(matched), tuple(missing))

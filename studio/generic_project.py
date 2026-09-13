@@ -314,6 +314,18 @@ Objective and current plan:
                 ranked_names = preliminary_names[:route_budget.agent_limit]
 
                 def evaluate_model_candidate():
+                    implementation_left = phase_remaining(
+                        phase_quotas,
+                        phase="implementation",
+                        elapsed_seconds=clock() - implementation_started,
+                    )
+                    if implementation_left < 30:
+                        agent_trace.append({
+                            "status":"quota_exhausted",
+                            "candidate":"model",
+                            "phase":"implementation",
+                        })
+                        return None
                     if before_agent is not None:
                         restore_agent_workspace(work, before_agent)
                     try:
@@ -620,7 +632,20 @@ Objective and current plan:
             "repository": _snapshot(work, 300_000),
         }
         review_started = clock()
-        review, review_model = ask(REVIEW_SYSTEM, canonical(review_context), code=False)
+        review_remaining = phase_remaining(
+            phase_quotas,
+            phase="review",
+            elapsed_seconds=0,
+        )
+        if review_remaining < 30:
+            review = {
+                "complete": False,
+                "remaining": ["review quota exhausted"],
+                "reason": "trusted review was not launched because its phase quota was exhausted",
+            }
+            review_model = None
+        else:
+            review, review_model = ask(REVIEW_SYSTEM, canonical(review_context), code=False)
         review_elapsed = max(0, int(clock() - review_started))
         if review_elapsed < phase_quotas.review:
             phase_quotas = reallocate_phase_quota(

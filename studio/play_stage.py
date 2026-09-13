@@ -41,13 +41,16 @@ def detect_package_name(root: Path) -> str:
 
 def _human_action(state: dict, action: str, detail: str) -> dict:
     state['human_action'] = {'action': action, 'detail': detail}
-    state['status'] = 'human_action_required'
-    state['release_status'] = 'human_action_required'
     state.setdefault('release_evidence', {})['play_publish'] = {
         'passed': False,
         'human_action_required': True,
         'blocker': action,
     }
+    # Preserve validated-preview semantics while recomputing the missing stage;
+    # only then expose the external human-action status.
+    original_status = state.get('status')
+    if original_status == 'human_action_required':
+        state['status'] = 'validated_preview'
     apply_completion(state)
     state['status'] = 'human_action_required'
     state['release_status'] = 'human_action_required'

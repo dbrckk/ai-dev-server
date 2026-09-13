@@ -4,7 +4,7 @@
 
 Un moteur générique pour **nouvelles applications Flutter**, avec livraison Android de démonstration. Le dépôt de contrôle reçoit un brief JSON ; GitHub Actions enchaîne produit, direction artistique, développement, tests, revue de code, inspection multimodale des captures et corrections. Les rôles sont des appels distincts au modèle configuré, pas une garantie d'indépendance entre plusieurs fournisseurs.
 
-Les sources et l'état sont enregistrés dans `studio/<id>` du dépôt cible. Les échecs et budgets épuisés restent explicites. Le moteur ne fusionne pas automatiquement et ne publie pas sur les stores.
+Les sources et l'état sont enregistrés dans `studio/<id>` du dépôt cible. Les échecs et budgets épuisés restent explicites. La publication Google Play est désactivée par défaut et n'est ajoutée au contrat de complétion que via un opt-in explicite du brief.
 
 ## Utilisation depuis une conversation ChatGPT
 
@@ -43,7 +43,7 @@ Les noms de modèles/configurations fournisseurs ne prouvent pas leur disponibil
 
 ## Contrat et budgets
 
-L'exemple est **désactivé** et ne crée aucune application sans brief activé. Champs obligatoires : `id`, `target_repo`, `app_name`, `brief`, `enabled`. Champs optionnels : `max_rounds` (3 par défaut, maximum 6), `max_calls` (12, maximum 30), `max_cycles` (5, maximum 10). Une tentative HTTP peut être réessayée deux fois sur une erreur transitoire ; le plafond concerne les appels logiques, pas le nombre exact de requêtes ni un plafond monétaire. Cinq projets actifs maximum, un brief actif par dépôt cible.
+L'exemple est **désactivé** et ne crée aucune application sans brief activé. Champs obligatoires : `id`, `target_repo`, `app_name`, `brief`, `enabled`. Champs optionnels : `max_rounds` (3 par défaut, maximum 6), `max_calls` (12, maximum 30), `max_cycles` (5, maximum 10) et `play_publish`. Ce dernier accepte `enabled`, `track` (`internal`, `alpha`, `beta`, `production`) et `commit`. `commit:true` exige `enabled:true` et reste soumis à une approbation trusted côté runner. Une tentative HTTP peut être réessayée deux fois sur une erreur transitoire ; le plafond concerne les appels logiques, pas le nombre exact de requêtes ni un plafond monétaire. Cinq projets actifs maximum, un brief actif par dépôt cible.
 
 Le même identifiant désigne un brief immuable. Pour un autre brief, utiliser un nouvel identifiant et un nouveau dépôt vide. La mise à jour d'une application existante avec un nouveau brief est une évolution future, pas une fonctionnalité annoncée comme livrée.
 
@@ -73,9 +73,11 @@ Les processus applicatifs s'exécutent dans Docker sans clé fournisseur, jeton 
 | `repair_needed` | Contrôle ou revue échoué ; reprise au prochain cycle si budget disponible |
 | `blocked` | Configuration, fournisseur, protocole ou autre erreur bloquante |
 | `awaiting_visual_review` | APK et revue de code disponibles ; modèle vision non configuré |
-| `validated_preview` | Contrôles de cette version passés ; aucune promesse de perfection ni certification store |
+| `validated_preview` | Contrôles de preview passés ; les gates release/store peuvent encore rester à exécuter |
+| `human_action_required` | Une étape trusted est prête mais attend un credential/accord externe explicite, sans relancer la génération |
+| `finished` | Toutes les étapes requises par le brief, y compris Play si opt-in, ont produit des preuves valides |
 
-Tous les rapports portent `release_status: not_store_ready`. Les tests visuels intégrés couvrent **l’écran initial et l’écran final de chaque parcours déclaré**. Ils ne couvrent pas automatiquement tous les états possibles. Les parcours d’acceptation sont figés dans le livrable produit avant le développement et rejoués par un banc de test que le modèle ne peut pas éditer par ses patches. Les tests supplémentaires restent générés pour le brief. Les goldens sont créés pour inspection, pas comparés à une référence de design approuvée. La revue IA peut manquer des défauts.
+Le `release_status` reste `not_store_ready` tant que les gates obligatoires ne sont pas terminées ; il peut devenir `store_ready` une fois le contrat de complétion satisfait, ou `human_action_required` lorsqu'une autorisation externe manque. Les tests visuels intégrés couvrent **l’écran initial et l’écran final de chaque parcours déclaré**. Ils ne couvrent pas automatiquement tous les états possibles. Les parcours d’acceptation sont figés dans le livrable produit avant le développement et rejoués par un banc de test que le modèle ne peut pas éditer par ses patches. Les tests supplémentaires restent générés pour le brief. Les goldens sont créés pour inspection, pas comparés à une référence de design approuvée. La revue IA peut manquer des défauts.
 
 Le pipeline release produit désormais un AAB et un APK release. Si les secrets d'upload Android sont configurés, l'AAB est copié hors du workspace projet, toute ancienne métadonnée de signature JAR est retirée, puis l'artefact seul est signé et vérifié avec `jarsigner/keytool`. Le keystore et ses mots de passe ne sont jamais transmis au modèle ni au conteneur applicatif. Sans keystore, la preuve `production_signing` reste explicitement en échec sans inventer de signature. La publication Play/App Store reste une étape distincte non encore automatisée de bout en bout. iOS dispose de sources de plateforme générées, mais aucun build/signing iOS production n'est exécuté.
 

@@ -185,6 +185,10 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         if deadline is not None and clock() >= deadline - 60:
             break
         round_repository_before = snapshot_repository_progress(work)
+        try:
+            round_workspace_before = snapshot_agent_workspace(work)
+        except ValueError:
+            round_workspace_before = None
         previous_verification_for_round = last_verification
         loop_decision = decide_failure_loop(state["rounds"], prior=failure_memory_seed)
         state["failure_loop"] = loop_decision
@@ -1111,6 +1115,22 @@ Objective and current plan:
             state["status"] = "complete" if complete else "work_remaining"
         (out / "generic-report.json").parent.mkdir(parents=True, exist_ok=True)
         (out / "generic-report.json").write_text(canonical(state))
+
+        if repository_progress.get("status") == "regression":
+            if round_workspace_before is not None:
+                restore_agent_workspace(work, round_workspace_before)
+                rollback_status = "restored"
+            else:
+                rollback_status = "deferred_to_next_restore"
+            round_state["publication"] = {
+                "published": False,
+                "reason": "regression_rejected",
+                "rollback": rollback_status,
+            }
+            state["status"] = "regression_rejected"
+            state["last_rejected_round"] = round_index
+            (out / "generic-report.json").write_text(canonical(state))
+            continue
 
         base_sha = repo.publish(base_sha, work, "Autonomous generic project round " + str(round_index))
         if applied_category not in {"no_history", "passed"}:

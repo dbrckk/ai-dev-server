@@ -37,8 +37,13 @@ def failure_signature(verification: dict | None) -> str | None:
 
 
 def _model_identities(round_state: dict) -> tuple[set[str], set[str]]:
-    providers: set[str] = set()
-    models: set[str] = set()
+    if signature is None and prior_signature is not None and prior_repeated > 0:
+        signature = prior_signature
+        repeated = prior_repeated
+    elif signature is not None and signature == prior_signature:
+        repeated += prior_repeated
+    providers: set[str] = set(prior_providers if signature == prior_signature else set())
+    models: set[str] = set(prior_models if signature == prior_signature else set())
     model_groups = round_state.get("models", {}) if isinstance(round_state, dict) else {}
     values = []
     if isinstance(model_groups, dict):
@@ -58,11 +63,19 @@ def _model_identities(round_state: dict) -> tuple[set[str], set[str]]:
     return providers, models
 
 
-def decide(rounds: list[dict], *, switch_after: int = 2, stop_after: int = 4) -> dict:
+def decide(rounds: list[dict], *, prior: dict | None = None, switch_after: int = 2, stop_after: int = 4) -> dict:
     if switch_after < 2 or stop_after < switch_after:
         raise ValueError("failure loop thresholds invalid")
     if not isinstance(rounds, list):
         raise ValueError("failure loop rounds invalid")
+
+    prior = prior or {}
+    prior_signature = prior.get("signature") if isinstance(prior, dict) else None
+    prior_repeated = prior.get("repeated_failures", 0) if isinstance(prior, dict) else 0
+    prior_providers = set(prior.get("avoid_providers", [])) if isinstance(prior, dict) else set()
+    prior_models = set(prior.get("avoid_models", [])) if isinstance(prior, dict) else set()
+    if type(prior_repeated) is not int or prior_repeated < 0:
+        raise ValueError("failure loop prior count invalid")
 
     signature = None
     repeated = 0

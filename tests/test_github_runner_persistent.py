@@ -81,9 +81,10 @@ class GithubRunnerPersistentTests(unittest.TestCase):
                  patch("github_runner.save_project_memory"), \
                  patch("github_runner.persist_local",side_effect=lambda *a,**k:order.append("state")), \
                  patch("github_runner.persist_memory_local",side_effect=lambda *a,**k:order.append("memory")), \
-                 patch("github_runner.persist_agent_performance_local",side_effect=lambda *a,**k:order.append("agent-performance")):
+                 patch("github_runner.persist_agent_performance_local",side_effect=lambda *a,**k:order.append("agent-performance")), \
+                 patch("github_runner.persist_provider_health_local",side_effect=lambda *a,**k:order.append("provider-health")):
                 run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha="d"*40)
-            self.assertEqual(order,["ingest","state","memory","agent-performance"])
+            self.assertEqual(order,["ingest","state","memory","agent-performance","provider-health"])
 
     def test_invalid_memory_ingestion_blocks_state_checkpoint(self):
         with tempfile.TemporaryDirectory() as td:

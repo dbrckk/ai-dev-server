@@ -303,6 +303,7 @@ Objective and current plan:
                 })
 
                 candidate_records = []
+                fallback_started = clock()
                 routing_events = load_routing_history(out/".autonomy/routing-history.json")
                 preliminary_names = ranked_agent_names(
                     {"code_editing","repo_analysis"},
@@ -421,7 +422,11 @@ Objective and current plan:
                                     phase="implementation",
                                     elapsed_seconds=clock() - implementation_started,
                                 ),
-                                phase_quotas.fallback,
+                                phase_remaining(
+                                    phase_quotas,
+                                    phase="fallback",
+                                    elapsed_seconds=clock() - fallback_started,
+                                ),
                             ),
                             minimum=30,
                             maximum=1200,
@@ -451,10 +456,22 @@ Objective and current plan:
                         if not delta["changed"]:
                             continue
                         candidate_verify_timeout = bounded_timeout(
-                            phase_quotas.fallback,
+                            phase_remaining(
+                                phase_quotas,
+                                phase="fallback",
+                                elapsed_seconds=clock() - fallback_started,
+                            ),
                             minimum=30,
                             maximum=900,
                         )
+                        if candidate_verify_timeout <= 0:
+                            agent_trace.append({
+                                "status":"quota_exhausted",
+                                "candidate":"agent:"+candidate_name,
+                                "phase":"fallback",
+                            })
+                            restore_agent_workspace(work, before_agent)
+                            break
                         candidate_verification = verify(
                             work,
                             timeout_per_command=candidate_verify_timeout or 30,
@@ -512,6 +529,13 @@ Objective and current plan:
                 )
                 if not model_first and not (meta_route.mode == "agent_focus" and agent_verified):
                     evaluate_model_candidate()
+                fallback_elapsed = max(0, int(clock() - fallback_started))
+                if fallback_elapsed < phase_quotas.fallback:
+                    phase_quotas = reallocate_phase_quota(
+                        phase_quotas,
+                        phase="fallback",
+                        unused_seconds=phase_quotas.fallback - fallback_elapsed,
+                    )
                 if before_agent is not None:
                     restore_agent_workspace(work, before_agent)
                 viable=[x for x in candidate_records if x.get("changed")]
@@ -537,7 +561,11 @@ Objective and current plan:
                             if isinstance(item.get("model"),dict) and isinstance(item.get("model",{}).get("model"),str)
                         }
                         candidate_review_timeout = bounded_timeout(
-                            phase_quotas.fallback,
+                            phase_remaining(
+                                phase_quotas,
+                                phase="fallback",
+                                elapsed_seconds=clock() - fallback_started,
+                            ),
                             minimum=30,
                             maximum=180,
                         )

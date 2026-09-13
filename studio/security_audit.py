@@ -29,6 +29,12 @@ SENSITIVE_PERMISSIONS = {
 } | DANGEROUS_PERMISSIONS
 CLEAR_TEXT = re.compile(r'http://(?!schemas\.android\.com/)[^\s\"\'<>]+', re.I)
 
+TRUSTED_HOSTED_REGISTRIES = {'https://pub.dev'}
+STRONG_COPYLEFT = {'GPL-2.0', 'GPL-3.0', 'AGPL-3.0'}
+WEAK_COPYLEFT = {'LGPL-2.1', 'LGPL-3.0', 'MPL-2.0'}
+PERMISSIVE_LICENSES = {'MIT', 'BSD-2-Clause', 'BSD-3-Clause', 'Apache-2.0', 'ISC', 'Zlib'}
+
+
 
 def _candidate_files(root: Path) -> list[Path]:
     files = []
@@ -69,33 +75,134 @@ def dependency_inventory(root: Path) -> list[dict]:
         return []
     packages = []
     current = None
+    in_description = False
     for raw in lock.read_text(errors='replace').splitlines():
         match = re.match(r'^  ([A-Za-z_][A-Za-z0-9_-]*):\s*$', raw)
         if match:
             if current:
                 packages.append(current)
-            current = {'name': match.group(1), 'version': None, 'source': None}
+            current = {
+                'name': match.group(1),
+                'version': None,
+                'source': None,
+                'dependency': None,
+                'sha256': None,
+                'registry': None,
+            }
+            in_description = False
             continue
-        if current:
-            version = re.match(r'^    version:\s*["\']?([^"\']+)["\']?\s*$', raw)
-            source = re.match(r'^    source:\s*([^\s]+)\s*$', raw)
-            if version:
-                current['version'] = version.group(1)
-            elif source:
-                current['source'] = source.group(1)
+        if not current:
+            continue
+        dependency = re.match(r'^    dependency:\s*([^\s]+(?:\s+[^\s]+)?)\s*$', raw)
+        version = re.match(r'^    version:\s*["\']?([^"\']+)["\']?\s*$', raw)
+        source = re.match(r'^    source:\s*([^\s]+)\s*$', raw)
+        if dependency:
+            current['dependency'] = dependency.group(1)
+            in_description = False
+        elif raw.startswith('    description:'):
+            in_description = True
+        elif source:
+            current['source'] = source.group(1)
+            in_description = False
+        elif version:
+            current['version'] = version.group(1)
+            in_description = False
+        elif in_description:
+            sha = re.match(r'^      sha256:\s*["\']?([0-9a-fA-F]{64})["\']?\s*$', raw)
+            url = re.match(r'^      url:\s*["\']?([^"\']+)["\']?\s*$', raw)
+            if sha:
+                current['sha256'] = sha.group(1).lower()
+            elif url:
+                current['registry'] = url.group(1).rstrip('/')
     if current:
         packages.append(current)
     return sorted(packages, key=lambda item: item['name'])
 
 
-def dependency_risks(root: Path, dependencies: list[dict]) -> list[str]:
+def _license_text(root: Path, dep: dict) -> str | None:
+    name = dep.get('name')
+    version = dep.get('version')
+    if not isinstance(name, str) or not isinstance(version, str):
+        return None
+    cache = root / '.studio-cache/pub/hosted/pub.dev' / f'{name}-{version}'
+    if not cache.is_dir():
+        return None
+    for filename in ('LICENSE', 'LICENSE.md', 'LICENSE.txt', 'COPYING', 'COPYING.txt'):
+        path = cache / filename
+        if path.is_file() and not path.is_symlink() and path.stat().st_size <= 300000:
+            return path.read_text(errors='replace')
+    return None
+
+
+def _license_id(text: str | None) -> str:
+    if not text:
+        return 'UNKNOWN'
+    lower = re.sub(r'\s+', ' ', text.lower())
+    if 'gnu affero general public license' in lower:
+        return 'AGPL-3.0'
+    if 'gnu lesser general public license' in lower:
+        if 'version 2.1' in lower:
+            return 'LGPL-2.1'
+        return 'LGPL-3.0'
+    if 'gnu general public license' in lower:
+        if 'version 2' in lower and 'version 3' not in lower:
+            return 'GPL-2.0'
+        return 'GPL-3.0'
+    if 'mozilla public license' in lower:
+        return 'MPL-2.0'
+    if 'apache license' in lower and 'version 2' in lower:
+        return 'Apache-2.0'
+    if 'permission is hereby granted, free of charge' in lower:
+        return 'MIT'
+    if 'redistribution and use in source and binary forms' in lower:
+        return 'BSD-3-Clause'
+    if 'isc license' in lower:
+        return 'ISC'
+    if 'zlib license' in lower or ('this software is provided' in lower and 'altered source versions' in lower):
+        return 'Zlib'
+    return 'UNKNOWN'
+
+
+def dependency_license_inventory(root: Path, dependencies: list[dict]) -> list[dict]:
+    result = []
+    for dep in dependencies:
+        license_id = 'SDK' if dep.get('source') == 'sdk' else _license_id(_license_text(root, dep))
+        status = (
+            'sdk' if license_id == 'SDK'
+            else 'permissive' if license_id in PERMISSIVE_LICENSES
+            else 'weak_copyleft' if license_id in WEAK_COPYLEFT
+            else 'strong_copyleft' if license_id in STRONG_COPYLEFT
+            else 'unknown'
+        )
+        result.append({
+            'name': dep.get('name'),
+            'version': dep.get('version'),
+            'license': license_id,
+            'license_status': status,
+        })
+    return result
+
+
+def dependency_risks(root: Path, dependencies: list[dict], licenses: list[dict] | None = None) -> list[str]:
     pubspec = (root / 'pubspec.yaml').read_text(errors='replace') if (root / 'pubspec.yaml').is_file() else ''
     blockers = []
     if re.search(r'^\s{2,}[A-Za-z_][A-Za-z0-9_-]*:\s*\n\s+(git|path):', pubspec, re.M):
         blockers.append('unreviewed_git_or_path_dependency')
     for dep in dependencies:
-        if not dep.get('version') and dep.get('source') not in ('sdk', None):
+        source = dep.get('source')
+        if not dep.get('version') and source not in ('sdk', None):
             blockers.append('dependency_without_locked_version:' + dep['name'])
+        if source == 'hosted':
+            registry = dep.get('registry')
+            if registry and registry not in TRUSTED_HOSTED_REGISTRIES:
+                blockers.append('unreviewed_hosted_registry:' + dep['name'])
+            if not dep.get('sha256'):
+                blockers.append('hosted_dependency_without_content_hash:' + dep['name'])
+    for item in licenses or []:
+        if item.get('license_status') == 'strong_copyleft':
+            blockers.append('strong_copyleft_dependency_requires_review:' + str(item.get('name')))
+        elif item.get('license_status') == 'unknown':
+            blockers.append('dependency_license_unresolved:' + str(item.get('name')))
     return sorted(set(blockers))
 
 
@@ -122,7 +229,8 @@ def scan(root: Path) -> dict:
     dangerous = sorted(p for p in permissions if p in DANGEROUS_PERMISSIONS)
     sensitive = sorted(p for p in permissions if p in SENSITIVE_PERMISSIONS)
     dependencies = dependency_inventory(root)
-    dep_risks = dependency_risks(root, dependencies)
+    dependency_licenses = dependency_license_inventory(root, dependencies)
+    dep_risks = dependency_risks(root, dependencies, dependency_licenses)
 
     blockers = []
     if secrets:
@@ -148,15 +256,25 @@ def scan(root: Path) -> dict:
         'android_flags': debug_flags,
         'process_execution_markers': executable_markers,
         'dependencies': dependencies,
+        'dependency_licenses': dependency_licenses,
     }
 
 
 def sbom(root: Path, audit: dict) -> dict:
     components = []
+    licenses = {item['name']: item for item in audit.get('dependency_licenses', [])}
     for dep in audit['dependencies']:
+        license_info = licenses.get(dep['name'], {})
         components.append({
-            'type': 'library', 'name': dep['name'], 'version': dep.get('version'),
-            'source': dep.get('source'), 'license_status': 'not_resolved_offline',
+            'type': 'library',
+            'name': dep['name'],
+            'version': dep.get('version'),
+            'source': dep.get('source'),
+            'dependency': dep.get('dependency'),
+            'registry': dep.get('registry'),
+            'content_sha256': dep.get('sha256'),
+            'license': license_info.get('license', 'UNKNOWN'),
+            'license_status': license_info.get('license_status', 'unknown'),
         })
     pubspec = root / 'pubspec.yaml'
     app_hash = hashlib.sha256(pubspec.read_bytes()).hexdigest() if pubspec.is_file() else None
@@ -164,7 +282,7 @@ def sbom(root: Path, audit: dict) -> dict:
         'format': 'studio-sbom-v1',
         'application_pubspec_sha256': app_hash,
         'components': components,
-        'license_resolution': 'deferred_to_registry_or_cache_audit',
+        'license_resolution': 'resolved_from_trusted_build_cache_when_available',
     }
 
 
@@ -185,5 +303,6 @@ def build_security_package(root: Path, out: Path) -> dict:
         'dependency_count': len(audit['dependencies']),
         'sensitive_permissions': audit['sensitive_permissions'],
         'dangerous_permissions': audit['dangerous_permissions'],
-        'license_status': 'inventory_complete_resolution_deferred',
+        'license_status': 'resolved_or_blocked',
+        'unresolved_license_count': sum(1 for item in audit.get('dependency_licenses', []) if item.get('license_status') == 'unknown'),
     }

@@ -109,3 +109,64 @@ def best_strategy(data: dict, *, allowed: set[str] | None = None) -> tuple[str, 
         return None
     candidates.sort(key=lambda item: (-item[1]["efficiency"], -item[1]["success_rate"], item[1]["ema_cost_seconds"], item[0]))
     return candidates[0]
+
+
+EXPLORATION_EVERY = 6
+
+
+def select_strategy(
+    data: dict,
+    *,
+    allowed: set[str] | None = None,
+    exploration_every: int = EXPLORATION_EVERY,
+) -> tuple[str, dict] | None:
+    """Deterministic bounded explore/exploit policy.
+
+    Exploit the best mature strategy most of the time. Every Nth observed
+    decision, explore the least-sampled allowed alternative so stale winners
+    can be challenged without introducing randomness.
+    """
+    if type(exploration_every) is not int or exploration_every < 2:
+        raise ValueError("exploration cadence invalid")
+    allowed_set = set(VALID_STRATEGIES if allowed is None else allowed)
+    allowed_set &= VALID_STRATEGIES
+    if not allowed_set:
+        return None
+
+    exploit = best_strategy(data, allowed=allowed_set)
+    if exploit is None:
+        return None
+
+    total_samples = sum(
+        max(0, int(data.get(name, {}).get("samples", 0)))
+        for name in allowed_set
+        if isinstance(data.get(name), dict)
+    )
+    if total_samples > 0 and total_samples % exploration_every == 0:
+        exploit_name = exploit[0]
+        alternatives = [name for name in allowed_set if name != exploit_name]
+        if alternatives:
+            alternatives.sort(
+                key=lambda name: (
+                    max(0, int(data.get(name, {}).get("samples", 0)))
+                    if isinstance(data.get(name), dict) else 0,
+                    name,
+                )
+            )
+            selected = alternatives[0]
+            selected_metrics = metrics(data, selected)
+            info = dict(selected_metrics or {
+                "samples": max(0, int(data.get(selected, {}).get("samples", 0)))
+                if isinstance(data.get(selected), dict) else 0,
+                "success_rate": 0.0,
+                "ema_cost_seconds": max(1.0, float(data.get(selected, {}).get("ema_cost_seconds", 0.0)))
+                if isinstance(data.get(selected), dict) else 1.0,
+                "efficiency": 0.0,
+            })
+            info["selection_mode"] = "explore"
+            info["exploited_strategy"] = exploit_name
+            return selected, info
+
+    info = dict(exploit[1])
+    info["selection_mode"] = "exploit"
+    return exploit[0], info

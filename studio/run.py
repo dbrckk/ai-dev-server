@@ -179,6 +179,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         if state and state.get('request_hash') != fingerprint:
             raise StudioError('Brief changed for existing id; use a new id and fresh target')
         state = state or {'request_hash': fingerprint, 'status': 'pending', 'cycles': 0, 'rounds': 0, 'blockers': []}
+        state['publication_request'] = dict(req.get('play_publish', {'enabled': False, 'track': 'internal', 'commit': False}))
         if state['status'] == 'validated_preview' and state.get('validation_contract') != 2:
             state.update(status='validation_upgrade_required', blockers=['Acceptance-journey validation required for this older checkpoint.'])
         if state.get('product') and 'journeys' not in state['product']:

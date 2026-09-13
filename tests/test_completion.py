@@ -88,6 +88,22 @@ class CompletionTests(unittest.TestCase):
         )}
         self.assertFalse(completion_report(state)["finished"])
 
+    def test_human_action_preserves_post_preview_next_stage(self):
+        state = preview_state()
+        state["status"] = "human_action_required"
+        state["publication_request"] = {"enabled": True, "track": "internal", "commit": False}
+        state["release_evidence"] = {
+            "release_build": {"passed": True},
+            "real_device": {"passed": True},
+            "capability_qa": {"passed": True, "required_qa_stages": []},
+            "store_metadata": {"passed": True},
+            "artwork_qa": {"passed": True},
+            "privacy_policy": {"passed": True},
+            "security_scan": {"passed": True},
+            "play_publish": {"passed": False, "human_action_required": True},
+        }
+        self.assertEqual(next_stage(state), "play_publish")
+
     def test_unvalidated_app_returns_to_preview_stage(self):
         state = preview_state()
         state["status"] = "repair_needed"

@@ -32,6 +32,32 @@ ANDROID_SCHEMA_URLS = (
     'http://schemas.android.com/tools',
 )
 
+DEPENDENCY_CAPABILITIES = {
+    'analytics': {'firebase_analytics', 'amplitude_flutter', 'mixpanel_flutter', 'posthog_flutter'},
+    'advertising': {'google_mobile_ads', 'applovin_max', 'unity_ads_plugin'},
+    'authentication': {'firebase_auth', 'google_sign_in', 'sign_in_with_apple', 'oauth2', 'supabase_flutter'},
+    'crash_reporting': {'firebase_crashlytics', 'sentry_flutter'},
+    'location': {'geolocator', 'location'},
+    'payments': {'in_app_purchase', 'purchases_flutter', 'flutter_stripe'},
+    'push_notifications': {'firebase_messaging', 'onesignal_flutter'},
+    'remote_backend': {'firebase_core', 'cloud_firestore', 'firebase_database', 'supabase_flutter', 'graphql_flutter', 'dio', 'http'},
+}
+EXTERNAL_DATA_CAPABILITIES = {
+    'analytics', 'advertising', 'authentication', 'crash_reporting',
+    'location', 'payments', 'push_notifications', 'remote_backend',
+}
+CAPABILITY_DATA_CLASSES = {
+    'analytics': ['app_activity', 'device_or_other_ids'],
+    'advertising': ['app_activity', 'device_or_other_ids'],
+    'authentication': ['personal_info', 'user_ids'],
+    'crash_reporting': ['app_info_and_performance', 'device_or_other_ids'],
+    'location': ['location'],
+    'payments': ['financial_info', 'purchase_history'],
+    'push_notifications': ['device_or_other_ids'],
+    'remote_backend': ['unclassified_network_data'],
+}
+
+
 
 def _files(root: Path) -> list[Path]:
     allowed = []
@@ -97,6 +123,21 @@ def dependency_names(root: Path) -> list[str]:
     return sorted(set(names))
 
 
+def dependency_capabilities(dependencies: list[str]) -> list[dict]:
+    found = []
+    dep_set = set(dependencies)
+    for capability, names in DEPENDENCY_CAPABILITIES.items():
+        hits = sorted(dep_set & names)
+        if hits:
+            found.append({
+                'capability': capability,
+                'dependencies': hits,
+                'potential_data_classes': list(CAPABILITY_DATA_CLASSES.get(capability, [])),
+                'external_data_flow_possible': capability in EXTERNAL_DATA_CAPABILITIES,
+            })
+    return found
+
+
 def analyze(root: Path) -> dict:
     source = _text(root)
     network_source = _network_text(root)
@@ -106,14 +147,29 @@ def analyze(root: Path) -> dict:
     local_markers = sorted(marker for marker in LOCAL_STORAGE_MARKERS if marker in source)
     sensitive = sorted(set(SENSITIVE_PERMISSION_DATA[p] for p in perms if p in SENSITIVE_PERMISSION_DATA))
     internet_permission = 'android.permission.INTERNET' in perms
-    network_capable = internet_permission or bool(network_markers)
+    capabilities = dependency_capabilities(deps)
+    capability_names = sorted(item['capability'] for item in capabilities)
+    external_capabilities = sorted(
+        item['capability'] for item in capabilities if item['external_data_flow_possible']
+    )
+    network_capable = internet_permission or bool(network_markers) or bool(external_capabilities)
     local_storage = bool(local_markers)
+
+    potential_data_classes = sorted(set(
+        sensitive + [
+            data_class
+            for item in capabilities
+            for data_class in item.get('potential_data_classes', [])
+        ]
+    ))
 
     blockers = []
     if network_capable:
         blockers.append('network_capability_requires_verified_data_flow_classification')
     if sensitive:
         blockers.append('sensitive_permissions_require_verified_collection_purpose')
+    for capability in external_capabilities:
+        blockers.append('third_party_' + capability + '_requires_verified_data_flow_classification')
 
     return {
         'permissions': perms,
@@ -123,8 +179,11 @@ def analyze(root: Path) -> dict:
         'local_storage_detected': local_storage,
         'local_storage_markers': local_markers,
         'sensitive_data_classes': sensitive,
-        'can_assert_no_external_collection': not network_capable and not sensitive,
-        'blockers': blockers,
+        'third_party_capabilities': capabilities,
+        'capability_names': capability_names,
+        'potential_data_classes': potential_data_classes,
+        'can_assert_no_external_collection': not network_capable and not sensitive and not external_capabilities,
+        'blockers': sorted(set(blockers)),
     }
 
 
@@ -146,6 +205,8 @@ def build_data_safety(audit: dict) -> dict:
         'local_processing_only': None,
         'requires_human_legal_attestation': True,
         'blockers': list(audit['blockers']),
+        'detected_capabilities': list(audit.get('third_party_capabilities', [])),
+        'potential_data_classes': list(audit.get('potential_data_classes', [])),
     }
 
 
@@ -163,6 +224,10 @@ def policy_text(app_title: str, audit: dict, data_safety: dict) -> str:
             sections.append('The application may store app state locally on the device. This local data is not detected as being transmitted externally by the audited build.')
     else:
         sections.append('The audited build contains capabilities that could involve personal-data processing. Collection and sharing cannot be truthfully classified from static evidence alone and must be verified before publication.')
+        if audit.get('capability_names'):
+            sections.append('Detected capability classes: ' + ', '.join(audit['capability_names']) + '.')
+        if audit.get('potential_data_classes'):
+            sections.append('Potential data classes requiring classification: ' + ', '.join(audit['potential_data_classes']) + '.')
     sections += [
         '',
         '## Android permissions',

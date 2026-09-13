@@ -118,15 +118,34 @@ def metrics(data: dict, strategy: str) -> dict | None:
     # more weight so regime changes are detected without discarding history.
     success_rate = 0.4 * cumulative_success_rate + 0.6 * recent_success_rate
     cost = max(1.0, float(row.get("ema_cost_seconds", 0.0)))
+
+    # Conservative uncertainty combines finite-sample risk with regime-shift
+    # disagreement. It is intentionally bounded so low-data strategies are
+    # penalized but never permanently excluded from exploration.
+    finite_sample = 0.5 / max(1.0, samples ** 0.5)
+    binomial = (
+        (cumulative_success_rate * (1.0 - cumulative_success_rate) / samples) ** 0.5
+        if samples > 0 else 0.5
+    )
+    regime_gap = abs(recent_success_rate - cumulative_success_rate) * 0.5
+    uncertainty = min(0.5, finite_sample + binomial + regime_gap)
+    conservative_success = max(0.0, success_rate - 0.5 * uncertainty)
+
     # Scale to verified successes per 100 seconds for readable values.
     efficiency = success_rate * 100.0 / cost
+    risk_adjusted_efficiency = conservative_success * 100.0 / cost
+    optimistic_efficiency = min(1.0, success_rate + uncertainty) * 100.0 / cost
     return {
         "samples": samples,
         "success_rate": success_rate,
         "cumulative_success_rate": cumulative_success_rate,
         "recent_success_rate": recent_success_rate,
+        "uncertainty": uncertainty,
+        "conservative_success_rate": conservative_success,
         "ema_cost_seconds": cost,
         "efficiency": efficiency,
+        "risk_adjusted_efficiency": risk_adjusted_efficiency,
+        "optimistic_efficiency": optimistic_efficiency,
     }
 
 
@@ -141,9 +160,10 @@ def best_strategy(data: dict, *, allowed: set[str] | None = None) -> tuple[str, 
     if not candidates:
         return None
     candidates.sort(key=lambda item: (
-        -item[1]["efficiency"],
+        -item[1]["risk_adjusted_efficiency"],
         -item[1]["recent_success_rate"],
         -item[1]["success_rate"],
+        item[1]["uncertainty"],
         item[1]["ema_cost_seconds"],
         item[0],
     ))

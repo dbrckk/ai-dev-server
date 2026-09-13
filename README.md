@@ -1,15 +1,20 @@
 # AI Dev Server
 
-Studio de création mobile autonome et environnement de développement pour GitHub Codespaces.
+Plateforme d'ingénierie autonome multi-engine et environnement de développement pour GitHub/Codespaces.
 
-## Création d'une nouvelle application depuis ChatGPT
+## Pipeline autonome
 
-Le moteur `studio/` reçoit un brief dans `control/mobile-requests/`, enchaîne produit → design → développement → tests/compilation → revues → corrections et sauvegarde les sources dans une branche du dépôt cible. Il livre un APK Android debug et des captures quand les contrôles passent.
+Le moteur `studio/` reçoit un brief, détecte le type de projet et prend en charge trois familles :
 
-**[Configuration, utilisation et limites du studio mobile](docs/MOBILE_STUDIO.md)**. **[Repli CircleCI et activation](docs/CIRCLECI.md)**. L'exemple est désactivé. Le moteur cible actuellement les nouvelles applications Flutter ; les cycles Jumpy historiques restent séparés.
+- **Flutter** : produit, design, développement, tests, rendu, revue visuelle, build release, device QA, store metadata, privacy/security, AAB/APK et signature Android trusted ;
+- **Godot** : import de dépôt existant, tests headless, device/runtime journeys, visual QA, build AAB signé, metadata/privacy/security, final review et publication Play opt-in ;
+- **Generic** : analyse de repo existant, planification, modifications, vérification réelle et revue sur Node/npm, Python, Go, Rust, Maven, Gradle, .NET et plusieurs autres toolchains détectées.
 
+La génération continue jusqu'à une définition de fini vérifiée, un blocage technique réel, ou une action humaine externe explicitement requise.
 
-**[Prise en charge de Jumpy : référence Godot](docs/JUMPY_ONBOARDING.md)**
+La publication Google Play est **désactivée par défaut**. Lorsqu'elle est activée dans le brief, le chemin trusted utilise Android Publisher v3 en mode validate-first ; un commit Play requiert une approbation explicite côté runner. Les credentials de signing et de publication ne sont jamais transmis au modèle ou au workspace applicatif.
+
+**[Configuration et limites du studio mobile](docs/MOBILE_STUDIO.md)** · **[Generic engine](docs/GENERIC_ENGINE.md)** · **[Jumpy/Godot](docs/JUMPY_ONBOARDING.md)** · **[Repli CircleCI](docs/CIRCLECI.md)**
 
 ## Objectif
 
@@ -40,7 +45,7 @@ Les ports 8082, 3080 et 3000 sont prévus pour être forwardés par Codespaces.
 
 Les projets qui ne sont ni Flutter ni Godot passent maintenant par un moteur générique : analyse du repo, recherche de projets similaires dans le portefeuille GitHub du propriétaire, planification, modifications, vérifications réelles, revue, checkpoint Git puis nouvelle itération jusqu'à validation.
 
-Stacks de vérification détectées actuellement : Node/npm, Python, Go, Rust, Maven, Gradle et .NET.
+Stacks de vérification détectées notamment : Node/npm, Python, Go, Rust, Maven, Gradle, .NET, Deno, Bun, PHP, Ruby, Elixir, Swift, CMake et Make.
 
 Documentation : **[Generic autonomous project engine](docs/GENERIC_ENGINE.md)**.
 
@@ -54,14 +59,17 @@ Une intervention humaine n'est demandée que pour un prérequis externe réellem
 
 Documentation : **[Autonomous project ownership](docs/AUTONOMOUS_PROJECTS.md)**.
 
-## Meta-router multi-agent
+## Meta-router multi-agent et apprentissage
 
-Le dépôt contient désormais une première couche de routage par capacités :
+Le routage ne se limite plus à un score statique :
 
 - registre d'agents interchangeable dans `studio/agents/` ;
-- scoring selon capacités, disponibilité, gratuité et tâches longues ;
-- sélection OpenCode / Codex / Claude Code / DeepSeek Harness / Hermes / OpenHands ;
-- scanner automatique de `dbrckk/star-list` pour rechercher des dépôts utiles à chaque nouvelle phase de projet.
+- sélection OpenCode / Codex / Claude Code / DeepSeek Harness / Hermes / OpenHands selon disponibilité/capacités ;
+- apprentissage du succès vérifié par coût pour `model_only`, `agent_only`, `model→agent`, `agent→model` et `dual` ;
+- exploration/exploitation bornée, recency, incertitude et détection de changement de régime ;
+- mémoire contextuelle pondérée par type de tâche et stack ;
+- scanner de `dbrckk/star-list` pour fournir des références de projets pertinentes ;
+- budget prédictif, quotas de phase, timeout global, contrôle de dérive et réserve de vérification.
 
 Commande rapide :
 
@@ -71,9 +79,22 @@ python studio/meta_router.py --capability code_editing --capability tests
 
 Documentation : **[Meta-router et star-list](docs/META_ROUTER.md)**.
 
-## Sécurité
+## Sécurité et gates CI
 
 Les clés API, jetons et fichiers `.env` sont ignorés par Git. Ne jamais les committer dans le dépôt.
+
+Le pipeline inclut notamment :
+
+- sandbox applicatif sans credentials ;
+- AAB signé uniquement après la build, hors workspace projet ;
+- vérification de certificat/signature ;
+- SBOM, hashes des dépendances, provenance registry et contrôle de licences ;
+- classification privacy/Data Safety conservative ;
+- checkpoints scellés et reprise inter-run ;
+- vérification d'identité des PR de promotion de capabilities ;
+- `Validate AI Dev Server`, `Mobile Studio Real Build`, `Multi-Engine E2E Benchmark` et `Fault Injection Gate`.
+
+Le benchmark multi-engine couvre un vrai build Flutter, un smoke generic complet et les régressions Jumpy/Godot pinées.
 
 ## Remarque
 

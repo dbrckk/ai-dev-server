@@ -48,6 +48,13 @@ def validate_artwork_provider(provider_path: Path):
             raise ArtworkValidationError("provider output is not deterministic")
         if first.get("passed") is not True or not isinstance(first.get("evidence"),dict):
             raise ArtworkValidationError("provider result invalid")
+        provenance=first["evidence"].get("provenance")
+        if provenance != {
+            "origin":"studio_generated",
+            "external_sources":False,
+            "license_status":"generated_original",
+        }:
+            raise ArtworkValidationError("provider provenance invalid")
         assets=first.get("assets")
         if not isinstance(assets,dict) or not assets:
             raise ArtworkValidationError("provider assets missing")

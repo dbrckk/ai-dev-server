@@ -104,8 +104,28 @@ def build(req:dict,root:Path,out:Path,state:dict)->dict:
         'release_aab_sha256':artifact['aab_sha256'],
         'screenshots':screen_evidence,
         'assets':{
-            'icon':{'width':512,'height':512,'sha256':hashlib.sha256(icon.read_bytes()).hexdigest()},
-            'feature_graphic':{'width':1024,'height':500,'sha256':hashlib.sha256(feature.read_bytes()).hexdigest()},
+            'icon':{
+                'width':512,
+                'height':512,
+                'sha256':hashlib.sha256(icon.read_bytes()).hexdigest(),
+                'provenance':{
+                    'origin':'studio_generated',
+                    'external_sources':False,
+                    'license_status':'generated_original',
+                    'generator':'studio.store_package._brand_image',
+                },
+            },
+            'feature_graphic':{
+                'width':1024,
+                'height':500,
+                'sha256':hashlib.sha256(feature.read_bytes()).hexdigest(),
+                'provenance':{
+                    'origin':'studio_generated',
+                    'external_sources':False,
+                    'license_status':'generated_original',
+                    'generator':'studio.store_package._brand_image',
+                },
+            },
         },
         'privacy':privacy,
         'submission_fields_required':['developer_contact_email','content_rating','target_audience','data_safety_legal_attestation'],

@@ -39,3 +39,18 @@ def classify(brief: str, toolchain: dict | None = None) -> str:
     if {"python", "go", "rust", "maven", "gradle", "dotnet", "php", "ruby", "elixir"} & stacks:
         return "backend"
     return "general"
+
+
+def hierarchy(brief: str, toolchain: dict | None = None) -> list[str]:
+    primary = classify(brief, toolchain)
+    stacks = []
+    if isinstance(toolchain, dict) and isinstance(toolchain.get("stacks"), list):
+        stacks = sorted({str(x).strip().lower() for x in toolchain["stacks"] if str(x).strip()})
+    contexts = [primary]
+    contexts.extend("stack:" + stack for stack in stacks)
+    contexts.append("general")
+    result = []
+    for item in contexts:
+        if item not in result:
+            result.append(item)
+    return result

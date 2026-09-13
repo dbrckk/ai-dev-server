@@ -193,7 +193,17 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             "available_agent_candidates": agent_candidates[:6],
         }
         planning_started = clock()
-        planning_timeout = bounded_timeout(phase_quotas.planning if 'phase_quotas' in locals() else 180, minimum=30, maximum=300)
+        preplan_remaining = None if deadline is None else max(0.0, deadline - clock())
+        preplan_quotas = allocate_phase_quotas(
+            available_seconds=preplan_remaining,
+            verification_reserve_seconds=difficulty.verification_reserve_seconds,
+            difficulty_band=difficulty.band,
+        )
+        planning_timeout = bounded_timeout(
+            preplan_quotas.planning,
+            minimum=30,
+            maximum=300,
+        )
         plan, plan_model = ask(
             PLAN_SYSTEM,
             canonical(plan_payload),

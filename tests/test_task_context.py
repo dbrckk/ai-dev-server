@@ -29,7 +29,7 @@ class TaskContextTests(unittest.TestCase):
     def test_frontend_context_is_detected(self):
         self.assertEqual(
             classify("Refine React component UI spacing", {"stacks":["node"]}),
-            "refactor",
+            "frontend",
         )
 
     def test_backend_fallback_uses_toolchain(self):

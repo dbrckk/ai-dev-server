@@ -80,15 +80,18 @@ def _python_imports(root:Path,source:Path,text:str)->set[str]:
                         out.add(candidate.relative_to(root).as_posix())
                         break
         elif isinstance(node,ast.ImportFrom) and node.level==0 and node.module:
-            parts=node.module.split(".")
-            candidates=[
-                root.joinpath(*parts).with_suffix(".py"),
-                root.joinpath(*parts,"__init__.py"),
-            ]
-            for candidate in candidates:
-                if candidate.is_file():
-                    out.add(candidate.relative_to(root).as_posix())
-                    break
+            base=node.module.split(".")
+            targets=[base]
+            targets.extend([*base,*alias.name.split(".")] for alias in node.names)
+            for parts in targets:
+                candidates=[
+                    root.joinpath(*parts).with_suffix(".py"),
+                    root.joinpath(*parts,"__init__.py"),
+                ]
+                for candidate in candidates:
+                    if candidate.is_file():
+                        out.add(candidate.relative_to(root).as_posix())
+                        break
     return out
 
 

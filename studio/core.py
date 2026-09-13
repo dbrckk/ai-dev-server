@@ -307,9 +307,13 @@ class Model:
         r = None
         last_error = None
         selected_model = ''
-        for provider in provider_candidates:
+        for provider_index, provider in enumerate(provider_candidates):
             selected_model = provider.model_for(role, bool(screenshots))
-            api = API(provider.base, provider.key)
+            # Reuse the primary client created at construction time. Besides
+            # avoiding needless client churn, this keeps dependency injection
+            # deterministic for tests and callers. Fallback providers still
+            # receive isolated clients with their own credentials/base URL.
+            api = self.api if provider_index == 0 else API(provider.base, provider.key)
             params = {'model': selected_model, 'stream': False,
                 'max_tokens': 16000 if role == 'implementation' else 8192,
                 'messages': messages}
@@ -323,7 +327,6 @@ class Model:
                 continue
             self.models_used[role] = selected_model
             self.providers_used[role] = provider.name
-            self.api = api
             break
         if r is None:
             if isinstance(last_error, APIError):

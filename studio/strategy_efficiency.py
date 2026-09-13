@@ -253,13 +253,14 @@ def select_strategy(
         exploit_name = exploit[0]
         alternatives = [name for name in allowed_set if name != exploit_name]
         if alternatives:
-            alternatives.sort(
-                key=lambda name: (
-                    max(0, int(data.get(name, {}).get("samples", 0)))
-                    if isinstance(data.get(name), dict) else 0,
-                    name,
-                )
-            )
+            def exploration_key(name: str):
+                row = data.get(name)
+                samples = max(0, int(row.get("samples", 0))) if isinstance(row, dict) else 0
+                info = metrics(data, name)
+                optimistic = float(info["optimistic_efficiency"]) if info is not None else 0.0
+                return (samples, -optimistic, name)
+
+            alternatives.sort(key=exploration_key)
             selected = alternatives[0]
             selected_metrics = metrics(data, selected)
             info = dict(selected_metrics or {

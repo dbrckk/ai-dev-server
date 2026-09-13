@@ -10,6 +10,7 @@ import tempfile
 from completion import apply_completion, next_stage
 from core import Sandbox, StudioError, apply_patch, canonical
 from release import build_release
+from android_signing import sign_aab, signing_credentials
 from run import GitHub
 
 
@@ -86,7 +87,28 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
     if evidence.get('passed'):
         bundle = root / 'build/app/outputs/bundle/release/app-release.aab'
         apk = root / 'build/app/outputs/flutter-apk/app-release.apk'
-        shutil.copyfile(bundle, out / 'app-release.aab')
+        credentials = signing_credentials(project_root=root)
+        if credentials.get('available'):
+            signed_path = out / 'app-release.aab'
+            signing = sign_aab(
+                bundle,
+                signed_path,
+                credentials['keystore'],
+                credentials['alias'],
+                credentials['store_password'],
+                credentials['key_password'],
+            )
+            evidence['production_signing'] = signing
+            evidence['artifact_sha256'] = signing['signed_aab_sha256']
+            evidence['certificate_sha256'] = signing['certificate_sha256']
+            evidence['signing_scope'] = signing['signing_scope']
+        else:
+            shutil.copyfile(bundle, out / 'app-release.aab')
+            evidence['production_signing'] = {
+                'passed': False,
+                'available': False,
+                'blocker': credentials.get('blocker') or 'android_upload_keystore_required',
+            }
         shutil.copyfile(apk, out / 'app-release.apk')
     apply_completion(state)
     state['status'] = 'validated_preview' if not state['completion']['finished'] else 'finished'

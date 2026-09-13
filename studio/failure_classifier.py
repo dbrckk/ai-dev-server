@@ -97,6 +97,7 @@ def classify(verification: dict | None, *, changed_files: list[str] | None = Non
     result = _failed_result(verification)
     log = _text(result)
     rc = result.get("returncode") if isinstance(result, dict) else None
+    changed_files_known = changed_files is not None
     changed_files = changed_files or []
 
     if status == "no_verifier":
@@ -155,7 +156,7 @@ def classify(verification: dict | None, *, changed_files: list[str] | None = Non
             "recovery": "repair_tests_or_behavior",
         }
 
-    if not changed_files:
+    if changed_files_known and not changed_files:
         return {
             "category": "no_progress",
             "confidence": "medium",

@@ -173,6 +173,7 @@ def run_persistent_project(
             from multi_engine_orchestrator import run_project as run_once
 
     context_path = project_out / AUTONOMY_DIR / "learned-context.json"
+    provider_health_path = project_out / AUTONOMY_DIR / "provider-health.json"
 
     def context_provider(_goal_state):
         memory = load_memory(memory_path)
@@ -209,7 +210,9 @@ def run_persistent_project(
 
     def execute_cycle(_goal_state):
         previous = os.environ.get("STUDIO_LEARNED_CONTEXT_PATH")
+        previous_health = os.environ.get("STUDIO_PROVIDER_HEALTH_PATH")
         os.environ["STUDIO_LEARNED_CONTEXT_PATH"] = str(context_path)
+        os.environ["STUDIO_PROVIDER_HEALTH_PATH"] = str(provider_health_path)
         try:
             result = run_once(
                 request_path, project_out, work, runner, deadline, clock, baseline_sha
@@ -217,6 +220,8 @@ def run_persistent_project(
         finally:
             if previous is None: os.environ.pop("STUDIO_LEARNED_CONTEXT_PATH", None)
             else: os.environ["STUDIO_LEARNED_CONTEXT_PATH"] = previous
+            if previous_health is None: os.environ.pop("STUDIO_PROVIDER_HEALTH_PATH", None)
+            else: os.environ["STUDIO_PROVIDER_HEALTH_PATH"] = previous_health
         translated = translate_orchestrator_result(result)
         if translated.get("evidence"):
             translated["tests_passed"] = True

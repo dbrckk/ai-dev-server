@@ -54,3 +54,41 @@ def hierarchy(brief: str, toolchain: dict | None = None) -> list[str]:
         if item not in result:
             result.append(item)
     return result
+
+
+def weighted_contexts(brief: str, toolchain: dict | None = None) -> list[tuple[str, float]]:
+    """Return deterministic multi-label task contexts with normalized weights."""
+    text = (brief or "").lower()
+    stacks = []
+    if isinstance(toolchain, dict) and isinstance(toolchain.get("stacks"), list):
+        stacks = sorted({str(x).strip().lower() for x in toolchain["stacks"] if str(x).strip()})
+
+    rules = (
+        ("tests", ("test", "coverage", "pytest", "jest", "spec", "regression")),
+        ("bugfix", ("bug", "fix", "crash", "error", "broken", "regression", "issue")),
+        ("refactor", ("refactor", "cleanup", "clean up", "restructure", "architecture", "technical debt")),
+        ("mobile", ("android", "ios", "flutter", "react native", "mobile", "swift")),
+        ("frontend", ("frontend", "ui", "ux", "css", "html", "react", "vue", "svelte", "component")),
+        ("backend", ("backend", "api", "server", "endpoint", "database", "sql", "auth")),
+        ("devops", ("ci", "cd", "docker", "deployment", "deploy", "kubernetes", "workflow", "github actions")),
+        ("data", ("data", "etl", "pandas", "analytics", "pipeline", "dataset")),
+    )
+    scores = {}
+    for context, keywords in rules:
+        hits = sum(1 for keyword in keywords if keyword in text)
+        if hits:
+            scores[context] = min(1.0, 0.55 + 0.15 * (hits - 1))
+
+    if not scores:
+        primary = classify(brief, toolchain)
+        scores[primary] = 0.75 if primary != "general" else 0.50
+
+    for stack in stacks:
+        scores["stack:" + stack] = max(scores.get("stack:" + stack, 0.0), 0.35)
+
+    scores["general"] = max(scores.get("general", 0.0), 0.15)
+    total = sum(scores.values())
+    if total <= 0:
+        return [("general", 1.0)]
+    ordered = sorted(scores.items(), key=lambda item: (-item[1], item[0]))
+    return [(name, weight / total) for name, weight in ordered]

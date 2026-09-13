@@ -41,6 +41,21 @@ class ExecutionBudgetTests(unittest.TestCase):
         self.assertEqual(budget.max_work_passes, 1)
         self.assertEqual(budget.agent_limit, 1)
 
+    def test_predictive_inputs_bound_normal_budget(self):
+        budget = choose_budget(
+            remaining_seconds=1800,
+            previous_verification={"passed": False},
+            bootstrap_passed=True,
+            meta_agent_limit=2,
+            predicted_work_passes=1,
+            predicted_agent_limit=1,
+            predicted_reserve_seconds=240,
+        )
+        self.assertEqual(budget.mode, "normal")
+        self.assertEqual(budget.max_work_passes, 1)
+        self.assertEqual(budget.agent_limit, 1)
+        self.assertEqual(budget.reserve_seconds, 240)
+
     def test_bootstrap_failure_prioritizes_recovery(self):
         budget = choose_budget(
             remaining_seconds=1800,

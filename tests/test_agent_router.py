@@ -38,6 +38,19 @@ class AgentRouterTests(unittest.TestCase):
             decision = choose_agent({"research"}, registry=self.registry)
         self.assertEqual(decision.agent.name, "research")
 
+    def test_learned_agent_weights_affect_ranking_and_trace(self):
+        with patch("shutil.which", return_value="/bin/tool"):
+            ranked = rank_agents(
+                {"code_editing", "tests"},
+                registry=self.registry,
+                prefer_free=True,
+                reliability={"free-code": -20.0, "paid-code": 20.0},
+                weights={"reliability": 1.25},
+            )
+        self.assertEqual(ranked[0].agent.name, "free-code")
+        self.assertIsInstance(ranked[0].trace, dict)
+        self.assertIn("reliability", ranked[0].trace["components"])
+
     def test_opencode_invocation_uses_secret_alias(self):
         env={
             "STUDIO_API_BASE":"https://example.invalid/v1",

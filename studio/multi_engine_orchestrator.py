@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 import sys
 
-from core import StudioError
+from core import StudioError, request_check
 from orchestrator import load_report, run_project as run_flutter_project
 from generic_project import run_project as run_generic_project
 
@@ -56,6 +56,10 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
             except (OSError,json.JSONDecodeError): portfolio={}
         return run_generic_project(req,project_out,Path(work),portfolio=portfolio,max_rounds=6,deadline=deadline,clock=clock)
     if engine!='godot': raise StudioError('Unsupported project engine')
+    try:
+        godot_request=request_check(json.loads(Path(request_path).read_text()))
+    except (OSError,json.JSONDecodeError):
+        raise StudioError('Godot project request is unreadable') from None
 
     stages=[
         ('studio/engine_entry.py',work,'preview','godot_preview_validated','godot_android_export_qa'),
@@ -149,4 +153,25 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
             or completion.get('next_stage')!='godot_play_submission'
             or coverage.get('final_review') is not True):
         raise StudioError('Godot final review stage returned invalid transition')
-    return {'status':'human_action_required','report':report,'next_stage':'godot_play_submission'}
+
+    publication=godot_request.get('play_publish')
+    if not isinstance(publication,dict) or publication.get('enabled') is not True:
+        return {'status':'human_action_required','report':report,'next_stage':'godot_play_submission'}
+
+    play_work=str(Path(work).with_name(Path(work).name+'-play-submit'))
+    result=_run_stage('studio/godot_play_stage.py',request_path,project_out,play_work,runner,deadline,clock)
+    if result is None: return {'status':'deferred','report':report,'next_stage':'godot_play_submission'}
+    report=load_report(project_out) if (project_out/'report.json').is_file() else {}
+    if result.returncode==2:
+        return {'status':'human_action_required','report':report,'next_stage':'godot_play_submission',
+                'human_action':report.get('human_action')}
+    if result.returncode!=0:
+        return {'status':'failed','report':report,'next_stage':'godot_play_submission'}
+    completion=report.get('completion'); coverage=report.get('coverage') or {}
+    if (report.get('engine')!='godot'
+            or report.get('status') not in {'godot_play_validated','godot_published'}
+            or not isinstance(completion,dict) or completion.get('finished') is not True
+            or completion.get('next_stage') is not None
+            or coverage.get('play_publish') is not True):
+        raise StudioError('Godot Play stage returned invalid completion evidence')
+    return {'status':'complete','report':report,'next_stage':None}

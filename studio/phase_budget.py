@@ -93,3 +93,22 @@ def reallocate_unused(quotas: PhaseQuotas, *, phase: str, unused_seconds: int) -
     values[targets[0]] += first
     values[targets[1]] += second
     return PhaseQuotas(**values)
+
+
+def phase_remaining(quotas: PhaseQuotas, *, phase: str, elapsed_seconds: float) -> int:
+    values = quotas.as_dict()
+    if phase not in values:
+        raise ValueError("unknown phase")
+    return max(0, int(values[phase] - max(0.0, float(elapsed_seconds))))
+
+
+def bounded_timeout(remaining_seconds: int, *, minimum: int = 30, maximum: int = 1800) -> int:
+    if type(remaining_seconds) is not int or remaining_seconds < 0:
+        raise ValueError("remaining_seconds invalid")
+    if type(minimum) is not int or minimum < 1:
+        raise ValueError("minimum timeout invalid")
+    if type(maximum) is not int or maximum < minimum:
+        raise ValueError("maximum timeout invalid")
+    if remaining_seconds <= 0:
+        return 0
+    return max(minimum, min(maximum, remaining_seconds))

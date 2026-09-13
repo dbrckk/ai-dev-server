@@ -1147,7 +1147,11 @@ Objective and current plan:
                             "reason": str(exc),
                         }
 
-            if isinstance(selective, dict) and selective.get("status") == "partial_rollback_passed":
+            if (
+                isinstance(selective, dict)
+                and selective.get("status") == "partial_rollback_passed"
+                and selective.get("kept_files")
+            ):
                 verification = selective["verification"]
                 last_verification = verification
                 changed = list(selective.get("kept_files", []))
@@ -1183,7 +1187,8 @@ Objective and current plan:
                     "recovery_policy": round_recovery_policy,
                     "selective_rollback": selective,
                     "publication": {
-                        "published": True,
+                        "published": False,
+                        "pending": True,
                         "reason": "safe_subset_recovered",
                     },
                 })
@@ -1207,6 +1212,12 @@ Objective and current plan:
                 continue
 
         base_sha = repo.publish(base_sha, work, "Autonomous generic project round " + str(round_index))
+        if isinstance(round_state.get("publication"), dict) and round_state["publication"].get("pending"):
+            round_state["publication"] = {
+                "published": True,
+                "reason": round_state["publication"].get("reason", "safe_subset_recovered"),
+                "commit": base_sha,
+            }
         if applied_category not in {"no_history", "passed"}:
             recovery_learning_row = record_recovery_learning(
                 recovery_learning_path,

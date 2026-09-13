@@ -57,6 +57,46 @@ class FailureLoopTests(unittest.TestCase):
         )["verification"])
         self.assertEqual(a, b)
 
+    def test_persisted_failure_contributes_to_current_streak(self):
+        first = failed(provider="p1", model="m1")
+        signature = failure_signature(first["verification"])
+        decision = decide(
+            [failed(provider="p2", model="m2")],
+            prior={
+                "signature": signature,
+                "repeated_failures": 1,
+                "avoid_providers": ["p1"],
+                "avoid_models": ["m1"],
+            },
+        )
+        self.assertEqual(decision["action"], "switch_strategy")
+        self.assertEqual(decision["repeated_failures"], 2)
+        self.assertEqual(decision["avoid_providers"], ["p1", "p2"])
+        self.assertEqual(decision["avoid_models"], ["m1", "m2"])
+
+    def test_current_success_clears_persisted_failure_streak(self):
+        decision = decide(
+            [{
+                "verification": {
+                    "status": "passed",
+                    "passed": True,
+                    "results": [],
+                },
+                "models": {},
+            }],
+            prior={
+                "signature": "a" * 64,
+                "repeated_failures": 3,
+                "avoid_providers": ["p1"],
+                "avoid_models": ["m1"],
+            },
+        )
+        self.assertEqual(decision["action"], "continue")
+        self.assertEqual(decision["repeated_failures"], 0)
+        self.assertIsNone(decision["signature"])
+        self.assertEqual(decision["avoid_providers"], [])
+        self.assertEqual(decision["avoid_models"], [])
+
     def test_passing_verification_breaks_loop(self):
         rounds = [
             failed(),

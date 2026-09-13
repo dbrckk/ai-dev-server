@@ -10,6 +10,7 @@ from core import API, APIError, ProtocolError, StudioError
 from provider_router import candidates_for, load_providers
 from provider_health import eligible as provider_eligible, load as load_provider_health, reliability_bonus, record_failure as record_provider_failure, record_success as record_provider_success
 from provider_metrics import latency_bonus, load as load_provider_metrics, record as record_provider_latency
+from adaptive_scoring import score_provider
 
 
 def _decode(response: dict) -> dict:
@@ -43,15 +44,19 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     metrics = load_provider_metrics(metrics_path) if metrics_path is not None else {}
     if health_path is not None:
         providers = tuple(provider for provider in providers if provider_eligible(health_path, provider.name))
+    provider_scores = {
+        provider.name: score_provider(
+            name=provider.name,
+            priority=provider.priority,
+            free_preferred=provider.free_preferred,
+            reliability=reliability_bonus(health, provider.name),
+            latency=latency_bonus(metrics, provider.name, role),
+        )
+        for provider in providers
+    }
     providers = tuple(sorted(
         providers,
-        key=lambda provider: (
-            -(provider.priority
-              + reliability_bonus(health, provider.name)
-              + latency_bonus(metrics, provider.name, role)
-              + (20 if provider.free_preferred else 0)),
-            provider.name,
-        ),
+        key=lambda provider: (-provider_scores[provider.name].total, provider.name),
     ))
     if not providers:
         raise StudioError("No healthy configured provider available for generic project")
@@ -91,6 +96,7 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 "provider": provider.name,
                 "model": model,
                 "independent_preference_met": provider.name not in avoid_providers and model not in avoid_models,
+                "routing_score": provider_scores[provider.name].as_dict(),
             }
         except (APIError, StudioError, ProtocolError) as exc:
             if metrics_path is not None:

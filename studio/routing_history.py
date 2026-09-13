@@ -31,7 +31,7 @@ def load(path: Path) -> list[dict]:
     for event in value[-MAX_EVENTS:]:
         if not isinstance(event, dict):
             continue
-        if event.get("kind") not in {"provider", "agent"}:
+        if event.get("kind") not in {"provider", "agent", "model_candidate"}:
             continue
         if not isinstance(event.get("name"), str) or not isinstance(event.get("role"), str):
             continue
@@ -63,7 +63,7 @@ def _save(path: Path, events: list[dict]) -> None:
 
 
 def record(path: Path, *, kind: str, name: str, role: str, score: dict, success: bool, duration_seconds: float) -> list[dict]:
-    if kind not in {"provider", "agent"}:
+    if kind not in {"provider", "agent", "model_candidate"}:
         raise ValueError("routing kind invalid")
     if not isinstance(name, str) or not name or not isinstance(role, str) or not role:
         raise ValueError("routing identity invalid")

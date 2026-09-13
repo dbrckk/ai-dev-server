@@ -112,13 +112,53 @@ def best_strategy(data: dict, *, allowed: set[str] | None = None) -> tuple[str, 
 
 
 EXPLORATION_EVERY = 6
+MIN_EXPLORATION_EVERY = 4
+MAX_EXPLORATION_EVERY = 12
+
+
+def exploration_cadence(data: dict, *, allowed: set[str] | None = None) -> int:
+    """Return a deterministic exploration interval from evidence strength.
+
+    Close strategies or shallow evidence explore more often. A durable,
+    materially superior winner explores less often, but never less frequently
+    than MAX_EXPLORATION_EVERY.
+    """
+    allowed_set = set(VALID_STRATEGIES if allowed is None else allowed) & VALID_STRATEGIES
+    mature = []
+    for strategy in allowed_set:
+        info = metrics(data, strategy)
+        if info is not None:
+            mature.append((strategy, info))
+    if not mature:
+        return EXPLORATION_EVERY
+    mature.sort(key=lambda item: (-item[1]["efficiency"], item[0]))
+    winner = mature[0][1]
+    winner_samples = int(winner["samples"])
+    if len(mature) == 1:
+        if winner_samples >= 16:
+            return 10
+        if winner_samples >= 8:
+            return 8
+        return EXPLORATION_EVERY
+    runner_up = mature[1][1]
+    best_eff = float(winner["efficiency"])
+    second_eff = float(runner_up["efficiency"])
+    relative_gap = 0.0 if best_eff <= 0 else max(0.0, (best_eff - second_eff) / best_eff)
+    evidence = min(winner_samples, int(runner_up["samples"]))
+    if relative_gap < 0.10 or evidence < 6:
+        return MIN_EXPLORATION_EVERY
+    if relative_gap < 0.25 or evidence < 12:
+        return EXPLORATION_EVERY
+    if relative_gap < 0.50 or evidence < 20:
+        return 8
+    return MAX_EXPLORATION_EVERY
 
 
 def select_strategy(
     data: dict,
     *,
     allowed: set[str] | None = None,
-    exploration_every: int = EXPLORATION_EVERY,
+    exploration_every: int | None = None,
 ) -> tuple[str, dict] | None:
     """Deterministic bounded explore/exploit policy.
 
@@ -126,7 +166,7 @@ def select_strategy(
     decision, explore the least-sampled allowed alternative so stale winners
     can be challenged without introducing randomness.
     """
-    if type(exploration_every) is not int or exploration_every < 2:
+    if exploration_every is not None and (type(exploration_every) is not int or exploration_every < 2):
         raise ValueError("exploration cadence invalid")
     allowed_set = set(VALID_STRATEGIES if allowed is None else allowed)
     allowed_set &= VALID_STRATEGIES
@@ -137,12 +177,13 @@ def select_strategy(
     if exploit is None:
         return None
 
+    cadence = exploration_cadence(data, allowed=allowed_set) if exploration_every is None else exploration_every
     total_samples = sum(
         max(0, int(data.get(name, {}).get("samples", 0)))
         for name in allowed_set
         if isinstance(data.get(name), dict)
     )
-    if total_samples > 0 and total_samples % exploration_every == 0:
+    if total_samples > 0 and total_samples % cadence == 0:
         exploit_name = exploit[0]
         alternatives = [name for name in allowed_set if name != exploit_name]
         if alternatives:
@@ -165,8 +206,10 @@ def select_strategy(
             })
             info["selection_mode"] = "explore"
             info["exploited_strategy"] = exploit_name
+            info["exploration_cadence"] = cadence
             return selected, info
 
     info = dict(exploit[1])
     info["selection_mode"] = "exploit"
+    info["exploration_cadence"] = cadence
     return exploit[0], info

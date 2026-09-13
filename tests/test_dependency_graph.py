@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from dependency_graph import assess, build
+from dependency_graph import assess, build, patch_guard
 
 
 class DependencyGraphTests(unittest.TestCase):
@@ -41,6 +41,26 @@ class DependencyGraphTests(unittest.TestCase):
         result=assess(graph,[])
         self.assertEqual(result["focus"][0]["path"],"core.py")
         self.assertEqual(result["level"],"high")
+
+    def test_high_coupling_direct_pair_is_rejected(self):
+        graph={
+            "edges":{"core.py":["api.py"],"api.py":[]},
+            "reverse":{"core.py":[f"m{i}.py" for i in range(8)],"api.py":["client.py"]},
+            "tests":[],
+            "edge_count":10,
+        }
+        result=patch_guard(graph,["core.py","api.py"])
+        self.assertTrue(result["reject"])
+        self.assertEqual(result["direct_pairs"],[["api.py","core.py"]])
+
+    def test_uncoupled_pair_is_allowed(self):
+        graph={
+            "edges":{"a.py":[],"b.py":[]},
+            "reverse":{"a.py":[],"b.py":[]},
+            "tests":[],
+            "edge_count":0,
+        }
+        self.assertFalse(patch_guard(graph,["a.py","b.py"])["reject"])
 
     def test_high_coupling_reduces_patch_width(self):
         graph={"edges":{"core.py":[]},"reverse":{"core.py":[f"m{i}.py" for i in range(9)]},"tests":[],"edge_count":9}

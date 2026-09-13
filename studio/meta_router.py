@@ -41,7 +41,7 @@ def choose_execution_mode(events: list[dict], *, role: str, agent_available: boo
     if not agent_available:
         return MetaRoute("model_only", 0, 1.0, "no eligible external agent")
     agent_n, agent_rate = _rate(events, "agent", role)
-    provider_n, provider_rate = _rate(events, "provider", role)
+    provider_n, provider_rate = _rate(events, "model_candidate", role)
     if agent_n < MIN_EVENTS or provider_n < MIN_EVENTS:
         return MetaRoute("dual", 2, 0.0, "insufficient comparative evidence")
     gap = agent_rate - provider_rate
@@ -49,7 +49,7 @@ def choose_execution_mode(events: list[dict], *, role: str, agent_available: boo
     if gap >= MIN_GAP:
         return MetaRoute("agent_focus", 2, confidence, "verified agent success rate materially higher")
     if gap <= -MIN_GAP:
-        return MetaRoute("model_focus", 1, confidence, "verified direct-model success rate materially higher")
+        return MetaRoute("model_focus", 1, confidence, "verified model-candidate success rate materially higher")
     return MetaRoute("dual", 2, confidence, "success rates are too close for specialization")
 
 

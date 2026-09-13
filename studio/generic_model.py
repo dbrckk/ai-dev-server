@@ -11,6 +11,7 @@ from provider_router import candidates_for, load_providers
 from provider_health import eligible as provider_eligible, load as load_provider_health, reliability_bonus, record_failure as record_provider_failure, record_success as record_provider_success
 from provider_metrics import latency_bonus, load as load_provider_metrics, record as record_provider_latency
 from adaptive_scoring import score_provider
+from routing_history import learned_weights, load as load_routing_history, record as record_routing_event
 
 
 def _decode(response: dict) -> dict:
@@ -40,8 +41,12 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     metrics_raw = os.environ.get("STUDIO_PROVIDER_METRICS_PATH", "")
     health_path = Path(health_raw) if health_raw else None
     metrics_path = Path(metrics_raw) if metrics_raw else None
+    history_raw = os.environ.get("STUDIO_ROUTING_HISTORY_PATH", "")
+    history_path = Path(history_raw) if history_raw else None
     health = load_provider_health(health_path) if health_path is not None else {}
     metrics = load_provider_metrics(metrics_path) if metrics_path is not None else {}
+    history = load_routing_history(history_path) if history_path is not None else []
+    weights = learned_weights(history, kind="provider", role=role)
     if health_path is not None:
         providers = tuple(provider for provider in providers if provider_eligible(health_path, provider.name))
     provider_scores = {
@@ -51,6 +56,7 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
             free_preferred=provider.free_preferred,
             reliability=reliability_bonus(health, provider.name),
             latency=latency_bonus(metrics, provider.name, role),
+            weights=weights,
         )
         for provider in providers
     }
@@ -92,6 +98,16 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
             decoded = _decode(response)
             if health_path is not None:
                 record_provider_success(health_path, provider.name)
+            if history_path is not None:
+                record_routing_event(
+                    history_path,
+                    kind="provider",
+                    name=provider.name,
+                    role=role,
+                    score=provider_scores[provider.name].as_dict(),
+                    success=True,
+                    duration_seconds=elapsed,
+                )
             return decoded, {
                 "provider": provider.name,
                 "model": model,
@@ -99,10 +115,21 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 "routing_score": provider_scores[provider.name].as_dict(),
             }
         except (APIError, StudioError, ProtocolError) as exc:
+            elapsed = time.monotonic() - started
             if metrics_path is not None:
-                record_provider_latency(metrics_path, provider.name, role, time.monotonic() - started)
+                record_provider_latency(metrics_path, provider.name, role, elapsed)
             if health_path is not None:
                 record_provider_failure(health_path, provider.name)
+            if history_path is not None:
+                record_routing_event(
+                    history_path,
+                    kind="provider",
+                    name=provider.name,
+                    role=role,
+                    score=provider_scores[provider.name].as_dict(),
+                    success=False,
+                    duration_seconds=elapsed,
+                )
             last = exc
             continue
     raise StudioError("All generic-project providers failed: " + (str(last) if last else "unknown")) from None

@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from strategy_efficiency import best_strategy, load, metrics, record, select_strategy
+from strategy_efficiency import best_strategy, exploration_cadence, load, metrics, record, select_strategy
 
 
 class StrategyEfficiencyTests(unittest.TestCase):
@@ -27,6 +27,37 @@ class StrategyEfficiencyTests(unittest.TestCase):
             best=best_strategy(load(path))
             self.assertEqual(best[0],"model_only")
             self.assertGreater(best[1]["efficiency"],0)
+
+    def test_exploration_is_more_frequent_when_strategies_are_close(self):
+        data={
+            "model_only":{"samples":8,"successes":8,"ema_cost_seconds":100.0},
+            "dual":{"samples":8,"successes":8,"ema_cost_seconds":105.0},
+        }
+        self.assertEqual(exploration_cadence(data,allowed={"model_only","dual"}),4)
+
+    def test_exploration_decays_for_durable_dominant_strategy(self):
+        data={
+            "model_only":{"samples":24,"successes":24,"ema_cost_seconds":50.0},
+            "dual":{"samples":24,"successes":12,"ema_cost_seconds":200.0},
+        }
+        self.assertEqual(exploration_cadence(data,allowed={"model_only","dual"}),12)
+
+    def test_exploration_never_disappears(self):
+        data={
+            "model_only":{"samples":100,"successes":100,"ema_cost_seconds":20.0},
+            "dual":{"samples":100,"successes":1,"ema_cost_seconds":500.0},
+        }
+        cadence=exploration_cadence(data,allowed={"model_only","dual"})
+        self.assertLessEqual(cadence,12)
+        selected=select_strategy(
+            {
+                "model_only":{"samples":6,"successes":6,"ema_cost_seconds":20.0},
+                "dual":{"samples":6,"successes":1,"ema_cost_seconds":500.0},
+            },
+            allowed={"model_only","dual"},
+            exploration_every=12,
+        )
+        self.assertEqual(selected[1]["exploration_cadence"],12)
 
     def test_bandit_exploits_best_strategy_outside_exploration_window(self):
         data={

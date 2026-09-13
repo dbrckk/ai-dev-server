@@ -17,6 +17,7 @@ from objective_dag import (
     resume,
     save,
     summary,
+    task_context,
 )
 
 
@@ -49,6 +50,25 @@ class ObjectiveDagTests(unittest.TestCase):
         dag=mark_running(dag,"core")
         dag=mark_verified(dag,"core",commit="b"*40)
         self.assertEqual(next_task(dag)["id"],"api")
+
+    def test_task_context_contains_verified_dependency_commits(self):
+        dag=new(
+            "demo",
+            "build",
+            {
+                "tasks":[
+                    {"id":"core","title":"core","depends_on":[]},
+                    {"id":"api","title":"api","depends_on":["core"]},
+                ]
+            },
+            "a"*40,
+        )
+        dag=mark_running(dag,"core")
+        dag=mark_verified(dag,"core",commit="b"*40)
+        context=task_context(dag,"api")
+        self.assertEqual(context["title"],"api")
+        self.assertEqual(context["verified_dependencies"][0]["id"],"core")
+        self.assertEqual(context["verified_dependencies"][0]["last_commit"],"b"*40)
 
     def test_running_task_resumes_as_ready_after_restart(self):
         dag=new("demo","x",{"work_items":["one"]},"a"*40)

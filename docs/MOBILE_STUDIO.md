@@ -28,6 +28,7 @@ Dans les secrets Actions de ce dépôt :
 | `STUDIO_ANDROID_UPLOAD_KEY_ALIAS` | Alias de la clé d'upload Android. |
 | `STUDIO_ANDROID_UPLOAD_STORE_PASSWORD` | Mot de passe du keystore, transmis uniquement à `jarsigner/keytool` via variables d'environnement. |
 | `STUDIO_ANDROID_UPLOAD_KEY_PASSWORD` | Mot de passe de la clé si différent du mot de passe du keystore ; sinon le mot de passe du store est réutilisé. |
+| `STUDIO_PLAY_ACCESS_TOKEN` | Jeton OAuth court terme pour Android Publisher API. Il n'est jamais transmis au modèle ni écrit dans le rapport. |
 
 Dans les variables Actions :
 
@@ -123,3 +124,9 @@ Références : https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3-super
 ## État de vérification au 8 septembre 2026
 
 51 tests Python passent. Le témoin déterministe a passé les contrôles Flutter, huit captures sur deux écrans et la compilation Android debug. L’essai fournisseur 34191589329 a franchi produit et design puis a été bloqué par HTTP 410 sur le modèle de code désormais retiré du choix par défaut. La génération complète avec la configuration finale et l’écriture dans un dépôt cible restent à valider. Aucun résultat de cet essai n’est présenté comme une application terminée.
+
+## Publication Google Play
+
+Le client de publication utilise l'Android Publisher API v3 avec une transaction d'edit : création de l'edit, upload de l'AAB, mise à jour de la piste, validation de l'edit, puis commit uniquement si un composant de confiance l'autorise explicitement. Le mode par défaut est **validate-only** : aucun commit Play n'est effectué implicitement. Les pistes actuellement autorisées sont `internal`, `alpha`, `beta` et `production`.
+
+L'accès Play requiert `STUDIO_PLAY_ACCESS_TOKEN`. L'absence de jeton est un blocage externe explicite, pas une raison de simuler une publication. Les obligations de compte, contrats, identité, paiement et règles Play Console restent des gates humaines lorsqu'elles ne peuvent pas être automatisées légalement ou techniquement.

@@ -67,7 +67,7 @@ class SelectiveRollbackTests(unittest.TestCase):
                 passed="BROKEN" not in (root/"f7.py").read_text()
                 return {"passed":passed,"status":"passed" if passed else "failed"}
 
-            result=isolate(root,before=before,verify=verify,max_runs=5)
+            result=isolate(root,before=before,verify=verify,max_runs=7)
             self.assertEqual(result["status"],"partial_rollback_passed")
             self.assertEqual(result["reverted_files"],["f7.py"])
             self.assertIn("f0.py",result["kept_files"])

@@ -193,3 +193,36 @@ def assess(graph:dict,focus_files:list[str]|None=None)->dict:
         "impacted_tests":impacted_tests[:50],
         "edge_count":int(graph.get("edge_count",0)) if isinstance(graph,dict) else 0,
     }
+
+
+def patch_guard(graph:dict,files:list[str])->dict:
+    """Assess whether a multi-file patch crosses a highly coupled local boundary."""
+    unique=sorted(set(str(f) for f in files if f))
+    edges=graph.get("edges",{}) if isinstance(graph,dict) else {}
+    reverse=graph.get("reverse",{}) if isinstance(graph,dict) else {}
+    direct_pairs=[]
+    for left in unique:
+        for right in unique:
+            if left>=right:
+                continue
+            if right in edges.get(left,[]) or left in edges.get(right,[]):
+                direct_pairs.append([left,right])
+    max_coupling=0
+    for rel in unique:
+        max_coupling=max(
+            max_coupling,
+            len(edges.get(rel,[]))+len(reverse.get(rel,[])),
+        )
+    reject=bool(len(unique)>1 and direct_pairs and max_coupling>=8)
+    reason=(
+        "patch spans directly coupled files in a high-coupling hotspot"
+        if reject else
+        "patch coupling within allowed bound"
+    )
+    return {
+        "reject":reject,
+        "reason":reason,
+        "files":unique,
+        "direct_pairs":direct_pairs[:50],
+        "max_coupling":max_coupling,
+    }

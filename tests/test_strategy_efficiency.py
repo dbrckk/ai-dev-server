@@ -131,6 +131,63 @@ class StrategyEfficiencyTests(unittest.TestCase):
             row=load(path)["model_only"]
             self.assertAlmostEqual(row["ema_success_rate"],0.75)
 
+    def test_uncertainty_decreases_with_more_evidence(self):
+        low={
+            "model_only":{
+                "samples":4,
+                "successes":4,
+                "ema_cost_seconds":50.0,
+                "ema_success_rate":1.0,
+            }
+        }
+        high={
+            "model_only":{
+                "samples":40,
+                "successes":40,
+                "ema_cost_seconds":50.0,
+                "ema_success_rate":1.0,
+            }
+        }
+        self.assertGreater(
+            metrics(low,"model_only")["uncertainty"],
+            metrics(high,"model_only")["uncertainty"],
+        )
+
+    def test_risk_adjustment_can_prefer_mature_strategy(self):
+        data={
+            "model_only":{
+                "samples":4,
+                "successes":4,
+                "ema_cost_seconds":50.0,
+                "ema_success_rate":1.0,
+            },
+            "dual":{
+                "samples":40,
+                "successes":38,
+                "ema_cost_seconds":50.0,
+                "ema_success_rate":0.95,
+            },
+        }
+        self.assertGreater(
+            metrics(data,"model_only")["efficiency"],
+            metrics(data,"dual")["efficiency"],
+        )
+        self.assertEqual(best_strategy(data)[0],"dual")
+
+    def test_metrics_expose_conservative_and_optimistic_efficiency(self):
+        data={
+            "model_only":{
+                "samples":8,
+                "successes":6,
+                "ema_cost_seconds":80.0,
+                "ema_success_rate":0.60,
+            }
+        }
+        info=metrics(data,"model_only")
+        self.assertGreater(info["uncertainty"],0.0)
+        self.assertLessEqual(info["risk_adjusted_efficiency"],info["efficiency"])
+        self.assertGreaterEqual(info["optimistic_efficiency"],info["efficiency"])
+
     def test_failure_rate_reduces_efficiency(self):
         with tempfile.TemporaryDirectory() as td:
             path=Path(td)/"strategy-efficiency.json"

@@ -14,11 +14,10 @@ class ProjectEngineTests(unittest.TestCase):
     def test_infers_godot_from_project_file(self):
         self.assertEqual(infer(['README.md', 'project.godot', 'scripts/player.gd']).name, 'godot')
 
-    def test_ambiguous_or_unknown_project_fails_closed(self):
+    def test_ambiguous_specialized_markers_fail_and_other_stacks_use_generic(self):
         with self.assertRaisesRegex(EngineError, 'Ambiguous'):
             infer(['pubspec.yaml', 'project.godot'])
-        with self.assertRaisesRegex(EngineError, 'no trusted marker'):
-            infer(['README.md', 'src/main.kt'])
+        self.assertEqual(infer(['README.md', 'src/main.kt']).name, 'generic')
 
     def test_godot_edit_scope_is_bounded_to_text_project_files(self):
         for path in ['project.godot','export_presets.cfg','scripts/player.gd','scenes/Main.tscn','assets/theme.tres','assets/icon.svg','tests/test_player.gd','docs/GAME_DESIGN.md']:

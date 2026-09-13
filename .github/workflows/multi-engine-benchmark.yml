@@ -1,0 +1,134 @@
+name: Multi-Engine E2E Benchmark
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generic:
+    name: Generic trusted smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Run generic engine fixture
+        env:
+          PYTHONPATH: studio
+        run: python studio/generic_smoke.py
+      - name: Preserve generic diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: multi-engine-generic-${{ github.run_id }}
+          path: studio-output/generic-smoke/
+          if-no-files-found: warn
+          retention-days: 14
+
+  godot:
+    name: Godot and Jumpy runtime smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Build minimal Godot fixture
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/studio-godot-fixture/scripts
+          cat > /tmp/studio-godot-fixture/project.godot <<'EOF'
+          [application]
+          config/name="StudioGodotBenchmark"
+          run/main_scene="res://main.tscn"
+          [rendering]
+          renderer/rendering_method="gl_compatibility"
+          EOF
+          cat > /tmp/studio-godot-fixture/main.tscn <<'EOF'
+          [gd_scene load_steps=2 format=3]
+          [ext_resource path="res://scripts/smoke.gd" type="Script" id="1"]
+          [node name="Main" type="Node"]
+          script = ExtResource("1")
+          EOF
+          cat > /tmp/studio-godot-fixture/scripts/smoke.gd <<'EOF'
+          extends Node
+          func _ready() -> void:
+              print("studio-godot-benchmark")
+          EOF
+      - name: Execute pinned Godot runtime
+        env:
+          PYTHONPATH: studio
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from godot_runtime import install, validate
+          binary=install(Path('/tmp/studio-godot-benchmark-runtime'))
+          result=validate(Path('/tmp/studio-godot-fixture'),binary,timeout=420)
+          print(result)
+          if not result['passed']:
+              raise SystemExit('Godot benchmark failed')
+          PY
+      - name: Probe pinned real Jumpy repository
+        env:
+          PYTHONPATH: studio
+        run: |
+          python studio/godot_repository_probe.py dbrckk/Jumpy f32cc45e2e1b8713c3aa41961810bcbc90ab97c0 --out /tmp/jumpy-godot-probe.json
+          python -m json.tool /tmp/jumpy-godot-probe.json
+
+  flutter:
+    name: Flutter real sandbox smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Bootstrap Android device-QA runtime
+        run: |
+          test -d "$ANDROID_HOME"
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/emulator" >> "$GITHUB_PATH"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "emulator"
+      - name: Validate Android acceleration
+        run: |
+          command -v adb
+          command -v emulator
+          test -e /dev/kvm
+          sudo chmod 666 /dev/kvm
+          emulator -accel-check
+      - name: Compile and render Flutter fixture
+        run: python studio/smoke.py
+      - name: Preserve Flutter diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: multi-engine-flutter-${{ github.run_id }}
+          path: studio-output/
+          if-no-files-found: warn
+          retention-days: 14
+
+  benchmark-gate:
+    name: Multi-engine benchmark gate
+    runs-on: ubuntu-24.04
+    needs: [generic, godot, flutter]
+    if: always()
+    steps:
+      - name: Require every engine benchmark
+        env:
+          GENERIC: ${{ needs.generic.result }}
+          GODOT: ${{ needs.godot.result }}
+          FLUTTER: ${{ needs.flutter.result }}
+        run: |
+          set -euo pipefail
+          printf 'generic=%s godot=%s flutter=%s\n' "$GENERIC" "$GODOT" "$FLUTTER"
+          test "$GENERIC" = success
+          test "$GODOT" = success
+          test "$FLUTTER" = success

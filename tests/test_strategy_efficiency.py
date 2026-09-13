@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from strategy_efficiency import best_strategy, load, metrics, record
+from strategy_efficiency import best_strategy, load, metrics, record, select_strategy
 
 
 class StrategyEfficiencyTests(unittest.TestCase):
@@ -27,6 +27,37 @@ class StrategyEfficiencyTests(unittest.TestCase):
             best=best_strategy(load(path))
             self.assertEqual(best[0],"model_only")
             self.assertGreater(best[1]["efficiency"],0)
+
+    def test_bandit_exploits_best_strategy_outside_exploration_window(self):
+        data={
+            "model_only":{"samples":5,"successes":5,"ema_cost_seconds":80.0},
+            "dual":{"samples":4,"successes":4,"ema_cost_seconds":240.0},
+        }
+        selected=select_strategy(data,allowed={"model_only","dual"},exploration_every=6)
+        self.assertEqual(selected[0],"model_only")
+        self.assertEqual(selected[1]["selection_mode"],"exploit")
+
+    def test_bandit_explores_least_sampled_alternative_on_cadence(self):
+        data={
+            "model_only":{"samples":6,"successes":6,"ema_cost_seconds":80.0},
+            "dual":{"samples":0,"successes":0,"ema_cost_seconds":0.0},
+            "agent_only":{"samples":0,"successes":0,"ema_cost_seconds":0.0},
+        }
+        selected=select_strategy(
+            data,
+            allowed={"model_only","dual","agent_only"},
+            exploration_every=6,
+        )
+        self.assertEqual(selected[0],"agent_only")
+        self.assertEqual(selected[1]["selection_mode"],"explore")
+        self.assertEqual(selected[1]["exploited_strategy"],"model_only")
+
+    def test_bandit_requires_mature_strategy_before_exploration(self):
+        data={
+            "model_only":{"samples":3,"successes":3,"ema_cost_seconds":80.0},
+            "dual":{"samples":3,"successes":3,"ema_cost_seconds":240.0},
+        }
+        self.assertIsNone(select_strategy(data,allowed={"model_only","dual"}))
 
     def test_failure_rate_reduces_efficiency(self):
         with tempfile.TemporaryDirectory() as td:

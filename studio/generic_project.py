@@ -230,18 +230,18 @@ Objective and current plan:
                             except (TypeError,ValueError): duration=0.0
                             break
                     success = candidate_verification.get("passed") is True
+                    route_trace = routing_trace_for(
+                        candidate_name,
+                        {"code_editing","repo_analysis"},
+                        role="implementation",
+                        memory_path=out/".autonomy/agent-performance.json",
+                    )
                     record_agent_performance(
                         out/".autonomy/agent-performance.json",
                         candidate_name,
                         "implementation",
                         success=success,
                         duration=duration,
-                    )
-                    route_trace = routing_trace_for(
-                        candidate_name,
-                        {"code_editing","repo_analysis"},
-                        role="implementation",
-                        memory_path=out/".autonomy/agent-performance.json",
                     )
                     if route_trace is not None:
                         record_routing_event(

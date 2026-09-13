@@ -58,6 +58,74 @@ class PrivacyAuditTests(unittest.TestCase):
             self.assertTrue(audit['can_assert_no_external_collection'])
             self.assertTrue(build_data_safety(audit)['local_processing_only'])
 
+    def test_analytics_dependency_requires_verified_classification(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pubspec = '''name: demo
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_analytics: ^11.0.0
+'''
+            self.make_app(
+                root,
+                '<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application /></manifest>',
+                pubspec=pubspec,
+            )
+            audit = analyze(root)
+            self.assertIn('analytics', audit['capability_names'])
+            self.assertIn('app_activity', audit['potential_data_classes'])
+            self.assertIn(
+                'third_party_analytics_requires_verified_data_flow_classification',
+                audit['blockers'],
+            )
+            self.assertFalse(audit['can_assert_no_external_collection'])
+
+    def test_auth_and_payments_surface_specific_data_classes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pubspec = '''name: demo
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_auth: ^5.0.0
+  in_app_purchase: ^3.2.0
+'''
+            self.make_app(
+                root,
+                '<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application /></manifest>',
+                pubspec=pubspec,
+            )
+            audit = analyze(root)
+            self.assertIn('authentication', audit['capability_names'])
+            self.assertIn('payments', audit['capability_names'])
+            self.assertIn('personal_info', audit['potential_data_classes'])
+            self.assertIn('financial_info', audit['potential_data_classes'])
+
+    def test_push_sdk_is_not_mistaken_for_offline_app(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pubspec = '''name: demo
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_messaging: ^15.0.0
+'''
+            self.make_app(
+                root,
+                '<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application /></manifest>',
+                pubspec=pubspec,
+            )
+            audit = analyze(root)
+            self.assertTrue(audit['network_capable'])
+            self.assertIn('push_notifications', audit['capability_names'])
+            safety = build_data_safety(audit)
+            self.assertEqual(safety['status'], 'needs_verified_classification')
+            self.assertEqual(
+                safety['detected_capabilities'][0]['capability'],
+                'push_notifications',
+            )
+
     def test_package_writes_policy_and_data_safety_evidence(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / 'app'

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 from agents.router import rank_agents
 from star_scanner import scan
-from strategy_efficiency import best_strategy
+from strategy_efficiency import select_strategy
 
 
 MIN_EVENTS = 6
@@ -44,9 +44,12 @@ def choose_execution_mode(events: list[dict], *, role: str, agent_available: boo
     if not agent_available:
         return MetaRoute("model_only", 0, 1.0, "no eligible external agent", "model_only")
     if isinstance(strategy_data, dict):
-        best = best_strategy(strategy_data, allowed={"model_only","agent_only","model_to_agent","agent_to_model","dual"})
-        if best is not None:
-            strategy, info = best
+        selected = select_strategy(
+            strategy_data,
+            allowed={"model_only","agent_only","model_to_agent","agent_to_model","dual"},
+        )
+        if selected is not None:
+            strategy, info = selected
             confidence = min(1.0, float(info["samples"]) / 12.0)
             mapping = {
                 "model_only": ("model_only", 0),
@@ -60,7 +63,7 @@ def choose_execution_mode(events: list[dict], *, role: str, agent_available: boo
                 mode,
                 limit,
                 confidence,
-                "historically best verified-success efficiency",
+                "bounded strategy " + str(info.get("selection_mode","exploit")) + " by verified-success efficiency",
                 strategy,
             )
     agent_n, agent_rate = _rate(events, "agent", role)

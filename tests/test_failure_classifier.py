@@ -26,6 +26,23 @@ class FailureClassifierTests(unittest.TestCase):
         self.assertEqual(result["category"], "no_history")
         self.assertEqual(policy(result)["action"], "continue")
 
+    def test_objective_no_progress_overrides_opaque_failure(self):
+        result = classify(
+            verification("opaque failure"),
+            changed_files=["a.py"],
+            progress={"status": "churn_without_verified_progress"},
+        )
+        self.assertEqual(result["category"], "no_progress")
+        self.assertEqual(policy(result)["action"], "switch_strategy")
+
+    def test_objective_regression_has_priority(self):
+        result = classify(
+            verification("opaque failure"),
+            changed_files=["a.py"],
+            progress={"status": "regression"},
+        )
+        self.assertEqual(result["category"], "regression")
+
     def test_dependency_failure(self):
         result = classify(verification("ModuleNotFoundError: No module named 'x'"), changed_files=["a.py"])
         self.assertEqual(result["category"], "dependency_failure")

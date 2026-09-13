@@ -32,9 +32,7 @@ def detect_engine(req: dict, github: GitHub) -> str:
     if not isinstance(metadata, dict) or metadata.get('archived'):
         raise StudioError('Target repository is unavailable or archived')
     if metadata.get('size', 0) == 0:
-        brief = str(req.get('brief', '')).lower()
-        mobile_hints = ('flutter', 'android', 'application mobile', 'mobile app', 'apk')
-        return 'flutter' if any(hint in brief for hint in mobile_hints) else 'generic'
+        return 'flutter'
     branch = 'studio/' + req['id']
     exact = _exact_branch_ref(github, branch)
     if exact:
@@ -53,9 +51,7 @@ def detect_engine(req: dict, github: GitHub) -> str:
     paths = [item.get('path') for item in tree['tree'] if isinstance(item, dict) and item.get('type') == 'blob' and isinstance(item.get('path'), str)]
     # Preserve legacy Flutter bootstrap repositories containing only documentation files.
     if set(paths) <= {'README.md', 'LICENSE', '.gitignore'}:
-        brief = str(req.get('brief', '')).lower()
-        mobile_hints = ('flutter', 'android', 'application mobile', 'mobile app', 'apk')
-        return 'flutter' if any(hint in brief for hint in mobile_hints) else 'generic'
+        return 'flutter'
     try:
         return infer(paths).name
     except EngineError as exc:

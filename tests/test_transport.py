@@ -75,6 +75,19 @@ class TransportTests(unittest.TestCase):
             )
         self.assertLessEqual(opener.open.call_args.kwargs["timeout"], 180)
 
+    def test_retry_uses_one_total_timeout_budget(self):
+        api = API(BASE, 'test-token')
+        transient = urllib.error.HTTPError(BASE, 503, 'busy', {}, None)
+        with patch.object(api, '_response', side_effect=[transient, {'ok': True}]) as response_call, \
+             patch('core.time.monotonic', side_effect=[0.0, 0.0, 1.0, 2.0]), \
+             patch('core.time.sleep'):
+            result = api.call('POST', '/chat/completions', {}, timeout_seconds=10)
+        self.assertEqual(result, {'ok': True})
+        first = response_call.call_args_list[0].kwargs['timeout_seconds']
+        second = response_call.call_args_list[1].kwargs['timeout_seconds']
+        self.assertLess(second, first)
+        self.assertLessEqual(first, 10)
+
     def test_completion_explicitly_disables_streaming(self):
         with patch.dict('os.environ', {'STUDIO_API_KEY': 'test'}, clear=True):
             m = Model(1)

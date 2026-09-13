@@ -17,6 +17,7 @@ import urllib.request
 from journeys import CONTRACT, encoded_journeys, validate_journeys
 from provider_health import eligible as provider_eligible, load as load_provider_health, reliability_bonus, record_failure as record_provider_failure, record_success as record_provider_success
 from provider_metrics import latency_bonus, load as load_provider_metrics, record as record_provider_latency
+from routing_history import learned_weights, load as load_routing_history, record as record_routing_event
 
 IMAGE = 'ghcr.io/cirruslabs/flutter:3.44.0@sha256:0a9de3b70b5b7b921a346eb2793e363dc22280849a4fd690d9dde99ce1c2b1b8'
 ROLES = {
@@ -307,22 +308,31 @@ class Model:
         metrics_raw = os.environ.get('STUDIO_PROVIDER_METRICS_PATH', '')
         health_path = Path(health_raw) if health_raw else None
         metrics_path = Path(metrics_raw) if metrics_raw else None
+        history_raw = os.environ.get('STUDIO_ROUTING_HISTORY_PATH', '')
+        history_path = Path(history_raw) if history_raw else None
         health = load_provider_health(health_path) if health_path is not None else {}
         metrics = load_provider_metrics(metrics_path) if metrics_path is not None else {}
+        history = load_routing_history(history_path) if history_path is not None else []
+        weights = learned_weights(history, kind='provider', role=role)
         if health_path is not None:
             provider_candidates = tuple(
                 provider for provider in provider_candidates
                 if provider_eligible(health_path, provider.name)
             )
+        provider_scores = {
+            provider.name: __import__('adaptive_scoring').score_provider(
+                name=provider.name,
+                priority=provider.priority,
+                free_preferred=provider.free_preferred,
+                reliability=reliability_bonus(health, provider.name),
+                latency=latency_bonus(metrics, provider.name, role),
+                weights=weights,
+            )
+            for provider in provider_candidates
+        }
         provider_candidates = tuple(sorted(
             provider_candidates,
-            key=lambda provider: (
-                -(provider.priority
-                  + reliability_bonus(health, provider.name)
-                  + latency_bonus(metrics, provider.name, role)
-                  + (20 if provider.free_preferred else 0)),
-                provider.name,
-            ),
+            key=lambda provider: (-provider_scores[provider.name].total, provider.name),
         ))
         if not provider_candidates:
             raise StudioError('No healthy configured provider supports this model role')
@@ -348,14 +358,26 @@ class Model:
             started = time.monotonic()
             try:
                 r = api.call('POST', '/chat/completions', params)
+                elapsed = time.monotonic() - started
                 if metrics_path is not None:
-                    record_provider_latency(metrics_path, provider.name, role, time.monotonic() - started)
+                    record_provider_latency(metrics_path, provider.name, role, elapsed)
                 responded = True
             except (APIError, StudioError) as exc:
+                elapsed = time.monotonic() - started
                 if metrics_path is not None:
-                    record_provider_latency(metrics_path, provider.name, role, time.monotonic() - started)
+                    record_provider_latency(metrics_path, provider.name, role, elapsed)
                 if health_path is not None:
                     record_provider_failure(health_path, provider.name)
+                if history_path is not None:
+                    record_routing_event(
+                        history_path,
+                        kind='provider',
+                        name=provider.name,
+                        role=role,
+                        score=provider_scores[provider.name].as_dict(),
+                        success=False,
+                        duration_seconds=elapsed,
+                    )
                 last_error = exc
                 continue
             selected_provider = provider.name
@@ -407,6 +429,16 @@ class Model:
                 raise ProtocolError('Model response contains a credential pattern')
             if health_path is not None and selected_provider is not None:
                 record_provider_success(health_path, selected_provider)
+            if history_path is not None and selected_provider is not None:
+                record_routing_event(
+                    history_path,
+                    kind='provider',
+                    name=selected_provider,
+                    role=role,
+                    score=provider_scores[selected_provider].as_dict(),
+                    success=True,
+                    duration_seconds=elapsed,
+                )
             return value
         except ProtocolError:
             if health_path is not None and selected_provider is not None:

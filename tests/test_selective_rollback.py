@@ -101,7 +101,7 @@ class SelectiveRollbackTests(unittest.TestCase):
                 return {"passed":False,"status":"failed"}
 
             result=isolate(root,before=before,verify=verify,max_runs=2)
-            self.assertEqual(result["status"],"full_rollback_required")
+            self.assertEqual(result["status"],"baseline_not_reproducible")
             self.assertEqual((root/"a.py").read_text(),"ok\n")
             self.assertEqual((root/"b.py").read_text(),"ok\n")
             self.assertEqual((root/"c.py").read_text(),"ok\n")

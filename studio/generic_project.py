@@ -24,6 +24,7 @@ from routing_history import record as record_routing_event, load as load_routing
 from meta_router import choose_execution_mode
 from execution_budget import choose_budget
 from predictive_budget import can_start_generation, estimate as estimate_difficulty
+from verification_cost import estimate_seconds as estimate_verification_seconds, load as load_verification_cost, record as record_verification_cost
 from execution_checkpoint import advance as advance_checkpoint, load as load_checkpoint, new as new_checkpoint, save as save_checkpoint, ExecutionCheckpointError
 
 PLAN_SYSTEM = """You are the senior autonomous maintainer of an existing software repository.
@@ -152,9 +153,15 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         )
         if isinstance(last_verification,dict) and last_verification.get("passed") is not True:
             previous_failures += 1
-        verification_seconds = (
+        verification_fallback = (
             float(last_verification.get("elapsed_seconds",0.0))
             if isinstance(last_verification,dict) else None
+        )
+        verification_cost_path = out/".autonomy/verification-cost.json"
+        verification_seconds = estimate_verification_seconds(
+            load_verification_cost(verification_cost_path),
+            state["toolchain"],
+            fallback=verification_fallback,
         )
         difficulty = estimate_difficulty(
             file_count=len(snapshot["files"]),
@@ -491,6 +498,12 @@ Objective and current plan:
                 "used": True,
                 "reason": adaptive_recipe["reason"],
             }
+        record_verification_cost(
+            out/".autonomy/verification-cost.json",
+            state["toolchain"],
+            elapsed_seconds=float(verification.get("elapsed_seconds",0.0) or 0.0),
+            success=verification.get("passed") is True,
+        )
         last_verification = verification
         checkpoint = advance_checkpoint(
             checkpoint,

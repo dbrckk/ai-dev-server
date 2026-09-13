@@ -2,9 +2,12 @@
 from __future__ import annotations
 
 import json
+import os
+from pathlib import Path
 
 from core import API, APIError, ProtocolError, StudioError
 from provider_router import candidates_for, load_providers
+from provider_health import eligible as provider_eligible, record_failure as record_provider_failure, record_success as record_provider_success
 
 
 def _decode(response: dict) -> dict:
@@ -30,8 +33,12 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
         raise StudioError(str(exc)) from None
     role = "implementation" if code else "product"
     providers = candidates_for(role, providers=providers)
+    health_raw = os.environ.get("STUDIO_PROVIDER_HEALTH_PATH", "")
+    health_path = Path(health_raw) if health_raw else None
+    if health_path is not None:
+        providers = tuple(provider for provider in providers if provider_eligible(health_path, provider.name))
     if not providers:
-        raise StudioError("No configured provider available for generic project")
+        raise StudioError("No healthy configured provider available for generic project")
     avoid_models = avoid_models or set()
     avoid_providers = avoid_providers or set()
     preferred = [
@@ -57,12 +64,17 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
             params.update(chat_template_kwargs={"enable_thinking": True}, reasoning_budget=2048)
         try:
             response = api.call("POST", "/chat/completions", params)
-            return _decode(response), {
+            decoded = _decode(response)
+            if health_path is not None:
+                record_provider_success(health_path, provider.name)
+            return decoded, {
                 "provider": provider.name,
                 "model": model,
                 "independent_preference_met": provider.name not in avoid_providers and model not in avoid_models,
             }
         except (APIError, StudioError, ProtocolError) as exc:
+            if health_path is not None:
+                record_provider_failure(health_path, provider.name)
             last = exc
             continue
     raise StudioError("All generic-project providers failed: " + (str(last) if last else "unknown")) from None

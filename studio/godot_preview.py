@@ -147,6 +147,7 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
     if state and state.get('request_hash') != fingerprint:
         raise StudioError('Brief changed for existing Godot id; use a new id')
     state = state or {'request_hash':fingerprint,'status':'pending','engine':'godot','cycles':0,'rounds':0,'blockers':[]}
+    state['publication_request'] = dict(req.get('play_publish', {'enabled':False,'track':'internal','commit':False}))
     if state.get('engine') != 'godot':
         raise StudioError('Checkpoint engine mismatch')
     if state['status'] == 'godot_preview_validated' or state['cycles'] >= req['max_cycles']:

@@ -175,6 +175,7 @@ def run_persistent_project(
     context_path = project_out / AUTONOMY_DIR / "learned-context.json"
     provider_health_path = project_out / AUTONOMY_DIR / "provider-health.json"
     provider_metrics_path = project_out / AUTONOMY_DIR / "provider-metrics.json"
+    routing_history_path = project_out / AUTONOMY_DIR / "routing-history.json"
 
     def context_provider(_goal_state):
         memory = load_memory(memory_path)
@@ -213,9 +214,11 @@ def run_persistent_project(
         previous = os.environ.get("STUDIO_LEARNED_CONTEXT_PATH")
         previous_health = os.environ.get("STUDIO_PROVIDER_HEALTH_PATH")
         previous_metrics = os.environ.get("STUDIO_PROVIDER_METRICS_PATH")
+        previous_history = os.environ.get("STUDIO_ROUTING_HISTORY_PATH")
         os.environ["STUDIO_LEARNED_CONTEXT_PATH"] = str(context_path)
         os.environ["STUDIO_PROVIDER_HEALTH_PATH"] = str(provider_health_path)
         os.environ["STUDIO_PROVIDER_METRICS_PATH"] = str(provider_metrics_path)
+        os.environ["STUDIO_ROUTING_HISTORY_PATH"] = str(routing_history_path)
         try:
             result = run_once(
                 request_path, project_out, work, runner, deadline, clock, baseline_sha
@@ -227,6 +230,8 @@ def run_persistent_project(
             else: os.environ["STUDIO_PROVIDER_HEALTH_PATH"] = previous_health
             if previous_metrics is None: os.environ.pop("STUDIO_PROVIDER_METRICS_PATH", None)
             else: os.environ["STUDIO_PROVIDER_METRICS_PATH"] = previous_metrics
+            if previous_history is None: os.environ.pop("STUDIO_ROUTING_HISTORY_PATH", None)
+            else: os.environ["STUDIO_ROUTING_HISTORY_PATH"] = previous_history
         translated = translate_orchestrator_result(result)
         if translated.get("evidence"):
             translated["tests_passed"] = True

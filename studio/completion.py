@@ -7,6 +7,7 @@ from __future__ import annotations
 
 PREVIEW_STATUS = "validated_preview"
 FINISHED_STATUS = "finished"
+HUMAN_ACTION_STATUS = "human_action_required"
 
 BASE_RELEASE_STAGES = (
     "release_build",
@@ -49,7 +50,7 @@ def required_release_stages(state: dict) -> tuple[str, ...]:
 def completion_report(state: dict) -> dict:
     """Return a deterministic completion assessment without inventing evidence."""
     blockers: list[str] = []
-    if state.get("status") not in (PREVIEW_STATUS, FINISHED_STATUS):
+    if state.get("status") not in (PREVIEW_STATUS, FINISHED_STATUS, HUMAN_ACTION_STATUS):
         blockers.append("preview_not_validated")
     if state.get("validation_contract") != 2:
         blockers.append("acceptance_journeys_not_validated")

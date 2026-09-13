@@ -375,7 +375,29 @@ Objective and current plan:
                         return None
                     if not model_changed:
                         return None
-                    model_verification = verify(work, commands=adaptive_recipe["commands"] if adaptive_recipe else None)
+                    model_verify_timeout = bounded_timeout(
+                        phase_remaining(
+                            phase_quotas,
+                            phase="fallback",
+                            elapsed_seconds=clock() - fallback_started,
+                        ),
+                        minimum=30,
+                        maximum=900,
+                    )
+                    if model_verify_timeout <= 0:
+                        agent_trace.append({
+                            "status":"quota_exhausted",
+                            "candidate":"model",
+                            "phase":"fallback",
+                        })
+                        if before_agent is not None:
+                            restore_agent_workspace(work, before_agent)
+                        return None
+                    model_verification = verify(
+                        work,
+                        timeout_per_command=model_verify_timeout,
+                        commands=adaptive_recipe["commands"] if adaptive_recipe else None,
+                    )
                     model_success = model_verification.get("passed") is True
                     routing_score = model_impl.get("routing_score") if isinstance(model_impl,dict) else None
                     if isinstance(routing_score,dict):
@@ -529,13 +551,6 @@ Objective and current plan:
                 )
                 if not model_first and not (meta_route.mode == "agent_focus" and agent_verified):
                     evaluate_model_candidate()
-                fallback_elapsed = max(0, int(clock() - fallback_started))
-                if fallback_elapsed < phase_quotas.fallback:
-                    phase_quotas = reallocate_phase_quota(
-                        phase_quotas,
-                        phase="fallback",
-                        unused_seconds=phase_quotas.fallback - fallback_elapsed,
-                    )
                 if before_agent is not None:
                     restore_agent_workspace(work, before_agent)
                 viable=[x for x in candidate_records if x.get("changed")]
@@ -569,14 +584,24 @@ Objective and current plan:
                             minimum=30,
                             maximum=180,
                         )
-                        candidate_review,candidate_review_model=ask(
-                            CANDIDATE_REVIEW_SYSTEM,
-                            canonical(review_payload),
-                            code=False,
-                            avoid_models=avoided_models,
-                            timeout_seconds=candidate_review_timeout or 30,
-                        )
-                        winner_id=candidate_review.get("winner")
+                        if candidate_review_timeout <= 0:
+                            verified=[item for item in viable if item["verification"].get("passed") is True]
+                            winner_id=(verified[0] if verified else viable[0])["id"]
+                            candidate_review={
+                                "winner":winner_id,
+                                "reason":"fallback quota exhausted; deterministic verified-first selection",
+                                "scores":{winner_id:100},
+                            }
+                            candidate_review_model=None
+                        else:
+                            candidate_review,candidate_review_model=ask(
+                                CANDIDATE_REVIEW_SYSTEM,
+                                canonical(review_payload),
+                                code=False,
+                                avoid_models=avoided_models,
+                                timeout_seconds=candidate_review_timeout,
+                            )
+                            winner_id=candidate_review.get("winner")
                         if winner_id not in {item["id"] for item in viable}:
                             verified=[item for item in viable if item["verification"].get("passed") is True]
                             winner_id=(verified[0] if verified else viable[0])["id"]
@@ -602,6 +627,14 @@ Objective and current plan:
                 else:
                     if before_agent is not None:
                         restore_agent_workspace(work, before_agent)
+
+                fallback_elapsed = max(0, int(clock() - fallback_started))
+                if fallback_elapsed < phase_quotas.fallback:
+                    phase_quotas = reallocate_phase_quota(
+                        phase_quotas,
+                        phase="fallback",
+                        unused_seconds=phase_quotas.fallback - fallback_elapsed,
+                    )
 
             if not used_external_agent and not changed:
                 direct_model_timeout = bounded_timeout(

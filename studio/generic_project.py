@@ -456,6 +456,10 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
                             state["status"] = "objective_review_blocked"
                             state["objective_review_error"] = str(exc)
                             break
+                    else:
+                        state["status"] = "objective_review_blocked"
+                        state["objective_review_error"] = "final review incomplete without actionable remaining work"
+                        break
                 else:
                     state["status"] = "objective_review_deferred"
                     break
@@ -1732,11 +1736,14 @@ Objective and current plan:
                 "next_stage": None,
             }
 
-    deferred_blockers = (
-        ["repeated verification failure loop detected; resume with a fresh strategy"]
-        if state.get("status") == "failure_loop_stop"
-        else ["verified work remains"]
-    )
+    if state.get("status") == "failure_loop_stop":
+        deferred_blockers = ["repeated verification failure loop detected; resume with a fresh strategy"]
+    elif state.get("status") == "objective_review_deferred":
+        deferred_blockers = ["final objective review could not run within the remaining budget"]
+    elif state.get("status") == "objective_review_blocked":
+        deferred_blockers = [str(state.get("objective_review_error") or "final objective review blocked")]
+    else:
+        deferred_blockers = ["verified work remains"]
     return {
         "status": "deferred",
         "report": {

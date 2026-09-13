@@ -10,11 +10,24 @@ class CostDriftDetector:
     severe_ratio: float = 2.0
     samples: list[dict] = field(default_factory=list)
 
-    def record(self, *, phase: str, expected_seconds: float, observed_seconds: float) -> dict:
+    def record(self, *, phase: str, expected_seconds: float, observed_seconds: float, baseline: dict | None = None) -> dict:
         expected = max(1.0, float(expected_seconds))
         observed = max(0.0, float(observed_seconds))
         ratio = observed / expected
-        if ratio >= self.severe_ratio:
+        source = "fixed_ratio"
+        normalized_deviation = None
+        if isinstance(baseline, dict):
+            mean = max(1.0, float(baseline.get("ema_seconds", 0.0)))
+            deviation = max(1.0, float(baseline.get("ema_abs_deviation", 0.0)))
+            normalized_deviation = (observed - mean) / deviation
+            source = "historical"
+            if normalized_deviation >= 4.0:
+                level = "severe"
+            elif normalized_deviation >= 2.5:
+                level = "elevated"
+            else:
+                level = "normal"
+        elif ratio >= self.severe_ratio:
             level = "severe"
         elif ratio >= self.elevated_ratio:
             level = "elevated"
@@ -26,7 +39,10 @@ class CostDriftDetector:
             "observed_seconds": round(observed, 3),
             "ratio": round(ratio, 3),
             "level": level,
+            "source": source,
         }
+        if normalized_deviation is not None:
+            sample["normalized_deviation"] = round(normalized_deviation, 3)
         self.samples.append(sample)
         return sample
 

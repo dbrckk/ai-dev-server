@@ -1,4 +1,4 @@
-"""Bounded selective rollback for generic-project regressions."""
+"""Bounded delta-debugging for regressive generic-project rounds."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -6,7 +6,7 @@ from typing import Callable
 
 from agents.workspace import restore as restore_workspace, snapshot as snapshot_workspace
 
-MAX_DIAGNOSTIC_RUNS = 6
+MAX_DIAGNOSTIC_RUNS = 8
 MAX_CHANGED_FILES = 24
 
 
@@ -35,6 +35,15 @@ def _materialize(
         target.write_text(text, encoding="utf-8")
 
 
+def _passed(value: dict | None) -> bool:
+    return isinstance(value, dict) and value.get("passed") is True
+
+
+def _halves(items: list[str]) -> tuple[list[str], list[str]]:
+    pivot = max(1, len(items) // 2)
+    return items[:pivot], items[pivot:]
+
+
 def isolate(
     root: Path,
     *,
@@ -42,11 +51,11 @@ def isolate(
     verify: Callable[[], dict],
     max_runs: int = MAX_DIAGNOSTIC_RUNS,
 ) -> dict:
-    """Try to preserve a passing subset of a regressive round.
+    """Preserve the largest proven-safe portion of a regressive round.
 
-    Starts from the current regressed workspace and cumulatively reverts changed
-    files until verification passes. It then greedily re-applies reverted files
-    while preserving a passing state. The result is bounded and deterministic.
+    The original published baseline is re-verified first. A passing baseline is
+    required before attributing the regression to current changes. The rollback
+    set is then reduced by partition tests followed by greedy minimization.
     """
     if not 1 <= max_runs <= MAX_DIAGNOSTIC_RUNS:
         raise ValueError("selective rollback run budget invalid")
@@ -62,6 +71,7 @@ def isolate(
             "reverted_files": [],
             "kept_files": [],
             "verification": None,
+            "strategy": "none",
         }
     if len(changed) > MAX_CHANGED_FILES:
         return {
@@ -72,45 +82,65 @@ def isolate(
             "reverted_files": changed,
             "kept_files": [],
             "verification": None,
+            "strategy": "full_rollback",
         }
 
-    reverted: set[str] = set()
     runs = 0
-    last = None
 
-    # Find a passing state by cumulatively reverting files.
-    for rel in changed:
-        if runs >= max_runs:
-            break
-        reverted.add(rel)
-        _materialize(root, before=before, current=current, reverted=reverted)
-        last = verify()
-        runs += 1
-        if isinstance(last, dict) and last.get("passed") is True:
-            break
-
-    if not isinstance(last, dict) or last.get("passed") is not True:
+    # Establish causality: the authoritative pre-round workspace must still pass.
+    reverted = set(changed)
+    _materialize(root, before=before, current=current, reverted=reverted)
+    baseline = verify()
+    runs += 1
+    if not _passed(baseline):
         restore_workspace(root, before)
         return {
-            "status": "full_rollback_required",
+            "status": "baseline_not_reproducible",
             "attempted": True,
             "diagnostic_runs": runs,
             "changed_files": changed,
             "reverted_files": changed,
             "kept_files": [],
-            "verification": last,
+            "verification": baseline,
+            "strategy": "full_rollback",
         }
 
-    # Minimize the rollback set: re-apply each reverted file if tests stay green.
+    last = baseline
+
+    # Delta-debugging: if reverting only one half still passes, the culprit set is
+    # entirely contained in that half. Recurse while the budget permits.
+    while len(reverted) > 1 and runs < max_runs:
+        ordered = sorted(reverted)
+        left, right = _halves(ordered)
+        narrowed = False
+        for part in (left, right):
+            if not part or runs >= max_runs:
+                break
+            candidate = set(part)
+            _materialize(root, before=before, current=current, reverted=candidate)
+            probe = verify()
+            runs += 1
+            if _passed(probe):
+                reverted = candidate
+                last = probe
+                narrowed = True
+                break
+        if not narrowed:
+            # Culprits likely span partitions; greedy minimization below can still
+            # remove unrelated files from the rollback set.
+            _materialize(root, before=before, current=current, reverted=reverted)
+            break
+
+    # Minimize the proven passing rollback set one file at a time.
     for rel in list(sorted(reverted)):
-        if runs >= max_runs:
+        if runs >= max_runs or len(reverted) <= 1:
             break
         candidate = set(reverted)
         candidate.remove(rel)
         _materialize(root, before=before, current=current, reverted=candidate)
         probe = verify()
         runs += 1
-        if isinstance(probe, dict) and probe.get("passed") is True:
+        if _passed(probe):
             reverted = candidate
             last = probe
         else:
@@ -126,4 +156,5 @@ def isolate(
         "reverted_files": sorted(reverted),
         "kept_files": kept,
         "verification": last,
+        "strategy": "partition_then_minimize",
     }

@@ -79,6 +79,73 @@ class SecurityAuditTests(unittest.TestCase):
             audit = scan(root)
             self.assertIn('unreviewed_git_or_path_dependency', audit['blockers'])
 
+    def test_hosted_dependency_requires_content_hash_and_trusted_registry(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            lock = '''packages:
+  demo_pkg:
+    dependency: direct main
+    description:
+      name: demo_pkg
+      url: "https://packages.example.invalid"
+    source: hosted
+    version: "1.2.3"
+'''
+            self.make_app(root, lock=lock)
+            audit = scan(root)
+            self.assertIn('unreviewed_hosted_registry:demo_pkg', audit['blockers'])
+            self.assertIn('hosted_dependency_without_content_hash:demo_pkg', audit['blockers'])
+
+    def test_cached_mit_license_and_hash_produce_resolved_dependency_evidence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            digest = 'a' * 64
+            lock = f'''packages:
+  demo_pkg:
+    dependency: direct main
+    description:
+      name: demo_pkg
+      sha256: "{digest}"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.3"
+'''
+            self.make_app(root, lock=lock)
+            cache = root / '.studio-cache/pub/hosted/pub.dev/demo_pkg-1.2.3'
+            cache.mkdir(parents=True)
+            (cache / 'LICENSE').write_text(
+                'Permission is hereby granted, free of charge, to any person obtaining a copy '
+                'of this software and associated documentation files.'
+            )
+            audit = scan(root)
+            self.assertTrue(audit['passed'])
+            dep = audit['dependencies'][0]
+            self.assertEqual(dep['sha256'], digest)
+            self.assertEqual(dep['registry'], 'https://pub.dev')
+            self.assertEqual(audit['dependency_licenses'][0]['license'], 'MIT')
+
+    def test_unknown_dependency_license_blocks_release(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            digest = 'b' * 64
+            lock = f'''packages:
+  mystery_pkg:
+    dependency: direct main
+    description:
+      name: mystery_pkg
+      sha256: "{digest}"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.9.9"
+'''
+            self.make_app(root, lock=lock)
+            cache = root / '.studio-cache/pub/hosted/pub.dev/mystery_pkg-9.9.9'
+            cache.mkdir(parents=True)
+            (cache / 'LICENSE').write_text('Custom proprietary terms.')
+            audit = scan(root)
+            self.assertFalse(audit['passed'])
+            self.assertIn('dependency_license_unresolved:mystery_pkg', audit['blockers'])
+
     def test_package_writes_hashed_audit_and_sbom(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / 'app'

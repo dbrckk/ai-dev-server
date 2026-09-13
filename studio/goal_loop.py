@@ -48,7 +48,13 @@ def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_c
             context=context_provider(dict(state))
             if not isinstance(context,list): raise ValueError("goal context invalid")
             cycle_state["learned_context"]=context
-        result=execute_cycle(cycle_state)
+        try:
+            result=execute_cycle(cycle_state)
+        except Exception as exc:
+            # Worker/provider failures are retryable goal attempts. Keep the
+            # persisted state valid and avoid leaking exception details that
+            # may contain credentials or remote response bodies.
+            result={"failure":"cycle_exception:"+type(exc).__name__}
         if not isinstance(result,dict):
             state=record_cycle(state,failure="cycle returned invalid result")
         elif result.get("yield_run") is True:

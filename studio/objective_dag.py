@@ -339,3 +339,43 @@ def task_context(value: dict, task_id: str) -> dict:
         "depends_on": task["depends_on"],
         "verified_dependencies": dependencies,
     }
+
+
+def append_amendments(value: dict, items: list[str]) -> dict:
+    """Append review-derived work after a fully verified DAG."""
+    validate(value)
+    clean = [str(item).strip() for item in items if str(item).strip()]
+    if not clean:
+        raise ObjectiveDagError("objective amendment items invalid")
+    unsigned = dict(value)
+    unsigned.pop("sha256", None)
+    tasks = [dict(task) for task in unsigned["tasks"]]
+    if any(task["state"] != "verified" for task in tasks):
+        raise ObjectiveDagError("objective amendments require verified DAG")
+    if len(tasks) + len(clean) > MAX_TASKS:
+        raise ObjectiveDagError("objective task count invalid")
+
+    all_previous = [task["id"] for task in tasks]
+    prefix_index = 1
+    existing = {task["id"] for task in tasks}
+    previous_new = None
+    for title in clean:
+        while f"amendment-{prefix_index}" in existing:
+            prefix_index += 1
+        task_id = f"amendment-{prefix_index}"
+        dependencies = [previous_new] if previous_new else list(all_previous)
+        tasks.append({
+            "id": task_id,
+            "title": title,
+            "depends_on": dependencies,
+            "state": "ready" if not dependencies or all(dep in all_previous for dep in dependencies) else "blocked",
+            "attempts": 0,
+            "last_commit": None,
+            "last_error": None,
+        })
+        existing.add(task_id)
+        previous_new = task_id
+        prefix_index += 1
+
+    unsigned["tasks"] = tasks
+    return refresh(_seal(unsigned))

@@ -62,7 +62,7 @@ Completed or materially implemented:
 - predictive difficulty budgeting, explicit phase quotas, active timeouts, verification reserves, shared fallback budgets, run-wide cost controls and statistical cost-drift detection;
 - persisted provider health/metrics, routing history, verification costs, phase-cost baselines, strategy efficiency, contextual strategy efficiency, agent performance, project memory and execution checkpoints;
 - capability self-evolution, isolated validation, promotion, rollback and persistence machinery;
-- exact registry-promotion PR identity verification ported directly onto current main (the old PR #118 is now functionally superseded but still open until current CI is green);
+- exact registry-promotion PR identity verification ported directly onto current main; stale PR #118 was closed without merge after its guarantees were superseded and validated on modern main;
 - stronger Flutter software-supply-chain evidence: hosted registry provenance, package content hashes, dependency-type evidence, cached license classification, strong-copyleft/unknown-license fail-closed behavior and enriched SBOM;
 - richer privacy/Data Safety classification for analytics, advertising, auth, crash reporting, location, payments, push notifications and remote backends;
 - a fixed multi-engine E2E benchmark workflow covering Flutter real sandbox build, pinned Godot runtime + real Jumpy probe, and a trusted generic Python fixture;
@@ -72,9 +72,9 @@ Completed or materially implemented:
 Current open trust-boundary / production work:
 
 - PR #118 is stale/unmergeable but its guarantees have been ported to current main; close it after the current HEAD CI is green.
-- current HEAD CI for unit validation, real Flutter build, multi-engine benchmark and fault-injection gate is queued and should be observed before treating this increment as proven.
+- current HEAD CI for unit validation, real Flutter build, multi-engine benchmark and fault-injection gate should still be observed before treating the latest artifact-handoff increment as fully proven.
 - Google Play publication code is implemented, but live end-to-end publication still requires real authorized credentials, Play account agreements and explicit trusted commit approval.
-- signed AAB persistence across separate runner restarts is still stronger for same-run flows than for long-delayed human gates; durable artifact handoff can be improved.
+- signed AAB handoff now survives runner restarts through project-scoped GitHub Actions artifacts, with deterministic prior-artifact selection and exact SHA-256 verification before trusted reuse.
 - full repeated end-to-end proof is still needed on real managed repositories, especially Jumpy, plus at least one Flutter and one generic repository.
 - iOS production build/signing/publication remains outside the current production path.
 - broader asset provenance/license QA and long-duration soak/fault scenarios can still be expanded.
@@ -83,7 +83,7 @@ Current open trust-boundary / production work:
 
 Estimated completion toward the repository's stated final objective:
 
-**93%**
+**94%**
 
 This is weighted by end-to-end production capability rather than file or commit count.
 
@@ -110,20 +110,16 @@ Approximate subsystem maturity:
    - Mobile Studio Real Build
    - Multi-Engine E2E Benchmark
    - Fault Injection Gate
-2. Close stale PR #118 as superseded once those checks are green.
-3. Run durable end-to-end completion on Jumpy and one real Flutter + one generic repository.
-4. Add durable signed-AAB artifact handoff for publication after a long runner restart/human gate.
-5. Exercise the Play validate-only path against a real authorized Play application; only then test an explicitly approved internal-track commit.
-6. Harden remaining asset/license/provenance controls and long-duration restart/provider-failure soak tests.
-7. Refresh README/operator docs after live Play validation is proven.
+2. Run durable end-to-end completion on Jumpy and one real Flutter + one generic repository.
+3. Exercise the Play validate-only path against a real authorized Play application; only then test an explicitly approved internal-track commit.
+4. Harden remaining asset provenance/visual-consistency controls and long-duration restart/provider-failure soak tests.
+5. Refresh README/operator docs after live Play validation is proven.
 
 ## Remaining roadmap
 
-- Close superseded PR #118 after green HEAD validation.
 - Real Jumpy completion cycle with release evidence retained.
 - Real Flutter repository completion through signed AAB and Play edit validation.
 - Real generic repository completion through learned routing + verification.
-- Durable cross-run signed artifact persistence for delayed Play submission.
 - Live Android Publisher API validation with authorized short-lived credentials.
 - Explicitly approved internal-track publication test.
 - Stronger asset provenance/license policy and visual-consistency QA.

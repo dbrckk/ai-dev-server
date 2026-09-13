@@ -7,6 +7,7 @@ from .adapters import AgentAdapter
 from .performance import bonus,eligible,load
 from .registry import DEFAULT_REGISTRY
 from .router import rank_agents
+from routing_history import learned_weights, load as load_routing_history
 
 def _opencode_runtime(prompt:str)->tuple[list[str],dict[str,str]]:
     model=os.environ.get("STUDIO_CODE_MODEL") or os.environ.get("STUDIO_MODEL","")
@@ -51,8 +52,18 @@ def invocation_for(name:str,prompt:str)->tuple[list[str],dict[str,str]]|None:
 
 def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,timeout:int=1800)->dict:
     perf=load(memory_path)
-    ranked=rank_agents(required,registry=DEFAULT_REGISTRY,prefer_free=True,long_task="long_task" in required)
-    ranked.sort(key=lambda x:-(x.score+bonus(perf,x.agent.name,role)))
+    history_raw=os.environ.get("STUDIO_ROUTING_HISTORY_PATH","")
+    history=load_routing_history(Path(history_raw)) if history_raw else []
+    weights=learned_weights(history,kind="agent",role=role)
+    reliability={spec.name:bonus(perf,spec.name,role) for spec in DEFAULT_REGISTRY.all()}
+    ranked=rank_agents(
+        required,
+        registry=DEFAULT_REGISTRY,
+        prefer_free=True,
+        long_task="long_task" in required,
+        reliability=reliability,
+        weights=weights,
+    )
     attempts=[]
     for decision in ranked:
         if not decision.agent.available(): continue
@@ -78,8 +89,18 @@ def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,ti
 
 def ranked_agent_names(required:set[str],*,role:str,memory_path:Path,limit:int=2)->list[str]:
     perf=load(memory_path)
-    ranked=rank_agents(required,registry=DEFAULT_REGISTRY,prefer_free=True,long_task="long_task" in required)
-    ranked.sort(key=lambda x:-(x.score+bonus(perf,x.agent.name,role)))
+    history_raw=os.environ.get("STUDIO_ROUTING_HISTORY_PATH","")
+    history=load_routing_history(Path(history_raw)) if history_raw else []
+    weights=learned_weights(history,kind="agent",role=role)
+    reliability={spec.name:bonus(perf,spec.name,role) for spec in DEFAULT_REGISTRY.all()}
+    ranked=rank_agents(
+        required,
+        registry=DEFAULT_REGISTRY,
+        prefer_free=True,
+        long_task="long_task" in required,
+        reliability=reliability,
+        weights=weights,
+    )
     names=[]
     for decision in ranked:
         if len(names)>=limit:
@@ -107,3 +128,21 @@ def execute_named(name:str,prompt:str,*,cwd:Path,timeout:int=1800)->dict:
     evidence={"agent":run.agent,"status":"passed" if ok else "failed","returncode":run.returncode,
         "duration_seconds":run.duration_seconds,"stdout_tail":run.stdout_tail,"stderr_tail":run.stderr_tail}
     return {"status":"passed" if ok else "failed","selected":run.agent if ok else None,"attempts":[evidence]}
+
+
+def routing_trace_for(name:str,required:set[str],*,role:str,memory_path:Path)->dict|None:
+    perf=load(memory_path)
+    history_raw=os.environ.get("STUDIO_ROUTING_HISTORY_PATH","")
+    history=load_routing_history(Path(history_raw)) if history_raw else []
+    weights=learned_weights(history,kind="agent",role=role)
+    reliability={spec.name:bonus(perf,spec.name,role) for spec in DEFAULT_REGISTRY.all()}
+    ranked=rank_agents(
+        required,
+        registry=DEFAULT_REGISTRY,
+        prefer_free=True,
+        long_task="long_task" in required,
+        reliability=reliability,
+        weights=weights,
+    )
+    decision=next((item for item in ranked if item.agent.name==name),None)
+    return decision.trace if decision is not None else None

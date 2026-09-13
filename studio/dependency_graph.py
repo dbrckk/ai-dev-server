@@ -56,15 +56,18 @@ def _python_imports(root:Path,source:Path,text:str)->set[str]:
             ascend=max(0,node.level-1)
             base=package[:max(0,len(package)-ascend)]
             module=(node.module or "").split(".") if node.module else []
-            parts=[*base,*module]
-            candidates=[]
-            if parts:
-                candidates.append(root.joinpath(*parts).with_suffix(".py"))
-                candidates.append(root.joinpath(*parts,"__init__.py"))
-            for candidate in candidates:
-                if candidate.is_file():
-                    out.add(candidate.relative_to(root).as_posix())
-                    break
+            targets=[[*base,*module]] if module else [
+                [*base,*alias.name.split(".")] for alias in node.names
+            ]
+            for parts in targets:
+                candidates=[]
+                if parts:
+                    candidates.append(root.joinpath(*parts).with_suffix(".py"))
+                    candidates.append(root.joinpath(*parts,"__init__.py"))
+                for candidate in candidates:
+                    if candidate.is_file():
+                        out.add(candidate.relative_to(root).as_posix())
+                        break
         elif isinstance(node,ast.Import):
             for alias in node.names:
                 parts=alias.name.split(".")

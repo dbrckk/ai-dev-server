@@ -39,6 +39,24 @@ class GoalLoopTests(unittest.TestCase):
             self.assertEqual(state["evidence"]["ok"], "proved")
             self.assertEqual(load_goal(goal_path)["status"], "complete")
 
+    def test_worker_exception_is_recorded_and_retried(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            goal_path, registry_path = self.make_paths(root)
+            calls = {"n": 0}
+
+            def execute(state):
+                calls["n"] += 1
+                if calls["n"] == 1:
+                    raise RuntimeError("transient provider failure")
+                return {"evidence": {"ok": "proved"}}
+
+            state = run_goal(goal_path, registry_path, execute, max_cycles=3)
+            self.assertEqual(state["status"], "complete")
+            self.assertEqual(calls["n"], 2)
+            self.assertTrue(any(x == "cycle_exception:RuntimeError" for x in state["failures"]))
+            self.assertFalse(any("transient provider failure" in x for x in state["failures"]))
+
     def test_missing_capability_is_adapted_registered_and_goal_resumes(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

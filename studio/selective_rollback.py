@@ -147,6 +147,19 @@ def isolate(
             _materialize(root, before=before, current=current, reverted=reverted)
 
     kept = sorted(set(changed) - reverted)
+    if not kept:
+        restore_workspace(root, before)
+        return {
+            "status": "full_rollback_required",
+            "attempted": True,
+            "diagnostic_runs": runs,
+            "changed_files": changed,
+            "reverted_files": changed,
+            "kept_files": [],
+            "verification": last,
+            "strategy": "full_rollback",
+        }
+
     _materialize(root, before=before, current=current, reverted=reverted)
     return {
         "status": "partial_rollback_passed",

@@ -17,6 +17,7 @@ import urllib.request
 import zipfile
 
 from core import IMAGE, StudioError
+from android_signing import sign_aab
 from godot_android_export import (MAX_TEMPLATE_ARCHIVE_BYTES, TEMPLATE_ASSET,
                                   TEMPLATE_SHA256, TEMPLATE_URL, _preset_name)
 from godot_runtime import GODOT_VERSION, _copy_project, _host_env, _trusted_binary_hash
@@ -114,44 +115,3 @@ def build_unsigned_aab(project_root:Path,binary:Path,source_template:Path,artifa
                 'binary_sha256':binary_hash,'network':'none','source_project':'not_mounted','signing_material_exposed':False}
 
 
-def _valid_aab(path:Path)->bool:
-    if not path.is_file() or path.is_symlink() or not 0<path.stat().st_size<=AAB_MAX_BYTES: return False
-    try:
-        with zipfile.ZipFile(path) as zf:
-            names=set(zf.namelist())
-            return 'BundleConfig.pb' in names and 'base/manifest/AndroidManifest.xml' in names
-    except zipfile.BadZipFile:
-        return False
-
-
-def _sign_env(password:str)->dict[str,str]:
-    env={k:v for k,v in os.environ.items() if k in {'PATH','HOME','JAVA_HOME'}}
-    env['STUDIO_AAB_STOREPASS']=password; env['STUDIO_AAB_KEYPASS']=password
-    return env
-
-
-def sign_aab(unsigned:Path,signed:Path,keystore:Path,alias:str,password:str,runner=subprocess.run)->dict:
-    unsigned=unsigned.resolve(); signed=signed.resolve(); keystore=keystore.resolve()
-    if not _valid_aab(unsigned): raise StudioError('Unsigned AAB structure invalid')
-    if not keystore.is_file() or keystore.is_symlink(): raise StudioError('Release keystore unavailable')
-    if not isinstance(alias,str) or not re.fullmatch(r'[A-Za-z0-9_.-]{1,80}',alias): raise StudioError('Release keystore alias invalid')
-    if not isinstance(password,str) or not password: raise StudioError('Release keystore password missing')
-    signed.parent.mkdir(parents=True,exist_ok=True); signed.unlink(missing_ok=True)
-    env=_sign_env(password)
-    sign=['jarsigner','-keystore',str(keystore),'-storepass:env','STUDIO_AAB_STOREPASS','-keypass:env','STUDIO_AAB_KEYPASS',
-          '-signedjar',str(signed),str(unsigned),alias]
-    result=runner(sign,env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=180)
-    if result.returncode or not _valid_aab(signed): signed.unlink(missing_ok=True); raise StudioError('AAB signing failed')
-    verify=runner(['jarsigner','-verify','-verbose','-certs',str(signed)],env={k:v for k,v in env.items() if not k.startswith('STUDIO_AAB_')},
-                  stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=180)
-    verify_text=verify.stdout.decode(errors='replace') if isinstance(verify.stdout,bytes) else str(verify.stdout or '')
-    if verify.returncode or 'jar verified.' not in verify_text.lower(): signed.unlink(missing_ok=True); raise StudioError('Signed AAB verification failed')
-    cert=runner(['keytool','-list','-v','-keystore',str(keystore),'-storepass:env','STUDIO_AAB_STOREPASS','-alias',alias],
-                env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=120)
-    cert_text=cert.stdout.decode(errors='replace') if isinstance(cert.stdout,bytes) else str(cert.stdout or '')
-    match=CERT_RE.search(cert_text)
-    if cert.returncode or not match: signed.unlink(missing_ok=True); raise StudioError('Upload certificate fingerprint unavailable')
-    fingerprint=match.group(1).replace(':','').lower()
-    if len(fingerprint)!=64: signed.unlink(missing_ok=True); raise StudioError('Upload certificate fingerprint invalid')
-    return {'passed':True,'signed_aab_sha256':hashlib.sha256(signed.read_bytes()).hexdigest(),'certificate_sha256':fingerprint,
-            'signing_scope':'artifact_only','project_code_had_signing_material':False,'verified_with':'jarsigner'}

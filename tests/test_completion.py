@@ -63,6 +63,23 @@ class CompletionTests(unittest.TestCase):
         self.assertEqual(state["release_status"], "store_ready")
         self.assertTrue(completion_report(state)["finished"])
 
+    def test_play_publish_is_required_only_when_explicitly_enabled(self):
+        state = preview_state()
+        state["publication_request"] = {"enabled": True, "track": "internal", "commit": False}
+        state["release_evidence"] = {
+            "release_build": {"passed": True, "sha256": "abc"},
+            "real_device": True,
+            "capability_qa": {"passed": True, "required_qa_stages": []},
+            "store_metadata": True,
+            "artwork_qa": True,
+            "privacy_policy": True,
+            "security_scan": True,
+        }
+        self.assertEqual(next_stage(state), "play_publish")
+        self.assertFalse(completion_report(state)["finished"])
+        state["release_evidence"]["play_publish"] = {"passed": True, "edit_validated": True, "committed": False}
+        self.assertTrue(apply_completion(state)["finished"])
+
     def test_missing_review_stays_blocked_even_with_release_evidence(self):
         state = preview_state()
         state["code_review"] = {"passed": False, "blockers": ["defect"]}

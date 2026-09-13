@@ -4,7 +4,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from task_context import classify, hierarchy
+from task_context import classify, hierarchy, weighted_contexts
 
 
 class TaskContextTests(unittest.TestCase):
@@ -43,6 +43,18 @@ class TaskContextTests(unittest.TestCase):
             hierarchy("Fix API crash", {"stacks":["python","node"]}),
             ["bugfix","stack:node","stack:python","general"],
         )
+
+    def test_weighted_contexts_capture_multiple_task_signals(self):
+        weighted = dict(weighted_contexts(
+            "Fix backend API bug and add regression tests",
+            {"stacks":["python"]},
+        ))
+        self.assertIn("bugfix", weighted)
+        self.assertIn("backend", weighted)
+        self.assertIn("tests", weighted)
+        self.assertIn("stack:python", weighted)
+        self.assertAlmostEqual(sum(weighted.values()), 1.0)
+        self.assertGreater(weighted["bugfix"], weighted["general"])
 
     def test_general_when_no_signal_exists(self):
         self.assertEqual(classify("Improve the project", {"stacks":[]}), "general")

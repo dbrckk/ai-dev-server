@@ -103,6 +103,24 @@ class ObjectiveDagTests(unittest.TestCase):
         with self.assertRaisesRegex(ObjectiveDagError,"verified DAG"):
             append_amendments(dag,["more work"])
 
+    def test_failed_task_stalls_after_retry_budget(self):
+        dag=new("demo","x",{"work_items":["one"]},"a"*40)
+        for index in range(3):
+            dag=mark_running(dag,"task-1")
+            dag=mark_failed(dag,"task-1",error=f"failure-{index}")
+        info=summary(dag)
+        self.assertIsNone(info["next_task"])
+        self.assertEqual(info["stalled_tasks"][0]["id"],"task-1")
+        self.assertEqual(info["stalled_tasks"][0]["attempts"],3)
+
+    def test_exhausted_task_cannot_run_again(self):
+        dag=new("demo","x",{"work_items":["one"]},"a"*40)
+        for index in range(3):
+            dag=mark_running(dag,"task-1")
+            dag=mark_failed(dag,"task-1",error=f"failure-{index}")
+        with self.assertRaisesRegex(ObjectiveDagError,"retry budget"):
+            mark_running(dag,"task-1")
+
     def test_cycle_is_rejected(self):
         with self.assertRaisesRegex(ObjectiveDagError,"cyclic"):
             new(

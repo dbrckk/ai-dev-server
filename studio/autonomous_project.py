@@ -13,6 +13,7 @@ try:
     from .capability_runtime import execute_capability
     from .project_memory import new_memory, load as load_memory, save as save_memory
     from .goal_learning import context_for_goal, learn_from_cycle
+    from .human_input_request import requires_human_input
 except ImportError:
     from capability_registry import new_registry, save as save_registry, load as load_registry, register, has_capability
     from goal_engine import new_goal, save as save_goal

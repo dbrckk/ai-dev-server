@@ -78,11 +78,18 @@ def _text(result: dict | None) -> str:
 
 
 def classify(verification: dict | None, *, changed_files: list[str] | None = None) -> dict:
+    if verification is None:
+        return {
+            "category": "no_history",
+            "confidence": "high",
+            "reason": "no previous verification exists for this project run",
+            "recovery": "start",
+        }
     if not isinstance(verification, dict):
         return {
             "category": "unknown_failure",
             "confidence": "low",
-            "reason": "verification evidence missing or invalid",
+            "reason": "verification evidence is invalid",
             "recovery": "replan",
         }
     if verification.get("passed") is True:
@@ -176,7 +183,7 @@ def policy(classification: dict, *, repeated_failures: int = 1) -> dict:
     category = classification.get("category")
     repeated = max(0, int(repeated_failures))
 
-    if category == "passed":
+    if category in {"passed", "no_history"}:
         return {"action": "continue", "priority": "normal", "provider_switch": False}
     if category == "dependency_failure":
         return {"action": "repair_dependencies", "priority": "high", "provider_switch": repeated >= 2}

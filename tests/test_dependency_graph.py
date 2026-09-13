@@ -1,0 +1,42 @@
+from pathlib import Path
+import tempfile
+import unittest
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
+
+from dependency_graph import assess, build
+
+
+class DependencyGraphTests(unittest.TestCase):
+    def test_python_import_and_impacted_test(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            (root/"pkg").mkdir()
+            (root/"tests").mkdir()
+            (root/"pkg"/"core.py").write_text("VALUE=1\n")
+            (root/"pkg"/"api.py").write_text("from . import core\n")
+            (root/"tests"/"test_api.py").write_text("from pkg import api\n")
+            graph=build(root)
+            self.assertIn("pkg/core.py",graph["edges"]["pkg/api.py"])
+            impact=assess(graph,["pkg/core.py"])
+            self.assertIn("tests/test_api.py",impact["impacted_tests"])
+
+    def test_js_relative_imports_are_resolved(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            (root/"src").mkdir()
+            (root/"src"/"util.ts").write_text("export const x=1\n")
+            (root/"src"/"main.ts").write_text("import {x} from './util'\n")
+            graph=build(root)
+            self.assertEqual(graph["edges"]["src/main.ts"],["src/util.ts"])
+
+    def test_high_coupling_reduces_patch_width(self):
+        graph={"edges":{"core.py":[]},"reverse":{"core.py":[f"m{i}.py" for i in range(9)]},"tests":[],"edge_count":9}
+        result=assess(graph,["core.py"])
+        self.assertEqual(result["level"],"high")
+        self.assertEqual(result["max_patch_files"],2)
+
+
+if __name__=="__main__":
+    unittest.main()

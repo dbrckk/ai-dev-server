@@ -16,7 +16,7 @@ class MetaRouterTests(unittest.TestCase):
     def test_insufficient_history_keeps_dual_mode(self):
         events = [
             {"kind":"agent","role":"implementation","success":True},
-            {"kind":"provider","role":"implementation","success":True},
+            {"kind":"model_candidate","role":"implementation","success":True},
         ]
         decision = choose_execution_mode(events, role="implementation", agent_available=True)
         self.assertEqual(decision.mode, "dual")
@@ -26,7 +26,7 @@ class MetaRouterTests(unittest.TestCase):
         events = []
         for _ in range(6):
             events.append({"kind":"agent","role":"implementation","success":False})
-            events.append({"kind":"provider","role":"implementation","success":True})
+            events.append({"kind":"model_candidate","role":"implementation","success":True})
         decision = choose_execution_mode(events, role="implementation", agent_available=True)
         self.assertEqual(decision.mode, "model_focus")
         self.assertEqual(decision.agent_limit, 1)
@@ -35,7 +35,7 @@ class MetaRouterTests(unittest.TestCase):
         events = []
         for _ in range(6):
             events.append({"kind":"agent","role":"implementation","success":True})
-            events.append({"kind":"provider","role":"implementation","success":False})
+            events.append({"kind":"model_candidate","role":"implementation","success":False})
         decision = choose_execution_mode(events, role="implementation", agent_available=True)
         self.assertEqual(decision.mode, "agent_focus")
         self.assertEqual(decision.agent_limit, 2)

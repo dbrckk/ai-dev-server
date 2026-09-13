@@ -66,6 +66,29 @@ class MetaRouterTests(unittest.TestCase):
         self.assertEqual(decision.mode,"agent_focus")
         self.assertIn("explore",decision.reason)
 
+    def test_strategy_uncertainty_reduces_meta_route_confidence(self):
+        strategy_data={
+            "model_only":{
+                "samples":4,
+                "successes":4,
+                "ema_cost_seconds":80.0,
+                "ema_success_rate":1.0,
+            },
+            "dual":{
+                "samples":5,
+                "successes":4,
+                "ema_cost_seconds":200.0,
+                "ema_success_rate":0.8,
+            },
+        }
+        decision=choose_execution_mode(
+            [],
+            role="implementation",
+            agent_available=True,
+            strategy_data=strategy_data,
+        )
+        self.assertLess(decision.confidence,4/12)
+
     def test_agent_advantage_keeps_agent_focus(self):
         events = []
         for _ in range(6):

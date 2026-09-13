@@ -77,7 +77,7 @@ def _text(result: dict | None) -> str:
     return re.sub(r"\s+", " ", str(result.get("log_tail", ""))).strip().lower()
 
 
-def classify(verification: dict | None, *, changed_files: list[str] | None = None) -> dict:
+def classify(verification: dict | None, *, changed_files: list[str] | None = None, progress: dict | None = None) -> dict:
     if verification is None:
         return {
             "category": "no_history",
@@ -92,6 +92,23 @@ def classify(verification: dict | None, *, changed_files: list[str] | None = Non
             "reason": "verification evidence is invalid",
             "recovery": "replan",
         }
+    if isinstance(progress, dict):
+        progress_status = progress.get("status")
+        if progress_status == "regression":
+            return {
+                "category": "regression",
+                "confidence": "high",
+                "reason": "repository progress evidence shows verification regressed from passing to failing",
+                "recovery": "revert_or_target_regression",
+            }
+        if progress_status in {"no_progress", "churn_without_verified_progress"}:
+            return {
+                "category": "no_progress",
+                "confidence": "high",
+                "reason": "repository delta did not improve trusted verification evidence",
+                "recovery": "switch_strategy",
+            }
+
     if verification.get("passed") is True:
         return {
             "category": "passed",

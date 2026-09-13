@@ -75,7 +75,12 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     fallback = [provider for provider in providers if provider not in preferred]
     ordered = [*preferred, *fallback]
     last = None
+    total_timeout = max(1.0, min(300.0, float(timeout_seconds)))
+    deadline = time.monotonic() + total_timeout
     for provider in ordered:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
         model = provider.model_for(role)
         api = API(provider.base, provider.key)
         params = {
@@ -91,7 +96,7 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
             params.update(chat_template_kwargs={"enable_thinking": True}, reasoning_budget=2048)
         started = time.monotonic()
         try:
-            response = api.call("POST", "/chat/completions", params, timeout_seconds=timeout_seconds)
+            response = api.call("POST", "/chat/completions", params, timeout_seconds=remaining)
             elapsed = time.monotonic() - started
             if metrics_path is not None:
                 record_provider_latency(metrics_path, provider.name, role, elapsed)
@@ -133,4 +138,6 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 )
             last = exc
             continue
+    if time.monotonic() >= deadline:
+        raise StudioError("Generic model call quota timed out") from None
     raise StudioError("All generic-project providers failed: " + (str(last) if last else "unknown")) from None

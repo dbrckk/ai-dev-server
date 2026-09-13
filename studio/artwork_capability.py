@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
+import re
 
 try:
     from .capability_registry import has_capability, validate as validate_registry
@@ -21,6 +22,60 @@ REQUIREMENTS={
 
 class ArtworkError(ValueError):
     pass
+
+
+SHA40_RE=re.compile(r"[0-9a-f]{40}")
+SHA256_RE=re.compile(r"[0-9a-f]{64}")
+ALLOWED_LICENSE_STATUS={"generated_original","project_owned","permissive_verified"}
+
+
+def _provider_provenance(selection: dict) -> dict:
+    mode=selection.get("mode")
+    provider=selection.get("provider")
+    evidence=selection.get("evidence")
+    if mode=="deterministic_fallback" and provider=="studio.store_package._brand_image":
+        return {
+            "origin":"studio_generated",
+            "external_sources":False,
+            "license_status":"generated_original",
+            "provider_identity":"trusted_builtin",
+        }
+    if (
+        mode=="capability"
+        and provider=="studio.capabilities.asset_artwork"
+        and isinstance(evidence,dict)
+        and evidence.get("source")=="promoted_factory_capability"
+        and isinstance(evidence.get("candidate_sha"),str)
+        and SHA40_RE.fullmatch(evidence["candidate_sha"])
+    ):
+        return {
+            "origin":"studio_generated",
+            "external_sources":False,
+            "license_status":"generated_original",
+            "provider_identity":evidence["candidate_sha"],
+        }
+    explicit=evidence.get("provenance") if isinstance(evidence,dict) else None
+    if not isinstance(explicit,dict):
+        raise ArtworkError("artwork provider provenance missing")
+    required={"origin","external_sources","license_status","provider_identity"}
+    if set(explicit)!=required:
+        raise ArtworkError("artwork provider provenance invalid")
+    origin=explicit.get("origin")
+    external=explicit.get("external_sources")
+    license_status=explicit.get("license_status")
+    identity=explicit.get("provider_identity")
+    if origin not in {"studio_generated","project_owned","verified_external"}:
+        raise ArtworkError("artwork provenance origin invalid")
+    if type(external) is not bool or license_status not in ALLOWED_LICENSE_STATUS:
+        raise ArtworkError("artwork provenance license invalid")
+    if not isinstance(identity,str) or not identity or len(identity)>200:
+        raise ArtworkError("artwork provenance identity invalid")
+    if external:
+        if origin!="verified_external" or license_status!="permissive_verified" or not SHA256_RE.fullmatch(identity):
+            raise ArtworkError("external artwork provenance insufficient")
+    elif origin=="verified_external":
+        raise ArtworkError("external artwork provenance inconsistent")
+    return dict(explicit)
 
 
 def select_provider(registry):
@@ -105,12 +160,14 @@ def validate_artwork_set(icon_path,feature_path,*,provider_selection,visual_qa):
         raise ArtworkError("provider selection invalid")
     if not isinstance(visual_qa,dict) or visual_qa.get("passed") is not True:
         raise ArtworkError("visual qa required")
+    provenance=_provider_provenance(provider_selection)
     icon=validate_asset(icon_path,"icon")
     feature=validate_asset(feature_path,"feature_graphic")
     return {
         "passed":True,
         "provider":provider_selection["provider"],
         "provider_mode":provider_selection["mode"],
+        "provenance":provenance,
         "assets":{"icon":icon,"feature_graphic":feature},
         "visual_qa":visual_qa,
     }

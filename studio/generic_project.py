@@ -387,6 +387,18 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         agent_candidates.sort(key=lambda item: (-float(item["score"]), item["name"]))
 
         if objective_dag is not None:
+            dag_precheck = objective_dag_summary(objective_dag)
+            if (
+                not dag_precheck.get("complete")
+                and dag_precheck.get("next_task") is None
+                and dag_precheck.get("stalled_tasks")
+            ):
+                state["status"] = "objective_task_stalled"
+                state["objective_dag"] = dag_precheck
+                state["objective_task_stalled"] = dag_precheck.get("stalled_tasks")
+                break
+
+        if objective_dag is not None:
             dag_status = objective_dag_summary(objective_dag)
             if dag_status.get("complete") and isinstance(last_verification, dict) and last_verification.get("passed") is True:
                 final_review_timeout = 120
@@ -1742,6 +1754,12 @@ Objective and current plan:
         deferred_blockers = ["final objective review could not run within the remaining budget"]
     elif state.get("status") == "objective_review_blocked":
         deferred_blockers = [str(state.get("objective_review_error") or "final objective review blocked")]
+    elif state.get("status") == "objective_task_stalled":
+        stalled = state.get("objective_task_stalled") or []
+        deferred_blockers = [
+            "objective task retry budget exhausted: "
+            + ", ".join(str(item.get("id")) for item in stalled if isinstance(item, dict))
+        ]
     else:
         deferred_blockers = ["verified work remains"]
     return {

@@ -10,6 +10,7 @@ from pathlib import Path
 VERSION = 1
 _STATES = {"blocked", "ready", "running", "verified", "failed"}
 MAX_TASKS = 64
+MAX_TASK_ATTEMPTS = 3
 
 
 class ObjectiveDagError(ValueError):
@@ -198,7 +199,10 @@ def next_task(value: dict) -> dict | None:
     validate(value)
     refreshed = refresh(value)
     ready = [task for task in refreshed["tasks"] if task["state"] == "ready"]
-    failed = [task for task in refreshed["tasks"] if task["state"] == "failed"]
+    failed = [
+        task for task in refreshed["tasks"]
+        if task["state"] == "failed" and task["attempts"] < MAX_TASK_ATTEMPTS
+    ]
     candidates = ready or failed
     if not candidates:
         return None
@@ -216,6 +220,8 @@ def mark_running(value: dict, task_id: str) -> dict:
             continue
         if task["state"] not in {"ready", "failed"}:
             raise ObjectiveDagError("objective task not runnable")
+        if task["attempts"] >= MAX_TASK_ATTEMPTS:
+            raise ObjectiveDagError("objective task retry budget exhausted")
         task["state"] = "running"
         task["attempts"] += 1
         task["last_error"] = None
@@ -271,10 +277,21 @@ def summary(value: dict) -> dict:
     for task in refreshed["tasks"]:
         counts[task["state"]] += 1
     current = next_task(refreshed)
+    stalled = [
+        {
+            "id": task["id"],
+            "title": task["title"],
+            "attempts": task["attempts"],
+            "last_error": task.get("last_error"),
+        }
+        for task in refreshed["tasks"]
+        if task["state"] == "failed" and task["attempts"] >= MAX_TASK_ATTEMPTS
+    ]
     return {
         "counts": counts,
         "complete": counts["verified"] == len(refreshed["tasks"]),
         "next_task": current,
+        "stalled_tasks": stalled,
         "tasks": [
             {
                 "id": task["id"],

@@ -7,7 +7,7 @@ from pathlib import Path
 
 from core import API, APIError, ProtocolError, StudioError
 from provider_router import candidates_for, load_providers
-from provider_health import eligible as provider_eligible, record_failure as record_provider_failure, record_success as record_provider_success
+from provider_health import eligible as provider_eligible, load as load_provider_health, reliability_bonus, record_failure as record_provider_failure, record_success as record_provider_success
 
 
 def _decode(response: dict) -> dict:
@@ -36,7 +36,15 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     health_raw = os.environ.get("STUDIO_PROVIDER_HEALTH_PATH", "")
     health_path = Path(health_raw) if health_raw else None
     if health_path is not None:
+        health = load_provider_health(health_path)
         providers = tuple(provider for provider in providers if provider_eligible(health_path, provider.name))
+        providers = tuple(sorted(
+            providers,
+            key=lambda provider: (
+                -(provider.priority + reliability_bonus(health, provider.name) + (20 if provider.free_preferred else 0)),
+                provider.name,
+            ),
+        ))
     if not providers:
         raise StudioError("No healthy configured provider available for generic project")
     avoid_models = avoid_models or set()

@@ -4,7 +4,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from task_context import classify
+from task_context import classify, hierarchy
 
 
 class TaskContextTests(unittest.TestCase):
@@ -36,6 +36,12 @@ class TaskContextTests(unittest.TestCase):
         self.assertEqual(
             classify("Implement the requested feature", {"stacks":["go"]}),
             "backend",
+        )
+
+    def test_hierarchy_falls_back_through_stack_and_general(self):
+        self.assertEqual(
+            hierarchy("Fix API crash", {"stacks":["python","node"]}),
+            ["bugfix","stack:node","stack:python","general"],
         )
 
     def test_general_when_no_signal_exists(self):

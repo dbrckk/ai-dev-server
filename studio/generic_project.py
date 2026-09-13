@@ -231,6 +231,18 @@ Objective and current plan:
                     if not model_changed:
                         return None
                     model_verification = verify(work, commands=adaptive_recipe["commands"] if adaptive_recipe else None)
+                    model_success = model_verification.get("passed") is True
+                    routing_score = model_impl.get("routing_score") if isinstance(model_impl,dict) else None
+                    if isinstance(routing_score,dict):
+                        record_routing_event(
+                            out/".autonomy/routing-history.json",
+                            kind="model_candidate",
+                            name=str(model_impl.get("provider") or "direct-model"),
+                            role="implementation",
+                            score=routing_score,
+                            success=model_success,
+                            duration_seconds=float(model_impl.get("duration_seconds",0.0) or 0.0),
+                        )
                     candidate = {
                         "id":"model",
                         "agent":None,

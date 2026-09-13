@@ -50,6 +50,31 @@ class TransportTests(unittest.TestCase):
         with self.assertRaisesRegex(StudioError, 'non-JSON'):
             self.call_with([r])
 
+    def test_transport_timeout_is_forwarded_to_http_open(self):
+        opener = Mock()
+        opener.open.return_value = response(200, {"ok": True})
+        with patch('core.urllib.request.build_opener', return_value=opener):
+            result = API(BASE, 'test-token').call(
+                'POST',
+                '/chat/completions',
+                {},
+                timeout_seconds=7,
+            )
+        self.assertEqual(result, {"ok": True})
+        self.assertLessEqual(opener.open.call_args.kwargs["timeout"], 7)
+
+    def test_transport_timeout_is_clamped_to_safe_maximum(self):
+        opener = Mock()
+        opener.open.return_value = response(200, {"ok": True})
+        with patch('core.urllib.request.build_opener', return_value=opener):
+            API(BASE, 'test-token').call(
+                'POST',
+                '/chat/completions',
+                {},
+                timeout_seconds=9999,
+            )
+        self.assertLessEqual(opener.open.call_args.kwargs["timeout"], 180)
+
     def test_completion_explicitly_disables_streaming(self):
         with patch.dict('os.environ', {'STUDIO_API_KEY': 'test'}, clear=True):
             m = Model(1)

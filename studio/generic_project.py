@@ -22,6 +22,7 @@ from agents.orchestrator import execute as execute_agent, execute_named as execu
 from agents.workspace import snapshot as snapshot_agent_workspace, validate_delta as validate_agent_delta, restore as restore_agent_workspace
 from routing_history import record as record_routing_event, load as load_routing_history
 from meta_router import choose_execution_mode
+from execution_budget import choose_budget
 from execution_checkpoint import advance as advance_checkpoint, load as load_checkpoint, new as new_checkpoint, save as save_checkpoint, ExecutionCheckpointError
 
 PLAN_SYSTEM = """You are the senior autonomous maintainer of an existing software repository.
@@ -173,7 +174,15 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         agent_trace = []
         agent_used = None
         current_plan = plan
-        for work_pass in range(1, 3):
+        remaining_seconds = None if deadline is None else max(0.0, deadline - clock())
+        round_budget = choose_budget(
+            remaining_seconds=remaining_seconds,
+            previous_verification=last_verification,
+            bootstrap_passed=state["bootstrap"].get("passed") is True,
+            meta_agent_limit=2,
+        )
+        progress_trace.append({"budget": round_budget.as_dict()})
+        for work_pass in range(1, round_budget.max_work_passes + 1):
             implementation_context = {
                 "brief": req["brief"],
                 "plan": current_plan,
@@ -216,7 +225,15 @@ Objective and current plan:
                     agent_available=bool(preliminary_names),
                 )
                 agent_trace.append({"status":"meta_route","decision":meta_route.as_dict()})
-                ranked_names = preliminary_names[:meta_route.agent_limit]
+                remaining_seconds = None if deadline is None else max(0.0, deadline - clock())
+                route_budget = choose_budget(
+                    remaining_seconds=remaining_seconds,
+                    previous_verification=last_verification,
+                    bootstrap_passed=state["bootstrap"].get("passed") is True,
+                    meta_agent_limit=meta_route.agent_limit,
+                )
+                agent_trace.append({"status":"execution_budget","decision":route_budget.as_dict()})
+                ranked_names = preliminary_names[:route_budget.agent_limit]
 
                 def evaluate_model_candidate():
                     if before_agent is not None:
@@ -407,7 +424,7 @@ Objective and current plan:
             if action not in {"work", "verify"}:
                 action = "verify"
             progress_trace.append({"pass":work_pass,"decision":progress,"model":progress_model})
-            if action == "verify" or work_pass == 2:
+            if action == "verify" or work_pass == round_budget.max_work_passes:
                 break
             next_work = progress.get("next_work")
             if isinstance(next_work, list) and next_work:

@@ -44,7 +44,7 @@ class AgentRouterTests(unittest.TestCase):
                 {"code_editing", "tests"},
                 registry=self.registry,
                 prefer_free=True,
-                reliability={"free-code": -20.0, "paid-code": 20.0},
+                reliability={"free-code": 20.0, "paid-code": -20.0},
                 weights={"reliability": 1.25},
             )
         self.assertEqual(ranked[0].agent.name, "free-code")

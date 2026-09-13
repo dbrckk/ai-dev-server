@@ -23,6 +23,7 @@ from agents.workspace import snapshot as snapshot_agent_workspace, validate_delt
 from routing_history import record as record_routing_event, load as load_routing_history
 from meta_router import choose_execution_mode
 from execution_budget import choose_budget
+from predictive_budget import can_start_generation, estimate as estimate_difficulty
 from execution_checkpoint import advance as advance_checkpoint, load as load_checkpoint, new as new_checkpoint, save as save_checkpoint, ExecutionCheckpointError
 
 PLAN_SYSTEM = """You are the senior autonomous maintainer of an existing software repository.
@@ -144,6 +145,24 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             break
         star_context=recommend('implementation',out)
         snapshot = _snapshot(work)
+        previous_failures = sum(
+            1 for item in state["rounds"]
+            if isinstance(item,dict) and isinstance(item.get("verification"),dict)
+            and item["verification"].get("passed") is not True
+        )
+        if isinstance(last_verification,dict) and last_verification.get("passed") is not True:
+            previous_failures += 1
+        verification_seconds = (
+            float(last_verification.get("elapsed_seconds",0.0))
+            if isinstance(last_verification,dict) else None
+        )
+        difficulty = estimate_difficulty(
+            file_count=len(snapshot["files"]),
+            source_bytes=int(snapshot["bytes"]),
+            previous_failures=previous_failures,
+            verification_seconds=verification_seconds,
+            bootstrap_passed=state["bootstrap"].get("passed") is True,
+        )
         learned_context = load_context()
         agent_perf = load_agent_performance(out/".autonomy/agent-performance.json")
         agent_candidates = []
@@ -180,9 +199,28 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             previous_verification=last_verification,
             bootstrap_passed=state["bootstrap"].get("passed") is True,
             meta_agent_limit=2,
+            predicted_work_passes=difficulty.recommended_work_passes,
+            predicted_agent_limit=difficulty.recommended_agent_limit,
+            predicted_reserve_seconds=difficulty.verification_reserve_seconds,
         )
-        progress_trace.append({"budget": round_budget.as_dict()})
+        progress_trace.append({
+            "budget": round_budget.as_dict(),
+            "difficulty": difficulty.as_dict(),
+        })
         for work_pass in range(1, round_budget.max_work_passes + 1):
+            current_remaining = None if deadline is None else max(0.0, deadline - clock())
+            if not can_start_generation(
+                remaining_seconds=current_remaining,
+                reserve_seconds=round_budget.reserve_seconds,
+            ):
+                progress_trace.append({
+                    "pass":work_pass,
+                    "decision":{
+                        "action":"verify",
+                        "reason":"verification reserve protected; new generation skipped",
+                    },
+                })
+                break
             implementation_context = {
                 "brief": req["brief"],
                 "plan": current_plan,
@@ -231,6 +269,9 @@ Objective and current plan:
                     previous_verification=last_verification,
                     bootstrap_passed=state["bootstrap"].get("passed") is True,
                     meta_agent_limit=meta_route.agent_limit,
+                    predicted_work_passes=difficulty.recommended_work_passes,
+                    predicted_agent_limit=difficulty.recommended_agent_limit,
+                    predicted_reserve_seconds=difficulty.verification_reserve_seconds,
                 )
                 agent_trace.append({"status":"execution_budget","decision":route_budget.as_dict()})
                 ranked_names = preliminary_names[:route_budget.agent_limit]

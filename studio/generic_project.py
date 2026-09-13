@@ -1098,10 +1098,15 @@ Objective and current plan:
             timeout=120,
         )
         stability_required = fragility_context.get("extra_verification") is True
+        available_verification_quota = phase_remaining(
+            phase_quotas,
+            phase="verification",
+            elapsed_seconds=clock() - verification_started,
+        )
         primary_verification_quota = (
-            max(30.0, phase_quotas.verification / 2.0)
-            if stability_required and phase_quotas.verification >= 60
-            else phase_quotas.verification
+            max(30.0, available_verification_quota / 2.0)
+            if stability_required and available_verification_quota >= 60
+            else available_verification_quota
         )
         verification_timeout = bounded_timeout(
             primary_verification_quota,

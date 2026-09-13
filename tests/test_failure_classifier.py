@@ -21,6 +21,11 @@ def verification(log="", returncode=1, status="failed", passed=False):
 
 
 class FailureClassifierTests(unittest.TestCase):
+    def test_no_history_starts_cleanly(self):
+        result = classify(None)
+        self.assertEqual(result["category"], "no_history")
+        self.assertEqual(policy(result)["action"], "continue")
+
     def test_dependency_failure(self):
         result = classify(verification("ModuleNotFoundError: No module named 'x'"), changed_files=["a.py"])
         self.assertEqual(result["category"], "dependency_failure")

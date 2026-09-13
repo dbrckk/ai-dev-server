@@ -50,7 +50,10 @@ def choose_execution_mode(events: list[dict], *, role: str, agent_available: boo
         )
         if selected is not None:
             strategy, info = selected
-            confidence = min(1.0, float(info["samples"]) / 12.0)
+            confidence = min(
+                1.0,
+                (float(info["samples"]) / 12.0) * (1.0 - float(info.get("uncertainty", 0.0))),
+            )
             mapping = {
                 "model_only": ("model_only", 0),
                 "agent_only": ("agent_focus", 1),

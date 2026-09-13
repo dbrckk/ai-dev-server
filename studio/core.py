@@ -15,7 +15,7 @@ import uuid
 import urllib.error
 import urllib.request
 from journeys import CONTRACT, encoded_journeys, validate_journeys
-from provider_health import eligible as provider_eligible, record_failure as record_provider_failure, record_success as record_provider_success
+from provider_health import eligible as provider_eligible, load as load_provider_health, reliability_bonus, record_failure as record_provider_failure, record_success as record_provider_success
 
 IMAGE = 'ghcr.io/cirruslabs/flutter:3.44.0@sha256:0a9de3b70b5b7b921a346eb2793e363dc22280849a4fd690d9dde99ce1c2b1b8'
 ROLES = {
@@ -305,10 +305,18 @@ class Model:
         health_raw = os.environ.get('STUDIO_PROVIDER_HEALTH_PATH', '')
         health_path = Path(health_raw) if health_raw else None
         if health_path is not None:
+            health = load_provider_health(health_path)
             provider_candidates = tuple(
                 provider for provider in provider_candidates
                 if provider_eligible(health_path, provider.name)
             )
+            provider_candidates = tuple(sorted(
+                provider_candidates,
+                key=lambda provider: (
+                    -(provider.priority + reliability_bonus(health, provider.name) + (20 if provider.free_preferred else 0)),
+                    provider.name,
+                ),
+            ))
         if not provider_candidates:
             raise StudioError('No healthy configured provider supports this model role')
         messages = [{'role': 'system', 'content': ROLES[role] + '\n' + (CONTRACT if role in ('product', 'implementation') else '') + schema}, {'role': 'user', 'content': content if screenshots else context}]

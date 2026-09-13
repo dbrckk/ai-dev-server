@@ -182,6 +182,10 @@ def run_registered_stages(request_path,project_out,work,report,deadline,runner,c
         try: remaining=_remaining(deadline,clock)
         except TimeoutError: return {'status':stage.deferred_status,'report':report,'next_stage':name}
         result=runner(_stage_command(name,stage,request_path,work,project_out),timeout=remaining)
+        if result.returncode==2:
+            updated=load_report(project_out)
+            return {'status':'human_action_required','report':updated,'next_stage':name,
+                    'human_action':updated.get('human_action')}
         if result.returncode!=0: return {'status':stage.failed_status,'report':load_report(project_out),'next_stage':name}
         updated=load_report(project_out); updated_completion=updated.get('completion',{}); next_name=updated_completion.get('next_stage') if isinstance(updated_completion,dict) else None
         if next_name==name and not updated_completion.get('finished'): raise StudioError('Successful stage did not advance completion state: '+name)

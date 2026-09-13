@@ -75,6 +75,9 @@ class GithubRunnerPersistentTests(unittest.TestCase):
                  patch("github_runner.RepoGitHub"), \
                  patch("github_runner.restore_local"), \
                  patch("github_runner.restore_memory_local"), \
+                 patch("github_runner.restore_agent_performance_local"), \
+                 patch("github_runner.restore_provider_health_local"), \
+                 patch("github_runner.restore_execution_checkpoint_local"), \
                  patch("github_runner.run_persistent_project",return_value=state), \
                  patch("github_runner.load_project_memory",return_value={"memory":"before"}), \
                  patch("github_runner.ingest_run",side_effect=lambda *a,**k:(order.append("ingest") or {"memory":"after"})), \

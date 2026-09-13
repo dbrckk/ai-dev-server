@@ -58,9 +58,11 @@ class EngineEntryTests(unittest.TestCase):
         self.assertEqual(detect_engine(REQ, gh), 'godot')
         self.assertNotIn('/branches/main', gh.calls)
 
-    def test_unknown_existing_engine_fails_closed(self):
-        with self.assertRaisesRegex(StudioError, 'Unsupported project engine'):
-            detect_engine(REQ, FakeGitHub(default_paths=['package.json','src/index.js']))
+    def test_existing_non_specialized_repository_uses_generic_engine(self):
+        self.assertEqual(
+            detect_engine(REQ, FakeGitHub(default_paths=['package.json','src/index.js'])),
+            'generic',
+        )
 
 
 if __name__ == '__main__':

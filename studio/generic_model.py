@@ -30,7 +30,7 @@ def _decode(response: dict) -> dict:
     return value
 
 
-def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | None = None, avoid_providers: set[str] | None = None, timeout_seconds: int | float = 300) -> tuple[dict, dict]:
+def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | None = None, avoid_providers: set[str] | None = None, provider_bias: dict[str, float] | None = None, timeout_seconds: int | float = 300) -> tuple[dict, dict]:
     try:
         providers = load_providers(prefer_free=True)
     except ValueError as exc:
@@ -60,9 +60,13 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
         )
         for provider in providers
     }
+    provider_bias = provider_bias or {}
     providers = tuple(sorted(
         providers,
-        key=lambda provider: (-provider_scores[provider.name].total, provider.name),
+        key=lambda provider: (
+            -(provider_scores[provider.name].total + max(-20.0, min(20.0, float(provider_bias.get(provider.name, 0.0))))),
+            provider.name,
+        ),
     ))
     if not providers:
         raise StudioError("No healthy configured provider available for generic project")
@@ -118,6 +122,7 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 "model": model,
                 "independent_preference_met": provider.name not in avoid_providers and model not in avoid_models,
                 "routing_score": provider_scores[provider.name].as_dict(),
+                "zone_bias": max(-20.0, min(20.0, float(provider_bias.get(provider.name, 0.0)))),
                 "duration_seconds": elapsed,
             }
         except (APIError, StudioError, ProtocolError) as exc:

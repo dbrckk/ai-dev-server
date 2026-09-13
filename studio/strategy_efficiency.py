@@ -171,6 +171,13 @@ def exploration_cadence(data: dict, *, allowed: set[str] | None = None) -> int:
     if not mature:
         return EXPLORATION_EVERY
     mature.sort(key=lambda item: (-item[1]["efficiency"], item[0]))
+    # A material recent-vs-cumulative gap indicates a regime change. Increase
+    # exploration immediately rather than waiting for long-term averages.
+    if any(
+        abs(float(info["recent_success_rate"]) - float(info["cumulative_success_rate"])) >= 0.20
+        for _, info in mature
+    ):
+        return MIN_EXPLORATION_EVERY
     winner = mature[0][1]
     winner_samples = int(winner["samples"])
     if len(mature) == 1:

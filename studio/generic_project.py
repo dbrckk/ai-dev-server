@@ -20,7 +20,8 @@ from agents.router import rank_agents
 from agents.performance import load as load_agent_performance, bonus as agent_bonus, record as record_agent_performance
 from agents.orchestrator import execute as execute_agent, execute_named as execute_named_agent, ranked_agent_names, routing_trace_for
 from agents.workspace import snapshot as snapshot_agent_workspace, validate_delta as validate_agent_delta, restore as restore_agent_workspace
-from routing_history import record as record_routing_event
+from routing_history import record as record_routing_event, load as load_routing_history
+from meta_router import choose_execution_mode
 from execution_checkpoint import advance as advance_checkpoint, load as load_checkpoint, new as new_checkpoint, save as save_checkpoint, ExecutionCheckpointError
 
 PLAN_SYSTEM = """You are the senior autonomous maintainer of an existing software repository.
@@ -202,12 +203,20 @@ Objective and current plan:
                 })
 
                 candidate_records = []
-                ranked_names = ranked_agent_names(
+                routing_events = load_routing_history(out/".autonomy/routing-history.json")
+                preliminary_names = ranked_agent_names(
                     {"code_editing","repo_analysis"},
                     role="implementation",
                     memory_path=out/".autonomy/agent-performance.json",
                     limit=2,
                 )
+                meta_route = choose_execution_mode(
+                    routing_events,
+                    role="implementation",
+                    agent_available=bool(preliminary_names),
+                )
+                agent_trace.append({"status":"meta_route","decision":meta_route.as_dict()})
+                ranked_names = preliminary_names[:meta_route.agent_limit]
                 for candidate_name in (ranked_names if before_agent is not None else []):
                     restore_agent_workspace(work, before_agent)
                     agent_result = execute_named_agent(candidate_name, agent_prompt, cwd=work, timeout=1200)

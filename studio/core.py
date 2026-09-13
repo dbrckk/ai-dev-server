@@ -18,6 +18,7 @@ from journeys import CONTRACT, encoded_journeys, validate_journeys
 from provider_health import eligible as provider_eligible, load as load_provider_health, reliability_bonus, record_failure as record_provider_failure, record_success as record_provider_success
 from provider_metrics import latency_bonus, load as load_provider_metrics, record as record_provider_latency
 from routing_history import learned_weights, load as load_routing_history, record as record_routing_event
+from adaptive_scoring import score_provider
 
 IMAGE = 'ghcr.io/cirruslabs/flutter:3.44.0@sha256:0a9de3b70b5b7b921a346eb2793e363dc22280849a4fd690d9dde99ce1c2b1b8'
 ROLES = {
@@ -320,7 +321,7 @@ class Model:
                 if provider_eligible(health_path, provider.name)
             )
         provider_scores = {
-            provider.name: __import__('adaptive_scoring').score_provider(
+            provider.name: score_provider(
                 name=provider.name,
                 priority=provider.priority,
                 free_preferred=provider.free_preferred,
@@ -443,10 +444,30 @@ class Model:
         except ProtocolError:
             if health_path is not None and selected_provider is not None:
                 record_provider_failure(health_path, selected_provider)
+            if history_path is not None and selected_provider is not None:
+                record_routing_event(
+                    history_path,
+                    kind='provider',
+                    name=selected_provider,
+                    role=role,
+                    score=provider_scores[selected_provider].as_dict(),
+                    success=False,
+                    duration_seconds=elapsed,
+                )
             raise
         except (KeyError, IndexError, TypeError, ValueError, UnicodeError, RecursionError):
             if health_path is not None and selected_provider is not None:
                 record_provider_failure(health_path, selected_provider)
+            if history_path is not None and selected_provider is not None:
+                record_routing_event(
+                    history_path,
+                    kind='provider',
+                    name=selected_provider,
+                    role=role,
+                    score=provider_scores[selected_provider].as_dict(),
+                    success=False,
+                    duration_seconds=elapsed,
+                )
             raise ProtocolError('Provider returned invalid structured output') from None
 
 class Sandbox:

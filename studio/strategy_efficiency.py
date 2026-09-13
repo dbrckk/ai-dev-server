@@ -7,6 +7,7 @@ import tempfile
 from pathlib import Path
 
 ALPHA = 0.25
+SUCCESS_ALPHA = 0.25
 MAX_STRATEGIES = 8
 MIN_SAMPLES = 4
 VALID_STRATEGIES = {
@@ -32,13 +33,18 @@ def load(path: Path) -> dict:
         try:
             samples = max(0, int(row.get("samples", 0)))
             successes = max(0, int(row.get("successes", 0)))
+            successes = min(successes, samples)
             ema_cost = max(0.0, float(row.get("ema_cost_seconds", 0.0)))
+            fallback_rate = (successes / samples) if samples else 0.0
+            ema_success = float(row.get("ema_success_rate", fallback_rate))
+            ema_success = max(0.0, min(1.0, ema_success))
         except (TypeError, ValueError):
             continue
         clean[name] = {
             "samples": samples,
-            "successes": min(successes, samples),
+            "successes": successes,
             "ema_cost_seconds": ema_cost,
+            "ema_success_rate": ema_success,
         }
     return clean
 
@@ -65,15 +71,33 @@ def record(path: Path, strategy: str, *, success: bool, cost_seconds: float) -> 
     if strategy not in VALID_STRATEGIES:
         raise ValueError("strategy invalid")
     data = load(path)
-    row = data.get(strategy, {"samples": 0, "successes": 0, "ema_cost_seconds": 0.0})
+    row = data.get(strategy, {
+        "samples": 0,
+        "successes": 0,
+        "ema_cost_seconds": 0.0,
+        "ema_success_rate": 0.0,
+    })
     samples = int(row["samples"])
     cost = max(0.0, float(cost_seconds))
     previous = float(row["ema_cost_seconds"])
     ema = cost if samples == 0 else (ALPHA * cost + (1.0 - ALPHA) * previous)
+    observed_success = 1.0 if success else 0.0
+    previous_success = float(
+        row.get(
+            "ema_success_rate",
+            (int(row["successes"]) / samples) if samples else observed_success,
+        )
+    )
+    ema_success = (
+        observed_success
+        if samples == 0
+        else SUCCESS_ALPHA * observed_success + (1.0 - SUCCESS_ALPHA) * previous_success
+    )
     data[strategy] = {
         "samples": samples + 1,
         "successes": int(row["successes"]) + int(bool(success)),
         "ema_cost_seconds": ema,
+        "ema_success_rate": max(0.0, min(1.0, ema_success)),
     }
     _save(path, data)
     return data
@@ -85,13 +109,22 @@ def metrics(data: dict, strategy: str) -> dict | None:
         return None
     samples = int(row["samples"])
     successes = int(row["successes"])
-    success_rate = successes / samples if samples else 0.0
+    cumulative_success_rate = successes / samples if samples else 0.0
+    recent_success_rate = max(
+        0.0,
+        min(1.0, float(row.get("ema_success_rate", cumulative_success_rate))),
+    )
+    # Blend long-term evidence with recent behavior. Recent performance gets
+    # more weight so regime changes are detected without discarding history.
+    success_rate = 0.4 * cumulative_success_rate + 0.6 * recent_success_rate
     cost = max(1.0, float(row.get("ema_cost_seconds", 0.0)))
-    # Scale to successes per 100 seconds for readable values.
+    # Scale to verified successes per 100 seconds for readable values.
     efficiency = success_rate * 100.0 / cost
     return {
         "samples": samples,
         "success_rate": success_rate,
+        "cumulative_success_rate": cumulative_success_rate,
+        "recent_success_rate": recent_success_rate,
         "ema_cost_seconds": cost,
         "efficiency": efficiency,
     }
@@ -107,7 +140,13 @@ def best_strategy(data: dict, *, allowed: set[str] | None = None) -> tuple[str, 
             candidates.append((strategy, info))
     if not candidates:
         return None
-    candidates.sort(key=lambda item: (-item[1]["efficiency"], -item[1]["success_rate"], item[1]["ema_cost_seconds"], item[0]))
+    candidates.sort(key=lambda item: (
+        -item[1]["efficiency"],
+        -item[1]["recent_success_rate"],
+        -item[1]["success_rate"],
+        item[1]["ema_cost_seconds"],
+        item[0],
+    ))
     return candidates[0]
 
 

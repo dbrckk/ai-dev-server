@@ -39,7 +39,11 @@ def required_release_stages(state: dict) -> tuple[str, ...]:
             for stage in requested:
                 if stage in ALLOWED_DYNAMIC_QA and stage not in dynamic:
                     dynamic.append(stage)
-    return BASE_RELEASE_STAGES + tuple(dynamic) + POST_QA_STAGES
+    stages = BASE_RELEASE_STAGES + tuple(dynamic) + POST_QA_STAGES
+    publication = state.get("publication_request", {})
+    if isinstance(publication, dict) and publication.get("enabled") is True:
+        stages += ("play_publish",)
+    return stages
 
 
 def completion_report(state: dict) -> dict:

@@ -185,6 +185,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         if deadline is not None and clock() >= deadline - 60:
             break
         round_repository_before = snapshot_repository_progress(work)
+        previous_verification_for_round = last_verification
         loop_decision = decide_failure_loop(state["rounds"], prior=failure_memory_seed)
         state["failure_loop"] = loop_decision
         if loop_decision["action"] == "stop":
@@ -1062,9 +1063,7 @@ Objective and current plan:
         repository_progress = compare_repository_progress(
             round_repository_before,
             round_repository_after,
-            previous_verification=last_verification if last_verification is not verification else (
-                state["rounds"][-1].get("verification") if state["rounds"] else resumed_verification
-            ),
+            previous_verification=previous_verification_for_round,
             current_verification=verification,
         )
         round_failure_classification = classify_failure(

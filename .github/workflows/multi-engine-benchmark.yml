@@ -34,7 +34,7 @@ jobs:
   godot:
     name: Godot and Jumpy runtime smoke
     runs-on: ubuntu-24.04
-    timeout-minutes: 18
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -80,6 +80,18 @@ jobs:
         run: |
           python studio/godot_repository_probe.py dbrckk/Jumpy f32cc45e2e1b8713c3aa41961810bcbc90ab97c0 --out /tmp/jumpy-godot-probe.json
           python -m json.tool /tmp/jumpy-godot-probe.json
+      - name: Reproduce and verify pinned Jumpy finance/save regressions
+        env:
+          PYTHONPATH: studio
+        run: python studio/godot_baseline.py --verify-save-fix
+      - name: Preserve Jumpy regression evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: multi-engine-jumpy-${{ github.run_id }}
+          path: studio-output/jumpy-baseline/
+          if-no-files-found: warn
+          retention-days: 14
 
   flutter:
     name: Flutter real sandbox smoke

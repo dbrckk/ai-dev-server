@@ -115,6 +115,11 @@ def run(context):
             "asset_count": len(assets),
             "primary": primary,
             "accent": accent,
+            "provenance": {
+                "origin": "studio_generated",
+                "external_sources": False,
+                "license_status": "generated_original",
+            },
         },
         "assets": assets,
     }

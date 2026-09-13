@@ -16,6 +16,7 @@ import urllib.error
 import urllib.request
 from journeys import CONTRACT, encoded_journeys, validate_journeys
 from provider_health import eligible as provider_eligible, load as load_provider_health, reliability_bonus, record_failure as record_provider_failure, record_success as record_provider_success
+from provider_metrics import latency_bonus, load as load_provider_metrics, record as record_provider_latency
 
 IMAGE = 'ghcr.io/cirruslabs/flutter:3.44.0@sha256:0a9de3b70b5b7b921a346eb2793e363dc22280849a4fd690d9dde99ce1c2b1b8'
 ROLES = {
@@ -303,20 +304,26 @@ class Model:
         from provider_router import candidates_for
         provider_candidates = candidates_for(role, screenshots=bool(screenshots), providers=self.providers)
         health_raw = os.environ.get('STUDIO_PROVIDER_HEALTH_PATH', '')
+        metrics_raw = os.environ.get('STUDIO_PROVIDER_METRICS_PATH', '')
         health_path = Path(health_raw) if health_raw else None
+        metrics_path = Path(metrics_raw) if metrics_raw else None
+        health = load_provider_health(health_path) if health_path is not None else {}
+        metrics = load_provider_metrics(metrics_path) if metrics_path is not None else {}
         if health_path is not None:
-            health = load_provider_health(health_path)
             provider_candidates = tuple(
                 provider for provider in provider_candidates
                 if provider_eligible(health_path, provider.name)
             )
-            provider_candidates = tuple(sorted(
-                provider_candidates,
-                key=lambda provider: (
-                    -(provider.priority + reliability_bonus(health, provider.name) + (20 if provider.free_preferred else 0)),
-                    provider.name,
-                ),
-            ))
+        provider_candidates = tuple(sorted(
+            provider_candidates,
+            key=lambda provider: (
+                -(provider.priority
+                  + reliability_bonus(health, provider.name)
+                  + latency_bonus(metrics, provider.name, role)
+                  + (20 if provider.free_preferred else 0)),
+                provider.name,
+            ),
+        ))
         if not provider_candidates:
             raise StudioError('No healthy configured provider supports this model role')
         messages = [{'role': 'system', 'content': ROLES[role] + '\n' + (CONTRACT if role in ('product', 'implementation') else '') + schema}, {'role': 'user', 'content': content if screenshots else context}]
@@ -338,10 +345,15 @@ class Model:
             if api.base == 'https://integrate.api.nvidia.com/v1' and selected_model.startswith('nvidia/nemotron-3-'):
                 params.update(chat_template_kwargs={'enable_thinking': True}, reasoning_budget=2048)
             print('Model role: ' + role + '; provider: ' + provider.name + '; model: ' + selected_model, flush=True)
+            started = time.monotonic()
             try:
                 r = api.call('POST', '/chat/completions', params)
+                if metrics_path is not None:
+                    record_provider_latency(metrics_path, provider.name, role, time.monotonic() - started)
                 responded = True
             except (APIError, StudioError) as exc:
+                if metrics_path is not None:
+                    record_provider_latency(metrics_path, provider.name, role, time.monotonic() - started)
                 if health_path is not None:
                     record_provider_failure(health_path, provider.name)
                 last_error = exc

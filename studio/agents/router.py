@@ -23,7 +23,10 @@ def _score(spec: AgentSpec, required: set[str], prefer_free: bool, long_task: bo
     if missing:
         score -= 35.0 * len(missing)
     if prefer_free:
-        score += 15.0 if spec.free_preferred else -20.0
+        # Free-first is a routing policy, not a weak hint. Keep priority
+        # relevant inside the same cost class while ensuring a fully capable
+        # free agent wins over an otherwise comparable paid agent.
+        score += 30.0 if spec.free_preferred else -30.0
     if long_task:
         score += 20.0 if spec.long_running else -10.0
     if not spec.available():

@@ -193,7 +193,13 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             "available_agent_candidates": agent_candidates[:6],
         }
         planning_started = clock()
-        plan, plan_model = ask(PLAN_SYSTEM, canonical(plan_payload), code=False)
+        planning_timeout = bounded_timeout(phase_quotas.planning if 'phase_quotas' in locals() else 180, minimum=30, maximum=300)
+        plan, plan_model = ask(
+            PLAN_SYSTEM,
+            canonical(plan_payload),
+            code=False,
+            timeout_seconds=planning_timeout or 30,
+        )
         checkpoint = advance_checkpoint(checkpoint, round_index=round_index, phase="planned")
         save_checkpoint(checkpoint_path, checkpoint)
         changed = []
@@ -329,7 +335,28 @@ Objective and current plan:
                     if before_agent is not None:
                         restore_agent_workspace(work, before_agent)
                     try:
-                        model_patch, model_impl = ask(IMPLEMENT_SYSTEM, canonical(implementation_context), code=True)
+                        model_timeout = bounded_timeout(
+                            phase_remaining(
+                                phase_quotas,
+                                phase="implementation",
+                                elapsed_seconds=clock() - implementation_started,
+                            ),
+                            minimum=30,
+                            maximum=300,
+                        )
+                        if model_timeout <= 0:
+                            agent_trace.append({
+                                "status":"quota_exhausted",
+                                "candidate":"model",
+                                "phase":"implementation",
+                            })
+                            return None
+                        model_patch, model_impl = ask(
+                            IMPLEMENT_SYSTEM,
+                            canonical(implementation_context),
+                            code=True,
+                            timeout_seconds=model_timeout,
+                        )
                         model_files = validate_patch(model_patch)
                         model_changed = _apply(work, {"files":model_files})
                     except (StudioError, ValueError) as exc:
@@ -499,11 +526,17 @@ Objective and current plan:
                             for item in viable
                             if isinstance(item.get("model"),dict) and isinstance(item.get("model",{}).get("model"),str)
                         }
+                        candidate_review_timeout = bounded_timeout(
+                            phase_quotas.fallback,
+                            minimum=30,
+                            maximum=180,
+                        )
                         candidate_review,candidate_review_model=ask(
                             CANDIDATE_REVIEW_SYSTEM,
                             canonical(review_payload),
                             code=False,
                             avoid_models=avoided_models,
+                            timeout_seconds=candidate_review_timeout or 30,
                         )
                         winner_id=candidate_review.get("winner")
                         if winner_id not in {item["id"] for item in viable}:
@@ -533,16 +566,52 @@ Objective and current plan:
                         restore_agent_workspace(work, before_agent)
 
             if not used_external_agent and not changed:
-                patch, impl_model = ask(IMPLEMENT_SYSTEM, canonical(implementation_context), code=True)
+                direct_model_timeout = bounded_timeout(
+                    phase_remaining(
+                        phase_quotas,
+                        phase="implementation",
+                        elapsed_seconds=clock() - implementation_started,
+                    ),
+                    minimum=30,
+                    maximum=300,
+                )
+                if direct_model_timeout <= 0:
+                    progress_trace.append({
+                        "pass":work_pass,
+                        "decision":{
+                            "action":"verify",
+                            "reason":"implementation model quota exhausted",
+                        },
+                    })
+                    break
+                patch, impl_model = ask(
+                    IMPLEMENT_SYSTEM,
+                    canonical(implementation_context),
+                    code=True,
+                    timeout_seconds=direct_model_timeout,
+                )
                 changed.extend(_apply(work, patch))
                 implementation_models.append(impl_model)
-            progress, progress_model = ask(PROGRESS_SYSTEM, canonical({
-                "brief": req["brief"],
-                "plan": current_plan,
-                "changed_files": changed,
-                "repository": _snapshot(work, 320_000),
-                "previous_verification": last_verification,
-            }), code=False)
+            progress_timeout = bounded_timeout(
+                phase_remaining(
+                    phase_quotas,
+                    phase="implementation",
+                    elapsed_seconds=clock() - implementation_started,
+                ),
+                minimum=30,
+                maximum=120,
+            )
+            if progress_timeout <= 0:
+                progress = {"action":"verify","reason":"implementation phase quota exhausted","next_work":[]}
+                progress_model = None
+            else:
+                progress, progress_model = ask(PROGRESS_SYSTEM, canonical({
+                    "brief": req["brief"],
+                    "plan": current_plan,
+                    "changed_files": changed,
+                    "repository": _snapshot(work, 320_000),
+                    "previous_verification": last_verification,
+                }), code=False, timeout_seconds=progress_timeout)
             action = progress.get("action")
             if action not in {"work", "verify"}:
                 action = "verify"
@@ -645,7 +714,17 @@ Objective and current plan:
             }
             review_model = None
         else:
-            review, review_model = ask(REVIEW_SYSTEM, canonical(review_context), code=False)
+            review_timeout = bounded_timeout(
+                review_remaining,
+                minimum=30,
+                maximum=180,
+            )
+            review, review_model = ask(
+                REVIEW_SYSTEM,
+                canonical(review_context),
+                code=False,
+                timeout_seconds=review_timeout or 30,
+            )
         review_elapsed = max(0, int(clock() - review_started))
         if review_elapsed < phase_quotas.review:
             phase_quotas = reallocate_phase_quota(

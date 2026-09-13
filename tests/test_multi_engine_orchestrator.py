@@ -78,6 +78,10 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                 if fail_stage=='final': return subprocess.CompletedProcess(args,1)
                 report={'engine':'godot','status':'godot_technical_store_ready','release_status':'technical_store_ready','completion':{'finished':False,'next_stage':'godot_play_submission'},'coverage':{'release_artifact':True,'release_signed':True,'store_metadata':True,'privacy_qa':True,'security_qa':True,'final_review':True}}
                 (out/'report.json').write_text(json.dumps(report))
+            elif script=='studio/godot_play_stage.py':
+                if fail_stage=='play': return subprocess.CompletedProcess(args,1)
+                report={'engine':'godot','status':'godot_play_validated','release_status':'play_validated','completion':{'finished':True,'next_stage':None},'coverage':{'release_artifact':True,'release_signed':True,'store_metadata':True,'privacy_qa':True,'security_qa':True,'final_review':True,'play_publish':True}}
+                (out/'report.json').write_text(json.dumps(report))
             return subprocess.CompletedProcess(args,0)
         return runner,calls
 
@@ -94,6 +98,18 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
             result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
         self.assertEqual(result['status'],'human_action_required'); self.assertEqual(result['next_stage'],'godot_play_submission')
         self.assertTrue(any('studio/godot_final_review_stage.py' in call for call in calls))
+
+    def test_opt_in_play_validation_can_complete_godot_pipeline(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); out=root/'out'
+            request=dict(REQUEST)
+            request['play_publish']={'enabled':True,'track':'internal','commit':False}
+            req=root/'request.json'; req.write_text(json.dumps(request))
+            runner,calls=self._runner(out,release_ready=True)
+            result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
+        self.assertEqual(result['status'],'complete')
+        self.assertIsNone(result['next_stage'])
+        self.assertTrue(any('studio/godot_play_stage.py' in call for call in calls))
 
     def test_credentials_lost_between_preflight_and_signing_return_to_human_action(self):
         with tempfile.TemporaryDirectory() as td:

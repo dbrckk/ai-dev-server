@@ -25,7 +25,7 @@ from meta_router import choose_execution_mode
 from execution_budget import choose_budget
 from predictive_budget import can_start_generation, estimate as estimate_difficulty
 from verification_cost import estimate_seconds as estimate_verification_seconds, load as load_verification_cost, record as record_verification_cost
-from phase_budget import allocate as allocate_phase_quotas, reallocate_unused as reallocate_phase_quota
+from phase_budget import allocate as allocate_phase_quotas, reallocate_unused as reallocate_phase_quota, phase_remaining, bounded_timeout
 from execution_checkpoint import advance as advance_checkpoint, load as load_checkpoint, new as new_checkpoint, save as save_checkpoint, ExecutionCheckpointError
 
 PLAN_SYSTEM = """You are the senior autonomous maintainer of an existing software repository.
@@ -231,6 +231,20 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         })
         implementation_started = clock()
         for work_pass in range(1, round_budget.max_work_passes + 1):
+            implementation_remaining = phase_remaining(
+                phase_quotas,
+                phase="implementation",
+                elapsed_seconds=clock() - implementation_started,
+            )
+            if implementation_remaining <= 0:
+                progress_trace.append({
+                    "pass": work_pass,
+                    "decision": {
+                        "action": "verify",
+                        "reason": "implementation phase quota exhausted",
+                    },
+                })
+                break
             current_remaining = None if deadline is None else max(0.0, deadline - clock())
             if not can_start_generation(
                 remaining_seconds=current_remaining,
@@ -351,7 +365,31 @@ Objective and current plan:
                 if not model_verified:
                     for candidate_name in (ranked_names if before_agent is not None else []):
                         restore_agent_workspace(work, before_agent)
-                        agent_result = execute_named_agent(candidate_name, agent_prompt, cwd=work, timeout=1200)
+                        agent_timeout = bounded_timeout(
+                            min(
+                                phase_remaining(
+                                    phase_quotas,
+                                    phase="implementation",
+                                    elapsed_seconds=clock() - implementation_started,
+                                ),
+                                phase_quotas.fallback,
+                            ),
+                            minimum=30,
+                            maximum=1200,
+                        )
+                        if agent_timeout <= 0:
+                            agent_trace.append({
+                                "status":"quota_exhausted",
+                                "agent":candidate_name,
+                                "phase":"implementation",
+                            })
+                            break
+                        agent_result = execute_named_agent(
+                            candidate_name,
+                            agent_prompt,
+                            cwd=work,
+                            timeout=agent_timeout,
+                        )
                         agent_trace.append(agent_result)
                         if agent_result.get("status") != "passed":
                             continue
@@ -363,7 +401,16 @@ Objective and current plan:
                             continue
                         if not delta["changed"]:
                             continue
-                        candidate_verification = verify(work, commands=adaptive_recipe["commands"] if adaptive_recipe else None)
+                        candidate_verify_timeout = bounded_timeout(
+                            phase_quotas.fallback,
+                            minimum=30,
+                            maximum=900,
+                        )
+                        candidate_verification = verify(
+                            work,
+                            timeout_per_command=candidate_verify_timeout or 30,
+                            commands=adaptive_recipe["commands"] if adaptive_recipe else None,
+                        )
                         duration = 0.0
                         for attempt in agent_result.get("attempts",[]):
                             if isinstance(attempt,dict) and attempt.get("agent")==candidate_name:
@@ -503,7 +550,16 @@ Objective and current plan:
             )
         recommend('testing',out)
         verification_started = clock()
-        verification = verify(work, commands=adaptive_recipe["commands"] if adaptive_recipe else None)
+        verification_timeout = bounded_timeout(
+            phase_quotas.verification,
+            minimum=30,
+            maximum=900,
+        )
+        verification = verify(
+            work,
+            timeout_per_command=verification_timeout or 30,
+            commands=adaptive_recipe["commands"] if adaptive_recipe else None,
+        )
         if verification.get("status") == "no_verifier":
             adaptive_recipe, verifier_model = synthesize_verifier(
                 work,
@@ -511,7 +567,20 @@ Objective and current plan:
                 previous=last_verification,
             )
             save_recipe(adaptive_path, adaptive_recipe, verifier_model)
-            verification = verify(work, commands=adaptive_recipe["commands"])
+            adaptive_verify_timeout = bounded_timeout(
+                phase_remaining(
+                    phase_quotas,
+                    phase="verification",
+                    elapsed_seconds=clock() - verification_started,
+                ),
+                minimum=30,
+                maximum=900,
+            )
+            verification = verify(
+                work,
+                timeout_per_command=adaptive_verify_timeout or 30,
+                commands=adaptive_recipe["commands"],
+            )
             verification["adaptive"] = {
                 "used": True,
                 "reason": adaptive_recipe["reason"],

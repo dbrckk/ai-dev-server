@@ -23,14 +23,24 @@ def _validate(data):
     for name, row in data.items():
         if name not in VALID_STRATEGIES or not isinstance(row, dict):
             raise StrategyEfficiencyStoreError("strategy efficiency entry invalid")
-        if set(row) != {"samples", "successes", "ema_cost_seconds"}:
+        allowed_fields={"samples","successes","ema_cost_seconds","ema_success_rate"}
+        if not set(row).issubset(allowed_fields) or not {"samples","successes","ema_cost_seconds"}.issubset(row):
             raise StrategyEfficiencyStoreError("strategy efficiency fields invalid")
         samples=row["samples"]; successes=row["successes"]; cost=row["ema_cost_seconds"]
         if type(samples) is not int or samples < 0 or type(successes) is not int or successes < 0 or successes > samples:
             raise StrategyEfficiencyStoreError("strategy efficiency counters invalid")
         if not isinstance(cost,(int,float)) or isinstance(cost,bool) or cost < 0:
             raise StrategyEfficiencyStoreError("strategy efficiency cost invalid")
-        clean[name]={"samples":samples,"successes":successes,"ema_cost_seconds":float(cost)}
+        fallback_rate=(successes/samples) if samples else 0.0
+        recent=row.get("ema_success_rate",fallback_rate)
+        if not isinstance(recent,(int,float)) or isinstance(recent,bool) or not 0.0 <= float(recent) <= 1.0:
+            raise StrategyEfficiencyStoreError("strategy efficiency recent success invalid")
+        clean[name]={
+            "samples":samples,
+            "successes":successes,
+            "ema_cost_seconds":float(cost),
+            "ema_success_rate":float(recent),
+        }
     return clean
 
 

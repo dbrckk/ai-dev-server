@@ -43,62 +43,93 @@ GitHub Actions is the primary CI. Android jobs use Ubuntu 24.04, install the And
 
 ## Current state — 2026-09-13
 
-The factory is now substantially beyond the 2026-09-09 snapshot.
+The factory now has a mature autonomous engineering core across Flutter, Godot and generic repositories.
 
 Completed or materially implemented:
 
-- multi-engine routing exists for Flutter, Godot and a generic repository engine;
-- Godot has repository probing, runtime journeys, visual QA, Android export/device QA, privacy/security QA, release artifact QA, store metadata QA and final review stages;
-- the generic engine performs repository analysis, planning, implementation, real verification, review, checkpoints and iterative continuation across Node, Python, Go, Rust, Maven, Gradle, .NET and additional detected toolchains;
-- provider routing now learns reliability and latency per role, persists health/metrics and uses bounded circuit-breaking;
-- external-agent routing learns verified performance by role and can compare direct-model vs agent candidates;
-- meta-routing learns verified-success efficiency for model-only, agent-only, model→agent, agent→model and dual strategies;
-- strategy learning is recency-aware, uncertainty/risk-adjusted, uses bounded deterministic exploration and detects regime shifts;
-- strategy selection now learns by task context and stack, with hierarchical fallback and weighted multi-label contexts;
-- execution has predictive difficulty budgeting, explicit phase quotas, active phase timeouts, shared fallback quotas, verification reserves, run-wide cost controls and statistical cost-drift detection;
-- verification cost and phase-cost baselines are persisted by toolchain;
-- routing history, strategy efficiency, contextual strategy efficiency, provider health/metrics, agent performance, project memory and execution checkpoints survive GitHub runner restarts;
-- capability self-evolution, isolated validation, promotion, rollback and persistence machinery are extensive and fail closed;
-- privacy, security, SBOM/dependency evidence, store packaging and Godot release/store gates are present;
-- the repository currently contains more than 130 Python test modules and nine GitHub Actions workflows.
+- multi-engine routing for Flutter, Godot and generic repositories;
+- generic repository analysis, planning, implementation, verification, review, checkpointing and bounded continuation across Node, Python, Go, Rust, Maven, Gradle, .NET and additional detected toolchains;
+- Godot repository import/probing, runtime journeys, visual QA, Android export/device QA, release artifact QA, store metadata, privacy/security QA, final release review and opt-in trusted Google Play publication;
+- Flutter real-device/release pipeline, trusted Android artifact-only production signing, Play metadata/privacy/security gates and opt-in trusted Google Play publication;
+- shared Android AAB signer strips prior JAR signatures, keeps keystores outside the project workspace, passes passwords only through trusted process environment and verifies the signed bundle/certificate;
+- Android Publisher v3 edit workflow implemented as validate-first by default: create edit, upload AAB, update track, validate, optional explicit commit;
+- explicit human-action states for missing keystore/token/commit approval, without regenerating an already validated application;
+- provider routing with reliability, latency, circuit breaking and bounded transport timeouts;
+- external-agent routing and verified candidate comparison;
+- meta-routing that learns verified-success efficiency for model-only, agent-only, model→agent, agent→model and dual strategies;
+- recency-aware, uncertainty-adjusted, bounded explore/exploit strategy learning with regime-shift detection;
+- hierarchical and weighted multi-label task-context strategy learning;
+- predictive difficulty budgeting, explicit phase quotas, active timeouts, verification reserves, shared fallback budgets, run-wide cost controls and statistical cost-drift detection;
+- persisted provider health/metrics, routing history, verification costs, phase-cost baselines, strategy efficiency, contextual strategy efficiency, agent performance, project memory and execution checkpoints;
+- capability self-evolution, isolated validation, promotion, rollback and persistence machinery;
+- exact registry-promotion PR identity verification ported directly onto current main (the old PR #118 is now functionally superseded but still open until current CI is green);
+- stronger Flutter software-supply-chain evidence: hosted registry provenance, package content hashes, dependency-type evidence, cached license classification, strong-copyleft/unknown-license fail-closed behavior and enriched SBOM;
+- richer privacy/Data Safety classification for analytics, advertising, auth, crash reporting, location, payments, push notifications and remote backends;
+- a fixed multi-engine E2E benchmark workflow covering Flutter real sandbox build, pinned Godot runtime + real Jumpy probe, and a trusted generic Python fixture;
+- an integrated fault-injection CI gate covering provider outage, circuit breaker, checkpoint tampering, run-cost exhaustion, adaptation-state tampering and registry-promotion identity changes;
+- 141 Python test modules, 170 studio Python modules and 11 GitHub Actions workflows.
 
-Current open trust-boundary work:
+Current open trust-boundary / production work:
 
-- PR #118, `Verify exact registry promotion PR before activation`, remains open. Its head `55d23d60fad567c3f5b2357e6ef600e668a557c6` has successful validation/mobile-build evidence, but the PR has not been merged.
-- autonomous production signing / keystore lifecycle and direct Play Console publication are not yet implemented as a complete trusted path.
-- the full final objective still needs repeated end-to-end proof on real managed repositories, especially Jumpy, rather than relying only on component/unit/smoke coverage.
-- graphics/provenance, licensing/dependency policy and privacy/Data Safety classification can still be hardened for broader production use.
-- the current weighted contextual strategy routing is implemented but its latest main-head CI should be observed before considering that increment fully proven.
+- PR #118 is stale/unmergeable but its guarantees have been ported to current main; close it after the current HEAD CI is green.
+- current HEAD CI for unit validation, real Flutter build, multi-engine benchmark and fault-injection gate is queued and should be observed before treating this increment as proven.
+- Google Play publication code is implemented, but live end-to-end publication still requires real authorized credentials, Play account agreements and explicit trusted commit approval.
+- signed AAB persistence across separate runner restarts is still stronger for same-run flows than for long-delayed human gates; durable artifact handoff can be improved.
+- full repeated end-to-end proof is still needed on real managed repositories, especially Jumpy, plus at least one Flutter and one generic repository.
+- iOS production build/signing/publication remains outside the current production path.
+- broader asset provenance/license QA and long-duration soak/fault scenarios can still be expanded.
 
 ## Progress estimate
 
 Estimated completion toward the repository's stated final objective:
 
-**86%**
+**93%**
 
-This percentage is weighted by end-to-end capability rather than file/commit count. The autonomous engineering core is roughly in the mid-90% range; the remaining percentage is dominated by production publication/signing, capability-promotion closure, and real-world end-to-end evidence.
+This is weighted by end-to-end production capability rather than file or commit count.
+
+Approximate subsystem maturity:
+
+- autonomous orchestration / persistence / recovery: 97%
+- generic engine: 96%
+- Flutter engineering/release pipeline: 96%
+- Godot engineering/release pipeline: 95%
+- adaptive routing / agents / provider learning: 98%
+- budgeting / drift / cost control: 98%
+- self-evolution / capability promotion: 92%
+- security / SBOM / dependency provenance: 92%
+- privacy / Data Safety preclassification: 91%
+- Android production signing: 90%
+- Google Play API publication path: 86%
+- repeated live end-to-end proof on real repositories: 76%
+- iOS production delivery: 35%
 
 ## Immediate next objective
 
-1. Observe green validation + real-build CI for the current weighted multi-label routing head.
-2. Reconcile or merge/replace stale open PR #118 so capability-registry promotion verification is no longer an unresolved branch-level trust boundary.
-3. Add a trusted Android signing/keystore abstraction that never exposes signing material to generated/model-controlled code.
-4. Add an authorized Play Console publication path with explicit human/legal/payment/store-agreement gates.
-5. Run durable end-to-end cycles on Jumpy and at least one Flutter and one generic repository; turn every real failure into a regression test or capability improvement.
-6. Harden software-supply-chain evidence: license policy, dependency provenance, SBOM enforcement and artifact provenance.
-7. Refresh operator/user documentation once the publication path is stable.
+1. Observe green CI on current main for:
+   - Validate AI Dev Server
+   - Mobile Studio Real Build
+   - Multi-Engine E2E Benchmark
+   - Fault Injection Gate
+2. Close stale PR #118 as superseded once those checks are green.
+3. Run durable end-to-end completion on Jumpy and one real Flutter + one generic repository.
+4. Add durable signed-AAB artifact handoff for publication after a long runner restart/human gate.
+5. Exercise the Play validate-only path against a real authorized Play application; only then test an explicitly approved internal-track commit.
+6. Harden remaining asset/license/provenance controls and long-duration restart/provider-failure soak tests.
+7. Refresh README/operator docs after live Play validation is proven.
 
 ## Remaining roadmap
 
-- Production signing, key rotation and secure keystore integration.
-- Play Console upload/release-track automation when authorized credentials and agreements exist.
-- Close the registry-promotion verification loop represented by PR #118.
-- Repeated Jumpy end-to-end completion, including device/runtime/release evidence.
-- A small fixed cross-engine benchmark portfolio used as a release gate for self-evolution and routing changes.
-- Stronger asset/license/provenance controls and visual-consistency QA.
-- Richer privacy/Data Safety classification for networked/SDK-heavy applications.
-- Long-duration soak/fault-injection tests for runner restarts, provider outages, quota exhaustion and partially completed promotions.
-- Documentation cleanup so README/docs reflect the current adaptive generic/meta-routing architecture.
+- Close superseded PR #118 after green HEAD validation.
+- Real Jumpy completion cycle with release evidence retained.
+- Real Flutter repository completion through signed AAB and Play edit validation.
+- Real generic repository completion through learned routing + verification.
+- Durable cross-run signed artifact persistence for delayed Play submission.
+- Live Android Publisher API validation with authorized short-lived credentials.
+- Explicitly approved internal-track publication test.
+- Stronger asset provenance/license policy and visual-consistency QA.
+- Longer soak tests across runner restarts, provider outages, quota exhaustion and partially completed promotions.
+- Optional future iOS build/signing/App Store production path.
+- Documentation cleanup so README/docs reflect the current adaptive multi-engine architecture.
 
 ## Mandatory context-file convention for every project
 

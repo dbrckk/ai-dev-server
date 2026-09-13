@@ -1058,17 +1058,7 @@ Objective and current plan:
         )
 
         applied_category = failure_classification.get("category", "unknown_failure")
-        if applied_category not in {"no_history", "passed"}:
-            recovery_learning_row = record_recovery_learning(
-                recovery_learning_path,
-                toolchain=state["toolchain"],
-                category=applied_category,
-                action=str(recovery_policy.get("action", "replan")),
-                success=verification.get("passed") is True,
-                duration_seconds=max(0.0, clock() - round_recovery_started),
-            )
-        else:
-            recovery_learning_row = None
+        recovery_learning_row = None
 
         round_state = {
             "round": round_index,
@@ -1103,6 +1093,16 @@ Objective and current plan:
         (out / "generic-report.json").write_text(canonical(state))
 
         base_sha = repo.publish(base_sha, work, "Autonomous generic project round " + str(round_index))
+        if applied_category not in {"no_history", "passed"}:
+            recovery_learning_row = record_recovery_learning(
+                recovery_learning_path,
+                toolchain=state["toolchain"],
+                category=applied_category,
+                action=str(recovery_policy.get("action", "replan")),
+                success=verification.get("passed") is True,
+                duration_seconds=max(0.0, clock() - round_recovery_started),
+            )
+            round_state["recovery_learning"] = recovery_learning_row
         durable_failure = decide_failure_loop(state["rounds"], prior=failure_memory_seed)
         failure_memory = advance_failure_memory(
             failure_memory_seed,

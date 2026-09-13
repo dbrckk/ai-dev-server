@@ -113,6 +113,7 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 "model": model,
                 "independent_preference_met": provider.name not in avoid_providers and model not in avoid_models,
                 "routing_score": provider_scores[provider.name].as_dict(),
+                "duration_seconds": elapsed,
             }
         except (APIError, StudioError, ProtocolError) as exc:
             elapsed = time.monotonic() - started

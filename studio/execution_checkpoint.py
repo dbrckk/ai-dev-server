@@ -102,6 +102,25 @@ def advance(
     return _seal(item)
 
 
+def resume(checkpoint: dict, *, project_id: str, engine: str, base_sha: str) -> dict:
+    """Return a checkpoint that is safe to resume against the authoritative Git base.
+
+    Work from planned/implemented/verified phases has not been published yet. After a
+    crash those phases must be discarded rather than replayed with an advanced round
+    number against the previous published commit.
+    """
+    validate(checkpoint)
+    if (
+        checkpoint.get("project_id") != project_id
+        or checkpoint.get("engine") != engine
+        or checkpoint.get("base_sha") != base_sha
+    ):
+        return new(project_id, engine, base_sha)
+    if checkpoint.get("phase") in {"planned", "implemented", "verified"}:
+        return new(project_id, engine, base_sha)
+    return checkpoint
+
+
 def save(path: Path, checkpoint: dict) -> None:
     validate(checkpoint)
     path = Path(path)

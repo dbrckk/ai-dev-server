@@ -6,7 +6,7 @@ import unittest
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from execution_checkpoint import ExecutionCheckpointError, advance, load, new, save
+from execution_checkpoint import ExecutionCheckpointError, advance, load, new, resume, save
 
 
 class ExecutionCheckpointTests(unittest.TestCase):
@@ -37,6 +37,43 @@ class ExecutionCheckpointTests(unittest.TestCase):
             path.write_text(json.dumps(value))
             with self.assertRaisesRegex(ExecutionCheckpointError, "integrity"):
                 load(path)
+
+    def test_interrupted_verified_round_resets_to_authoritative_base(self):
+        checkpoint = new("demo", "generic", "a" * 40)
+        checkpoint = advance(
+            checkpoint,
+            round_index=3,
+            phase="verified",
+            last_verification={"passed": True},
+        )
+        restored = resume(
+            checkpoint,
+            project_id="demo",
+            engine="generic",
+            base_sha="a" * 40,
+        )
+        self.assertEqual(restored["round"], 0)
+        self.assertEqual(restored["phase"], "restored")
+        self.assertIsNone(restored["last_verification"])
+
+    def test_published_round_is_preserved_for_resume(self):
+        checkpoint = new("demo", "generic", "a" * 40)
+        checkpoint = advance(
+            checkpoint,
+            base_sha="b" * 40,
+            round_index=2,
+            phase="published",
+            last_verification={"passed": False},
+        )
+        restored = resume(
+            checkpoint,
+            project_id="demo",
+            engine="generic",
+            base_sha="b" * 40,
+        )
+        self.assertEqual(restored["round"], 2)
+        self.assertEqual(restored["phase"], "published")
+        self.assertFalse(restored["last_verification"]["passed"])
 
     def test_round_cannot_regress(self):
         checkpoint = new("demo", "generic", "a" * 40)

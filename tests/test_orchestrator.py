@@ -120,6 +120,33 @@ class OrchestratorTests(unittest.TestCase):
             self.assertEqual(result['synthesis_status'], 'not_ready')
             self.assertTrue((out / 'evolution-request.json').is_file()); self.assertFalse((out / 'evolution-work-order.json').exists())
 
+    def test_stage_return_code_two_is_human_action_not_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}')
+            def runner(args, timeout):
+                out.mkdir(parents=True, exist_ok=True)
+                if 'studio/run.py' in args:
+                    report = {'status': 'validated_preview'}
+                    rc = 0
+                elif 'studio/post_preview.py' in args:
+                    report = {'status': 'validated_preview', 'completion': {'finished': False, 'next_stage': 'play_publish'}}
+                    rc = 0
+                elif 'studio/play_stage.py' in args:
+                    report = {
+                        'status': 'human_action_required',
+                        'human_action': {'action': 'play_access_token_required'},
+                        'completion': {'finished': False, 'next_stage': 'play_publish'},
+                    }
+                    rc = 2
+                else:
+                    self.fail('unexpected stage ' + str(args))
+                (out / 'report.json').write_text(json.dumps(report))
+                return subprocess.CompletedProcess(args, rc)
+            result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)
+            self.assertEqual(result['status'], 'human_action_required')
+            self.assertEqual(result['human_action']['action'], 'play_access_token_required')
+            self.assertEqual(result['next_stage'], 'play_publish')
+
     def test_successful_stage_must_advance(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}')

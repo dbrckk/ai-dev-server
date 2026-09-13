@@ -78,6 +78,7 @@ class GithubRunnerPersistentTests(unittest.TestCase):
                  patch("github_runner.restore_agent_performance_local"), \
                  patch("github_runner.restore_provider_health_local"), \
                  patch("github_runner.restore_provider_metrics_local"), \
+                 patch("github_runner.restore_routing_history_local"), \
                  patch("github_runner.restore_execution_checkpoint_local"), \
                  patch("github_runner.run_persistent_project",return_value=state), \
                  patch("github_runner.load_project_memory",return_value={"memory":"before"}), \
@@ -88,9 +89,10 @@ class GithubRunnerPersistentTests(unittest.TestCase):
                  patch("github_runner.persist_agent_performance_local",side_effect=lambda *a,**k:order.append("agent-performance")), \
                  patch("github_runner.persist_provider_health_local",side_effect=lambda *a,**k:order.append("provider-health")), \
                  patch("github_runner.persist_provider_metrics_local",side_effect=lambda *a,**k:order.append("provider-metrics")), \
+                 patch("github_runner.persist_routing_history_local",side_effect=lambda *a,**k:order.append("routing-history")), \
                  patch("github_runner.persist_execution_checkpoint_local",side_effect=lambda *a,**k:order.append("execution-checkpoint")):
                 run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha="d"*40)
-            self.assertEqual(order,["ingest","state","memory","agent-performance","provider-health","provider-metrics","execution-checkpoint"])
+            self.assertEqual(order,["ingest","state","memory","agent-performance","provider-health","provider-metrics","routing-history","execution-checkpoint"])
 
     def test_invalid_memory_ingestion_blocks_state_checkpoint(self):
         with tempfile.TemporaryDirectory() as td:

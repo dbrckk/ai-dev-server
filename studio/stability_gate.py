@@ -15,6 +15,11 @@ def combine(primary: dict, recheck: dict) -> dict:
         raise ValueError("stability verification evidence invalid")
     result = dict(primary)
     result["stability_recheck"] = recheck
+    result["elapsed_seconds"] = round(
+        float(primary.get("elapsed_seconds", 0.0) or 0.0)
+        + float(recheck.get("elapsed_seconds", 0.0) or 0.0),
+        3,
+    )
     if recheck.get("passed") is True:
         result["stability_confirmed"] = True
         return result

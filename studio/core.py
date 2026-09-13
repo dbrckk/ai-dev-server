@@ -54,19 +54,20 @@ def request_check(data):
         if type(val) is not int or not 1 <= val <= maximum:
             raise StudioError('Invalid ' + key)
         data[key] = val
-    publish = data.get('play_publish', {'enabled': False, 'track': 'internal', 'commit': False})
-    if not isinstance(publish, dict) or set(publish) - {'enabled', 'track', 'commit'}:
-        raise StudioError('Invalid play_publish')
-    enabled = publish.get('enabled', False)
-    track = publish.get('track', 'internal')
-    commit = publish.get('commit', False)
-    if type(enabled) is not bool or type(commit) is not bool:
-        raise StudioError('Invalid play_publish flags')
-    if track not in {'internal', 'alpha', 'beta', 'production'}:
-        raise StudioError('Invalid play_publish track')
-    if commit and not enabled:
-        raise StudioError('play_publish commit requires enabled=true')
-    data['play_publish'] = {'enabled': enabled, 'track': track, 'commit': commit}
+    if 'play_publish' in data:
+        publish = data['play_publish']
+        if not isinstance(publish, dict) or set(publish) - {'enabled', 'track', 'commit'}:
+            raise StudioError('Invalid play_publish')
+        enabled = publish.get('enabled', False)
+        track = publish.get('track', 'internal')
+        commit = publish.get('commit', False)
+        if type(enabled) is not bool or type(commit) is not bool:
+            raise StudioError('Invalid play_publish flags')
+        if track not in {'internal', 'alpha', 'beta', 'production'}:
+            raise StudioError('Invalid play_publish track')
+        if commit and not enabled:
+            raise StudioError('play_publish commit requires enabled=true')
+        data['play_publish'] = {'enabled': enabled, 'track': track, 'commit': commit}
     return data
 
 def allowed(path):

@@ -26,7 +26,7 @@ from execution_budget import choose_budget
 from predictive_budget import can_start_generation, estimate as estimate_difficulty
 from verification_cost import estimate_seconds as estimate_verification_seconds, load as load_verification_cost, record as record_verification_cost
 from phase_budget import allocate as allocate_phase_quotas, reallocate_unused as reallocate_phase_quota, phase_remaining, bounded_timeout
-from execution_checkpoint import advance as advance_checkpoint, load as load_checkpoint, new as new_checkpoint, save as save_checkpoint, ExecutionCheckpointError
+from execution_checkpoint import advance as advance_checkpoint, load as load_checkpoint, new as new_checkpoint, resume as resume_checkpoint, save as save_checkpoint, ExecutionCheckpointError
 from run_cost_controller import RunCostController
 from cost_drift import CostDriftDetector
 from phase_cost_baseline import baseline as phase_cost_baseline, load as load_phase_cost_baselines, record as record_phase_cost_baseline
@@ -106,12 +106,14 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         checkpoint = load_checkpoint(checkpoint_path) if checkpoint_path.is_file() else new_checkpoint(req["id"], "generic", base_sha)
     except ExecutionCheckpointError:
         checkpoint = new_checkpoint(req["id"], "generic", base_sha)
-    if checkpoint.get("project_id") != req["id"] or checkpoint.get("engine") != "generic":
-        checkpoint = new_checkpoint(req["id"], "generic", base_sha)
-    # The repository checkpoint commit is authoritative. If remote state moved,
-    # discard stale phase metadata rather than replaying work against a different tree.
-    if checkpoint.get("base_sha") != base_sha:
-        checkpoint = new_checkpoint(req["id"], "generic", base_sha)
+    # The published Git commit is authoritative. Identity/base mismatches and
+    # interrupted, unpublished phases are reset before any new round is planned.
+    checkpoint = resume_checkpoint(
+        checkpoint,
+        project_id=req["id"],
+        engine="generic",
+        base_sha=base_sha,
+    )
     save_checkpoint(checkpoint_path, checkpoint)
     resume_round = checkpoint.get("round", 0) if checkpoint.get("phase") in {"published", "complete"} else 0
     resumed_verification = checkpoint.get("last_verification") if resume_round else None

@@ -25,6 +25,17 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
     evidence = build_privacy_package(root, out, state)
     state.setdefault('release_evidence', {})['privacy_policy'] = evidence
     apply_completion(state)
+    if evidence.get('passed') is not True and evidence.get('data_safety', {}).get('status') == 'needs_verified_classification':
+        audit=evidence.get('audit', {})
+        state['human_action'] = {
+            'action': 'data_safety_legal_attestation_required',
+            'detail': 'Verify Google Play Data Safety collection/sharing declarations for detected app capabilities.',
+            'potential_data_classes': list(audit.get('potential_data_classes', [])),
+            'detected_capabilities': list(audit.get('capability_names', [])),
+            'blockers': list(evidence.get('blockers', [])),
+        }
+        state['status'] = 'human_action_required'
+        state['release_status'] = 'human_action_required'
 
     parent = state.get('checkpoint_commit')
     if not parent:
@@ -49,6 +60,8 @@ def main() -> int:
         'next_stage': state.get('completion', {}).get('next_stage'),
         'privacy_passed': evidence.get('passed') if isinstance(evidence, dict) else None,
     }))
+    if state.get('status') == 'human_action_required':
+        return 2
     return 0 if isinstance(evidence, dict) and evidence.get('passed') else 1
 
 

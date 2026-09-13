@@ -18,6 +18,7 @@ from objective_dag import (
     save,
     summary,
     task_context,
+    append_amendments,
 )
 
 
@@ -84,6 +85,23 @@ class ObjectiveDagTests(unittest.TestCase):
         self.assertEqual(next_task(dag)["state"],"failed")
         dag=mark_running(dag,"task-1")
         self.assertEqual(summary(dag)["counts"]["running"],1)
+
+    def test_final_review_amendments_extend_verified_dag(self):
+        dag=new("demo","x",{"work_items":["one"]},"a"*40)
+        dag=mark_running(dag,"task-1")
+        dag=mark_verified(dag,"task-1",commit="b"*40)
+        dag=append_amendments(dag,["fix edge case","add missing docs"])
+        info=summary(dag)
+        first=next(task for task in info["tasks"] if task["id"]=="amendment-1")
+        second=next(task for task in info["tasks"] if task["id"]=="amendment-2")
+        self.assertEqual(first["state"],"ready")
+        self.assertEqual(second["state"],"blocked")
+        self.assertEqual(second["depends_on"],["amendment-1"])
+
+    def test_amendments_require_fully_verified_dag(self):
+        dag=new("demo","x",{"work_items":["one"]},"a"*40)
+        with self.assertRaisesRegex(ObjectiveDagError,"verified DAG"):
+            append_amendments(dag,["more work"])
 
     def test_cycle_is_rejected(self):
         with self.assertRaisesRegex(ObjectiveDagError,"cyclic"):

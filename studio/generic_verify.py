@@ -72,9 +72,10 @@ def discover(root: Path) -> list[list[str]]:
 
 
 def run(root: Path, *, timeout_per_command: int = 900, commands: list[list[str]] | None = None) -> dict:
+    started = time.monotonic()
     commands = discover(root) if commands is None else commands
     if not commands:
-        return {"status": "no_verifier", "passed": False, "commands": [], "results": []}
+        return {"status": "no_verifier", "passed": False, "commands": [], "results": [], "elapsed_seconds": time.monotonic() - started}
     results = []
     all_passed = True
     for command in commands:
@@ -89,4 +90,5 @@ def run(root: Path, *, timeout_per_command: int = 900, commands: list[list[str]]
         "passed": all_passed,
         "commands": commands,
         "results": results,
+        "elapsed_seconds": time.monotonic() - started,
     }

@@ -305,6 +305,7 @@ class Model:
             raise StudioError('No configured provider supports this model role')
         messages = [{'role': 'system', 'content': ROLES[role] + '\n' + (CONTRACT if role in ('product', 'implementation') else '') + schema}, {'role': 'user', 'content': content if screenshots else context}]
         r = None
+        responded = False
         last_error = None
         selected_model = ''
         for provider_index, provider in enumerate(provider_candidates):
@@ -322,13 +323,14 @@ class Model:
             print('Model role: ' + role + '; provider: ' + provider.name + '; model: ' + selected_model, flush=True)
             try:
                 r = api.call('POST', '/chat/completions', params)
+                responded = True
             except (APIError, StudioError) as exc:
                 last_error = exc
                 continue
             self.models_used[role] = selected_model
             self.providers_used[role] = provider.name
             break
-        if r is None:
+        if not responded:
             if isinstance(last_error, APIError):
                 raise StudioError('All configured providers failed; last HTTP status ' + str(last_error.status)) from None
             raise StudioError('All configured providers are unavailable') from None

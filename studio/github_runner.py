@@ -32,6 +32,7 @@ from github_memory_store import GitHubMemoryError, persist_local as persist_memo
 from github_agent_performance_store import AgentPerformanceStoreError, persist_local as persist_agent_performance_local, restore_local as restore_agent_performance_local
 from github_provider_health_store import ProviderHealthStoreError, persist_local as persist_provider_health_local, restore_local as restore_provider_health_local
 from github_execution_checkpoint_store import ExecutionCheckpointStoreError, persist_local as persist_execution_checkpoint_local, restore_local as restore_execution_checkpoint_local
+from github_provider_metrics_store import ProviderMetricsStoreError, persist_local as persist_provider_metrics_local, restore_local as restore_provider_metrics_local
 from improvement_backlog import activate_next, load as load_improvement_backlog, merge_assessment, new_backlog, save as save_improvement_backlog
 from improvement_executor import run_active_improvement, verified_project_cycle
 from human_input_request import prerequisite_satisfied, requires_human_input, write_request as write_human_input_request
@@ -146,6 +147,7 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             restore_memory_local(remote_github,out/'.memory/memory.json')
             restore_agent_performance_local(remote_github,out/'.autonomy/agent-performance.json')
             restore_provider_health_local(remote_github,out/'.autonomy/provider-health.json')
+            restore_provider_metrics_local(remote_github,out/'.autonomy/provider-metrics.json')
             restore_execution_checkpoint_local(remote_github,request['id'],out/'.autonomy/generic-execution-checkpoint.json')
         except RemoteStateError as exc:
             raise StudioError('Remote autonomous state restore failed: '+str(exc)) from None
@@ -155,6 +157,8 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             raise StudioError('Remote agent performance restore failed: '+str(exc)) from None
         except ProviderHealthStoreError as exc:
             raise StudioError('Remote provider health restore failed: '+str(exc)) from None
+        except ProviderMetricsStoreError as exc:
+            raise StudioError('Remote provider metrics restore failed: '+str(exc)) from None
         except ExecutionCheckpointStoreError as exc:
             raise StudioError('Remote execution checkpoint restore failed: '+str(exc)) from None
     goal_path=out/'.autonomy/goal.json'
@@ -397,6 +401,7 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             persist_memory_local(remote_github,memory_path)
             persist_agent_performance_local(remote_github,out/'.autonomy/agent-performance.json')
             persist_provider_health_local(remote_github,out/'.autonomy/provider-health.json')
+            persist_provider_metrics_local(remote_github,out/'.autonomy/provider-metrics.json')
             persist_execution_checkpoint_local(remote_github,request['id'],out/'.autonomy/generic-execution-checkpoint.json')
         except RemoteStateError as exc:
             raise StudioError('Remote autonomous state persistence failed: '+str(exc)) from None
@@ -406,6 +411,8 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             raise StudioError('Remote agent performance persistence failed: '+str(exc)) from None
         except ProviderHealthStoreError as exc:
             raise StudioError('Remote provider health persistence failed: '+str(exc)) from None
+        except ProviderMetricsStoreError as exc:
+            raise StudioError('Remote provider metrics persistence failed: '+str(exc)) from None
         except ExecutionCheckpointStoreError as exc:
             raise StudioError('Remote execution checkpoint persistence failed: '+str(exc)) from None
         except ValueError as exc:

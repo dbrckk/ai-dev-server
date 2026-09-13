@@ -217,74 +217,21 @@ Objective and current plan:
                 )
                 agent_trace.append({"status":"meta_route","decision":meta_route.as_dict()})
                 ranked_names = preliminary_names[:meta_route.agent_limit]
-                for candidate_name in (ranked_names if before_agent is not None else []):
-                    restore_agent_workspace(work, before_agent)
-                    agent_result = execute_named_agent(candidate_name, agent_prompt, cwd=work, timeout=1200)
-                    agent_trace.append(agent_result)
-                    if agent_result.get("status") != "passed":
-                        continue
-                    try:
-                        delta = validate_agent_delta(work, before_agent)
-                    except ValueError as exc:
-                        restore_agent_workspace(work, before_agent)
-                        agent_trace.append({"status":"rejected_delta","agent":candidate_name,"error":str(exc)})
-                        continue
-                    if not delta["changed"]:
-                        continue
-                    candidate_verification = verify(work, commands=adaptive_recipe["commands"] if adaptive_recipe else None)
-                    duration = 0.0
-                    for attempt in agent_result.get("attempts",[]):
-                        if isinstance(attempt,dict) and attempt.get("agent")==candidate_name:
-                            try: duration=float(attempt.get("duration_seconds",0.0))
-                            except (TypeError,ValueError): duration=0.0
-                            break
-                    success = candidate_verification.get("passed") is True
-                    route_trace = routing_trace_for(
-                        candidate_name,
-                        {"code_editing","repo_analysis"},
-                        role="implementation",
-                        memory_path=out/".autonomy/agent-performance.json",
-                    )
-                    record_agent_performance(
-                        out/".autonomy/agent-performance.json",
-                        candidate_name,
-                        "implementation",
-                        success=success,
-                        duration=duration,
-                    )
-                    if route_trace is not None:
-                        record_routing_event(
-                            out/".autonomy/routing-history.json",
-                            kind="agent",
-                            name=candidate_name,
-                            role="implementation",
-                            score=route_trace,
-                            success=success,
-                            duration_seconds=duration,
-                        )
-                    candidate_records.append({
-                        "id":"agent:"+candidate_name,
-                        "agent":candidate_name,
-                        "files":delta["files"],
-                        "changed":delta["changed"],
-                        "verification":candidate_verification,
-                        "repository":_snapshot(work,260_000),
-                    })
 
-                if before_agent is not None:
-                    restore_agent_workspace(work, before_agent)
-                try:
-                    model_patch, model_impl = ask(IMPLEMENT_SYSTEM, canonical(implementation_context), code=True)
-                    model_files = validate_patch(model_patch)
-                    model_changed = _apply(work, {"files":model_files})
-                except (StudioError, ValueError) as exc:
-                    agent_trace.append({"status":"model_candidate_failed","error":str(exc)[:1000]})
-                    model_patch = None
-                    model_impl = None
-                    model_changed = []
-                if model_changed:
+                def evaluate_model_candidate():
+                    if before_agent is not None:
+                        restore_agent_workspace(work, before_agent)
+                    try:
+                        model_patch, model_impl = ask(IMPLEMENT_SYSTEM, canonical(implementation_context), code=True)
+                        model_files = validate_patch(model_patch)
+                        model_changed = _apply(work, {"files":model_files})
+                    except (StudioError, ValueError) as exc:
+                        agent_trace.append({"status":"model_candidate_failed","error":str(exc)[:1000]})
+                        return None
+                    if not model_changed:
+                        return None
                     model_verification = verify(work, commands=adaptive_recipe["commands"] if adaptive_recipe else None)
-                    candidate_records.append({
+                    candidate = {
                         "id":"model",
                         "agent":None,
                         "files":model_files,
@@ -292,8 +239,90 @@ Objective and current plan:
                         "verification":model_verification,
                         "repository":_snapshot(work,260_000),
                         "model":model_impl,
+                    }
+                    candidate_records.append(candidate)
+                    return candidate
+
+                model_first = meta_route.mode == "model_focus"
+                model_candidate = evaluate_model_candidate() if model_first else None
+                model_verified = bool(
+                    model_candidate and model_candidate["verification"].get("passed") is True
+                )
+                if model_verified:
+                    agent_trace.append({
+                        "status":"meta_route_early_stop",
+                        "winner":"model",
+                        "reason":"preferred model candidate passed trusted verification",
                     })
 
+                if not model_verified:
+                    for candidate_name in (ranked_names if before_agent is not None else []):
+                        restore_agent_workspace(work, before_agent)
+                        agent_result = execute_named_agent(candidate_name, agent_prompt, cwd=work, timeout=1200)
+                        agent_trace.append(agent_result)
+                        if agent_result.get("status") != "passed":
+                            continue
+                        try:
+                            delta = validate_agent_delta(work, before_agent)
+                        except ValueError as exc:
+                            restore_agent_workspace(work, before_agent)
+                            agent_trace.append({"status":"rejected_delta","agent":candidate_name,"error":str(exc)})
+                            continue
+                        if not delta["changed"]:
+                            continue
+                        candidate_verification = verify(work, commands=adaptive_recipe["commands"] if adaptive_recipe else None)
+                        duration = 0.0
+                        for attempt in agent_result.get("attempts",[]):
+                            if isinstance(attempt,dict) and attempt.get("agent")==candidate_name:
+                                try: duration=float(attempt.get("duration_seconds",0.0))
+                                except (TypeError,ValueError): duration=0.0
+                                break
+                        success = candidate_verification.get("passed") is True
+                        route_trace = routing_trace_for(
+                            candidate_name,
+                            {"code_editing","repo_analysis"},
+                            role="implementation",
+                            memory_path=out/".autonomy/agent-performance.json",
+                        )
+                        record_agent_performance(
+                            out/".autonomy/agent-performance.json",
+                            candidate_name,
+                            "implementation",
+                            success=success,
+                            duration=duration,
+                        )
+                        if route_trace is not None:
+                            record_routing_event(
+                                out/".autonomy/routing-history.json",
+                                kind="agent",
+                                name=candidate_name,
+                                role="implementation",
+                                score=route_trace,
+                                success=success,
+                                duration_seconds=duration,
+                            )
+                        candidate_records.append({
+                            "id":"agent:"+candidate_name,
+                            "agent":candidate_name,
+                            "files":delta["files"],
+                            "changed":delta["changed"],
+                            "verification":candidate_verification,
+                            "repository":_snapshot(work,260_000),
+                        })
+                        if meta_route.mode == "agent_focus" and success:
+                            agent_trace.append({
+                                "status":"meta_route_early_stop",
+                                "winner":"agent:"+candidate_name,
+                                "reason":"preferred agent candidate passed trusted verification",
+                            })
+                            break
+
+                agent_verified = any(
+                    item.get("agent") and item.get("verification",{}).get("passed") is True
+                    for item in candidate_records
+                )
+                if not model_first and not (meta_route.mode == "agent_focus" and agent_verified):
+                    evaluate_model_candidate()
                 if before_agent is not None:
                     restore_agent_workspace(work, before_agent)
                 viable=[x for x in candidate_records if x.get("changed")]

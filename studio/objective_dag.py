@@ -313,3 +313,29 @@ def load(path: Path) -> dict:
     except (OSError, json.JSONDecodeError) as exc:
         raise ObjectiveDagError("objective dag unreadable") from exc
     return validate(value)
+
+
+def task_context(value: dict, task_id: str) -> dict:
+    """Return bounded context for one resumable objective task."""
+    validate(value)
+    tasks = {task["id"]: task for task in value["tasks"]}
+    task = tasks.get(task_id)
+    if task is None:
+        raise ObjectiveDagError("objective task missing")
+    dependencies = []
+    for dep_id in task["depends_on"]:
+        dep = tasks[dep_id]
+        dependencies.append({
+            "id": dep["id"],
+            "title": dep["title"],
+            "state": dep["state"],
+            "last_commit": dep.get("last_commit"),
+        })
+    return {
+        "id": task["id"],
+        "title": task["title"],
+        "state": task["state"],
+        "attempts": task["attempts"],
+        "depends_on": task["depends_on"],
+        "verified_dependencies": dependencies,
+    }

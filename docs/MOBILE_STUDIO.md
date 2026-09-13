@@ -24,6 +24,10 @@ Dans les secrets Actions de ce dépôt :
 |---|---|
 | `STUDIO_GITHUB_TOKEN` | Jeton avec Contents lecture/écriture sur les dépôts cibles. Repli sur `CODESPACES_PAT` existant ; son accès réel reste à vérifier. |
 | `STUDIO_API_KEY` | Clé du fournisseur IA. Repli sur `NVIDIA_NIM_API_KEY` existant. |
+| `STUDIO_ANDROID_UPLOAD_KEYSTORE_PATH` | Chemin hôte vers le keystore d'upload Android. Ne doit jamais être dans le workspace projet. |
+| `STUDIO_ANDROID_UPLOAD_KEY_ALIAS` | Alias de la clé d'upload Android. |
+| `STUDIO_ANDROID_UPLOAD_STORE_PASSWORD` | Mot de passe du keystore, transmis uniquement à `jarsigner/keytool` via variables d'environnement. |
+| `STUDIO_ANDROID_UPLOAD_KEY_PASSWORD` | Mot de passe de la clé si différent du mot de passe du keystore ; sinon le mot de passe du store est réutilisé. |
 
 Dans les variables Actions :
 
@@ -72,7 +76,7 @@ Les processus applicatifs s'exécutent dans Docker sans clé fournisseur, jeton 
 
 Tous les rapports portent `release_status: not_store_ready`. Les tests visuels intégrés couvrent **l’écran initial et l’écran final de chaque parcours déclaré**. Ils ne couvrent pas automatiquement tous les états possibles. Les parcours d’acceptation sont figés dans le livrable produit avant le développement et rejoués par un banc de test que le modèle ne peut pas éditer par ses patches. Les tests supplémentaires restent générés pour le brief. Les goldens sont créés pour inspection, pas comparés à une référence de design approuvée. La revue IA peut manquer des défauts.
 
-L'APK est une version debug installable pour essai, pas un AAB signé de production. iOS dispose de sources de plateforme générées, mais aucun build iOS n'est exécuté. Authentification, backend, paiements, publicités, push, configuration native spécifique, publication Play/App Store et assets raster complexes nécessitent encore des intégrations dédiées. Le moteur doit signaler ces dépendances, pas les simuler.
+Le pipeline release produit désormais un AAB et un APK release. Si les secrets d'upload Android sont configurés, l'AAB est copié hors du workspace projet, toute ancienne métadonnée de signature JAR est retirée, puis l'artefact seul est signé et vérifié avec `jarsigner/keytool`. Le keystore et ses mots de passe ne sont jamais transmis au modèle ni au conteneur applicatif. Sans keystore, la preuve `production_signing` reste explicitement en échec sans inventer de signature. La publication Play/App Store reste une étape distincte non encore automatisée de bout en bout. iOS dispose de sources de plateforme générées, mais aucun build/signing iOS production n'est exécuté.
 
 ## Vérification du moteur
 

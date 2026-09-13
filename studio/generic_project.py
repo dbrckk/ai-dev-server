@@ -25,6 +25,7 @@ from meta_router import choose_execution_mode
 from execution_budget import choose_budget
 from predictive_budget import can_start_generation, estimate as estimate_difficulty
 from verification_cost import estimate_seconds as estimate_verification_seconds, load as load_verification_cost, record as record_verification_cost
+from phase_budget import allocate as allocate_phase_quotas, reallocate_unused as reallocate_phase_quota
 from execution_checkpoint import advance as advance_checkpoint, load as load_checkpoint, new as new_checkpoint, save as save_checkpoint, ExecutionCheckpointError
 
 PLAN_SYSTEM = """You are the senior autonomous maintainer of an existing software repository.
@@ -191,6 +192,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             "previous_rounds": state["rounds"][-3:],
             "available_agent_candidates": agent_candidates[:6],
         }
+        planning_started = clock()
         plan, plan_model = ask(PLAN_SYSTEM, canonical(plan_payload), code=False)
         checkpoint = advance_checkpoint(checkpoint, round_index=round_index, phase="planned")
         save_checkpoint(checkpoint_path, checkpoint)
@@ -210,10 +212,24 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             predicted_agent_limit=difficulty.recommended_agent_limit,
             predicted_reserve_seconds=difficulty.verification_reserve_seconds,
         )
+        phase_quotas = allocate_phase_quotas(
+            available_seconds=remaining_seconds,
+            verification_reserve_seconds=round_budget.reserve_seconds,
+            difficulty_band=difficulty.band,
+        )
+        planning_elapsed = max(0, int(clock() - planning_started))
+        if planning_elapsed < phase_quotas.planning:
+            phase_quotas = reallocate_phase_quota(
+                phase_quotas,
+                phase="planning",
+                unused_seconds=phase_quotas.planning - planning_elapsed,
+            )
         progress_trace.append({
             "budget": round_budget.as_dict(),
             "difficulty": difficulty.as_dict(),
+            "phase_quotas": phase_quotas.as_dict(),
         })
+        implementation_started = clock()
         for work_pass in range(1, round_budget.max_work_passes + 1):
             current_remaining = None if deadline is None else max(0.0, deadline - clock())
             if not can_start_generation(
@@ -478,7 +494,15 @@ Objective and current plan:
             if isinstance(next_work, list) and next_work:
                 current_plan = {**current_plan, "controller_next_work": next_work}
 
+        implementation_elapsed = max(0, int(clock() - implementation_started))
+        if implementation_elapsed < phase_quotas.implementation:
+            phase_quotas = reallocate_phase_quota(
+                phase_quotas,
+                phase="implementation",
+                unused_seconds=phase_quotas.implementation - implementation_elapsed,
+            )
         recommend('testing',out)
+        verification_started = clock()
         verification = verify(work, commands=adaptive_recipe["commands"] if adaptive_recipe else None)
         if verification.get("status") == "no_verifier":
             adaptive_recipe, verifier_model = synthesize_verifier(
@@ -498,6 +522,13 @@ Objective and current plan:
                 "used": True,
                 "reason": adaptive_recipe["reason"],
             }
+        verification_elapsed = max(0, int(clock() - verification_started))
+        if verification_elapsed < phase_quotas.verification:
+            phase_quotas = reallocate_phase_quota(
+                phase_quotas,
+                phase="verification",
+                unused_seconds=phase_quotas.verification - verification_elapsed,
+            )
         record_verification_cost(
             out/".autonomy/verification-cost.json",
             state["toolchain"],
@@ -519,7 +550,15 @@ Objective and current plan:
             "verification": verification,
             "repository": _snapshot(work, 300_000),
         }
+        review_started = clock()
         review, review_model = ask(REVIEW_SYSTEM, canonical(review_context), code=False)
+        review_elapsed = max(0, int(clock() - review_started))
+        if review_elapsed < phase_quotas.review:
+            phase_quotas = reallocate_phase_quota(
+                phase_quotas,
+                phase="review",
+                unused_seconds=phase_quotas.review - review_elapsed,
+            )
         complete = review.get("complete") is True and verification.get("passed") is True
 
         round_state = {
@@ -530,6 +569,7 @@ Objective and current plan:
             "review": review,
             "progress_trace": progress_trace,
             "agent_trace": agent_trace,
+            "phase_quotas_final": phase_quotas.as_dict(),
             "models": {"plan": plan_model, "implementation": implementation_models, "review": review_model},
         }
         state["rounds"].append(round_state)

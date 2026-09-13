@@ -31,6 +31,17 @@ class DependencyGraphTests(unittest.TestCase):
             graph=build(root)
             self.assertEqual(graph["edges"]["src/main.ts"],["src/util.ts"])
 
+    def test_hotspot_is_selected_without_explicit_focus(self):
+        graph={
+            "edges":{"core.py":[],"leaf.py":[]},
+            "reverse":{"core.py":[f"m{i}.py" for i in range(8)],"leaf.py":[]},
+            "tests":[],
+            "edge_count":8,
+        }
+        result=assess(graph,[])
+        self.assertEqual(result["focus"][0]["path"],"core.py")
+        self.assertEqual(result["level"],"high")
+
     def test_high_coupling_reduces_patch_width(self):
         graph={"edges":{"core.py":[]},"reverse":{"core.py":[f"m{i}.py" for i in range(9)]},"tests":[],"edge_count":9}
         result=assess(graph,["core.py"])

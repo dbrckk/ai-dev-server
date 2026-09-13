@@ -35,6 +35,7 @@ from github_execution_checkpoint_store import ExecutionCheckpointStoreError, per
 from github_provider_metrics_store import ProviderMetricsStoreError, persist_local as persist_provider_metrics_local, restore_local as restore_provider_metrics_local
 from github_routing_history_store import RoutingHistoryStoreError, persist_local as persist_routing_history_local, restore_local as restore_routing_history_local
 from github_verification_cost_store import VerificationCostStoreError, persist_local as persist_verification_cost_local, restore_local as restore_verification_cost_local
+from github_phase_cost_baseline_store import PhaseCostBaselineStoreError, persist_local as persist_phase_cost_baseline_local, restore_local as restore_phase_cost_baseline_local
 from improvement_backlog import activate_next, load as load_improvement_backlog, merge_assessment, new_backlog, save as save_improvement_backlog
 from improvement_executor import run_active_improvement, verified_project_cycle
 from human_input_request import prerequisite_satisfied, requires_human_input, write_request as write_human_input_request
@@ -152,6 +153,7 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             restore_provider_metrics_local(remote_github,out/'.autonomy/provider-metrics.json')
             restore_routing_history_local(remote_github,out/'.autonomy/routing-history.json')
             restore_verification_cost_local(remote_github,out/'.autonomy/verification-cost.json')
+            restore_phase_cost_baseline_local(remote_github,out/'.autonomy/phase-cost-baselines.json')
             restore_execution_checkpoint_local(remote_github,request['id'],out/'.autonomy/generic-execution-checkpoint.json')
         except RemoteStateError as exc:
             raise StudioError('Remote autonomous state restore failed: '+str(exc)) from None
@@ -167,6 +169,8 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             raise StudioError('Remote routing history restore failed: '+str(exc)) from None
         except VerificationCostStoreError as exc:
             raise StudioError('Remote verification cost restore failed: '+str(exc)) from None
+        except PhaseCostBaselineStoreError as exc:
+            raise StudioError('Remote phase cost baseline restore failed: '+str(exc)) from None
         except ExecutionCheckpointStoreError as exc:
             raise StudioError('Remote execution checkpoint restore failed: '+str(exc)) from None
     goal_path=out/'.autonomy/goal.json'
@@ -412,6 +416,7 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             persist_provider_metrics_local(remote_github,out/'.autonomy/provider-metrics.json')
             persist_routing_history_local(remote_github,out/'.autonomy/routing-history.json')
             persist_verification_cost_local(remote_github,out/'.autonomy/verification-cost.json')
+            persist_phase_cost_baseline_local(remote_github,out/'.autonomy/phase-cost-baselines.json')
             persist_execution_checkpoint_local(remote_github,request['id'],out/'.autonomy/generic-execution-checkpoint.json')
         except RemoteStateError as exc:
             raise StudioError('Remote autonomous state persistence failed: '+str(exc)) from None
@@ -427,6 +432,8 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             raise StudioError('Remote routing history persistence failed: '+str(exc)) from None
         except VerificationCostStoreError as exc:
             raise StudioError('Remote verification cost persistence failed: '+str(exc)) from None
+        except PhaseCostBaselineStoreError as exc:
+            raise StudioError('Remote phase cost baseline persistence failed: '+str(exc)) from None
         except ExecutionCheckpointStoreError as exc:
             raise StudioError('Remote execution checkpoint persistence failed: '+str(exc)) from None
         except ValueError as exc:

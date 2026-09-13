@@ -3,11 +3,13 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from pathlib import Path
 
 from core import API, APIError, ProtocolError, StudioError
 from provider_router import candidates_for, load_providers
 from provider_health import eligible as provider_eligible, load as load_provider_health, reliability_bonus, record_failure as record_provider_failure, record_success as record_provider_success
+from provider_metrics import latency_bonus, load as load_provider_metrics, record as record_provider_latency
 
 
 def _decode(response: dict) -> dict:
@@ -34,17 +36,23 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     role = "implementation" if code else "product"
     providers = candidates_for(role, providers=providers)
     health_raw = os.environ.get("STUDIO_PROVIDER_HEALTH_PATH", "")
+    metrics_raw = os.environ.get("STUDIO_PROVIDER_METRICS_PATH", "")
     health_path = Path(health_raw) if health_raw else None
+    metrics_path = Path(metrics_raw) if metrics_raw else None
+    health = load_provider_health(health_path) if health_path is not None else {}
+    metrics = load_provider_metrics(metrics_path) if metrics_path is not None else {}
     if health_path is not None:
-        health = load_provider_health(health_path)
         providers = tuple(provider for provider in providers if provider_eligible(health_path, provider.name))
-        providers = tuple(sorted(
-            providers,
-            key=lambda provider: (
-                -(provider.priority + reliability_bonus(health, provider.name) + (20 if provider.free_preferred else 0)),
-                provider.name,
-            ),
-        ))
+    providers = tuple(sorted(
+        providers,
+        key=lambda provider: (
+            -(provider.priority
+              + reliability_bonus(health, provider.name)
+              + latency_bonus(metrics, provider.name, role)
+              + (20 if provider.free_preferred else 0)),
+            provider.name,
+        ),
+    ))
     if not providers:
         raise StudioError("No healthy configured provider available for generic project")
     avoid_models = avoid_models or set()
@@ -70,8 +78,12 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
         }
         if api.base == "https://integrate.api.nvidia.com/v1" and model.startswith("nvidia/nemotron-3-"):
             params.update(chat_template_kwargs={"enable_thinking": True}, reasoning_budget=2048)
+        started = time.monotonic()
         try:
             response = api.call("POST", "/chat/completions", params)
+            elapsed = time.monotonic() - started
+            if metrics_path is not None:
+                record_provider_latency(metrics_path, provider.name, role, elapsed)
             decoded = _decode(response)
             if health_path is not None:
                 record_provider_success(health_path, provider.name)
@@ -81,6 +93,8 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 "independent_preference_met": provider.name not in avoid_providers and model not in avoid_models,
             }
         except (APIError, StudioError, ProtocolError) as exc:
+            if metrics_path is not None:
+                record_provider_latency(metrics_path, provider.name, role, time.monotonic() - started)
             if health_path is not None:
                 record_provider_failure(health_path, provider.name)
             last = exc

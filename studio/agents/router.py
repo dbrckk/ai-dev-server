@@ -14,9 +14,10 @@ class RouteDecision:
     score: float
     matched: tuple[str, ...]
     missing: tuple[str, ...]
+    trace: dict | None = None
 
 
-def _score(spec: AgentSpec, required: set[str], prefer_free: bool, long_task: bool) -> RouteDecision:
+def _score(spec: AgentSpec, required: set[str], prefer_free: bool, long_task: bool, *, reliability: float = 0.0, weights: dict[str, float] | None = None) -> RouteDecision:
     matched = sorted(required & set(spec.capabilities))
     missing = sorted(required - set(spec.capabilities))
     coverage = len(matched) / max(1, len(required))
@@ -29,12 +30,17 @@ def _score(spec: AgentSpec, required: set[str], prefer_free: bool, long_task: bo
         priority=spec.priority,
         free_adjustment=free_adjustment,
         long_task_adjustment=long_task_adjustment,
-        reliability=0.0,
+        reliability=reliability,
+        weights=weights,
     )
     score = trace.total
     if not spec.available():
         score -= 1000.0
-    return RouteDecision(spec, score, tuple(matched), tuple(missing))
+    trace_data = trace.as_dict()
+    if not spec.available():
+        trace_data["components"]["availability"] = -1000.0
+        trace_data["total"] = round(score, 3)
+    return RouteDecision(spec, score, tuple(matched), tuple(missing), trace_data)
 
 
 def rank_agents(
@@ -43,9 +49,22 @@ def rank_agents(
     registry: AgentRegistry = DEFAULT_REGISTRY,
     prefer_free: bool = True,
     long_task: bool = False,
+    reliability: dict[str, float] | None = None,
+    weights: dict[str, float] | None = None,
 ) -> list[RouteDecision]:
     required_set = {x.strip() for x in required if x and x.strip()}
-    decisions = [_score(spec, required_set, prefer_free, long_task) for spec in registry.all()]
+    reliability = reliability or {}
+    decisions = [
+        _score(
+            spec,
+            required_set,
+            prefer_free,
+            long_task,
+            reliability=float(reliability.get(spec.name, 0.0)),
+            weights=weights,
+        )
+        for spec in registry.all()
+    ]
     return sorted(decisions, key=lambda item: (-item.score, item.agent.name))
 
 

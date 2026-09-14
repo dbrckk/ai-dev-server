@@ -121,6 +121,58 @@ class ObjectiveDagTests(unittest.TestCase):
         with self.assertRaisesRegex(ObjectiveDagError,"retry budget"):
             mark_running(dag,"task-1")
 
+    def test_critical_task_waits_for_high_confidence_dependency(self):
+        dag=new(
+            "demo",
+            "build",
+            {
+                "tasks":[
+                    {"id":"core","title":"core","depends_on":[]},
+                    {"id":"release","title":"release","depends_on":["core"],"critical":True},
+                ]
+            },
+            "a"*40,
+        )
+        dag=mark_running(dag,"core")
+        dag=mark_verified(dag,"core",commit="b"*40,confidence=80)
+        info=summary(dag)
+        release=next(task for task in info["tasks"] if task["id"]=="release")
+        self.assertEqual(release["state"],"blocked")
+
+    def test_critical_task_unlocks_at_high_confidence(self):
+        dag=new(
+            "demo",
+            "build",
+            {
+                "tasks":[
+                    {"id":"core","title":"core","depends_on":[]},
+                    {"id":"release","title":"release","depends_on":["core"],"critical":True},
+                ]
+            },
+            "a"*40,
+        )
+        dag=mark_running(dag,"core")
+        dag=mark_verified(dag,"core",commit="b"*40,confidence=90)
+        release=next(task for task in summary(dag)["tasks"] if task["id"]=="release")
+        self.assertEqual(release["state"],"ready")
+
+    def test_noncritical_task_does_not_require_confidence_threshold(self):
+        dag=new(
+            "demo",
+            "build",
+            {
+                "tasks":[
+                    {"id":"core","title":"core","depends_on":[]},
+                    {"id":"api","title":"api","depends_on":["core"]},
+                ]
+            },
+            "a"*40,
+        )
+        dag=mark_running(dag,"core")
+        dag=mark_verified(dag,"core",commit="b"*40,confidence=55)
+        api=next(task for task in summary(dag)["tasks"] if task["id"]=="api")
+        self.assertEqual(api["state"],"ready")
+
     def test_cycle_is_rejected(self):
         with self.assertRaisesRegex(ObjectiveDagError,"cyclic"):
             new(

@@ -76,6 +76,62 @@ class LocalModelReputationTests(unittest.TestCase):
             )
             self.assertLess(score, rep.MAX_BONUS)
 
+    def test_verified_success_dominates_after_minimum_samples(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "rep.json"
+            for _ in range(5):
+                rep.record(
+                    path,
+                    provider="ollama",
+                    model="coder",
+                    role="implementation",
+                    success=True,
+                    latency_seconds=1.0,
+                )
+            for outcome in [False, False, False]:
+                rep.record_verified_outcome(
+                    path,
+                    provider="ollama",
+                    model="coder",
+                    role="implementation",
+                    verified_success=outcome,
+                )
+            score = rep.score(
+                rep.load(path),
+                provider="ollama",
+                model="coder",
+                role="implementation",
+            )
+            self.assertLess(score, 0.0)
+
+    def test_verified_success_can_rehabilitate_model(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "rep.json"
+            for _ in range(5):
+                rep.record(
+                    path,
+                    provider="ollama",
+                    model="coder",
+                    role="implementation",
+                    success=True,
+                    latency_seconds=1.0,
+                )
+            for outcome in [True, True, True, True]:
+                rep.record_verified_outcome(
+                    path,
+                    provider="ollama",
+                    model="coder",
+                    role="implementation",
+                    verified_success=outcome,
+                )
+            score = rep.score(
+                rep.load(path),
+                provider="ollama",
+                model="coder",
+                role="implementation",
+            )
+            self.assertGreater(score, 0.0)
+
     def test_benchmark_bonus_is_bounded(self):
         data = {
             "ollama|great": {"score": 100.0},

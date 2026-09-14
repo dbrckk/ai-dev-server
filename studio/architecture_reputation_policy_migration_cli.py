@@ -35,6 +35,8 @@ def main(argv=None) -> int:
     apply_cmd.add_argument("registry")
     apply_cmd.add_argument("plan")
     apply_cmd.add_argument("authorization")
+    apply_cmd.add_argument("approval")
+    apply_cmd.add_argument("--ledger")
     apply_cmd.add_argument("--out")
 
     args=parser.parse_args(argv)
@@ -54,7 +56,9 @@ def main(argv=None) -> int:
         registry=_load(registry_path,"registry")
         plan=_load(Path(args.plan),"migration plan")
         authorization=_load(Path(args.authorization),"authorization")
-        migrated=apply_migration(registry,plan,authorization)
+        approval=_load(Path(args.approval),"approval provenance")
+        ledger=_load(Path(args.ledger),"approval ledger") if args.ledger else None
+        migrated=apply_migration(registry,plan,authorization,approval=approval,approval_ledger=ledger)
         target=Path(args.out) if args.out else registry_path
         target.parent.mkdir(parents=True,exist_ok=True)
         target.write_text(json.dumps(migrated,ensure_ascii=False,indent=2,sort_keys=True)+"\n",encoding="utf-8")

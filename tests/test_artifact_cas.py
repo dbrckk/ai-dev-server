@@ -86,11 +86,27 @@ class ArtifactCasTests(unittest.TestCase):
                 "STUDIO_ARTIFACT_CAS_STATS_PATH": str(Path(td) / "stats.json"),
             }
             with mock.patch.dict(os.environ, {**base, "STUDIO_PROJECT_ID": "project-a"}, clear=False):
-                first = artifact_cas.put(b"public", shareable=True)
-                first_path = artifact_cas.blob_path(first["sha256"], shareable=True)
+                first = artifact_cas.put(
+                    b"public",
+                    shareable=True,
+                    artifact_class="public-test-fixture",
+                )
+                first_path = artifact_cas.blob_path(
+                    first["sha256"],
+                    shareable=True,
+                    artifact_class="public-test-fixture",
+                )
             with mock.patch.dict(os.environ, {**base, "STUDIO_PROJECT_ID": "project-b"}, clear=False):
-                second = artifact_cas.put(b"public", shareable=True)
-                second_path = artifact_cas.blob_path(second["sha256"], shareable=True)
+                second = artifact_cas.put(
+                    b"public",
+                    shareable=True,
+                    artifact_class="public-test-fixture",
+                )
+                second_path = artifact_cas.blob_path(
+                    second["sha256"],
+                    shareable=True,
+                    artifact_class="public-test-fixture",
+                )
 
             self.assertEqual(first_path, second_path)
             self.assertIn("/shared/", first_path.as_posix())

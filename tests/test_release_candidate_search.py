@@ -652,6 +652,8 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
             cache_env = {
                 "STUDIO_ARTIFACT_CAS_PATH": str(root / ".artifact-cas"),
                 "STUDIO_ARTIFACT_CACHE_PATH": str(root / ".artifact-cache.json"),
+                "STUDIO_ARTIFACT_CAS_STATS_PATH": str(root / ".artifact-cas-stats.json"),
+                "STUDIO_PROJECT_ID": "candidate-test-project",
             }
 
             class FullCacheSandbox:
@@ -730,6 +732,8 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
             cache_env = {
                 "STUDIO_ARTIFACT_CAS_PATH": str(root / ".artifact-cas"),
                 "STUDIO_ARTIFACT_CACHE_PATH": str(root / ".artifact-cache.json"),
+                "STUDIO_ARTIFACT_CAS_STATS_PATH": str(root / ".artifact-cas-stats.json"),
+                "STUDIO_PROJECT_ID": "candidate-test-project",
             }
 
             class FullCacheSandbox:
@@ -769,8 +773,8 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
                 )
                 key = first["full_validation_key"]
                 apk_meta = shared_artifact_cache[key]["files"]["build/app/outputs/flutter-apk/app-debug.apk"]
-                blob = root / ".artifact-cas" / apk_meta["sha256"][:2] / apk_meta["sha256"][2:]
-                blob.unlink()
+                from artifact_cas import blob_path
+                blob_path(apk_meta["sha256"]).unlink()
 
                 second = run_branch(
                     root,

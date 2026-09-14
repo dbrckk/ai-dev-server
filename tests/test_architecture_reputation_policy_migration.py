@@ -60,11 +60,32 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         value["approval_digest"]=approval_digest(value)
         return value
 
-    def apply(self,registry,plan,auth,now=300.0,approval=None,ledger=None):
+    def github_attestation(self,plan,reinforced=False):
+        from architecture_reputation_policy_github_attestation import build
+        reviews=[
+            {"user":{"login":"reviewer-a"},"state":"APPROVED","commit_id":"a"*40},
+        ]
+        permissions={"reviewer-a":"write"}
+        if reinforced:
+            reviews.append({"user":{"login":"risk-owner-b"},"state":"APPROVED","commit_id":"a"*40})
+            permissions["risk-owner-b"]="maintain"
+        return build(
+            plan,
+            repository="dbrckk/ai-dev-server",
+            pull_request=42,
+            commit_sha="a"*40,
+            reviews=reviews,
+            permissions=permissions,
+            workflow_runs=[{"id":99,"head_sha":"a"*40,"conclusion":"success","name":"CI"}],
+            reinforced=reinforced,
+        )
+
+    def apply(self,registry,plan,auth,now=300.0,approval=None,ledger=None,github_attestation=None):
         reinforced=plan.get("risk",{}).get("reinforced_review_required") is True
         return apply_migration(
             registry,plan,auth,
             approval=approval or self.approval(plan,reinforced=reinforced),
+            github_attestation=github_attestation or self.github_attestation(plan,reinforced=reinforced),
             approval_ledger=ledger,
             now=now,
         )
@@ -276,6 +297,28 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         ledger=migrated["policy_migration_approval_ledger"]
         with self.assertRaises(ReputationPolicyMigrationError):
             self.apply(registry,plan,self.authorize(plan),now=301.0,ledger=ledger)
+
+    def test_apply_requires_github_attestation(self):
+        registry=self.registry()
+        plan=dry_run(registry,self.learning(),now=200.0)
+        reinforced=plan.get("risk",{}).get("reinforced_review_required") is True
+        with self.assertRaises(ReputationPolicyMigrationError):
+            apply_migration(
+                registry,plan,self.authorize(plan),
+                approval=self.approval(plan,reinforced=reinforced),
+                now=300.0,
+            )
+
+    def test_applied_migration_audits_github_attestation(self):
+        registry=self.registry()
+        plan=dry_run(registry,self.learning(),now=200.0)
+        migrated=self.apply(registry,plan,self.authorize(plan),now=300.0)
+        last=migrated["last_policy_migration"]
+        self.assertEqual(last["github_repository"],"dbrckk/ai-dev-server")
+        self.assertEqual(last["github_commit_sha"],"a"*40)
+        self.assertEqual(last["github_pull_request"],42)
+        self.assertEqual(last["github_workflow_run_id"],99)
+        self.assertEqual(last["github_reviewer"],"reviewer-a")
 
 if __name__=="__main__":
     unittest.main()

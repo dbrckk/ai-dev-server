@@ -40,9 +40,27 @@ def _rate(events: list[dict], kind: str, role: str) -> tuple[int, float]:
     return len(rows), success / len(rows)
 
 
-def choose_execution_mode(events: list[dict], *, role: str, agent_available: bool, strategy_data: dict | None = None) -> MetaRoute:
+def choose_execution_mode(
+    events: list[dict],
+    *,
+    role: str,
+    agent_available: bool,
+    strategy_data: dict | None = None,
+    safe_rewrite_summary: dict | None = None,
+) -> MetaRoute:
     if not agent_available:
         return MetaRoute("model_only", 0, 1.0, "no eligible external agent", "model_only")
+    architecture_bias = 0.0
+    if role == "implementation" and isinstance(safe_rewrite_summary, dict):
+        origins = safe_rewrite_summary.get("origin_rankings")
+        if isinstance(origins, list):
+            agent_rows = [row for row in origins if row.get("kind") == "agent" and row.get("eligible_for_routing_bias") is True]
+            provider_rows = [row for row in origins if row.get("kind") == "provider" and row.get("eligible_for_routing_bias") is True]
+            if agent_rows and provider_rows:
+                agent_rate = sum(float(row.get("verification_pass_rate", 0.0)) for row in agent_rows) / len(agent_rows)
+                provider_rate = sum(float(row.get("verification_pass_rate", 0.0)) for row in provider_rows) / len(provider_rows)
+                architecture_bias = max(-0.25, min(0.25, agent_rate - provider_rate))
+
     if isinstance(strategy_data, dict):
         selected = select_strategy(
             strategy_data,
@@ -62,18 +80,21 @@ def choose_execution_mode(events: list[dict], *, role: str, agent_available: boo
                 "dual": ("dual", 2),
             }
             mode, limit = mapping[strategy]
+            if role == "implementation" and architecture_bias <= -MIN_GAP and mode == "agent_focus":
+                mode, limit, strategy = "dual", 1, "dual"
             return MetaRoute(
                 mode,
                 limit,
                 confidence,
-                "bounded strategy " + str(info.get("selection_mode","exploit")) + " by verified-success efficiency",
+                "bounded strategy " + str(info.get("selection_mode","exploit")) + " by verified-success efficiency"
+                + ("; architecture discipline reduced agent focus" if role == "implementation" and architecture_bias <= -MIN_GAP else ""),
                 strategy,
             )
     agent_n, agent_rate = _rate(events, "agent", role)
     provider_n, provider_rate = _rate(events, "model_candidate", role)
     if agent_n < MIN_EVENTS or provider_n < MIN_EVENTS:
         return MetaRoute("dual", 2, 0.0, "insufficient comparative evidence", "dual")
-    gap = agent_rate - provider_rate
+    gap = (agent_rate - provider_rate) + architecture_bias
     confidence = min(1.0, min(agent_n, provider_n) / 20.0)
     if gap >= MIN_GAP:
         return MetaRoute("agent_focus", 2, confidence, "verified agent success rate materially higher", "agent_to_model")

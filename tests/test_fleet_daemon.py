@@ -15,6 +15,7 @@ class FleetDaemonTests(unittest.TestCase):
              patch("fleet_daemon.append_metrics", return_value={"snapshots": 2, "latest": {"ts": 1}}), \
              patch("fleet_daemon.evaluate_regression", return_value={"regressed": True, "regressions": ["healthy_projects_decreased"]}), \
              patch("fleet_daemon.maintain", return_value={"summary": {"projects": 1}}), \
+             patch("fleet_daemon.persist_capacity_plan", return_value={"summary": {"active_projects": 1, "allocated_tokens": 100}}), \
              patch("fleet_daemon.apply_supervisor", return_value={"apply": False, "restarts_executed": 0, "results": []}) as supervisor:
             report = fleet_daemon.tick("out", "requests", apply_restarts=True, max_restarts=2)
 
@@ -34,6 +35,21 @@ class FleetDaemonTests(unittest.TestCase):
         self.assertEqual(report["supervisor"]["restarts_executed"], 1)
         self.assertTrue(supervisor.call_args.kwargs["apply"])
         self.assertEqual(supervisor.call_args.kwargs["max_restarts"], 1)
+
+
+    def test_tick_persists_capacity_plan(self):
+        with patch("fleet_daemon.collect", return_value={"summary": {"total": 1}}), \
+             patch("fleet_daemon.snapshot", return_value={"ts": 1, "healthy": 1}), \
+             patch("fleet_daemon.append_metrics", return_value={"snapshots": 1, "latest": {"ts": 1}}), \
+             patch("fleet_daemon.evaluate_regression", return_value={"regressed": False, "regressions": []}), \
+             patch("fleet_daemon.maintain", return_value={"summary": {"projects": 1}}), \
+             patch("fleet_daemon.persist_capacity_plan", return_value={"summary": {"active_projects": 1, "allocated_tokens": 32000}}) as capacity, \
+             patch("fleet_daemon.apply_supervisor", return_value={"apply": False, "restarts_executed": 0, "results": []}):
+            report = fleet_daemon.tick("out", "requests")
+
+        capacity.assert_called_once()
+        self.assertEqual(report["capacity"]["allocated_tokens"], 32000)
+
 
     def test_run_loop_enforces_minimum_interval(self):
         sleeps = []

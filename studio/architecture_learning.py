@@ -11,6 +11,15 @@ from file_lock import exclusive
 MIN_SAMPLES = 5
 
 
+def root_for_output(out: Path | str) -> Path:
+    out = Path(out)
+    if out.name == "studio-output":
+        return out
+    if out.parent.name == "studio-output":
+        return out.parent
+    return out
+
+
 def _rows(root: Path):
     candidates = []
     direct = root / "architecture-outcome.json"

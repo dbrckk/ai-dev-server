@@ -38,6 +38,8 @@ class ReadinessTests(unittest.TestCase):
                 "STUDIO_ARTIFACT_CACHE_PATH": str(root / "artifact.json"),
                 "STUDIO_ARTIFACT_CAS_PATH": str(root / "cas"),
                 "STUDIO_CHECKPOINT_PATH": str(root / "checkpoint.json"),
+                "STUDIO_TASK_LEASE_PATH": str(root / "task-leases.json"),
+                "STUDIO_TELEMETRY_PATH": str(root / "telemetry.jsonl"),
             }
             with patch.dict(os.environ, env, clear=True),                  patch("readiness.shutil.which", return_value="/usr/bin/docker"),                  patch("readiness.load_providers", return_value=(object(),)):
                 result = readiness.check(root)

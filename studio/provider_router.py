@@ -20,6 +20,7 @@ class ProviderSpec:
     input_cost_per_million: float = 0.0
     output_cost_per_million: float = 0.0
     unmetered: bool = False
+    monthly_token_quota: int = 0
 
     def model_for(self, role: str, screenshots: bool = False) -> str:
         if screenshots:
@@ -62,6 +63,16 @@ def _primary() -> ProviderSpec | None:
     if vision == "disabled":
         vision = ""
     explicit_unmetered = os.environ.get("STUDIO_PROVIDER_UNMETERED")
+    quota_raw = os.environ.get("STUDIO_MONTHLY_TOKEN_QUOTA", "")
+    if quota_raw:
+        try:
+            monthly_token_quota = max(0, int(quota_raw))
+        except ValueError:
+            raise ValueError("STUDIO_MONTHLY_TOKEN_QUOTA must be an integer") from None
+    elif "omniroute" in os.environ.get("STUDIO_PROVIDER_NAME", "primary").lower() or ":20128" in base:
+        monthly_token_quota = 1_470_000_000
+    else:
+        monthly_token_quota = 0
     return ProviderSpec(
         name=os.environ.get("STUDIO_PROVIDER_NAME", "primary"),
         base=base,
@@ -76,8 +87,9 @@ def _primary() -> ProviderSpec | None:
         unmetered=(
             _bool(explicit_unmetered, False)
             if explicit_unmetered is not None
-            else _is_local_base(base)
+            else (_is_local_base(base) and monthly_token_quota == 0)
         ),
+        monthly_token_quota=monthly_token_quota,
     )
 
 
@@ -96,7 +108,7 @@ def _json_specs(raw: str) -> list[ProviderSpec]:
             raise ValueError("Provider entries must be objects")
         allowed = {
             "name", "base", "key_env", "model", "code_model", "vision_model",
-            "priority", "free_preferred", "input_cost_per_million", "output_cost_per_million", "unmetered",
+            "priority", "free_preferred", "input_cost_per_million", "output_cost_per_million", "unmetered", "monthly_token_quota",
         }
         if set(item) - allowed:
             raise ValueError("Unknown provider configuration field")
@@ -134,8 +146,12 @@ def _json_specs(raw: str) -> list[ProviderSpec]:
             unmetered=(
                 _bool(item.get("unmetered"), False)
                 if "unmetered" in item
-                else _is_local_base(base)
+                else (
+                    _is_local_base(base)
+                    and int(item.get("monthly_token_quota", 0) or 0) == 0
+                )
             ),
+            monthly_token_quota=max(0, int(item.get("monthly_token_quota", 0) or 0)),
         ))
     return specs
 

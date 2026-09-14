@@ -139,6 +139,7 @@ def run_branch(
         quick_gate_cache = {}
     if full_gate_cache is None:
         full_gate_cache = {}
+    artifact_cache_enabled = artifact_cache is not None
     if artifact_cache is None:
         artifact_cache = {}
     baseline = snapshot_workspace(root)
@@ -270,7 +271,11 @@ def run_branch(
         journeys = validate_journeys(state.get("product", {}).get("journeys"))
         full_key = full_validation_key(root, app_name=app_name, journeys=journeys)
         artifact_restore = None
-        if full_cache_hit(full_gate_cache, full_key) and full_key in artifact_cache:
+        if (
+            artifact_cache_enabled
+            and full_cache_hit(full_gate_cache, full_key)
+            and full_key in artifact_cache
+        ):
             artifact_restore = restore_artifacts(
                 root,
                 artifact_cache[full_key],
@@ -289,7 +294,8 @@ def run_branch(
             cached_full_validation = False
             if passed:
                 full_cache_record_success(full_gate_cache, full_key)
-                artifact_cache[full_key] = capture_artifacts(root, full_key)
+                if artifact_cache_enabled:
+                    artifact_cache[full_key] = capture_artifacts(root, full_key)
         refinements = 0
         while (
             not passed

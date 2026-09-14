@@ -75,3 +75,17 @@ def inspect(project_out: Path | str) -> dict:
         "paths": {name: str(path) for name, path in paths.items()},
         "errors": errors,
     }
+
+
+def main(argv=None) -> int:
+    import argparse
+    parser = argparse.ArgumentParser(description="Inspect one autonomous project runtime")
+    parser.add_argument("project_out")
+    args = parser.parse_args(argv)
+    report = inspect(args.project_out)
+    print(json.dumps(report, sort_keys=True))
+    return 0 if report["status"] == "healthy" else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

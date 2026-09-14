@@ -216,8 +216,20 @@ class API:
     def __init__(self, base, key):
         from urllib.parse import urlsplit
         u = urlsplit(base)
-        if u.scheme != 'https' or not u.netloc or u.username or u.password or u.query or u.fragment:
-            raise StudioError('API endpoint must be an HTTPS URL without credentials/query')
+        loopback_hosts = {'127.0.0.1', 'localhost', '::1', '0.0.0.0'}
+        local_http = u.scheme == 'http' and (u.hostname or '').lower() in loopback_hosts
+        secure_remote = u.scheme == 'https'
+        if (
+            not (secure_remote or local_http)
+            or not u.netloc
+            or u.username
+            or u.password
+            or u.query
+            or u.fragment
+        ):
+            raise StudioError(
+                'API endpoint must use HTTPS, except loopback-local HTTP without credentials/query'
+            )
         self.base, self.key = base.rstrip('/'), key
     def _response(self, req, timeout_seconds=300):
         # A pending inference is polled; never submit a second paid POST.
@@ -256,9 +268,12 @@ class API:
         raise StudioError('Pending inference polling limit reached')
 
     def call(self, method, path, data=None, timeout_seconds=300):
+        headers={'Content-Type': 'application/json', 'Accept': 'application/json'}
+        if self.key:
+            headers['Authorization']='Bearer ' + self.key
         req = urllib.request.Request(self.base + path, method=method,
             data=None if data is None else canonical(data).encode(),
-            headers={'Authorization': 'Bearer ' + self.key, 'Content-Type': 'application/json', 'Accept': 'application/json'})
+            headers=headers)
         timeout_seconds = max(1.0, min(300.0, float(timeout_seconds)))
         deadline = time.monotonic() + timeout_seconds
         for attempt in range(3):

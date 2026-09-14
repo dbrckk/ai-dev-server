@@ -134,8 +134,17 @@ def finish_attempt(
     model_calls: int = 0,
     improved: bool = True,
     providers_used: dict | None = None,
+    strategy: str | None = None,
+    strategy_cost_seconds: float | None = None,
 ) -> dict:
     task["model_calls_spent"] = int(task.get("model_calls_spent", 0)) + max(0, int(model_calls))
+    if isinstance(strategy, str) and strategy:
+        task["last_strategy"] = strategy
+        history = list(task.get("strategy_history", []))
+        history.append(strategy)
+        task["strategy_history"] = history[-8:]
+    if strategy_cost_seconds is not None:
+        task["strategy_cost_seconds"] = float(task.get("strategy_cost_seconds", 0.0)) + max(0.0, float(strategy_cost_seconds))
     providers = providers_used or {}
     if isinstance(providers, dict):
         used = [name for name in providers.values() if isinstance(name, str) and name]

@@ -7,6 +7,7 @@ from typing import Iterable
 from .registry import AgentRegistry, AgentSpec, DEFAULT_REGISTRY
 from adaptive_scoring import score_agent, ScoreTrace
 from safe_rewrite_learning import origin_violation_penalty, rewrite_recovery_bonus, exploration_bonus
+from contextual_routing_memory import contextual_adjustment
 
 
 @dataclass(frozen=True)
@@ -27,6 +28,8 @@ def _score(
     reliability: float = 0.0,
     weights: dict[str, float] | None = None,
     safe_rewrite_summary: dict | None = None,
+    contextual_routing: dict | None = None,
+    weighted_contexts: list[tuple[str, float]] | None = None,
 ) -> RouteDecision:
     matched = sorted(required & set(spec.capabilities))
     missing = sorted(required - set(spec.capabilities))
@@ -68,6 +71,19 @@ def _score(
             total=sum(float(value) for value in components.values()),
             components=components,
         )
+    if isinstance(contextual_routing, dict) and weighted_contexts:
+        components = dict(trace.components)
+        components["contextual_performance"] = contextual_adjustment(
+            contextual_routing,
+            weighted_contexts=weighted_contexts,
+            kind="agent",
+            name=spec.name,
+        )
+        trace = ScoreTrace(
+            name=spec.name,
+            total=sum(float(value) for value in components.values()),
+            components=components,
+        )
     score = trace.total
     if not spec.available():
         score -= 1000.0
@@ -87,6 +103,8 @@ def rank_agents(
     reliability: dict[str, float] | None = None,
     weights: dict[str, float] | None = None,
     safe_rewrite_summary: dict | None = None,
+    contextual_routing: dict | None = None,
+    weighted_contexts: list[tuple[str, float]] | None = None,
 ) -> list[RouteDecision]:
     required_set = {x.strip() for x in required if x and x.strip()}
     reliability = reliability or {}
@@ -99,6 +117,8 @@ def rank_agents(
             reliability=float(reliability.get(spec.name, 0.0)),
             weights=weights,
             safe_rewrite_summary=safe_rewrite_summary,
+            contextual_routing=contextual_routing,
+            weighted_contexts=weighted_contexts,
         )
         for spec in registry.all()
     ]

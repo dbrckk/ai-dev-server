@@ -84,9 +84,12 @@ class GodotPreviewTests(unittest.TestCase):
         self.assertGreaterEqual(len(github.states),3)
         self.assertEqual(state['architecture_decision']['constraints']['framework'],'godot')
         self.assertEqual(
-            state['architecture_autonomy_policy'],
-            state['architecture_decision'].get('autonomy_policy', {}),
+            state['architecture_autonomy_policy']['decision_confidence'],
+            state['architecture_decision'].get('autonomy_policy', {}).get('decision_confidence'),
         )
+        self.assertIn('architecture_changes_allowed', state['architecture_autonomy_policy'])
+        self.assertEqual(state['architecture_preflight']['status'],'validated')
+        self.assertIn(state['architecture_preflight']['verdict'], {'pass','hold'})
         self.assertEqual(state['architecture_evaluation']['status'],'evaluated')
         self.assertEqual(state['architecture_benchmark']['status'],'benchmarked')
         self.assertIn('architecture_learning',state)

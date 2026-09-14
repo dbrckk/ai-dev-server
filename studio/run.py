@@ -162,6 +162,34 @@ class GitHub(API):
             self.call('POST', self.repo + '/git/refs', {'ref': 'refs/heads/' + branch, 'sha': commit['sha']})
         return commit['sha']
 
+def _load_architecture_replacement_work_orders(out: Path) -> dict:
+    path = Path(out) / 'architecture-replacement-work-orders.json'
+    if not path.is_file():
+        return {'status': 'unavailable', 'work_orders': []}
+    try:
+        value = json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return {'status': 'invalid', 'work_orders': []}
+    if not isinstance(value, dict):
+        return {'status': 'invalid', 'work_orders': []}
+    work_orders = []
+    for row in value.get('work_orders', [])[:4]:
+        if not isinstance(row, dict):
+            continue
+        work_orders.append({
+            'id': row.get('id'),
+            'current_repo': row.get('current_repo'),
+            'replacement_repo': row.get('replacement_repo'),
+            'risk': row.get('risk'),
+            'scope': row.get('scope'),
+            'go_no_go': row.get('go_no_go'),
+        })
+    return {
+        'status': value.get('status', 'planned'),
+        'work_orders': work_orders,
+        'advisory_only': True,
+    }
+
 def _load_architecture_replacement_plan(out: Path) -> dict:
     path = Path(out) / 'architecture-replacement-plan.json'
     if not path.is_file():
@@ -293,6 +321,7 @@ def context(req, state, root):
                       'architecture_benchmark': state.get('architecture_benchmark', {'status':'unavailable','migration_candidates':[]}),
                       'architecture_obsolescence': state.get('architecture_obsolescence', {'status':'unavailable','deprecation_candidates':[]}),
                       'architecture_replacement_plan': state.get('architecture_replacement_plan', {'status':'unavailable','replacement_plans':[]}),
+                      'architecture_replacement_work_orders': state.get('architecture_replacement_work_orders', {'status':'unavailable','work_orders':[]}),
                       'architecture_drift_alerts': state.get('architecture_drift_alerts', []),
                       'files': files})
 

@@ -17,6 +17,7 @@ from architecture_obsolescence import write as write_architecture_obsolescence
 from architecture_replacement_planner import write as write_architecture_replacement_plan
 from architecture_replacement_work_order import write as write_architecture_replacement_work_orders
 from architecture_learning import summarize as summarize_architecture_learning, root_for_output as architecture_learning_root
+from architecture_replacement_learning import summarize as summarize_replacement_learning
 from repo_maintenance import probe as probe_repo_maintenance
 
 def _recommendation_context(request_path):
@@ -59,11 +60,13 @@ def _evaluate_architecture(report,project_out):
     current_repos=[x.get('current_repo') for x in benchmark.get('comparisons',[]) if isinstance(x,dict) and isinstance(x.get('current_repo'),str)]
     maintenance=probe_repo_maintenance(current_repos)
     obsolescence=write_architecture_obsolescence(learning,benchmark,recommendations,project_out,maintenance=maintenance)
-    replacement_plan=write_architecture_replacement_plan(obsolescence,recommendations,project_out)
+    replacement_learning=summarize_replacement_learning(architecture_learning_root(project_out))
+    replacement_plan=write_architecture_replacement_plan(obsolescence,recommendations,project_out,learning=replacement_learning)
     replacement_work_orders=write_architecture_replacement_work_orders(replacement_plan,project_out)
     report['architecture_evaluation']=evaluation
     report['architecture_benchmark']=benchmark
     report['architecture_obsolescence']=obsolescence
+    report['architecture_replacement_learning']=replacement_learning
     report['architecture_replacement_plan']=replacement_plan
     report['architecture_replacement_work_orders']=replacement_work_orders
     (project_out/'report.json').write_text(json.dumps(report,ensure_ascii=False,sort_keys=True,separators=(',',':')))

@@ -32,6 +32,7 @@ from architecture_change_guard import enforce as enforce_architecture_change_gua
 from architecture_safe_rewrite import build_context as build_architecture_safe_rewrite_context
 from capacity_status import snapshot as capacity_snapshot
 from local_capacity_inventory import write as write_local_capacity_inventory
+from local_model_reputation import load as load_local_model_reputation, snapshot as local_model_reputation_snapshot
 from safe_rewrite_learning import (
     record_attempt as record_safe_rewrite_attempt,
     finalize as finalize_safe_rewrite,
@@ -366,10 +367,14 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         autonomy_dir.mkdir(parents=True, exist_ok=True)
         os.environ['STUDIO_PROVIDER_COST_PATH'] = str(autonomy_dir / 'provider-cost.json')
         os.environ['STUDIO_PROVIDER_MONTHLY_QUOTA_PATH'] = str(autonomy_dir / 'provider-monthly-quota.json')
+        os.environ['STUDIO_LOCAL_MODEL_REPUTATION_PATH'] = str(autonomy_dir / 'local-model-reputation.json')
         state['local_capacity_inventory'] = write_local_capacity_inventory(out)
         state['capacity_status'] = capacity_snapshot(
             autonomy_dir / 'provider-monthly-quota.json'
         )
+        state['local_model_reputation'] = local_model_reputation_snapshot(
+            load_local_model_reputation(autonomy_dir / 'local-model-reputation.json')
+        )[:40]
         preliminary_capacity_plan = expanded_call_limit(
             int(state.get('project_budget', {}).get('model_call_limit', req['max_calls'] * req['max_cycles'])),
             state['capacity_status'],

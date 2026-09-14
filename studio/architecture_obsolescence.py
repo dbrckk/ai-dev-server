@@ -77,6 +77,15 @@ def evaluate(learning: dict, benchmark: dict, recommendations: dict, maintenance
             "maintenance_evidence": maintenance_row if isinstance(maintenance_row, dict) else {},
             "current_tier": current_meta.get("tier"),
             "replacement_tier": alt_meta.get("tier"),
+            "framework": drift_row.get("framework"),
+            "project_type": drift_row.get("project_type"),
+            "primary_domain": drift_row.get("primary_domain"),
+            "platform": next((
+                value for value in current_meta.get("platforms", [])
+                if isinstance(value, str) and value
+            ), None) if isinstance(current_meta.get("platforms"), list) else None,
+            "current_major_version": current_meta.get("majorVersion"),
+            "replacement_major_version": alt_meta.get("majorVersion"),
             "reason": (
                 "runtime degradation and benchmark evidence both favor an alternative"
                 + ("; maintenance is also weak" if maintenance_signal in {"aging","stale","archived"} else
@@ -92,7 +101,7 @@ def evaluate(learning: dict, benchmark: dict, recommendations: dict, maintenance
         reverse=True,
     )
     return {
-        "version": 1,
+        "version": 2,
         "status": "evaluated",
         "advisory_only": True,
         "deprecation_candidates": candidates[:20],

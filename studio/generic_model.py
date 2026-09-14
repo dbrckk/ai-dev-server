@@ -18,6 +18,10 @@ from safe_rewrite_learning import (
     rewrite_recovery_bonus,
     exploration_bonus,
 )
+from contextual_routing_memory import (
+    load as load_contextual_routing_memory,
+    contextual_adjustment,
+)
 
 
 def _decode(response: dict) -> dict:
@@ -51,10 +55,19 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     history_path = Path(history_raw) if history_raw else None
     safe_rewrite_raw = os.environ.get("STUDIO_SAFE_REWRITE_LEARNING_PATH", "")
     safe_rewrite_path = Path(safe_rewrite_raw) if safe_rewrite_raw else None
+    contextual_routing_raw = os.environ.get("STUDIO_CONTEXTUAL_ROUTING_MEMORY_PATH", "")
+    contextual_routing_path = Path(contextual_routing_raw) if contextual_routing_raw else None
+    try:
+        weighted_contexts = json.loads(os.environ.get("STUDIO_ROUTING_CONTEXTS_JSON", "[]"))
+    except json.JSONDecodeError:
+        weighted_contexts = []
+    if not isinstance(weighted_contexts, list):
+        weighted_contexts = []
     health = load_provider_health(health_path) if health_path is not None else {}
     metrics = load_provider_metrics(metrics_path) if metrics_path is not None else {}
     history = load_routing_history(history_path) if history_path is not None else []
     safe_rewrite_summary = summarize_safe_rewrite_learning(safe_rewrite_path) if safe_rewrite_path is not None else {}
+    contextual_routing = load_contextual_routing_memory(contextual_routing_path) if contextual_routing_path is not None else {}
     weights = learned_weights(history, kind="provider", role=role)
     if health_path is not None:
         providers = tuple(provider for provider in providers if provider_eligible(health_path, provider.name))
@@ -89,6 +102,17 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 kind="provider",
                 name=provider.name,
                 role=role,
+            )
+        if role == "implementation" and contextual_routing_path is not None:
+            components["contextual_performance"] = contextual_adjustment(
+                contextual_routing,
+                weighted_contexts=[
+                    (str(item[0]), float(item[1]))
+                    for item in weighted_contexts
+                    if isinstance(item, list) and len(item) == 2
+                ],
+                kind="provider",
+                name=provider.name,
             )
         from adaptive_scoring import ScoreTrace
         provider_scores[provider.name] = ScoreTrace(

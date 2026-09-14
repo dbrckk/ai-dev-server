@@ -470,6 +470,7 @@ Objective and current plan:
                     role="implementation",
                     agent_available=bool(preliminary_names),
                     strategy_data=strategy_data,
+                    safe_rewrite_summary=safe_rewrite_summary,
                 )
                 agent_trace.append({
                     "status":"meta_route",

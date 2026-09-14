@@ -263,6 +263,9 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             state["toolchain"],
             fallback=verification_fallback,
         )
+        __import__("os").environ["STUDIO_EXPECTED_VERIFICATION_SECONDS"] = str(
+            float(verification_seconds or 0.0)
+        )
         difficulty = estimate_difficulty(
             file_count=len(snapshot["files"]),
             source_bytes=int(snapshot["bytes"]),
@@ -290,6 +293,13 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         contextual_routing = load_contextual_routing_memory(contextual_routing_path)
         agent_perf = load_agent_performance(out/".autonomy/agent-performance.json")
         safe_rewrite_summary = summarize_safe_rewrite_learning(safe_rewrite_learning_path)
+        agent_execution_seconds = {}
+        for agent_name in {spec.name for spec in __import__("studio.agents.registry", fromlist=["DEFAULT_REGISTRY"]).DEFAULT_REGISTRY.all()}:
+            row = agent_perf.get(agent_name + ":implementation")
+            if isinstance(row, dict) and int(row.get("runs", 0) or 0) > 0:
+                agent_execution_seconds[agent_name] = (
+                    float(row.get("duration_total", 0.0) or 0.0) / max(1, int(row.get("runs", 0)))
+                )
         agent_candidates = []
         for decision in rank_agents(
             {"code_editing","repo_analysis"},
@@ -298,6 +308,8 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             safe_rewrite_summary=safe_rewrite_summary,
             contextual_routing=contextual_routing,
             weighted_contexts=round_weighted_contexts,
+            execution_seconds=agent_execution_seconds,
+            verification_seconds=float(verification_seconds or 0.0),
         ):
             if decision.agent.available():
                 agent_candidates.append({

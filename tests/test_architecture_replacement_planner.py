@@ -684,6 +684,66 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         self.assertEqual(row["go_no_go"],"NO_GO_PENDING_ISOLATED_BENCHMARK")
         self.assertIn("dependency_policy_approved",row["required_gates"])
 
+    def test_reputation_state_machine(self):
+        cases=[
+            (None,"UNOBSERVED"),
+            ({"samples":2,"effective_samples":2,"evidence_confidence":0.1},"EXPERIMENTAL"),
+            ({"samples":20,"effective_samples":20,"evidence_confidence":1.0,
+              "wilson_lower_95":0.80,"regression_rate":0.05},"TRUSTED"),
+            ({"samples":20,"effective_samples":20,"evidence_confidence":1.0,
+              "wilson_lower_95":0.30,"regression_rate":0.40},"DEGRADED"),
+            ({"samples":20,"effective_samples":20,"evidence_confidence":1.0,
+              "wilson_lower_95":0.80,"regression_rate":0.05,
+              "sequential_drift":True},"QUARANTINED"),
+            ({"samples":20,"effective_samples":20,"evidence_confidence":1.0,
+              "wilson_lower_95":0.30,"regression_rate":0.30,
+              "recovery_candidate":True},"RECOVERING"),
+        ]
+        for evidence,expected in cases:
+            with self.subTest(expected=expected):
+                self.assertEqual(arp._reputation_state(evidence)["state"],expected)
+
+    def test_quarantined_reputation_adds_explicit_gate(self):
+        obs=self.obsolescence()
+        history={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "samples":30,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.9,"posterior_success_rate":0.88,"regression_rate":0.1,
+            "rollback_rate":0.0,"wilson_lower_95":0.75,"mean_quality_score":90.0,
+            "sequential_drift":{"status":"drift","drift_detected":True},
+            "latest_observed_at":time.time(),
+        }
+        row=plan(obs,self.recommendations(),learning={"rankings":[history]})["replacement_plans"][0]
+        self.assertEqual(row["replacement_reputation"]["state"],"QUARANTINED")
+        self.assertFalse(row["replacement_reputation"]["promotion_eligible"])
+        self.assertIn("quarantined_replacement_revalidated",row["required_gates"])
+
+    def test_trusted_reputation_is_explainable_and_promotion_eligible(self):
+        obs=self.obsolescence()
+        history={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "samples":30,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.95,"posterior_success_rate":0.93,"regression_rate":0.02,
+            "rollback_rate":0.0,"wilson_lower_95":0.80,"mean_quality_score":95.0,
+            "latest_observed_at":time.time(),
+        }
+        row=plan(obs,self.recommendations(),learning={"rankings":[history]})["replacement_plans"][0]
+        reputation=row["replacement_reputation"]
+        self.assertEqual(reputation["state"],"TRUSTED")
+        self.assertTrue(reputation["promotion_eligible"])
+        self.assertEqual(reputation["reason"],"strong_consistent_historical_evidence")
+
+    def test_recovering_reputation_never_becomes_trusted_directly(self):
+        evidence={
+            "samples":50,"effective_samples":50,"evidence_confidence":1.0,
+            "wilson_lower_95":0.90,"regression_rate":0.0,
+            "recovery_candidate":True,
+        }
+        reputation=arp._reputation_state(evidence)
+        self.assertEqual(reputation["state"],"RECOVERING")
+        self.assertFalse(reputation["promotion_eligible"])
+        self.assertTrue(reputation["requires_revalidation"])
+
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)

@@ -67,276 +67,65 @@ def run_candidate(
         if not changed:
             raise StudioError("Repair candidate produced no source delta")
         journeys = validate_journeys(state.get("product", {}).get("journeys"))
-        sandbox = sandbox_factory(root)
-        passed, logs = sandbox.gates(app_name, journeys)
-        elapsed = max(0.0, time.monotonic() - started)
-        candidate = {
-            "strategy": strategy,
-            "strategy_prior_score": float(strategy_prior_score),
-            "passed": passed is True,
-            "changed_files": changed,
-            "files": list(delta.get("files", [])),
-            "gate_count": len(logs),
-            "elapsed_seconds": round(elapsed, 3),
-            **metadata,
-        }
-        if not passed:
-            candidate["failure"] = canonical(logs[-1:])[-4000:]
-        candidate["candidate_score"] = round(_candidate_score(candidate), 3)
-        return candidate
-    except (StudioError, ValueError) as exc:
-        elapsed = max(0.0, time.monotonic() - started)
-        return {
-            "strategy": strategy,
-            "strategy_prior_score": float(strategy_prior_score),
-            "passed": False,
-            "changed_files": [],
-            "files": [],
-            "gate_count": 0,
-            "elapsed_seconds": round(elapsed, 3),
-            "failure": str(exc),
-            **metadata,
-            "candidate_score": -1_000_000.0,
-        }
-    finally:
-        restore_workspace(root, baseline)
 
-
-def apply_winner(root: Path, winner: dict) -> None:
-    files = winner.get("files", [])
-    if not isinstance(files, list) or not files:
-        raise StudioError("Winning repair candidate has no patch")
-    apply_patch(root, {"files": files})
-
-
-
-def run_branch(
-    root: Path,
-    *,
-    strategy: str,
-    strategy_prior_score: float,
-    steps: list,
-    refine,
-    state: dict,
-    app_name: str,
-    sandbox_factory,
-    strategy_row: dict | None = None,
-    remaining_model_calls: int = 0,
-    step_model_calls: list[int] | None = None,
-    quick_gate_cache: dict | None = None,
-    full_gate_cache: dict | None = None,
-    artifact_cache: dict | None = None,
-) -> dict:
-    if not 1 <= len(steps) <= MAX_BRANCH_STEPS:
-        raise StudioError("Repair branch step count invalid")
-    if step_model_calls is None:
-        step_model_calls = [1] * len(steps)
-    if len(step_model_calls) != len(steps) or any(
-        type(value) is not int or value < 0 for value in step_model_calls
-    ):
-        raise StudioError("Repair branch step-cost metadata invalid")
-    if quick_gate_cache is None:
-        quick_gate_cache = {}
-    if full_gate_cache is None:
-        full_gate_cache = {}
-    artifact_cache_enabled = artifact_cache is not None
-    if artifact_cache is None:
-        artifact_cache = {}
-    baseline = snapshot_workspace(root)
-    started = time.monotonic()
-    metadata = {
-        "steps": [],
-        "model_calls": 0,
-        "models_used": {},
-        "providers_used": {},
-        "agent": None,
-    }
-    try:
-        pending_failure = None
-        for index, step in enumerate(steps, start=1):
-            before_step = snapshot_workspace(root)
-            step_started = time.monotonic()
-            result = step(pending_failure)
-            pending_failure = None
-            if not isinstance(result, dict):
-                result = {}
-            step_trace = {
-                "step": index,
-                "metadata": result,
-                "elapsed_seconds": round(max(0.0, time.monotonic() - step_started), 3),
-            }
-            metadata["model_calls"] += max(0, int(result.get("model_calls", 0)))
-            if isinstance(result.get("models_used"), dict):
-                metadata["models_used"].update(result["models_used"])
-            if isinstance(result.get("providers_used"), dict):
-                metadata["providers_used"].update(result["providers_used"])
-            if result.get("agent") is not None:
-                metadata["agent"] = result.get("agent")
-
-            if index < len(steps):
-                step_delta = validate_delta(root, before_step)
-                quick_plan = plan_quick_gates(root, list(step_delta.get("changed", [])))
-                digest = delta_hash(list(step_delta.get("files", [])))
-                workspace_digest = workspace_hash(snapshot_workspace(root))
-                step_trace["delta"] = quick_plan
-                quick_sandbox = sandbox_factory(root)
-                progressive = []
-                quick_passed = True
-                quick_failure = None
-                gate_specs = (
-                    ("dependency", "quick_dependency_gate", quick_plan["dependency"]),
-                    ("analyze", "quick_analyze_gate", quick_plan["analyze"]),
-                    ("test", "quick_test_gate", quick_plan["test"]),
-                )
-                for gate_name, gate_method_name, required in gate_specs:
-                    if not required:
-                        progressive.append({
-                            "gate": gate_name,
-                            "passed": True,
-                            "skipped": True,
-                            "reason": "delta_not_relevant",
-                            "logs": [],
-                        })
-                        continue
-                    gate_method = getattr(quick_sandbox, gate_method_name, None)
-                    if gate_method is None:
-                        fallback = getattr(quick_sandbox, "quick_gates")
-                        gate_ok, gate_logs = fallback()
-                        progressive.append({
-                            "gate": "compatibility",
-                            "passed": gate_ok is True,
-                            "skipped": False,
-                            "logs": gate_logs,
-                        })
-                        quick_passed = gate_ok is True
-                        if not quick_passed:
-                            quick_failure = canonical(gate_logs[-1:])[-4000:]
-                        break
-                    targets = quick_plan["targeted_tests"] if gate_name == "test" else []
-                    key = cache_key(digest, gate_name, targets, workspace_digest=workspace_digest)
-                    cached = cache_get(quick_gate_cache, key)
-                    if cached is not None:
-                        gate_ok = cached["passed"]
-                        gate_logs = cached["logs"]
-                        from_cache = True
-                    else:
-                        if gate_name == "test":
-                            try:
-                                gate_ok, gate_logs = gate_method(targets)
-                            except TypeError:
-                                gate_ok, gate_logs = gate_method()
-                        else:
-                            gate_ok, gate_logs = gate_method()
-                        cache_put(
-                            quick_gate_cache,
-                            key,
-                            passed=gate_ok is True,
-                            logs=gate_logs,
-                        )
-                        from_cache = False
-                    progressive.append({
-                        "gate": gate_name,
-                        "passed": gate_ok is True,
-                        "skipped": False,
-                        "cached": from_cache,
-                        "cache_key": key,
-                        "mode": quick_plan["test_mode"] if gate_name == "test" else None,
-                        "targets": targets,
-                        "logs": gate_logs,
-                    })
-                    if not gate_ok:
-                        quick_passed = False
-                        quick_failure = canonical(gate_logs[-1:])[-4000:]
-                        break
-                step_trace["quick_gates"] = {
-                    "passed": quick_passed,
-                    "progressive": progressive,
-                    "failure": quick_failure,
-                }
-                if not quick_passed:
-                    pending_failure = quick_failure
-                    next_step_model_calls = step_model_calls[index]
-                    if not should_continue_after_quick_failure(
-                        next_step_model_calls=next_step_model_calls,
-                        remaining_model_calls=max(
-                            0,
-                            int(remaining_model_calls) - int(metadata["model_calls"]),
-                        ),
-                        strategy_row=strategy_row or {},
-                    ):
-                        metadata["steps"].append(step_trace)
-                        raise StudioError("Repair branch pruned after failed quick gates")
-            metadata["steps"].append(step_trace)
-
-        journeys = validate_journeys(state.get("product", {}).get("journeys"))
-        full_key = full_validation_key(root, app_name=app_name, journeys=journeys)
-        artifact_restore = None
-        cached_full_validation = False
-        cache_restore_error = None
-        if (
-            artifact_cache_enabled
-            and full_cache_hit(full_gate_cache, full_key)
-            and full_key in artifact_cache
-        ):
-            try:
-                artifact_restore = restore_artifacts(
-                    root,
-                    artifact_cache[full_key],
-                    full_key,
-                )
-            except StudioError as exc:
-                cache_restore_error = str(exc)
-                artifact_cache.pop(full_key, None)
-                full_gate_cache.pop(full_key, None)
-            else:
-                touch_artifact_cache(artifact_cache, full_key)
-                passed = True
-                logs = [{
-                    "command": ["cached-full-candidate-validation"],
-                    "exit_code": 0,
-                    "output": full_key,
-                }]
-                cached_full_validation = True
-        if not cached_full_validation:
-            full_key = full_validation_key(root, app_name=app_name, journeys=journeys)
-            artifact_restore = None
-            cache_restore_error = None
-            cached_full_validation = False
+        def validate_full_state():
+            key = full_validation_key(root, app_name=app_name, journeys=journeys)
+            restored = None
+            restore_error = None
+            cached = False
             if (
                 artifact_cache_enabled
-                and full_cache_hit(full_gate_cache, full_key)
-                and full_key in artifact_cache
+                and full_cache_hit(full_gate_cache, key)
+                and key in artifact_cache
             ):
                 try:
-                    artifact_restore = restore_artifacts(
+                    restored = restore_artifacts(
                         root,
-                        artifact_cache[full_key],
-                        full_key,
+                        artifact_cache[key],
+                        key,
                     )
                 except StudioError as exc:
-                    cache_restore_error = str(exc)
-                    artifact_cache.pop(full_key, None)
-                    full_gate_cache.pop(full_key, None)
+                    restore_error = str(exc)
+                    artifact_cache.pop(key, None)
+                    full_gate_cache.pop(key, None)
                 else:
-                    touch_artifact_cache(artifact_cache, full_key)
-                    passed = True
-                    logs = [{
-                        "command": ["cached-full-candidate-validation"],
-                        "exit_code": 0,
-                        "output": full_key,
-                    }]
-                    cached_full_validation = True
-            if not cached_full_validation:
-                sandbox = sandbox_factory(root)
-                passed, logs = sandbox.gates(app_name, journeys)
-                if passed:
-                    full_cache_record_success(full_gate_cache, full_key)
-                    if artifact_cache_enabled:
-                        artifact_cache[full_key] = capture_artifacts(root, full_key)
-            if passed:
-                full_cache_record_success(full_gate_cache, full_key)
+                    touch_artifact_cache(artifact_cache, key)
+                    return (
+                        True,
+                        [{
+                            "command": ["cached-full-candidate-validation"],
+                            "exit_code": 0,
+                            "output": key,
+                        }],
+                        True,
+                        restored,
+                        restore_error,
+                        key,
+                    )
+
+            sandbox = sandbox_factory(root)
+            gate_passed, gate_logs = sandbox.gates(app_name, journeys)
+            if gate_passed:
+                full_cache_record_success(full_gate_cache, key)
                 if artifact_cache_enabled:
-                    artifact_cache[full_key] = capture_artifacts(root, full_key)
+                    artifact_cache[key] = capture_artifacts(root, key)
+            return (
+                gate_passed,
+                gate_logs,
+                cached,
+                restored,
+                restore_error,
+                key,
+            )
+
+        (
+            passed,
+            logs,
+            cached_full_validation,
+            artifact_restore,
+            cache_restore_error,
+            full_key,
+        ) = validate_full_state()
         refinements = 0
         while (
             not passed
@@ -368,8 +157,14 @@ def run_branch(
                 metadata["providers_used"].update(result["providers_used"])
             if result.get("agent") is not None:
                 metadata["agent"] = result.get("agent")
-            sandbox = sandbox_factory(root)
-            passed, logs = sandbox.gates(app_name, journeys)
+            (
+                passed,
+                logs,
+                cached_full_validation,
+                artifact_restore,
+                cache_restore_error,
+                full_key,
+            ) = validate_full_state()
 
         delta = validate_delta(root, baseline)
         changed = list(delta.get("changed", []))

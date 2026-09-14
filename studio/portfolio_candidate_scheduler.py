@@ -104,13 +104,22 @@ def choose_schedule(
         agent_limit = 0
         model_limit = min(available_models, candidate_limit)
     else:
-        # Prefer one direct model, then diversify with an agent, then another
-        # direct model when the portfolio is wide enough.
-        model_limit = min(available_models, 1)
-        agent_limit = min(available_agents, max(0, candidate_limit - model_limit))
-        remaining = candidate_limit - model_limit - agent_limit
-        if remaining > 0:
-            model_limit += min(available_models - model_limit, remaining)
+        # Prefer heterogeneous portfolios: model+agent at width 2, and
+        # two independent direct models plus one agent at width 3.
+        if candidate_limit >= 3 and available_models >= 2 and available_agents >= 1:
+            model_limit = 2
+            agent_limit = 1
+        elif candidate_limit >= 2 and available_models >= 1 and available_agents >= 1:
+            model_limit = 1
+            agent_limit = 1
+        else:
+            model_limit = min(available_models, candidate_limit)
+            agent_limit = min(available_agents, max(0, candidate_limit - model_limit))
+            if model_limit + agent_limit < candidate_limit:
+                agent_limit += min(
+                    available_agents - agent_limit,
+                    candidate_limit - model_limit - agent_limit,
+                )
 
     actual_capacity = model_limit + agent_limit
     candidate_limit = max(1, min(MAX_CANDIDATES, candidate_limit, max(1, actual_capacity)))

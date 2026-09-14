@@ -35,6 +35,7 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
             break
         if not remediation_candidate(evidence):
             break
+        blockers_before = len(evidence.get('blockers', []))
         result = remediate(root, evidence)
         remediation_history.append({
             'round': round_index + 1,

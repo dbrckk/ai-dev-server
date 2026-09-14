@@ -12,6 +12,7 @@ from evolution_executor import consume as consume_evolution_request
 from stage_registry import STAGES,get_stage
 from project_recommendations import recommend
 from architecture_evaluator import write as write_architecture_evaluation
+from architecture_benchmark import write as write_architecture_benchmark
 
 def _recommendation_context(request_path):
     try:
@@ -26,6 +27,16 @@ def _recommendation_context(request_path):
     language='dart' if 'flutter' in text else None
     return {'context_text': brief, 'platform': platform, 'language': language}
 
+def _load_recommendations(project_out):
+    path=project_out/'star-recommendations.json'
+    if not path.is_file():
+        return {'matches':[]}
+    try:
+        value=json.loads(path.read_text())
+    except (OSError,json.JSONDecodeError):
+        return {'matches':[]}
+    return value if isinstance(value,dict) else {'matches':[]}
+
 def _evaluate_architecture(report,project_out):
     path=project_out/'architecture-decision.json'
     if not path.is_file():
@@ -37,7 +48,9 @@ def _evaluate_architecture(report,project_out):
     if not isinstance(decision,dict):
         return {'status':'invalid','verdict':'insufficient_evidence','advisory_only':True}
     evaluation=write_architecture_evaluation(decision,report,project_out)
+    benchmark=write_architecture_benchmark(decision,evaluation,_load_recommendations(project_out),project_out)
     report['architecture_evaluation']=evaluation
+    report['architecture_benchmark']=benchmark
     (project_out/'report.json').write_text(json.dumps(report,ensure_ascii=False,sort_keys=True,separators=(',',':')))
     return evaluation
 

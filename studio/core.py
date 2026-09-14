@@ -342,17 +342,7 @@ class Model:
                             raise StudioError('Repair roles may not edit tests or documentation')
                     elif role in ('review', 'visual'):
                         verdict(value)
-                    if local_rep_path is not None and selected_provider_spec is not None and selected_provider_spec.unmetered and ':' in selected_provider_spec.name:
-                record_local_model_reputation(
-                    local_rep_path,
-                    provider=selected_provider_spec.name.split(':', 1)[0],
-                    model=selected_model,
-                    role=role,
-                    success=True,
-                    latency_seconds=elapsed if 'elapsed' in locals() else 0.0,
-                    protocol_failure=False,
-                )
-            return value
+                    return value
                 except (ValueError, StudioError) as e:
                     error = str(e)
             if attempt or self.calls >= self.limit:

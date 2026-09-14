@@ -547,6 +547,21 @@ class Sandbox:
         self.native_files = {p.relative_to(self.root).as_posix(): p.read_bytes()
                              for folder in ('android', 'ios') for p in (self.root / folder).rglob('*')
                              if p.is_file() and not p.is_symlink() and p.name != 'local.properties'}
+    def quick_gates(self):
+        """Cheap intermediate validation used to prune repair branches early."""
+        logs = []
+        for args, network in [
+            (['flutter', 'pub', 'get'], True),
+            (['flutter', 'analyze', '--no-pub'], False),
+            (['flutter', 'test', '--no-pub', '--exclude-tags=studio-visual'], False),
+        ]:
+            print('Quick gate: ' + ' '.join(args), flush=True)
+            rc, out = self.run(args, network=network, timeout=600)
+            logs.append({'command': args, 'exit_code': rc, 'output': out})
+            if rc:
+                return False, logs
+        return True, logs
+
     def gates(self, name, journeys):
         # Trusted test is reinstated every round; model cannot edit its reserved name.
         probe = Path(__file__).with_name('visual_test.dart').read_text().replace('APP_NAME', name).replace('JOURNEYS_BASE64', encoded_journeys(journeys))

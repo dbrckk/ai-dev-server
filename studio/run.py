@@ -27,6 +27,11 @@ from architecture_benchmark import write as write_architecture_benchmark
 from architecture_preflight import write as write_architecture_preflight
 from architecture_change_guard import enforce as enforce_architecture_change_guard, ArchitectureChangeBlocked
 from architecture_safe_rewrite import build_context as build_architecture_safe_rewrite_context
+from safe_rewrite_learning import (
+    record_attempt as record_safe_rewrite_attempt,
+    finalize as finalize_safe_rewrite,
+    summarize as summarize_safe_rewrite_learning,
+)
 
 class GitHub(API):
     def __init__(self, repo):
@@ -375,6 +380,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                 (root / 'pubspec.lock').write_bytes(p.read_bytes())
             elif p.is_file():
                 apply_patch(root, {'files': [{'path': p.relative_to(saved_root).as_posix(), 'content': p.read_text()}]})
+    safe_rewrite_learning_path = out / '.autonomy' / 'safe-rewrite-learning.json'
     state['technical_recommendations'] = _load_star_recommendations(out)
     historical_root = architecture_learning_root(out)
     historical_learning = summarize_architecture_learning(historical_root)
@@ -465,6 +471,21 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                     continue
                 patch = retry_patch
                 event['safe_rewrite_status'] = 'accepted'
+                event_id = f"{req['id']}:{state['rounds']}:flutter"
+                origin_name = str(getattr(model, 'providers_used', {}).get('implementation') or getattr(model, 'models_used', {}).get('implementation') or 'unknown')
+                rewrite_name = str(getattr(model, 'providers_used', {}).get('implementation') or getattr(model, 'models_used', {}).get('implementation') or 'unknown')
+                record_safe_rewrite_attempt(
+                    safe_rewrite_learning_path,
+                    event_id=event_id,
+                    engine='flutter',
+                    origin_kind='provider',
+                    origin_name=origin_name,
+                    rewrite_kind='provider',
+                    rewrite_name=rewrite_name,
+                    guard_passed=True,
+                )
+                event['learning_event_id'] = event_id
+                state['pending_safe_rewrite_event_id'] = event_id
                 state['status'] = 'working'
                 state['blockers'] = []
             apply_patch(root, patch)
@@ -489,6 +510,15 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             (out / 'validation.json').write_text(canonical(logs))
             state['status'] = 'repair_needed'
             if not passed:
+                pending_safe_rewrite = state.pop('pending_safe_rewrite_event_id', None)
+                if pending_safe_rewrite:
+                    finalize_safe_rewrite(
+                        safe_rewrite_learning_path,
+                        event_id=pending_safe_rewrite,
+                        verification_passed=False,
+                        review_passed=None,
+                    )
+                    state['safe_rewrite_learning'] = summarize_safe_rewrite_learning(safe_rewrite_learning_path)
                 state['blockers'] = ['Validation failed: ' + canonical(logs[-1:])[-16000:]]
                 state['repair_plan'] = preview_plan('preview_validation', state['blockers'])
                 enqueue(state, state['repair_plan'], estimated_model_calls=1)
@@ -499,6 +529,15 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             review = verdict(checkpointed_ask(model, 'review', context(req, state, root), namespace='preview-review'))
             state['code_review'] = review
             if not review['passed']:
+                pending_safe_rewrite = state.pop('pending_safe_rewrite_event_id', None)
+                if pending_safe_rewrite:
+                    finalize_safe_rewrite(
+                        safe_rewrite_learning_path,
+                        event_id=pending_safe_rewrite,
+                        verification_passed=True,
+                        review_passed=False,
+                    )
+                    state['safe_rewrite_learning'] = summarize_safe_rewrite_learning(safe_rewrite_learning_path)
                 state['blockers'] = review['blockers']
                 state['repair_plan'] = preview_plan('code_review', state['blockers'])
                 enqueue(state, state['repair_plan'], estimated_model_calls=1)
@@ -528,6 +567,15 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                 state['repair_queue_summary'] = summarize(state)
                 parent = checkpoint(parent)
                 continue
+            pending_safe_rewrite = state.pop('pending_safe_rewrite_event_id', None)
+            if pending_safe_rewrite:
+                finalize_safe_rewrite(
+                    safe_rewrite_learning_path,
+                    event_id=pending_safe_rewrite,
+                    verification_passed=True,
+                    review_passed=True,
+                )
+                state['safe_rewrite_learning'] = summarize_safe_rewrite_learning(safe_rewrite_learning_path)
             state.update(status='validated_preview', blockers=[])
             state['repair_plan'] = preview_plan('preview', [])
             for completed_stage in ('preview_validation', 'code_review', 'visual_review'):

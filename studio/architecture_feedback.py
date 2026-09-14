@@ -7,6 +7,8 @@ MIN_SAMPLES = 5
 MAX_SCORE_BONUS = 3.0
 MAX_STACK_SCORE_BONUS = 2.0
 MAX_EVIDENCE_AGE_SECONDS = 30 * 24 * 60 * 60
+SUCCESS_WEIGHT = 0.6
+QUALITY_WEIGHT = 0.4
 
 def _context_weight(row: dict, framework: str | None, project_type: str | None, primary_domain: str | None) -> float:
     """Down-weight legacy/generic evidence; full bonus requires matching context."""
@@ -117,7 +119,14 @@ def apply(
         if history is not None:
             applied_count += 1
             success_rate = max(0.0, min(1.0, float(history["success_rate"])))
-            centered = (success_rate - 0.5) * 2.0
+            mean_quality = history.get("mean_quality_score")
+            quality_rate = (
+                max(0.0, min(1.0, float(mean_quality) / 100.0))
+                if isinstance(mean_quality, (int, float))
+                else success_rate
+            )
+            combined_rate = SUCCESS_WEIGHT * success_rate + QUALITY_WEIGHT * quality_rate
+            centered = (combined_rate - 0.5) * 2.0
             context_weight = _context_weight(history, normalized_framework, normalized_project_type, normalized_primary_domain)
             bonus = max(-MAX_SCORE_BONUS, min(MAX_SCORE_BONUS, centered * MAX_SCORE_BONUS * context_weight))
             item["historical_evidence"] = {
@@ -130,6 +139,8 @@ def apply(
                 "mean_model_calls": history.get("mean_model_calls"),
                 "mean_cycles": history.get("mean_cycles"),
                 "mean_blockers": history.get("mean_blockers"),
+                "mean_quality_score": history.get("mean_quality_score"),
+                "combined_outcome_rate": round(combined_rate, 4),
                 "advisory_bonus": round(bonus, 4),
                 "context_weight": round(context_weight, 4),
             }
@@ -153,6 +164,8 @@ def apply(
         "advisory_only": True,
         "can_add_dependency": False,
         "max_evidence_age_seconds": MAX_EVIDENCE_AGE_SECONDS,
+        "success_weight": SUCCESS_WEIGHT,
+        "quality_weight": QUALITY_WEIGHT,
     }
     return result
 
@@ -235,7 +248,14 @@ def stack_adjustment(
             continue
 
         rate = max(0.0, min(1.0, float(success_rate)))
-        centered = (rate - 0.5) * 2.0
+        mean_quality = row.get("mean_quality_score")
+        quality_rate = (
+            max(0.0, min(1.0, float(mean_quality) / 100.0))
+            if isinstance(mean_quality, (int, float))
+            else rate
+        )
+        combined_rate = SUCCESS_WEIGHT * rate + QUALITY_WEIGHT * quality_rate
+        centered = (combined_rate - 0.5) * 2.0
         context_weight = _context_weight(row, normalized_framework, normalized_project_type, normalized_primary_domain)
         if context_weight <= 0:
             continue
@@ -246,6 +266,8 @@ def stack_adjustment(
             "repos": sorted(repo_set)[:12],
             "samples": samples,
             "success_rate": rate,
+            "mean_quality_score": row.get("mean_quality_score"),
+            "combined_outcome_rate": round(combined_rate, 4),
             "overlap_with_selected": overlap,
             "framework": row_framework,
             "project_type": row_project_type,
@@ -265,5 +287,7 @@ def stack_adjustment(
             "minimum_samples": MIN_SAMPLES,
             "max_stack_score_bonus": MAX_STACK_SCORE_BONUS,
             "advisory_only": True,
+            "success_weight": SUCCESS_WEIGHT,
+            "quality_weight": QUALITY_WEIGHT,
         },
     }

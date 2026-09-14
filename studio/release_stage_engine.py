@@ -117,6 +117,7 @@ def evaluate_and_repair(
                 stage,
                 req["app_name"],
                 task=task,
+                artifact_cache_enabled=True,
             )
         except StudioError as exc:
             if task is not None:

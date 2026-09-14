@@ -155,11 +155,48 @@ class GitHub(API):
             self.call('POST', self.repo + '/git/refs', {'ref': 'refs/heads/' + branch, 'sha': commit['sha']})
         return commit['sha']
 
+def _load_star_recommendations(out: Path) -> dict:
+    """Load bounded recommendation evidence as advisory data only."""
+    path = Path(out) / 'star-recommendations.json'
+    if not path.is_file():
+        return {'status': 'unavailable', 'matches': []}
+    try:
+        value = json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return {'status': 'invalid', 'matches': []}
+    if not isinstance(value, dict):
+        return {'status': 'invalid', 'matches': []}
+    safe = []
+    for row in value.get('matches', [])[:12]:
+        if not isinstance(row, dict) or not isinstance(row.get('repo'), str):
+            continue
+        safe.append({
+            'repo': row['repo'][:160],
+            'score': row.get('score'),
+            'quality_score': row.get('quality_score'),
+            'tier': row.get('tier'),
+            'domain': row.get('domain'),
+            'capabilities': [str(x)[:80] for x in row.get('capabilities', [])[:16]],
+            'best_for': [str(x)[:160] for x in row.get('best_for', [])[:8]],
+            'avoid_when': [str(x)[:160] for x in row.get('avoid_when', [])[:8]],
+            'alternatives': [str(x)[:160] for x in row.get('alternatives', [])[:8]],
+            'complements': [str(x)[:160] for x in row.get('complements', [])[:8]],
+        })
+    return {
+        'status': value.get('status', 'ok'),
+        'phase': value.get('phase'),
+        'source_format': value.get('source_format'),
+        'matches': safe,
+        'advisory_only': True,
+    }
+
 def context(req, state, root):
     files = {p.relative_to(root).as_posix(): p.read_text() for p in sorted(root.rglob('*'))
              if p.is_file() and not p.is_symlink() and allowed(p.relative_to(root).as_posix())}
     return canonical({'request': req, 'product': state.get('product'), 'design': state.get('design'),
-                      'previous_blockers': state.get('blockers', []), 'files': files})
+                      'previous_blockers': state.get('blockers', []),
+                      'technical_recommendations': state.get('technical_recommendations', {'status':'unavailable','matches':[]}),
+                      'files': files})
 
 def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sandbox):
     def clear_preview_evidence(state):
@@ -210,6 +247,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                 (root / 'pubspec.lock').write_bytes(p.read_bytes())
             elif p.is_file():
                 apply_patch(root, {'files': [{'path': p.relative_to(saved_root).as_posix(), 'content': p.read_text()}]})
+    state['technical_recommendations'] = _load_star_recommendations(out)
     state['cycles'] += 1
 
     def checkpoint(parent_sha):

@@ -46,5 +46,50 @@ class ProviderMonthlyQuotaTests(unittest.TestCase):
             self.assertEqual(status["remaining_tokens"], 0)
 
 
+    def test_noncritical_work_preserves_reserve(self):
+        now = datetime(2026, 9, 14, tzinfo=timezone.utc)
+        data = {"schema": 1, "months": {"2026-09": {
+            "omniroute": {"total_tokens": 960}
+        }}}
+        decision = quota.quota_admission(
+            data,
+            "omniroute",
+            1000,
+            estimated_tokens=20,
+            reserve_ratio=0.03,
+            now=now,
+        )
+        self.assertFalse(decision["admitted"])
+        self.assertEqual(decision["reason"], "reserved_for_critical_work")
+        self.assertEqual(decision["reserve_tokens"], 30)
+
+    def test_critical_work_can_use_reserve_but_not_exceed_quota(self):
+        now = datetime(2026, 9, 14, tzinfo=timezone.utc)
+        data = {"schema": 1, "months": {"2026-09": {
+            "omniroute": {"total_tokens": 960}
+        }}}
+        allowed = quota.quota_admission(
+            data,
+            "omniroute",
+            1000,
+            estimated_tokens=20,
+            reserve_ratio=0.03,
+            allow_reserve=True,
+            now=now,
+        )
+        denied = quota.quota_admission(
+            data,
+            "omniroute",
+            1000,
+            estimated_tokens=50,
+            reserve_ratio=0.03,
+            allow_reserve=True,
+            now=now,
+        )
+        self.assertTrue(allowed["admitted"])
+        self.assertFalse(denied["admitted"])
+        self.assertEqual(denied["reason"], "insufficient_remaining_quota")
+
+
 if __name__ == "__main__":
     unittest.main()

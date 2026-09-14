@@ -10,7 +10,7 @@ WORKFLOW_NAMES = {
     "Validate AI Dev Server": ".github/workflows/validate.yml",
     "Fault Injection Gate": ".github/workflows/fault-injection.yml",
     "Resilience Soak": ".github/workflows/resilience-soak.yml",
-    "Mobile Studio Real Build": ".github/workflows/mobile-real-build.yml",
+    "Mobile Studio Real Build": ".github/workflows/studio-smoke.yml",
     "Multi-Engine E2E Benchmark": ".github/workflows/multi-engine-benchmark.yml",
 }
 

@@ -19,6 +19,7 @@ from architecture_replacement_work_order import write as write_architecture_repl
 from architecture_learning import summarize as summarize_architecture_learning, root_for_output as architecture_learning_root
 from architecture_replacement_learning import summarize as summarize_replacement_learning
 from repo_maintenance import probe as probe_repo_maintenance
+from repo_version_probe import probe as probe_repo_versions
 
 def _recommendation_context(request_path):
     try:
@@ -58,8 +59,10 @@ def _evaluate_architecture(report,project_out):
     benchmark=write_architecture_benchmark(decision,evaluation,recommendations,project_out)
     learning=summarize_architecture_learning(architecture_learning_root(project_out))
     current_repos=[x.get('current_repo') for x in benchmark.get('comparisons',[]) if isinstance(x,dict) and isinstance(x.get('current_repo'),str)]
+    replacement_repos=[x.get('best_alternative') for x in benchmark.get('comparisons',[]) if isinstance(x,dict) and isinstance(x.get('best_alternative'),str)]
     maintenance=probe_repo_maintenance(current_repos)
-    obsolescence=write_architecture_obsolescence(learning,benchmark,recommendations,project_out,maintenance=maintenance)
+    versions=probe_repo_versions(current_repos+replacement_repos)
+    obsolescence=write_architecture_obsolescence(learning,benchmark,recommendations,project_out,maintenance=maintenance,versions=versions)
     replacement_learning=summarize_replacement_learning(architecture_learning_root(project_out))
     replacement_plan=write_architecture_replacement_plan(obsolescence,recommendations,project_out,learning=replacement_learning)
     replacement_work_orders=write_architecture_replacement_work_orders(replacement_plan,project_out)

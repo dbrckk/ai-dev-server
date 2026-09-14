@@ -9,6 +9,7 @@ from core import StudioError, apply_patch, canonical
 from journeys import validate_journeys
 from repair_search_policy import should_continue_after_quick_failure, should_refine
 from diff_quick_gates import plan as plan_quick_gates
+from quick_gate_cache import cache_key, delta_hash, get as cache_get, put as cache_put
 
 MAX_CANDIDATES = 2
 MAX_BRANCH_STEPS = 3
@@ -54,6 +55,8 @@ def run_candidate(
     app_name: str,
     sandbox_factory,
 ) -> dict:
+    if quick_gate_cache is None:
+        quick_gate_cache = {}
     baseline = snapshot_workspace(root)
     started = time.monotonic()
     metadata = {}
@@ -120,6 +123,7 @@ def run_branch(
     strategy_row: dict | None = None,
     remaining_model_calls: int = 0,
     step_model_calls: list[int] | None = None,
+    quick_gate_cache: dict | None = None,
 ) -> dict:
     if not 1 <= len(steps) <= MAX_BRANCH_STEPS:
         raise StudioError("Repair branch step count invalid")
@@ -163,6 +167,7 @@ def run_branch(
             if index < len(steps):
                 step_delta = validate_delta(root, before_step)
                 quick_plan = plan_quick_gates(root, list(step_delta.get("changed", [])))
+                digest = delta_hash(list(step_delta.get("files", [])))
                 step_trace["delta"] = quick_plan
                 quick_sandbox = sandbox_factory(root)
                 progressive = []
@@ -197,19 +202,36 @@ def run_branch(
                         if not quick_passed:
                             quick_failure = canonical(gate_logs[-1:])[-4000:]
                         break
-                    if gate_name == "test":
-                        try:
-                            gate_ok, gate_logs = gate_method(quick_plan["targeted_tests"])
-                        except TypeError:
-                            gate_ok, gate_logs = gate_method()
+                    targets = quick_plan["targeted_tests"] if gate_name == "test" else []
+                    key = cache_key(digest, gate_name, targets)
+                    cached = cache_get(quick_gate_cache, key)
+                    if cached is not None:
+                        gate_ok = cached["passed"]
+                        gate_logs = cached["logs"]
+                        from_cache = True
                     else:
-                        gate_ok, gate_logs = gate_method()
+                        if gate_name == "test":
+                            try:
+                                gate_ok, gate_logs = gate_method(targets)
+                            except TypeError:
+                                gate_ok, gate_logs = gate_method()
+                        else:
+                            gate_ok, gate_logs = gate_method()
+                        cache_put(
+                            quick_gate_cache,
+                            key,
+                            passed=gate_ok is True,
+                            logs=gate_logs,
+                        )
+                        from_cache = False
                     progressive.append({
                         "gate": gate_name,
                         "passed": gate_ok is True,
                         "skipped": False,
+                        "cached": from_cache,
+                        "cache_key": key,
                         "mode": quick_plan["test_mode"] if gate_name == "test" else None,
-                        "targets": quick_plan["targeted_tests"] if gate_name == "test" else [],
+                        "targets": targets,
                         "logs": gate_logs,
                     })
                     if not gate_ok:

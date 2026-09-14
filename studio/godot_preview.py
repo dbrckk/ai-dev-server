@@ -27,12 +27,24 @@ from architecture_learning import (
 from architecture_evaluator import write as write_architecture_evaluation
 from architecture_benchmark import write as write_architecture_benchmark
 from architecture_preflight import write as write_architecture_preflight
+from architecture_change_guard import enforce as enforce_architecture_change_guard
 from architecture_outcome import write as write_architecture_outcome
 
 MAX_PUBLISH_FILE_BYTES = 1_000_000
 
 
-def _safe_apply(root: Path, value: dict, role: str) -> None:
+def _safe_apply(
+    root: Path,
+    value: dict,
+    role: str,
+    *,
+    architecture_changes_allowed: bool = True,
+) -> None:
+    enforce_architecture_change_guard(
+        value,
+        engine='godot',
+        architecture_changes_allowed=architecture_changes_allowed,
+    )
     files = validate_patch(value, 'godot', role)
     root = root.resolve(); targets = []
     for item in files:
@@ -218,9 +230,23 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
                 state[role] = result; state['status'] = role + '_complete'; checkpoint()
         for _ in range(req['max_rounds']):
             state['rounds'] += 1
-            patch = model.ask('implementation', _context(req,state,root)); _safe_apply(root, patch, 'implementation')
+            patch = model.ask('implementation', _context(req,state,root)); _safe_apply(
+                root,
+                patch,
+                'implementation',
+                architecture_changes_allowed=bool(
+                    state.get('architecture_autonomy_policy', {}).get('architecture_changes_allowed', True)
+                ),
+            )
             if not any(p.is_file() and not p.is_symlink() for p in (root / 'tests').rglob('*.gd')):
-                qa = model.ask('tests', _context(req,state,root)); _safe_apply(root, qa, 'tests')
+                qa = model.ask('tests', _context(req,state,root)); _safe_apply(
+                    root,
+                    qa,
+                    'tests',
+                    architecture_changes_allowed=bool(
+                        state.get('architecture_autonomy_policy', {}).get('architecture_changes_allowed', True)
+                    ),
+                )
             if not any(p.is_file() and not p.is_symlink() for p in (root / 'tests').rglob('*.gd')):
                 raise StudioError('Godot QA must supply tests/*.gd')
             try: journeys = validate_journeys(state['product'].get('journeys'))

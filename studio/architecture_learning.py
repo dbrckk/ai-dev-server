@@ -52,6 +52,8 @@ def summarize(root: Path | str = "studio-output") -> dict:
         calls = max(0, int(outcome.get("model_calls_this_cycle", 0) or 0))
         cycles = max(0, int(outcome.get("cycles", 0) or 0))
         blockers = max(0, int(outcome.get("blocker_count", 0) or 0))
+        quality = outcome.get("quality_score")
+        quality = max(0.0, min(100.0, float(quality))) if isinstance(quality, (int, float)) else (100.0 if successful else 0.0)
 
         constraints = row.get("decision_constraints")
         framework = (
@@ -104,6 +106,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
                 "model_calls": 0,
                 "cycles": 0,
                 "blockers": 0,
+                "quality_total": 0.0,
                 "latest_observed_at": None,
             })
             stack["samples"] += 1
@@ -111,6 +114,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
             stack["model_calls"] += calls
             stack["cycles"] += cycles
             stack["blockers"] += blockers
+            stack["quality_total"] += quality
             if observed_at is not None:
                 prev = stack.get("latest_observed_at")
                 stack["latest_observed_at"] = observed_at if not isinstance(prev, (int,float)) else max(float(prev), observed_at)
@@ -133,6 +137,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
                 "model_calls": 0,
                 "cycles": 0,
                 "blockers": 0,
+                "quality_total": 0.0,
                 "latest_observed_at": None,
             })
             item["samples"] += 1
@@ -140,6 +145,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
             item["model_calls"] += calls
             item["cycles"] += cycles
             item["blockers"] += blockers
+            item["quality_total"] += quality
             if observed_at is not None:
                 previous_ts = item.get("latest_observed_at")
                 item["latest_observed_at"] = (
@@ -163,6 +169,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
             "mean_model_calls": round(item["model_calls"] / samples, 3) if samples else 0.0,
             "mean_cycles": round(item["cycles"] / samples, 3) if samples else 0.0,
             "mean_blockers": round(item["blockers"] / samples, 3) if samples else 0.0,
+            "mean_quality_score": round(item["quality_total"] / samples, 3) if samples else 0.0,
             "latest_observed_at": item.get("latest_observed_at"),
             "eligible_for_advisory_bias": samples >= MIN_SAMPLES,
         })
@@ -170,6 +177,8 @@ def summarize(root: Path | str = "studio-output") -> dict:
     rankings.sort(
         key=lambda x: (
             x["eligible_for_advisory_bias"],
+            x["mean_quality_score"],
+            x["mean_quality_score"],
             x["success_rate"],
             -x["mean_blockers"],
             -x["mean_model_calls"],
@@ -191,6 +200,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
             "mean_model_calls": round(item["model_calls"] / samples, 3) if samples else 0.0,
             "mean_cycles": round(item["cycles"] / samples, 3) if samples else 0.0,
             "mean_blockers": round(item["blockers"] / samples, 3) if samples else 0.0,
+            "mean_quality_score": round(item["quality_total"] / samples, 3) if samples else 0.0,
             "latest_observed_at": item.get("latest_observed_at"),
             "eligible_for_advisory_bias": samples >= MIN_SAMPLES,
         })
@@ -206,7 +216,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
     )
 
     return {
-        "schema": 3,
+        "schema": 4,
         "projects_observed": projects,
         "minimum_samples": MIN_SAMPLES,
         "advisory_only": True,

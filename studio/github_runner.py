@@ -192,6 +192,8 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
                 (out/'user-input-required.json').unlink(missing_ok=True)
         except ValueError as exc:
             raise StudioError('Autonomous goal resume check failed: '+str(exc)) from None
+    os.environ['STUDIO_STRATEGY_EFFICIENCY_PATH']=str(out/'.autonomy/strategy-efficiency.json')
+    os.environ['STUDIO_CONTEXTUAL_STRATEGY_EFFICIENCY_PATH']=str(out/'.autonomy/contextual-strategy-efficiency.json')
     adaptation_path=out/'.autonomy/capability-adaptation.json'
     memory_path=out/'.memory/memory.json'
     registry_path=out/'.autonomy/capabilities.json'

@@ -24,6 +24,7 @@ from architecture_planner import write as write_architecture_plan
 from architecture_outcome import write as write_architecture_outcome
 from architecture_learning import write as write_architecture_learning, summarize as summarize_architecture_learning, root_for_output as architecture_learning_root
 from architecture_replacement_learning import summarize as summarize_replacement_learning
+from architecture_replacement_reputation import load as load_replacement_reputation
 from architecture_evaluator import write as write_architecture_evaluation
 from architecture_benchmark import write as write_architecture_benchmark
 from architecture_preflight import write as write_architecture_preflight
@@ -333,6 +334,7 @@ def context(req, state, root):
                       'architecture_replacement_plan': state.get('architecture_replacement_plan', {'status':'unavailable','replacement_plans':[]}),
                       'architecture_replacement_work_orders': state.get('architecture_replacement_work_orders', {'status':'unavailable','work_orders':[]}),
                       'architecture_replacement_learning': state.get('architecture_replacement_learning', {'outcomes_observed':0,'rankings':[]}),
+                      'architecture_replacement_reputation': state.get('architecture_replacement_reputation', {'entries':[],'policy':{}}),
                       'architecture_drift_alerts': state.get('architecture_drift_alerts', []),
                       'files': files})
 
@@ -438,10 +440,18 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     historical_root = architecture_learning_root(out)
     historical_learning = summarize_architecture_learning(historical_root)
     replacement_learning = summarize_replacement_learning(historical_root)
+    replacement_reputation = load_replacement_reputation(
+        historical_root / 'architecture-replacement-reputation.json'
+    )
     state['architecture_replacement_learning'] = {
         'outcomes_observed': replacement_learning.get('outcomes_observed',0),
         'rankings': replacement_learning.get('rankings',[])[:20],
         'advisory_only': True,
+    }
+    state['architecture_replacement_reputation'] = {
+        'entries': list(replacement_reputation.get('entries',{}).values())[:20],
+        'policy': replacement_reputation.get('policy',{}),
+        'audit_tail': replacement_reputation.get('audit',[])[-10:],
     }
     state['architecture_drift_alerts'] = historical_learning.get('drift_alerts', [])[:20]
     state['architecture_decision'] = write_architecture_plan(

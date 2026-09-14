@@ -28,7 +28,9 @@ def _scope_root(*, shareable: bool = False, artifact_class: str | None = None) -
     if root is None:
         raise StudioError("Artifact CAS path unavailable")
     if shareable:
-        return root / "shared" / validate_shareable_class(artifact_class)
+        shared_raw = os.environ.get("STUDIO_SHARED_ARTIFACT_CAS_PATH", "")
+        shared_root = Path(shared_raw) if shared_raw else root / "shared"
+        return shared_root / validate_shareable_class(artifact_class)
     return root / "private" / project_namespace(_project_id())
 
 

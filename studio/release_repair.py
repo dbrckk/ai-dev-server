@@ -179,8 +179,8 @@ def attempt(
 
         if strategy_name == "model_only":
             steps = [
-                lambda s=state, st=stage, b=blockers, t=task:
-                    _model_mutation(root, s, st, b, t, model_factory)
+                lambda intermediate_failure=None, s=state, st=stage, b=blockers, t=task:
+                    _model_mutation(root, s, st, b, t, model_factory, intermediate_failure)
             ]
             step_model_calls = [1]
             refine = lambda failure, s=state, st=stage, b=blockers, t=task: (
@@ -188,8 +188,8 @@ def attempt(
             )
         elif strategy_name == "agent_only":
             steps = [
-                lambda st=stage, b=blockers:
-                    _agent_mutation(root, b, st)
+                lambda intermediate_failure=None, st=stage, b=blockers:
+                    _agent_mutation(root, b, st, intermediate_failure)
             ]
             step_model_calls = [0]
             refine = lambda failure, st=stage, b=blockers: (
@@ -197,10 +197,10 @@ def attempt(
             )
         elif strategy_name == "agent_to_model":
             steps = [
-                lambda st=stage, b=blockers:
-                    _agent_mutation(root, b, st),
-                lambda s=state, st=stage, b=blockers, t=task:
-                    _model_mutation(root, s, st, b, t, model_factory),
+                lambda intermediate_failure=None, st=stage, b=blockers:
+                    _agent_mutation(root, b, st, intermediate_failure),
+                lambda intermediate_failure=None, s=state, st=stage, b=blockers, t=task:
+                    _model_mutation(root, s, st, b, t, model_factory, intermediate_failure),
             ]
             step_model_calls = [0, 1]
             refine = lambda failure, s=state, st=stage, b=blockers, t=task: (
@@ -208,10 +208,10 @@ def attempt(
             )
         else:
             steps = [
-                lambda s=state, st=stage, b=blockers, t=task:
-                    _model_mutation(root, s, st, b, t, model_factory),
-                lambda st=stage, b=blockers:
-                    _agent_mutation(root, b, st),
+                lambda intermediate_failure=None, s=state, st=stage, b=blockers, t=task:
+                    _model_mutation(root, s, st, b, t, model_factory, intermediate_failure),
+                lambda intermediate_failure=None, st=stage, b=blockers:
+                    _agent_mutation(root, b, st, intermediate_failure),
             ]
             step_model_calls = [1, 0]
             refine = lambda failure, s=state, st=stage, b=blockers, t=task: (

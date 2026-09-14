@@ -17,6 +17,7 @@ try:
     from .atomic_file import write_text as atomic_write_text
     from .durable_state import load_recovering as load_runtime_state, save as save_durable_state
     from .telemetry import emit as emit_telemetry
+    from .telemetry_maintenance import compact as compact_telemetry
 except ImportError:
     from capability_registry import new_registry, save as save_registry, load as load_registry, register, has_capability
     from goal_engine import new_goal, save as save_goal
@@ -29,6 +30,7 @@ except ImportError:
     from atomic_file import write_text as atomic_write_text
     from durable_state import load_recovering as load_runtime_state, save as save_durable_state
     from telemetry import emit as emit_telemetry
+    from telemetry_maintenance import compact as compact_telemetry
 
 
 AUTONOMY_DIR = ".autonomy"
@@ -280,6 +282,10 @@ def run_persistent_project(
         os.environ[env_name] = str(env_path)
     os.environ["STUDIO_PROJECT_ID"] = str(goal_id)
     try:
+        try:
+            compact_telemetry(Path(runtime_paths["STUDIO_TELEMETRY_PATH"]))
+        except OSError:
+            pass
         emit_telemetry("goal_run_started", goal_id=goal_id, max_cycles=max_cycles)
         result = run_goal(
             goal_path,
@@ -301,6 +307,10 @@ def run_persistent_project(
             "blocked_reason": result.get("blocked_reason"),
         })
         emit_telemetry("goal_run_finished", goal_id=goal_id, status=result.get("status"))
+        try:
+            compact_telemetry(Path(runtime_paths["STUDIO_TELEMETRY_PATH"]))
+        except OSError:
+            pass
         return result
     finally:
         for env_name, previous in previous_runtime.items():

@@ -119,6 +119,9 @@ def choose_schedule(
         if candidate_limit >= 3 and available_models >= 2 and available_agents >= 1:
             model_limit = 2
             agent_limit = 1
+        elif candidate_limit >= 3 and available_models >= 1 and available_agents >= 2:
+            model_limit = 1
+            agent_limit = 2
         elif candidate_limit >= 2 and available_models >= 1 and available_agents >= 1:
             model_limit = 1
             agent_limit = 1

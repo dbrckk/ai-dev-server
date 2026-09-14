@@ -7,6 +7,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
+import architecture_replacement_planner as arp
 from architecture_replacement_planner import plan, write
 
 class ArchitectureReplacementPlannerTests(unittest.TestCase):
@@ -743,6 +744,37 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         self.assertEqual(reputation["state"],"RECOVERING")
         self.assertFalse(reputation["promotion_eligible"])
         self.assertTrue(reputation["requires_revalidation"])
+
+    def test_persistent_reputation_overrides_current_derived_state(self):
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter","project_type":"game","primary_domain":"mobile",
+            "platform":"android","current_major_version":1,"replacement_major_version":2,
+        })
+        history={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "framework":"flutter","project_type":"game","primary_domain":"mobile","platform":"android",
+            "current_major_version":1,"replacement_major_version":2,
+            "samples":20,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.95,"posterior_success_rate":0.93,"regression_rate":0.02,
+            "rollback_rate":0.0,"wilson_lower_95":0.80,"mean_quality_score":95.0,
+            "latest_observed_at":time.time(),
+        }
+        context={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "framework":"flutter","project_type":"game","primary_domain":"mobile",
+            "platform":"android","current_major_version":1,"replacement_major_version":2,
+        }
+        import architecture_replacement_reputation as reputation
+        registry,_=reputation.apply(None,context,{**history,"sequential_drift":True},now=100.0)
+        row=plan(
+            obs,self.recommendations(),
+            learning={"rankings":[history]},
+            reputation_registry=registry,
+        )["replacement_plans"][0]
+        self.assertEqual(row["replacement_reputation"]["state"],"QUARANTINED")
+        self.assertEqual(row["replacement_reputation"]["source"],"persistent_registry")
+        self.assertFalse(row["replacement_reputation"]["promotion_eligible"])
 
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:

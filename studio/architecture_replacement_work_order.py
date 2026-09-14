@@ -32,6 +32,12 @@ def build(replacement_plan: dict) -> dict:
             "replacement_repo": replacement,
             "risk": row.get("risk"),
             "scope": row.get("estimated_change_scope"),
+            "framework": row.get("framework"),
+            "project_type": row.get("project_type"),
+            "primary_domain": row.get("primary_domain"),
+            "platform": row.get("platform"),
+            "current_major_version": row.get("current_major_version"),
+            "replacement_major_version": row.get("replacement_major_version"),
             "go_no_go": "NO_GO_PENDING_EXECUTION",
             "isolation": {
                 "required": True,
@@ -72,7 +78,7 @@ def build(replacement_plan: dict) -> dict:
         })
 
     return {
-        "version": 1,
+        "version": 2,
         "status": "planned",
         "advisory_only": True,
         "work_orders": work_orders,

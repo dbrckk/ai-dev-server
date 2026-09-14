@@ -17,6 +17,7 @@ from project_context import write as write_project_context
 from repair_planner import preview_plan
 from repair_queue import complete_stage_tasks, enqueue, summarize
 from project_budget import budget_status, can_spend, configure as configure_budget, record_calls
+from idempotent_model import ask_value as checkpointed_ask
 
 class GitHub(API):
     def __init__(self, repo):
@@ -218,7 +219,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     try:
         for role in ('product', 'design'):
             if role not in state:
-                result = model.ask(role, context(req, state, root))
+                result = checkpointed_ask(model, role, context(req, state, root), namespace='preview-' + role)
                 if role == 'product':
                     try:
                         validate_journeys(result.get('journeys'))
@@ -230,10 +231,10 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         for _ in range(req['max_rounds']):
             state['rounds'] += 1
             clear_preview_evidence(state)
-            patch = model.ask('implementation', context(req, state, root))
+            patch = checkpointed_ask(model, 'implementation', context(req, state, root), namespace='preview-implementation')
             apply_patch(root, patch)
             if not any(not p.name.startswith('__studio') for p in (root / 'test').rglob('*_test.dart')):
-                qa_patch = model.ask('tests', context(req, state, root))
+                qa_patch = checkpointed_ask(model, 'tests', context(req, state, root), namespace='preview-tests')
                 apply_patch(root, qa_patch)
             if not any(not p.name.startswith('__studio') for p in (root / 'test').rglob('*_test.dart')):
                 raise StudioError('QA must supply test/*_test.dart files')
@@ -252,7 +253,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                 parent = checkpoint(parent)
                 continue
             state['validation_contract'] = 2
-            review = verdict(model.ask('review', context(req, state, root)))
+            review = verdict(checkpointed_ask(model, 'review', context(req, state, root), namespace='preview-review'))
             state['code_review'] = review
             if not review['passed']:
                 state['blockers'] = review['blockers']
@@ -271,8 +272,8 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                 batch = [p for p in screenshots if p.name.startswith(screen + '--')]
                 if len(batch) != 4:
                     raise StudioError('Missing actual screenshots for ' + screen)
-                result = verdict(model.ask('visual', canonical({'brief': req['brief'], 'design': state['design'],
-                    'screen': screen, 'journeys': journeys}), batch))
+                result = verdict(checkpointed_ask(model, 'visual', canonical({'brief': req['brief'], 'design': state['design'],
+                    'screen': screen, 'journeys': journeys}), batch, namespace='preview-visual'))
                 state['visual_reviews'][screen] = result
                 visual['blockers'].extend(screen + ': ' + item for item in result['blockers'])
             visual['passed'] = not visual['blockers']

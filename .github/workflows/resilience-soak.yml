@@ -1,0 +1,35 @@
+name: Resilience Soak
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: resilience-soak-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  soak:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+
+      - name: Compile resilience modules
+        run: python -m compileall -q studio tests/test_resilience_soak.py
+
+      - name: Run long resilience soak
+        env:
+          PYTHONPATH: studio
+          STUDIO_SOAK_CYCLES: "500"
+        run: python -m unittest discover -s tests -p "test_resilience_soak.py" -v

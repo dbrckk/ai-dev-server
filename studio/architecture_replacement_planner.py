@@ -193,6 +193,7 @@ def _fuse_histories(histories: list[dict]) -> dict | None:
     effective_samples=sum(
         float(history.get("samples",0) or 0)
         * float(history.get("compatibility",{}).get("transferability",0.0) or 0.0)
+        * (1.0 if history.get("eligible_for_bias") is True else 0.35)
         for _,history in weighted
     )
     max_transfer=max(

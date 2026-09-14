@@ -1,6 +1,8 @@
 """Single source of truth for replacement GitHub CI trust requirements."""
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 from datetime import datetime,timezone
 from pathlib import Path
@@ -10,12 +12,26 @@ REQUIRED_GITHUB_CHECKS=frozenset({"validate","python-tests"})
 TRUSTED_CHECK_APP="github-actions"
 REQUIRED_WORKFLOW_NAME="CI"
 REQUIRED_WORKFLOW_PATH=".github/workflows/ci.yml"
+CI_TRUST_POLICY_VERSION=1
 
 # Explicit allowlist: third-party actions and mutable refs are fail-closed.
 TRUSTED_ACTION_REVISIONS={
     "actions/checkout":"11d5960a326750d5838078e36cf38b85af677262",
     "actions/setup-python":"a26af69be951a213d495a4c3e4e4022e16d87065",
 }
+
+def ci_trust_policy_digest() -> str:
+    payload={
+        "version":CI_TRUST_POLICY_VERSION,
+        "required_checks":sorted(REQUIRED_GITHUB_CHECKS),
+        "trusted_check_app":TRUSTED_CHECK_APP,
+        "workflow_name":REQUIRED_WORKFLOW_NAME,
+        "workflow_path":REQUIRED_WORKFLOW_PATH,
+        "trusted_action_revisions":dict(sorted(TRUSTED_ACTION_REVISIONS.items())),
+    }
+    return hashlib.sha256(
+        json.dumps(payload,sort_keys=True,separators=(",",":")).encode("utf-8")
+    ).hexdigest()
 
 def workflow_action_uses_text(text: str) -> list[dict]:
     rows=[]
@@ -124,6 +140,8 @@ def validate_workflow_text(text: str) -> dict:
         "workflow_name":workflow_name,
         "expected_workflow_name":REQUIRED_WORKFLOW_NAME,
         "action_pinning":action_policy,
+        "ci_trust_policy_version":CI_TRUST_POLICY_VERSION,
+        "ci_trust_policy_digest":ci_trust_policy_digest(),
     }
 
 def validate_workflow(path: Path) -> dict:

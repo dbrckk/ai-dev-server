@@ -52,5 +52,22 @@ class PersistentQuickGateCacheTests(unittest.TestCase):
                 self.assertIn(str(pqc.MAX_ENTRIES + 19), loaded)
 
 
+    def test_stale_writer_merges_existing_entries_instead_of_overwriting(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "cache.json"
+            with patch.dict(os.environ, {"STUDIO_QUICK_GATE_CACHE_PATH": str(path)}, clear=False):
+                first = {"first": {"passed": True, "logs": []}}
+                pqc.save(first)
+
+                stale_second = {"second": {"passed": True, "logs": []}}
+                pqc.save(stale_second)
+
+                loaded = pqc.load()
+                self.assertIn("first", loaded)
+                self.assertIn("second", loaded)
+                self.assertEqual(stale_second, loaded)
+
+
+
 if __name__ == "__main__":
     unittest.main()

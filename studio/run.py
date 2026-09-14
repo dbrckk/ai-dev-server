@@ -387,6 +387,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         os.environ['STUDIO_LOCAL_MODEL_REPUTATION_PATH'] = str(autonomy_dir / 'local-model-reputation.json')
         os.environ['STUDIO_LOCAL_MODEL_SPECIALIZATION_PATH'] = str(autonomy_dir / 'local-model-specialization.json')
         os.environ['STUDIO_LOCAL_MODEL_BENCHMARK_PATH'] = str(autonomy_dir / 'local-model-benchmark.json')
+        os.environ['STUDIO_MODEL_PORTFOLIO_LEARNING_PATH'] = str(autonomy_dir / 'model-portfolio-learning.json')
         state['local_capacity_inventory'] = write_local_capacity_inventory(out)
         state['capacity_status'] = capacity_snapshot(
             autonomy_dir / 'provider-monthly-quota.json'

@@ -103,7 +103,27 @@ def _apply(root: Path, patch: dict) -> list[str]:
 
 
 def _prepare_architecture(req: dict, out: Path, state: dict) -> Path:
-    architecture_root = _prepare_architecture(req, out, state)
+    recommendations = recommend(
+        "planning",
+        out,
+        context_text=req.get("brief"),
+    )
+    architecture_root = architecture_learning_root(out)
+    learning = summarize_architecture_learning(architecture_root)
+    state["architecture_recommendations"] = recommendations
+    state["architecture_decision"] = write_architecture_plan(
+        req,
+        recommendations,
+        out,
+        learning=learning,
+        framework="generic",
+        publication_target="unspecified",
+    )
+    state["architecture_autonomy_policy"] = (
+        state["architecture_decision"].get("autonomy_policy", {})
+        if isinstance(state.get("architecture_decision"), dict)
+        else {}
+    )
     return architecture_root
 
 
@@ -155,22 +175,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         "toolchain": detect_toolchain(work),
     }
 
-    architecture_recommendations = recommend(
-        "planning",
-        out,
-        context_text=req.get("brief"),
-    )
-    architecture_root = architecture_learning_root(out)
-    architecture_learning = summarize_architecture_learning(architecture_root)
-    state["architecture_recommendations"] = architecture_recommendations
-    state["architecture_decision"] = write_architecture_plan(
-        req,
-        architecture_recommendations,
-        out,
-        learning=architecture_learning,
-        framework="generic",
-        publication_target="unspecified",
-    )
+    architecture_root = _prepare_architecture(req, out, state)
 
     bootstrap_evidence = []
     for command in bootstrap_commands(work):

@@ -11,13 +11,15 @@ from architecture_planner import plan, write
 class ArchitecturePlannerTests(unittest.TestCase):
     def test_selects_ranked_candidates_without_authorizing_dependencies(self):
         recs={"matches":[
-            {"repo":"a/core","tier":"core","capabilities":["testing"],"best_for":["qa"],"alternatives":["a/alt"]},
+            {"repo":"a/core","score":92.0,"quality_score":9.8,"tier":"core","domain":"software_engineering","capabilities":["testing"],"best_for":["qa"],"alternatives":["a/alt"]},
             {"repo":"b/reject","tier":"recommended","capabilities":["ui"],"avoid_when":["native-only"]},
         ]}
         result=plan({"target_repo":"o/r","app_name":"demo"},recs)
         self.assertEqual(result["status"],"planned")
         self.assertFalse(result["dependency_policy"]["allow_automatic_dependency_addition"])
         self.assertEqual(result["chosen"][0]["repo"],"a/core")
+        self.assertEqual(result["chosen"][0]["selection_score"],92.0)
+        self.assertEqual(result["chosen"][0]["quality_score"],9.8)
         self.assertEqual(result["rejected"][0]["repo"],"b/reject")
         self.assertEqual(result["fallbacks"][0]["alternatives"],["a/alt"])
 

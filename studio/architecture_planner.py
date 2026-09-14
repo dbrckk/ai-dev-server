@@ -129,6 +129,13 @@ def plan(
         if isinstance(req.get("publication_target"), str) and req.get("publication_target")
         else "google-play" if resolved_framework in {"flutter", "godot"} else "unspecified"
     )
+    resolved_platform = (
+        req.get("platform")
+        if isinstance(req.get("platform"), str) and req.get("platform")
+        else "android" if resolved_publication == "google-play"
+        else "ios" if resolved_publication in {"app-store","ios-app-store"}
+        else None
+    )
     raw_rows = _clean_rows(recommendations)
     resolved_primary_domain = _primary_domain(raw_rows)
     recommendations = apply_feedback(
@@ -209,7 +216,7 @@ def plan(
     autonomy_policy = _autonomy_policy(chosen, rejected)
 
     return {
-        "version":3,
+        "version":4,
         "status":"planned",
         "advisory_only":True,
         "feedback_applied": bool(recommendations.get("feedback_applied")),
@@ -242,6 +249,7 @@ def plan(
             "framework":resolved_framework,
             "project_type":resolved_project_type,
             "primary_domain":resolved_primary_domain,
+            "platform":resolved_platform,
         },
     }
 

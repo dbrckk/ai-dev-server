@@ -12,6 +12,7 @@ from fleet_dashboard import collect
 from provider_monthly_quota import load as load_monthly_quota, quota_status
 from provider_router import load_providers
 from capacity_ledger import detailed_snapshot as ledger_detailed_snapshot
+from capacity_efficiency import summarize as summarize_capacity_efficiency, project_multiplier as efficiency_multiplier
 from queue import matrix
 
 
@@ -35,6 +36,7 @@ def _project_rows(
     *,
     ledger_usage: dict | None = None,
     previous_plan: dict | None = None,
+    efficiency_summary: dict | None = None,
 ) -> list[dict]:
     dashboard = collect(root)
     health = {row["id"]: row for row in dashboard.get("projects", [])}
@@ -86,6 +88,10 @@ def _project_rows(
             if previous_envelope > 0
             else 0.0
         )
+        verified_efficiency_multiplier = efficiency_multiplier(
+            efficiency_summary or {},
+            project_id,
+        )
 
         rows.append({
             "id": project_id,
@@ -99,6 +105,7 @@ def _project_rows(
                 or "medium"
             ),
             "capacity_pressure": round(pressure, 4),
+            "efficiency_multiplier": verified_efficiency_multiplier,
             "committed_tokens": committed,
             "previous_envelope_tokens": previous_envelope,
         })
@@ -165,11 +172,13 @@ def plan(
     except (OSError, UnicodeError, json.JSONDecodeError):
         previous_plan = {}
     ledger = ledger_detailed_snapshot(root / "capacity-ledger.json")
+    efficiency = summarize_capacity_efficiency(root / "capacity-efficiency.json")
     projects = _project_rows(
         root,
         request_dir,
         ledger_usage=ledger.get("usage_by_project", {}),
         previous_plan=previous_plan,
+        efficiency_summary=efficiency,
     )
     providers = _provider_rows(
         reservations_by_provider=ledger.get("reservations_by_provider", {}),
@@ -205,6 +214,15 @@ def plan(
         "pressured_projects": sum(
             1 for row in report["projects"]
             if float(row.get("capacity_pressure", 0.0) or 0.0) >= 0.80
+        ),
+        "efficiency_evidence_projects": len(efficiency.get("projects", {})),
+        "efficiency_boosted_projects": sum(
+            1 for row in report["projects"]
+            if float(row.get("efficiency_multiplier", 1.0) or 1.0) > 1.0
+        ),
+        "efficiency_reduced_projects": sum(
+            1 for row in report["projects"]
+            if float(row.get("efficiency_multiplier", 1.0) or 1.0) < 1.0
         ),
     }
     return report

@@ -9,7 +9,7 @@ from completion import apply_completion, next_stage
 from core import StudioError, canonical
 from native_qa import validate_native
 from run import GitHub
-from release_stage_engine import apply_external_gate, evaluate_and_repair
+from release_stage_engine import apply_external_gate, evaluate_and_repair, invalidate_for_source_change
 
 
 def advance(request_path: Path, root: Path, out: Path) -> dict:
@@ -24,6 +24,7 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
         return state
 
     evidence = evaluate_and_repair(root, out, state, req, 'native_qa', validate_native)
+    invalidate_for_source_change(state, evidence)
     state.setdefault('release_evidence', {})['native_qa'] = evidence
     state.pop('human_action', None)
     if state.get('status') == 'human_action_required':

@@ -9,6 +9,8 @@ from core import StudioError, apply_patch, canonical
 from journeys import validate_journeys
 
 MAX_CANDIDATES = 2
+MAX_BRANCH_STEPS = 3
+MAX_LOCAL_REFINEMENTS = 1
 
 
 def _candidate_score(candidate: dict) -> float:
@@ -100,3 +102,110 @@ def apply_winner(root: Path, winner: dict) -> None:
     if not isinstance(files, list) or not files:
         raise StudioError("Winning repair candidate has no patch")
     apply_patch(root, {"files": files})
+
+
+
+def run_branch(
+    root: Path,
+    *,
+    strategy: str,
+    strategy_prior_score: float,
+    steps: list,
+    refine,
+    state: dict,
+    app_name: str,
+    sandbox_factory,
+) -> dict:
+    if not 1 <= len(steps) <= MAX_BRANCH_STEPS:
+        raise StudioError("Repair branch step count invalid")
+    baseline = snapshot_workspace(root)
+    started = time.monotonic()
+    metadata = {
+        "steps": [],
+        "model_calls": 0,
+        "models_used": {},
+        "providers_used": {},
+        "agent": None,
+    }
+    try:
+        for index, step in enumerate(steps, start=1):
+            step_started = time.monotonic()
+            result = step()
+            if not isinstance(result, dict):
+                result = {}
+            metadata["steps"].append({
+                "step": index,
+                "metadata": result,
+                "elapsed_seconds": round(max(0.0, time.monotonic() - step_started), 3),
+            })
+            metadata["model_calls"] += max(0, int(result.get("model_calls", 0)))
+            if isinstance(result.get("models_used"), dict):
+                metadata["models_used"].update(result["models_used"])
+            if isinstance(result.get("providers_used"), dict):
+                metadata["providers_used"].update(result["providers_used"])
+            if result.get("agent") is not None:
+                metadata["agent"] = result.get("agent")
+
+        journeys = validate_journeys(state.get("product", {}).get("journeys"))
+        sandbox = sandbox_factory(root)
+        passed, logs = sandbox.gates(app_name, journeys)
+        refinements = 0
+        while not passed and refine is not None and refinements < MAX_LOCAL_REFINEMENTS:
+            refinements += 1
+            failure = canonical(logs[-1:])[-4000:]
+            refine_started = time.monotonic()
+            result = refine(failure)
+            if not isinstance(result, dict):
+                result = {}
+            metadata["steps"].append({
+                "step": len(metadata["steps"]) + 1,
+                "kind": "local_refinement",
+                "metadata": result,
+                "elapsed_seconds": round(max(0.0, time.monotonic() - refine_started), 3),
+            })
+            metadata["model_calls"] += max(0, int(result.get("model_calls", 0)))
+            if isinstance(result.get("models_used"), dict):
+                metadata["models_used"].update(result["models_used"])
+            if isinstance(result.get("providers_used"), dict):
+                metadata["providers_used"].update(result["providers_used"])
+            if result.get("agent") is not None:
+                metadata["agent"] = result.get("agent")
+            sandbox = sandbox_factory(root)
+            passed, logs = sandbox.gates(app_name, journeys)
+
+        delta = validate_delta(root, baseline)
+        changed = list(delta.get("changed", []))
+        if not changed:
+            raise StudioError("Repair branch produced no source delta")
+        elapsed = max(0.0, time.monotonic() - started)
+        candidate = {
+            "strategy": strategy,
+            "strategy_prior_score": float(strategy_prior_score),
+            "passed": passed is True,
+            "changed_files": changed,
+            "files": list(delta.get("files", [])),
+            "gate_count": len(logs),
+            "elapsed_seconds": round(elapsed, 3),
+            "refinements": refinements,
+            **metadata,
+        }
+        if not passed:
+            candidate["failure"] = canonical(logs[-1:])[-4000:]
+        candidate["candidate_score"] = round(_candidate_score(candidate), 3)
+        return candidate
+    except (StudioError, ValueError) as exc:
+        elapsed = max(0.0, time.monotonic() - started)
+        return {
+            "strategy": strategy,
+            "strategy_prior_score": float(strategy_prior_score),
+            "passed": False,
+            "changed_files": [],
+            "files": [],
+            "gate_count": 0,
+            "elapsed_seconds": round(elapsed, 3),
+            "failure": str(exc),
+            **metadata,
+            "candidate_score": -1_000_000.0,
+        }
+    finally:
+        restore_workspace(root, baseline)

@@ -94,5 +94,30 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
                     ])
             self.assertEqual(rc,0)
 
+    def test_bind_target_reissues_content_bound_plan(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            registry_value=self.registry()
+            plan_value=dry_run(registry_value,None,now=200.0)
+            original_id=plan_value["migration_id"]
+            plan=root/"plan.json"; plan.write_text(json.dumps(plan_value))
+            target={
+                "repository":"dbrckk/ai-dev-server","pull_request":7,"commit_sha":"a"*40,
+                "head_ref":"policy/migration","base_ref":"main","author":"alice",
+            }
+            out=root/"bound.json"
+            with patch.object(cli,"collect_review_target",return_value=target):
+                with patch.dict("os.environ",{"STUDIO_GITHUB_TOKEN":"token"},clear=False):
+                    rc=cli.main([
+                        "bind-target",str(plan),
+                        "--repository","dbrckk/ai-dev-server","--pull-request","7",
+                        "--out",str(out),
+                    ])
+            self.assertEqual(rc,0)
+            bound=json.loads(out.read_text())
+            self.assertNotEqual(bound["migration_id"],original_id)
+            self.assertEqual(bound["github_review_target"]["commit_sha"],"a"*40)
+            self.assertFalse(bound["authorization_template"]["authorized"])
+
 if __name__=="__main__":
     unittest.main()

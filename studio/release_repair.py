@@ -275,6 +275,8 @@ def attempt(
                     "model_calls": item.get("model_calls", 0),
                     "gate_count": item.get("gate_count", 0),
                     "elapsed_seconds": item.get("elapsed_seconds", 0.0),
+                    "refinements": item.get("refinements", 0),
+                    "steps": item.get("steps", []),
                     "failure": item.get("failure"),
                 }
                 for item in candidates

@@ -116,13 +116,14 @@ class StarScannerTests(unittest.TestCase):
     def test_model_context_contains_recommendations_as_data(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            state = {"technical_recommendations": {"status": "ok", "matches": [{"repo": "owner/repo"}]}, "architecture_decision": {"status": "planned", "chosen": [{"repo": "owner/repo"}]}, "architecture_benchmark": {"status": "benchmarked", "migration_candidates": [{"best_alternative": "owner/alt"}]}, "architecture_replacement_work_orders": {"status": "planned", "work_orders": [{"id": "replace-1", "current_repo": "owner/repo", "replacement_repo": "owner/alt"}]}, "architecture_drift_alerts": [{"type": "repository", "repo": "owner/repo", "score": 1.0}]}
+            state = {"technical_recommendations": {"status": "ok", "matches": [{"repo": "owner/repo"}]}, "architecture_decision": {"status": "planned", "chosen": [{"repo": "owner/repo"}]}, "architecture_benchmark": {"status": "benchmarked", "migration_candidates": [{"best_alternative": "owner/alt"}]}, "architecture_replacement_work_orders": {"status": "planned", "work_orders": [{"id": "replace-1", "current_repo": "owner/repo", "replacement_repo": "owner/alt"}]}, "architecture_replacement_learning": {"outcomes_observed": 5, "rankings": [{"current_repo": "owner/repo", "replacement_repo": "owner/alt", "samples": 5, "success_rate": 1.0}]}, "architecture_drift_alerts": [{"type": "repository", "repo": "owner/repo", "score": 1.0}]}
             payload = json.loads(build_context({"brief": "test"}, state, root))
             self.assertEqual(payload["technical_recommendations"]["matches"][0]["repo"], "owner/repo")
             self.assertEqual(payload["architecture_decision"]["chosen"][0]["repo"], "owner/repo")
             self.assertEqual(payload["architecture_benchmark"]["migration_candidates"][0]["best_alternative"], "owner/alt")
             self.assertEqual(payload["architecture_drift_alerts"][0]["repo"], "owner/repo")
             self.assertEqual(payload["architecture_replacement_work_orders"]["work_orders"][0]["replacement_repo"], "owner/alt")
+            self.assertEqual(payload["architecture_replacement_learning"]["rankings"][0]["success_rate"], 1.0)
 
     def test_load_architecture_benchmark_is_bounded(self):
         with tempfile.TemporaryDirectory() as tmp:

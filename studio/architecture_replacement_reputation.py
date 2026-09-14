@@ -8,7 +8,7 @@ from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
 
-REGISTRY_VERSION=4
+REGISTRY_VERSION=5
 MAX_AUDIT_EVENTS=500
 RECOVERY_CONFIRMATIONS_REQUIRED=2
 RECOVERY_MIN_DWELL_SECONDS=7*24*60*60
@@ -69,6 +69,16 @@ DANGEROUS_STATE_GATES={
     "QUARANTINED":"quarantined_replacement_revalidated",
     "RECOVERING":"recovering_replacement_revalidated",
 }
+
+def transition_policy_digest(policy: dict | None=None) -> str:
+    policy=TRANSITION_POLICY if policy is None else policy
+    payload={
+        "version":TRANSITION_POLICY_VERSION,
+        "policy":policy,
+    }
+    return hashlib.sha256(
+        json.dumps(payload,sort_keys=True,separators=(",",":")).encode("utf-8")
+    ).hexdigest()
 
 def validate_transition_policy(policy: dict | None=None) -> dict:
     policy=TRANSITION_POLICY if policy is None else policy
@@ -154,6 +164,7 @@ def validate_transition_policy(policy: dict | None=None) -> dict:
         "states":sorted(REPUTATION_STATES),
         "reachable_states":sorted(reachable),
         "policy_version":TRANSITION_POLICY_VERSION,
+        "policy_digest":transition_policy_digest(policy),
     }
 
 def assert_transition_policy_valid(policy: dict | None=None) -> None:
@@ -384,6 +395,7 @@ def apply(registry: dict | None, context: dict, evidence: dict | None, *, now: f
         "reason":desired["reason"],
         "transition_reason":transition_reason,
         "transition_policy_version":TRANSITION_POLICY_VERSION,
+        "transition_policy_digest":transition_policy_digest(),
         "transition_rule":applied_rule,
         "requested_transition_rule":requested_rule,
         "required_transition_gates":applied_rule.get("required_gates",[]),
@@ -419,6 +431,7 @@ def apply(registry: dict | None, context: dict, evidence: dict | None, *, now: f
         "transition_reason":transition_reason,
         "reason":desired["reason"],
         "transition_policy_version":TRANSITION_POLICY_VERSION,
+        "transition_policy_digest":transition_policy_digest(),
         "transition_rule":applied_rule,
         "transition_pending":transition_meta.get("transition_pending") is True,
         "eligible_at":transition_meta.get("eligible_at"),
@@ -434,6 +447,7 @@ def apply(registry: dict | None, context: dict, evidence: dict | None, *, now: f
         "audit":audit,
         "policy":{
             "version":TRANSITION_POLICY_VERSION,
+            "digest":transition_policy_digest(),
             "transition_matrix":TRANSITION_POLICY,
             "recovery_confirmations_required":RECOVERY_CONFIRMATIONS_REQUIRED,
             "recovery_min_dwell_seconds":RECOVERY_MIN_DWELL_SECONDS,

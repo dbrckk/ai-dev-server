@@ -1,7 +1,7 @@
 """Shared bounded repair loop for release QA stages."""
 from __future__ import annotations
 
-from diagnostics import classify, repairable
+from diagnostics import classify, repairable, retryable_environment
 from core import StudioError
 from release_repair import MAX_RELEASE_REPAIR_ROUNDS, attempt as repair_attempt
 from repair_planner import plan
@@ -17,6 +17,22 @@ def evaluate_and_repair(
 ) -> dict:
     evidence = validator(root, out)
     history = []
+    environment_retries = []
+
+    for retry_index in range(2):
+        retryable = retryable_environment(stage, evidence)
+        diagnostics = classify(stage, evidence)
+        if not retryable:
+            break
+        if diagnostics["human_or_external"] or diagnostics["prerequisite"] or diagnostics["code"]:
+            break
+        environment_retries.append({
+            "retry": retry_index + 1,
+            "blockers": list(retryable),
+        })
+        evidence = validator(root, out)
+        if evidence.get("passed") is True:
+            break
 
     for round_index in range(MAX_RELEASE_REPAIR_ROUNDS):
         diagnostics = classify(stage, evidence)
@@ -58,6 +74,12 @@ def evaluate_and_repair(
     diagnostics = classify(stage, evidence)
     evidence["diagnostics"] = diagnostics
     evidence["repair_plan"] = plan(stage, diagnostics)
+    evidence["environment_retry"] = {
+        "attempted": bool(environment_retries),
+        "retries": environment_retries,
+        "max_retries": 2,
+        "converged": evidence.get("passed") is True,
+    }
     evidence["agentic_remediation"] = {
         "attempted": bool(history),
         "rounds": history,

@@ -114,6 +114,76 @@ def _compatibility_distance(history: dict | None, context: dict) -> dict:
         "exact_context_match": all(value==1.0 for value in components.values()),
     }
 
+def _reputation_state(evidence: dict | None) -> dict:
+    if not isinstance(evidence,dict):
+        return {
+            "state":"UNOBSERVED",
+            "reason":"no_historical_evidence",
+            "promotion_eligible":False,
+            "requires_revalidation":False,
+        }
+
+    samples=max(0,int(evidence.get("effective_samples",evidence.get("samples",0)) or 0))
+    confidence=float(evidence.get("evidence_confidence",0.0) or 0.0)
+    wilson=float(evidence.get("wilson_lower_95",0.0) or 0.0)
+    regression=float(evidence.get("regression_rate",0.0) or 0.0)
+
+    if evidence.get("sequential_drift") is True or evidence.get("regime_shift") is True:
+        return {
+            "state":"QUARANTINED",
+            "reason":"active_performance_deterioration",
+            "promotion_eligible":False,
+            "requires_revalidation":True,
+        }
+    if evidence.get("evidence_conflict") is True:
+        return {
+            "state":"DEGRADED",
+            "reason":"conflicting_historical_evidence",
+            "promotion_eligible":False,
+            "requires_revalidation":True,
+        }
+    if evidence.get("recovery_candidate") is True:
+        return {
+            "state":"RECOVERING",
+            "reason":"sustained_recent_recovery",
+            "promotion_eligible":False,
+            "requires_revalidation":True,
+        }
+    if evidence.get("stale_evidence") is True:
+        return {
+            "state":"DEGRADED",
+            "reason":"stale_historical_evidence",
+            "promotion_eligible":False,
+            "requires_revalidation":True,
+        }
+    if samples<5 or confidence<0.25:
+        return {
+            "state":"EXPERIMENTAL",
+            "reason":"insufficient_effective_evidence",
+            "promotion_eligible":False,
+            "requires_revalidation":False,
+        }
+    if wilson>=0.70 and regression<=0.10 and confidence>=0.50:
+        return {
+            "state":"TRUSTED",
+            "reason":"strong_consistent_historical_evidence",
+            "promotion_eligible":True,
+            "requires_revalidation":False,
+        }
+    if wilson<0.50 or regression>=0.25:
+        return {
+            "state":"DEGRADED",
+            "reason":"weak_or_regressive_historical_evidence",
+            "promotion_eligible":False,
+            "requires_revalidation":True,
+        }
+    return {
+        "state":"EXPERIMENTAL",
+        "reason":"mixed_or_maturing_evidence",
+        "promotion_eligible":False,
+        "requires_revalidation":False,
+    }
+
 def _index(recommendations: dict) -> dict[str, dict]:
     rows = recommendations.get("matches", []) if isinstance(recommendations, dict) else []
     return {
@@ -382,6 +452,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             else _history_context_weight(history,context)
         )
         evidence=fused_history if isinstance(fused_history,dict) else history
+        reputation=_reputation_state(evidence)
         if isinstance(evidence,dict) and evidence.get("eligible_for_bias") is True:
             regression=float(evidence.get("regression_rate",0.0) or 0.0)
             wilson=float(evidence.get("wilson_lower_95",0.0) or 0.0)
@@ -434,6 +505,8 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             gates.insert(0,"conflicting_replacement_evidence_reviewed")
         if isinstance(fused_history,dict) and fused_history.get("stale_evidence") is True:
             gates.insert(0,"stale_replacement_evidence_revalidated")
+        if reputation.get("state")=="QUARANTINED":
+            gates.insert(0,"quarantined_replacement_revalidated")
         if row.get("maintenance_evidence_available") is not True:
             gates.insert(0, "maintenance_evidence_completed")
 
@@ -453,6 +526,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             "replacement_major_version": context.get("replacement_major_version"),
             "historical_replacement_evidence": history,
             "fused_historical_evidence": fused_history,
+            "replacement_reputation": reputation,
             "history_context_weight": history_context_weight,
             "compatibility_distance": (
                 history.get("compatibility")
@@ -487,7 +561,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
     ),reverse=True)
 
     return {
-        "version": 12,
+        "version": 13,
         "status": "planned",
         "advisory_only": True,
         "replacement_plans": plans,

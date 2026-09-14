@@ -10,6 +10,7 @@ MAX_CANDIDATES = 3
 class PortfolioSchedule:
     candidate_limit: int
     agent_limit: int
+    model_limit: int
     include_model: bool
     continue_after_verified: bool
     uncertainty: float
@@ -21,6 +22,7 @@ class PortfolioSchedule:
         return {
             "candidate_limit": self.candidate_limit,
             "agent_limit": self.agent_limit,
+            "model_limit": self.model_limit,
             "include_model": self.include_model,
             "continue_after_verified": self.continue_after_verified,
             "uncertainty": round(self.uncertainty, 4),
@@ -59,6 +61,7 @@ def choose_schedule(
     remaining_seconds: float | None,
     available_agents: int,
     strategy: str,
+    available_models: int = 1,
 ) -> PortfolioSchedule:
     confidence = max(0.0, min(1.0, float(route_confidence or 0.0)))
     uncertainty = 1.0 - confidence
@@ -90,29 +93,35 @@ def choose_schedule(
         candidate_limit = 3
         reason = "high uncertainty, abundant free capacity, cheap verification"
 
-    if strategy == "model_only":
-        candidate_limit = 1
-    if strategy == "agent_only":
-        include_model = False
-    else:
-        include_model = True
-
     available_agents = max(0, int(available_agents))
-    desired_agents = candidate_limit - int(include_model)
-    if strategy == "model_only":
-        agent_limit = 0
-    else:
-        agent_limit = min(available_agents, max(0, desired_agents))
-        if not include_model:
-            candidate_limit = max(1, min(candidate_limit, agent_limit or 1))
+    available_models = max(0, int(available_models))
+    include_model = strategy != "agent_only" and available_models > 0
 
-    actual_capacity = int(include_model) + agent_limit
+    if strategy == "agent_only":
+        model_limit = 0
+        agent_limit = min(available_agents, candidate_limit)
+    elif strategy == "model_only":
+        agent_limit = 0
+        model_limit = min(available_models, candidate_limit)
+    else:
+        # Prefer one direct model, then diversify with an agent, then another
+        # direct model when the portfolio is wide enough.
+        model_limit = min(available_models, 1)
+        agent_limit = min(available_agents, max(0, candidate_limit - model_limit))
+        remaining = candidate_limit - model_limit - agent_limit
+        if remaining > 0:
+            model_limit += min(available_models - model_limit, remaining)
+
+    actual_capacity = model_limit + agent_limit
     candidate_limit = max(1, min(MAX_CANDIDATES, candidate_limit, max(1, actual_capacity)))
+    model_limit = min(model_limit, candidate_limit)
+    agent_limit = min(agent_limit, max(0, candidate_limit - model_limit))
     continue_after_verified = candidate_limit > 1 and uncertainty >= 0.35 and capacity >= 0.45
 
     return PortfolioSchedule(
         candidate_limit=candidate_limit,
         agent_limit=agent_limit,
+        model_limit=model_limit,
         include_model=include_model,
         continue_after_verified=continue_after_verified,
         uncertainty=uncertainty,

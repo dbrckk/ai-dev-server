@@ -55,8 +55,6 @@ def run_candidate(
     app_name: str,
     sandbox_factory,
 ) -> dict:
-    if quick_gate_cache is None:
-        quick_gate_cache = {}
     baseline = snapshot_workspace(root)
     started = time.monotonic()
     metadata = {}
@@ -133,6 +131,8 @@ def run_branch(
         type(value) is not int or value < 0 for value in step_model_calls
     ):
         raise StudioError("Repair branch step-cost metadata invalid")
+    if quick_gate_cache is None:
+        quick_gate_cache = {}
     baseline = snapshot_workspace(root)
     started = time.monotonic()
     metadata = {

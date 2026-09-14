@@ -31,6 +31,9 @@ def render(req: dict, state: dict) -> str:
     required = _clean_list(completion.get('required_stages'))
     next_stage = completion.get('next_stage')
     status = state.get('status', 'unknown')
+    architecture = state.get('architecture_decision') if isinstance(state.get('architecture_decision'), dict) else {}
+    chosen_arch = architecture.get('chosen') if isinstance(architecture.get('chosen'), list) else []
+    chosen_repos = [x.get('repo') for x in chosen_arch if isinstance(x, dict) and isinstance(x.get('repo'), str)]
 
     immediate = (
         f'Execute and validate `{next_stage}`.'
@@ -64,6 +67,10 @@ def render(req: dict, state: dict) -> str:
 - Target repository: `{req.get('target_repo', 'unknown')}`
 - Current studio status: `{status}`
 - Capability profiles: {', '.join(profiles) if profiles else 'not classified yet'}
+
+### Architecture decision
+
+{_bullets(chosen_repos, 'No architecture recommendation has been selected.')}
 
 ## Current validation / release evidence
 

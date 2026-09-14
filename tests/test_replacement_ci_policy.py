@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
-from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, validate_check_runs, validate_workflow, validate_workflow_text
+from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow, validate_workflow_text
 
 class ReplacementCIPolicyTests(unittest.TestCase):
     def test_repository_ci_exposes_required_check_ids(self):
@@ -82,6 +82,64 @@ class ReplacementCIPolicyTests(unittest.TestCase):
         result=validate_workflow_text("name: CI\njobs:\n  python-tests:\n")
         self.assertFalse(result["valid"])
         self.assertIn("validate",result["missing_checks"])
+
+    def test_workflow_actions_must_be_allowlisted_and_sha_pinned(self):
+        text=(
+            "name: CI\n"
+            "jobs:\n"
+            "  validate:\n"
+            "    steps:\n"
+            "      - uses: actions/checkout@"+TRUSTED_ACTION_REVISIONS["actions/checkout"]+"\n"
+            "      - uses: actions/setup-python@"+TRUSTED_ACTION_REVISIONS["actions/setup-python"]+"\n"
+            "  python-tests:\n"
+        )
+        result=validate_workflow_text(text)
+        self.assertTrue(result["valid"],result)
+        self.assertTrue(result["action_pinning"]["valid"])
+
+    def test_mutable_action_ref_is_rejected(self):
+        text=(
+            "name: CI\n"
+            "jobs:\n"
+            "  validate:\n"
+            "    steps:\n"
+            "      - uses: actions/checkout@v4\n"
+            "  python-tests:\n"
+        )
+        result=validate_action_pinning_text(text)
+        self.assertFalse(result["valid"])
+        self.assertEqual(result["violations"][0]["reason"],"mutable_or_non_sha_revision")
+
+    def test_third_party_action_is_rejected(self):
+        text=(
+            "name: CI\n"
+            "jobs:\n"
+            "  validate:\n"
+            "    steps:\n"
+            "      - uses: third-party/example@0123456789012345678901234567890123456789\n"
+            "  python-tests:\n"
+        )
+        result=validate_action_pinning_text(text)
+        self.assertFalse(result["valid"])
+        self.assertEqual(result["violations"][0]["reason"],"action_not_allowlisted")
+
+    def test_unapproved_sha_for_trusted_action_is_rejected(self):
+        text=(
+            "name: CI\n"
+            "jobs:\n"
+            "  validate:\n"
+            "    steps:\n"
+            "      - uses: actions/checkout@0000000000000000000000000000000000000000\n"
+            "  python-tests:\n"
+        )
+        result=validate_action_pinning_text(text)
+        self.assertFalse(result["valid"])
+        self.assertEqual(result["violations"][0]["reason"],"unapproved_action_revision")
+
+    def test_local_action_is_fail_closed(self):
+        result=validate_action_pinning_text("jobs:\n  validate:\n    steps:\n      - uses: ./local-action\n")
+        self.assertFalse(result["valid"])
+        self.assertEqual(result["violations"][0]["reason"],"local_action_not_allowlisted")
 
 if __name__=="__main__":
     unittest.main()

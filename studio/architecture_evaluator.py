@@ -5,6 +5,8 @@ import json
 import re
 from pathlib import Path
 
+from atomic_file import write_text as atomic_write_text
+
 _NEGATIVE_STATUSES={"failed","blocked","repair_needed","release_failed","human_action_required"}
 _POSITIVE_STATUSES={"validated_preview","finished","complete"}
 
@@ -97,7 +99,8 @@ def evaluate(decision:dict, report:dict)->dict:
 def write(decision:dict, report:dict, out:Path)->dict:
     out.mkdir(parents=True,exist_ok=True)
     result=evaluate(decision,report)
-    (out/"architecture-evaluation.json").write_text(
+    atomic_write_text(
+        out/"architecture-evaluation.json",
         json.dumps(result,ensure_ascii=False,indent=2,sort_keys=True)+"\n",
         encoding="utf-8",
     )

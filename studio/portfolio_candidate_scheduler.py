@@ -62,6 +62,7 @@ def choose_schedule(
     available_agents: int,
     strategy: str,
     available_models: int = 1,
+    recommended_width: int | None = None,
 ) -> PortfolioSchedule:
     confidence = max(0.0, min(1.0, float(route_confidence or 0.0)))
     uncertainty = 1.0 - confidence
@@ -96,6 +97,15 @@ def choose_schedule(
     available_agents = max(0, int(available_agents))
     available_models = max(0, int(available_models))
     include_model = strategy != "agent_only" and available_models > 0
+
+    if recommended_width is not None:
+        try:
+            learned_width = max(1, min(MAX_CANDIDATES, int(recommended_width)))
+        except (TypeError, ValueError):
+            learned_width = candidate_limit
+        # Historical learning may reduce speculative breadth, but cannot widen
+        # a run beyond current safety/capacity conditions.
+        candidate_limit = min(candidate_limit, learned_width)
 
     if strategy == "agent_only":
         model_limit = 0

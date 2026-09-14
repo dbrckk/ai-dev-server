@@ -29,6 +29,7 @@ class FleetDaemonTests(unittest.TestCase):
              patch("fleet_daemon.append_metrics", return_value={"snapshots": 2, "latest": {"ts": 1}}), \
              patch("fleet_daemon.evaluate_regression", return_value={"regressed": False, "regressions": []}), \
              patch("fleet_daemon.maintain", return_value={"summary": {"projects": 1}}), \
+             patch("fleet_daemon.persist_capacity_plan", return_value={"summary": {"active_projects": 1, "allocated_tokens": 100}}), \
              patch("fleet_daemon.apply_supervisor", return_value={"apply": True, "restarts_executed": 1, "results": []}) as supervisor:
             report = fleet_daemon.tick("out", "requests", apply_restarts=True, max_restarts=1)
 

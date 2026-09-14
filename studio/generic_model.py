@@ -16,6 +16,7 @@ from safe_rewrite_learning import (
     summarize as summarize_safe_rewrite_learning,
     origin_violation_penalty,
     rewrite_recovery_bonus,
+    exploration_bonus,
 )
 
 
@@ -83,6 +84,12 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
             )
             components["architecture_violation"] = -violation
             components["safe_rewrite_recovery"] = recovery
+            components["architecture_exploration"] = exploration_bonus(
+                safe_rewrite_summary,
+                kind="provider",
+                name=provider.name,
+                role=role,
+            )
         from adaptive_scoring import ScoreTrace
         provider_scores[provider.name] = ScoreTrace(
             name=provider.name,

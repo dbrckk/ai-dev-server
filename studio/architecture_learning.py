@@ -12,6 +12,54 @@ MIN_SAMPLES = 5
 CONFIDENCE_SAMPLE_TARGET = 20
 QUALITY_PRIOR_MEAN = 50.0
 QUALITY_PRIOR_STRENGTH = 5.0
+DRIFT_RECENT_SAMPLES = 5
+DRIFT_BASELINE_MIN_SAMPLES = 5
+DRIFT_SUCCESS_DELTA = 0.20
+DRIFT_QUALITY_DELTA = 15.0
+
+def _drift(observations: list[dict]) -> dict:
+    timed = [
+        x for x in observations
+        if isinstance(x, dict) and isinstance(x.get("observed_at"), (int, float))
+    ]
+    timed.sort(key=lambda x: float(x["observed_at"]))
+    if len(timed) < DRIFT_RECENT_SAMPLES + DRIFT_BASELINE_MIN_SAMPLES:
+        return {
+            "status": "insufficient_evidence",
+            "score": 0.0,
+            "recent_samples": min(len(timed), DRIFT_RECENT_SAMPLES),
+            "baseline_samples": max(0, len(timed) - DRIFT_RECENT_SAMPLES),
+        }
+
+    recent = timed[-DRIFT_RECENT_SAMPLES:]
+    baseline = timed[:-DRIFT_RECENT_SAMPLES]
+    recent_success = sum(1 for x in recent if x.get("successful") is True) / len(recent)
+    baseline_success = sum(1 for x in baseline if x.get("successful") is True) / len(baseline)
+    recent_quality = sum(float(x.get("quality", 0.0)) for x in recent) / len(recent)
+    baseline_quality = sum(float(x.get("quality", 0.0)) for x in baseline) / len(baseline)
+    success_delta = recent_success - baseline_success
+    quality_delta = recent_quality - baseline_quality
+
+    success_component = min(1.0, abs(success_delta) / DRIFT_SUCCESS_DELTA) if DRIFT_SUCCESS_DELTA else 0.0
+    quality_component = min(1.0, abs(quality_delta) / DRIFT_QUALITY_DELTA) if DRIFT_QUALITY_DELTA else 0.0
+    magnitude = round(0.6 * success_component + 0.4 * quality_component, 4)
+
+    degraded = success_delta <= -DRIFT_SUCCESS_DELTA or quality_delta <= -DRIFT_QUALITY_DELTA
+    improving = success_delta >= DRIFT_SUCCESS_DELTA or quality_delta >= DRIFT_QUALITY_DELTA
+    status = "degraded" if degraded else "improving" if improving else "stable"
+
+    return {
+        "status": status,
+        "score": magnitude,
+        "recent_samples": len(recent),
+        "baseline_samples": len(baseline),
+        "recent_success_rate": round(recent_success, 4),
+        "baseline_success_rate": round(baseline_success, 4),
+        "success_delta": round(success_delta, 4),
+        "recent_quality_score": round(recent_quality, 3),
+        "baseline_quality_score": round(baseline_quality, 3),
+        "quality_delta": round(quality_delta, 3),
+    }
 
 def _wilson_lower(successes: int, samples: int, z: float = 1.96) -> float:
     if samples <= 0:
@@ -134,6 +182,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
                 "blockers": 0,
                 "quality_total": 0.0,
                 "quality_sq_total": 0.0,
+                "observations": [],
                 "latest_observed_at": None,
             })
             stack["samples"] += 1
@@ -143,6 +192,12 @@ def summarize(root: Path | str = "studio-output") -> dict:
             stack["blockers"] += blockers
             stack["quality_total"] += quality
             stack["quality_sq_total"] += quality * quality
+            if observed_at is not None:
+                stack["observations"].append({
+                    "observed_at": observed_at,
+                    "successful": successful,
+                    "quality": quality,
+                })
             if observed_at is not None:
                 prev = stack.get("latest_observed_at")
                 stack["latest_observed_at"] = observed_at if not isinstance(prev, (int,float)) else max(float(prev), observed_at)
@@ -167,6 +222,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
                 "blockers": 0,
                 "quality_total": 0.0,
                 "quality_sq_total": 0.0,
+                "observations": [],
                 "latest_observed_at": None,
             })
             item["samples"] += 1
@@ -176,6 +232,12 @@ def summarize(root: Path | str = "studio-output") -> dict:
             item["blockers"] += blockers
             item["quality_total"] += quality
             item["quality_sq_total"] += quality * quality
+            if observed_at is not None:
+                item["observations"].append({
+                    "observed_at": observed_at,
+                    "successful": successful,
+                    "quality": quality,
+                })
             if observed_at is not None:
                 previous_ts = item.get("latest_observed_at")
                 item["latest_observed_at"] = (
@@ -195,6 +257,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
         quality_variance = max(0.0, item["quality_sq_total"] / samples - quality_mean * quality_mean) if samples else 0.0
         quality_std = quality_variance ** 0.5
         quality_shrunk = _quality_shrunk_mean(item["quality_total"], samples)
+        drift = _drift(item.get("observations", []))
         rankings.append({
             "repo": item["repo"],
             "domain": item.get("domain"),
@@ -215,6 +278,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
             "quality_shrunk_mean": round(quality_shrunk, 3),
             "latest_observed_at": item.get("latest_observed_at"),
             "eligible_for_advisory_bias": samples >= MIN_SAMPLES,
+            "drift": drift,
         })
 
     rankings.sort(
@@ -239,6 +303,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
         quality_variance = max(0.0, item["quality_sq_total"] / samples - quality_mean * quality_mean) if samples else 0.0
         quality_std = quality_variance ** 0.5
         quality_shrunk = _quality_shrunk_mean(item["quality_total"], samples)
+        drift = _drift(item.get("observations", []))
         stack_rankings.append({
             "repos": item["repos"],
             "framework": item.get("framework"),
@@ -258,6 +323,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
             "quality_shrunk_mean": round(quality_shrunk, 3),
             "latest_observed_at": item.get("latest_observed_at"),
             "eligible_for_advisory_bias": samples >= MIN_SAMPLES,
+            "drift": drift,
         })
     stack_rankings.sort(
         key=lambda x: (
@@ -272,12 +338,14 @@ def summarize(root: Path | str = "studio-output") -> dict:
     )
 
     return {
-        "schema": 5,
+        "schema": 6,
         "projects_observed": projects,
         "minimum_samples": MIN_SAMPLES,
         "confidence_sample_target": CONFIDENCE_SAMPLE_TARGET,
         "quality_prior_mean": QUALITY_PRIOR_MEAN,
         "quality_prior_strength": QUALITY_PRIOR_STRENGTH,
+        "drift_recent_samples": DRIFT_RECENT_SAMPLES,
+        "drift_baseline_min_samples": DRIFT_BASELINE_MIN_SAMPLES,
         "advisory_only": True,
         "rankings": rankings,
         "stack_rankings": stack_rankings[:100],

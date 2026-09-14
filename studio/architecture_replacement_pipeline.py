@@ -18,6 +18,7 @@ from architecture_replacement_pr_package import write as write_pr_package, Repla
 from core import StudioError, canonical
 
 def run(work_order_path: Path, repo_root: Path, out: Path) -> dict:
+    out.mkdir(parents=True,exist_ok=True)
     order=json.loads(work_order_path.read_text(encoding="utf-8"))
     candidate=synthesize_candidate(work_order_path,repo_root,out)
     execution=execute_candidate(repo_root,order,candidate,out)

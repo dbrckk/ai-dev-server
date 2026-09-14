@@ -359,6 +359,25 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             raise StudioError('Brief changed for existing id; use a new id and fresh target')
         state = state or {'request_hash': fingerprint, 'status': 'pending', 'cycles': 0, 'rounds': 0, 'blockers': []}
         configure_budget(state, req)
+        autonomy_dir = out / '.autonomy'
+        autonomy_dir.mkdir(parents=True, exist_ok=True)
+        os.environ['STUDIO_PROVIDER_COST_PATH'] = str(autonomy_dir / 'provider-cost.json')
+        os.environ['STUDIO_PROVIDER_MONTHLY_QUOTA_PATH'] = str(autonomy_dir / 'provider-monthly-quota.json')
+        state['capacity_status'] = capacity_snapshot(
+            autonomy_dir / 'provider-monthly-quota.json'
+        )
+        preliminary_capacity_plan = expanded_call_limit(
+            int(state.get('project_budget', {}).get('model_call_limit', req['max_calls'] * req['max_cycles'])),
+            state['capacity_status'],
+            explicit_limit=req.get('max_project_model_calls') is not None,
+        )
+        capacity_multiplier = float(preliminary_capacity_plan.get('multiplier', 1.0) or 1.0)
+        effective_max_cycles = (
+            req['max_cycles']
+            if req.get('max_project_model_calls') is not None
+            else min(20, max(req['max_cycles'], int(round(req['max_cycles'] * capacity_multiplier))))
+        )
+        state['effective_max_cycles'] = effective_max_cycles
         state['publication_request'] = dict(req.get('play_publish', {'enabled': False, 'track': 'internal', 'commit': False}))
         if state['status'] == 'human_action_required' and state.get('validation_contract') == 2:
             state['status'] = 'validated_preview'
@@ -366,14 +385,10 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             state.update(status='validation_upgrade_required', blockers=['Acceptance-journey validation required for this older checkpoint.'])
         if state.get('product') and 'journeys' not in state['product']:
             state.pop('product')
-        if state['status'] == 'validated_preview' or state['cycles'] >= req['max_cycles']:
+        if state['status'] == 'validated_preview' or state['cycles'] >= effective_max_cycles:
             atomic_write_text(out / 'report.json', canonical(state))
             return state
         clear_preview_evidence(state)
-        autonomy_dir = out / '.autonomy'
-        autonomy_dir.mkdir(parents=True, exist_ok=True)
-        os.environ['STUDIO_PROVIDER_COST_PATH'] = str(autonomy_dir / 'provider-cost.json')
-        os.environ['STUDIO_PROVIDER_MONTHLY_QUOTA_PATH'] = str(autonomy_dir / 'provider-monthly-quota.json')
         max_api_cost = req.get('max_api_cost_usd')
         if isinstance(max_api_cost, (int, float)) and float(max_api_cost) > 0:
             os.environ['STUDIO_MAX_API_COST_USD'] = str(float(max_api_cost))
@@ -643,7 +658,12 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     state['project_budget_status'] = budget_status(state)
     state['models_used'] = getattr(model, 'models_used', {})
     state['providers_used'] = getattr(model, 'providers_used', {})
-    state['limits'] = {'max_cycles': req['max_cycles'], 'max_calls_per_cycle': req['max_calls'], 'max_rounds_per_cycle': req['max_rounds']}
+    state['limits'] = {
+        'requested_max_cycles': req['max_cycles'],
+        'effective_max_cycles': state.get('effective_max_cycles', req['max_cycles']),
+        'max_calls_per_cycle': req['max_calls'],
+        'max_rounds_per_cycle': req['max_rounds'],
+    }
     state['release_status'] = 'not_store_ready'
     state['coverage'] = {'variants_per_path': 4, 'journeys': [j['id'] for j in state.get('product', {}).get('journeys', [])], 'scope': 'Initial screen and final screen of each declared journey; not all possible states or real-device testing.'}
     for p in (root / 'test/goldens').glob('*.png'):

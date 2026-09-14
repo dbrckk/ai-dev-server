@@ -461,3 +461,24 @@ def reopen_confidence_dependency(value: dict, task_id: str) -> dict:
         raise ObjectiveDagError("objective task missing")
     unsigned["tasks"] = tasks
     return refresh(_seal(unsigned))
+
+
+def invalidate_confidence(value: dict, task_ids: list[str]) -> dict:
+    """Invalidate confidence evidence while preserving historical verified state."""
+    validate(value)
+    targets = {str(task_id) for task_id in task_ids if task_id}
+    if not targets:
+        return value
+    unsigned = dict(value)
+    unsigned.pop("sha256", None)
+    tasks = [dict(task) for task in unsigned["tasks"]]
+    known = {task["id"] for task in tasks}
+    unknown = targets - known
+    if unknown:
+        raise ObjectiveDagError("objective confidence task missing")
+    for task in tasks:
+        if task["id"] in targets and task["state"] == "verified":
+            task["confidence"] = None
+            task["last_error"] = "confidence invalidated by affected downstream change"
+    unsigned["tasks"] = tasks
+    return refresh(_seal(unsigned))

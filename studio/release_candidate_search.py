@@ -343,6 +343,7 @@ def run_branch(
                         root,
                         key,
                         rebuild_cost_seconds=gate_cost_seconds,
+                        entries=artifact_cache,
                     )
             return (
                 gate_passed,

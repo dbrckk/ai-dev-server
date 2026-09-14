@@ -1,3 +1,4 @@
+import base64
 import sys
 from pathlib import Path
 import unittest
@@ -46,7 +47,15 @@ class GitHubAttestationCollectorTests(unittest.TestCase):
                     {"id":102,"name":"python-tests","head_sha":"a"*40,"status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:40Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/99"},
                 ]}
             if "/actions/runs?" in url:
-                return {"workflow_runs":[{"id":99,"head_sha":"a"*40,"conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:25Z"}]}
+                return {"workflow_runs":[{"id":99,"head_sha":"a"*40,"conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/7/merge","created_at":"2026-01-01T00:00:25Z"}]}
+            if "/contents/.github/workflows/ci.yml?ref=" in url:
+                raw=b"name: CI\n"
+                return {
+                    "path":".github/workflows/ci.yml",
+                    "sha":"blob123",
+                    "encoding":"base64",
+                    "content":base64.b64encode(raw).decode(),
+                }
             raise AssertionError(url)
         return _request
 
@@ -55,6 +64,8 @@ class GitHubAttestationCollectorTests(unittest.TestCase):
             result=collector.collect(self.plan(False),token="t",repository="o/r",pull_request=7)
         self.assertEqual(result["reviewer"]["login"],"alice")
         self.assertEqual(result["workflow_run_id"],99)
+        self.assertEqual(result["workflow_file"]["path"],".github/workflows/ci.yml")
+        self.assertEqual(result["workflow"]["path"],".github/workflows/ci.yml")
 
     def test_collects_reinforced_attestation(self):
         with patch.object(collector,"_request",side_effect=self.fake_request(True)):

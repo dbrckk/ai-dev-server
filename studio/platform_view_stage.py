@@ -9,7 +9,7 @@ from completion import apply_completion, next_stage
 from core import StudioError, canonical
 from platform_view_qa import validate_platform_views
 from run import GitHub
-from release_stage_engine import apply_external_gate, evaluate_and_repair
+from release_stage_engine import apply_external_gate, evaluate_and_repair, invalidate_for_source_change
 
 
 def advance(request_path: Path, root: Path, out: Path) -> dict:
@@ -24,6 +24,7 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
         return state
 
     evidence = evaluate_and_repair(root, out, state, req, 'platform_view_qa', validate_platform_views)
+    invalidate_for_source_change(state, evidence)
     state.setdefault('release_evidence', {})['platform_view_qa'] = evidence
     state.pop('human_action', None)
     if state.get('status') == 'human_action_required':

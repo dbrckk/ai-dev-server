@@ -204,6 +204,18 @@ def _fuse_histories(histories: list[dict]) -> dict | None:
         weight*float(history.get("compatibility",{}).get("transferability",0.0) or 0.0)
         for weight,history in weighted
     )/total
+    positive_weight=sum(
+        weight for weight,history in weighted
+        if float(history.get("wilson_lower_95",0.0) or 0.0)>=0.70
+        and float(history.get("regression_rate",0.0) or 0.0)<=0.10
+    )
+    negative_weight=sum(
+        weight for weight,history in weighted
+        if float(history.get("wilson_lower_95",0.0) or 0.0)<0.50
+        or float(history.get("regression_rate",0.0) or 0.0)>=0.25
+    )
+    conflict_ratio=min(positive_weight,negative_weight)/total if total>0 else 0.0
+    evidence_conflict=positive_weight/total>=0.20 and negative_weight/total>=0.20
     contributors=[]
     for weight,history in weighted:
         compatibility=history.get("compatibility",{})
@@ -233,6 +245,10 @@ def _fuse_histories(histories: list[dict]) -> dict | None:
         "mean_quality_score":round(avg("mean_quality_score"),3),
         "evidence_confidence":round(min(1.0,effective_samples/20.0),4),
         "eligible_for_bias":effective_samples>=5.0,
+        "evidence_conflict":evidence_conflict,
+        "conflict_ratio":round(conflict_ratio,4),
+        "positive_weight_share":round(positive_weight/total,4),
+        "negative_weight_share":round(negative_weight/total,4),
     }
 
 def _history_context_weight(history: dict | None, context: dict) -> float:
@@ -309,7 +325,10 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             wilson=float(evidence.get("wilson_lower_95",0.0) or 0.0)
             confidence=float(evidence.get("evidence_confidence",0.0) or 0.0)
             empirical_priority_adjustment=max(-10.0,min(5.0,(wilson-0.5)*10.0-regression*10.0))*confidence*history_context_weight
-            if history_context_weight>=MIN_TRANSFERABILITY_FOR_RISK and (regression>=0.25 or wilson<0.5):
+            if isinstance(fused_history,dict) and fused_history.get("evidence_conflict") is True:
+                empirical_priority_adjustment=min(0.0,empirical_priority_adjustment)
+                empirical_status="conflicting_history"
+            elif history_context_weight>=MIN_TRANSFERABILITY_FOR_RISK and (regression>=0.25 or wilson<0.5):
                 risk="high"
                 empirical_status="historically_risky"
             elif history_context_weight>=MIN_TRANSFERABILITY_FOR_POSITIVE_BIAS and wilson>=0.70 and regression<=0.10:
@@ -332,6 +351,8 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             gates.insert(1, "missing_capabilities_resolved")
         if empirical_status=="historically_risky":
             gates.insert(0,"historical_replacement_risk_reviewed")
+        if empirical_status=="conflicting_history":
+            gates.insert(0,"conflicting_replacement_evidence_reviewed")
         if row.get("maintenance_evidence_available") is not True:
             gates.insert(0, "maintenance_evidence_completed")
 
@@ -385,7 +406,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
     ),reverse=True)
 
     return {
-        "version": 6,
+        "version": 7,
         "status": "planned",
         "advisory_only": True,
         "replacement_plans": plans,

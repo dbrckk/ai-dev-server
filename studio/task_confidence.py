@@ -25,6 +25,7 @@ def score(
     fragility: dict | None,
     dependency: dict | None,
     task_attempts: int,
+    acceptance_review: dict | None = None,
 ) -> TaskConfidence:
     passed = isinstance(verification, dict) and verification.get("passed") is True
     if not passed:
@@ -32,6 +33,16 @@ def score(
             score=0,
             level="unverified",
             factors={"verification_passed": False},
+        )
+
+    if isinstance(acceptance_review, dict) and acceptance_review.get("complete") is not True:
+        return TaskConfidence(
+            score=0,
+            level="unaccepted",
+            factors={
+                "verification_passed": True,
+                "acceptance_review_complete": False,
+            },
         )
 
     value = 70.0
@@ -97,6 +108,38 @@ def score(
     if semantic_verified:
         value += 3
     factors["semantic_verified_evidence"] = semantic_verified
+
+    criteria_rows = (
+        acceptance_review.get("criteria", [])
+        if isinstance(acceptance_review, dict) and isinstance(acceptance_review.get("criteria"), list)
+        else []
+    )
+    criteria_rows = [row for row in criteria_rows if isinstance(row, dict)]
+    deterministic_count = sum(1 for row in criteria_rows if row.get("source") == "deterministic")
+    referenced_count = sum(
+        1
+        for row in criteria_rows
+        if isinstance(row.get("evidence_refs"), list) and row.get("evidence_refs")
+    )
+    deterministic_ratio = (
+        deterministic_count / len(criteria_rows)
+        if criteria_rows
+        else 0.0
+    )
+    evidence_quality_bonus = int(round(deterministic_ratio * 8))
+    if criteria_rows and referenced_count == len(criteria_rows):
+        evidence_quality_bonus += 2
+    value += evidence_quality_bonus
+    factors["acceptance_criteria_count"] = len(criteria_rows)
+    factors["deterministic_criteria_count"] = deterministic_count
+    factors["referenced_criteria_count"] = referenced_count
+    factors["deterministic_evidence_ratio"] = round(deterministic_ratio, 3)
+    factors["evidence_quality_bonus"] = evidence_quality_bonus
+    factors["acceptance_review_complete"] = (
+        acceptance_review.get("complete") is True
+        if isinstance(acceptance_review, dict)
+        else None
+    )
 
     final_score = int(round(_clamp(value)))
     if final_score >= 85:

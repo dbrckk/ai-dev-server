@@ -1988,6 +1988,7 @@ Objective and current plan:
                 fragility=state.get("fragility"),
                 dependency=targeted_impact,
                 task_attempts=int(active_task_row_before.get("attempts", 0)),
+                acceptance_review=review,
             )
             if task_verified:
                 objective_dag = mark_objective_verified(

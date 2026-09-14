@@ -83,6 +83,27 @@ class ApprovalProvenanceTests(unittest.TestCase):
         with self.assertRaises(ApprovalProvenanceError):
             validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
 
+    def test_github_attestation_rejects_forged_pass_without_check_evidence(self):
+        a=self.github_attestation()
+        a["required_checks"]["check_evidence"].pop("validate")
+        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
+        with self.assertRaises(ApprovalProvenanceError):
+            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
+
+    def test_github_attestation_rejects_check_evidence_for_wrong_sha(self):
+        a=self.github_attestation()
+        a["required_checks"]["check_evidence"]["validate"]["head_sha"]="old"
+        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
+        with self.assertRaises(ApprovalProvenanceError):
+            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
+
+    def test_github_attestation_rejects_check_evidence_before_head_commit(self):
+        a=self.github_attestation()
+        a["required_checks"]["check_evidence"]["validate"]["timestamp"]=1767225599.0
+        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
+        with self.assertRaises(ApprovalProvenanceError):
+            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
+
     def test_github_attestation_rejects_failed_required_check(self):
         a=self.github_attestation()
         a["required_checks"]["valid"]=False

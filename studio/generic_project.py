@@ -37,6 +37,7 @@ from architecture_planner import write as write_architecture_plan
 from architecture_learning import summarize as summarize_architecture_learning, write as write_architecture_learning, root_for_output as architecture_learning_root
 from architecture_evaluator import write as write_architecture_evaluation
 from architecture_benchmark import write as write_architecture_benchmark
+from architecture_preflight import write as write_architecture_preflight
 from architecture_outcome import write as write_architecture_outcome
 
 PLAN_SYSTEM = """You are the senior autonomous maintainer of an existing software repository.
@@ -123,6 +124,14 @@ def _prepare_architecture(req: dict, out: Path, state: dict) -> Path:
         state["architecture_decision"].get("autonomy_policy", {})
         if isinstance(state.get("architecture_decision"), dict)
         else {}
+    )
+    state["architecture_preflight"] = write_architecture_preflight(
+        state["architecture_decision"],
+        recommendations,
+        out,
+    )
+    state["architecture_autonomy_policy"]["architecture_changes_allowed"] = bool(
+        state["architecture_preflight"].get("architecture_changes_allowed")
     )
     return architecture_root
 
@@ -253,6 +262,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             "star_repositories": star_context.get("matches",[])[:12] if isinstance(star_context,dict) else [],
             "architecture_decision": state.get("architecture_decision", {}),
             "architecture_autonomy_policy": state.get("architecture_autonomy_policy", {}),
+            "architecture_preflight": state.get("architecture_preflight", {"status": "unavailable", "verdict": "unknown"}),
             "previous_verification": last_verification,
             "bootstrap": state["bootstrap"],
             "previous_rounds": state["rounds"][-3:],

@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 import star_scanner
 from project_recommendations import recommend
-from run import _load_star_recommendations, context as build_context
+from run import _load_star_recommendations, _load_architecture_benchmark, context as build_context
 from orchestrator import _recommendation_context
 
 
@@ -116,10 +116,31 @@ class StarScannerTests(unittest.TestCase):
     def test_model_context_contains_recommendations_as_data(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            state = {"technical_recommendations": {"status": "ok", "matches": [{"repo": "owner/repo"}]}, "architecture_decision": {"status": "planned", "chosen": [{"repo": "owner/repo"}]}}
+            state = {"technical_recommendations": {"status": "ok", "matches": [{"repo": "owner/repo"}]}, "architecture_decision": {"status": "planned", "chosen": [{"repo": "owner/repo"}]}, "architecture_benchmark": {"status": "benchmarked", "migration_candidates": [{"best_alternative": "owner/alt"}]}}
             payload = json.loads(build_context({"brief": "test"}, state, root))
             self.assertEqual(payload["technical_recommendations"]["matches"][0]["repo"], "owner/repo")
             self.assertEqual(payload["architecture_decision"]["chosen"][0]["repo"], "owner/repo")
+            self.assertEqual(payload["architecture_benchmark"]["migration_candidates"][0]["best_alternative"], "owner/alt")
+
+    def test_load_architecture_benchmark_is_bounded(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            payload = {
+                "status": "benchmarked",
+                "evaluation_verdict": "review",
+                "migration_candidates": [{
+                    "current_repo": "a/current",
+                    "best_alternative": "a/better",
+                    "current_score": 50,
+                    "migration_reason": "better evidence",
+                    "ignored": "not propagated",
+                }] * 20,
+            }
+            (root / "architecture-benchmark.json").write_text(json.dumps(payload))
+            result = _load_architecture_benchmark(root)
+            self.assertEqual(len(result["migration_candidates"]), 8)
+            self.assertTrue(result["advisory_only"])
+            self.assertNotIn("ignored", result["migration_candidates"][0])
 
     def test_recommendation_context_uses_project_brief(self):
         with tempfile.TemporaryDirectory() as tmp:

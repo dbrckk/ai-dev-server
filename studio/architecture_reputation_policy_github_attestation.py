@@ -93,17 +93,28 @@ def latest_approvals(reviews: list[dict], commit_sha: str, *, head_commit_timest
         })
     return rows
 
-def successful_workflow(runs: list[dict], commit_sha: str) -> dict:
+def successful_workflow(runs: list[dict], commit_sha: str, *, head_commit_timestamp: float | None=None) -> dict:
     candidates=[]
     for run in runs if isinstance(runs,list) else []:
         head=run.get("head_sha")
         conclusion=str(run.get("conclusion") or "").lower()
-        if head==commit_sha and conclusion=="success":
-            candidates.append(run)
+        if head!=commit_sha or conclusion!="success":
+            continue
+        created=_timestamp(run.get("run_started_at") or run.get("created_at") or run.get("updated_at"))
+        if head_commit_timestamp is not None:
+            if created is None or created<float(head_commit_timestamp):
+                continue
+        candidates.append({**run,"_validated_timestamp":created})
     if not candidates:
         raise ApprovalProvenanceError("no successful workflow for reviewed commit")
     run=sorted(candidates,key=lambda x:int(x.get("id") or 0),reverse=True)[0]
-    return {"id":run.get("id"),"head_sha":commit_sha,"conclusion":"success","name":run.get("name")}
+    return {
+        "id":run.get("id"),
+        "head_sha":commit_sha,
+        "conclusion":"success",
+        "name":run.get("name"),
+        "timestamp":run.get("_validated_timestamp"),
+    }
 
 def build(plan: dict, *, repository: str, pull_request: int, commit_sha: str,
           reviews: list[dict], permissions: dict[str,str], workflow_runs: list[dict],
@@ -122,8 +133,17 @@ def build(plan: dict, *, repository: str, pull_request: int, commit_sha: str,
             raise ApprovalProvenanceError("reinforced GitHub approval requires two eligible approvers")
         second=eligible[1]
         second["permission"]=permissions[second["login"]]
-    workflow=successful_workflow(workflow_runs,commit_sha)
-    checks=validate_check_runs(check_runs,repository)
+    workflow=successful_workflow(
+        workflow_runs,
+        commit_sha,
+        head_commit_timestamp=float(head_commit_timestamp),
+    )
+    checks=validate_check_runs(
+        check_runs,
+        repository,
+        commit_sha=commit_sha,
+        head_commit_timestamp=float(head_commit_timestamp),
+    )
     if checks.get("valid") is not True:
         raise ApprovalProvenanceError("required GitHub checks are not all successful")
     attestation={
@@ -138,7 +158,12 @@ def build(plan: dict, *, repository: str, pull_request: int, commit_sha: str,
         "head_commit_timestamp":float(head_commit_timestamp),
         "pr_identity":pr_identity,
         "required_checks":checks,
-        "workflow":{"head_sha":workflow["head_sha"],"conclusion":workflow["conclusion"],"name":workflow["name"]},
+        "workflow":{
+            "head_sha":workflow["head_sha"],
+            "conclusion":workflow["conclusion"],
+            "name":workflow["name"],
+            "timestamp":workflow["timestamp"],
+        },
     }
     if second is not None: attestation["second_reviewer"]=second
     attestation["attestation_digest"]=hashlib.sha256(_canonical(attestation).encode()).hexdigest()

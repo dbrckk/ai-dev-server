@@ -214,6 +214,7 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
     os.environ['STUDIO_QUICK_GATE_CACHE_PATH']=str(out/'.autonomy/quick-gate-cache.json')
     os.environ['STUDIO_FULL_GATE_CACHE_PATH']=str(out/'.autonomy/full-gate-cache.json')
     os.environ['STUDIO_ARTIFACT_CACHE_PATH']=str(out/'.autonomy/artifact-cache.json')
+    os.environ['STUDIO_ARTIFACT_CACHE_ENABLED']='1'
     os.environ['STUDIO_ARTIFACT_CAS_PATH']=str(out/'.autonomy/artifact-cas')
     os.environ['STUDIO_ARTIFACT_CAS_STATS_PATH']=str(out/'.autonomy/artifact-cas-stats.json')
     os.environ['STUDIO_ARTIFACT_CAS_AUDIT_PATH']=str(out/'.autonomy/artifact-cas-audit.json')

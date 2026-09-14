@@ -32,7 +32,11 @@ from architecture_change_guard import enforce as enforce_architecture_change_gua
 from architecture_safe_rewrite import build_context as build_architecture_safe_rewrite_context
 from capacity_status import snapshot as capacity_snapshot
 from local_capacity_inventory import write as write_local_capacity_inventory
-from local_model_reputation import load as load_local_model_reputation, snapshot as local_model_reputation_snapshot
+from local_model_reputation import (
+    load as load_local_model_reputation,
+    snapshot as local_model_reputation_snapshot,
+    record_verified_outcome as record_local_model_verified_outcome,
+)
 from safe_rewrite_learning import (
     record_attempt as record_safe_rewrite_attempt,
     finalize as finalize_safe_rewrite,
@@ -442,6 +446,25 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             elif p.is_file():
                 apply_patch(root, {'files': [{'path': p.relative_to(saved_root).as_posix(), 'content': p.read_text()}]})
     safe_rewrite_learning_path = out / '.autonomy' / 'safe-rewrite-learning.json'
+    local_model_reputation_path = out / '.autonomy' / 'local-model-reputation.json'
+
+    def record_verified_implementation(success):
+        provider_name = str(
+            getattr(model, 'providers_used', {}).get('implementation') or ''
+        )
+        model_name = str(
+            getattr(model, 'models_used', {}).get('implementation') or ''
+        )
+        if ':' not in provider_name or not model_name:
+            return
+        record_local_model_verified_outcome(
+            local_model_reputation_path,
+            provider=provider_name.split(':', 1)[0],
+            model=model_name,
+            role='implementation',
+            verified_success=bool(success),
+        )
+
     state['technical_recommendations'] = _load_star_recommendations(out)
     historical_root = architecture_learning_root(out)
     historical_learning = summarize_architecture_learning(historical_root)
@@ -594,6 +617,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             (out / 'validation.json').write_text(canonical(logs))
             state['status'] = 'repair_needed'
             if not passed:
+                record_verified_implementation(False)
                 pending_safe_rewrite = state.pop('pending_safe_rewrite_event_id', None)
                 if pending_safe_rewrite:
                     finalize_safe_rewrite(
@@ -613,6 +637,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             review = verdict(checkpointed_ask(model, 'review', context(req, state, root), namespace='preview-review'))
             state['code_review'] = review
             if not review['passed']:
+                record_verified_implementation(False)
                 pending_safe_rewrite = state.pop('pending_safe_rewrite_event_id', None)
                 if pending_safe_rewrite:
                     finalize_safe_rewrite(
@@ -651,6 +676,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                 state['repair_queue_summary'] = summarize(state)
                 parent = checkpoint(parent)
                 continue
+            record_verified_implementation(True)
             pending_safe_rewrite = state.pop('pending_safe_rewrite_event_id', None)
             if pending_safe_rewrite:
                 finalize_safe_rewrite(

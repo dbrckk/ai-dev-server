@@ -165,6 +165,29 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         self.assertEqual(row["historical_replacement_evidence"]["framework"],"flutter")
         self.assertEqual(row["platform"],"android")
 
+    def test_generic_history_is_downweighted_for_specific_context(self):
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter",
+            "project_type":"game",
+            "primary_domain":"mobile",
+            "platform":"android",
+        })
+        learning={"rankings":[{
+            "current_repo":"a/current",
+            "replacement_repo":"a/better",
+            "samples":20,
+            "eligible_for_bias":True,
+            "evidence_confidence":1.0,
+            "regression_rate":0.5,
+            "wilson_lower_95":0.2,
+        }]}
+        result=plan(obs,self.recommendations(),learning=learning)
+        row=result["replacement_plans"][0]
+        self.assertEqual(row["empirical_status"],"mixed_history")
+        self.assertLess(row["history_context_weight"],0.75)
+        self.assertEqual(row["risk"],"low")
+
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)

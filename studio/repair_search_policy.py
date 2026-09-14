@@ -52,3 +52,17 @@ def should_refine(
     if refinement_model_calls > remaining_model_calls:
         return False
     return expected_value(strategy_row) >= MIN_REFINEMENT_VALUE
+
+
+def should_continue_after_quick_failure(
+    *,
+    next_step_model_calls: int,
+    remaining_model_calls: int,
+    strategy_row: dict,
+) -> bool:
+    if next_step_model_calls > remaining_model_calls:
+        return False
+    # Continuing a broken intermediate state is only justified for strategies
+    # with meaningful expected value. This lets a later agent/model repair an
+    # intermediate compile/test regression without blindly exploring.
+    return expected_value(strategy_row) >= MIN_EXPANSION_VALUE

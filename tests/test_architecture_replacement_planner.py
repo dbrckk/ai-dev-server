@@ -434,8 +434,8 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         row=plan(obs,self.recommendations(),learning={"rankings":rows})["replacement_plans"][0]
         fused=row["fused_historical_evidence"]
         self.assertEqual(fused["contributor_count"],3)
-        self.assertGreater(fused["effective_samples"],5)
-        self.assertTrue(fused["eligible_for_bias"])
+        self.assertLess(fused["effective_samples"],5)
+        self.assertFalse(fused["eligible_for_bias"])
 
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:

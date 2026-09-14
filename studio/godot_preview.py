@@ -10,6 +10,7 @@ import hashlib
 from pathlib import Path
 
 from core import StudioError, canonical, request_check, verdict
+from atomic_file import write_text as atomic_write_text
 from engine_patch import SECRET, validate as validate_patch
 from existing_project import ExistingProjectError, materialize, plan
 from godot_model import GodotModel
@@ -169,7 +170,7 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
     if state.get('engine') != 'godot':
         raise StudioError('Checkpoint engine mismatch')
     if state['status'] == 'godot_preview_validated' or state['cycles'] >= req['max_cycles']:
-        (out / 'report.json').write_text(canonical(state)); return state
+        atomic_write_text(out / 'report.json', canonical(state)); return state
 
     architecture_recommendations = recommend(
         'planning',
@@ -213,7 +214,7 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
             try: journeys = validate_journeys(state['product'].get('journeys'))
             except ValueError as exc: raise StudioError(str(exc)) from None
             passed, logs = sandbox.gates(req['app_name'], journeys)
-            (out / 'validation.json').write_text(canonical(logs))
+            atomic_write_text(out / 'validation.json', canonical(logs))
             if not passed:
                 state.update(status='repair_needed',blockers=['Godot headless validation failed: ' + canonical(logs[-1:])[-16000:]])
                 checkpoint(); continue
@@ -250,7 +251,7 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
         except OSError:
             state['architecture_learning'] = {'status':'unavailable'}
 
-        (out / 'report.json').write_text(canonical(state))
+        atomic_write_text(out / 'report.json', canonical(state))
         checkpoint(); state['checkpoint_commit'] = parent
-        (out / 'report.json').write_text(canonical(state))
+        atomic_write_text(out / 'report.json', canonical(state))
     return state

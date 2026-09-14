@@ -40,6 +40,43 @@ class DoneWhenEvaluatorTests(unittest.TestCase):
             self.assertFalse(kwargs["network"])
 
     @patch("done_when_evaluator.run_command")
+    def test_reuses_targeted_test_precheck_without_rerun(self, run_command):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            result=evaluate(
+                root,
+                ["test:tests/test_api.py::test_ok"],
+                verification={
+                    "passed":True,
+                    "targeted_precheck":{
+                        "passed":True,
+                        "impacted_tests":["tests/test_api.py"],
+                        "command":["pytest","-q","tests/test_api.py"],
+                    },
+                },
+            )
+            self.assertTrue(result["deterministic"][0]["passed"])
+            self.assertEqual(result["deterministic"][0]["source"],"verification_reuse")
+            run_command.assert_not_called()
+
+    @patch("done_when_evaluator.run_command")
+    def test_reuses_trusted_build_result_without_rerun(self, run_command):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            result=evaluate(
+                root,
+                ["build:default"],
+                verification={
+                    "passed":True,
+                    "commands":[["npm","run","build"]],
+                    "results":[{"passed":True}],
+                },
+            )
+            self.assertTrue(result["deterministic"][0]["passed"])
+            self.assertEqual(result["deterministic"][0]["source"],"verification_reuse")
+            run_command.assert_not_called()
+
+    @patch("done_when_evaluator.run_command")
     def test_build_criterion_uses_known_build_script(self, run_command):
         run_command.return_value={"passed":True}
         with tempfile.TemporaryDirectory() as td:

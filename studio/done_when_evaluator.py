@@ -144,7 +144,54 @@ def evaluate_command(root: Path, criterion: str, *, timeout: int=120) -> dict | 
     }
 
 
-def evaluate(root: Path, criteria: list[str], *, timeout: int=120) -> dict:
+def _reuse_verification(criterion: str, verification: dict | None) -> dict | None:
+    if not isinstance(verification, dict) or verification.get("passed") is not True:
+        return None
+    item=classify(criterion)
+    if item["kind"]=="test":
+        targeted=verification.get("targeted_precheck")
+        target_ref=item["spec"].split("::",1)[0].strip()
+        if isinstance(targeted,dict) and targeted.get("passed") is True:
+            impacted=targeted.get("impacted_tests",[])
+            if isinstance(impacted,list) and target_ref in impacted:
+                return {
+                    "criterion":item["raw"],
+                    "kind":"test",
+                    "passed":True,
+                    "evidence_refs":[target_ref],
+                    "evidence":"reused trusted targeted precheck",
+                    "source":"verification_reuse",
+                    "command":targeted.get("command"),
+                }
+    if item["kind"]=="build":
+        commands=verification.get("commands",[])
+        results=verification.get("results",[])
+        if isinstance(commands,list) and isinstance(results,list):
+            for command,result in zip(commands,results):
+                if not isinstance(command,list) or not isinstance(result,dict) or result.get("passed") is not True:
+                    continue
+                normalized=[str(x) for x in command]
+                is_build=(
+                    normalized[:3]==["npm","run","build"]
+                    or normalized[:2]==["cargo","build"]
+                    or normalized[:2]==["go","build"]
+                    or ("gradlew" in " ".join(normalized) and "build" in normalized)
+                    or ("cmake" in normalized[:1] and "--build" in normalized)
+                )
+                if is_build:
+                    return {
+                        "criterion":item["raw"],
+                        "kind":"build",
+                        "passed":True,
+                        "evidence_refs":[],
+                        "evidence":"reused trusted build verification",
+                        "source":"verification_reuse",
+                        "command":command,
+                    }
+    return None
+
+
+def evaluate(root: Path, criteria: list[str], *, timeout: int=120, verification: dict | None = None) -> dict:
     deterministic=[]
     reviewer=[]
     for criterion in criteria:
@@ -153,6 +200,8 @@ def evaluate(root: Path, criteria: list[str], *, timeout: int=120) -> dict:
             reviewer.append(item["raw"])
             continue
         evidence=evaluate_static(root,item["raw"])
+        if evidence is None:
+            evidence=_reuse_verification(item["raw"],verification)
         if evidence is None:
             evidence=evaluate_command(root,item["raw"],timeout=timeout)
         deterministic.append(evidence)

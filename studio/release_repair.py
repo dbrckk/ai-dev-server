@@ -38,6 +38,7 @@ def attempt(
     evidence: dict,
     stage: str,
     app_name: str,
+    task: dict | None = None,
     *,
     model_factory=Model,
     sandbox_factory=Sandbox,
@@ -47,6 +48,10 @@ def attempt(
         return {"attempted": False, "changed": False, "reason": "no_repairable_code_diagnostics"}
 
     model = model_factory(4)
+    if task and task.get("rotate_strategy") is True:
+        last_provider = task.get("last_provider")
+        if isinstance(last_provider, str) and last_provider and hasattr(model, "avoid_providers"):
+            model.avoid_providers.add(last_provider)
     patch = model.ask("release_fix", _context(root, state, stage, blockers))
     files = patch_check(patch)
     snapshot = {}

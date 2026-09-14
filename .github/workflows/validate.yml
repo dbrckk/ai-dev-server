@@ -59,6 +59,8 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Validate release contract
         run: python studio/release_contract.py
+      - name: Validate architecture automation contract
+        run: python studio/architecture_contract.py
       - name: Validate CI provider configuration
         run: python -m json.tool control/ci.json >/dev/null
       - name: Validate mobile brief queue

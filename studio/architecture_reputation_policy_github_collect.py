@@ -67,11 +67,24 @@ def collect(plan: dict, *, token: str, repository: str, pull_request: int) -> di
         if not isinstance(commit_sha,str) or not commit_sha:
             raise GitHubAttestationCollectionError("pull request head SHA missing")
 
+        commit=_request(api+f"/commits/{commit_sha}",token)
+        commit_data=commit.get("commit") if isinstance(commit,dict) and isinstance(commit.get("commit"),dict) else {}
+        committer=commit_data.get("committer") if isinstance(commit_data.get("committer"),dict) else {}
+        author_commit=commit_data.get("author") if isinstance(commit_data.get("author"),dict) else {}
+        head_commit_time_raw=committer.get("date") or author_commit.get("date")
+        if not isinstance(head_commit_time_raw,str) or not head_commit_time_raw:
+            raise GitHubAttestationCollectionError("head commit timestamp missing")
+
+        from architecture_reputation_policy_github_attestation import _timestamp
+        head_commit_timestamp=_timestamp(head_commit_time_raw)
+        if head_commit_timestamp is None:
+            raise GitHubAttestationCollectionError("head commit timestamp invalid")
+
         reviews=_request(api+f"/pulls/{pull_request}/reviews?per_page=100",token)
         if not isinstance(reviews,list):
             raise GitHubAttestationCollectionError("pull request reviews malformed")
 
-        approvals=latest_approvals(reviews,commit_sha)
+        approvals=latest_approvals(reviews,commit_sha,head_commit_timestamp=head_commit_timestamp)
         permissions={}
         for row in approvals:
             login=row.get("login")
@@ -129,6 +142,7 @@ def collect(plan: dict, *, token: str, repository: str, pull_request: int) -> di
             workflow_runs=workflow_runs,
             check_runs=check_runs,
             pr_identity=pr_identity,
+            head_commit_timestamp=head_commit_timestamp,
             reinforced=reinforced,
         )
     except ReplacementPersistenceError as exc:

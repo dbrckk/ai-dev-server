@@ -113,6 +113,14 @@ class StudioTests(unittest.TestCase):
         self.assertEqual(state['release_status'], 'not_store_ready')
         self.assertTrue((root / 'out/app-debug.apk').exists())
         self.assertEqual(len(list((root / 'out').glob('*.png'))), 8)
+        self.assertEqual(state['architecture_evaluation']['verdict'], 'retain')
+        self.assertEqual(state['architecture_benchmark']['status'], 'benchmarked')
+        self.assertTrue((root / 'out/architecture-evaluation.json').is_file())
+        self.assertTrue((root / 'out/architecture-benchmark.json').is_file())
+        self.assertTrue((root / 'out/architecture-outcome.json').is_file())
+        self.assertIn('architecture_benchmark', gh.state)
+        self.assertIn('architecture_evaluation', gh.state)
+        self.assertIn('PROJECT_CONTEXT.md', gh.files)
     def test_repair_loop(self):
         class RepairSandbox(FakeSandbox):
             def gates(self, name, journeys):

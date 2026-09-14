@@ -5,6 +5,9 @@ import argparse
 import json
 from pathlib import Path
 
+from atomic_file import write_text as atomic_write_text
+from file_lock import exclusive
+
 MIN_SAMPLES = 3
 
 
@@ -85,11 +88,27 @@ def summarize(root: Path | str = "studio-output") -> dict:
     }
 
 
+def write(root: Path | str = "studio-output", path: Path | str | None = None) -> dict:
+    root = Path(root)
+    path = Path(path) if path is not None else root / "architecture-learning.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with exclusive(path):
+        result = summarize(root)
+        atomic_write_text(
+            path,
+            json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+            encoding="utf-8",
+        )
+    return result
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="Aggregate architecture outcome evidence")
     parser.add_argument("--root", default="studio-output")
+    parser.add_argument("--write", action="store_true")
     args = parser.parse_args(argv)
-    print(json.dumps(summarize(args.root), sort_keys=True))
+    result = write(args.root) if args.write else summarize(args.root)
+    print(json.dumps(result, sort_keys=True))
     return 0
 
 

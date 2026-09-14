@@ -176,6 +176,7 @@ def run_persistent_project(
         "STUDIO_ARTIFACT_CAS_STATS_PATH": autonomy_root / "artifact-cas-stats.json",
         "STUDIO_CHECKPOINT_PATH": autonomy_root / "workflow-checkpoints.json",
         "STUDIO_TELEMETRY_PATH": autonomy_root / "telemetry.jsonl",
+        "STUDIO_TASK_LEASE_PATH": autonomy_root / "task-leases.json",
     }
     goal_path, registry_path, memory_path = ensure_project_goal(
         project_out, goal_id, objective, max_attempts=max_attempts

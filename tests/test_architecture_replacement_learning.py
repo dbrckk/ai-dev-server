@@ -112,4 +112,27 @@ class ReplacementLearningTests(unittest.TestCase):
             row=arl.summarize(root,now=now)["rankings"][0]
             self.assertFalse(row["regime_shift"])
 
+    def test_sequential_drift_detects_gradual_degradation(self):
+        rows=[]
+        now=2_000_000_000.0
+        sequence=[True,True,True,True,True,True,True,False,True,False,False,False]
+        for i,success in enumerate(sequence):
+            rows.append({"observed_at":now+i,"successful":success})
+        result=arl._sequential_drift(rows)
+        self.assertTrue(result["drift_detected"])
+        self.assertIn(result["status"],{"drift"})
+        self.assertGreater(result["ewma_drop"],0.18)
+
+    def test_sequential_drift_stable_sequence_remains_stable(self):
+        rows=[{"observed_at":float(i),"successful":True} for i in range(12)]
+        result=arl._sequential_drift(rows)
+        self.assertFalse(result["drift_detected"])
+        self.assertEqual(result["status"],"stable")
+
+    def test_sequential_drift_requires_minimum_samples(self):
+        rows=[{"observed_at":float(i),"successful":False} for i in range(4)]
+        result=arl._sequential_drift(rows)
+        self.assertEqual(result["status"],"insufficient_evidence")
+        self.assertFalse(result["drift_detected"])
+
 if __name__=="__main__": unittest.main()

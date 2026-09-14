@@ -456,10 +456,15 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         sandbox.create(req['app_name'])
         github.native_files = getattr(sandbox, 'native_files', {})
         for p in saved_root.rglob('*'):
+            rel = p.relative_to(saved_root).as_posix()
             if p.name == 'pubspec.lock':
                 (root / 'pubspec.lock').write_bytes(p.read_bytes())
+            elif rel == 'PROJECT_CONTEXT.md':
+                # Trusted derived handoff: regenerated at the next checkpoint,
+                # never reintroduced through the model-editable patch channel.
+                continue
             elif p.is_file():
-                apply_patch(root, {'files': [{'path': p.relative_to(saved_root).as_posix(), 'content': p.read_text()}]})
+                apply_patch(root, {'files': [{'path': rel, 'content': p.read_text()}]})
     safe_rewrite_learning_path = out / '.autonomy' / 'safe-rewrite-learning.json'
     local_model_reputation_path = out / '.autonomy' / 'local-model-reputation.json'
     local_model_specialization_path = out / '.autonomy' / 'local-model-specialization.json'

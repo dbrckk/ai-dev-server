@@ -231,6 +231,7 @@ def context(req, state, root):
                       'architecture_decision': state.get('architecture_decision', {'status':'unavailable','chosen':[]}),
                       'architecture_autonomy_policy': state.get('architecture_autonomy_policy', {}),
                       'architecture_benchmark': state.get('architecture_benchmark', {'status':'unavailable','migration_candidates':[]}),
+                      'architecture_drift_alerts': state.get('architecture_drift_alerts', []),
                       'files': files})
 
 def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sandbox):
@@ -285,6 +286,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     state['technical_recommendations'] = _load_star_recommendations(out)
     historical_root = architecture_learning_root(out)
     historical_learning = summarize_architecture_learning(historical_root)
+    state['architecture_drift_alerts'] = historical_learning.get('drift_alerts', [])[:20]
     state['architecture_decision'] = write_architecture_plan(
         req,
         state['technical_recommendations'],

@@ -15,7 +15,10 @@ AGENTIC_BLOCKERS = {
 
 
 def eligible_blockers(evidence: dict) -> list[str]:
-    return sorted(set(evidence.get("blockers", [])) & AGENTIC_BLOCKERS)
+    blockers = set(evidence.get("blockers", []))
+    if "credential_material_detected" in blockers:
+        return []
+    return sorted(blockers & AGENTIC_BLOCKERS)
 
 
 def _context(root: Path, state: dict, blockers: list[str]) -> str:
@@ -27,9 +30,6 @@ def _context(root: Path, state: dict, blockers: list[str]) -> str:
         if not allowed(rel):
             continue
         text = path.read_text(errors="replace")
-        # Secret-bearing files are intentionally withheld from external models.
-        if "credential_material_detected" in state.get("release_evidence", {}).get("security_scan", {}).get("blockers", []):
-            continue
         files[rel] = text
     return canonical({
         "task": "Repair only the listed technical security findings without weakening behavior or tests.",

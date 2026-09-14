@@ -420,6 +420,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             PLAN_SYSTEM,
             canonical(plan_payload),
             code=False,
+            role="product",
             timeout_seconds=planning_timeout or 30,
         )
         if isinstance(plan_model,dict):
@@ -639,6 +640,7 @@ Objective and current plan:
                             IMPLEMENT_SYSTEM,
                             canonical(implementation_context),
                             code=True,
+                            role="implementation",
                             timeout_seconds=model_timeout,
                         )
                         if isinstance(model_impl,dict):
@@ -902,6 +904,7 @@ Objective and current plan:
                                 CANDIDATE_REVIEW_SYSTEM,
                                 canonical(review_payload),
                                 code=False,
+                                role="review",
                                 avoid_models=avoided_models,
                                 timeout_seconds=candidate_review_timeout,
                             )
@@ -937,6 +940,7 @@ Objective and current plan:
                             IMPLEMENT_SYSTEM,
                             retry_context,
                             code=True,
+                            role="implementation",
                             timeout_seconds=max(30, min(300, phase_remaining(
                                 phase_quotas,
                                 phase="fallback",
@@ -1053,6 +1057,7 @@ Objective and current plan:
                     IMPLEMENT_SYSTEM,
                     direct_context,
                     code=True,
+                    role="implementation",
                     timeout_seconds=direct_model_timeout,
                 )
                 if isinstance(impl_model,dict):
@@ -1081,6 +1086,7 @@ Objective and current plan:
                             engine="generic",
                         ),
                         code=True,
+                        role="implementation",
                         timeout_seconds=direct_model_timeout,
                     )
                     if isinstance(retry_model,dict):
@@ -1127,7 +1133,7 @@ Objective and current plan:
                     "changed_files": changed,
                     "repository": _snapshot(work, 320_000),
                     "previous_verification": last_verification,
-                }), code=False, timeout_seconds=progress_timeout)
+                }), code=False, role="product", timeout_seconds=progress_timeout)
                 if isinstance(progress_model,dict):
                     cost_controller.record_model(float(progress_model.get("duration_seconds",0.0) or 0.0), phase="implementation")
             action = progress.get("action")
@@ -1266,10 +1272,23 @@ Objective and current plan:
                 minimum=30,
                 maximum=180,
             )
+            implementation_providers = {
+                str(meta.get("provider"))
+                for meta in implementation_models
+                if isinstance(meta, dict) and meta.get("provider")
+            }
+            implementation_model_names = {
+                str(meta.get("model"))
+                for meta in implementation_models
+                if isinstance(meta, dict) and meta.get("model")
+            }
             review, review_model = ask(
                 REVIEW_SYSTEM,
                 canonical(review_context),
                 code=False,
+                role="review",
+                avoid_providers=implementation_providers,
+                avoid_models=implementation_model_names,
                 timeout_seconds=review_timeout or 30,
             )
             if isinstance(review_model,dict):

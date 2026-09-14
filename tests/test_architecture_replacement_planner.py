@@ -295,6 +295,64 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         self.assertEqual(row["historical_replacement_evidence"]["framework"],"flutter")
         self.assertTrue(row["compatibility_distance"]["exact_context_match"])
 
+    def test_framework_mismatch_caps_transferability(self):
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter",
+            "project_type":"game",
+            "primary_domain":"mobile",
+            "platform":"android",
+            "current_major_version":3,
+            "replacement_major_version":4,
+        })
+        learning={"rankings":[{
+            "current_repo":"a/current",
+            "replacement_repo":"a/better",
+            "framework":"python",
+            "project_type":"game",
+            "primary_domain":"mobile",
+            "platform":"android",
+            "current_major_version":3,
+            "replacement_major_version":4,
+            "samples":50,
+            "eligible_for_bias":True,
+            "evidence_confidence":1.0,
+            "regression_rate":0.0,
+            "wilson_lower_95":0.95,
+        }]}
+        row=plan(obs,self.recommendations(),learning=learning)["replacement_plans"][0]
+        self.assertLessEqual(row["compatibility_distance"]["transferability"],0.35)
+        self.assertEqual(row["empirical_status"],"mixed_history")
+
+    def test_version_jump_similarity_handles_downgrades(self):
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter",
+            "project_type":"game",
+            "primary_domain":"mobile",
+            "platform":"android",
+            "current_major_version":5,
+            "replacement_major_version":4,
+        })
+        learning={"rankings":[{
+            "current_repo":"a/current",
+            "replacement_repo":"a/better",
+            "framework":"flutter",
+            "project_type":"game",
+            "primary_domain":"mobile",
+            "platform":"android",
+            "current_major_version":4,
+            "replacement_major_version":3,
+            "samples":20,
+            "eligible_for_bias":True,
+            "evidence_confidence":1.0,
+            "regression_rate":0.0,
+            "wilson_lower_95":0.85,
+        }]}
+        row=plan(obs,self.recommendations(),learning=learning)["replacement_plans"][0]
+        self.assertEqual(row["compatibility_distance"]["components"]["version_jump"],1.0)
+        self.assertGreater(row["compatibility_distance"]["transferability"],0.8)
+
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)

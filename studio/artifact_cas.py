@@ -46,6 +46,13 @@ def put(data: bytes) -> dict:
         tmp.unlink(missing_ok=True)
         raise StudioError("Artifact CAS write verification failed")
     os.replace(tmp, path)
+    if usage() > MAX_CAS_BYTES:
+        path.unlink(missing_ok=True)
+        try:
+            path.parent.rmdir()
+        except OSError:
+            pass
+        raise StudioError("Artifact CAS quota exceeded")
     return {"sha256": digest, "size": len(data)}
 
 

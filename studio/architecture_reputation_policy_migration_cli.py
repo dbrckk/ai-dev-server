@@ -10,11 +10,13 @@ import sys
 from architecture_reputation_policy_migration import (
     ReputationPolicyMigrationError,
     apply_migration,
+    bind_github_review_target,
     dry_run,
 )
 from architecture_reputation_policy_github_collect import (
     GitHubAttestationCollectionError,
     collect as collect_github_attestation,
+    collect_review_target,
 )
 from core import canonical
 
@@ -35,6 +37,12 @@ def main(argv=None) -> int:
     review.add_argument("registry")
     review.add_argument("--learning")
     review.add_argument("--out",default="studio-output")
+
+    bind_target=sub.add_parser("bind-target")
+    bind_target.add_argument("plan")
+    bind_target.add_argument("--repository",required=True)
+    bind_target.add_argument("--pull-request",type=int,required=True)
+    bind_target.add_argument("--out",required=True)
 
     apply_cmd=sub.add_parser("apply")
     apply_cmd.add_argument("registry")
@@ -58,6 +66,27 @@ def main(argv=None) -> int:
             target=out/"architecture-reputation-policy-migration-review.json"
             target.write_text(json.dumps(result,ensure_ascii=False,indent=2,sort_keys=True)+"\n",encoding="utf-8")
             print(canonical(result))
+            return 0
+
+        if args.command=="bind-target":
+            plan=_load(Path(args.plan),"migration plan")
+            target=collect_review_target(
+                token=os.environ.get("STUDIO_GITHUB_TOKEN",""),
+                repository=args.repository,
+                pull_request=args.pull_request,
+            )
+            bound=bind_github_review_target(plan,target)
+            Path(args.out).write_text(
+                json.dumps(bound,ensure_ascii=False,indent=2,sort_keys=True)+"\n",
+                encoding="utf-8",
+            )
+            print(canonical({
+                "status":"reputation_policy_migration_target_bound",
+                "migration_id":bound.get("migration_id"),
+                "review_digest":bound.get("review_digest"),
+                "github_review_target":bound.get("github_review_target"),
+                "output":args.out,
+            }))
             return 0
 
         registry_path=Path(args.registry)

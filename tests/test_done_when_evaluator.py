@@ -108,6 +108,34 @@ class DoneWhenEvaluatorTests(unittest.TestCase):
         self.assertFalse(result["valid"])
         self.assertIn("unsafe file criterion",result["errors"][0])
 
+    def test_json_criterion_matches_nested_value(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            (root/"package.json").write_text('{"scripts":{"build":"vite build"},"flags":[true,false]}')
+            result=evaluate_static(root,'json:package.json#scripts.build="vite build"')
+            self.assertTrue(result["passed"])
+            self.assertEqual(result["evidence_refs"],["package.json"])
+
+    def test_json_criterion_supports_array_index(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            (root/"config.json").write_text('{"flags":[true,false]}')
+            result=evaluate_static(root,'json:config.json#flags.0=true')
+            self.assertTrue(result["passed"])
+            self.assertEqual(result["actual"],True)
+
+    def test_json_criterion_detects_mismatch(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            (root/"config.json").write_text('{"mode":"dev"}')
+            result=evaluate_static(root,'json:config.json#mode="prod"')
+            self.assertFalse(result["passed"])
+
+    def test_contract_rejects_invalid_json_expected_value(self):
+        result=validate_contract(['json:config.json#mode=prod'])
+        self.assertFalse(result["valid"])
+        self.assertIn("invalid json expected value",result["errors"][0])
+
     def test_mixed_criteria_split_deterministic_and_reviewer(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td)

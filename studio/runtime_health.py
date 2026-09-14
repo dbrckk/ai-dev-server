@@ -6,7 +6,7 @@ from pathlib import Path
 
 from durable_state import load_recovering
 from telemetry import summarize as telemetry_summary
-from workflow_checkpoint import load as load_checkpoints
+from workflow_checkpoint import load_path as load_checkpoints
 
 
 def _lease_summary(path: Path) -> dict:
@@ -48,7 +48,7 @@ def inspect(project_out: Path | str) -> dict:
         errors.append("runtime_state:missing")
 
     try:
-        checkpoints = load_checkpoints()
+        checkpoints = load_checkpoints(paths["checkpoints"])
     except Exception as exc:
         checkpoints = {}
         errors.append("checkpoints:" + type(exc).__name__)

@@ -12,6 +12,7 @@ from security_audit import build_security_package
 from security_remediation import MAX_REMEDIATION_ROUNDS, remediate, remediation_candidate
 from security_agent import MAX_AGENTIC_ROUNDS, attempt as agentic_attempt, eligible_blockers as agentic_eligible_blockers
 from project_budget import budget_status, can_spend, configure as configure_budget, record_repair_outcome
+from release_stage_engine import invalidate_for_source_change
 
 
 def advance(request_path: Path, root: Path, out: Path) -> dict:
@@ -27,6 +28,7 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
 
     configure_budget(state, req)
     remediation_history = []
+    source_changed = False
     evidence = build_security_package(root, out)
     for round_index in range(MAX_REMEDIATION_ROUNDS):
         if evidence.get('passed') is True or evidence.get('human_review_required') is True:
@@ -48,6 +50,7 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
         )
         if result.get('changed') is not True:
             break
+        source_changed = True
         evidence = build_security_package(root, out)
     evidence['auto_remediation'] = {
         'attempted': bool(remediation_history),
@@ -97,6 +100,7 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
         })
         if result.get('changed') is not True:
             break
+        source_changed = True
         evidence = build_security_package(root, out)
 
     evidence['auto_remediation'] = {
@@ -111,7 +115,17 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
         'max_rounds': MAX_AGENTIC_ROUNDS,
         'converged': evidence.get('passed') is True,
     }
+    if source_changed:
+        evidence['post_repair_scan'] = {
+            'passed': evidence.get('passed') is True,
+            'blockers': list(evidence.get('blockers', [])),
+        }
+        evidence['passed'] = False
+        evidence['blockers'] = ['release_artifact_rebuild_required']
+        evidence['source_repaired'] = True
+        evidence['repaired_stage'] = 'security_scan'
     evidence['project_budget'] = budget_status(state)
+    invalidate_for_source_change(state, evidence)
     state.setdefault('release_evidence', {})['security_scan'] = evidence
     state.pop('human_action', None)
     if state.get('status') == 'human_action_required':
@@ -159,6 +173,8 @@ def main() -> int:
     }))
     if state.get('status') == 'human_action_required':
         return 2
+    if isinstance(evidence, dict) and evidence.get('source_repaired') is True:
+        return 0
     return 0 if isinstance(evidence, dict) and evidence.get('passed') else 1
 
 

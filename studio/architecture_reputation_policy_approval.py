@@ -89,9 +89,15 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         raise ApprovalProvenanceError("github attestation binding mismatch")
     if attestation.get("commit_sha")!=attestation.get("reviewed_commit_sha"):
         raise ApprovalProvenanceError("review does not bind current commit")
+    head_commit_timestamp=attestation.get("head_commit_timestamp")
+    if not isinstance(head_commit_timestamp,(int,float)):
+        raise ApprovalProvenanceError("github head commit timestamp missing")
     reviewer=attestation.get("reviewer")
     if not isinstance(reviewer,dict) or reviewer.get("review_state")!="APPROVED":
         raise ApprovalProvenanceError("github approving review missing")
+    submitted=reviewer.get("submitted_at_epoch")
+    if not isinstance(submitted,(int,float)) or submitted<float(head_commit_timestamp):
+        raise ApprovalProvenanceError("github approval predates latest PR head commit")
     if reviewer.get("permission") not in {"admin","maintain","write"}:
         raise ApprovalProvenanceError("github reviewer lacks write-level permission")
     second=attestation.get("second_reviewer")
@@ -102,6 +108,9 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
             raise ApprovalProvenanceError("github reinforced review requires separation of duties")
         if second.get("permission") not in {"admin","maintain","write"}:
             raise ApprovalProvenanceError("second github reviewer lacks write-level permission")
+        second_submitted=second.get("submitted_at_epoch")
+        if not isinstance(second_submitted,(int,float)) or second_submitted<float(head_commit_timestamp):
+            raise ApprovalProvenanceError("second github approval predates latest PR head commit")
     pr_identity=attestation.get("pr_identity")
     if not isinstance(pr_identity,dict):
         raise ApprovalProvenanceError("github PR identity missing")
@@ -166,6 +175,9 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         "github_head_ref":pr_identity.get("head_ref"),
         "github_base_ref":pr_identity.get("base_ref"),
         "github_pr_author":pr_identity.get("author"),
+        "github_head_commit_timestamp":float(head_commit_timestamp),
+        "github_reviewer_submitted_at":reviewer.get("submitted_at_epoch"),
+        "github_second_reviewer_submitted_at":second.get("submitted_at_epoch") if isinstance(second,dict) else None,
         "required_checks":checks.get("required_checks"),
         "passed_checks":checks.get("passed_checks"),
         "attestation_digest":digest,

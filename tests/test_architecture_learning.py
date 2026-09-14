@@ -44,21 +44,23 @@ class ArchitectureLearningTests(unittest.TestCase):
             self._write(root, "p1", ["a/core"], True, 2, 1, 0)
             self._write(root, "p2", ["a/core"], True, 4, 2, 1)
             self._write(root, "p3", ["a/core"], False, 6, 3, 2)
+            self._write(root, "p4", ["a/core"], True, 3, 1, 0)
+            self._write(root, "p5", ["a/core"], True, 3, 1, 0)
 
             result = al.summarize(root)
             row = result["rankings"][0]
 
-            self.assertEqual(row["samples"], 3)
-            self.assertEqual(row["success_rate"], 0.6667)
-            self.assertEqual(row["mean_model_calls"], 4.0)
-            self.assertEqual(row["mean_cycles"], 2.0)
-            self.assertEqual(row["mean_blockers"], 1.0)
+            self.assertEqual(row["samples"], 5)
+            self.assertEqual(row["success_rate"], 0.8)
+            self.assertEqual(row["mean_model_calls"], 3.6)
+            self.assertEqual(row["mean_cycles"], 1.6)
+            self.assertEqual(row["mean_blockers"], 0.6)
             self.assertTrue(row["eligible_for_advisory_bias"])
 
     def test_better_evidence_ranks_higher(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
-            for i in range(3):
+            for i in range(5):
                 self._write(root, f"good-{i}", ["good/repo"], True, 2, 1, 0)
                 self._write(root, f"bad-{i}", ["bad/repo"], i == 0, 5, 3, 2)
 
@@ -122,6 +124,16 @@ class ArchitectureLearningTests(unittest.TestCase):
             self.assertEqual(by_domain["backend"]["success_rate"], 0.0)
 
 
+    def test_stack_rankings_aggregate_joint_outcomes(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            for i in range(5):
+                self._write(root, f"p{i}", ["a/core", "b/helper"], True, 2, 1, 0)
+            result = al.summarize(root)
+            self.assertEqual(result["schema"], 2)
+            self.assertEqual(result["stack_rankings"][0]["repos"], ["a/core", "b/helper"])
+            self.assertEqual(result["stack_rankings"][0]["samples"], 5)
+            self.assertTrue(result["stack_rankings"][0]["eligible_for_advisory_bias"])
 
 if __name__ == "__main__":
     unittest.main()

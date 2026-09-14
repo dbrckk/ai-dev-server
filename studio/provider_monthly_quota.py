@@ -7,6 +7,8 @@ import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
+from file_lock import exclusive
+
 DEFAULT_OMNIROUTE_MONTHLY_TOKENS = 1_470_000_000
 
 
@@ -52,29 +54,31 @@ def record(
     completion_tokens: int,
     now: datetime | None = None,
 ) -> dict:
-    data = load(path)
-    key = month_key(now)
-    month = data["months"].setdefault(key, {})
-    row = month.get(provider, {
-        "calls": 0,
-        "prompt_tokens": 0,
-        "completion_tokens": 0,
-        "total_tokens": 0,
-    })
-    prompt = max(0, int(prompt_tokens))
-    completion = max(0, int(completion_tokens))
-    row = {
-        "calls": int(row.get("calls", 0)) + 1,
-        "prompt_tokens": int(row.get("prompt_tokens", 0)) + prompt,
-        "completion_tokens": int(row.get("completion_tokens", 0)) + completion,
-        "total_tokens": int(row.get("total_tokens", 0)) + prompt + completion,
-    }
-    month[provider] = row
-    # Retain only the newest 14 calendar buckets.
-    for old in sorted(data["months"])[:-14]:
-        data["months"].pop(old, None)
-    _save(path, data)
-    return row
+    path = Path(path)
+    with exclusive(path):
+        data = load(path)
+        key = month_key(now)
+        month = data["months"].setdefault(key, {})
+        row = month.get(provider, {
+            "calls": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0,
+        })
+        prompt = max(0, int(prompt_tokens))
+        completion = max(0, int(completion_tokens))
+        row = {
+            "calls": int(row.get("calls", 0)) + 1,
+            "prompt_tokens": int(row.get("prompt_tokens", 0)) + prompt,
+            "completion_tokens": int(row.get("completion_tokens", 0)) + completion,
+            "total_tokens": int(row.get("total_tokens", 0)) + prompt + completion,
+        }
+        month[provider] = row
+        # Retain only the newest 14 calendar buckets.
+        for old in sorted(data["months"])[:-14]:
+            data["months"].pop(old, None)
+        _save(path, data)
+        return row
 
 
 def used_tokens(path_or_data: Path | dict, provider: str, *, now: datetime | None = None) -> int:

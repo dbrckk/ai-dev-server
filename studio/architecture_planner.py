@@ -4,6 +4,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from architecture_feedback import apply as apply_feedback
+from atomic_file import write_text as atomic_write_text
+
 MAX_CHOSEN = 6
 MAX_REJECTED = 12
 
@@ -28,7 +31,8 @@ def _reason(row):
         parts.append("best for: " + "; ".join(str(x) for x in best[:2]))
     return " | ".join(parts) or "ranked recommendation"
 
-def plan(req: dict, recommendations: dict) -> dict:
+def plan(req: dict, recommendations: dict, learning: dict | None = None) -> dict:
+    recommendations = apply_feedback(recommendations, learning)
     rows=_clean_rows(recommendations)
     chosen=[]
     rejected=[]
@@ -44,7 +48,9 @@ def plan(req: dict, recommendations: dict) -> dict:
         if len(chosen)<MAX_CHOSEN:
             chosen.append({
                 "repo":repo,
-                "selection_score":row.get("score"),
+                "selection_score":row.get("feedback_score", row.get("score")),
+                "base_selection_score":row.get("score"),
+                "historical_evidence":row.get("historical_evidence"),
                 "quality_score":row.get("quality_score"),
                 "tier":row.get("tier"),
                 "domain":row.get("domain"),
@@ -60,6 +66,8 @@ def plan(req: dict, recommendations: dict) -> dict:
         "version":1,
         "status":"planned",
         "advisory_only":True,
+        "feedback_applied": bool(recommendations.get("feedback_applied")),
+        "feedback_policy": recommendations.get("feedback_policy"),
         "brief_fingerprint_source":"request.brief",
         "chosen":chosen,
         "rejected":rejected[:MAX_REJECTED],
@@ -80,10 +88,11 @@ def plan(req: dict, recommendations: dict) -> dict:
         },
     }
 
-def write(req: dict, recommendations: dict, out: Path) -> dict:
+def write(req: dict, recommendations: dict, out: Path, learning: dict | None = None) -> dict:
     out.mkdir(parents=True, exist_ok=True)
-    decision=plan(req,recommendations)
-    (out/"architecture-decision.json").write_text(
+    decision=plan(req,recommendations,learning=learning)
+    atomic_write_text(
+        out/"architecture-decision.json",
         json.dumps(decision,ensure_ascii=False,indent=2,sort_keys=True)+"\n",
         encoding="utf-8",
     )

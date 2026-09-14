@@ -7,6 +7,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 import fleet_capacity
+import provider_monthly_quota
 from provider_router import ProviderSpec
 
 
@@ -122,6 +123,29 @@ class FleetCapacityTests(unittest.TestCase):
         self.assertEqual(rows[0]["capacity_pressure"], 0.85)
         self.assertEqual(rows[0]["committed_tokens"], 850)
         self.assertEqual(rows[0]["previous_envelope_tokens"], 1000)
+
+
+
+    def test_explicit_fleet_quota_path_is_used_for_provider_capacity(self):
+        provider = ProviderSpec(
+            "omniroute",
+            "http://127.0.0.1:20128/v1",
+            "",
+            "auto",
+            monthly_token_quota=1000,
+        )
+        with tempfile.TemporaryDirectory() as td:
+            quota_path = Path(td) / "provider-monthly-quota.json"
+            provider_monthly_quota.record(
+                quota_path,
+                "omniroute",
+                prompt_tokens=200,
+                completion_tokens=100,
+            )
+            with patch("fleet_capacity.load_providers", return_value=(provider,)):
+                providers = fleet_capacity._provider_rows(quota_path=quota_path)
+
+        self.assertEqual(providers[0].available_tokens, 700)
 
 
     def test_persist_writes_machine_readable_plan(self):

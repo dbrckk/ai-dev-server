@@ -27,7 +27,9 @@ from architecture_replacement_reputation import (
     validate_transition_policy,
 )
 
-MIGRATION_VERSION=1
+MIGRATION_VERSION=2
+RISK_LEVELS=("NO_IMPACT","SAFE_STRICTER","BEHAVIOR_CHANGE","TRUST_DOWNGRADE","PROMOTION_PATH_CHANGE","CRITICAL")
+_REINFORCED_RISKS={"PROMOTION_PATH_CHANGE","CRITICAL"}
 
 class ReputationPolicyMigrationError(RuntimeError):
     pass
@@ -97,6 +99,132 @@ def _migrated_state(previous: str, desired: str) -> tuple[str,str,bool]:
         return previous,"policy_migration_no_upward_promotion",False
     raise ReputationPolicyMigrationError("unknown desired reputation state")
 
+def _rule_snapshot(rule: dict | None) -> dict:
+    if not isinstance(rule,dict):
+        return {
+            "allowed":False,
+            "severity":"critical",
+            "minimum_dwell_seconds":0,
+            "minimum_new_effective_samples":0.0,
+            "minimum_confirmations":0,
+            "required_gates":[],
+        }
+    return {
+        "allowed":rule.get("allowed") is True,
+        "severity":str(rule.get("severity","warning")),
+        "minimum_dwell_seconds":int(rule.get("minimum_dwell_seconds",0) or 0),
+        "minimum_new_effective_samples":float(rule.get("minimum_new_effective_samples",0.0) or 0.0),
+        "minimum_confirmations":int(rule.get("minimum_confirmations",0) or 0),
+        "required_gates":sorted(set(
+            gate for gate in rule.get("required_gates",[])
+            if isinstance(gate,str) and gate
+        )),
+    }
+
+def _policy_edges(policy: dict | None) -> dict[tuple[str,str],dict]:
+    if not isinstance(policy,dict):
+        return {}
+    out={}
+    for source,row in policy.items():
+        if not isinstance(source,str) or not isinstance(row,dict):
+            continue
+        for target,rule in row.items():
+            if isinstance(target,str) and isinstance(rule,dict):
+                out[(source,target)]=_rule_snapshot(rule)
+    return out
+
+def _is_stricter_or_equal(old: dict, new: dict) -> bool:
+    if old["allowed"] is False and new["allowed"] is True:
+        return False
+    if old["allowed"] is True and new["allowed"] is False:
+        return True
+    if not old["allowed"] and not new["allowed"]:
+        return True
+    severity_rank={"info":0,"warning":1,"critical":2}
+    if severity_rank.get(new["severity"],1)<severity_rank.get(old["severity"],1):
+        return False
+    if new["minimum_dwell_seconds"]<old["minimum_dwell_seconds"]:
+        return False
+    if new["minimum_new_effective_samples"]<old["minimum_new_effective_samples"]:
+        return False
+    if new["minimum_confirmations"]<old["minimum_confirmations"]:
+        return False
+    if not set(old["required_gates"]).issubset(set(new["required_gates"])):
+        return False
+    return True
+
+def classify_migration_risk(registry: dict, changes: list[dict]) -> dict:
+    if not isinstance(registry,dict) or not isinstance(changes,list):
+        raise ReputationPolicyMigrationError("risk classifier inputs malformed")
+
+    source_policy=registry.get("policy") if isinstance(registry.get("policy"),dict) else {}
+    source_matrix=source_policy.get("transition_matrix") if isinstance(source_policy.get("transition_matrix"),dict) else {}
+    old_edges=_policy_edges(source_matrix)
+    new_edges=_policy_edges(TRANSITION_POLICY)
+    all_edges=sorted(set(old_edges)|set(new_edges))
+
+    changed_edges=[]
+    promotion_path_changes=[]
+    only_stricter=True
+    for edge in all_edges:
+        old=old_edges.get(edge,_rule_snapshot(None))
+        new=new_edges.get(edge,_rule_snapshot(None))
+        if old==new:
+            continue
+        source,target=edge
+        stricter=_is_stricter_or_equal(old,new)
+        only_stricter=only_stricter and stricter
+        row={
+            "source":source,
+            "target":target,
+            "old":old,
+            "new":new,
+            "stricter_or_equal":stricter,
+        }
+        changed_edges.append(row)
+        if target=="TRUSTED" or source in {"DEGRADED","QUARANTINED","RECOVERING"}:
+            promotion_path_changes.append(row)
+
+    changed_rows=[row for row in changes if isinstance(row,dict) and row.get("changed") is True]
+    trusted_downgrades=[
+        row for row in changed_rows
+        if row.get("previous_state")=="TRUSTED"
+        and row.get("target_state") in {"DEGRADED","QUARANTINED","RECOVERING","EXPERIMENTAL","UNOBSERVED"}
+    ]
+
+    source_validation=source_policy.get("validation") if isinstance(source_policy.get("validation"),dict) else None
+    source_known_invalid=isinstance(source_validation,dict) and source_validation.get("valid") is False
+
+    if source_known_invalid:
+        level="CRITICAL"
+        reason="source_policy_was_invalid"
+    elif promotion_path_changes:
+        level="PROMOTION_PATH_CHANGE"
+        reason="transition_path_to_or_from_recovery_changed"
+    elif trusted_downgrades:
+        level="TRUST_DOWNGRADE"
+        reason="one_or_more_trusted_entries_downgrade"
+    elif changed_edges and only_stricter and not changed_rows:
+        level="SAFE_STRICTER"
+        reason="policy_only_became_stricter_without_state_changes"
+    elif changed_edges or changed_rows:
+        level="BEHAVIOR_CHANGE"
+        reason="policy_or_reputation_behavior_changes"
+    else:
+        level="NO_IMPACT"
+        reason="no_effective_policy_or_state_change"
+
+    return {
+        "level":level,
+        "reason":reason,
+        "reinforced_review_required":level in _REINFORCED_RISKS,
+        "changed_transition_edges":changed_edges,
+        "promotion_path_changes":promotion_path_changes,
+        "trusted_downgrades":len(trusted_downgrades),
+        "changed_entries":len(changed_rows),
+        "policy_only_stricter":bool(changed_edges) and only_stricter,
+    }
+
 def dry_run(registry: dict, learning: dict | None=None, *, now: float | None=None) -> dict:
     validation=validate_transition_policy()
     if validation.get("valid") is not True:
@@ -152,6 +280,7 @@ def dry_run(registry: dict, learning: dict | None=None, *, now: float | None=Non
             "evidence_source":"learning" if tuple(entry.get(field) for field in _CONTEXT_FIELDS) in index else "entry_metrics",
         })
 
+    risk=classify_migration_risk(registry,changes)
     core={
         "version":MIGRATION_VERSION,
         "status":"reputation_policy_migration_review_ready",
@@ -163,6 +292,7 @@ def dry_run(registry: dict, learning: dict | None=None, *, now: float | None=Non
         "target_registry_version":REGISTRY_VERSION,
         "target_policy_version":TRANSITION_POLICY_VERSION,
         "target_policy_digest":target_policy_digest,
+        "risk":risk,
         "summary":{
             "entries":len(changes),
             "changed":sum(1 for row in changes if row["changed"]),
@@ -177,6 +307,7 @@ def dry_run(registry: dict, learning: dict | None=None, *, now: float | None=Non
             "automatic_apply":False,
             "never_promote_during_policy_migration":True,
             "explicit_authorization_required":True,
+            "reinforced_review_required":risk.get("reinforced_review_required") is True,
         },
     }
     migration_id=hashlib.sha256(_canonical(core).encode("utf-8")).hexdigest()
@@ -189,6 +320,9 @@ def dry_run(registry: dict, learning: dict | None=None, *, now: float | None=Non
             "migration_id":migration_id,
             "source_registry_digest":source_digest,
             "target_policy_digest":target_policy_digest,
+            "risk_level":risk.get("level"),
+            "reinforced_review_required":risk.get("reinforced_review_required") is True,
+            "reinforced_reviewed":False,
             "authorized":False,
         },
     }
@@ -203,6 +337,12 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, now: flo
     for key in ("migration_id","source_registry_digest","target_policy_digest"):
         if authorization.get(key)!=plan.get(key):
             raise ReputationPolicyMigrationError("migration authorization identity mismatch: "+key)
+    risk=plan.get("risk") if isinstance(plan.get("risk"),dict) else {}
+    if authorization.get("risk_level")!=risk.get("level"):
+        raise ReputationPolicyMigrationError("migration authorization risk mismatch")
+    if risk.get("reinforced_review_required") is True:
+        if authorization.get("reinforced_reviewed") is not True:
+            raise ReputationPolicyMigrationError("reinforced migration review absent")
 
     current_digest=registry_digest(registry)
     if current_digest!=plan.get("source_registry_digest"):

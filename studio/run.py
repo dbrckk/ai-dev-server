@@ -368,6 +368,21 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             atomic_write_text(out / 'report.json', canonical(state))
             return state
         clear_preview_evidence(state)
+        autonomy_dir = out / '.autonomy'
+        autonomy_dir.mkdir(parents=True, exist_ok=True)
+        os.environ['STUDIO_PROVIDER_COST_PATH'] = str(autonomy_dir / 'provider-cost.json')
+        os.environ['STUDIO_PROVIDER_MONTHLY_QUOTA_PATH'] = str(autonomy_dir / 'provider-monthly-quota.json')
+        max_api_cost = req.get('max_api_cost_usd')
+        if isinstance(max_api_cost, (int, float)) and float(max_api_cost) > 0:
+            os.environ['STUDIO_MAX_API_COST_USD'] = str(float(max_api_cost))
+        else:
+            os.environ.pop('STUDIO_MAX_API_COST_USD', None)
+        state['budget_policy'] = {
+            **state.get('budget_policy', {}),
+            'max_api_cost_usd': float(max_api_cost) if isinstance(max_api_cost, (int, float)) and float(max_api_cost) > 0 else None,
+            'unmetered_continues_after_paid_budget': True,
+            'pooled_free_continues_after_paid_budget': True,
+        }
         cycle_budget = min(req['max_calls'], max(0, budget_status(state)['model_calls_remaining']))
         if cycle_budget < 1:
             state.update(status='blocked', blockers=['Project model-call budget exhausted'])

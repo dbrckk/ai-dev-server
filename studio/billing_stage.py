@@ -9,7 +9,7 @@ from billing_qa import validate_billing
 from completion import apply_completion, next_stage
 from core import StudioError, canonical
 from run import GitHub
-from release_stage_engine import apply_external_gate, evaluate_and_repair
+from release_stage_engine import apply_external_gate, evaluate_and_repair, invalidate_for_source_change
 
 
 def advance(request_path: Path, root: Path, out: Path) -> dict:
@@ -24,6 +24,7 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
         return state
 
     evidence = evaluate_and_repair(root, out, state, req, 'billing_qa', validate_billing)
+    invalidate_for_source_change(state, evidence)
     state.setdefault('release_evidence', {})['billing_qa'] = evidence
     state.pop('human_action', None)
     if state.get('status') == 'human_action_required':

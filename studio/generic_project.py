@@ -1620,7 +1620,30 @@ Objective and current plan:
             phase="review",
             elapsed_seconds=0,
         )
-        if review_remaining < 30:
+        deterministic_only_task = bool(
+            active_task_id
+            and deterministic_done_when.get("deterministic")
+            and not deterministic_done_when.get("reviewer")
+        )
+        if deterministic_only_task:
+            deterministic_passed = deterministic_done_when.get("all_deterministic_passed") is True
+            review = {
+                "complete": deterministic_passed,
+                "criteria": [],
+                "remaining": [] if deterministic_passed else [
+                    item.get("criterion")
+                    for item in deterministic_done_when.get("deterministic", [])
+                    if isinstance(item, dict) and item.get("passed") is not True
+                ],
+                "reason": (
+                    "all task acceptance criteria verified deterministically"
+                    if deterministic_passed
+                    else "one or more deterministic task acceptance criteria failed"
+                ),
+                "review_source": "deterministic",
+            }
+            review_model = None
+        elif review_remaining < 30:
             review = {
                 "complete": False,
                 "remaining": ["review quota exhausted"],

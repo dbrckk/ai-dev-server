@@ -69,7 +69,13 @@ def evaluate_and_repair(
         })
         if result.get("changed") is not True:
             break
-        evidence = validator(root, out)
+        evidence = {
+            "passed": False,
+            "blockers": ["release_artifact_rebuild_required"],
+            "source_repaired": True,
+            "repaired_stage": stage,
+        }
+        break
 
     diagnostics = classify(stage, evidence)
     evidence["diagnostics"] = diagnostics
@@ -102,4 +108,13 @@ def apply_external_gate(state: dict, stage: str, evidence: dict) -> bool:
     }
     state["status"] = "human_action_required"
     state["release_status"] = "human_action_required"
+    return True
+
+
+
+def invalidate_for_source_change(state: dict, evidence: dict) -> bool:
+    if evidence.get("source_repaired") is not True:
+        return False
+    state["release_evidence"] = {}
+    state["release_status"] = "not_store_ready"
     return True

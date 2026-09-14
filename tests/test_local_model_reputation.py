@@ -132,6 +132,45 @@ class LocalModelReputationTests(unittest.TestCase):
             )
             self.assertGreater(score, 0.0)
 
+    def test_repeated_verified_failures_trigger_quarantine(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "rep.json"
+            for _ in range(rep.QUARANTINE_MIN_VERIFIED):
+                rep.record_verified_outcome(
+                    path,
+                    provider="ollama",
+                    model="bad",
+                    role="implementation",
+                    verified_success=False,
+                )
+            status = rep.quarantine_status(
+                rep.load(path),
+                provider="ollama",
+                model="bad",
+                role="implementation",
+            )
+            self.assertTrue(status["quarantined"])
+            self.assertEqual(status["reason"], "repeated_verified_failure")
+
+    def test_good_verified_runs_do_not_quarantine(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "rep.json"
+            for _ in range(rep.QUARANTINE_MIN_VERIFIED):
+                rep.record_verified_outcome(
+                    path,
+                    provider="ollama",
+                    model="good",
+                    role="implementation",
+                    verified_success=True,
+                )
+            status = rep.quarantine_status(
+                rep.load(path),
+                provider="ollama",
+                model="good",
+                role="implementation",
+            )
+            self.assertFalse(status["quarantined"])
+
     def test_benchmark_bonus_is_bounded(self):
         data = {
             "ollama|great": {"score": 100.0},

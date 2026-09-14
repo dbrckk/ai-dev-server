@@ -94,6 +94,8 @@ def candidates(state: dict) -> list[dict]:
             continue
         if task.get("status") in TERMINAL or task.get("status") not in {"pending", "retry"}:
             continue
+        if task.get("action") not in {"repair_code", "retry_environment", "satisfy_prerequisite"}:
+            continue
         if not _dependencies_ready(task, completed):
             continue
         if not _budget_feasible(state, task):
@@ -136,6 +138,13 @@ def dispatch(state: dict) -> dict:
 def pipeline_stage_for_task(task: dict | None) -> str | None:
     if not isinstance(task, dict):
         return None
+    action = task.get("action")
+    blockers = set(task.get("blockers", []))
+    if action == "satisfy_prerequisite" and blockers & {
+        "release_apk_missing",
+        "release_artifact_rebuild_required",
+    }:
+        return "release_build"
     stage = task.get("stage")
     if stage in PREVIEW_STAGES:
         return "preview"

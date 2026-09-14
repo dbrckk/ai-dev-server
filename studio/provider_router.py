@@ -50,10 +50,10 @@ def _bool(value, default=True):
 
 
 def _primary() -> ProviderSpec | None:
-    key = os.environ.get("STUDIO_API_KEY", "")
-    if not key:
-        return None
     base = os.environ.get("STUDIO_API_BASE", "https://integrate.api.nvidia.com/v1")
+    key = os.environ.get("STUDIO_API_KEY", "")
+    if not key and not _is_local_base(base):
+        return None
     model = os.environ.get("STUDIO_MODEL", "nvidia/nemotron-3-super-120b-a12b")
     code_model = os.environ.get("STUDIO_CODE_MODEL", "") or model
     vision = os.environ.get("STUDIO_VISION_MODEL", "")
@@ -104,11 +104,19 @@ def _json_specs(raw: str) -> list[ProviderSpec]:
         base = item.get("base")
         key_env = item.get("key_env")
         model = item.get("model")
-        if not all(isinstance(v, str) and v.strip() for v in (name, base, key_env, model)):
-            raise ValueError("Provider name/base/key_env/model are required strings")
-        key = os.environ.get(key_env, "")
-        if not key:
-            continue
+        if not all(isinstance(v, str) and v.strip() for v in (name, base, model)):
+            raise ValueError("Provider name/base/model are required strings")
+        local_base = _is_local_base(base)
+        if key_env is not None and (not isinstance(key_env, str) or not key_env.strip()):
+            raise ValueError("Provider key_env must be a non-empty string when provided")
+        if key_env:
+            key = os.environ.get(key_env, "")
+            if not key and not local_base:
+                continue
+        else:
+            if not local_base:
+                raise ValueError("Remote providers require key_env")
+            key = ""
         priority = item.get("priority", 50)
         if type(priority) is not int:
             raise ValueError("Provider priority must be an integer")

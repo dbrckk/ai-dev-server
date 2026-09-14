@@ -47,7 +47,7 @@ from dependency_graph import assess as assess_dependency_graph, build as build_d
 from dependency_scheduler import hotspot_plan as dependency_hotspot_plan, patch_batch_guard
 from dependency_ledger import DependencyLedgerError, advance as advance_dependency_ledger, load as load_dependency_ledger, new as new_dependency_ledger, resume as resume_dependency_ledger, save as save_dependency_ledger, suggestions as dependency_ledger_suggestions
 from targeted_verify import run as run_targeted_verify
-from objective_dag import ObjectiveDagError, append_amendments as append_objective_amendments, load as load_objective_dag, mark_failed as mark_objective_failed, mark_running as mark_objective_running, mark_verified as mark_objective_verified, new as new_objective_dag, next_task as next_objective_task, resume as resume_objective_dag, save as save_objective_dag, summary as objective_dag_summary, task_context as objective_task_context
+from objective_dag import ObjectiveDagError, append_amendments as append_objective_amendments, load as load_objective_dag, mark_failed as mark_objective_failed, mark_running as mark_objective_running, mark_verified as mark_objective_verified, new as new_objective_dag, next_task as next_objective_task, reopen_confidence_dependency, resume as resume_objective_dag, save as save_objective_dag, summary as objective_dag_summary, task_context as objective_task_context
 from task_semantic_checkpoint import TaskSemanticCheckpointError, load as load_task_semantic_checkpoint, new as new_task_semantic_checkpoint, record as record_task_semantic_checkpoint, reject_stagnant_surface, resume as resume_task_semantic_checkpoint, retry_policy as task_retry_policy, save as save_task_semantic_checkpoint, stagnation_guard as task_stagnation_guard, task_context as task_semantic_context
 from task_context_bundle import build as build_task_context_bundle
 from task_confidence import score as score_task_confidence
@@ -441,6 +441,25 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
 
         if objective_dag is not None:
             dag_precheck = objective_dag_summary(objective_dag)
+            if (
+                not dag_precheck.get("complete")
+                and dag_precheck.get("next_task") is None
+                and dag_precheck.get("confidence_blockers")
+            ):
+                blocker = dag_precheck["confidence_blockers"][0]
+                try:
+                    objective_dag = reopen_confidence_dependency(
+                        objective_dag,
+                        blocker["dependency"],
+                    )
+                    save_objective_dag(objective_dag_path, objective_dag)
+                    dag_precheck = objective_dag_summary(objective_dag)
+                    state["objective_confidence_revalidation"] = blocker
+                except ObjectiveDagError as exc:
+                    state["status"] = "objective_confidence_blocked"
+                    state["objective_confidence_error"] = str(exc)
+                    state["objective_dag"] = dag_precheck
+                    break
             if (
                 not dag_precheck.get("complete")
                 and dag_precheck.get("next_task") is None
@@ -1958,6 +1977,10 @@ Objective and current plan:
         deferred_blockers = [
             "objective task retry budget exhausted: "
             + ", ".join(str(item.get("id")) for item in stalled if isinstance(item, dict))
+        ]
+    elif state.get("status") == "objective_confidence_blocked":
+        deferred_blockers = [
+            str(state.get("objective_confidence_error") or "critical task confidence requirement blocked")
         ]
     else:
         deferred_blockers = ["verified work remains"]

@@ -467,6 +467,13 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             else 'pass'
         )
         contexts.append(('architecture-risk:' + architecture_risk, 0.35))
+        phase_context = (
+            'phase:repair'
+            if state.get('status') == 'repair_needed' or bool(state.get('blockers'))
+            else 'phase:implementation'
+        )
+        contexts.append((phase_context, 0.30))
+        contexts.append(('framework:flutter', 0.35))
         total = sum(max(0.0, float(weight)) for _, weight in contexts)
         if total <= 0:
             return [('mobile', 1.0)]

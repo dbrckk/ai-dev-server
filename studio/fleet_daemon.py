@@ -50,6 +50,7 @@ def tick(
         "maintenance": maintenance["summary"],
         "capacity": {
             **capacity["summary"],
+            "rebalance": capacity.get("rebalance", {}),
             "ledger": capacity_ledger,
         },
         "supervisor": {

@@ -28,6 +28,7 @@ from architecture_evaluator import write as write_architecture_evaluation
 from architecture_benchmark import write as write_architecture_benchmark
 from architecture_preflight import write as write_architecture_preflight
 from architecture_change_guard import enforce as enforce_architecture_change_guard, ArchitectureChangeBlocked
+from architecture_safe_rewrite import build_context as build_architecture_safe_rewrite_context
 from architecture_outcome import write as write_architecture_outcome
 
 MAX_PUBLISH_FILE_BYTES = 1_000_000
@@ -231,7 +232,8 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
                 state[role] = result; state['status'] = role + '_complete'; checkpoint()
         for _ in range(req['max_rounds']):
             state['rounds'] += 1
-            patch = model.ask('implementation', _context(req,state,root))
+            implementation_context = _context(req,state,root)
+            patch = model.ask('implementation', implementation_context)
             try:
                 _safe_apply(
                     root,
@@ -242,15 +244,37 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
                     ),
                 )
             except ArchitectureChangeBlocked as exc:
-                state.setdefault('architecture_guard_events', []).append({
+                event = {
                     'round': state['rounds'],
                     'role': 'implementation',
                     'status': 'blocked_architecture_change',
                     'detail': str(exc)[:2000],
-                })
-                state.update(status='architecture_review_hold', blockers=[str(exc)])
-                checkpoint()
-                continue
+                }
+                state.setdefault('architecture_guard_events', []).append(event)
+                retry_patch = model.ask(
+                    'implementation',
+                    build_architecture_safe_rewrite_context(
+                        implementation_context,
+                        patch,
+                        str(exc),
+                        engine='godot',
+                    ),
+                )
+                try:
+                    _safe_apply(
+                        root,
+                        retry_patch,
+                        'implementation',
+                        architecture_changes_allowed=False,
+                    )
+                except ArchitectureChangeBlocked as retry_exc:
+                    event['safe_rewrite_status'] = 'blocked'
+                    event['safe_rewrite_detail'] = str(retry_exc)[:2000]
+                    state.update(status='architecture_review_hold', blockers=[str(retry_exc)])
+                    checkpoint()
+                    continue
+                event['safe_rewrite_status'] = 'accepted'
+                state.update(status='working', blockers=[])
             if not any(p.is_file() and not p.is_symlink() for p in (root / 'tests').rglob('*.gd')):
                 qa = model.ask('tests', _context(req,state,root)); _safe_apply(
                     root,

@@ -63,6 +63,14 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
                 permissions={"alice":"write"},workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:25Z"}],
                 check_runs=self.check_runs(),pr_identity=self.pr_identity(),head_commit_timestamp=1767225600.0,reinforced=False)
 
+    def test_wrong_workflow_name_rejected(self):
+        with self.assertRaises(ApprovalProvenanceError):
+            build(self.plan,repository="o/r",pull_request=7,commit_sha="abc",
+                reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:10Z"}],
+                permissions={"alice":"write"},
+                workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"Other","created_at":"2026-01-01T00:00:25Z"}],
+                check_runs=self.check_runs(),pr_identity=self.pr_identity(),head_commit_timestamp=1767225600.0,reinforced=False)
+
     def test_stale_workflow_time_rejected(self):
         with self.assertRaises(ApprovalProvenanceError):
             build(self.plan,repository="o/r",pull_request=7,commit_sha="abc",

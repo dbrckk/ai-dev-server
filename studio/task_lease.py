@@ -8,7 +8,7 @@ import socket
 import time
 import uuid
 
-from task_claim_store import claim as persist_claim, heartbeat as persist_heartbeat, release as persist_release
+from strict_task_claim_store import claim as persist_claim, heartbeat as persist_heartbeat, release as persist_release
 
 DEFAULT_LEASE_SECONDS = 60 * 60
 MIN_LEASE_SECONDS = 30

@@ -8,30 +8,13 @@ from __future__ import annotations
 import base64
 import hashlib
 from pathlib import Path
-from urllib.parse import quote, urlparse
+from urllib.parse import quote
 
 from architecture_replacement_persist import _request, ReplacementPersistenceError
-from replacement_ci_policy import REQUIRED_GITHUB_CHECKS as REQUIRED_CHECKS, TRUSTED_CHECK_APP
+from replacement_ci_policy import REQUIRED_GITHUB_CHECKS as REQUIRED_CHECKS, validate_check_runs
 
 class ReplacementPRValidationError(RuntimeError):
     pass
-
-def _trusted_check(run: dict, repository: str) -> bool:
-    if not isinstance(run,dict):
-        return False
-    app=run.get("app")
-    if not isinstance(app,dict) or app.get("slug")!=TRUSTED_CHECK_APP:
-        return False
-    details=run.get("details_url")
-    if not isinstance(details,str):
-        return False
-    parsed=urlparse(details)
-    prefix="/"+repository+"/actions/runs/"
-    return (
-        parsed.scheme=="https"
-        and parsed.netloc=="github.com"
-        and parsed.path.startswith(prefix)
-    )
 
 def _expected_files(package: dict) -> dict[str,str]:
     rows=package.get("files") if isinstance(package,dict) else None
@@ -116,9 +99,8 @@ def validate(review: dict, package: dict, persisted: dict, token: str, repositor
     runs=checks.get("check_runs") if isinstance(checks,dict) else None
     if not isinstance(runs,list):
         raise ReplacementPRValidationError("GitHub check-run evidence malformed")
-    trusted=[run for run in runs if _trusted_check(run,repository)]
-    by_name={run.get("name"):run for run in trusted if isinstance(run.get("name"),str)}
-    missing=sorted(REQUIRED_CHECKS-set(by_name))
+    check_result=validate_check_runs(runs,repository)
+    missing=check_result["missing_checks"]
     if missing:
         return {
             "version":1,
@@ -130,7 +112,7 @@ def validate(review: dict, package: dict, persisted: dict, token: str, repositor
             "draft":pr.get("draft") is True,
             "ready_to_merge":False,
         }
-    incomplete=[name for name in sorted(REQUIRED_CHECKS) if by_name[name].get("status")!="completed"]
+    incomplete=check_result["incomplete_checks"]
     if incomplete:
         return {
             "version":1,
@@ -143,7 +125,7 @@ def validate(review: dict, package: dict, persisted: dict, token: str, repositor
             "draft":pr.get("draft") is True,
             "ready_to_merge":False,
         }
-    failed=[name for name in sorted(REQUIRED_CHECKS) if by_name[name].get("conclusion")!="success"]
+    failed=check_result["failed_checks"]
     if failed:
         raise ReplacementPRValidationError("required replacement PR check failed: "+",".join(failed))
 

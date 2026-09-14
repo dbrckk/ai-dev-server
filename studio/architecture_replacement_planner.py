@@ -462,6 +462,9 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
                 "promotion_eligible":persisted_reputation.get("promotion_eligible") is True,
                 "requires_revalidation":persisted_reputation.get("requires_revalidation") is True,
                 "transition_reason":persisted_reputation.get("transition_reason"),
+                "transition_pending":persisted_reputation.get("transition_pending") is True,
+                "eligible_at":persisted_reputation.get("eligible_at"),
+                "new_effective_samples_since_recovery":persisted_reputation.get("new_effective_samples_since_recovery"),
                 "updated_at":persisted_reputation.get("updated_at"),
                 "source":"persistent_registry",
             }
@@ -494,6 +497,20 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             else:
                 empirical_status="mixed_history"
 
+        reputation_state=reputation.get("state")
+        if reputation_state=="QUARANTINED":
+            risk="high"
+            empirical_priority_adjustment=min(0.0,empirical_priority_adjustment)
+            empirical_status="persisted_quarantine"
+        elif reputation_state=="DEGRADED":
+            empirical_priority_adjustment=min(0.0,empirical_priority_adjustment)
+            if empirical_status in {"historically_supported","unobserved"}:
+                empirical_status="persisted_degraded"
+        elif reputation_state=="RECOVERING":
+            empirical_priority_adjustment=min(0.0,empirical_priority_adjustment)
+            if empirical_status not in {"sequential_drift_detected","regime_shift_detected"}:
+                empirical_status="persisted_recovering"
+
         gates = [
             "replacement_metadata_available",
             "capability_parity_reviewed",
@@ -521,6 +538,12 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             gates.insert(0,"stale_replacement_evidence_revalidated")
         if reputation.get("state")=="QUARANTINED":
             gates.insert(0,"quarantined_replacement_revalidated")
+        if reputation.get("state")=="DEGRADED":
+            gates.insert(0,"degraded_replacement_revalidated")
+        if reputation.get("state")=="RECOVERING":
+            gates.insert(0,"recovering_replacement_revalidated")
+        if reputation.get("transition_pending") is True:
+            gates.insert(0,"replacement_reputation_transition_completed")
         if row.get("maintenance_evidence_available") is not True:
             gates.insert(0, "maintenance_evidence_completed")
 
@@ -575,7 +598,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
     ),reverse=True)
 
     return {
-        "version": 14,
+        "version": 15,
         "status": "planned",
         "advisory_only": True,
         "replacement_plans": plans,

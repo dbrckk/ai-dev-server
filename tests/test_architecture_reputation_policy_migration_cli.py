@@ -63,6 +63,9 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
             plan_value=bind_github_review_target(plan_value,{
                 "repository":"dbrckk/ai-dev-server","pull_request":7,"commit_sha":"a"*40,
                 "head_ref":"policy/migration","base_ref":"main","author":"alice",
+                "workflow_path":".github/workflows/ci.yml",
+                "workflow_blob_sha":"blob123",
+                "workflow_sha256":"a"*64,
             },now=200.0)
             plan=root/"plan.json"; plan.write_text(json.dumps(plan_value))
             auth_value=dict(plan_value["authorization_template"]); auth_value["authorized"]=True
@@ -78,12 +81,13 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
             attestation=build(
                 plan_value,repository="dbrckk/ai-dev-server",pull_request=7,commit_sha="a"*40,
                 reviews=reviews,permissions=permissions,
-                workflow_runs=[{"id":9,"head_sha":"a"*40,"conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:25Z"}],
+                workflow_runs=[{"id":9,"head_sha":"a"*40,"conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/7/merge","created_at":"2026-01-01T00:00:25Z"}],
                 check_runs=[
                     {"id":11,"name":"validate","head_sha":"a"*40,"status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:30Z","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/9"},
                     {"id":12,"name":"python-tests","head_sha":"a"*40,"status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:40Z","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/9"},
                 ],
                 pr_identity={"number":7,"state":"open","draft":False,"head_ref":"policy/migration","head_sha":"a"*40,"base_ref":"main","author":"alice"},
+                workflow_file={"path":".github/workflows/ci.yml","blob_sha":"blob123","size":9,"sha256":"a"*64},
                 head_commit_timestamp=1767225600.0,
                 reinforced=reinforced,
             )
@@ -105,6 +109,9 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
             target={
                 "repository":"dbrckk/ai-dev-server","pull_request":7,"commit_sha":"a"*40,
                 "head_ref":"policy/migration","base_ref":"main","author":"alice",
+                "workflow_path":".github/workflows/ci.yml",
+                "workflow_blob_sha":"blob123",
+                "workflow_sha256":"a"*64,
             }
             out=root/"bound.json"
             with patch.object(cli,"collect_review_target",return_value=target):

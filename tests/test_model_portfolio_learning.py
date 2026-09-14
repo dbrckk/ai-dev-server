@@ -47,5 +47,35 @@ class ModelPortfolioLearningTests(unittest.TestCase):
             self.assertIn("independent|medium", data)
 
 
+    def test_diversity_bias_is_zero_without_enough_evidence(self):
+        data = {
+            "independent|high": {
+                "samples": learning.MIN_SAMPLES - 1,
+                "successes": learning.MIN_SAMPLES - 1,
+                "ema_success": 1.0,
+            }
+        }
+        self.assertEqual(learning.diversity_bias(data), 0.0)
+
+    def test_diversity_bias_is_bounded_by_portfolio_class(self):
+        high = {
+            "independent|high": {
+                "samples": learning.MIN_SAMPLES,
+                "successes": learning.MIN_SAMPLES,
+                "ema_success": 1.0,
+            }
+        }
+        medium = {
+            "independent|medium": {
+                "samples": learning.MIN_SAMPLES,
+                "successes": learning.MIN_SAMPLES,
+                "ema_success": 1.0,
+            }
+        }
+        self.assertEqual(learning.diversity_bias(high), 4.0)
+        self.assertEqual(learning.diversity_bias(medium), 2.0)
+        self.assertLess(learning.diversity_bias(high), 10.0)
+
+
 if __name__ == "__main__":
     unittest.main()

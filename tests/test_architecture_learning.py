@@ -131,7 +131,7 @@ class ArchitectureLearningTests(unittest.TestCase):
             for i in range(5):
                 self._write(root, f"p{i}", ["a/core", "b/helper"], True, 2, 1, 0)
             result = al.summarize(root)
-            self.assertEqual(result["schema"], 6)
+            self.assertEqual(result["schema"], 7)
             self.assertEqual(result["stack_rankings"][0]["repos"], ["a/core", "b/helper"])
             self.assertEqual(result["stack_rankings"][0]["samples"], 5)
             self.assertTrue(result["stack_rankings"][0]["eligible_for_advisory_bias"])
@@ -361,6 +361,35 @@ class ArchitectureLearningTests(unittest.TestCase):
         ]
         result = al._drift(observations)
         self.assertEqual(result["status"], "stable")
+    def test_degraded_history_is_exposed_as_drift_alert(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            qualities = [95, 95, 95, 95, 95, 50, 50, 50, 50, 50]
+            for i, quality in enumerate(qualities):
+                out = root / f"p{i}"
+                out.mkdir()
+                (out / "architecture-outcome.json").write_text(json.dumps({
+                    "schema": 3,
+                    "observed_at": float(i + 1),
+                    "decision_constraints": {
+                        "framework": "flutter",
+                        "project_type": "general",
+                        "primary_domain": "mobile",
+                    },
+                    "chosen_contexts": [{"repo": "a/core", "domain": "mobile"}],
+                    "outcome": {
+                        "successful": True,
+                        "quality_score": quality,
+                        "model_calls_this_cycle": 2,
+                        "cycles": 1,
+                        "blocker_count": 0,
+                    },
+                }), encoding="utf-8")
+            result = al.summarize(root)
+            alerts = [x for x in result["drift_alerts"] if x.get("type") == "repository"]
+            self.assertTrue(alerts)
+            self.assertEqual(alerts[0]["repo"], "a/core")
+            self.assertLess(alerts[0]["quality_delta"], 0.0)
 
 if __name__ == "__main__":
     unittest.main()

@@ -36,6 +36,9 @@ def render(req: dict, state: dict) -> str:
     chosen_repos = [x.get('repo') for x in chosen_arch if isinstance(x, dict) and isinstance(x.get('repo'), str)]
     architecture_eval = state.get('architecture_evaluation') if isinstance(state.get('architecture_evaluation'), dict) else {}
     architecture_verdict = architecture_eval.get('verdict') if isinstance(architecture_eval.get('verdict'), str) else 'not evaluated'
+    architecture_benchmark = state.get('architecture_benchmark') if isinstance(state.get('architecture_benchmark'), dict) else {}
+    migration_candidates = architecture_benchmark.get('migration_candidates') if isinstance(architecture_benchmark.get('migration_candidates'), list) else []
+    migration_repos = [x.get('best_alternative') for x in migration_candidates if isinstance(x, dict) and isinstance(x.get('best_alternative'), str)]
 
     immediate = (
         f'Execute and validate `{next_stage}`.'
@@ -75,6 +78,10 @@ def render(req: dict, state: dict) -> str:
 {_bullets(chosen_repos, 'No architecture recommendation has been selected.')}
 
 Architecture evaluation: `{architecture_verdict}`
+
+Potential migration candidates:
+
+{_bullets(migration_repos, 'No benchmark-backed migration candidate is currently recommended.')}
 
 ## Current validation / release evidence
 

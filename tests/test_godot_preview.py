@@ -82,6 +82,13 @@ class GodotPreviewTests(unittest.TestCase):
         self.assertFalse(state['coverage']['android_export'])
         self.assertIsNotNone(github.branch_head)
         self.assertGreaterEqual(len(github.states),3)
+        self.assertEqual(state['architecture_decision']['constraints']['framework'],'godot')
+        self.assertEqual(state['architecture_evaluation']['status'],'evaluated')
+        self.assertEqual(state['architecture_benchmark']['status'],'benchmarked')
+        self.assertIn('architecture_learning',state)
+        self.assertIn('architecture_decision',github.states[-1])
+        self.assertIn('architecture_evaluation',github.states[-1])
+        self.assertIn('architecture_benchmark',github.states[-1])
 
     def test_publication_refuses_branch_movement(self):
         github=FakeGitHub(); github.branch_head='e'*40

@@ -9,7 +9,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
 import architecture_replacement_reputation as reputation
 import architecture_reputation_policy_migration_cli as cli
-from architecture_reputation_policy_migration import dry_run
+from architecture_reputation_policy_migration import bind_github_review_target, dry_run
 
 class ReputationPolicyMigrationCLITests(unittest.TestCase):
     def registry(self):
@@ -60,6 +60,10 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
             registry_value=self.registry()
             registry=root/"registry.json"; registry.write_text(json.dumps(registry_value))
             plan_value=dry_run(registry_value,None,now=200.0)
+            plan_value=bind_github_review_target(plan_value,{
+                "repository":"dbrckk/ai-dev-server","pull_request":7,"commit_sha":"a"*40,
+                "head_ref":"policy/migration","base_ref":"main","author":"alice",
+            },now=200.0)
             plan=root/"plan.json"; plan.write_text(json.dumps(plan_value))
             auth_value=dict(plan_value["authorization_template"]); auth_value["authorized"]=True
             if plan_value.get("risk",{}).get("reinforced_review_required") is True:

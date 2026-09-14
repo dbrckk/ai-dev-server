@@ -57,7 +57,11 @@ from model_portfolio_learning import (
 )
 from capacity_ledger import reserve as reserve_capacity, settle as settle_capacity, release as release_capacity
 from capacity_runtime import project_envelope as load_project_envelope
-from capacity_efficiency import summarize as summarize_capacity_efficiency, routing_bonus as capacity_efficiency_routing_bonus
+from capacity_efficiency import (
+    summarize as summarize_capacity_efficiency,
+    routing_bonus as capacity_efficiency_routing_bonus,
+    stagnation_routing_penalty,
+)
 
 
 def _decode(response: dict) -> dict:
@@ -220,6 +224,12 @@ def ask(
         components = dict(base.components)
         if project_id is not None:
             components["verified_token_efficiency"] = capacity_efficiency_routing_bonus(
+                capacity_efficiency,
+                project_id=project_id,
+                provider=provider.name,
+                model=provider.model_for(role),
+            )
+            components["stagnation_route_penalty"] = stagnation_routing_penalty(
                 capacity_efficiency,
                 project_id=project_id,
                 provider=provider.name,

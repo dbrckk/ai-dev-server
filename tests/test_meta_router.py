@@ -89,6 +89,37 @@ class MetaRouterTests(unittest.TestCase):
         )
         self.assertLess(decision.confidence,4/12)
 
+    def test_architecture_discipline_can_reduce_agent_focus(self):
+        events = []
+        for _ in range(6):
+            events.append({"kind":"agent","role":"implementation","success":True})
+            events.append({"kind":"model_candidate","role":"implementation","success":False})
+        summary = {
+            "origin_rankings": [
+                {
+                    "kind":"agent",
+                    "name":"agent-a",
+                    "samples":10,
+                    "verification_pass_rate":0.1,
+                    "eligible_for_routing_bias":True,
+                },
+                {
+                    "kind":"provider",
+                    "name":"provider-a",
+                    "samples":10,
+                    "verification_pass_rate":0.9,
+                    "eligible_for_routing_bias":True,
+                },
+            ]
+        }
+        decision = choose_execution_mode(
+            events,
+            role="implementation",
+            agent_available=True,
+            safe_rewrite_summary=summary,
+        )
+        self.assertNotEqual(decision.mode, "agent_focus")
+
     def test_agent_advantage_keeps_agent_focus(self):
         events = []
         for _ in range(6):

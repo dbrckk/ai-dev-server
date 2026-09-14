@@ -85,6 +85,8 @@ def _score(
             kind="agent",
             name=spec.name,
         )
+        components["contextual_expected_success"] = bandit["expected_success"] * 10.0
+        components["contextual_uncertainty"] = -bandit["uncertainty"] * 2.0
         components["contextual_bandit_exploration"] = bandit["exploration_bonus"]
         trace = ScoreTrace(
             name=spec.name,

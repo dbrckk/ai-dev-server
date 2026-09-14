@@ -15,6 +15,12 @@ class ReplacementWorkOrderTests(unittest.TestCase):
             "replacement_repo":"a/better",
             "risk":"medium",
             "estimated_change_scope":"moderate",
+            "framework":"flutter",
+            "project_type":"game",
+            "primary_domain":"mobile",
+            "platform":"android",
+            "current_major_version":1,
+            "replacement_major_version":2,
             "required_gates":["dependency_policy_approved","rollback_path_verified"],
         }]}
 
@@ -26,6 +32,14 @@ class ReplacementWorkOrderTests(unittest.TestCase):
         self.assertTrue(order["isolation"]["required"])
         self.assertFalse(order["isolation"]["external_source_execution"])
         self.assertFalse(result["policy"]["execute_automatically"])
+
+    def test_context_is_carried_into_work_order(self):
+        order=build(self.plan())["work_orders"][0]
+        self.assertEqual(order["framework"],"flutter")
+        self.assertEqual(order["project_type"],"game")
+        self.assertEqual(order["platform"],"android")
+        self.assertEqual(order["current_major_version"],1)
+        self.assertEqual(order["replacement_major_version"],2)
 
     def test_id_is_deterministic(self):
         first=build(self.plan())["work_orders"][0]["id"]

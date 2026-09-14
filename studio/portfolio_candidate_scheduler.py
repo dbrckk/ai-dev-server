@@ -1,0 +1,122 @@
+"""Bounded scheduler for speculative implementation portfolios."""
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+MAX_CANDIDATES = 3
+
+
+@dataclass(frozen=True)
+class PortfolioSchedule:
+    candidate_limit: int
+    agent_limit: int
+    include_model: bool
+    continue_after_verified: bool
+    uncertainty: float
+    free_capacity: float
+    verification_pressure: float
+    reason: str
+
+    def as_dict(self) -> dict:
+        return {
+            "candidate_limit": self.candidate_limit,
+            "agent_limit": self.agent_limit,
+            "include_model": self.include_model,
+            "continue_after_verified": self.continue_after_verified,
+            "uncertainty": round(self.uncertainty, 4),
+            "free_capacity": round(self.free_capacity, 4),
+            "verification_pressure": round(self.verification_pressure, 4),
+            "reason": self.reason,
+        }
+
+
+def _free_capacity(status: dict) -> float:
+    if not isinstance(status, dict):
+        return 0.0
+    if status.get("unmetered_available") is True:
+        return 1.0
+    best = 0.0
+    rows = status.get("providers")
+    if isinstance(rows, list):
+        for row in rows:
+            if not isinstance(row, dict) or row.get("mode") != "pooled-free":
+                continue
+            quota = row.get("monthly_quota")
+            if not isinstance(quota, dict) or quota.get("exhausted") is True:
+                continue
+            try:
+                best = max(best, float(quota.get("remaining_ratio", 0.0) or 0.0))
+            except (TypeError, ValueError):
+                pass
+    return max(0.0, min(1.0, best))
+
+
+def choose_schedule(
+    *,
+    capacity_status: dict,
+    route_confidence: float,
+    verification_seconds: float | None,
+    remaining_seconds: float | None,
+    available_agents: int,
+    strategy: str,
+) -> PortfolioSchedule:
+    confidence = max(0.0, min(1.0, float(route_confidence or 0.0)))
+    uncertainty = 1.0 - confidence
+    capacity = _free_capacity(capacity_status)
+    verification = max(0.0, float(verification_seconds or 0.0))
+    verification_pressure = min(1.0, verification / 300.0)
+
+    candidate_limit = 1
+    reason = "single candidate is sufficient"
+
+    enough_time_for_two = remaining_seconds is None or remaining_seconds >= max(180.0, verification * 2.0)
+    enough_time_for_three = remaining_seconds is None or remaining_seconds >= max(360.0, verification * 3.0)
+
+    if (
+        uncertainty >= 0.35
+        and capacity >= 0.45
+        and verification <= 300.0
+        and enough_time_for_two
+    ):
+        candidate_limit = 2
+        reason = "uncertain route with abundant low-cost capacity"
+    if (
+        uncertainty >= 0.60
+        and capacity >= 0.80
+        and verification <= 120.0
+        and enough_time_for_three
+        and available_agents >= 2
+    ):
+        candidate_limit = 3
+        reason = "high uncertainty, abundant free capacity, cheap verification"
+
+    if strategy == "model_only":
+        candidate_limit = 1
+    if strategy == "agent_only":
+        include_model = False
+    else:
+        include_model = True
+
+    available_agents = max(0, int(available_agents))
+    desired_agents = candidate_limit - int(include_model)
+    if strategy == "model_only":
+        agent_limit = 0
+    else:
+        agent_limit = min(available_agents, max(0, desired_agents))
+        if not include_model:
+            candidate_limit = max(1, min(candidate_limit, agent_limit or 1))
+
+    actual_capacity = int(include_model) + agent_limit
+    candidate_limit = max(1, min(MAX_CANDIDATES, candidate_limit, max(1, actual_capacity)))
+    continue_after_verified = candidate_limit > 1 and uncertainty >= 0.35 and capacity >= 0.45
+
+    return PortfolioSchedule(
+        candidate_limit=candidate_limit,
+        agent_limit=agent_limit,
+        include_model=include_model,
+        continue_after_verified=continue_after_verified,
+        uncertainty=uncertainty,
+        free_capacity=capacity,
+        verification_pressure=verification_pressure,
+        reason=reason,
+    )

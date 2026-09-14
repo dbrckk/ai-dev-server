@@ -43,5 +43,12 @@ class ArchitectureEvaluatorTests(unittest.TestCase):
             saved=json.loads((out/"architecture-evaluation.json").read_text())
             self.assertEqual(saved,result)
 
+
+    def test_godot_preview_validation_is_retain(self):
+        result=evaluate(self.decision(),{"status":"godot_preview_validated","blockers":[]})
+        self.assertEqual(result["verdict"],"retain")
+        self.assertEqual(result["confidence"],"high")
+
+
 if __name__=="__main__":
     unittest.main()

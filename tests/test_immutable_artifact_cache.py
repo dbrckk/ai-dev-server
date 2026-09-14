@@ -97,7 +97,8 @@ class ImmutableArtifactCacheTests(unittest.TestCase):
                 (root / APK_REL).write_bytes(b"B" * 2048)
                 second = capture(root, "2" * 64)
                 stale = first["files"][APK_REL]["sha256"]
-                stale_path = root / "cas" / stale[:2] / stale[2:]
+                from artifact_cas import blob_path
+                stale_path = blob_path(stale)
                 self.assertTrue(stale_path.exists())
                 save({"2" * 64: second})
                 self.assertFalse(stale_path.exists())

@@ -27,7 +27,9 @@ from architecture_replacement_reputation import (
     validate_transition_policy,
 )
 
-MIGRATION_VERSION=2
+MIGRATION_VERSION=3
+AUTHORIZATION_VERSION=2
+AUTHORIZATION_TTL_SECONDS=24*60*60
 RISK_LEVELS=("NO_IMPACT","SAFE_STRICTER","BEHAVIOR_CHANGE","TRUST_DOWNGRADE","PROMOTION_PATH_CHANGE","CRITICAL")
 _REINFORCED_RISKS={"PROMOTION_PATH_CHANGE","CRITICAL"}
 
@@ -296,6 +298,36 @@ def explain_migration(risk: dict, changes: list[dict]) -> dict:
         ),
     }
 
+def review_digest(plan: dict) -> str:
+    if not isinstance(plan,dict):
+        raise ReputationPolicyMigrationError("migration plan malformed")
+    payload={
+        "migration_id":plan.get("migration_id"),
+        "risk":plan.get("risk"),
+        "explanation":plan.get("explanation"),
+        "summary":plan.get("summary"),
+        "changes":plan.get("changes"),
+    }
+    return hashlib.sha256(_canonical(payload).encode("utf-8")).hexdigest()
+
+def authorization_template(plan: dict, *, now: float | None=None) -> dict:
+    now=float(now) if isinstance(now,(int,float)) else time.time()
+    risk=plan.get("risk") if isinstance(plan.get("risk"),dict) else {}
+    return {
+        "version":AUTHORIZATION_VERSION,
+        "status":"explicit_reputation_policy_migration_authorization",
+        "migration_id":plan.get("migration_id"),
+        "source_registry_digest":plan.get("source_registry_digest"),
+        "target_policy_digest":plan.get("target_policy_digest"),
+        "review_digest":review_digest(plan),
+        "risk_level":risk.get("level"),
+        "reinforced_review_required":risk.get("reinforced_review_required") is True,
+        "reinforced_reviewed":False,
+        "issued_at":now,
+        "expires_at":now+AUTHORIZATION_TTL_SECONDS,
+        "authorized":False,
+    }
+
 def dry_run(registry: dict, learning: dict | None=None, *, now: float | None=None) -> dict:
     validation=validate_transition_policy()
     if validation.get("valid") is not True:
@@ -384,32 +416,26 @@ def dry_run(registry: dict, learning: dict | None=None, *, now: float | None=Non
         },
     }
     migration_id=hashlib.sha256(_canonical(core).encode("utf-8")).hexdigest()
-    return {
-        **core,
-        "migration_id":migration_id,
-        "authorization_template":{
-            "version":1,
-            "status":"explicit_reputation_policy_migration_authorization",
-            "migration_id":migration_id,
-            "source_registry_digest":source_digest,
-            "target_policy_digest":target_policy_digest,
-            "risk_level":risk.get("level"),
-            "reinforced_review_required":risk.get("reinforced_review_required") is True,
-            "reinforced_reviewed":False,
-            "authorized":False,
-        },
-    }
+    result={**core,"migration_id":migration_id}
+    result["review_digest"]=review_digest(result)
+    result["authorization_template"]=authorization_template(result,now=now)
+    return result
 
 def apply_migration(registry: dict, plan: dict, authorization: dict, *, now: float | None=None) -> dict:
     if not isinstance(plan,dict) or plan.get("status")!="reputation_policy_migration_review_ready":
         raise ReputationPolicyMigrationError("migration plan invalid")
     if not isinstance(authorization,dict):
         raise ReputationPolicyMigrationError("migration authorization missing")
+    if authorization.get("version")!=AUTHORIZATION_VERSION:
+        raise ReputationPolicyMigrationError("migration authorization version unsupported")
     if authorization.get("status")!="explicit_reputation_policy_migration_authorization" or authorization.get("authorized") is not True:
         raise ReputationPolicyMigrationError("explicit migration authorization absent")
     for key in ("migration_id","source_registry_digest","target_policy_digest"):
         if authorization.get(key)!=plan.get(key):
             raise ReputationPolicyMigrationError("migration authorization identity mismatch: "+key)
+    expected_review_digest=review_digest(plan)
+    if plan.get("review_digest")!=expected_review_digest or authorization.get("review_digest")!=expected_review_digest:
+        raise ReputationPolicyMigrationError("migration review digest mismatch")
     risk=plan.get("risk") if isinstance(plan.get("risk"),dict) else {}
     if authorization.get("risk_level")!=risk.get("level"):
         raise ReputationPolicyMigrationError("migration authorization risk mismatch")
@@ -417,13 +443,22 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, now: flo
         if authorization.get("reinforced_reviewed") is not True:
             raise ReputationPolicyMigrationError("reinforced migration review absent")
 
+    now=float(now) if isinstance(now,(int,float)) else time.time()
+    issued_at=authorization.get("issued_at")
+    expires_at=authorization.get("expires_at")
+    if not isinstance(issued_at,(int,float)) or not isinstance(expires_at,(int,float)):
+        raise ReputationPolicyMigrationError("migration authorization lifetime missing")
+    if expires_at<=issued_at or expires_at-issued_at>AUTHORIZATION_TTL_SECONDS:
+        raise ReputationPolicyMigrationError("migration authorization lifetime invalid")
+    if now<issued_at or now>=expires_at:
+        raise ReputationPolicyMigrationError("migration authorization expired or not yet valid")
+
     current_digest=registry_digest(registry)
     if current_digest!=plan.get("source_registry_digest"):
         raise ReputationPolicyMigrationError("registry changed after migration review")
     if plan.get("target_policy_version")!=TRANSITION_POLICY_VERSION or plan.get("target_policy_digest")!=transition_policy_digest():
         raise ReputationPolicyMigrationError("target transition policy changed after review")
 
-    now=float(now) if isinstance(now,(int,float)) else time.time()
     entries=registry.get("entries")
     audit=registry.get("audit") if isinstance(registry.get("audit"),list) else []
     if not isinstance(entries,dict):
@@ -510,6 +545,9 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, now: flo
             "risk_level":risk.get("level"),
             "reinforced_review_required":risk.get("reinforced_review_required") is True,
             "reinforced_reviewed":authorization.get("reinforced_reviewed") is True,
+            "review_digest":expected_review_digest,
+            "authorization_issued_at":issued_at,
+            "authorization_expires_at":expires_at,
             "applied_at":now,
             "source_registry_digest":plan.get("source_registry_digest"),
             "target_policy_digest":plan.get("target_policy_digest"),

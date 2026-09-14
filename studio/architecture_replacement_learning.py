@@ -10,6 +10,11 @@ CONFIDENCE_TARGET=20
 REGIME_WINDOWS_DAYS=(30,90,180)
 REGIME_MIN_SAMPLES=3
 REGIME_DROP_THRESHOLD=0.20
+SEQUENTIAL_MIN_SAMPLES=8
+EWMA_ALPHA=0.35
+EWMA_DROP_THRESHOLD=0.18
+CUSUM_ALLOWANCE=0.05
+CUSUM_THRESHOLD=0.75
 
 def _wilson_lower(successes:int,samples:int,z:float=1.96)->float:
     if samples<=0: return 0.0
@@ -19,6 +24,53 @@ def _wilson_lower(successes:int,samples:int,z:float=1.96)->float:
     centre=p+z2/(2*samples)
     margin=z*((p*(1-p)/samples+z2/(4*samples*samples))**0.5)
     return max(0.0,min(1.0,(centre-margin)/denom))
+
+def _sequential_drift(rows:list[dict])->dict:
+    timed=[
+        row for row in rows
+        if isinstance(row,dict) and isinstance(row.get("observed_at"),(int,float))
+    ]
+    timed.sort(key=lambda row:float(row["observed_at"]))
+    n=len(timed)
+    if n<SEQUENTIAL_MIN_SAMPLES:
+        return {
+            "status":"insufficient_evidence",
+            "samples":n,
+            "ewma":None,
+            "ewma_drop":0.0,
+            "cusum_negative":0.0,
+            "drift_detected":False,
+        }
+
+    baseline_count=max(3,min(5,n//2))
+    baseline_rows=timed[:baseline_count]
+    baseline=sum(1.0 if row.get("successful") is True else 0.0 for row in baseline_rows)/baseline_count
+    ewma=baseline
+    min_ewma=ewma
+    negative_cusum=0.0
+    max_negative_cusum=0.0
+    for row in timed[baseline_count:]:
+        x=1.0 if row.get("successful") is True else 0.0
+        ewma=EWMA_ALPHA*x+(1.0-EWMA_ALPHA)*ewma
+        min_ewma=min(min_ewma,ewma)
+        negative_cusum=max(0.0,negative_cusum+(baseline-x-CUSUM_ALLOWANCE))
+        max_negative_cusum=max(max_negative_cusum,negative_cusum)
+
+    ewma_drop=max(0.0,baseline-ewma)
+    detected=bool(
+        ewma_drop>=EWMA_DROP_THRESHOLD
+        or max_negative_cusum>=CUSUM_THRESHOLD
+    )
+    return {
+        "status":"drift" if detected else "stable",
+        "samples":n,
+        "baseline_success_rate":round(baseline,4),
+        "ewma":round(ewma,4),
+        "minimum_ewma":round(min_ewma,4),
+        "ewma_drop":round(ewma_drop,4),
+        "cusum_negative":round(max_negative_cusum,4),
+        "drift_detected":detected,
+    }
 
 def _rows(root:Path):
     candidates=[]
@@ -129,6 +181,11 @@ def summarize(root:Path|str="studio-output", now:float|None=None)->dict:
                 or (isinstance(recent_regression,(int,float)) and float(recent_regression)>=0.25)
             )
         )
+        sequential=_sequential_drift(raw_by_key.get((
+            item["current_repo"],item["replacement_repo"],item["framework"],
+            item["project_type"],item["primary_domain"],item["platform"],
+            item["current_major_version"],item["replacement_major_version"]
+        ),[]))
         rankings.append({
             **{k:item[k] for k in ("current_repo","replacement_repo","framework","project_type","primary_domain","platform","current_major_version","replacement_major_version","samples","successes","regressions","rollback_preparations","rollbacks","first_observed_at","latest_observed_at")},
             "success_rate":round(success_rate,4),
@@ -145,6 +202,7 @@ def summarize(root:Path|str="studio-output", now:float|None=None)->dict:
             "regime_drop":round(regime_drop,4),
             "regime_window_days":recent_window[0] if recent_window else None,
             "regime_recent_success_rate":recent_rate,
+            "sequential_drift":sequential,
         })
     rankings.sort(key=lambda x:(
         x["eligible_for_bias"],
@@ -155,13 +213,18 @@ def summarize(root:Path|str="studio-output", now:float|None=None)->dict:
         x["samples"],
     ),reverse=True)
     return {
-        "version":4,
+        "version":5,
         "outcomes_observed":outcomes,
         "minimum_samples":MIN_SAMPLES,
         "confidence_target":CONFIDENCE_TARGET,
         "regime_windows_days":list(REGIME_WINDOWS_DAYS),
         "regime_min_samples":REGIME_MIN_SAMPLES,
         "regime_drop_threshold":REGIME_DROP_THRESHOLD,
+        "sequential_min_samples":SEQUENTIAL_MIN_SAMPLES,
+        "ewma_alpha":EWMA_ALPHA,
+        "ewma_drop_threshold":EWMA_DROP_THRESHOLD,
+        "cusum_allowance":CUSUM_ALLOWANCE,
+        "cusum_threshold":CUSUM_THRESHOLD,
         "advisory_only":True,
         "rankings":rankings[:200],
     }

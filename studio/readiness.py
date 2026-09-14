@@ -17,6 +17,8 @@ REQUIRED_STATE_ENV = (
     "STUDIO_ARTIFACT_CACHE_PATH",
     "STUDIO_ARTIFACT_CAS_PATH",
     "STUDIO_CHECKPOINT_PATH",
+    "STUDIO_TASK_LEASE_PATH",
+    "STUDIO_TELEMETRY_PATH",
 )
 
 
@@ -62,6 +64,8 @@ def check(root: Path | str = ".", project_out: Path | str | None = None) -> dict
                 "STUDIO_ARTIFACT_CACHE_PATH": autonomy / "artifact-cache.json",
                 "STUDIO_ARTIFACT_CAS_PATH": autonomy / "artifact-cas",
                 "STUDIO_CHECKPOINT_PATH": autonomy / "workflow-checkpoints.json",
+                "STUDIO_TASK_LEASE_PATH": autonomy / "task-leases.json",
+                "STUDIO_TELEMETRY_PATH": autonomy / "telemetry.jsonl",
             }
             configured = name in defaults
         checks["env_" + name.lower()] = configured

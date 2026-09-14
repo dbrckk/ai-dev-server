@@ -147,7 +147,8 @@ def _stage_command(name,stage,request_path,work,project_out):
     return [sys.executable,'studio/evolution_stage_runner.py',stage.script,*args]
 
 def run_registered_stages(request_path,project_out,work,report,deadline,runner,clock=time.monotonic,baseline_sha=None):
-    seen=set()
+    visits={}
+    max_stage_visits=3
     while True:
         completion=report.get('completion',{})
         if not isinstance(completion,dict): raise StudioError('Completion report must be an object')
@@ -177,8 +178,8 @@ def run_registered_stages(request_path,project_out,work,report,deadline,runner,c
                 else:
                     return {'status':'adaptation_required','report':report,'next_stage':name,'pending_status':pending_status,'research_status':research_status,'synthesis_status':synthesis_status,'benchmark_status':benchmark_status,'promotion_status':promotion_status,'persistence_status':persistence_status,'automerge_status':automerge_status}
             else: raise StudioError('Unfinished project has no executable next stage')
-        if name in seen: raise StudioError('Stage did not advance completion state: '+name)
-        seen.add(name)
+        visits[name]=int(visits.get(name,0))+1
+        if visits[name]>max_stage_visits: raise StudioError('Stage revisit limit exceeded: '+name)
         try: remaining=_remaining(deadline,clock)
         except TimeoutError: return {'status':stage.deferred_status,'report':report,'next_stage':name}
         result=runner(_stage_command(name,stage,request_path,work,project_out),timeout=remaining)

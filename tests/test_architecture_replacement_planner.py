@@ -857,6 +857,56 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         self.assertEqual(row["replacement_reputation"]["reason"],canonical["reason"])
         self.assertEqual(row["replacement_reputation"]["source"],"derived_current_evidence")
 
+    def test_stale_persisted_policy_requires_revalidation(self):
+        obs=self.obsolescence()
+        context={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "framework":None,"project_type":None,"primary_domain":None,
+            "platform":None,"current_major_version":None,"replacement_major_version":None,
+        }
+        import architecture_replacement_reputation as reputation
+        evidence={
+            "samples":20,"effective_samples":20,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.95,"posterior_success_rate":0.93,"regression_rate":0.02,
+            "rollback_rate":0.0,"wilson_lower_95":0.80,"mean_quality_score":95.0,
+        }
+        registry,_=reputation.apply(None,context,evidence,now=100.0)
+        entry=next(iter(registry["entries"].values()))
+        entry["transition_policy_version"]=reputation.TRANSITION_POLICY_VERSION-1
+        entry["transition_policy_digest"]="0"*64
+        row=plan(
+            obs,self.recommendations(),
+            learning={"rankings":[evidence]},
+            reputation_registry=registry,
+        )["replacement_plans"][0]
+        rep=row["replacement_reputation"]
+        self.assertTrue(rep["policy_revalidation_required"])
+        self.assertFalse(rep["promotion_eligible"])
+        self.assertTrue(rep["requires_revalidation"])
+        self.assertIn("replacement_reputation_policy_revalidated",row["required_gates"])
+
+    def test_current_persisted_policy_does_not_require_revalidation(self):
+        obs=self.obsolescence()
+        context={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "framework":None,"project_type":None,"primary_domain":None,
+            "platform":None,"current_major_version":None,"replacement_major_version":None,
+        }
+        import architecture_replacement_reputation as reputation
+        evidence={
+            "samples":20,"effective_samples":20,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.95,"posterior_success_rate":0.93,"regression_rate":0.02,
+            "rollback_rate":0.0,"wilson_lower_95":0.80,"mean_quality_score":95.0,
+        }
+        registry,_=reputation.apply(None,context,evidence,now=100.0)
+        row=plan(
+            obs,self.recommendations(),
+            learning={"rankings":[evidence]},
+            reputation_registry=registry,
+        )["replacement_plans"][0]
+        self.assertFalse(row["replacement_reputation"]["policy_revalidation_required"])
+        self.assertNotIn("replacement_reputation_policy_revalidated",row["required_gates"])
+
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)

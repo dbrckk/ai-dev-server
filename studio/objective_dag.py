@@ -54,6 +54,8 @@ def _normalized_tasks(plan: dict) -> list[dict]:
                 for item in done_when
                 if str(item).strip()
             ][:12]
+            if not normalized_done_when and not bool(raw.get("critical", False)):
+                normalized_done_when = [title]
             contract = validate_contract(
                 normalized_done_when,
                 critical=bool(raw.get("critical", False)),

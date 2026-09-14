@@ -24,6 +24,9 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
 
     evidence = build_security_package(root, out)
     state.setdefault('release_evidence', {})['security_scan'] = evidence
+    state.pop('human_action', None)
+    if state.get('status') == 'human_action_required':
+        state['status'] = 'validated_preview'
     apply_completion(state)
     if evidence.get('passed') is not True and evidence.get('human_review_required') is True:
         state['human_action'] = {

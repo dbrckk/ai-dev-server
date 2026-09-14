@@ -42,7 +42,7 @@ def build(work_order: dict, merged: dict, postmerge: dict, rollback: dict | None
         quality=50.0
 
     return {
-        "version":1,
+        "version":2,
         "status":"replacement_outcome_recorded",
         "replacement_id":_identity(work_order,merged),
         "observed_at":time.time(),
@@ -51,6 +51,12 @@ def build(work_order: dict, merged: dict, postmerge: dict, rollback: dict | None
         "replacement_repo":work_order.get("replacement_repo"),
         "risk":work_order.get("risk"),
         "scope":work_order.get("scope"),
+        "framework":work_order.get("framework"),
+        "project_type":work_order.get("project_type"),
+        "primary_domain":work_order.get("primary_domain"),
+        "platform":work_order.get("platform"),
+        "current_major_version":work_order.get("current_major_version"),
+        "replacement_major_version":work_order.get("replacement_major_version"),
         "merge_sha":merged.get("merge_sha"),
         "successful":healthy,
         "regressed":regressed,

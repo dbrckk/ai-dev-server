@@ -151,5 +151,37 @@ class ArchitectureLearningTests(unittest.TestCase):
 
 
 
+    def test_same_repo_and_domain_are_separated_by_framework(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            for name, framework, successful in [
+                ("flutter", "flutter", True),
+                ("godot", "godot", False),
+            ]:
+                out = root / name
+                out.mkdir()
+                (out / "architecture-outcome.json").write_text(
+                    json.dumps({
+                        "schema": 1,
+                        "decision_constraints": {"framework": framework},
+                        "chosen_contexts": [{"repo": "a/core", "domain": "mobile"}],
+                        "outcome": {
+                            "successful": successful,
+                            "model_calls_this_cycle": 2,
+                            "cycles": 1,
+                            "blocker_count": 0 if successful else 1,
+                        },
+                    }),
+                    encoding="utf-8",
+                )
+
+            rankings = al.summarize(root)["rankings"]
+            keyed = {(row["framework"], row["domain"]): row for row in rankings}
+
+            self.assertEqual(keyed[("flutter", "mobile")]["success_rate"], 1.0)
+            self.assertEqual(keyed[("godot", "mobile")]["success_rate"], 0.0)
+
+
+
 if __name__ == "__main__":
     unittest.main()

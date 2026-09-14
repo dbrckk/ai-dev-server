@@ -70,5 +70,63 @@ class ArchitectureFeedbackTests(unittest.TestCase):
 
 
 
+    def test_domain_mismatch_does_not_bias_current_recommendation(self):
+        recs = {
+            "matches": [
+                {
+                    "repo": "a/core",
+                    "domain": "mobile",
+                    "score": 90.0,
+                }
+            ]
+        }
+        learning = {
+            "rankings": [
+                {
+                    "repo": "a/core",
+                    "domain": "backend",
+                    "samples": 10,
+                    "success_rate": 1.0,
+                }
+            ]
+        }
+
+        result = af.apply(recs, learning)
+
+        self.assertFalse(result["feedback_applied"])
+        self.assertEqual(result["matches"][0]["feedback_score"], 90.0)
+
+    def test_matching_domain_can_apply_feedback(self):
+        recs = {
+            "matches": [
+                {
+                    "repo": "a/core",
+                    "domain": "mobile",
+                    "score": 90.0,
+                }
+            ]
+        }
+        learning = {
+            "rankings": [
+                {
+                    "repo": "a/core",
+                    "domain": "mobile",
+                    "samples": 10,
+                    "success_rate": 1.0,
+                }
+            ]
+        }
+
+        result = af.apply(recs, learning)
+
+        self.assertTrue(result["feedback_applied"])
+        self.assertEqual(result["matches"][0]["feedback_score"], 93.0)
+        self.assertEqual(
+            result["matches"][0]["historical_evidence"]["domain"],
+            "mobile",
+        )
+
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -287,6 +287,45 @@ class ArchitectureFeedbackTests(unittest.TestCase):
         )
         self.assertEqual(mismatch["bonus"], 0.0)
         self.assertEqual(matching["bonus"], 2.0)
+    def test_quality_score_changes_feedback_with_same_success_rate(self):
+        recs = {"matches": [
+            {"repo": "a/clean", "domain": "mobile", "score": 90.0, "quality_score": 9.0},
+            {"repo": "b/costly", "domain": "mobile", "score": 90.0, "quality_score": 9.0},
+        ]}
+        learning = {"rankings": [
+            {
+                "repo": "a/clean",
+                "domain": "mobile",
+                "framework": "flutter",
+                "project_type": "general",
+                "primary_domain": "mobile",
+                "samples": 10,
+                "success_rate": 1.0,
+                "mean_quality_score": 95.0,
+            },
+            {
+                "repo": "b/costly",
+                "domain": "mobile",
+                "framework": "flutter",
+                "project_type": "general",
+                "primary_domain": "mobile",
+                "samples": 10,
+                "success_rate": 1.0,
+                "mean_quality_score": 55.0,
+            },
+        ]}
+        result = af.apply(
+            recs, learning,
+            framework="flutter",
+            project_type="general",
+            primary_domain="mobile",
+        )
+        by_repo = {x["repo"]: x for x in result["matches"]}
+        self.assertGreater(by_repo["a/clean"]["feedback_score"], by_repo["b/costly"]["feedback_score"])
+        self.assertGreater(
+            by_repo["a/clean"]["historical_evidence"]["combined_outcome_rate"],
+            by_repo["b/costly"]["historical_evidence"]["combined_outcome_rate"],
+        )
 
 if __name__ == "__main__":
     unittest.main()

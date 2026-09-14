@@ -17,6 +17,7 @@ class ImmutableArtifactCacheTests(unittest.TestCase):
         return {
             "STUDIO_ARTIFACT_CAS_PATH": str(root / "cas"),
             "STUDIO_ARTIFACT_CACHE_PATH": str(root / "artifact-cache.json"),
+            "STUDIO_ARTIFACT_CAS_STATS_PATH": str(root / "artifact-cas-stats.json"),
         }
     def _root(self, td):
         root = Path(td)
@@ -98,6 +99,38 @@ class ImmutableArtifactCacheTests(unittest.TestCase):
                 self.assertTrue(stale_path.exists())
                 save({"2" * 64: second})
                 self.assertFalse(stale_path.exists())
+
+    def test_high_value_artifact_can_evict_low_value_entry_before_admission(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = self._root(td)
+            entries = {}
+            with mock.patch.dict(os.environ, self._cas_env(root), clear=False):
+                with mock.patch("immutable_artifact_cache.MAX_TOTAL_BYTES", 3000):
+                    first_key = "7" * 64
+                    first = capture(
+                        root,
+                        first_key,
+                        rebuild_cost_seconds=1,
+                        entries=entries,
+                    )
+                    entries[first_key] = first
+                    old_apk_digest = first["files"][APK_REL]["sha256"]
+
+                    (root / APK_REL).write_bytes(b"B" * 2048)
+                    second_key = "8" * 64
+                    second = capture(
+                        root,
+                        second_key,
+                        rebuild_cost_seconds=100,
+                        entries=entries,
+                    )
+                    entries[second_key] = second
+
+                self.assertNotIn(first_key, entries)
+                self.assertIn(second_key, entries)
+                old_blob = root / "cas" / old_apk_digest[:2] / old_apk_digest[2:]
+                self.assertFalse(old_blob.exists())
+
 
     def test_touch_moves_entry_to_most_recent_position(self):
         entries = {

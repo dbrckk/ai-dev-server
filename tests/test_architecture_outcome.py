@@ -34,6 +34,8 @@ class ArchitectureOutcomeTests(unittest.TestCase):
         self.assertEqual(result["evaluation_verdict"], "retain")
         self.assertEqual(result["evaluation_confidence"], "high")
         self.assertEqual(result["outcome"]["model_calls_this_cycle"], 4)
+        self.assertGreater(result["outcome"]["quality_score"], 50.0)
+        self.assertLessEqual(result["outcome"]["quality_score"], 100.0)
         self.assertEqual(result["outcome"]["checkpoint_replays_this_cycle"], 1)
 
     def test_finished_outcome_is_successful(self):
@@ -55,6 +57,7 @@ class ArchitectureOutcomeTests(unittest.TestCase):
 
         self.assertFalse(result["outcome"]["successful"])
         self.assertEqual(result["outcome"]["blocker_count"], 1)
+        self.assertLess(result["outcome"]["quality_score"], 50.0)
 
     def test_write_is_machine_readable(self):
         with tempfile.TemporaryDirectory() as td:
@@ -93,10 +96,28 @@ class ArchitectureOutcomeTests(unittest.TestCase):
                 },
             },
         })
-        self.assertEqual(result["schema"], 2)
+        self.assertEqual(result["schema"], 3)
         self.assertEqual(result["decision_constraints"]["framework"], "flutter")
         self.assertEqual(result["decision_constraints"]["project_type"], "game")
         self.assertEqual(result["decision_constraints"]["primary_domain"], "mobile")
+    def test_quality_score_rewards_cleaner_success(self):
+        clean = build({
+            "status": "finished",
+            "cycles": 1,
+            "rounds": 1,
+            "model_calls_this_cycle": 2,
+            "blockers": [],
+            "architecture_decision": {"status": "planned", "chosen": []},
+        })
+        expensive = build({
+            "status": "finished",
+            "cycles": 8,
+            "rounds": 8,
+            "model_calls_this_cycle": 18,
+            "blockers": ["a", "b", "c", "d"],
+            "architecture_decision": {"status": "planned", "chosen": []},
+        })
+        self.assertGreater(clean["outcome"]["quality_score"], expensive["outcome"]["quality_score"])
 
 if __name__ == "__main__":
     unittest.main()

@@ -96,6 +96,20 @@ Le pipeline inclut notamment :
 
 Le benchmark multi-engine couvre un vrai build Flutter, un smoke generic complet et les régressions Jumpy/Godot pinées.
 
+### Vérification opérationnelle V1
+
+Le serveur expose maintenant deux contrôles machine-readable :
+
+```bash
+python studio/v1_gate.py
+python studio/v1_gate.py --project-out studio-output/<project-id>
+python studio/runtime_health.py studio-output/<project-id>
+```
+
+- `v1_gate.py` retourne `ready`, `operational` ou `blocked` et utilise un code de sortie non nul en cas de blocage ;
+- `runtime_health.py` vérifie state durable, checkpoints, leases et télémétrie d'un projet autonome ;
+- la disponibilité d'un hôte seul et la santé d'un projet actif restent volontairement séparées.
+
 ## Remarque
 
 Free Claude Code et les fournisseurs IA évoluent rapidement. L'installation est volontairement séparée du build critique du Codespace afin qu'une modification de FCC ne rende pas la création du Codespace inutilisable.

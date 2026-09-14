@@ -50,6 +50,8 @@ class DiffQuickGateTests(unittest.TestCase):
 
             result = plan(root, ["test/widget/foo_test.dart"])
 
+        self.assertFalse(result["analyze"])
+        self.assertTrue(result["test"])
         self.assertEqual(result["targeted_tests"], ["test/widget/foo_test.dart"])
         self.assertEqual(result["test_mode"], "targeted")
 

@@ -24,6 +24,7 @@ from architecture_outcome import write as write_architecture_outcome
 from architecture_learning import write as write_architecture_learning, summarize as summarize_architecture_learning, root_for_output as architecture_learning_root
 from architecture_evaluator import write as write_architecture_evaluation
 from architecture_benchmark import write as write_architecture_benchmark
+from architecture_preflight import write as write_architecture_preflight
 
 class GitHub(API):
     def __init__(self, repo):
@@ -230,6 +231,7 @@ def context(req, state, root):
                       'technical_recommendations': state.get('technical_recommendations', {'status':'unavailable','matches':[]}),
                       'architecture_decision': state.get('architecture_decision', {'status':'unavailable','chosen':[]}),
                       'architecture_autonomy_policy': state.get('architecture_autonomy_policy', {}),
+                      'architecture_preflight': state.get('architecture_preflight', {'status':'unavailable','verdict':'unknown'}),
                       'architecture_benchmark': state.get('architecture_benchmark', {'status':'unavailable','migration_candidates':[]}),
                       'architecture_drift_alerts': state.get('architecture_drift_alerts', []),
                       'files': files})
@@ -296,6 +298,14 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         publication_target="google-play",
     )
     state['architecture_autonomy_policy'] = state['architecture_decision'].get('autonomy_policy', {})
+    state['architecture_preflight'] = write_architecture_preflight(
+        state['architecture_decision'],
+        state['technical_recommendations'],
+        out,
+    )
+    state['architecture_autonomy_policy']['architecture_changes_allowed'] = bool(
+        state['architecture_preflight'].get('architecture_changes_allowed')
+    )
     state['cycles'] += 1
 
     def checkpoint(parent_sha):

@@ -574,6 +574,48 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         row=plan(obs,self.recommendations(),learning={"rankings":[stable,shifted]})["replacement_plans"][0]
         self.assertFalse(row["fused_historical_evidence"]["regime_shift"])
 
+    def test_sequential_drift_forces_high_risk_and_gate(self):
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter","project_type":"game","primary_domain":"mobile",
+            "platform":"android","current_major_version":3,"replacement_major_version":4,
+        })
+        history={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "framework":"flutter","project_type":"game","primary_domain":"mobile","platform":"android",
+            "current_major_version":3,"replacement_major_version":4,
+            "samples":30,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.9,"posterior_success_rate":0.88,"regression_rate":0.1,
+            "rollback_rate":0.0,"wilson_lower_95":0.75,"mean_quality_score":90.0,
+            "regime_shift":False,
+            "sequential_drift":{"status":"drift","drift_detected":True,"ewma_drop":0.25,"cusum_negative":1.0},
+            "latest_observed_at":time.time(),
+        }
+        row=plan(obs,self.recommendations(),learning={"rankings":[history]})["replacement_plans"][0]
+        self.assertEqual(row["empirical_status"],"sequential_drift_detected")
+        self.assertEqual(row["risk"],"high")
+        self.assertLessEqual(row["empirical_priority_adjustment"],0.0)
+        self.assertTrue(row["fused_historical_evidence"]["sequential_drift"])
+        self.assertIn("replacement_sequential_drift_revalidated",row["required_gates"])
+
+    def test_low_weight_sequential_drift_does_not_dominate_fusion(self):
+        obs=self.obsolescence()
+        stable={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "samples":20,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.9,"posterior_success_rate":0.88,"regression_rate":0.05,
+            "rollback_rate":0.0,"wilson_lower_95":0.75,"mean_quality_score":90.0,
+            "sequential_drift":{"status":"stable","drift_detected":False},
+            "latest_observed_at":time.time(),
+        }
+        shifted={
+            **stable,
+            "framework":"python","project_type":"trading","primary_domain":"backend","platform":"linux",
+            "sequential_drift":{"status":"drift","drift_detected":True,"ewma_drop":0.4,"cusum_negative":1.2},
+        }
+        row=plan(obs,self.recommendations(),learning={"rankings":[stable,shifted]})["replacement_plans"][0]
+        self.assertFalse(row["fused_historical_evidence"]["sequential_drift"])
+
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)

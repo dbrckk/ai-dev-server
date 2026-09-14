@@ -188,9 +188,11 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     safe_rewrite_learning_path = out / ".autonomy" / "safe-rewrite-learning.json"
     contextual_routing_path = out / ".autonomy" / "contextual-routing-memory.json"
     provider_cost_path = out / ".autonomy" / "provider-cost.json"
+    provider_monthly_quota_path = out / ".autonomy" / "provider-monthly-quota.json"
     __import__("os").environ["STUDIO_SAFE_REWRITE_LEARNING_PATH"] = str(safe_rewrite_learning_path)
     __import__("os").environ["STUDIO_CONTEXTUAL_ROUTING_MEMORY_PATH"] = str(contextual_routing_path)
     __import__("os").environ["STUDIO_PROVIDER_COST_PATH"] = str(provider_cost_path)
+    __import__("os").environ["STUDIO_PROVIDER_MONTHLY_QUOTA_PATH"] = str(provider_monthly_quota_path)
     max_api_cost = req.get("max_api_cost_usd")
     if isinstance(max_api_cost, (int, float)) and float(max_api_cost) > 0:
         __import__("os").environ["STUDIO_MAX_API_COST_USD"] = str(float(max_api_cost))

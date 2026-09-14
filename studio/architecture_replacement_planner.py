@@ -29,6 +29,27 @@ def _risk(current: dict, replacement: dict, benchmark_delta: float | None) -> st
         return "medium"
     return "low"
 
+def _replacement_history(learning: dict | None, current_repo: str, replacement_repo: str) -> dict | None:
+    if not isinstance(learning, dict):
+        return None
+    rows=learning.get("rankings")
+    if not isinstance(rows,list):
+        return None
+    matches=[
+        row for row in rows
+        if isinstance(row,dict)
+        and row.get("current_repo")==current_repo
+        and row.get("replacement_repo")==replacement_repo
+    ]
+    if not matches:
+        return None
+    matches.sort(key=lambda row:(
+        bool(row.get("eligible_for_bias")),
+        float(row.get("evidence_confidence",0.0) or 0.0),
+        int(row.get("samples",0) or 0),
+    ),reverse=True)
+    return matches[0]
+
 def _impact(current: dict, replacement: dict) -> dict:
     current_caps = set(current.get("capabilities", []) if isinstance(current.get("capabilities"), list) else [])
     replacement_caps = set(replacement.get("capabilities", []) if isinstance(replacement.get("capabilities"), list) else [])
@@ -54,7 +75,7 @@ def _impact(current: dict, replacement: dict) -> dict:
         },
     }
 
-def plan(obsolescence: dict, recommendations: dict) -> dict:
+def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None) -> dict:
     recs = _index(recommendations)
     rows = obsolescence.get("deprecation_candidates", []) if isinstance(obsolescence, dict) else []
     plans = []
@@ -71,6 +92,21 @@ def plan(obsolescence: dict, recommendations: dict) -> dict:
         replacement = recs.get(replacement_repo, {})
         impact = _impact(current, replacement)
         risk = _risk(current, replacement, row.get("benchmark_delta"))
+        history = _replacement_history(learning,current_repo,replacement_repo)
+        empirical_status="unobserved"
+        empirical_priority_adjustment=0.0
+        if isinstance(history,dict) and history.get("eligible_for_bias") is True:
+            regression=float(history.get("regression_rate",0.0) or 0.0)
+            wilson=float(history.get("wilson_lower_95",0.0) or 0.0)
+            confidence=float(history.get("evidence_confidence",0.0) or 0.0)
+            empirical_priority_adjustment=max(-10.0,min(5.0,(wilson-0.5)*10.0-regression*10.0))*confidence
+            if regression>=0.25 or wilson<0.5:
+                risk="high"
+                empirical_status="historically_risky"
+            elif wilson>=0.70 and regression<=0.10:
+                empirical_status="historically_supported"
+            else:
+                empirical_status="mixed_history"
 
         gates = [
             "replacement_metadata_available",
@@ -85,6 +121,8 @@ def plan(obsolescence: dict, recommendations: dict) -> dict:
         ]
         if impact["capabilities_missing"]:
             gates.insert(1, "missing_capabilities_resolved")
+        if empirical_status=="historically_risky":
+            gates.insert(0,"historical_replacement_risk_reviewed")
         if row.get("maintenance_evidence_available") is not True:
             gates.insert(0, "maintenance_evidence_completed")
 
@@ -96,6 +134,10 @@ def plan(obsolescence: dict, recommendations: dict) -> dict:
             "benchmark_delta": row.get("benchmark_delta"),
             "drift_score": row.get("drift_score"),
             "maintenance_signal": row.get("maintenance_signal"),
+            "historical_replacement_evidence": history,
+            "empirical_status": empirical_status,
+            "empirical_priority_adjustment": round(empirical_priority_adjustment,3),
+            "priority_score": round(float(row.get("benchmark_delta",0.0) or 0.0)+empirical_priority_adjustment,3),
             "impact": impact,
             "estimated_change_scope": (
                 "broad" if risk == "high" else "moderate" if risk == "medium" else "narrow"
@@ -114,8 +156,14 @@ def plan(obsolescence: dict, recommendations: dict) -> dict:
             "go_no_go": "NO_GO_PENDING_ISOLATED_BENCHMARK",
         })
 
+    plans.sort(key=lambda row:(
+        float(row.get("priority_score",0.0) or 0.0),
+        row.get("risk")=="low",
+        row.get("empirical_status")=="historically_supported",
+    ),reverse=True)
+
     return {
-        "version": 1,
+        "version": 2,
         "status": "planned",
         "advisory_only": True,
         "replacement_plans": plans,
@@ -129,9 +177,9 @@ def plan(obsolescence: dict, recommendations: dict) -> dict:
         },
     }
 
-def write(obsolescence: dict, recommendations: dict, out: Path) -> dict:
+def write(obsolescence: dict, recommendations: dict, out: Path, learning: dict | None = None) -> dict:
     out.mkdir(parents=True, exist_ok=True)
-    result = plan(obsolescence, recommendations)
+    result = plan(obsolescence, recommendations, learning=learning)
     atomic_write_text(
         out / "architecture-replacement-plan.json",
         json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n",

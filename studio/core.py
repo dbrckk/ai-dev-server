@@ -561,8 +561,9 @@ class Sandbox:
         log = {'command': args, 'exit_code': rc, 'output': out}
         return rc == 0, [log]
 
-    def quick_test_gate(self):
-        args = ['flutter', 'test', '--no-pub', '--exclude-tags=studio-visual']
+    def quick_test_gate(self, targets=()):
+        targets = [target for target in targets if isinstance(target, str) and target.startswith('test/') and target.endswith('_test.dart')]
+        args = ['flutter', 'test', '--no-pub', '--exclude-tags=studio-visual'] + targets
         print('Quick test gate: ' + ' '.join(args), flush=True)
         rc, out = self.run(args, network=False, timeout=600)
         log = {'command': args, 'exit_code': rc, 'output': out}

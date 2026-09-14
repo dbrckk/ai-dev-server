@@ -14,6 +14,7 @@ from task_semantic_checkpoint import (
     resume,
     save,
     task_context,
+    retry_policy,
 )
 
 
@@ -60,6 +61,51 @@ class TaskSemanticCheckpointTests(unittest.TestCase):
         ctx=task_context(resumed,"api")
         self.assertEqual(ctx["last_status"],"failed")
         self.assertEqual(ctx["recent_attempts"][0]["failure_signature"],"d"*64)
+
+    def test_retry_policy_avoids_recent_failed_routes(self):
+        state=new("demo","a"*64,"b"*40)
+        for provider,model,agent in [("p1","m1","a1"),("p2","m2","a2")]:
+            state=record(
+                state,
+                task_id="api",
+                task_title="build api",
+                commit=None,
+                status="failed",
+                changed_files=["src/api.py"],
+                impacted_tests=[],
+                models=[{"provider":provider,"model":model}],
+                agents=[agent],
+                failure_signature="d"*64,
+                verification={"status":"failed","passed":False},
+                dependency_context={"level":"low","max_coupling":1,"impacted_tests":[]},
+            )
+        policy=retry_policy(state,"api")
+        self.assertEqual(policy["failed_attempts"],2)
+        self.assertEqual(policy["avoid_agents"],["a1","a2"])
+        self.assertEqual(policy["avoid_providers"],["p1","p2"])
+        self.assertEqual(policy["avoid_models"],["m1","m2"])
+        self.assertEqual(policy["repeated_failure_signature"],"d"*64)
+
+    def test_verified_attempts_do_not_pollute_retry_policy(self):
+        state=new("demo","a"*64,"b"*40)
+        state=record(
+            state,
+            task_id="core",
+            task_title="core",
+            commit="c"*40,
+            status="verified",
+            changed_files=["core.py"],
+            impacted_tests=[],
+            models=[{"provider":"p1","model":"m1"}],
+            agents=["a1"],
+            failure_signature=None,
+            verification={"status":"passed","passed":True},
+            dependency_context={"level":"low","max_coupling":0,"impacted_tests":[]},
+        )
+        policy=retry_policy(state,"core")
+        self.assertEqual(policy["failed_attempts"],0)
+        self.assertEqual(policy["avoid_agents"],[])
+        self.assertEqual(policy["avoid_models"],[])
 
     def test_identity_mismatch_resets(self):
         state=new("demo","a"*64,"b"*40)

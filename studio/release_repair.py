@@ -11,12 +11,13 @@ from journeys import validate_journeys
 from agents.orchestrator import execute_named as execute_named_agent, ranked_agent_names
 from flutter_workspace import snapshot as snapshot_agent_workspace, restore as restore_agent_workspace, delta as validate_agent_delta
 from repair_strategy import choose as choose_strategy, record_outcome as record_strategy_outcome
-from release_candidate_search import MAX_CANDIDATES, apply_winner, run_candidate, select_winner
+from release_candidate_search import MAX_CANDIDATES, apply_winner, run_branch, select_winner
 
 MAX_RELEASE_REPAIR_ROUNDS = 2
+MAX_MODEL_CALLS_PER_BRANCH = 2
 
 
-def _context(root: Path, state: dict, stage: str, blockers: list[str]) -> str:
+def _context(root: Path, state: dict, stage: str, blockers: list[str], failure: str | None = None) -> str:
     files = {}
     for path in sorted(root.rglob("*")):
         if not path.is_file() or path.is_symlink():
@@ -35,6 +36,7 @@ def _context(root: Path, state: dict, stage: str, blockers: list[str]) -> str:
         "product": state.get("product"),
         "design": state.get("design"),
         "files": files,
+        "trusted_gate_failure": failure,
     })
 
 
@@ -68,7 +70,7 @@ def _validate_agent_scope(root: Path, before: dict[str, str]) -> dict:
     return delta
 
 
-def _run_agent(root: Path, blockers: list[str], stage: str) -> dict:
+def _run_agent(root: Path, blockers: list[str], stage: str, failure: str | None = None) -> dict:
     names = _agent_candidates()
     if not names:
         raise StudioError("No eligible repair agent is available")
@@ -77,7 +79,8 @@ def _run_agent(root: Path, blockers: list[str], stage: str) -> dict:
         "Repair only the listed Flutter release defect(s). Preserve behavior and tests. "
         "Do not modify tests, docs, native platform files, CI, credentials, or generated files. "
         "Do not commit, push, publish, deploy, or ask questions. "
-        "Stage and blockers: " + canonical({"stage": stage, "blockers": blockers})
+        "Stage, blockers, and trusted gate failure: "
+        + canonical({"stage": stage, "blockers": blockers, "failure": failure})
     )
     result = execute_named_agent(names[0], prompt, cwd=root, timeout=900)
     if result.get("status") != "passed":
@@ -98,13 +101,13 @@ def _strategy_prior(selection: dict, strategy: str) -> float:
     return 0.0
 
 
-def _model_mutation(root: Path, state: dict, stage: str, blockers: list[str], task: dict | None, model_factory):
+def _model_mutation(root: Path, state: dict, stage: str, blockers: list[str], task: dict | None, model_factory, failure: str | None = None):
     model = model_factory(4)
     if task and task.get("rotate_strategy") is True:
         last_provider = task.get("last_provider")
         if isinstance(last_provider, str) and last_provider and hasattr(model, "avoid_providers"):
             model.avoid_providers.add(last_provider)
-    patch = model.ask("release_fix", _context(root, state, stage, blockers))
+    patch = model.ask("release_fix", _context(root, state, stage, blockers, failure))
     files = patch_check(patch)
     for item in files:
         if item["path"].startswith(("test/", "docs/")):
@@ -118,8 +121,8 @@ def _model_mutation(root: Path, state: dict, stage: str, blockers: list[str], ta
     }
 
 
-def _agent_mutation(root: Path, blockers: list[str], stage: str):
-    evidence = _run_agent(root, blockers, stage)
+def _agent_mutation(root: Path, blockers: list[str], stage: str, failure: str | None = None):
+    evidence = _run_agent(root, blockers, stage, failure)
     return {
         "model_calls": 0,
         "models_used": {},
@@ -131,6 +134,15 @@ def _agent_mutation(root: Path, blockers: list[str], stage: str):
 def _hybrid_mutation(root: Path, state: dict, stage: str, blockers: list[str], task: dict | None, model_factory):
     metadata = _model_mutation(root, state, stage, blockers, task, model_factory)
     metadata["agent"] = _run_agent(root, blockers, stage)
+    return metadata
+
+
+def _agent_to_model_mutation(root: Path, state: dict, stage: str, blockers: list[str], task: dict | None, model_factory):
+    metadata = _agent_mutation(root, blockers, stage)
+    model_meta = _model_mutation(root, state, stage, blockers, task, model_factory)
+    metadata["model_calls"] += model_meta.get("model_calls", 0)
+    metadata["models_used"].update(model_meta.get("models_used", {}))
+    metadata["providers_used"].update(model_meta.get("providers_used", {}))
     return metadata
 
 
@@ -157,10 +169,10 @@ def attempt(
     if len(strategies) < MAX_CANDIDATES:
         for row in selection.get("candidate_ranking", []):
             name = row.get("strategy")
-            if name in {"model_only", "agent_only", "model_to_agent"} and name not in strategies:
+            if name in {"model_only", "agent_only", "model_to_agent", "agent_to_model"} and name not in strategies:
                 if name == "agent_only" and not agents:
                     continue
-                if name == "model_to_agent" and not agents:
+                if name in {"model_to_agent", "agent_to_model"} and not agents:
                     continue
                 strategies.append(name)
                 if len(strategies) >= MAX_CANDIDATES:
@@ -169,18 +181,50 @@ def attempt(
     candidates = []
     for strategy_name in strategies:
         prior = _strategy_prior(selection, strategy_name)
-        if strategy_name == "model_only":
-            mutate = lambda s=state, st=stage, b=blockers, t=task: _model_mutation(root, s, st, b, t, model_factory)
-        elif strategy_name == "agent_only":
-            mutate = lambda st=stage, b=blockers: _agent_mutation(root, b, st)
-        else:
-            mutate = lambda s=state, st=stage, b=blockers, t=task: _hybrid_mutation(root, s, st, b, t, model_factory)
 
-        candidate = run_candidate(
+        if strategy_name == "model_only":
+            steps = [
+                lambda s=state, st=stage, b=blockers, t=task:
+                    _model_mutation(root, s, st, b, t, model_factory)
+            ]
+            refine = lambda failure, s=state, st=stage, b=blockers, t=task: (
+                _model_mutation(root, s, st, b, t, model_factory, failure)
+            )
+        elif strategy_name == "agent_only":
+            steps = [
+                lambda st=stage, b=blockers:
+                    _agent_mutation(root, b, st)
+            ]
+            refine = lambda failure, st=stage, b=blockers: (
+                _agent_mutation(root, b, st, failure)
+            )
+        elif strategy_name == "agent_to_model":
+            steps = [
+                lambda st=stage, b=blockers:
+                    _agent_mutation(root, b, st),
+                lambda s=state, st=stage, b=blockers, t=task:
+                    _model_mutation(root, s, st, b, t, model_factory),
+            ]
+            refine = lambda failure, s=state, st=stage, b=blockers, t=task: (
+                _model_mutation(root, s, st, b, t, model_factory, failure)
+            )
+        else:
+            steps = [
+                lambda s=state, st=stage, b=blockers, t=task:
+                    _model_mutation(root, s, st, b, t, model_factory),
+                lambda st=stage, b=blockers:
+                    _agent_mutation(root, b, st),
+            ]
+            refine = lambda failure, s=state, st=stage, b=blockers, t=task: (
+                _model_mutation(root, s, st, b, t, model_factory, failure)
+            )
+
+        candidate = run_branch(
             root,
             strategy=strategy_name,
             strategy_prior_score=prior,
-            mutate=mutate,
+            steps=steps,
+            refine=refine,
             state=state,
             app_name=app_name,
             sandbox_factory=sandbox_factory,

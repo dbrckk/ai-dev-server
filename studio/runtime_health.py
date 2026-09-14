@@ -16,7 +16,9 @@ def _lease_summary(path: Path) -> dict:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, json.JSONDecodeError):
         return {"claims": None, "valid": False}
-    claims = data.get("claims") if isinstance(data, dict) else None
+    if not isinstance(data, dict):
+        return {"claims": None, "valid": False}
+    claims = data.get("claims")
     if data.get("schema") != 1 or not isinstance(claims, dict):
         return {"claims": None, "valid": False}
     return {"claims": len(claims), "valid": True}

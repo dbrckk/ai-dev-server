@@ -10,6 +10,80 @@ MAX_PLANS = 8
 LOW_RISK_DELTA = 15.0
 MEDIUM_RISK_DELTA = 8.0
 
+CONTEXT_WEIGHTS = {
+    "framework": 0.25,
+    "project_type": 0.20,
+    "primary_domain": 0.15,
+    "platform": 0.15,
+    "current_major_version": 0.10,
+    "replacement_major_version": 0.10,
+    "version_jump": 0.05,
+}
+MIN_TRANSFERABILITY_FOR_RISK = 0.72
+MIN_TRANSFERABILITY_FOR_POSITIVE_BIAS = 0.55
+
+def _major(value):
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value if value >= 0 else None
+    if isinstance(value, float) and value.is_integer() and value >= 0:
+        return int(value)
+    return None
+
+def _version_similarity(expected, observed) -> float:
+    expected=_major(expected)
+    observed=_major(observed)
+    if expected is None or observed is None:
+        return 0.5
+    gap=abs(expected-observed)
+    if gap==0:
+        return 1.0
+    if gap==1:
+        return 0.65
+    if gap==2:
+        return 0.35
+    return 0.0
+
+def _categorical_similarity(expected, observed) -> float:
+    if expected is None or observed is None:
+        return 0.5
+    return 1.0 if expected==observed else 0.0
+
+def _compatibility_distance(history: dict | None, context: dict) -> dict:
+    if not isinstance(history,dict):
+        return {
+            "transferability": 0.0,
+            "distance": 1.0,
+            "components": {},
+            "exact_context_match": False,
+        }
+
+    components={}
+    components["framework"]=_categorical_similarity(context.get("framework"),history.get("framework"))
+    components["project_type"]=_categorical_similarity(context.get("project_type"),history.get("project_type"))
+    components["primary_domain"]=_categorical_similarity(context.get("primary_domain"),history.get("primary_domain"))
+    components["platform"]=_categorical_similarity(context.get("platform"),history.get("platform"))
+    components["current_major_version"]=_version_similarity(context.get("current_major_version"),history.get("current_major_version"))
+    components["replacement_major_version"]=_version_similarity(context.get("replacement_major_version"),history.get("replacement_major_version"))
+
+    expected_current=_major(context.get("current_major_version"))
+    expected_replacement=_major(context.get("replacement_major_version"))
+    observed_current=_major(history.get("current_major_version"))
+    observed_replacement=_major(history.get("replacement_major_version"))
+    expected_jump=(expected_replacement-expected_current) if expected_current is not None and expected_replacement is not None else None
+    observed_jump=(observed_replacement-observed_current) if observed_current is not None and observed_replacement is not None else None
+    components["version_jump"]=_version_similarity(expected_jump,observed_jump)
+
+    transferability=sum(CONTEXT_WEIGHTS[key]*components[key] for key in CONTEXT_WEIGHTS)
+    transferability=max(0.0,min(1.0,transferability))
+    return {
+        "transferability": round(transferability,4),
+        "distance": round(1.0-transferability,4),
+        "components": {key:round(value,4) for key,value in components.items()},
+        "exact_context_match": all(value==1.0 for value in components.values()),
+    }
+
 def _index(recommendations: dict) -> dict[str, dict]:
     rows = recommendations.get("matches", []) if isinstance(recommendations, dict) else []
     return {
@@ -36,32 +110,14 @@ def _replacement_history(learning: dict | None, current_repo: str, replacement_r
     if not isinstance(rows,list):
         return None
     context=context if isinstance(context,dict) else {}
-    fields=("framework","project_type","primary_domain","platform","current_major_version","replacement_major_version")
     candidates=[]
     for row in rows:
         if not isinstance(row,dict):
             continue
         if row.get("current_repo")!=current_repo or row.get("replacement_repo")!=replacement_repo:
             continue
-        mismatch=False
-        specificity=0
-        for field in fields:
-            expected=context.get(field)
-            observed=row.get(field)
-            if isinstance(observed,str) and observed:
-                if isinstance(expected,str) and expected:
-                    if observed!=expected:
-                        mismatch=True
-                        break
-                    specificity+=1
-            elif isinstance(observed,(int,float)) and observed is not None:
-                if isinstance(expected,(int,float)) and expected is not None:
-                    if observed!=expected:
-                        mismatch=True
-                        break
-                    specificity+=1
-        if not mismatch:
-            candidates.append((specificity,row))
+        compatibility=_compatibility_distance(row,context)
+        candidates.append((compatibility["transferability"],row))
     if not candidates:
         return None
     candidates.sort(key=lambda item:(
@@ -70,23 +126,17 @@ def _replacement_history(learning: dict | None, current_repo: str, replacement_r
         float(item[1].get("evidence_confidence",0.0) or 0.0),
         int(item[1].get("samples",0) or 0),
     ),reverse=True)
-    return candidates[0][1]
+    best=dict(candidates[0][1])
+    best["compatibility"]=_compatibility_distance(best,context)
+    return best
 
 def _history_context_weight(history: dict | None, context: dict) -> float:
     if not isinstance(history,dict):
         return 0.0
-    fields=("framework","project_type","primary_domain","platform","current_major_version","replacement_major_version")
-    expected=[field for field in fields if context.get(field) is not None]
-    if not expected:
-        return 0.25
-    explicit=0
-    for field in expected:
-        value=history.get(field)
-        if value is not None:
-            if value!=context.get(field):
-                return 0.0
-            explicit+=1
-    return round(min(1.0,0.25+0.75*(explicit/len(expected))),4)
+    compatibility=history.get("compatibility")
+    if isinstance(compatibility,dict) and isinstance(compatibility.get("transferability"),(int,float)):
+        return round(max(0.0,min(1.0,float(compatibility["transferability"]))),4)
+    return _compatibility_distance(history,context)["transferability"]
 
 def _impact(current: dict, replacement: dict) -> dict:
     current_caps = set(current.get("capabilities", []) if isinstance(current.get("capabilities"), list) else [])
@@ -147,10 +197,10 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             wilson=float(history.get("wilson_lower_95",0.0) or 0.0)
             confidence=float(history.get("evidence_confidence",0.0) or 0.0)
             empirical_priority_adjustment=max(-10.0,min(5.0,(wilson-0.5)*10.0-regression*10.0))*confidence*history_context_weight
-            if history_context_weight>=0.75 and (regression>=0.25 or wilson<0.5):
+            if history_context_weight>=MIN_TRANSFERABILITY_FOR_RISK and (regression>=0.25 or wilson<0.5):
                 risk="high"
                 empirical_status="historically_risky"
-            elif history_context_weight>=0.75 and wilson>=0.70 and regression<=0.10:
+            elif history_context_weight>=MIN_TRANSFERABILITY_FOR_POSITIVE_BIAS and wilson>=0.70 and regression<=0.10:
                 empirical_status="historically_supported"
             else:
                 empirical_status="mixed_history"
@@ -189,6 +239,11 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             "replacement_major_version": context.get("replacement_major_version"),
             "historical_replacement_evidence": history,
             "history_context_weight": history_context_weight,
+            "compatibility_distance": (
+                history.get("compatibility")
+                if isinstance(history,dict) and isinstance(history.get("compatibility"),dict)
+                else {"transferability":0.0,"distance":1.0,"components":{},"exact_context_match":False}
+            ),
             "empirical_status": empirical_status,
             "empirical_priority_adjustment": round(empirical_priority_adjustment,3),
             "priority_score": round(float(row.get("benchmark_delta",0.0) or 0.0)+empirical_priority_adjustment,3),
@@ -217,7 +272,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
     ),reverse=True)
 
     return {
-        "version": 4,
+        "version": 5,
         "status": "planned",
         "advisory_only": True,
         "replacement_plans": plans,

@@ -31,6 +31,16 @@ def _count(value) -> int:
     return 0
 
 
+def _quality_score(*, successful: bool, blockers: int, cycles: int, rounds: int, calls: int) -> float:
+    """Continuous 0..100 project-quality score derived only from observable execution evidence."""
+    completion = 50.0 if successful else 0.0
+    blocker_score = 20.0 * max(0.0, 1.0 - min(blockers, 5) / 5.0)
+    cycle_score = 10.0 * max(0.0, 1.0 - max(0, min(cycles, 10) - 1) / 9.0)
+    round_score = 10.0 * max(0.0, 1.0 - max(0, min(rounds, 10) - 1) / 9.0)
+    call_score = 10.0 * max(0.0, 1.0 - min(calls, 20) / 20.0)
+    return round(completion + blocker_score + cycle_score + round_score + call_score, 3)
+
+
 def _decision_id(decision: dict) -> str:
     raw = json.dumps(decision, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
     return hashlib.sha256(raw).hexdigest()
@@ -53,8 +63,19 @@ def build(state: dict) -> dict:
         benchmark = {}
     migration_candidates = benchmark.get("migration_candidates")
     migration_candidates = migration_candidates if isinstance(migration_candidates, list) else []
+    successful = status in SUCCESS_STATUSES
+    cycles = _count(state.get("cycles", 0))
+    rounds = _count(state.get("rounds", 0))
+    calls = int(state.get("model_calls_this_cycle", 0) or 0)
+    quality_score = _quality_score(
+        successful=successful,
+        blockers=len(blockers),
+        cycles=cycles,
+        rounds=rounds,
+        calls=calls,
+    )
     return {
-        "schema": 2,
+        "schema": 3,
         "observed_at": round(time.time(), 3),
         "decision_id": _decision_id(decision),
         "decision_status": decision.get("status"),
@@ -79,10 +100,11 @@ def build(state: dict) -> dict:
         "decision_constraints": dict(decision.get("constraints") or {}),
         "outcome": {
             "status": status,
-            "successful": status in SUCCESS_STATUSES,
-            "cycles": _count(state.get("cycles", 0)),
-            "rounds": _count(state.get("rounds", 0)),
-            "model_calls_this_cycle": int(state.get("model_calls_this_cycle", 0) or 0),
+            "successful": successful,
+            "quality_score": quality_score,
+            "cycles": cycles,
+            "rounds": rounds,
+            "model_calls_this_cycle": calls,
             "checkpoint_replays_this_cycle": int(state.get("checkpoint_replays_this_cycle", 0) or 0),
             "blocker_count": len(blockers),
         },

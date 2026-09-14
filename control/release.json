@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "channel": "stable-candidate",
   "required_gates": [
     "CI",
@@ -13,7 +13,18 @@
   "operational_commands": [
     "python studio/v1_gate.py",
     "python studio/fleet_dashboard.py --root studio-output",
+    "python studio/fleet_metrics.py --root studio-output",
+    "python studio/fleet_regression.py --history studio-output/fleet-metrics.json",
     "python studio/fleet_supervisor.py --root studio-output",
-    "python studio/fleet_maintenance.py --root studio-output"
-  ]
+    "python studio/fleet_supervisor_apply.py --root studio-output",
+    "python studio/fleet_maintenance.py --root studio-output",
+    "python studio/fleet_daemon.py --root studio-output --once"
+  ],
+  "safety": {
+    "supervisor_default": "dry-run",
+    "restart_budget_default": 2,
+    "regression_blocks_restart": true,
+    "quarantine_on_state_integrity_failure": true,
+    "canary_schedule": "every 6 hours"
+  }
 }

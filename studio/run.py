@@ -14,6 +14,7 @@ import urllib.error
 from journeys import validate_journeys
 from core import API, APIError, Model, Sandbox, StudioError, allowed, apply_patch, canonical, request_check, verdict, SECRET, require_clean_patch_workspace
 from project_context import write as write_project_context
+from repair_planner import preview_plan
 
 class GitHub(API):
     def __init__(self, repo):
@@ -237,6 +238,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             state['status'] = 'repair_needed'
             if not passed:
                 state['blockers'] = ['Validation failed: ' + canonical(logs[-1:])[-16000:]]
+                state['repair_plan'] = preview_plan('preview_validation', state['blockers'])
                 parent = checkpoint(parent)
                 continue
             state['validation_contract'] = 2
@@ -244,6 +246,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             state['code_review'] = review
             if not review['passed']:
                 state['blockers'] = review['blockers']
+                state['repair_plan'] = preview_plan('code_review', state['blockers'])
                 parent = checkpoint(parent)
                 continue
             screenshots = sorted((root / 'test/goldens').glob('*.png'))
@@ -264,9 +267,11 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             state['visual_review'] = visual
             if not visual['passed']:
                 state['blockers'] = visual['blockers']
+                state['repair_plan'] = preview_plan('visual_review', state['blockers'])
                 parent = checkpoint(parent)
                 continue
             state.update(status='validated_preview', blockers=[])
+            state['repair_plan'] = preview_plan('preview', [])
             break
     except StudioError as e:
         state.update(status='blocked', blockers=[str(e)])

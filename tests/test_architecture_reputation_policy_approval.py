@@ -35,7 +35,7 @@ class ApprovalProvenanceTests(unittest.TestCase):
             "head_commit_timestamp":1767225600.0,
             "pr_identity":{"number":42,"state":"open","draft":False,"head_ref":"policy/migration","head_sha":"abc","base_ref":"main","author":"author"},
             "required_checks":{"valid":True,"required_checks":["validate","python-tests"],"passed_checks":["validate","python-tests"],"missing_checks":[],"incomplete_checks":[],"failed_checks":[],"stale_checks":[],"workflow_run_ids":[99],"common_workflow_run_id":99,"mixed_workflow_runs":False,"check_evidence":{"validate":{"id":1,"head_sha":"abc","timestamp":1767225630.0,"status":"completed","conclusion":"success","workflow_run_id":99},"python-tests":{"id":2,"head_sha":"abc","timestamp":1767225640.0,"status":"completed","conclusion":"success","workflow_run_id":99}}},
-            "workflow_file":{"path":".github/workflows/ci.yml","blob_sha":"blob123","size":44,"sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4","content_b64":"bmFtZTogQ0kKam9iczoKICB2YWxpZGF0ZToKICBweXRob24tdGVzdHM6Cg==","policy_validation":{"valid":True}},
+            "workflow_file":{"path":".github/workflows/ci.yml","blob_sha":"blob123","size":43,"sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4","content_b64":"bmFtZTogQ0kKam9iczoKICB2YWxpZGF0ZToKICBweXRob24tdGVzdHM6Cg==","policy_validation":{"valid":True}},
             "workflow":{"head_sha":"abc","conclusion":"success","name":"CI","path":".github/workflows/ci.yml","timestamp":1767225625.0},
         }
         if reinforced:a["second_reviewer"]={"login":"bob","review_state":"APPROVED","permission":"maintain","submitted_at_epoch":1767225620.0}

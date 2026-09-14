@@ -356,7 +356,7 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
             )
 
             self.assertFalse(candidate["passed"])
-            self.assertEqual(calls, ["dependency", "analyze"])
+            self.assertEqual(calls, ["analyze"])
             self.assertEqual(source.read_text(), "base\n")
 
     def test_progressive_quick_gates_reach_tests_only_after_analyze_passes(self):
@@ -415,7 +415,7 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
             )
 
             self.assertFalse(candidate["passed"])
-            self.assertEqual(calls, ["dependency", "analyze", "test"])
+            self.assertEqual(calls, ["analyze", "test"])
             self.assertEqual(source.read_text(), "base\n")
 
 

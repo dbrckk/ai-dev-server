@@ -17,6 +17,7 @@ class QueueTerminalStateTests(unittest.TestCase):
             "max_rounds":3,
             "max_calls":12,
             "max_cycles":5,
+            "priority":73,
         }
         path=Path(root)/(project_id+".json")
         path.write_text(json.dumps(value))
@@ -27,6 +28,15 @@ class QueueTerminalStateTests(unittest.TestCase):
             self.request(td,"active","owner/active")
             rows=matrix(td,{"done"})
             self.assertEqual([x["id"] for x in rows],["active"])
+
+    def test_validated_priority_and_budgets_are_propagated(self):
+        with tempfile.TemporaryDirectory() as td:
+            self.request(td,"active","owner/active")
+            row=matrix(td)[0]
+            self.assertEqual(row["priority"],73)
+            self.assertEqual(row["max_calls"],12)
+            self.assertEqual(row["max_rounds"],3)
+            self.assertEqual(row["max_cycles"],5)
 
     def test_unknown_terminal_id_is_harmless(self):
         with tempfile.TemporaryDirectory() as td:

@@ -57,6 +57,7 @@ from model_portfolio_learning import (
 )
 from capacity_ledger import reserve as reserve_capacity, settle as settle_capacity, release as release_capacity
 from capacity_runtime import project_envelope as load_project_envelope
+from capacity_efficiency import summarize as summarize_capacity_efficiency, routing_bonus as capacity_efficiency_routing_bonus
 
 
 def _decode(response: dict) -> dict:
@@ -133,10 +134,16 @@ def ask(
     capacity_ledger_raw = os.environ.get("STUDIO_CAPACITY_LEDGER_PATH", "")
     capacity_ledger_path = Path(capacity_ledger_raw) if capacity_ledger_raw else None
     capacity_plan_raw = os.environ.get("STUDIO_CAPACITY_PLAN_PATH", "")
+    capacity_efficiency_raw = os.environ.get("STUDIO_CAPACITY_EFFICIENCY_PATH", "")
     project_id = os.environ.get("STUDIO_PROJECT_ID", "").strip() or None
     project_capacity_envelope = load_project_envelope(
         Path(capacity_plan_raw) if capacity_plan_raw else None,
         project_id,
+    )
+    capacity_efficiency = (
+        summarize_capacity_efficiency(Path(capacity_efficiency_raw))
+        if capacity_efficiency_raw
+        else {"rows": [], "projects": {}}
     )
     try:
         weighted_contexts = json.loads(os.environ.get("STUDIO_ROUTING_CONTEXTS_JSON", "[]"))
@@ -211,6 +218,13 @@ def ask(
             weights=weights,
         )
         components = dict(base.components)
+        if project_id is not None:
+            components["verified_token_efficiency"] = capacity_efficiency_routing_bonus(
+                capacity_efficiency,
+                project_id=project_id,
+                provider=provider.name,
+                model=provider.model_for(role),
+            )
         if provider.unmetered and ":" in provider.name:
             gateway_name = provider.name.split(":", 1)[0]
             reputation_component = local_model_reputation_score(

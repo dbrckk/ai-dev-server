@@ -14,6 +14,9 @@ try:
     from .project_memory import new_memory, load as load_memory, save as save_memory
     from .goal_learning import context_for_goal, learn_from_cycle
     from .human_input_request import requires_human_input
+    from .atomic_file import write_text as atomic_write_text
+    from .durable_state import load_recovering as load_runtime_state, save as save_durable_state
+    from .telemetry import emit as emit_telemetry
 except ImportError:
     from capability_registry import new_registry, save as save_registry, load as load_registry, register, has_capability
     from goal_engine import new_goal, save as save_goal
@@ -23,6 +26,9 @@ except ImportError:
     from project_memory import new_memory, load as load_memory, save as save_memory
     from goal_learning import context_for_goal, learn_from_cycle
     from human_input_request import requires_human_input
+    from atomic_file import write_text as atomic_write_text
+    from durable_state import load_recovering as load_runtime_state, save as save_durable_state
+    from telemetry import emit as emit_telemetry
 
 
 AUTONOMY_DIR = ".autonomy"
@@ -166,7 +172,6 @@ def run_persistent_project(
     autonomy_root.mkdir(parents=True, exist_ok=True)
     runtime_state_path = autonomy_root / "runtime-state.json"
     if runtime_state_path.is_file():
-        from durable_state import load_recovering as load_runtime_state
         load_runtime_state(runtime_state_path)
     runtime_paths = {
         "STUDIO_QUICK_GATE_CACHE_PATH": autonomy_root / "quick-gate-cache.json",
@@ -223,7 +228,6 @@ def run_persistent_project(
                     "provenance":{"source":candidate["repo"],"kind":"owned_repository"},
                 })
         items=items[:20]
-        from atomic_file import write_text as atomic_write_text
         atomic_write_text(context_path, json.dumps(items, ensure_ascii=False, sort_keys=True, indent=2) + "\n")
         return items
 
@@ -270,8 +274,6 @@ def run_persistent_project(
             repo_root=Path("."),
         )
 
-    from durable_state import save as save_durable_state
-    from telemetry import emit as emit_telemetry
     previous_runtime = {name: os.environ.get(name) for name in runtime_paths}
     previous_project_id = os.environ.get("STUDIO_PROJECT_ID")
     for env_name, env_path in runtime_paths.items():

@@ -141,6 +141,54 @@ class CapacityEfficiencyTests(unittest.TestCase):
             self.assertEqual(row["success_streak"], 1)
 
 
+
+    def test_stagnation_routing_penalty_escalates_with_failure_streak(self):
+        summary = {
+            "rows": [
+                {
+                    "project_id": "a",
+                    "provider": "p",
+                    "model": "m",
+                    "samples": 8,
+                    "failure_streak": 8,
+                    "risk_adjusted_score": 0.0,
+                }
+            ]
+        }
+        self.assertEqual(
+            efficiency.stagnation_routing_penalty(
+                summary,
+                project_id="a",
+                provider="p",
+                model="m",
+            ),
+            -24.0,
+        )
+
+    def test_stagnation_routing_penalty_is_neutral_without_streak(self):
+        summary = {
+            "rows": [
+                {
+                    "project_id": "a",
+                    "provider": "p",
+                    "model": "m",
+                    "samples": 8,
+                    "failure_streak": 0,
+                    "risk_adjusted_score": 10.0,
+                }
+            ]
+        }
+        self.assertEqual(
+            efficiency.stagnation_routing_penalty(
+                summary,
+                project_id="a",
+                provider="p",
+                model="m",
+            ),
+            0.0,
+        )
+
+
     def test_sparse_projects_remain_neutral(self):
         summary = {
             "projects": {

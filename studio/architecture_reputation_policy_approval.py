@@ -167,6 +167,11 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
 
     target=plan.get("github_review_target") if isinstance(plan,dict) else None
     if isinstance(target,dict):
+        from replacement_ci_policy import CI_TRUST_POLICY_VERSION, ci_trust_policy_digest
+        if target.get("ci_trust_policy_version")!=CI_TRUST_POLICY_VERSION:
+            raise ApprovalProvenanceError("github CI trust policy version is stale")
+        if target.get("ci_trust_policy_digest")!=ci_trust_policy_digest():
+            raise ApprovalProvenanceError("github CI trust policy digest is stale")
         expected={
             "repository":target.get("repository"),
             "pull_request":target.get("pull_request"),

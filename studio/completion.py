@@ -5,6 +5,8 @@ orchestrator honest and gives CI a machine-readable list of work that remains.
 """
 from __future__ import annotations
 
+from task_scheduler import pipeline_stage_for_task, select as select_repair_task
+
 PREVIEW_STATUS = "validated_preview"
 FINISHED_STATUS = "finished"
 HUMAN_ACTION_STATUS = "human_action_required"
@@ -75,10 +77,16 @@ def completion_report(state: dict) -> dict:
 
 
 def next_stage(state: dict) -> str | None:
-    """Select the first missing trusted stage; never skip prerequisites."""
+    """Select the globally scheduled repair stage, then fall back to pipeline order."""
     report = completion_report(state)
     if report["finished"]:
         return None
+
+    scheduled = select_repair_task(state)
+    scheduled_stage = pipeline_stage_for_task(scheduled)
+    if scheduled_stage is not None:
+        return scheduled_stage
+
     if "preview_not_validated" in report["blockers"]:
         return "preview"
     release = state.get("release_evidence", {})

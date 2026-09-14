@@ -66,6 +66,7 @@ class TaskSemanticCheckpointTests(unittest.TestCase):
                         "criterion":"returns 200",
                         "passed":True,
                         "evidence":"tests/test_api.py::test_ok passed",
+                        "evidence_refs":["tests/test_api.py"],
                     }
                 ],
                 "remaining":[],
@@ -77,6 +78,7 @@ class TaskSemanticCheckpointTests(unittest.TestCase):
         self.assertTrue(review["complete"])
         self.assertEqual(review["criteria"][0]["criterion"],"returns 200")
         self.assertTrue(review["criteria"][0]["passed"])
+        self.assertEqual(review["criteria"][0]["evidence_refs"],["tests/test_api.py"])
 
     def test_failed_attempt_is_resumable(self):
         state=new("demo","a"*64,"b"*40)

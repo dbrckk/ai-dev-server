@@ -8,7 +8,7 @@ from pathlib import Path
 
 from generic_sandbox import run as run_command
 
-_PREFIXES=("file:","symbol:","test:","build:")
+_PREFIXES=("file:","symbol:","test:","build:","json:")
 
 
 def classify(criterion: str) -> dict:
@@ -29,6 +29,23 @@ def _safe_path(root: Path, rel: str) -> Path | None:
     if target.is_symlink():
         return None
     return target
+
+
+def _json_lookup(value, path: str):
+    current=value
+    if path=="":
+        return current, True
+    for part in path.split("."):
+        if isinstance(current,dict) and part in current:
+            current=current[part]
+            continue
+        if isinstance(current,list) and part.isdigit():
+            index=int(part)
+            if 0 <= index < len(current):
+                current=current[index]
+                continue
+        return None, False
+    return current, True
 
 
 def _symbol_exists(path: Path, symbol: str) -> bool:
@@ -79,6 +96,40 @@ def evaluate_static(root: Path, criterion: str) -> dict | None:
             "criterion":item["raw"],"kind":"symbol","passed":passed,
             "evidence_refs":[rel] if passed else [],
             "evidence":f"symbol {symbol} found in {rel}" if passed else f"symbol {symbol} not found in {rel}",
+        }
+    if kind=="json":
+        if "#" not in spec or "=" not in spec:
+            return {
+                "criterion":item["raw"],"kind":"json","passed":False,
+                "evidence_refs":[],"evidence":"json spec must be path#dot.path=<json literal>",
+            }
+        rel,expectation=spec.split("#",1)
+        key_path,raw_expected=expectation.split("=",1)
+        rel=rel.strip(); key_path=key_path.strip(); raw_expected=raw_expected.strip()
+        target=_safe_path(root,rel)
+        try:
+            expected=json.loads(raw_expected)
+        except json.JSONDecodeError:
+            return {
+                "criterion":item["raw"],"kind":"json","passed":False,
+                "evidence_refs":[],"evidence":"json expected value is not valid JSON",
+            }
+        try:
+            document=json.loads(target.read_text(encoding="utf-8")) if target and target.is_file() else None
+        except (OSError,UnicodeError,json.JSONDecodeError):
+            document=None
+        actual,found=_json_lookup(document,key_path) if document is not None else (None,False)
+        passed=bool(found and actual==expected)
+        return {
+            "criterion":item["raw"],"kind":"json","passed":passed,
+            "evidence_refs":[rel] if passed else [],
+            "evidence":(
+                f"json value matched at {rel}#{key_path}"
+                if passed else
+                f"json value mismatch at {rel}#{key_path}"
+            ),
+            "actual":actual if found else None,
+            "expected":expected,
         }
     return None
 
@@ -270,6 +321,25 @@ def validate_contract(criteria: list[str], *, critical: bool = False) -> dict:
         elif kind == "build":
             if spec.strip().lower() not in {"default", "project", "build"}:
                 errors.append(f"unsupported build criterion: {criterion}")
+
+        elif kind == "json":
+            if "#" not in spec or "=" not in spec:
+                errors.append(f"invalid json criterion: {criterion}")
+            else:
+                rel, expectation = spec.split("#", 1)
+                key_path, raw_expected = expectation.split("=", 1)
+                rel = rel.strip()
+                key_path = key_path.strip()
+                raw_expected = raw_expected.strip()
+                if not rel or rel.startswith("/") or ".." in Path(rel).parts:
+                    errors.append(f"unsafe json criterion: {criterion}")
+                elif not key_path:
+                    errors.append(f"invalid json criterion: {criterion}")
+                else:
+                    try:
+                        json.loads(raw_expected)
+                    except json.JSONDecodeError:
+                        errors.append(f"invalid json expected value: {criterion}")
 
     if critical and deterministic_count < 1:
         errors.append("critical task requires at least one deterministic done_when criterion")

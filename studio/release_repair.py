@@ -182,6 +182,7 @@ def attempt(
                 lambda s=state, st=stage, b=blockers, t=task:
                     _model_mutation(root, s, st, b, t, model_factory)
             ]
+            step_model_calls = [1]
             refine = lambda failure, s=state, st=stage, b=blockers, t=task: (
                 _model_mutation(root, s, st, b, t, model_factory, failure)
             )
@@ -190,6 +191,7 @@ def attempt(
                 lambda st=stage, b=blockers:
                     _agent_mutation(root, b, st)
             ]
+            step_model_calls = [0]
             refine = lambda failure, st=stage, b=blockers: (
                 _agent_mutation(root, b, st, failure)
             )
@@ -200,6 +202,7 @@ def attempt(
                 lambda s=state, st=stage, b=blockers, t=task:
                     _model_mutation(root, s, st, b, t, model_factory),
             ]
+            step_model_calls = [0, 1]
             refine = lambda failure, s=state, st=stage, b=blockers, t=task: (
                 _model_mutation(root, s, st, b, t, model_factory, failure)
             )
@@ -210,6 +213,7 @@ def attempt(
                 lambda st=stage, b=blockers:
                     _agent_mutation(root, b, st),
             ]
+            step_model_calls = [1, 0]
             refine = lambda failure, s=state, st=stage, b=blockers, t=task: (
                 _model_mutation(root, s, st, b, t, model_factory, failure)
             )
@@ -228,6 +232,7 @@ def attempt(
                 0,
                 budget_remaining(state, repair=True) - already_spent,
             ),
+            step_model_calls=step_model_calls,
             state=state,
             app_name=app_name,
             sandbox_factory=sandbox_factory,

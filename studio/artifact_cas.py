@@ -84,7 +84,7 @@ def put(
         tmp.unlink(missing_ok=True)
         raise StudioError("Artifact CAS write verification failed")
     os.replace(tmp, path)
-    if usage(shareable=shareable) > MAX_CAS_BYTES:
+    if usage(shareable=shareable, artifact_class=artifact_class) > MAX_CAS_BYTES:
         path.unlink(missing_ok=True)
         try:
             path.parent.rmdir()
@@ -92,7 +92,7 @@ def put(
             pass
         raise StudioError("Artifact CAS quota exceeded")
     record_stats(
-        digest,
+        stats_digest(digest, shareable=shareable, artifact_class=artifact_class),
         size=len(data),
         hit=False,
         rebuild_cost_seconds=rebuild_cost_seconds,

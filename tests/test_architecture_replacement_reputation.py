@@ -120,6 +120,55 @@ class ReplacementReputationTests(unittest.TestCase):
         self.assertEqual(entry["transition_rule"]["severity"],"critical")
         self.assertIn("quarantined_replacement_revalidated",entry["required_transition_gates"])
 
+    def test_policy_graph_is_valid(self):
+        validation=arr.validate_transition_policy()
+        self.assertTrue(validation["valid"],validation["errors"])
+        self.assertEqual(set(validation["reachable_states"]),arr.REPUTATION_STATES)
+
+    def test_validator_rejects_direct_quarantine_to_trusted(self):
+        policy={state:dict(row) for state,row in arr.TRANSITION_POLICY.items()}
+        policy["QUARANTINED"]={**policy["QUARANTINED"],"TRUSTED":{"allowed":True,"required_gates":[]}}
+        validation=arr.validate_transition_policy(policy)
+        self.assertFalse(validation["valid"])
+        self.assertTrue(any("unsafe_direct_promotion:QUARANTINED->TRUSTED" in e for e in validation["errors"]))
+
+    def test_validator_rejects_dangerous_transition_without_gate(self):
+        policy={state:dict(row) for state,row in arr.TRANSITION_POLICY.items()}
+        policy["TRUSTED"]={**policy["TRUSTED"],"QUARANTINED":{"allowed":True,"severity":"critical","required_gates":[]}}
+        validation=arr.validate_transition_policy(policy)
+        self.assertFalse(validation["valid"])
+        self.assertTrue(any("dangerous_state_missing_gate:TRUSTED->QUARANTINED" in e for e in validation["errors"]))
+
+    def test_validator_rejects_recovery_without_hysteresis(self):
+        policy={state:dict(row) for state,row in arr.TRANSITION_POLICY.items()}
+        policy["RECOVERING"]={**policy["RECOVERING"],"TRUSTED":{
+            "allowed":True,"required_gates":["replacement_reputation_transition_completed"],
+            "minimum_dwell_seconds":0,"minimum_new_effective_samples":0,"minimum_confirmations":1,
+        }}
+        validation=arr.validate_transition_policy(policy)
+        self.assertFalse(validation["valid"])
+        self.assertIn("recovering_trusted_missing_dwell",validation["errors"])
+        self.assertIn("recovering_trusted_missing_new_evidence",validation["errors"])
+        self.assertIn("recovering_trusted_missing_confirmations",validation["errors"])
+
+    def test_validator_rejects_unknown_and_unreachable_states(self):
+        policy={state:dict(row) for state,row in arr.TRANSITION_POLICY.items()}
+        policy["ALIEN"]={}
+        policy["UNOBSERVED"]={}
+        validation=arr.validate_transition_policy(policy)
+        self.assertFalse(validation["valid"])
+        self.assertTrue(any(e.startswith("unknown_source_states:") for e in validation["errors"]))
+        self.assertTrue(any(e.startswith("unreachable_states:") for e in validation["errors"]))
+
+    def test_apply_fail_closed_on_invalid_global_policy(self):
+        original=arr.TRANSITION_POLICY
+        try:
+            arr.TRANSITION_POLICY={"UNOBSERVED":{"TRUSTED":{"allowed":True,"required_gates":[]}}}
+            with self.assertRaises(ValueError):
+                arr.apply(None,self.context(),self.strong(),now=100.0)
+        finally:
+            arr.TRANSITION_POLICY=original
+
     def test_audit_records_every_transition(self):
         registry,_=arr.apply(None,self.context(),self.strong(),now=100.0)
         registry,_=arr.apply(registry,self.context(),{**self.strong(),"sequential_drift":True},now=200.0)

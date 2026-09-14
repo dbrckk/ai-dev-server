@@ -10,6 +10,7 @@ from journeys import validate_journeys
 from repair_search_policy import should_continue_after_quick_failure, should_refine
 from diff_quick_gates import plan as plan_quick_gates
 from quick_gate_cache import cache_key, delta_hash, get as cache_get, put as cache_put, workspace_hash
+from full_gate_cache import hit as full_cache_hit, record_success as full_cache_record_success, validation_key as full_validation_key
 
 MAX_CANDIDATES = 2
 MAX_BRANCH_STEPS = 3
@@ -122,6 +123,7 @@ def run_branch(
     remaining_model_calls: int = 0,
     step_model_calls: list[int] | None = None,
     quick_gate_cache: dict | None = None,
+    full_gate_cache: dict | None = None,
 ) -> dict:
     if not 1 <= len(steps) <= MAX_BRANCH_STEPS:
         raise StudioError("Repair branch step count invalid")
@@ -133,6 +135,8 @@ def run_branch(
         raise StudioError("Repair branch step-cost metadata invalid")
     if quick_gate_cache is None:
         quick_gate_cache = {}
+    if full_gate_cache is None:
+        full_gate_cache = {}
     baseline = snapshot_workspace(root)
     started = time.monotonic()
     metadata = {
@@ -260,8 +264,21 @@ def run_branch(
             metadata["steps"].append(step_trace)
 
         journeys = validate_journeys(state.get("product", {}).get("journeys"))
-        sandbox = sandbox_factory(root)
-        passed, logs = sandbox.gates(app_name, journeys)
+        full_key = full_validation_key(root, app_name=app_name, journeys=journeys)
+        if full_cache_hit(full_gate_cache, full_key):
+            passed = True
+            logs = [{
+                "command": ["cached-full-candidate-validation"],
+                "exit_code": 0,
+                "output": full_key,
+            }]
+            cached_full_validation = True
+        else:
+            sandbox = sandbox_factory(root)
+            passed, logs = sandbox.gates(app_name, journeys)
+            cached_full_validation = False
+            if passed:
+                full_cache_record_success(full_gate_cache, full_key)
         refinements = 0
         while (
             not passed
@@ -310,6 +327,8 @@ def run_branch(
             "gate_count": len(logs),
             "elapsed_seconds": round(elapsed, 3),
             "refinements": refinements,
+            "cached_full_validation": cached_full_validation,
+            "full_validation_key": full_key,
             **metadata,
         }
         if not passed:

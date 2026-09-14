@@ -12,7 +12,7 @@ import urllib.parse
 from architecture_replacement_persist import _request, ReplacementPersistenceError
 from architecture_reputation_policy_approval import ApprovalProvenanceError
 from architecture_reputation_policy_github_attestation import build, latest_approvals
-from replacement_ci_policy import REQUIRED_WORKFLOW_PATH, validate_workflow_text
+from replacement_ci_policy import CI_TRUST_POLICY_VERSION, REQUIRED_WORKFLOW_PATH, ci_trust_policy_digest, validate_workflow_text
 
 class GitHubAttestationCollectionError(RuntimeError):
     pass
@@ -82,6 +82,8 @@ def collect_review_target(*, token: str, repository: str, pull_request: int) -> 
         "workflow_path":workflow_file["path"] if isinstance(workflow_file,dict) else None,
         "workflow_blob_sha":workflow_file["blob_sha"] if isinstance(workflow_file,dict) else None,
         "workflow_sha256":workflow_file["sha256"] if isinstance(workflow_file,dict) else None,
+        "ci_trust_policy_version":CI_TRUST_POLICY_VERSION,
+        "ci_trust_policy_digest":ci_trust_policy_digest(),
     }
     if any(not target.get(key) for key in target):
         raise GitHubAttestationCollectionError("GitHub PR review target incomplete")

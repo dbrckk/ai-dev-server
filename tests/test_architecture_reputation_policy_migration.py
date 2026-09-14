@@ -77,6 +77,11 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
             reviews=reviews,
             permissions=permissions,
             workflow_runs=[{"id":99,"head_sha":"a"*40,"conclusion":"success","name":"CI"}],
+            check_runs=[
+                {"name":"validate","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/99"},
+                {"name":"python-tests","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/99"},
+            ],
+            pr_identity={"number":42,"state":"open","draft":False,"head_ref":"policy/migration","head_sha":"a"*40,"base_ref":"main","author":"reviewer-a"},
             reinforced=reinforced,
         )
 

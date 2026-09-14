@@ -96,6 +96,18 @@ def choose_execution_mode(
         return MetaRoute("dual", 2, 0.0, "insufficient comparative evidence", "dual")
     gap = (agent_rate - provider_rate) + architecture_bias
     confidence = min(1.0, min(agent_n, provider_n) / 20.0)
+    if (
+        role == "implementation"
+        and architecture_bias <= -MIN_GAP
+        and gap >= MIN_GAP
+    ):
+        return MetaRoute(
+            "dual",
+            1,
+            confidence,
+            "agent success is higher but architecture discipline requires independent model fallback",
+            "dual",
+        )
     if gap >= MIN_GAP:
         return MetaRoute("agent_focus", 2, confidence, "verified agent success rate materially higher", "agent_to_model")
     if gap <= -MIN_GAP:

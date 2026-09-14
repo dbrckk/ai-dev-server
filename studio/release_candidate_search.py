@@ -11,6 +11,7 @@ from repair_search_policy import should_continue_after_quick_failure, should_ref
 from diff_quick_gates import plan as plan_quick_gates
 from quick_gate_cache import cache_key, delta_hash, get as cache_get, put as cache_put, workspace_hash
 from full_gate_cache import hit as full_cache_hit, record_success as full_cache_record_success, validation_key as full_validation_key
+from immutable_artifact_cache import capture as capture_artifacts, restore as restore_artifacts
 
 MAX_CANDIDATES = 2
 MAX_BRANCH_STEPS = 3
@@ -124,6 +125,7 @@ def run_branch(
     step_model_calls: list[int] | None = None,
     quick_gate_cache: dict | None = None,
     full_gate_cache: dict | None = None,
+    artifact_cache: dict | None = None,
 ) -> dict:
     if not 1 <= len(steps) <= MAX_BRANCH_STEPS:
         raise StudioError("Repair branch step count invalid")
@@ -137,6 +139,8 @@ def run_branch(
         quick_gate_cache = {}
     if full_gate_cache is None:
         full_gate_cache = {}
+    if artifact_cache is None:
+        artifact_cache = {}
     baseline = snapshot_workspace(root)
     started = time.monotonic()
     metadata = {
@@ -265,7 +269,13 @@ def run_branch(
 
         journeys = validate_journeys(state.get("product", {}).get("journeys"))
         full_key = full_validation_key(root, app_name=app_name, journeys=journeys)
-        if full_cache_hit(full_gate_cache, full_key):
+        artifact_restore = None
+        if full_cache_hit(full_gate_cache, full_key) and full_key in artifact_cache:
+            artifact_restore = restore_artifacts(
+                root,
+                artifact_cache[full_key],
+                full_key,
+            )
             passed = True
             logs = [{
                 "command": ["cached-full-candidate-validation"],
@@ -279,6 +289,7 @@ def run_branch(
             cached_full_validation = False
             if passed:
                 full_cache_record_success(full_gate_cache, full_key)
+                artifact_cache[full_key] = capture_artifacts(root, full_key)
         refinements = 0
         while (
             not passed
@@ -329,6 +340,7 @@ def run_branch(
             "refinements": refinements,
             "cached_full_validation": cached_full_validation,
             "full_validation_key": full_key,
+            "artifact_restore": artifact_restore,
             **metadata,
         }
         if not passed:

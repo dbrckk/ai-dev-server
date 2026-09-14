@@ -110,3 +110,37 @@ def clear(root: Path) -> None:
             (root/name).unlink()
         except FileNotFoundError:
             pass
+
+
+def resume_decision(
+    path: Path,
+    *,
+    project_id: str,
+    environ: dict[str,str] | None = None,
+) -> dict:
+    """Return a pure resume decision for persisted external-input state."""
+    path=Path(path)
+    if not path.is_file():
+        return {"action":"continue","state":None,"missing_env":[]}
+    try:
+        state=load(path)
+    except UserInputRequiredError as exc:
+        return {
+            "action":"invalid",
+            "state":None,
+            "missing_env":[],
+            "error":str(exc),
+        }
+    if state.get("project_id")!=project_id:
+        return {
+            "action":"invalid",
+            "state":state,
+            "missing_env":[],
+            "error":"user input project mismatch",
+        }
+    missing=missing_env(state,environ)
+    return {
+        "action":"wait" if missing else "resume",
+        "state":state,
+        "missing_env":missing,
+    }

@@ -6,6 +6,7 @@ objects from GitHub, then this pure builder normalizes and binds them to the mig
 from __future__ import annotations
 import hashlib
 import json
+from datetime import datetime,timezone
 from architecture_reputation_policy_approval import ApprovalProvenanceError, validate_github_attestation
 from replacement_ci_policy import validate_check_runs
 
@@ -31,7 +32,31 @@ def _commit(review):
     if not isinstance(review,dict): return None
     return review.get("commit_sha") or review.get("commitId") or review.get("commit_id") or review.get("commit_oid")
 
-def latest_approvals(reviews: list[dict], commit_sha: str) -> list[dict]:
+def _timestamp(value) -> float | None:
+    if isinstance(value,(int,float)):
+        return float(value)
+    if not isinstance(value,str) or not value:
+        return None
+    try:
+        text=value[:-1]+"+00:00" if value.endswith("Z") else value
+        dt=datetime.fromisoformat(text)
+        if dt.tzinfo is None:
+            dt=dt.replace(tzinfo=timezone.utc)
+        return dt.timestamp()
+    except ValueError:
+        return None
+
+def _submitted_at(review):
+    if not isinstance(review,dict):
+        return None
+    return (
+        review.get("submitted_at")
+        or review.get("submittedAt")
+        or review.get("created_at")
+        or review.get("createdAt")
+    )
+
+def latest_approvals(reviews: list[dict], commit_sha: str, *, head_commit_timestamp: float | None=None) -> list[dict]:
     latest={}
     for review in reviews if isinstance(reviews,list) else []:
         login=_login(review)
@@ -42,7 +67,18 @@ def latest_approvals(reviews: list[dict], commit_sha: str) -> list[dict]:
         if _state(review)!="APPROVED": continue
         review_commit=_commit(review)
         if review_commit and review_commit!=commit_sha: continue
-        rows.append({"login":login,"review_state":"APPROVED","reviewed_commit_sha":review_commit or commit_sha})
+        submitted_raw=_submitted_at(review)
+        submitted_ts=_timestamp(submitted_raw)
+        if head_commit_timestamp is not None:
+            if submitted_ts is None or submitted_ts<head_commit_timestamp:
+                continue
+        rows.append({
+            "login":login,
+            "review_state":"APPROVED",
+            "reviewed_commit_sha":review_commit or commit_sha,
+            "submitted_at":submitted_raw,
+            "submitted_at_epoch":submitted_ts,
+        })
     return rows
 
 def successful_workflow(runs: list[dict], commit_sha: str) -> dict:
@@ -59,8 +95,10 @@ def successful_workflow(runs: list[dict], commit_sha: str) -> dict:
 
 def build(plan: dict, *, repository: str, pull_request: int, commit_sha: str,
           reviews: list[dict], permissions: dict[str,str], workflow_runs: list[dict],
-          check_runs: list[dict], pr_identity: dict, reinforced: bool) -> dict:
-    approvals=latest_approvals(reviews,commit_sha)
+          check_runs: list[dict], pr_identity: dict, head_commit_timestamp: float, reinforced: bool) -> dict:
+    if not isinstance(head_commit_timestamp,(int,float)):
+        raise ApprovalProvenanceError("head commit timestamp missing")
+    approvals=latest_approvals(reviews,commit_sha,head_commit_timestamp=float(head_commit_timestamp))
     eligible=[a for a in approvals if permissions.get(a["login"]) in {"admin","maintain","write"}]
     if not eligible:
         raise ApprovalProvenanceError("no eligible GitHub approver")
@@ -85,6 +123,7 @@ def build(plan: dict, *, repository: str, pull_request: int, commit_sha: str,
         "migration_id":plan.get("migration_id"),
         "review_digest":plan.get("review_digest"),
         "reviewer":first,
+        "head_commit_timestamp":float(head_commit_timestamp),
         "pr_identity":pr_identity,
         "required_checks":checks,
         "workflow":{"head_sha":workflow["head_sha"],"conclusion":workflow["conclusion"],"name":workflow["name"]},

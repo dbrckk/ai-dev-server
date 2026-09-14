@@ -116,21 +116,6 @@ def plan(
     for row in pending[:max(0,MAX_REJECTED-len(rejected))]:
         rejected.append({"repo":row["repo"],"reason":"lower-ranked than selected candidates for this phase"})
 
-    resolved_framework = (
-        framework
-        if isinstance(framework, str) and framework
-        else req.get("framework")
-        if isinstance(req.get("framework"), str) and req.get("framework")
-        else "flutter"
-    )
-    resolved_publication = (
-        publication_target
-        if isinstance(publication_target, str) and publication_target
-        else req.get("publication_target")
-        if isinstance(req.get("publication_target"), str) and req.get("publication_target")
-        else "google-play" if resolved_framework in {"flutter", "godot"} else "unspecified"
-    )
-
     return {
         "version":1,
         "status":"planned",

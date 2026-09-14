@@ -57,6 +57,7 @@ def summarize(root:Path|str="studio-output")->dict:
             "rollback_preparations":0,
             "rollbacks":0,
             "quality_total":0.0,
+            "first_observed_at":None,
             "latest_observed_at":None,
         })
         item["samples"]+=1
@@ -68,8 +69,11 @@ def summarize(root:Path|str="studio-output")->dict:
         item["quality_total"]+=float(q) if isinstance(q,(int,float)) else 0.0
         ts=row.get("observed_at")
         if isinstance(ts,(int,float)):
-            prev=item["latest_observed_at"]
-            item["latest_observed_at"]=float(ts) if not isinstance(prev,(int,float)) else max(float(prev),float(ts))
+            ts=float(ts)
+            first=item["first_observed_at"]
+            latest=item["latest_observed_at"]
+            item["first_observed_at"]=ts if not isinstance(first,(int,float)) else min(float(first),ts)
+            item["latest_observed_at"]=ts if not isinstance(latest,(int,float)) else max(float(latest),ts)
 
     rankings=[]
     for item in stats.values():
@@ -82,7 +86,7 @@ def summarize(root:Path|str="studio-output")->dict:
         rollback_rate=item["rollbacks"]/n if n else 0.0
         mean_quality=item["quality_total"]/n if n else 0.0
         rankings.append({
-            **{k:item[k] for k in ("current_repo","replacement_repo","framework","project_type","primary_domain","platform","current_major_version","replacement_major_version","samples","successes","regressions","rollback_preparations","rollbacks","latest_observed_at")},
+            **{k:item[k] for k in ("current_repo","replacement_repo","framework","project_type","primary_domain","platform","current_major_version","replacement_major_version","samples","successes","regressions","rollback_preparations","rollbacks","first_observed_at","latest_observed_at")},
             "success_rate":round(success_rate,4),
             "posterior_success_rate":round(posterior,4),
             "wilson_lower_95":round(_wilson_lower(successes,n),4),
@@ -102,7 +106,7 @@ def summarize(root:Path|str="studio-output")->dict:
         x["samples"],
     ),reverse=True)
     return {
-        "version":2,
+        "version":3,
         "outcomes_observed":outcomes,
         "minimum_samples":MIN_SAMPLES,
         "confidence_target":CONFIDENCE_TARGET,

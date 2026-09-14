@@ -1,12 +1,13 @@
-"""Local content-addressable store for immutable candidate artifacts."""
+"""Local content-addressable store with strict project isolation."""
 from __future__ import annotations
 
 import hashlib
 import os
 from pathlib import Path
 
-from core import StudioError
+from artifact_cas_namespace import project_namespace
 from artifact_cas_stats import forget as forget_stats, record as record_stats
+from core import StudioError
 
 MAX_CAS_BYTES = 64 * 1024 * 1024
 
@@ -16,25 +17,46 @@ def _root() -> Path | None:
     return Path(raw) if raw else None
 
 
+def _project_id() -> str:
+    raw = os.environ.get("STUDIO_PROJECT_ID", "")
+    return raw if raw else "local-project"
+
+
+def _scope_root(*, shareable: bool = False) -> Path:
+    root = _root()
+    if root is None:
+        raise StudioError("Artifact CAS path unavailable")
+    if shareable:
+        return root / "shared"
+    return root / "private" / project_namespace(_project_id())
+
+
 def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def blob_path(digest: str) -> Path:
-    root = _root()
-    if root is None:
-        raise StudioError("Artifact CAS path unavailable")
-    if not isinstance(digest, str) or len(digest) != 64 or any(ch not in "0123456789abcdef" for ch in digest):
+def blob_path(digest: str, *, shareable: bool = False) -> Path:
+    if (
+        not isinstance(digest, str)
+        or len(digest) != 64
+        or any(ch not in "0123456789abcdef" for ch in digest)
+    ):
         raise StudioError("Artifact CAS digest invalid")
+    root = _scope_root(shareable=shareable)
     return root / digest[:2] / digest[2:]
 
 
-def put(data: bytes, *, rebuild_cost_seconds: float | None = None) -> dict:
+def put(
+    data: bytes,
+    *,
+    rebuild_cost_seconds: float | None = None,
+    shareable: bool = False,
+) -> dict:
     if not isinstance(data, (bytes, bytearray)):
         raise StudioError("Artifact CAS payload invalid")
     data = bytes(data)
     digest = sha256(data)
-    path = blob_path(digest)
+    path = blob_path(digest, shareable=shareable)
     if path.is_file():
         existing = path.read_bytes()
         if sha256(existing) != digest:
@@ -53,7 +75,7 @@ def put(data: bytes, *, rebuild_cost_seconds: float | None = None) -> dict:
         tmp.unlink(missing_ok=True)
         raise StudioError("Artifact CAS write verification failed")
     os.replace(tmp, path)
-    if usage() > MAX_CAS_BYTES:
+    if usage(shareable=shareable) > MAX_CAS_BYTES:
         path.unlink(missing_ok=True)
         try:
             path.parent.rmdir()
@@ -69,8 +91,8 @@ def put(data: bytes, *, rebuild_cost_seconds: float | None = None) -> dict:
     return {"sha256": digest, "size": len(data)}
 
 
-def get(digest: str, expected_size: int) -> bytes:
-    path = blob_path(digest)
+def get(digest: str, expected_size: int, *, shareable: bool = False) -> bytes:
+    path = blob_path(digest, shareable=shareable)
     if not path.is_file() or path.is_symlink():
         raise StudioError("Artifact CAS blob missing")
     data = path.read_bytes()
@@ -80,9 +102,9 @@ def get(digest: str, expected_size: int) -> bytes:
     return data
 
 
-def usage() -> int:
-    root = _root()
-    if root is None or not root.is_dir():
+def usage(*, shareable: bool = False) -> int:
+    root = _scope_root(shareable=shareable)
+    if not root.is_dir():
         return 0
     total = 0
     for path in root.rglob("*"):
@@ -91,9 +113,9 @@ def usage() -> int:
     return total
 
 
-def gc(referenced: set[str]) -> dict:
-    root = _root()
-    if root is None or not root.is_dir():
+def gc(referenced: set[str], *, shareable: bool = False) -> dict:
+    root = _scope_root(shareable=shareable)
+    if not root.is_dir():
         return {"removed": 0, "bytes_removed": 0, "bytes_after": 0}
     removed = 0
     bytes_removed = 0
@@ -114,7 +136,7 @@ def gc(referenced: set[str]) -> dict:
                 path.rmdir()
             except OSError:
                 pass
-    after = usage()
+    after = usage(shareable=shareable)
     if after > MAX_CAS_BYTES:
         raise StudioError("Artifact CAS exceeds quota after GC")
     forget_stats(removed_digests)

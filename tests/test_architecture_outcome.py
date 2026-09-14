@@ -22,11 +22,17 @@ class ArchitectureOutcomeTests(unittest.TestCase):
                 "status": "planned",
                 "chosen": [{"repo": "a/core"}, {"repo": "b/ui"}],
             },
+            "architecture_evaluation": {
+                "verdict": "retain",
+                "confidence": "high",
+            },
         }
         result = build(state)
 
         self.assertTrue(result["outcome"]["successful"])
         self.assertEqual(result["chosen_repositories"], ["a/core", "b/ui"])
+        self.assertEqual(result["evaluation_verdict"], "retain")
+        self.assertEqual(result["evaluation_confidence"], "high")
         self.assertEqual(result["outcome"]["model_calls_this_cycle"], 4)
         self.assertEqual(result["outcome"]["checkpoint_replays_this_cycle"], 1)
 

@@ -138,8 +138,9 @@ def _model_mutation(root: Path, state: dict, stage: str, blockers: list[str], ta
         if item["path"].startswith(("test/", "docs/")):
             raise StudioError("Release repair may not edit tests or documentation")
     apply_patch(root, patch)
+    effective_calls = max(0, int(model.calls) - int(getattr(model, "checkpoint_replays", 0)))
     return {
-        "model_calls": model.calls,
+        "model_calls": effective_calls,
         "models_used": getattr(model, "models_used", {}),
         "providers_used": getattr(model, "providers_used", {}),
         "checkpoint_reused": checkpoint_reused,

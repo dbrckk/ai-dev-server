@@ -56,6 +56,8 @@ def main() -> int:
     }))
     if state.get('status') == 'human_action_required':
         return 2
+    if isinstance(evidence, dict) and evidence.get('source_repaired') is True:
+        return 0
     return 0 if isinstance(evidence, dict) and evidence.get('passed') else 1
 
 

@@ -25,10 +25,15 @@ def build(state: dict) -> dict:
     status = str(state.get("status", "unknown"))
     blockers = state.get("blockers")
     blockers = blockers if isinstance(blockers, list) else []
+    evaluation = state.get("architecture_evaluation")
+    if not isinstance(evaluation, dict):
+        evaluation = {}
     return {
         "schema": 1,
         "decision_id": _decision_id(decision),
         "decision_status": decision.get("status"),
+        "evaluation_verdict": evaluation.get("verdict"),
+        "evaluation_confidence": evaluation.get("confidence"),
         "chosen_repositories": [
             row.get("repo")
             for row in chosen

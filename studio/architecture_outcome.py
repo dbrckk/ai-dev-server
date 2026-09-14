@@ -54,7 +54,7 @@ def build(state: dict) -> dict:
     migration_candidates = benchmark.get("migration_candidates")
     migration_candidates = migration_candidates if isinstance(migration_candidates, list) else []
     return {
-        "schema": 1,
+        "schema": 2,
         "observed_at": round(time.time(), 3),
         "decision_id": _decision_id(decision),
         "decision_status": decision.get("status"),

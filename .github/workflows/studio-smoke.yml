@@ -40,8 +40,8 @@ jobs:
           test -r /dev/kvm
           test -w /dev/kvm
           emulator -accel-check
-      - name: Compile and render a real Flutter fixture in the studio sandbox
-        run: python studio/smoke.py
+      - name: Compile and render sequential isolated Flutter fixtures
+        run: python studio/multi_project_smoke.py
       - name: Preserve smoke diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

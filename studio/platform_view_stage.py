@@ -9,6 +9,7 @@ from completion import apply_completion, next_stage
 from core import StudioError, canonical
 from platform_view_qa import validate_platform_views
 from run import GitHub
+from release_stage_engine import apply_external_gate, evaluate_and_repair
 
 
 def advance(request_path: Path, root: Path, out: Path) -> dict:
@@ -22,9 +23,13 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
         report_path.write_text(canonical(state))
         return state
 
-    evidence = validate_platform_views(root, out)
+    evidence = evaluate_and_repair(root, out, state, req, 'platform_view_qa', validate_platform_views)
     state.setdefault('release_evidence', {})['platform_view_qa'] = evidence
+    state.pop('human_action', None)
+    if state.get('status') == 'human_action_required':
+        state['status'] = 'validated_preview'
     apply_completion(state)
+    apply_external_gate(state, 'platform_view_qa', evidence)
     parent = state.get('checkpoint_commit')
     if not parent:
         raise StudioError('Platform-view QA report has no checkpoint commit')
@@ -48,6 +53,8 @@ def main() -> int:
         'next_stage': state.get('completion', {}).get('next_stage'),
         'platform_view_passed': evidence.get('passed') if isinstance(evidence, dict) else None,
     }))
+    if state.get('status') == 'human_action_required':
+        return 2
     return 0 if isinstance(evidence, dict) and evidence.get('passed') else 1
 
 

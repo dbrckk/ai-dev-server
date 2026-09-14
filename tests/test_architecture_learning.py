@@ -135,5 +135,21 @@ class ArchitectureLearningTests(unittest.TestCase):
             self.assertEqual(result["stack_rankings"][0]["samples"], 5)
             self.assertTrue(result["stack_rankings"][0]["eligible_for_advisory_bias"])
 
+    def test_learning_root_does_not_escape_arbitrary_output_directory(self):
+        self.assertEqual(
+            al.root_for_output(Path("/tmp/demo-output")),
+            Path("/tmp/demo-output"),
+        )
+        self.assertEqual(
+            al.root_for_output(Path("studio-output/project-a")),
+            Path("studio-output"),
+        )
+        self.assertEqual(
+            al.root_for_output(Path("studio-output")),
+            Path("studio-output"),
+        )
+
+
+
 if __name__ == "__main__":
     unittest.main()

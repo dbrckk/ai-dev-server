@@ -29,6 +29,18 @@ class ProviderSpec:
         return self.model
 
 
+def _is_local_base(base: str) -> bool:
+    text = (base or "").strip().lower()
+    return (
+        text.startswith("http://127.0.0.1")
+        or text.startswith("https://127.0.0.1")
+        or text.startswith("http://localhost")
+        or text.startswith("https://localhost")
+        or text.startswith("http://0.0.0.0")
+        or text.startswith("https://0.0.0.0")
+    )
+
+
 def _bool(value, default=True):
     if isinstance(value, bool):
         return value
@@ -49,6 +61,7 @@ def _primary() -> ProviderSpec | None:
         vision = "nvidia/nemotron-nano-12b-v2-vl"
     if vision == "disabled":
         vision = ""
+    explicit_unmetered = os.environ.get("STUDIO_PROVIDER_UNMETERED")
     return ProviderSpec(
         name=os.environ.get("STUDIO_PROVIDER_NAME", "primary"),
         base=base,
@@ -60,7 +73,11 @@ def _primary() -> ProviderSpec | None:
         free_preferred=_bool(os.environ.get("STUDIO_PROVIDER_FREE", "true")),
         input_cost_per_million=max(0.0, float(os.environ.get("STUDIO_INPUT_COST_PER_MILLION", "0") or 0)),
         output_cost_per_million=max(0.0, float(os.environ.get("STUDIO_OUTPUT_COST_PER_MILLION", "0") or 0)),
-        unmetered=_bool(os.environ.get("STUDIO_PROVIDER_UNMETERED", "false"), False),
+        unmetered=(
+            _bool(explicit_unmetered, False)
+            if explicit_unmetered is not None
+            else _is_local_base(base)
+        ),
     )
 
 
@@ -106,7 +123,11 @@ def _json_specs(raw: str) -> list[ProviderSpec]:
             free_preferred=_bool(item.get("free_preferred", True)),
             input_cost_per_million=max(0.0, float(item.get("input_cost_per_million", 0.0) or 0.0)),
             output_cost_per_million=max(0.0, float(item.get("output_cost_per_million", 0.0) or 0.0)),
-            unmetered=_bool(item.get("unmetered", False), False),
+            unmetered=(
+                _bool(item.get("unmetered"), False)
+                if "unmetered" in item
+                else _is_local_base(base)
+            ),
         ))
     return specs
 

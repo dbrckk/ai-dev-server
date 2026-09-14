@@ -12,7 +12,7 @@ import time
 from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
-from architecture_reputation_policy_approval import ApprovalProvenanceError, consume as consume_approval, validate_approval, validate_ledger
+from architecture_reputation_policy_approval import ApprovalProvenanceError, consume as consume_approval, validate_approval, validate_github_attestation, validate_ledger
 from architecture_replacement_reputation import (
     DANGEROUS_STATE_GATES,
     MAX_AUDIT_EVENTS,
@@ -422,7 +422,7 @@ def dry_run(registry: dict, learning: dict | None=None, *, now: float | None=Non
     result["authorization_template"]=authorization_template(result,now=now)
     return result
 
-def apply_migration(registry: dict, plan: dict, authorization: dict, *, approval: dict | None=None, approval_ledger: dict | None=None, now: float | None=None) -> dict:
+def apply_migration(registry: dict, plan: dict, authorization: dict, *, approval: dict | None=None, github_attestation: dict | None=None, approval_ledger: dict | None=None, now: float | None=None) -> dict:
     if not isinstance(plan,dict) or plan.get("status")!="reputation_policy_migration_review_ready":
         raise ReputationPolicyMigrationError("migration plan invalid")
     if not isinstance(authorization,dict):
@@ -446,6 +446,11 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, approval
     try:
         provenance=validate_approval(
             approval,
+            plan,
+            reinforced=risk.get("reinforced_review_required") is True,
+        )
+        github_provenance=validate_github_attestation(
+            github_attestation,
             plan,
             reinforced=risk.get("reinforced_review_required") is True,
         )
@@ -572,6 +577,13 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, approval
             "authorization_issued_at":issued_at,
             "authorization_expires_at":expires_at,
             "approval_digest":provenance["approval_digest"],
+            "github_attestation_digest":github_provenance["attestation_digest"],
+            "github_repository":github_provenance["repository"],
+            "github_commit_sha":github_provenance["commit_sha"],
+            "github_pull_request":github_provenance["pull_request"],
+            "github_workflow_run_id":github_provenance["workflow_run_id"],
+            "github_reviewer":github_provenance["github_reviewer"],
+            "github_second_reviewer":github_provenance["github_second_reviewer"],
             "reviewer_id":provenance["reviewer_id"],
             "second_reviewer_id":provenance["second_reviewer_id"],
             "approval_ledger_head":next_approval_ledger["head"],
@@ -599,8 +611,8 @@ def write_dry_run(registry: dict, learning: dict | None, out: Path, *, now: floa
     )
     return result
 
-def write_applied(registry: dict, plan: dict, authorization: dict, path: Path, *, approval: dict | None=None, approval_ledger: dict | None=None, now: float | None=None) -> dict:
-    migrated=apply_migration(registry,plan,authorization,approval=approval,approval_ledger=approval_ledger,now=now)
+def write_applied(registry: dict, plan: dict, authorization: dict, path: Path, *, approval: dict | None=None, github_attestation: dict | None=None, approval_ledger: dict | None=None, now: float | None=None) -> dict:
+    migrated=apply_migration(registry,plan,authorization,approval=approval,github_attestation=github_attestation,approval_ledger=approval_ledger,now=now)
     atomic_write_text(
         path,
         json.dumps(migrated,ensure_ascii=False,indent=2,sort_keys=True)+"\n",

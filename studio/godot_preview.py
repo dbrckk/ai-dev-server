@@ -16,6 +16,16 @@ from godot_model import GodotModel
 from godot_session import GodotSandbox
 from journeys import validate_journeys
 from project_engine import editable, restorable
+from project_recommendations import recommend
+from architecture_planner import write as write_architecture_plan
+from architecture_learning import (
+    summarize as summarize_architecture_learning,
+    write as write_architecture_learning,
+    root_for_output as architecture_learning_root,
+)
+from architecture_evaluator import write as write_architecture_evaluation
+from architecture_benchmark import write as write_architecture_benchmark
+from architecture_outcome import write as write_architecture_outcome
 
 MAX_PUBLISH_FILE_BYTES = 1_000_000
 
@@ -41,8 +51,16 @@ def _context(req: dict, state: dict, root: Path) -> str:
         rel = path.relative_to(root).as_posix()
         if editable(rel, 'godot'):
             files[rel] = path.read_text()
-    return canonical({'engine':'godot','request':req,'product':state.get('product'),'design':state.get('design'),
-                      'previous_blockers':state.get('blockers',[]),'files':files})
+    return canonical({
+        'engine':'godot',
+        'request':req,
+        'product':state.get('product'),
+        'design':state.get('design'),
+        'previous_blockers':state.get('blockers',[]),
+        'architecture_decision':state.get('architecture_decision', {'status':'unavailable','chosen':[]}),
+        'architecture_benchmark':state.get('architecture_benchmark', {'status':'unavailable','migration_candidates':[]}),
+        'files':files,
+    })
 
 
 def _exact_branch_ref(github, branch: str):
@@ -152,6 +170,24 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
         raise StudioError('Checkpoint engine mismatch')
     if state['status'] == 'godot_preview_validated' or state['cycles'] >= req['max_cycles']:
         (out / 'report.json').write_text(canonical(state)); return state
+
+    architecture_recommendations = recommend(
+        'planning',
+        out,
+        context_text=req.get('brief'),
+    )
+    architecture_root = architecture_learning_root(out)
+    historical_learning = summarize_architecture_learning(architecture_root)
+    state['architecture_recommendations'] = architecture_recommendations
+    state['architecture_decision'] = write_architecture_plan(
+        req,
+        architecture_recommendations,
+        out,
+        learning=historical_learning,
+        framework='godot',
+        publication_target='google-play',
+    )
+
     model = model_factory(req['max_calls']); sandbox = sandbox_factory(root); sandbox.create(req['app_name'])
     state['cycles'] += 1
 
@@ -192,10 +228,28 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
         state.update(status='blocked',blockers=[str(exc)])
     finally:
         state['model_calls_this_cycle'] = model.calls
+        state['checkpoint_replays_this_cycle'] = 0
         state['models_used'] = getattr(model,'models_used',{})
         state['release_status'] = 'not_store_ready'
         state['coverage'] = {'engine':'godot','headless_import':True,'journeys_executed':False,
                              'android_export':False,'device_qa':False,'visual_qa':False}
+        state['architecture_evaluation'] = write_architecture_evaluation(
+            state.get('architecture_decision', {}),
+            state,
+            out,
+        )
+        state['architecture_benchmark'] = write_architecture_benchmark(
+            state.get('architecture_decision', {}),
+            state.get('architecture_evaluation', {}),
+            state.get('architecture_recommendations', {}),
+            out,
+        )
+        write_architecture_outcome(state, out)
+        try:
+            state['architecture_learning'] = write_architecture_learning(architecture_root)
+        except OSError:
+            state['architecture_learning'] = {'status':'unavailable'}
+
         (out / 'report.json').write_text(canonical(state))
         checkpoint(); state['checkpoint_commit'] = parent
         (out / 'report.json').write_text(canonical(state))

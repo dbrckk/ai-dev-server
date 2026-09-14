@@ -9,7 +9,7 @@ from pathlib import Path
 from atomic_file import write_text as atomic_write_text
 
 
-SUCCESS_STATUSES = {"validated_preview", "complete", "technical_store_ready"}
+SUCCESS_STATUSES = {"validated_preview", "finished", "complete", "technical_store_ready"}
 
 
 def _decision_id(decision: dict) -> str:
@@ -29,6 +29,11 @@ def build(state: dict) -> dict:
     evaluation = state.get("architecture_evaluation")
     if not isinstance(evaluation, dict):
         evaluation = {}
+    benchmark = state.get("architecture_benchmark")
+    if not isinstance(benchmark, dict):
+        benchmark = {}
+    migration_candidates = benchmark.get("migration_candidates")
+    migration_candidates = migration_candidates if isinstance(migration_candidates, list) else []
     return {
         "schema": 1,
         "observed_at": round(time.time(), 3),
@@ -36,6 +41,8 @@ def build(state: dict) -> dict:
         "decision_status": decision.get("status"),
         "evaluation_verdict": evaluation.get("verdict"),
         "evaluation_confidence": evaluation.get("confidence"),
+        "benchmark_status": benchmark.get("status"),
+        "migration_candidate_count": len(migration_candidates),
         "chosen_repositories": [
             row.get("repo")
             for row in chosen

@@ -319,6 +319,9 @@ def attempt(
                     "elapsed_seconds": item.get("elapsed_seconds", 0.0),
                     "refinements": item.get("refinements", 0),
                     "steps": item.get("steps", []),
+                    "cached_full_validation": item.get("cached_full_validation", False),
+                    "full_validation_key": item.get("full_validation_key"),
+                    "artifact_restore": item.get("artifact_restore"),
                     "failure": item.get("failure"),
                 }
                 for item in candidates

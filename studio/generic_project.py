@@ -185,8 +185,10 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
     safe_rewrite_learning_path = out / ".autonomy" / "safe-rewrite-learning.json"
     contextual_routing_path = out / ".autonomy" / "contextual-routing-memory.json"
+    provider_cost_path = out / ".autonomy" / "provider-cost.json"
     __import__("os").environ["STUDIO_SAFE_REWRITE_LEARNING_PATH"] = str(safe_rewrite_learning_path)
     __import__("os").environ["STUDIO_CONTEXTUAL_ROUTING_MEMORY_PATH"] = str(contextual_routing_path)
+    __import__("os").environ["STUDIO_PROVIDER_COST_PATH"] = str(provider_cost_path)
     try:
         checkpoint = load_checkpoint(checkpoint_path) if checkpoint_path.is_file() else new_checkpoint(req["id"], "generic", base_sha)
     except ExecutionCheckpointError:

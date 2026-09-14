@@ -5,7 +5,7 @@ orchestrator honest and gives CI a machine-readable list of work that remains.
 """
 from __future__ import annotations
 
-from task_scheduler import pipeline_stage_for_task, select as select_repair_task
+from task_scheduler import dispatch as scheduler_dispatch, pipeline_stage_for_task, select as select_repair_task
 
 PREVIEW_STATUS = "validated_preview"
 FINISHED_STATUS = "finished"
@@ -102,6 +102,7 @@ def apply_completion(state: dict) -> dict:
     report["required_stages"] = list(required_release_stages(state))
     report["next_stage"] = next_stage(state)
     state["completion"] = report
+    state["scheduler"] = scheduler_dispatch(state)
     state["release_status"] = "store_ready" if report["finished"] else "not_store_ready"
     if report["finished"]:
         state["status"] = FINISHED_STATUS

@@ -56,12 +56,24 @@ def _submitted_at(review):
         or review.get("createdAt")
     )
 
+def _review_order_key(review) -> tuple[float,int]:
+    ts=_timestamp(_submitted_at(review))
+    review_id=review.get("id") if isinstance(review,dict) else None
+    try:
+        rid=int(review_id or 0)
+    except (TypeError,ValueError):
+        rid=0
+    return (ts if ts is not None else float("-inf"),rid)
+
 def latest_approvals(reviews: list[dict], commit_sha: str, *, head_commit_timestamp: float | None=None) -> list[dict]:
     latest={}
     for review in reviews if isinstance(reviews,list) else []:
         login=_login(review)
-        if not login: continue
-        latest[login]=review
+        if not login:
+            continue
+        current=latest.get(login)
+        if current is None or _review_order_key(review)>=_review_order_key(current):
+            latest[login]=review
     rows=[]
     for login,review in sorted(latest.items()):
         if _state(review)!="APPROVED": continue

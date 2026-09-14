@@ -113,11 +113,11 @@ def run_branch(
     strategy_prior_score: float,
     steps: list,
     refine,
-    strategy_row: dict | None = None,
-    remaining_model_calls: int = 0,
     state: dict,
     app_name: str,
     sandbox_factory,
+    strategy_row: dict | None = None,
+    remaining_model_calls: int = 0,
 ) -> dict:
     if not 1 <= len(steps) <= MAX_BRANCH_STEPS:
         raise StudioError("Repair branch step count invalid")

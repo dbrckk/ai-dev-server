@@ -1664,6 +1664,7 @@ Objective and current plan:
             work,
             list(active_task_contract.get("done_when", [])) if active_task_contract else [],
             timeout=120,
+            verification=verification,
         ) if active_task_contract else {
             "deterministic": [],
             "reviewer": [],

@@ -99,6 +99,13 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
             'providers_used': dict(result.get('providers_used', {})),
             'gate_count': result.get('gate_count', 0),
         })
+        record_repair_outcome(
+            state,
+            success=result.get('changed') is True,
+            calls=result.get('model_calls', 0),
+            blockers_before=blockers_before,
+            blockers_after=0 if result.get('changed') is True else blockers_before,
+        )
         if result.get('changed') is not True:
             break
         source_changed = True

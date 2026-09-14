@@ -59,7 +59,10 @@ def collect_review_target(*, token: str, repository: str, pull_request: int) -> 
     base=pr.get("base") if isinstance(pr.get("base"),dict) else {}
     user=pr.get("user") if isinstance(pr.get("user"),dict) else {}
     commit_sha=head.get("sha")
-    workflow_file=_collect_workflow_file(api,token,commit_sha) if isinstance(commit_sha,str) and commit_sha else None
+    try:
+        workflow_file=_collect_workflow_file(api,token,commit_sha) if isinstance(commit_sha,str) and commit_sha else None
+    except ReplacementPersistenceError as exc:
+        raise GitHubAttestationCollectionError("GitHub workflow target collection failed") from exc
     target={
         "repository":repository,
         "pull_request":pull_request,

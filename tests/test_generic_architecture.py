@@ -22,6 +22,11 @@ class GenericArchitectureTests(unittest.TestCase):
         decision = {
             "status": "planned",
             "advisory_only": True,
+            "autonomy_policy": {
+                "decision_confidence": "low",
+                "validation_required": True,
+                "validation_mode": "independent_review",
+            },
             "constraints": {
                 "framework": "generic",
                 "publication_target": "unspecified",
@@ -38,6 +43,7 @@ class GenericArchitectureTests(unittest.TestCase):
         self.assertEqual(root, Path(td))
         self.assertEqual(state["architecture_recommendations"], recommendations)
         self.assertEqual(state["architecture_decision"], decision)
+        self.assertEqual(state["architecture_autonomy_policy"], decision["autonomy_policy"])
         recommend.assert_called_once()
         root_for_output.assert_called_once()
         summarize.assert_called_once_with(Path(td))

@@ -542,7 +542,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             }
 
             used_external_agent = False
-            if work_pass == 1 and agent_candidates:
+            if work_pass == 1:
                 try:
                     before_agent = snapshot_agent_workspace(work)
                 except ValueError as exc:
@@ -588,6 +588,18 @@ Objective and current plan:
                     memory_path=out/".autonomy/agent-performance.json",
                     limit=3,
                 )
+                try:
+                    direct_model_candidates = direct_candidates_for(
+                        "implementation",
+                        providers=load_direct_providers(prefer_free=True),
+                    )
+                    available_direct_models = len({
+                        (provider.name, provider.model_for("implementation"))
+                        for provider in direct_model_candidates
+                        if provider.model_for("implementation")
+                    })
+                except ValueError:
+                    available_direct_models = 1
                 meta_route = choose_execution_mode(
                     routing_events,
                     role="implementation",
@@ -615,21 +627,14 @@ Objective and current plan:
                     predicted_reserve_seconds=difficulty.verification_reserve_seconds,
                 )
                 agent_trace.append({"status":"execution_budget","decision":route_budget.as_dict()})
-                try:
-                    direct_model_candidates = direct_candidates_for(
-                        "implementation",
-                        providers=load_direct_providers(prefer_free=True),
-                    )
-                    available_direct_models = len({
-                        (provider.name, provider.model_for("implementation"))
-                        for provider in direct_model_candidates
-                        if provider.model_for("implementation")
-                    })
-                except ValueError:
-                    available_direct_models = 1
+                scheduler_confidence = (
+                    meta_route.confidence
+                    if preliminary_names
+                    else (0.5 if available_direct_models > 1 else 1.0)
+                )
                 candidate_schedule = choose_candidate_schedule(
                     capacity_status=state.get("capacity_status", {}),
-                    route_confidence=meta_route.confidence,
+                    route_confidence=scheduler_confidence,
                     verification_seconds=verification_seconds,
                     remaining_seconds=remaining_seconds,
                     available_agents=min(len(preliminary_names), route_budget.agent_limit),

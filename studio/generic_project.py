@@ -272,6 +272,20 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         )
         learned_context = load_context()
         round_weighted_contexts = weighted_task_contexts(req["brief"], state["toolchain"])
+        round_weighted_contexts = list(round_weighted_contexts)
+        round_weighted_contexts.append(("difficulty:" + str(difficulty.band), 0.30))
+        architecture_risk = (
+            "hold"
+            if state.get("architecture_autonomy_policy", {}).get("architecture_changes_allowed") is False
+            else "pass"
+        )
+        round_weighted_contexts.append(("architecture-risk:" + architecture_risk, 0.35))
+        total_context_weight = sum(max(0.0, float(weight)) for _, weight in round_weighted_contexts)
+        if total_context_weight > 0:
+            round_weighted_contexts = [
+                (name, max(0.0, float(weight)) / total_context_weight)
+                for name, weight in round_weighted_contexts
+            ]
         __import__("os").environ["STUDIO_ROUTING_CONTEXTS_JSON"] = json.dumps(round_weighted_contexts)
         contextual_routing = load_contextual_routing_memory(contextual_routing_path)
         agent_perf = load_agent_performance(out/".autonomy/agent-performance.json")

@@ -28,3 +28,21 @@ def project_envelope(path: Path | str | None, project_id: str | None) -> int | N
             return raw
         return None
     return None
+
+
+def project_state(path: Path | str | None, project_id: str | None) -> dict:
+    if not path or not project_id:
+        return {}
+    target = Path(path)
+    if not target.is_file():
+        return {}
+    try:
+        value = json.loads(target.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return {}
+    if not isinstance(value, dict) or not isinstance(value.get("projects"), list):
+        return {}
+    for row in value["projects"]:
+        if isinstance(row, dict) and row.get("id") == project_id:
+            return dict(row)
+    return {}

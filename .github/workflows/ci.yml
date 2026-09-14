@@ -31,6 +31,11 @@ jobs:
           PYTHONPATH: studio
         run: python studio/reputation_policy_check.py
 
+      - name: Validate replacement CI check policy
+        env:
+          PYTHONPATH: studio
+        run: python studio/replacement_ci_policy_check.py .github/workflows/ci.yml
+
       - name: Run exhaustive reputation state-machine tests
         env:
           PYTHONPATH: studio

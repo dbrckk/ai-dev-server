@@ -179,7 +179,6 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     base_sha, restore = repo.restore(work)
     checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
     safe_rewrite_learning_path = out / ".autonomy" / "safe-rewrite-learning.json"
-    previous_safe_rewrite_env = __import__("os").environ.get("STUDIO_SAFE_REWRITE_LEARNING_PATH")
     __import__("os").environ["STUDIO_SAFE_REWRITE_LEARNING_PATH"] = str(safe_rewrite_learning_path)
     try:
         checkpoint = load_checkpoint(checkpoint_path) if checkpoint_path.is_file() else new_checkpoint(req["id"], "generic", base_sha)

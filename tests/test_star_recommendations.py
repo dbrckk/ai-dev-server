@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 import star_scanner
 from project_recommendations import recommend
-from run import _load_star_recommendations, _load_architecture_benchmark, context as build_context
+from run import _load_star_recommendations, _load_architecture_benchmark, _load_architecture_replacement_work_orders, context as build_context
 from orchestrator import _recommendation_context
 
 
@@ -116,12 +116,13 @@ class StarScannerTests(unittest.TestCase):
     def test_model_context_contains_recommendations_as_data(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            state = {"technical_recommendations": {"status": "ok", "matches": [{"repo": "owner/repo"}]}, "architecture_decision": {"status": "planned", "chosen": [{"repo": "owner/repo"}]}, "architecture_benchmark": {"status": "benchmarked", "migration_candidates": [{"best_alternative": "owner/alt"}]}, "architecture_drift_alerts": [{"type": "repository", "repo": "owner/repo", "score": 1.0}]}
+            state = {"technical_recommendations": {"status": "ok", "matches": [{"repo": "owner/repo"}]}, "architecture_decision": {"status": "planned", "chosen": [{"repo": "owner/repo"}]}, "architecture_benchmark": {"status": "benchmarked", "migration_candidates": [{"best_alternative": "owner/alt"}]}, "architecture_replacement_work_orders": {"status": "planned", "work_orders": [{"id": "replace-1", "current_repo": "owner/repo", "replacement_repo": "owner/alt"}]}, "architecture_drift_alerts": [{"type": "repository", "repo": "owner/repo", "score": 1.0}]}
             payload = json.loads(build_context({"brief": "test"}, state, root))
             self.assertEqual(payload["technical_recommendations"]["matches"][0]["repo"], "owner/repo")
             self.assertEqual(payload["architecture_decision"]["chosen"][0]["repo"], "owner/repo")
             self.assertEqual(payload["architecture_benchmark"]["migration_candidates"][0]["best_alternative"], "owner/alt")
             self.assertEqual(payload["architecture_drift_alerts"][0]["repo"], "owner/repo")
+            self.assertEqual(payload["architecture_replacement_work_orders"]["work_orders"][0]["replacement_repo"], "owner/alt")
 
     def test_load_architecture_benchmark_is_bounded(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -142,6 +143,27 @@ class StarScannerTests(unittest.TestCase):
             self.assertEqual(len(result["migration_candidates"]), 8)
             self.assertTrue(result["advisory_only"])
             self.assertNotIn("ignored", result["migration_candidates"][0])
+
+    def test_load_replacement_work_orders_is_bounded(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            payload = {
+                "status": "planned",
+                "work_orders": [{
+                    "id": f"replace-{i}",
+                    "current_repo": "a/current",
+                    "replacement_repo": "a/better",
+                    "risk": "medium",
+                    "scope": "moderate",
+                    "go_no_go": "NO_GO_PENDING_EXECUTION",
+                    "ignored": "not propagated",
+                } for i in range(10)],
+            }
+            (root / "architecture-replacement-work-orders.json").write_text(json.dumps(payload))
+            result = _load_architecture_replacement_work_orders(root)
+            self.assertEqual(len(result["work_orders"]), 4)
+            self.assertTrue(result["advisory_only"])
+            self.assertNotIn("ignored", result["work_orders"][0])
 
     def test_recommendation_context_uses_project_brief(self):
         with tempfile.TemporaryDirectory() as tmp:

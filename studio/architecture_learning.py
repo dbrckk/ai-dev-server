@@ -337,8 +337,38 @@ def summarize(root: Path | str = "studio-output") -> dict:
         reverse=True,
     )
 
+    drift_alerts = []
+    for row in rankings:
+        drift = row.get("drift")
+        if isinstance(drift, dict) and drift.get("status") == "degraded":
+            drift_alerts.append({
+                "type": "repository",
+                "repo": row.get("repo"),
+                "domain": row.get("domain"),
+                "framework": row.get("framework"),
+                "project_type": row.get("project_type"),
+                "primary_domain": row.get("primary_domain"),
+                "score": drift.get("score"),
+                "success_delta": drift.get("success_delta"),
+                "quality_delta": drift.get("quality_delta"),
+            })
+    for row in stack_rankings:
+        drift = row.get("drift")
+        if isinstance(drift, dict) and drift.get("status") == "degraded":
+            drift_alerts.append({
+                "type": "stack",
+                "repos": row.get("repos", [])[:12],
+                "framework": row.get("framework"),
+                "project_type": row.get("project_type"),
+                "primary_domain": row.get("primary_domain"),
+                "score": drift.get("score"),
+                "success_delta": drift.get("success_delta"),
+                "quality_delta": drift.get("quality_delta"),
+            })
+    drift_alerts.sort(key=lambda x: float(x.get("score", 0.0) or 0.0), reverse=True)
+
     return {
-        "schema": 6,
+        "schema": 7,
         "projects_observed": projects,
         "minimum_samples": MIN_SAMPLES,
         "confidence_sample_target": CONFIDENCE_SAMPLE_TARGET,
@@ -349,6 +379,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
         "advisory_only": True,
         "rankings": rankings,
         "stack_rankings": stack_rankings[:100],
+        "drift_alerts": drift_alerts[:50],
     }
 
 

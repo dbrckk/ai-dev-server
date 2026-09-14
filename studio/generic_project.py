@@ -75,7 +75,7 @@ You receive the original plan, the exact validation error and the accepted task 
 Return ONLY a corrected JSON plan.
 Preserve valid task IDs/titles/dependencies where possible.
 Do not add unrelated work.
-Critical tasks must include at least one valid deterministic done_when criterion using file:, symbol:, test:, build:, or json:.
+Critical tasks must include at least one strong deterministic done_when criterion using symbol:, test:, build:, or json:. A file: existence check alone is not sufficient for a critical task.
 Structured paths must be repository-relative and must not contain '..' or absolute paths."""
 
 TASK_PLAN_SYSTEM = """You are maintaining one subgoal inside an already validated project objective DAG.
@@ -722,7 +722,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
                             "original_plan": plan,
                             "validation_error": initial_plan_error,
                             "rules": {
-                                "critical_requires_deterministic_done_when": True,
+                                "critical_requires_strong_deterministic_done_when": True,
                                 "structured_prefixes": ["file:","symbol:","test:","build:","json:"],
                                 "paths_must_be_repository_relative": True,
                                 "max_tasks": 64,

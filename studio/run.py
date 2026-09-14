@@ -21,7 +21,7 @@ from idempotent_model import ask_value as checkpointed_ask
 from atomic_file import write_text as atomic_write_text
 from architecture_planner import write as write_architecture_plan
 from architecture_outcome import write as write_architecture_outcome
-from architecture_learning import write as write_architecture_learning, summarize as summarize_architecture_learning
+from architecture_learning import write as write_architecture_learning, summarize as summarize_architecture_learning, root_for_output as architecture_learning_root
 from architecture_evaluator import write as write_architecture_evaluation
 from architecture_benchmark import write as write_architecture_benchmark
 
@@ -282,7 +282,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             elif p.is_file():
                 apply_patch(root, {'files': [{'path': p.relative_to(saved_root).as_posix(), 'content': p.read_text()}]})
     state['technical_recommendations'] = _load_star_recommendations(out)
-    historical_root = out if out.name == "studio-output" else out.parent
+    historical_root = architecture_learning_root(out)
     historical_learning = summarize_architecture_learning(historical_root)
     state['architecture_decision'] = write_architecture_plan(
         req,
@@ -405,7 +405,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         out,
     )
     write_architecture_outcome(state, out)
-    learning_root = out if (out / "architecture-outcome.json").is_file() and out.name == "studio-output" else out.parent
+    learning_root = architecture_learning_root(out)
     try:
         state["architecture_learning"] = write_architecture_learning(learning_root)
     except OSError:

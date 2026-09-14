@@ -54,5 +54,19 @@ class DurableStateTests(unittest.TestCase):
             self.assertEqual(ds.load(primary), {"status": "good"})
 
 
+    def test_load_recovering_restores_last_verified_backup(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "state.json"
+            ds.save(path, {"generation": 1})
+            ds.save(path, {"generation": 2})
+            path.write_text("{corrupted", encoding="utf-8")
+
+            loaded = ds.load_recovering(path)
+
+            self.assertEqual(loaded, {"generation": 1})
+            self.assertEqual(ds.load(path), {"generation": 1})
+
+
+
 if __name__ == "__main__":
     unittest.main()

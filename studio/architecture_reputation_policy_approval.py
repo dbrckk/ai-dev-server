@@ -136,6 +136,13 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         raise ApprovalProvenanceError("required GitHub checks incomplete or failed")
     if checks.get("stale_checks"):
         raise ApprovalProvenanceError("required GitHub checks stale")
+    if checks.get("mixed_workflow_runs") is True:
+        raise ApprovalProvenanceError("required GitHub checks come from multiple workflow runs")
+    common_run_id=checks.get("common_workflow_run_id")
+    if not isinstance(common_run_id,int):
+        raise ApprovalProvenanceError("required GitHub checks lack a common workflow run")
+    if common_run_id!=attestation.get("workflow_run_id") or common_run_id!=attestation.get("required_workflow_run_id"):
+        raise ApprovalProvenanceError("required checks do not bind attested workflow run")
     required_checks=checks.get("required_checks")
     passed_checks=checks.get("passed_checks")
     evidence=checks.get("check_evidence")
@@ -151,6 +158,8 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
             raise ApprovalProvenanceError("required GitHub check does not bind reviewed commit")
         if row.get("status")!="completed" or row.get("conclusion")!="success":
             raise ApprovalProvenanceError("required GitHub check is not successful")
+        if row.get("workflow_run_id")!=common_run_id:
+            raise ApprovalProvenanceError("required GitHub check workflow run mismatch")
         check_timestamp=row.get("timestamp")
         if not isinstance(check_timestamp,(int,float)) or check_timestamp<float(head_commit_timestamp):
             raise ApprovalProvenanceError("required GitHub check predates latest PR head commit")
@@ -205,6 +214,7 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         "passed_checks":checks.get("passed_checks"),
         "check_evidence":checks.get("check_evidence"),
         "workflow_timestamp":workflow_timestamp,
+        "common_workflow_run_id":common_run_id,
         "attestation_digest":digest,
     }
 

@@ -40,6 +40,7 @@ from local_model_reputation import (
     record as record_local_model_reputation,
     score as local_model_reputation_score,
     quarantine_status as local_model_quarantine_status,
+    QUARANTINE_ROUTING_PENALTY,
 )
 from local_model_benchmark import (
     load as load_local_model_benchmark,
@@ -171,7 +172,7 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 role=role,
             )
             if quarantine["quarantined"]:
-                components["quarantine_probation"] = -100.0
+                components["quarantine_probation"] = -QUARANTINE_ROUTING_PENALTY
             if reputation_component == 0.0:
                 components["local_model_benchmark"] = local_model_benchmark_bonus(
                     local_model_benchmark,

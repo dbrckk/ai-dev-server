@@ -35,6 +35,7 @@ def benchmark(decision: dict, evaluation: dict, recommendations: dict) -> dict:
     blockers = evaluation.get("blockers", []) if isinstance(evaluation, dict) else []
     blocker_count = len(blockers) if isinstance(blockers, list) else 0
 
+    constraints = decision.get("constraints") if isinstance(decision, dict) and isinstance(decision.get("constraints"), dict) else {}
     comparisons = []
     for chosen in decision.get("chosen", [])[:8] if isinstance(decision, dict) else []:
         if not isinstance(chosen, dict) or not isinstance(chosen.get("repo"), str):
@@ -68,6 +69,10 @@ def benchmark(decision: dict, evaluation: dict, recommendations: dict) -> dict:
         )
         comparisons.append({
             "current_repo": chosen["repo"],
+            "framework": constraints.get("framework"),
+            "project_type": constraints.get("project_type"),
+            "primary_domain": constraints.get("primary_domain"),
+            "platform": constraints.get("platform"),
             "current_score": current_score,
             "alternatives": alternatives,
             "best_alternative": best["repo"] if best else None,
@@ -80,7 +85,7 @@ def benchmark(decision: dict, evaluation: dict, recommendations: dict) -> dict:
 
     migration_candidates = [x for x in comparisons if x["migration_candidate"]]
     return {
-        "version": 1,
+        "version": 2,
         "status": "benchmarked",
         "advisory_only": True,
         "evaluation_verdict": evaluation.get("verdict") if isinstance(evaluation, dict) else None,

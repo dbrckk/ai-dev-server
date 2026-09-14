@@ -9,6 +9,15 @@ from atomic_file import write_text as atomic_write_text
 
 MAX_CHOSEN = 6
 MAX_REJECTED = 12
+HIGH_CONFIDENCE_MARGIN = 1.5
+MEDIUM_CONFIDENCE_MARGIN = 0.5
+
+def _selection_confidence(margin: float | None) -> str:
+    if margin is None or margin >= HIGH_CONFIDENCE_MARGIN:
+        return "high"
+    if margin >= MEDIUM_CONFIDENCE_MARGIN:
+        return "medium"
+    return "low"
 
 def _clean_rows(value):
     if not isinstance(value, dict):
@@ -130,10 +139,18 @@ def plan(
             item[1]["repo"],
         ), reverse=True)
         effective,row,synergy=scored[0]
+        runner_up_score = scored[1][0] if len(scored) > 1 else None
+        selection_margin = (
+            round(effective - runner_up_score, 4)
+            if runner_up_score is not None
+            else None
+        )
         pending=[x for x in pending if x["repo"]!=row["repo"]]
         chosen.append({
             "repo":row["repo"],
             "selection_score":effective,
+            "selection_margin":selection_margin,
+            "selection_confidence":_selection_confidence(selection_margin),
             "base_selection_score":row.get("score"),
             "repo_feedback_score":row.get("feedback_score", row.get("score")),
             "stack_synergy_bonus":synergy.get("bonus",0.0),
@@ -152,7 +169,7 @@ def plan(
         rejected.append({"repo":row["repo"],"reason":"lower-ranked than selected candidates for this phase"})
 
     return {
-        "version":1,
+        "version":2,
         "status":"planned",
         "advisory_only":True,
         "feedback_applied": bool(recommendations.get("feedback_applied")),
@@ -161,6 +178,9 @@ def plan(
             "advisory_only":True,
             "can_add_dependency":False,
             "greedy_synergy_rerank":True,
+            "selection_margin_confidence":True,
+            "high_confidence_margin":HIGH_CONFIDENCE_MARGIN,
+            "medium_confidence_margin":MEDIUM_CONFIDENCE_MARGIN,
         },
         "brief_fingerprint_source":"request.brief",
         "chosen":chosen,

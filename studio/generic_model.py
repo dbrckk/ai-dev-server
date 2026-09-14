@@ -50,6 +50,10 @@ from local_model_specialization import (
     load as load_local_model_specialization,
     specialization_score as local_model_specialization_score,
 )
+from model_portfolio_learning import (
+    load as load_model_portfolio_learning,
+    diversity_bias as model_portfolio_diversity_bias,
+)
 
 
 def _decode(response: dict) -> dict:
@@ -104,6 +108,8 @@ def ask(
     local_benchmark_path = Path(local_benchmark_raw) if local_benchmark_raw else None
     local_specialization_raw = os.environ.get("STUDIO_LOCAL_MODEL_SPECIALIZATION_PATH", "")
     local_specialization_path = Path(local_specialization_raw) if local_specialization_raw else None
+    portfolio_learning_raw = os.environ.get("STUDIO_MODEL_PORTFOLIO_LEARNING_PATH", "")
+    portfolio_learning_path = Path(portfolio_learning_raw) if portfolio_learning_raw else None
     try:
         weighted_contexts = json.loads(os.environ.get("STUDIO_ROUTING_CONTEXTS_JSON", "[]"))
     except json.JSONDecodeError:
@@ -128,6 +134,8 @@ def ask(
     local_model_reputation = load_local_model_reputation(local_rep_path) if local_rep_path is not None else {}
     local_model_benchmark = load_local_model_benchmark(local_benchmark_path) if local_benchmark_path is not None else {}
     local_model_specialization = load_local_model_specialization(local_specialization_path) if local_specialization_path is not None else {}
+    portfolio_learning = load_model_portfolio_learning(portfolio_learning_path) if portfolio_learning_path is not None else {}
+    learned_diversity_bias = model_portfolio_diversity_bias(portfolio_learning)
     try:
         max_api_cost_usd = float(os.environ.get("STUDIO_MAX_API_COST_USD", "0") or 0.0)
     except ValueError:
@@ -208,6 +216,13 @@ def ask(
                     gateway_name,
                     provider.model_for(role),
                 )
+        if role in {"review", "visual"} and learned_diversity_bias > 0:
+            candidate_model = provider.model_for(role)
+            if (
+                provider.name not in (avoid_providers or set())
+                and candidate_model not in (avoid_models or set())
+            ):
+                components["learned_portfolio_diversity"] = learned_diversity_bias
         if role == "implementation" and safe_rewrite_path is not None:
             violation = origin_violation_penalty(
                 safe_rewrite_summary,

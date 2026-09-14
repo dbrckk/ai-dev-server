@@ -6,7 +6,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 from core import StudioError
-from release_repair import _persist_caches, attempt
+from release_repair import _model_mutation, _persist_caches, attempt
 from unittest.mock import patch
 
 
@@ -172,6 +172,63 @@ class ReleaseRepairTests(unittest.TestCase):
         quick_save.assert_called_once()
         full_save.assert_called_once()
         artifact_save.assert_called_once()
+
+
+
+    def test_release_fix_checkpoint_replay_does_not_spend_model_budget(self):
+        class ReplayModel:
+            def __init__(self, limit):
+                self.calls = 0
+                self.models_used = {}
+                self.providers_used = {}
+                self.avoid_providers = set()
+
+            def ask(self, role, context, screenshots=()):
+                self.calls += 1
+                return {
+                    "files": [
+                        {
+                            "path": "lib/app.dart",
+                            "content": "const value = 2;\n",
+                        }
+                    ]
+                }
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            checkpoint = root / "checkpoints.json"
+            source = root / "lib/app.dart"
+            source.parent.mkdir(parents=True)
+            source.write_text("const value = 1;\n")
+
+            with patch.dict(
+                "os.environ",
+                {"STUDIO_CHECKPOINT_PATH": str(checkpoint)},
+                clear=False,
+            ):
+                first = _model_mutation(
+                    root,
+                    STATE,
+                    "performance_qa",
+                    ["excessive_jank"],
+                    None,
+                    ReplayModel,
+                )
+                self.assertEqual(first["model_calls"], 1)
+                source.write_text("const value = 1;\n")
+
+                second = _model_mutation(
+                    root,
+                    STATE,
+                    "performance_qa",
+                    ["excessive_jank"],
+                    None,
+                    ReplayModel,
+                )
+
+            self.assertTrue(second["checkpoint_reused"])
+            self.assertEqual(second["model_calls"], 0)
+            self.assertEqual(source.read_text(), "const value = 2;\n")
 
 
 

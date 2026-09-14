@@ -39,22 +39,25 @@ def run(work_order_path: Path, merged_path: Path, package_path: Path, out: Path,
         canonical(postmerge)+"\n",encoding="utf-8"
     )
 
-    outcome=write_replacement_outcome(work_order,merged,postmerge,out)
+    rollback_gate=None
+    if postmerge.get("rollback_required") is True:
+        rollback_gate=write_rollback_gate(postmerge,merged,package,out)
+
+    terminal=postmerge.get("status") in {"post_merge_healthy","post_merge_regression"}
+    outcome=None
+    if terminal:
+        outcome=write_replacement_outcome(work_order,merged,postmerge,out)
     learning=summarize_replacement_learning(root_for_output(out))
     (root_for_output(out)/"architecture-replacement-learning.json").write_text(
         json.dumps(learning,ensure_ascii=False,indent=2,sort_keys=True)+"\n",
         encoding="utf-8",
     )
 
-    rollback_gate=None
-    if postmerge.get("rollback_required") is True:
-        rollback_gate=write_rollback_gate(postmerge,merged,package,out)
-
     return {
         "version":1,
         "status":"replacement_postmerge_pipeline_complete",
         "postmerge_status":postmerge.get("status"),
-        "replacement_outcome":outcome.get("successful"),
+        "replacement_outcome":outcome.get("successful") if isinstance(outcome,dict) else None,
         "replacement_learning_samples":next((
             row.get("samples")
             for row in learning.get("rankings",[])

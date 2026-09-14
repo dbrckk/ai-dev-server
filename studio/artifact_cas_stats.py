@@ -92,3 +92,27 @@ def forget(digests: set[str]) -> None:
     for digest in digests:
         blobs.pop(digest, None)
     save(data)
+
+
+def summary() -> dict:
+    data = load()
+    blobs = data.get("blobs", {})
+    total_hits = 0
+    total_bytes = 0
+    protected_cost = 0.0
+    scores = []
+    for digest, row in blobs.items():
+        if not isinstance(row, dict):
+            continue
+        total_hits += max(0, int(row.get("hits", 0)))
+        total_bytes += max(0, int(row.get("size", 0)))
+        protected_cost += max(0.0, float(row.get("rebuild_cost_seconds", 0.0)))
+        scores.append(retention_score(digest))
+    return {
+        "blob_count": len(blobs),
+        "tracked_bytes": total_bytes,
+        "hits": total_hits,
+        "protected_rebuild_seconds": round(protected_cost, 3),
+        "mean_retention_score": round(sum(scores) / len(scores), 6) if scores else 0.0,
+        "logical_clock": int(data.get("clock", 0)),
+    }

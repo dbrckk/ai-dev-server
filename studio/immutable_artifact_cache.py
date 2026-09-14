@@ -5,7 +5,7 @@ import json
 import os
 from pathlib import Path
 
-from artifact_cas import gc as cas_gc, get as cas_get, put as cas_put
+from artifact_cas import blob_path as cas_blob_path, gc as cas_gc, get as cas_get, put as cas_put, usage as cas_usage
 from artifact_cas_stats import retention_score
 from core import StudioError, canonical
 
@@ -35,7 +35,7 @@ def _read_artifacts(root: Path) -> dict[str, bytes]:
     return files
 
 
-def capture(root: Path, validation_key: str, *, rebuild_cost_seconds: float = 0.0) -> dict:
+def capture(root: Path, validation_key: str, *, rebuild_cost_seconds: float = 0.0, entries: dict | None = None) -> dict:
     if not isinstance(validation_key, str) or len(validation_key) != 64:
         raise StudioError("Artifact cache validation key invalid")
     files = _read_artifacts(root)
@@ -48,6 +48,8 @@ def capture(root: Path, validation_key: str, *, rebuild_cost_seconds: float = 0.
     total = sum(len(data) for data in files.values())
     if total > MAX_TOTAL_BYTES:
         raise StudioError("Validated artifact set exceeds cache size limit")
+    if entries is not None:
+        _admit_under_quota(entries, files, rebuild_cost_seconds, validation_key)
     return {
         "validation_key": validation_key,
         "files": {

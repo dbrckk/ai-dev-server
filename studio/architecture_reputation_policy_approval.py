@@ -1,5 +1,6 @@
 """Approval provenance and append-only anti-replay ledger for reputation policy migrations."""
 from __future__ import annotations
+import base64
 import hashlib
 import json
 
@@ -195,6 +196,20 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         raise ApprovalProvenanceError("github workflow file digest invalid")
     if not isinstance(workflow_file.get("blob_sha"),str) or not workflow_file.get("blob_sha"):
         raise ApprovalProvenanceError("github workflow file blob SHA missing")
+    content_b64=workflow_file.get("content_b64")
+    if not isinstance(content_b64,str) or not content_b64:
+        raise ApprovalProvenanceError("github workflow file content missing")
+    try:
+        workflow_raw=base64.b64decode(content_b64,validate=False)
+        workflow_text=workflow_raw.decode("utf-8")
+    except Exception as exc:
+        raise ApprovalProvenanceError("github workflow file content invalid") from exc
+    if hashlib.sha256(workflow_raw).hexdigest()!=workflow_file.get("sha256"):
+        raise ApprovalProvenanceError("github workflow file content digest mismatch")
+    from replacement_ci_policy import validate_workflow_text
+    workflow_policy_validation=validate_workflow_text(workflow_text)
+    if workflow_policy_validation.get("valid") is not True:
+        raise ApprovalProvenanceError("github workflow file violates replacement CI policy")
 
     target=plan.get("github_review_target") if isinstance(plan,dict) else None
     if isinstance(target,dict):
@@ -248,6 +263,7 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         "workflow_path":workflow.get("path"),
         "workflow_file_blob_sha":workflow_file.get("blob_sha"),
         "workflow_file_sha256":workflow_file.get("sha256"),
+        "workflow_policy_validation":workflow_policy_validation,
         "common_workflow_run_id":common_run_id,
         "attestation_digest":digest,
     }

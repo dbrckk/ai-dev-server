@@ -200,10 +200,13 @@ class SecurityStageTests(unittest.TestCase):
         evidence = result["release_evidence"]["security_scan"]
         self.assertEqual(build.call_count, 2)
         remediate_fn.assert_called_once()
-        self.assertTrue(evidence["passed"])
+        self.assertFalse(evidence["passed"])
+        self.assertTrue(evidence["source_repaired"])
+        self.assertTrue(evidence["post_repair_scan"]["passed"])
         self.assertTrue(evidence["auto_remediation"]["attempted"])
         self.assertTrue(evidence["auto_remediation"]["converged"])
-        self.assertEqual(result["status"], "finished")
+        self.assertEqual(result["completion"]["next_stage"], "release_build")
+        self.assertFalse(result["completion"]["finished"])
 
 
 

@@ -174,6 +174,11 @@ def record(
                     "criterion": str(item.get("criterion") or "")[:500],
                     "passed": item.get("passed") is True,
                     "evidence": str(item.get("evidence") or "")[:2000],
+                    "evidence_refs": [
+                        str(ref)[:500]
+                        for ref in item.get("evidence_refs", [])
+                        if isinstance(ref, str) and ref
+                    ][:20],
                 }
                 for item in review.get("criteria", [])
                 if isinstance(item, dict)

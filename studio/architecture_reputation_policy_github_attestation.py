@@ -8,7 +8,7 @@ import hashlib
 import json
 from datetime import datetime,timezone
 from architecture_reputation_policy_approval import ApprovalProvenanceError, validate_github_attestation
-from replacement_ci_policy import validate_check_runs
+from replacement_ci_policy import REQUIRED_WORKFLOW_NAME, validate_check_runs
 
 def _canonical(v):
     return json.dumps(v,sort_keys=True,separators=(",",":"),ensure_ascii=False)
@@ -93,12 +93,14 @@ def latest_approvals(reviews: list[dict], commit_sha: str, *, head_commit_timest
         })
     return rows
 
-def successful_workflow(runs: list[dict], commit_sha: str, *, required_run_id: int | None=None, head_commit_timestamp: float | None=None) -> dict:
+def successful_workflow(runs: list[dict], commit_sha: str, *, required_run_id: int | None=None, required_workflow_name: str=REQUIRED_WORKFLOW_NAME, head_commit_timestamp: float | None=None) -> dict:
     candidates=[]
     for run in runs if isinstance(runs,list) else []:
         head=run.get("head_sha")
         conclusion=str(run.get("conclusion") or "").lower()
         if head!=commit_sha or conclusion!="success":
+            continue
+        if run.get("name")!=required_workflow_name:
             continue
         if required_run_id is not None and run.get("id")!=required_run_id:
             continue

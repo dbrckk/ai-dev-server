@@ -6,7 +6,7 @@ import socket
 import time
 import uuid
 
-DEFAULT_LEASE_SECONDS = 30 * 60
+DEFAULT_LEASE_SECONDS = 60 * 60
 MIN_LEASE_SECONDS = 30
 MAX_LEASE_SECONDS = 60 * 60
 

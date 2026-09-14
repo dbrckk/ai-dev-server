@@ -637,8 +637,16 @@ Objective and current plan:
                     route_confidence=scheduler_confidence,
                     verification_seconds=verification_seconds,
                     remaining_seconds=remaining_seconds,
-                    available_agents=min(len(preliminary_names), route_budget.agent_limit),
-                    available_models=min(3, max(1, available_direct_models)),
+                    available_agents=(
+                        min(len(preliminary_names), route_budget.agent_limit)
+                        if before_agent is not None
+                        else 0
+                    ),
+                    available_models=(
+                        min(3, max(1, available_direct_models))
+                        if before_agent is not None
+                        else 1
+                    ),
                     strategy=meta_route.strategy,
                 )
                 agent_trace.append({

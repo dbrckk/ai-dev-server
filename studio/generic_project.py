@@ -102,6 +102,30 @@ def _apply(root: Path, patch: dict) -> list[str]:
     return changed
 
 
+def _prepare_architecture(req: dict, out: Path, state: dict) -> Path:
+    architecture_root = _prepare_architecture(req, out, state)
+    return architecture_root
+
+
+def _record_architecture(state: dict, out: Path, architecture_root: Path) -> None:
+    state["architecture_evaluation"] = write_architecture_evaluation(
+        state.get("architecture_decision", {}),
+        state,
+        out,
+    )
+    state["architecture_benchmark"] = write_architecture_benchmark(
+        state.get("architecture_decision", {}),
+        state.get("architecture_evaluation", {}),
+        state.get("architecture_recommendations", {}),
+        out,
+    )
+    write_architecture_outcome(state, out)
+    try:
+        state["architecture_learning"] = write_architecture_learning(architecture_root)
+    except OSError:
+        state["architecture_learning"] = {"status": "unavailable"}
+
+
 def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict:
     github = GitHub(req["target_repo"])
     repo = GenericRepository(github, req["target_repo"], req["id"])
@@ -1025,22 +1049,7 @@ Objective and current plan:
         )
         state["model_calls_this_cycle"] = int(cost_controller.snapshot().get("model_calls", 0))
         state["checkpoint_replays_this_cycle"] = 0
-        state["architecture_evaluation"] = write_architecture_evaluation(
-            state.get("architecture_decision", {}),
-            state,
-            out,
-        )
-        state["architecture_benchmark"] = write_architecture_benchmark(
-            state.get("architecture_decision", {}),
-            state.get("architecture_evaluation", {}),
-            state.get("architecture_recommendations", {}),
-            out,
-        )
-        write_architecture_outcome(state, out)
-        try:
-            state["architecture_learning"] = write_architecture_learning(architecture_root)
-        except OSError:
-            state["architecture_learning"] = {"status": "unavailable"}
+        _record_architecture(state, out, architecture_root)
 
         (out / "generic-report.json").parent.mkdir(parents=True, exist_ok=True)
         (out / "generic-report.json").write_text(canonical(state))

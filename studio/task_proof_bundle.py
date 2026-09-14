@@ -197,3 +197,33 @@ def load(path: Path) -> dict:
     except (OSError,json.JSONDecodeError) as exc:
         raise TaskProofError("proof unreadable") from exc
     return validate(value)
+
+
+def verify_evidence_files(value: dict, project_root: Path) -> dict:
+    """Re-hash persisted file evidence against the restored repository workspace."""
+    validate(value)
+    mismatches=[]
+    for item in value.get("evidence_files",[]):
+        if not isinstance(item,dict):
+            continue
+        rel=str(item.get("ref") or "")
+        current=_file_proof(Path(project_root),rel)
+        if current is None:
+            mismatches.append({"ref":rel,"reason":"missing"})
+            continue
+        if (
+            current.get("sha256")!=item.get("sha256")
+            or int(current.get("size",0))!=int(item.get("size",0))
+        ):
+            mismatches.append({
+                "ref":rel,
+                "reason":"hash_mismatch",
+                "expected_sha256":item.get("sha256"),
+                "actual_sha256":current.get("sha256"),
+            })
+    if mismatches:
+        raise TaskProofError(
+            "proof evidence mismatch: "
+            + ", ".join(str(item.get("ref")) for item in mismatches[:10])
+        )
+    return {"valid":True,"checked_files":len(value.get("evidence_files",[]))}

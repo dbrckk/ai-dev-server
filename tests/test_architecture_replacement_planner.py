@@ -616,6 +616,74 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         row=plan(obs,self.recommendations(),learning={"rankings":[stable,shifted]})["replacement_plans"][0]
         self.assertFalse(row["fused_historical_evidence"]["sequential_drift"])
 
+    def test_recovery_candidate_reduces_old_negative_bias_but_requires_gate(self):
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter","project_type":"game","primary_domain":"mobile",
+            "platform":"android","current_major_version":3,"replacement_major_version":4,
+        })
+        history={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "framework":"flutter","project_type":"game","primary_domain":"mobile","platform":"android",
+            "current_major_version":3,"replacement_major_version":4,
+            "samples":30,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.45,"posterior_success_rate":0.47,"regression_rate":0.35,
+            "rollback_rate":0.2,"wilson_lower_95":0.30,"mean_quality_score":45.0,
+            "regime_shift":False,
+            "sequential_drift":{
+                "status":"recovery","drift_detected":False,"recovery_detected":True,
+                "ewma":0.82,"ewma_rise":0.42,"cusum_positive":1.2
+            },
+            "latest_observed_at":time.time(),
+        }
+        row=plan(obs,self.recommendations(),learning={"rankings":[history]})["replacement_plans"][0]
+        self.assertEqual(row["empirical_status"],"recovery_candidate")
+        self.assertIn("replacement_recovery_revalidated",row["required_gates"])
+        self.assertTrue(row["fused_historical_evidence"]["recovery_candidate"])
+        self.assertLessEqual(row["empirical_priority_adjustment"],0.0)
+        self.assertGreater(row["empirical_priority_adjustment"],-2.0)
+
+    def test_low_weight_recovery_does_not_override_bad_fusion(self):
+        obs=self.obsolescence()
+        bad={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "samples":30,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.3,"posterior_success_rate":0.32,"regression_rate":0.5,
+            "rollback_rate":0.2,"wilson_lower_95":0.15,"mean_quality_score":30.0,
+            "sequential_drift":{"status":"stable","drift_detected":False,"recovery_detected":False},
+            "latest_observed_at":time.time(),
+        }
+        recovering={
+            **bad,
+            "framework":"python","project_type":"trading","primary_domain":"backend","platform":"linux",
+            "success_rate":0.8,"posterior_success_rate":0.78,"regression_rate":0.1,
+            "wilson_lower_95":0.68,"mean_quality_score":80.0,
+            "sequential_drift":{
+                "status":"recovery","drift_detected":False,"recovery_detected":True,
+                "ewma":0.8,"ewma_rise":0.4,"cusum_positive":1.0
+            },
+        }
+        row=plan(obs,self.recommendations(),learning={"rankings":[bad,recovering]})["replacement_plans"][0]
+        self.assertFalse(row["fused_historical_evidence"]["recovery_candidate"])
+        self.assertNotEqual(row["empirical_status"],"recovery_candidate")
+
+    def test_recovery_never_skips_isolated_benchmark_gate(self):
+        obs=self.obsolescence()
+        history={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "samples":25,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.5,"posterior_success_rate":0.52,"regression_rate":0.3,
+            "rollback_rate":0.1,"wilson_lower_95":0.35,"mean_quality_score":50.0,
+            "sequential_drift":{
+                "status":"recovery","drift_detected":False,"recovery_detected":True,
+                "ewma":0.85,"ewma_rise":0.40,"cusum_positive":1.3
+            },
+            "latest_observed_at":time.time(),
+        }
+        row=plan(obs,self.recommendations(),learning={"rankings":[history]})["replacement_plans"][0]
+        self.assertEqual(row["go_no_go"],"NO_GO_PENDING_ISOLATED_BENCHMARK")
+        self.assertIn("dependency_policy_approved",row["required_gates"])
+
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)

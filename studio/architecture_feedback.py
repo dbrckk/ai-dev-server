@@ -144,6 +144,10 @@ def apply(
                 "primary_domain": history.get("primary_domain"),
                 "samples": history["samples"],
                 "success_rate": success_rate,
+                "posterior_success_rate": history.get("posterior_success_rate"),
+                "wilson_lower_95": history.get("wilson_lower_95"),
+                "conservative_success_rate": round(conservative_success, 4),
+                "evidence_confidence": round(confidence, 4),
                 "mean_model_calls": history.get("mean_model_calls"),
                 "mean_cycles": history.get("mean_cycles"),
                 "mean_blockers": history.get("mean_blockers"),
@@ -174,6 +178,7 @@ def apply(
         "max_evidence_age_seconds": MAX_EVIDENCE_AGE_SECONDS,
         "success_weight": SUCCESS_WEIGHT,
         "quality_weight": QUALITY_WEIGHT,
+        "uncertainty_blend": UNCERTAINTY_BLEND,
     }
     return result
 

@@ -23,6 +23,23 @@ MAX_RELEASE_REPAIR_ROUNDS = 2
 MAX_MODEL_CALLS_PER_BRANCH = 2
 
 
+def _persist_caches(quick_gate_cache: dict, full_gate_cache: dict, artifact_cache: dict | None) -> dict:
+    """Persist optimization caches without invalidating a verified repair."""
+    errors = []
+    for name, writer, payload in (
+        ("quick_gate", save_persistent_quick_cache, quick_gate_cache),
+        ("full_gate", save_full_gate_cache, full_gate_cache),
+        ("artifact", save_artifact_cache, artifact_cache),
+    ):
+        if payload is None:
+            continue
+        try:
+            writer(payload)
+        except (OSError, StudioError) as exc:
+            errors.append({"cache": name, "error": str(exc)})
+    return {"ok": not errors, "errors": errors}
+
+
 def _context(root: Path, state: dict, stage: str, blockers: list[str], failure: str | None = None) -> str:
     files = {}
     for path in sorted(root.rglob("*")):
@@ -289,10 +306,6 @@ def attempt(
                     strategies.append(name)
                 break
 
-    save_persistent_quick_cache(quick_gate_cache)
-    save_full_gate_cache(full_gate_cache)
-    if artifact_cache is not None:
-        save_artifact_cache(artifact_cache)
     winner = select_winner(candidates)
     if winner is None:
         raise StudioError(
@@ -307,6 +320,11 @@ def attempt(
         )
 
     apply_winner(root, winner)
+    cache_persistence = _persist_caches(
+        quick_gate_cache,
+        full_gate_cache,
+        artifact_cache,
+    )
     return {
         "attempted": True,
         "changed": True,
@@ -322,6 +340,7 @@ def attempt(
         "candidate_search": {
             "evaluated": len(candidates),
             "winner": winner.get("strategy"),
+            "cache_persistence": cache_persistence,
             "artifact_cas": artifact_cas_summary(),
             "candidates": [
                 {

@@ -93,6 +93,18 @@ def record(path: Path, *, audit: dict, success: bool) -> dict:
     return data
 
 
+def diversity_bias(data: dict) -> float:
+    recommendation_data = recommendation(data)
+    preferred = recommendation_data.get("recommended_class")
+    if not isinstance(preferred, str):
+        return 0.0
+    if preferred.endswith("|high"):
+        return 4.0
+    if preferred.endswith("|medium"):
+        return 2.0
+    return 0.0
+
+
 def recommendation(data: dict) -> dict:
     eligible = []
     for key, row in data.items():

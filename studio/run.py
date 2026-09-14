@@ -21,7 +21,7 @@ from idempotent_model import ask_value as checkpointed_ask
 from atomic_file import write_text as atomic_write_text
 from architecture_planner import write as write_architecture_plan
 from architecture_outcome import write as write_architecture_outcome
-from architecture_learning import write as write_architecture_learning
+from architecture_learning import write as write_architecture_learning, summarize as summarize_architecture_learning
 from architecture_evaluator import write as write_architecture_evaluation
 
 class GitHub(API):
@@ -253,7 +253,14 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             elif p.is_file():
                 apply_patch(root, {'files': [{'path': p.relative_to(saved_root).as_posix(), 'content': p.read_text()}]})
     state['technical_recommendations'] = _load_star_recommendations(out)
-    state['architecture_decision'] = write_architecture_plan(req, state['technical_recommendations'], out)
+    historical_root = out if out.name == "studio-output" else out.parent
+    historical_learning = summarize_architecture_learning(historical_root)
+    state['architecture_decision'] = write_architecture_plan(
+        req,
+        state['technical_recommendations'],
+        out,
+        learning=historical_learning,
+    )
     state['cycles'] += 1
 
     def checkpoint(parent_sha):

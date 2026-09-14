@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -13,6 +14,9 @@ from core import API, APIError
 from execution_checkpoint import new as new_checkpoint, save as save_checkpoint, load as load_checkpoint, ExecutionCheckpointError
 from provider_health import record_failure, eligible
 from run_cost_controller import RunCostController
+from durable_state import save as save_durable_state, load_recovering as load_durable_state
+from workflow_checkpoint import operation_key, put as put_workflow_checkpoint, get as get_workflow_checkpoint
+from task_claim_store import claim as claim_task, release as release_task
 
 
 def main() -> int:
@@ -49,6 +53,32 @@ def main() -> int:
             results["checkpoint_integrity"] = True
         else:
             results["checkpoint_integrity"] = False
+
+        durable_path = root / "durable-state.json"
+        save_durable_state(durable_path, {"generation": 1})
+        save_durable_state(durable_path, {"generation": 2})
+        durable_path.write_text("{corrupt", encoding="utf-8")
+        results["durable_state_recovery"] = load_durable_state(durable_path) == {"generation": 1}
+
+        workflow_path = root / "workflow-checkpoints.json"
+        lease_path = root / "task-leases.json"
+        with patch.dict(os.environ, {
+            "STUDIO_CHECKPOINT_PATH": str(workflow_path),
+            "STUDIO_TASK_LEASE_PATH": str(lease_path),
+        }, clear=False):
+            key = operation_key("fault-injection", {"step": "model"})
+            put_workflow_checkpoint(key, {"response": {"ok": True}}, kind="fault-injection")
+            results["workflow_checkpoint_replay"] = (
+                get_workflow_checkpoint(key) == {"response": {"ok": True}}
+            )
+            claim_task("task-1", "worker-a", "token-a", 1000.0, now=100.0)
+            try:
+                claim_task("task-1", "worker-b", "token-b", 1000.0, now=100.0)
+            except RuntimeError:
+                results["task_claim_exclusion"] = True
+            else:
+                results["task_claim_exclusion"] = False
+            release_task("task-1", owner="worker-a", token="token-a")
 
     controller = RunCostController(total_budget_seconds=1000, max_model_calls=20)
     controller.model_seconds = 300

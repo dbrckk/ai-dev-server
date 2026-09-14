@@ -170,5 +170,32 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         self.assertEqual(plan["risk"]["level"],"CRITICAL")
         self.assertTrue(plan["risk"]["reinforced_review_required"])
 
+    def test_explainer_describes_policy_edge_and_state_impact(self):
+        registry=self.registry()
+        registry["policy"]["transition_matrix"]=copy.deepcopy(reputation.TRANSITION_POLICY)
+        registry["policy"]["transition_matrix"]["RECOVERING"]["TRUSTED"]={
+            **registry["policy"]["transition_matrix"]["RECOVERING"]["TRUSTED"],
+            "minimum_confirmations":1,
+            "required_gates":[],
+        }
+        plan=dry_run(registry,self.learning(strong=False),now=200.0)
+        explanation=plan["explanation"]
+        self.assertEqual(explanation["risk_level"],"PROMOTION_PATH_CHANGE")
+        self.assertEqual(explanation["review_action"],"reinforced_review_required")
+        edge=next(x for x in explanation["policy_changes"] if x["transition"]=="RECOVERING -> TRUSTED")
+        fields={x["field"] for x in edge["changes"]}
+        self.assertIn("minimum_confirmations",fields)
+        self.assertIn("required_gate",fields)
+        self.assertEqual(explanation["state_impact"]["changed_entries"],1)
+        self.assertTrue(any(x["transition"]=="TRUSTED -> DEGRADED" for x in explanation["state_impact"]["transitions"]))
+
+    def test_explainer_no_impact_is_compact(self):
+        registry,_=reputation.apply(None,self.context(),self.learning()["rankings"][0],now=100.0)
+        plan=dry_run(registry,self.learning(),now=200.0)
+        explanation=plan["explanation"]
+        self.assertEqual(explanation["risk_level"],"NO_IMPACT")
+        self.assertEqual(explanation["policy_changes"],[])
+        self.assertEqual(explanation["state_impact"]["changed_entries"],0)
+
 if __name__=="__main__":
     unittest.main()

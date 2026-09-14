@@ -6,9 +6,14 @@ import json
 from pathlib import Path
 import shutil
 
-from atomic_file import write_text as atomic_write_text
-from core import StudioError, canonical
-from file_lock import exclusive
+try:
+    from .atomic_file import write_text as atomic_write_text
+    from .core import StudioError, canonical
+    from .file_lock import exclusive
+except ImportError:
+    from atomic_file import write_text as atomic_write_text
+    from core import StudioError, canonical
+    from file_lock import exclusive
 
 CURRENT_SCHEMA = 2
 

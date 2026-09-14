@@ -30,6 +30,11 @@ from provider_cost import (
     ema_cost as provider_ema_cost,
     estimate_call_cost,
 )
+from provider_monthly_quota import (
+    load as load_provider_monthly_quota,
+    record as record_provider_monthly_quota,
+    quota_status as provider_quota_status,
+)
 
 
 def _decode(response: dict) -> dict:
@@ -67,6 +72,8 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     contextual_routing_path = Path(contextual_routing_raw) if contextual_routing_raw else None
     provider_cost_raw = os.environ.get("STUDIO_PROVIDER_COST_PATH", "")
     provider_cost_path = Path(provider_cost_raw) if provider_cost_raw else None
+    quota_raw = os.environ.get("STUDIO_PROVIDER_MONTHLY_QUOTA_PATH", "")
+    quota_path = Path(quota_raw) if quota_raw else None
     try:
         weighted_contexts = json.loads(os.environ.get("STUDIO_ROUTING_CONTEXTS_JSON", "[]"))
     except json.JSONDecodeError:
@@ -87,6 +94,7 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     safe_rewrite_summary = summarize_safe_rewrite_learning(safe_rewrite_path) if safe_rewrite_path is not None else {}
     contextual_routing = load_contextual_routing_memory(contextual_routing_path) if contextual_routing_path is not None else {}
     provider_costs = load_provider_cost(provider_cost_path) if provider_cost_path is not None else {}
+    provider_quota_data = load_provider_monthly_quota(quota_path) if quota_path is not None else {"schema": 1, "months": {}}
     try:
         max_api_cost_usd = float(os.environ.get("STUDIO_MAX_API_COST_USD", "0") or 0.0)
     except ValueError:
@@ -104,9 +112,21 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
         max_api_cost_usd=max_api_cost_usd,
         spent_api_cost_usd=spent_api_cost_usd,
     )
+    providers = tuple(
+        provider
+        for provider in providers
+        if (
+            provider.monthly_token_quota <= 0
+            or not provider_quota_status(
+                provider_quota_data,
+                provider.name,
+                provider.monthly_token_quota,
+            )["exhausted"]
+        )
+    )
     if not providers:
         raise StudioError(
-            "Paid API budget exhausted and no unmetered provider is configured"
+            "No provider remains: paid API budget and pooled monthly token quotas are exhausted"
         )
     provider_scores = {}
     for provider in providers:
@@ -168,7 +188,12 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 else 0.0
             )
             retry_probability = max(0.0, min(1.0, 1.0 - bandit["expected_success"]))
-            monetary_cost_usd = provider_ema_cost(provider_costs, provider.name, role)
+            pooled_free = provider.monthly_token_quota > 0
+            monetary_cost_usd = (
+                0.0
+                if pooled_free
+                else provider_ema_cost(provider_costs, provider.name, role)
+            )
             utility = utility_score(
                 expected_success=bandit["expected_success"],
                 execution_seconds=execution_seconds,
@@ -177,11 +202,18 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 free_preferred=provider.free_preferred,
                 monetary_cost_usd=monetary_cost_usd,
                 retry_probability=retry_probability,
-                unmetered=provider.unmetered,
+                unmetered=provider.unmetered or pooled_free,
             )
             components["cost_aware_utility"] = utility["score"]
             components["verified_value_per_unit_cost"] = utility["verified_value_per_unit_cost"]
             components["unmetered_capacity"] = utility["unmetered_bonus"]
+            if provider.monthly_token_quota > 0:
+                quota = provider_quota_status(
+                    provider_quota_data,
+                    provider.name,
+                    provider.monthly_token_quota,
+                )
+                components["pooled_free_capacity"] = 6.0 * float(quota["remaining_ratio"] or 0.0)
             if max_api_cost_usd > 0 and not provider.unmetered:
                 remaining_ratio = max(
                     0.0,
@@ -238,7 +270,7 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
             call_cost = 0.0
             if provider_cost_path is not None and isinstance(usage, dict):
                 try:
-                    call_cost = 0.0 if provider.unmetered else estimate_call_cost(
+                    call_cost = 0.0 if (provider.unmetered or provider.monthly_token_quota > 0) else estimate_call_cost(
                         prompt_tokens=int(usage.get("prompt_tokens", 0) or 0),
                         completion_tokens=int(usage.get("completion_tokens", 0) or 0),
                         input_cost_per_million=provider.input_cost_per_million,
@@ -247,6 +279,19 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 except (TypeError, ValueError):
                     call_cost = 0.0
                 record_provider_cost(provider_cost_path, provider.name, role, call_cost)
+            if quota_path is not None and isinstance(usage, dict):
+                try:
+                    prompt_tokens = int(usage.get("prompt_tokens", 0) or 0)
+                    completion_tokens = int(usage.get("completion_tokens", 0) or 0)
+                except (TypeError, ValueError):
+                    prompt_tokens = completion_tokens = 0
+                if provider.monthly_token_quota > 0:
+                    record_provider_monthly_quota(
+                        quota_path,
+                        provider.name,
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=completion_tokens,
+                    )
             decoded = _decode(response)
             if health_path is not None:
                 record_provider_success(health_path, provider.name)
@@ -268,6 +313,15 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 "duration_seconds": elapsed,
                 "estimated_cost_usd": round(call_cost, 8),
                 "unmetered": provider.unmetered,
+                "monthly_token_quota": (
+                    provider_quota_status(
+                        quota_path if quota_path is not None else provider_quota_data,
+                        provider.name,
+                        provider.monthly_token_quota,
+                    )
+                    if provider.monthly_token_quota > 0
+                    else None
+                ),
                 "paid_budget": {
                     "limit_usd": max_api_cost_usd if max_api_cost_usd > 0 else None,
                     "spent_before_call_usd": round(spent_api_cost_usd, 8),

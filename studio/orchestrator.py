@@ -18,6 +18,7 @@ from architecture_replacement_planner import write as write_architecture_replace
 from architecture_replacement_work_order import write as write_architecture_replacement_work_orders
 from architecture_learning import summarize as summarize_architecture_learning, root_for_output as architecture_learning_root
 from architecture_replacement_learning import summarize as summarize_replacement_learning
+from architecture_replacement_reputation import load as load_replacement_reputation
 from repo_maintenance import probe as probe_repo_maintenance
 from repo_version_probe import probe as probe_repo_versions
 
@@ -63,13 +64,16 @@ def _evaluate_architecture(report,project_out):
     maintenance=probe_repo_maintenance(current_repos)
     versions=probe_repo_versions(current_repos+replacement_repos)
     obsolescence=write_architecture_obsolescence(learning,benchmark,recommendations,project_out,maintenance=maintenance,versions=versions)
-    replacement_learning=summarize_replacement_learning(architecture_learning_root(project_out))
-    replacement_plan=write_architecture_replacement_plan(obsolescence,recommendations,project_out,learning=replacement_learning)
+    historical_root=architecture_learning_root(project_out)
+    replacement_learning=summarize_replacement_learning(historical_root)
+    reputation_registry=load_replacement_reputation(historical_root/'architecture-replacement-reputation.json')
+    replacement_plan=write_architecture_replacement_plan(obsolescence,recommendations,project_out,learning=replacement_learning,reputation_registry=reputation_registry)
     replacement_work_orders=write_architecture_replacement_work_orders(replacement_plan,project_out)
     report['architecture_evaluation']=evaluation
     report['architecture_benchmark']=benchmark
     report['architecture_obsolescence']=obsolescence
     report['architecture_replacement_learning']=replacement_learning
+    report['architecture_replacement_reputation']={'entries':list(reputation_registry.get('entries',{}).values())[:50],'policy':reputation_registry.get('policy',{})}
     report['architecture_replacement_plan']=replacement_plan
     report['architecture_replacement_work_orders']=replacement_work_orders
     (project_out/'report.json').write_text(json.dumps(report,ensure_ascii=False,sort_keys=True,separators=(',',':')))

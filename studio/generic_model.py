@@ -68,12 +68,21 @@ def _decode(response: dict) -> dict:
     return value
 
 
-def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | None = None, avoid_providers: set[str] | None = None, timeout_seconds: int | float = 300) -> tuple[dict, dict]:
+def ask(
+    system: str,
+    user: str,
+    *,
+    code: bool = False,
+    role: str | None = None,
+    avoid_models: set[str] | None = None,
+    avoid_providers: set[str] | None = None,
+    timeout_seconds: int | float = 300,
+) -> tuple[dict, dict]:
     try:
         providers = load_providers(prefer_free=True)
     except ValueError as exc:
         raise StudioError(str(exc)) from None
-    role = "implementation" if code else "product"
+    role = role or ("implementation" if code else "product")
     providers = candidates_for(role, providers=providers)
     health_raw = os.environ.get("STUDIO_PROVIDER_HEALTH_PATH", "")
     metrics_raw = os.environ.get("STUDIO_PROVIDER_METRICS_PATH", "")

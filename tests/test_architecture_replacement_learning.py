@@ -135,4 +135,31 @@ class ReplacementLearningTests(unittest.TestCase):
         self.assertEqual(result["status"],"insufficient_evidence")
         self.assertFalse(result["drift_detected"])
 
+    def test_sequential_recovery_detects_sustained_improvement(self):
+        rows=[]
+        sequence=[False,False,False,True,False,True,True,True,True,True]
+        for i,success in enumerate(sequence):
+            rows.append({"observed_at":float(i),"successful":success})
+        result=arl._sequential_drift(rows)
+        self.assertTrue(result["recovery_detected"])
+        self.assertEqual(result["status"],"recovery")
+        self.assertGreaterEqual(result["ewma"],0.70)
+        self.assertGreater(result["ewma_rise"],0.18)
+        self.assertFalse(result["drift_detected"])
+
+    def test_recovery_requires_weak_baseline(self):
+        rows=[{"observed_at":float(i),"successful":success} for i,success in enumerate(
+            [True,True,True,True,True,True,True,True,True,True]
+        )]
+        result=arl._sequential_drift(rows)
+        self.assertFalse(result["recovery_detected"])
+        self.assertEqual(result["status"],"stable")
+
+    def test_short_improvement_is_not_recovery(self):
+        rows=[{"observed_at":float(i),"successful":success} for i,success in enumerate(
+            [False,False,False,False,False,True,True,False]
+        )]
+        result=arl._sequential_drift(rows)
+        self.assertFalse(result["recovery_detected"])
+
 if __name__=="__main__": unittest.main()

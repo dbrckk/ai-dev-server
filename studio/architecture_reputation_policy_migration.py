@@ -225,6 +225,77 @@ def classify_migration_risk(registry: dict, changes: list[dict]) -> dict:
         "policy_only_stricter":bool(changed_edges) and only_stricter,
     }
 
+def _format_seconds(value: int | float) -> str:
+    seconds=max(0,int(value or 0))
+    if seconds and seconds%86400==0:
+        return f"{seconds//86400}d"
+    if seconds and seconds%3600==0:
+        return f"{seconds//3600}h"
+    return f"{seconds}s"
+
+def explain_migration(risk: dict, changes: list[dict]) -> dict:
+    if not isinstance(risk,dict) or not isinstance(changes,list):
+        raise ReputationPolicyMigrationError("migration explainer inputs malformed")
+    edge_explanations=[]
+    for row in risk.get("changed_transition_edges",[]):
+        if not isinstance(row,dict):
+            continue
+        old=row.get("old") if isinstance(row.get("old"),dict) else {}
+        new=row.get("new") if isinstance(row.get("new"),dict) else {}
+        diffs=[]
+        for field in ("allowed","severity","minimum_dwell_seconds","minimum_new_effective_samples","minimum_confirmations"):
+            if old.get(field)==new.get(field):
+                continue
+            before=old.get(field); after=new.get(field)
+            if field=="minimum_dwell_seconds":
+                before=_format_seconds(before); after=_format_seconds(after)
+            diffs.append({"field":field,"before":before,"after":after})
+        old_gates=set(old.get("required_gates",[])); new_gates=set(new.get("required_gates",[]))
+        for gate in sorted(new_gates-old_gates):
+            diffs.append({"field":"required_gate","change":"added","value":gate})
+        for gate in sorted(old_gates-new_gates):
+            diffs.append({"field":"required_gate","change":"removed","value":gate})
+        edge_explanations.append({
+            "transition":f"{row.get('source')} -> {row.get('target')}",
+            "stricter_or_equal":row.get("stricter_or_equal") is True,
+            "changes":diffs,
+        })
+
+    state_counts={}
+    affected=[]
+    for row in changes:
+        if not isinstance(row,dict) or row.get("changed") is not True:
+            continue
+        key=f"{row.get('previous_state')} -> {row.get('target_state')}"
+        state_counts[key]=state_counts.get(key,0)+1
+        affected.append({
+            "identity":row.get("identity"),
+            "transition":key,
+            "reason":row.get("reason"),
+            "evidence_source":row.get("evidence_source"),
+        })
+
+    review_action=(
+        "reinforced_review_required"
+        if risk.get("reinforced_review_required") is True
+        else "explicit_authorization_required"
+    )
+    return {
+        "risk_level":risk.get("level"),
+        "risk_reason":risk.get("reason"),
+        "review_action":review_action,
+        "policy_changes":edge_explanations,
+        "state_impact":{
+            "changed_entries":len(affected),
+            "transitions":[{"transition":key,"count":state_counts[key]} for key in sorted(state_counts)],
+            "affected_entries":affected,
+        },
+        "summary":(
+            f"{risk.get('level')}: {len(edge_explanations)} policy edge(s) changed; "
+            f"{len(affected)} persisted reputation entr{'y' if len(affected)==1 else 'ies'} affected."
+        ),
+    }
+
 def dry_run(registry: dict, learning: dict | None=None, *, now: float | None=None) -> dict:
     validation=validate_transition_policy()
     if validation.get("valid") is not True:
@@ -281,6 +352,7 @@ def dry_run(registry: dict, learning: dict | None=None, *, now: float | None=Non
         })
 
     risk=classify_migration_risk(registry,changes)
+    explanation=explain_migration(risk,changes)
     core={
         "version":MIGRATION_VERSION,
         "status":"reputation_policy_migration_review_ready",
@@ -293,6 +365,7 @@ def dry_run(registry: dict, learning: dict | None=None, *, now: float | None=Non
         "target_policy_version":TRANSITION_POLICY_VERSION,
         "target_policy_digest":target_policy_digest,
         "risk":risk,
+        "explanation":explanation,
         "summary":{
             "entries":len(changes),
             "changed":sum(1 for row in changes if row["changed"]),

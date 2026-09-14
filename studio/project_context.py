@@ -44,6 +44,18 @@ def render(req: dict, state: dict) -> str:
     deprecations = obsolescence.get('deprecation_candidates') if isinstance(obsolescence.get('deprecation_candidates'), list) else []
     replacement_plan = state.get('architecture_replacement_plan') if isinstance(state.get('architecture_replacement_plan'), dict) else {}
     replacement_rows = replacement_plan.get('replacement_plans') if isinstance(replacement_plan.get('replacement_plans'), list) else []
+    replacement_learning = state.get('architecture_replacement_learning') if isinstance(state.get('architecture_replacement_learning'), dict) else {}
+    learned_replacements = replacement_learning.get('rankings') if isinstance(replacement_learning.get('rankings'), list) else []
+    learned_replacement_lines = []
+    for item in learned_replacements[:8]:
+        if not isinstance(item, dict):
+            continue
+        current = item.get('current_repo')
+        replacement = item.get('replacement_repo')
+        samples = item.get('samples')
+        success = item.get('success_rate')
+        if isinstance(current, str) and isinstance(replacement, str):
+            learned_replacement_lines.append(f"{current} -> {replacement}: success={success}, samples={samples}")
     replacement_lines = []
     for item in replacement_rows[:8]:
         if not isinstance(item, dict) or not isinstance(item.get('current_repo'), str):
@@ -124,6 +136,10 @@ Potential migration candidates:
 ### Replacement plans
 
 {_bullets(replacement_lines, 'No replacement plan is currently pending isolated validation.')}
+
+### Historical replacement evidence
+
+{_bullets(learned_replacement_lines, 'No terminal replacement outcome has been learned yet.')}
 
 ## Current validation / release evidence
 

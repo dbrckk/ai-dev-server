@@ -54,6 +54,9 @@ def validate() -> dict:
         failures.append("feedback_can_add_dependency")
     if float(policy.get("max_score_bonus", 999)) > 5.0:
         failures.append("feedback_bonus_too_large")
+    max_age = policy.get("max_evidence_age_seconds")
+    if not isinstance(max_age, (int, float)) or max_age <= 0 or max_age > 90 * 24 * 60 * 60:
+        failures.append("feedback_evidence_age_unbounded")
 
     decision = architecture_planner.plan(req, recs, learning=learning)
     dep_policy = decision.get("dependency_policy") or {}
@@ -96,6 +99,7 @@ def validate() -> dict:
             "automatic_migration": False,
             "max_feedback_bonus": architecture_feedback.MAX_SCORE_BONUS,
             "minimum_feedback_samples": architecture_feedback.MIN_SAMPLES,
+            "max_feedback_age_seconds": architecture_feedback.MAX_EVIDENCE_AGE_SECONDS,
         },
     }
 

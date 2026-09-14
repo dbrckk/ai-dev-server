@@ -261,25 +261,37 @@ def stack_adjustment(
             continue
 
         rate = max(0.0, min(1.0, float(success_rate)))
-        mean_quality = row.get("mean_quality_score")
+        posterior = row.get("posterior_success_rate")
+        posterior_rate = max(0.0, min(1.0, float(posterior))) if isinstance(posterior, (int, float)) else rate
+        wilson = row.get("wilson_lower_95")
+        wilson_rate = max(0.0, min(1.0, float(wilson))) if isinstance(wilson, (int, float)) else posterior_rate
+        conservative_success = UNCERTAINTY_BLEND * posterior_rate + (1.0 - UNCERTAINTY_BLEND) * wilson_rate
+        mean_quality = row.get("quality_shrunk_mean", row.get("mean_quality_score"))
         quality_rate = (
             max(0.0, min(1.0, float(mean_quality) / 100.0))
             if isinstance(mean_quality, (int, float))
-            else rate
+            else conservative_success
         )
-        combined_rate = SUCCESS_WEIGHT * rate + QUALITY_WEIGHT * quality_rate
+        confidence = row.get("evidence_confidence")
+        confidence = max(0.0, min(1.0, float(confidence))) if isinstance(confidence, (int, float)) else 1.0
+        combined_rate = SUCCESS_WEIGHT * conservative_success + QUALITY_WEIGHT * quality_rate
         centered = (combined_rate - 0.5) * 2.0
         context_weight = _context_weight(row, normalized_framework, normalized_project_type, normalized_primary_domain)
         if context_weight <= 0:
             continue
         weight = min(1.0, samples / 10.0) * min(1.0, overlap / max(1, len(chosen))) * context_weight
-        weighted += centered * weight
+        weighted += centered * weight * confidence
         total_weight += weight
         evidence.append({
             "repos": sorted(repo_set)[:12],
             "samples": samples,
             "success_rate": rate,
+            "posterior_success_rate": row.get("posterior_success_rate"),
+            "wilson_lower_95": row.get("wilson_lower_95"),
+            "conservative_success_rate": round(conservative_success, 4),
+            "evidence_confidence": round(confidence, 4),
             "mean_quality_score": row.get("mean_quality_score"),
+            "quality_shrunk_mean": row.get("quality_shrunk_mean"),
             "combined_outcome_rate": round(combined_rate, 4),
             "overlap_with_selected": overlap,
             "framework": row_framework,

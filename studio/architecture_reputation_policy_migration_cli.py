@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 import sys
 
@@ -10,6 +11,10 @@ from architecture_reputation_policy_migration import (
     ReputationPolicyMigrationError,
     apply_migration,
     dry_run,
+)
+from architecture_reputation_policy_github_collect import (
+    GitHubAttestationCollectionError,
+    collect as collect_github_attestation,
 )
 from core import canonical
 
@@ -35,7 +40,10 @@ def main(argv=None) -> int:
     apply_cmd.add_argument("registry")
     apply_cmd.add_argument("plan")
     apply_cmd.add_argument("authorization")
-    apply_cmd.add_argument("approval")
+    apply_cmd.add_argument("--approval")
+    apply_cmd.add_argument("--github-attestation")
+    apply_cmd.add_argument("--repository")
+    apply_cmd.add_argument("--pull-request",type=int)
     apply_cmd.add_argument("--ledger")
     apply_cmd.add_argument("--out")
 
@@ -56,9 +64,27 @@ def main(argv=None) -> int:
         registry=_load(registry_path,"registry")
         plan=_load(Path(args.plan),"migration plan")
         authorization=_load(Path(args.authorization),"authorization")
-        approval=_load(Path(args.approval),"approval provenance")
+        approval=_load(Path(args.approval),"approval provenance") if args.approval else None
         ledger=_load(Path(args.ledger),"approval ledger") if args.ledger else None
-        migrated=apply_migration(registry,plan,authorization,approval=approval,approval_ledger=ledger)
+        if args.github_attestation:
+            github_attestation=_load(Path(args.github_attestation),"GitHub attestation")
+        else:
+            repository=args.repository or os.environ.get("GITHUB_REPOSITORY","")
+            pull_request=args.pull_request
+            if not repository or not isinstance(pull_request,int):
+                raise ReputationPolicyMigrationError("GitHub repository and pull request required")
+            github_attestation=collect_github_attestation(
+                plan,
+                token=os.environ.get("STUDIO_GITHUB_TOKEN",""),
+                repository=repository,
+                pull_request=pull_request,
+            )
+        migrated=apply_migration(
+            registry,plan,authorization,
+            approval=approval,
+            github_attestation=github_attestation,
+            approval_ledger=ledger,
+        )
         target=Path(args.out) if args.out else registry_path
         target.parent.mkdir(parents=True,exist_ok=True)
         target.write_text(json.dumps(migrated,ensure_ascii=False,indent=2,sort_keys=True)+"\n",encoding="utf-8")
@@ -69,7 +95,7 @@ def main(argv=None) -> int:
             "output":str(target),
         }))
         return 0
-    except ReputationPolicyMigrationError:
+    except (ReputationPolicyMigrationError,GitHubAttestationCollectionError):
         return 1
 
 if __name__=="__main__":

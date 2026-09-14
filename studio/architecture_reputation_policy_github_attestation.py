@@ -8,7 +8,7 @@ import hashlib
 import json
 from datetime import datetime,timezone
 from architecture_reputation_policy_approval import ApprovalProvenanceError, validate_github_attestation
-from replacement_ci_policy import REQUIRED_WORKFLOW_NAME, validate_check_runs
+from replacement_ci_policy import REQUIRED_WORKFLOW_NAME, REQUIRED_WORKFLOW_PATH, validate_check_runs
 
 def _canonical(v):
     return json.dumps(v,sort_keys=True,separators=(",",":"),ensure_ascii=False)
@@ -93,7 +93,15 @@ def latest_approvals(reviews: list[dict], commit_sha: str, *, head_commit_timest
         })
     return rows
 
-def successful_workflow(runs: list[dict], commit_sha: str, *, required_run_id: int | None=None, required_workflow_name: str=REQUIRED_WORKFLOW_NAME, head_commit_timestamp: float | None=None) -> dict:
+def _workflow_path(run: dict) -> str | None:
+    if not isinstance(run,dict):
+        return None
+    raw=run.get("path")
+    if not isinstance(raw,str) or not raw:
+        return None
+    return raw.split("@",1)[0]
+
+def successful_workflow(runs: list[dict], commit_sha: str, *, required_run_id: int | None=None, required_workflow_name: str=REQUIRED_WORKFLOW_NAME, required_workflow_path: str=REQUIRED_WORKFLOW_PATH, head_commit_timestamp: float | None=None) -> dict:
     candidates=[]
     for run in runs if isinstance(runs,list) else []:
         head=run.get("head_sha")
@@ -101,6 +109,8 @@ def successful_workflow(runs: list[dict], commit_sha: str, *, required_run_id: i
         if head!=commit_sha or conclusion!="success":
             continue
         if run.get("name")!=required_workflow_name:
+            continue
+        if _workflow_path(run)!=required_workflow_path:
             continue
         if required_run_id is not None and run.get("id")!=required_run_id:
             continue
@@ -117,14 +127,24 @@ def successful_workflow(runs: list[dict], commit_sha: str, *, required_run_id: i
         "head_sha":commit_sha,
         "conclusion":"success",
         "name":run.get("name"),
+        "path":_workflow_path(run),
         "timestamp":run.get("_validated_timestamp"),
     }
 
 def build(plan: dict, *, repository: str, pull_request: int, commit_sha: str,
           reviews: list[dict], permissions: dict[str,str], workflow_runs: list[dict],
-          check_runs: list[dict], pr_identity: dict, head_commit_timestamp: float, reinforced: bool) -> dict:
+          check_runs: list[dict], pr_identity: dict, workflow_file: dict,
+          head_commit_timestamp: float, reinforced: bool) -> dict:
     if not isinstance(head_commit_timestamp,(int,float)):
         raise ApprovalProvenanceError("head commit timestamp missing")
+    if not isinstance(workflow_file,dict):
+        raise ApprovalProvenanceError("workflow file evidence missing")
+    if workflow_file.get("path")!=REQUIRED_WORKFLOW_PATH:
+        raise ApprovalProvenanceError("workflow file path is not trusted")
+    if not isinstance(workflow_file.get("sha256"),str) or len(workflow_file.get("sha256"))!=64:
+        raise ApprovalProvenanceError("workflow file digest missing")
+    if not isinstance(workflow_file.get("blob_sha"),str) or not workflow_file.get("blob_sha"):
+        raise ApprovalProvenanceError("workflow file blob SHA missing")
     approvals=latest_approvals(reviews,commit_sha,head_commit_timestamp=float(head_commit_timestamp))
     eligible=[a for a in approvals if permissions.get(a["login"]) in {"admin","maintain","write"}]
     if not eligible:
@@ -167,10 +187,12 @@ def build(plan: dict, *, repository: str, pull_request: int, commit_sha: str,
         "head_commit_timestamp":float(head_commit_timestamp),
         "pr_identity":pr_identity,
         "required_checks":checks,
+        "workflow_file":workflow_file,
         "workflow":{
             "head_sha":workflow["head_sha"],
             "conclusion":workflow["conclusion"],
             "name":workflow["name"],
+            "path":workflow["path"],
             "timestamp":workflow["timestamp"],
         },
     }

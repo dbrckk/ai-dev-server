@@ -39,7 +39,25 @@ def plan(
     framework: str | None = None,
     publication_target: str | None = None,
 ) -> dict:
-    recommendations = apply_feedback(recommendations, learning)
+    resolved_framework = (
+        framework
+        if isinstance(framework, str) and framework
+        else req.get("framework")
+        if isinstance(req.get("framework"), str) and req.get("framework")
+        else "flutter"
+    )
+    resolved_publication = (
+        publication_target
+        if isinstance(publication_target, str) and publication_target
+        else req.get("publication_target")
+        if isinstance(req.get("publication_target"), str) and req.get("publication_target")
+        else "google-play" if resolved_framework in {"flutter", "godot"} else "unspecified"
+    )
+    recommendations = apply_feedback(
+        recommendations,
+        learning,
+        framework=resolved_framework,
+    )
     rows=_clean_rows(recommendations)
     chosen=[]
     rejected=[]
@@ -61,7 +79,12 @@ def plan(
         chosen_names=[x["repo"] for x in chosen]
         scored=[]
         for row in pending:
-            synergy=stack_adjustment(row["repo"], chosen_names, learning)
+            synergy=stack_adjustment(
+                row["repo"],
+                chosen_names,
+                learning,
+                framework=resolved_framework,
+            )
             base=row.get("feedback_score", row.get("score"))
             base_score=float(base) if isinstance(base,(int,float)) else 0.0
             effective=round(base_score + float(synergy.get("bonus",0.0)),4)

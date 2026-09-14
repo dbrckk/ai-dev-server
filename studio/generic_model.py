@@ -122,6 +122,8 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 kind="provider",
                 name=provider.name,
             )
+            components["contextual_expected_success"] = bandit["expected_success"] * 10.0
+            components["contextual_uncertainty"] = -bandit["uncertainty"] * 2.0
             components["contextual_bandit_exploration"] = bandit["exploration_bonus"]
         from adaptive_scoring import ScoreTrace
         provider_scores[provider.name] = ScoreTrace(

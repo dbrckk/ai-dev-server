@@ -8,6 +8,7 @@ from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
 from core import IMAGE, canonical
+from file_lock import exclusive
 
 SCHEMA = 1
 MAX_ENTRIES = 512
@@ -53,10 +54,15 @@ def save(entries: dict) -> None:
     path = _path()
     if path is None:
         return
-    trimmed = list(entries.items())[-MAX_ENTRIES:]
-    payload = {
-        "schema": SCHEMA,
-        "toolchain_fingerprint": toolchain_fingerprint(),
-        "entries": dict(trimmed),
-    }
-    atomic_write_text(path, canonical(payload))
+    with exclusive(path):
+        merged = load()
+        merged.update(entries)
+        trimmed = dict(list(merged.items())[-MAX_ENTRIES:])
+        entries.clear()
+        entries.update(trimmed)
+        payload = {
+            "schema": SCHEMA,
+            "toolchain_fingerprint": toolchain_fingerprint(),
+            "entries": trimmed,
+        }
+        atomic_write_text(path, canonical(payload))

@@ -51,6 +51,7 @@ from objective_dag import ObjectiveDagError, append_amendments as append_objecti
 from task_semantic_checkpoint import TaskSemanticCheckpointError, affected_verified_tasks, load as load_task_semantic_checkpoint, new as new_task_semantic_checkpoint, record as record_task_semantic_checkpoint, reject_stagnant_surface, resume as resume_task_semantic_checkpoint, retry_policy as task_retry_policy, save as save_task_semantic_checkpoint, stagnation_guard as task_stagnation_guard, task_context as task_semantic_context
 from task_context_bundle import build as build_task_context_bundle
 from task_confidence import score as score_task_confidence
+from task_proof_bundle import TaskProofError, build as build_task_proof, filename as task_proof_filename, save as save_task_proof
 from release_confidence import assess as assess_release_confidence
 from task_acceptance import accepted as task_acceptance_passed, failure_reason as task_acceptance_failure_reason
 from done_when_evaluator import apply_causality as apply_done_when_causality, baseline_static as baseline_done_when_static, evaluate as evaluate_done_when
@@ -2096,6 +2097,35 @@ Objective and current plan:
                 task_attempts=int(active_task_row_before.get("attempts", 0)),
                 acceptance_review=review,
             )
+            task_proof = None
+            task_proof_error = None
+            if task_verified:
+                try:
+                    task_proof = build_task_proof(
+                        project_root=work,
+                        project_id=req["id"],
+                        task=plan.get("active_task") or active_task_row_before,
+                        commit=base_sha,
+                        review=review,
+                        verification=verification,
+                        confidence=task_confidence.as_dict(),
+                    )
+                    proof_name = task_proof_filename(active_task_id, base_sha)
+                    proof_path = out / ".autonomy" / "proofs" / proof_name
+                    save_task_proof(proof_path, task_proof)
+                    round_state["task_proof"] = {
+                        "path": ".autonomy/proofs/" + proof_name,
+                        "sha256": task_proof["sha256"],
+                        "commit": base_sha,
+                    }
+                except (TaskProofError, OSError) as exc:
+                    task_verified = False
+                    task_proof_error = str(exc)
+                    round_state["task_proof"] = {
+                        "error": task_proof_error,
+                        "commit": base_sha,
+                    }
+
             if task_verified:
                 objective_dag = mark_objective_verified(
                     objective_dag,
@@ -2107,11 +2137,15 @@ Objective and current plan:
                 objective_dag = mark_objective_failed(
                     objective_dag,
                     active_task_id,
-                    error=task_acceptance_failure_reason(
-                        verification=verification,
-                        review=review,
-                        active_task=plan.get("active_task"),
-                        allowed_evidence_refs=allowed_task_evidence_refs,
+                    error=(
+                        "task proof bundle failed: " + task_proof_error
+                        if task_proof_error
+                        else task_acceptance_failure_reason(
+                            verification=verification,
+                            review=review,
+                            active_task=plan.get("active_task"),
+                            allowed_evidence_refs=allowed_task_evidence_refs,
+                        )
                     ),
                 )
             save_objective_dag(objective_dag_path, objective_dag)

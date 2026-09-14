@@ -12,7 +12,7 @@ import time
 from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
-from architecture_reputation_policy_approval import ApprovalProvenanceError, consume as consume_approval, validate_approval, validate_github_attestation, validate_ledger
+from architecture_reputation_policy_approval import ApprovalProvenanceError, approval_from_github_attestation, consume as consume_approval, validate_approval, validate_github_attestation, validate_ledger
 from architecture_replacement_reputation import (
     DANGEROUS_STATE_GATES,
     MAX_AUDIT_EVENTS,
@@ -444,16 +444,27 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, approval
         if authorization.get("reinforced_reviewed") is not True:
             raise ReputationPolicyMigrationError("reinforced migration review absent")
     try:
-        provenance=validate_approval(
-            approval,
-            plan,
-            reinforced=risk.get("reinforced_review_required") is True,
-        )
+        reinforced=risk.get("reinforced_review_required") is True
         github_provenance=validate_github_attestation(
             github_attestation,
             plan,
-            reinforced=risk.get("reinforced_review_required") is True,
+            reinforced=reinforced,
         )
+        if approval is None:
+            approval=approval_from_github_attestation(
+                github_attestation,
+                plan,
+                reinforced=reinforced,
+            )
+        provenance=validate_approval(
+            approval,
+            plan,
+            reinforced=reinforced,
+        )
+        if provenance["reviewer_id"]!=github_provenance["github_reviewer"]:
+            raise ApprovalProvenanceError("approval reviewer does not match GitHub reviewer")
+        if reinforced and provenance["second_reviewer_id"]!=github_provenance["github_second_reviewer"]:
+            raise ApprovalProvenanceError("approval second reviewer does not match GitHub reviewer")
         if approval_ledger is not None and validate_ledger(approval_ledger).get("valid") is not True:
             raise ApprovalProvenanceError("approval ledger invalid")
     except ApprovalProvenanceError as exc:

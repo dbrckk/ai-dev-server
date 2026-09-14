@@ -90,6 +90,12 @@ def _evaluate_architecture(report,project_out):
         {
             'status':migration_review.get('status'),
             'migration_id':migration_review.get('migration_id'),
+            'review_digest':migration_review.get('review_digest'),
+            'authorization_expires_at':(
+                migration_review.get('authorization_template',{}).get('expires_at')
+                if isinstance(migration_review.get('authorization_template'),dict)
+                else None
+            ),
             'summary':migration_review.get('summary'),
             'risk':migration_review.get('risk'),
             'explanation':migration_review.get('explanation'),

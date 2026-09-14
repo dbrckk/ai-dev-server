@@ -160,14 +160,44 @@ def run_branch(
 
             if index < len(steps):
                 quick_sandbox = sandbox_factory(root)
-                quick_passed, quick_logs = quick_sandbox.quick_gates()
+                progressive = []
+                quick_passed = True
+                quick_failure = None
+                for gate_name, gate_method_name in (
+                    ("dependency", "quick_dependency_gate"),
+                    ("analyze", "quick_analyze_gate"),
+                    ("test", "quick_test_gate"),
+                ):
+                    gate_method = getattr(quick_sandbox, gate_method_name, None)
+                    if gate_method is None:
+                        fallback = getattr(quick_sandbox, "quick_gates")
+                        gate_ok, gate_logs = fallback()
+                        progressive.append({
+                            "gate": "compatibility",
+                            "passed": gate_ok is True,
+                            "logs": gate_logs,
+                        })
+                        quick_passed = gate_ok is True
+                        if not quick_passed:
+                            quick_failure = canonical(gate_logs[-1:])[-4000:]
+                        break
+                    gate_ok, gate_logs = gate_method()
+                    progressive.append({
+                        "gate": gate_name,
+                        "passed": gate_ok is True,
+                        "logs": gate_logs,
+                    })
+                    if not gate_ok:
+                        quick_passed = False
+                        quick_failure = canonical(gate_logs[-1:])[-4000:]
+                        break
                 step_trace["quick_gates"] = {
-                    "passed": quick_passed is True,
-                    "gate_count": len(quick_logs),
-                    "failure": None if quick_passed else canonical(quick_logs[-1:])[-4000:],
+                    "passed": quick_passed,
+                    "progressive": progressive,
+                    "failure": quick_failure,
                 }
                 if not quick_passed:
-                    pending_failure = canonical(quick_logs[-1:])[-4000:]
+                    pending_failure = quick_failure
                     next_step_model_calls = step_model_calls[index]
                     if not should_continue_after_quick_failure(
                         next_step_model_calls=next_step_model_calls,

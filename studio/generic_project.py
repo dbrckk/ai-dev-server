@@ -804,6 +804,12 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
                     "id": active_objective_task["id"],
                     "title": active_objective_task["title"],
                     "depends_on": active_objective_task["depends_on"],
+                    "critical": bool(active_objective_task.get("critical", False)),
+                    "done_when": list(
+                        active_objective_task.get("done_when")
+                        or [active_objective_task["title"]]
+                    ),
+                    "confidence": active_objective_task.get("confidence"),
                     "attempt": active_objective_task["attempts"],
                 },
                 "objective_dag": objective_dag_summary(objective_dag),

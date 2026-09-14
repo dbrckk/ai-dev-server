@@ -84,6 +84,10 @@ class DoneWhenEvaluatorTests(unittest.TestCase):
             (root/"package.json").write_text('{"scripts":{"build":"vite build"}}')
             result=evaluate(root,["build:default"])
             self.assertTrue(result["deterministic"][0]["passed"])
+            self.assertEqual(
+                result["deterministic"][0]["evidence_refs"],
+                ["command:npm run build"],
+            )
             args,_=run_command.call_args
             self.assertEqual(args[0],["npm","run","build"])
 
@@ -96,6 +100,17 @@ class DoneWhenEvaluatorTests(unittest.TestCase):
         result=validate_contract(["manual UX review"],critical=True)
         self.assertFalse(result["valid"])
         self.assertIn("critical task requires",result["errors"][-1])
+
+    def test_critical_contract_rejects_file_only_evidence(self):
+        result=validate_contract(["file:README.md"],critical=True)
+        self.assertFalse(result["valid"])
+        self.assertEqual(result["strong_deterministic_count"],0)
+        self.assertIn("strong deterministic",result["errors"][-1])
+
+    def test_critical_contract_accepts_symbol_evidence(self):
+        result=validate_contract(["symbol:src/api.py#handle_request"],critical=True)
+        self.assertTrue(result["valid"])
+        self.assertEqual(result["strong_deterministic_count"],1)
 
     def test_critical_contract_accepts_structured_evidence(self):
         result=validate_contract(["test:tests/test_api.py::test_ok","manual UX review"],critical=True)

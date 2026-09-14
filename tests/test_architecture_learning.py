@@ -67,5 +67,16 @@ class ArchitectureLearningTests(unittest.TestCase):
             self.assertEqual(rankings[1]["repo"], "bad/repo")
 
 
+    def test_write_persists_bounded_learning_summary(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            self._write(root, "p1", ["a/core"], True, 2, 1, 0)
+            result = al.write(root)
+            saved = json.loads((root / "architecture-learning.json").read_text(encoding="utf-8"))
+            self.assertEqual(saved, result)
+            self.assertTrue(saved["advisory_only"])
+
+
+
 if __name__ == "__main__":
     unittest.main()

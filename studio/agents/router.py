@@ -30,6 +30,8 @@ def _score(
     safe_rewrite_summary: dict | None = None,
     contextual_routing: dict | None = None,
     weighted_contexts: list[tuple[str, float]] | None = None,
+    execution_seconds: float | None = None,
+    verification_seconds: float | None = None,
 ) -> RouteDecision:
     matched = sorted(required & set(spec.capabilities))
     missing = sorted(required - set(spec.capabilities))
@@ -88,6 +90,18 @@ def _score(
         components["contextual_expected_success"] = bandit["expected_success"] * 10.0
         components["contextual_uncertainty"] = -bandit["uncertainty"] * 2.0
         components["contextual_bandit_exploration"] = bandit["exploration_bonus"]
+        architecture_hold = any(
+            context == "architecture-risk:hold"
+            for context, _weight in weighted_contexts
+        )
+        utility = utility_score(
+            expected_success=bandit["expected_success"],
+            execution_seconds=execution_seconds,
+            verification_seconds=verification_seconds,
+            architecture_hold=architecture_hold,
+            free_preferred=spec.free_preferred,
+        )
+        components["cost_aware_utility"] = utility["score"]
         trace = ScoreTrace(
             name=spec.name,
             total=sum(float(value) for value in components.values()),
@@ -114,6 +128,8 @@ def rank_agents(
     safe_rewrite_summary: dict | None = None,
     contextual_routing: dict | None = None,
     weighted_contexts: list[tuple[str, float]] | None = None,
+    execution_seconds: dict[str, float] | None = None,
+    verification_seconds: float | None = None,
 ) -> list[RouteDecision]:
     required_set = {x.strip() for x in required if x and x.strip()}
     reliability = reliability or {}
@@ -128,6 +144,8 @@ def rank_agents(
             safe_rewrite_summary=safe_rewrite_summary,
             contextual_routing=contextual_routing,
             weighted_contexts=weighted_contexts,
+            execution_seconds=(execution_seconds or {}).get(spec.name),
+            verification_seconds=verification_seconds,
         )
         for spec in registry.all()
     ]

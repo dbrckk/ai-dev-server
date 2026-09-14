@@ -13,6 +13,7 @@ def render(plan: dict) -> str:
     lines=[
         "# Reputation Policy Migration Review","",
         f"- Migration ID: `{plan.get('migration_id','unknown')}`",
+        f"- Review digest: `{plan.get('review_digest','unknown')}`",
         f"- Risk: **{risk.get('level','UNKNOWN')}**",
         f"- Review: **{explanation.get('review_action','explicit_authorization_required')}**",
         f"- Changed entries: **{impact.get('changed_entries',0)}**","",
@@ -38,6 +39,10 @@ def render(plan: dict) -> str:
         for row in transitions:
             lines.append(f"- {row.get('transition')}: **{row.get('count',0)}**")
     lines.extend(["","## Authorization",""])
+    auth=plan.get("authorization_template") if isinstance(plan.get("authorization_template"),dict) else {}
+    if auth:
+        lines.append(f"- Authorization expires at epoch: `{auth.get('expires_at','unknown')}`")
+        lines.append("")
     if risk.get("reinforced_review_required") is True:
         lines.append("This migration requires explicit authorization **and reinforced review** before apply.")
     else:

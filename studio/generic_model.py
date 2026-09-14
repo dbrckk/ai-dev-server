@@ -46,6 +46,10 @@ from local_model_benchmark import (
     load as load_local_model_benchmark,
     routing_bonus as local_model_benchmark_bonus,
 )
+from local_model_specialization import (
+    load as load_local_model_specialization,
+    specialization_score as local_model_specialization_score,
+)
 
 
 def _decode(response: dict) -> dict:
@@ -89,6 +93,8 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     local_rep_path = Path(local_rep_raw) if local_rep_raw else None
     local_benchmark_raw = os.environ.get("STUDIO_LOCAL_MODEL_BENCHMARK_PATH", "")
     local_benchmark_path = Path(local_benchmark_raw) if local_benchmark_raw else None
+    local_specialization_raw = os.environ.get("STUDIO_LOCAL_MODEL_SPECIALIZATION_PATH", "")
+    local_specialization_path = Path(local_specialization_raw) if local_specialization_raw else None
     try:
         weighted_contexts = json.loads(os.environ.get("STUDIO_ROUTING_CONTEXTS_JSON", "[]"))
     except json.JSONDecodeError:
@@ -112,6 +118,7 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     provider_quota_data = load_provider_monthly_quota(quota_path) if quota_path is not None else {"schema": 1, "months": {}}
     local_model_reputation = load_local_model_reputation(local_rep_path) if local_rep_path is not None else {}
     local_model_benchmark = load_local_model_benchmark(local_benchmark_path) if local_benchmark_path is not None else {}
+    local_model_specialization = load_local_model_specialization(local_specialization_path) if local_specialization_path is not None else {}
     try:
         max_api_cost_usd = float(os.environ.get("STUDIO_MAX_API_COST_USD", "0") or 0.0)
     except ValueError:
@@ -165,6 +172,19 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 role=role,
             )
             components["local_model_reputation"] = reputation_component
+            parsed_local_contexts = [
+                (str(item[0]), float(item[1]))
+                for item in weighted_contexts
+                if isinstance(item, list) and len(item) == 2
+            ]
+            specialization = local_model_specialization_score(
+                local_model_specialization,
+                provider=gateway_name,
+                model=provider.model_for(role),
+                role=role,
+                contexts=parsed_local_contexts,
+            )
+            components["local_model_specialization"] = specialization["score"]
             quarantine = local_model_quarantine_status(
                 local_model_reputation,
                 provider=gateway_name,

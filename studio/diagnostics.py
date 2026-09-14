@@ -25,6 +25,15 @@ PREREQUISITE_BLOCKERS = {
     "release_apk_missing",
 }
 
+RETRYABLE_ENVIRONMENT_BLOCKERS = {
+    "emulator_boot_timeout",
+    "notification_shade_expand_failed",
+    "notification_ui_dump_failed",
+    "notification_ui_dump_unreadable",
+    "notification_ui_dump_invalid",
+    "platform_view_screenshot_failed",
+}
+
 CODE_PREFIXES = (
     "app_unstable_for_",
     "notification_lifecycle_unstable:",
@@ -89,3 +98,11 @@ def classify(stage: str, evidence: dict) -> dict:
 
 def repairable(stage: str, evidence: dict) -> list[str]:
     return classify(stage, evidence)["code"]
+
+
+def retryable_environment(stage: str, evidence: dict) -> list[str]:
+    diagnostics = classify(stage, evidence)
+    return [
+        blocker for blocker in diagnostics["environment"]
+        if blocker.split(":", 1)[0] in RETRYABLE_ENVIRONMENT_BLOCKERS
+    ]

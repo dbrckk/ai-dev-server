@@ -7,6 +7,7 @@ from pathlib import Path
 
 from artifact_cas import MAX_CAS_BYTES, blob_path as cas_blob_path, gc as cas_gc, get as cas_get, put as cas_put, stats_digest as cas_stats_digest, usage as cas_usage
 from artifact_cas_stats import retention_score
+from atomic_file import write_bytes as atomic_write_bytes
 from core import StudioError, canonical
 
 SCHEMA = 2
@@ -266,6 +267,5 @@ def save(entries: dict) -> None:
     raw = canonical(payload).encode("utf-8")
     if len(raw) > 2 * 1024 * 1024:
         raise StudioError("Artifact cache index exceeds storage limit")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(raw)
+    atomic_write_bytes(path, raw)
     cas_gc(_referenced_digests(trimmed))

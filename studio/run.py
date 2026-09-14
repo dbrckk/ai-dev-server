@@ -28,6 +28,7 @@ from architecture_benchmark import write as write_architecture_benchmark
 from architecture_preflight import write as write_architecture_preflight
 from architecture_change_guard import enforce as enforce_architecture_change_guard, ArchitectureChangeBlocked
 from architecture_safe_rewrite import build_context as build_architecture_safe_rewrite_context
+from capacity_status import snapshot as capacity_snapshot
 from safe_rewrite_learning import (
     record_attempt as record_safe_rewrite_attempt,
     finalize as finalize_safe_rewrite,
@@ -383,6 +384,9 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             'unmetered_continues_after_paid_budget': True,
             'pooled_free_continues_after_paid_budget': True,
         }
+        state['capacity_status'] = capacity_snapshot(
+            autonomy_dir / 'provider-monthly-quota.json'
+        )
         cycle_budget = min(req['max_calls'], max(0, budget_status(state)['model_calls_remaining']))
         if cycle_budget < 1:
             state.update(status='blocked', blockers=['Project model-call budget exhausted'])

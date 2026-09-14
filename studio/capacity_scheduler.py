@@ -59,6 +59,12 @@ def _clean_project(row: dict) -> dict | None:
     except (TypeError, ValueError):
         efficiency = 1.0
     efficiency = max(0.75, min(1.25, efficiency))
+    try:
+        stagnation = float(row.get("stagnation_multiplier", 1.0) or 0.0)
+    except (TypeError, ValueError):
+        stagnation = 1.0
+    stagnation = max(0.0, min(1.0, stagnation))
+    paused = bool(row.get("capacity_paused", False))
     return {
         "id": project_id,
         "status": status,
@@ -69,6 +75,10 @@ def _clean_project(row: dict) -> dict | None:
         "critical": critical,
         "capacity_pressure": round(pressure, 4),
         "efficiency_multiplier": round(efficiency, 4),
+        "stagnation_multiplier": round(stagnation, 4),
+        "capacity_paused": paused,
+        "stagnation_level": str(row.get("stagnation_level") or "normal"),
+        "force_diversify": bool(row.get("force_diversify", False)),
     }
 
 
@@ -83,6 +93,7 @@ def _weight(project: dict) -> float:
     failure_bonus = 1.15 if project["status"] == "failed" else 1.0
     pressure_bonus = 1.0 + min(0.60, project.get("capacity_pressure", 0.0) * 0.40)
     efficiency_bonus = max(0.75, min(1.25, project.get("efficiency_multiplier", 1.0)))
+    stagnation_multiplier = max(0.0, min(1.0, project.get("stagnation_multiplier", 1.0)))
     return max(
         0.01,
         project["priority"]
@@ -90,7 +101,8 @@ def _weight(project: dict) -> float:
         * critical_bonus
         * failure_bonus
         * pressure_bonus
-        * efficiency_bonus,
+        * efficiency_bonus
+        * stagnation_multiplier,
     )
 
 
@@ -130,7 +142,10 @@ def allocate(
         weight = _weight(project)
         requested = project["requested_tokens"]
 
-        if has_unmetered:
+        if project.get("capacity_paused"):
+            envelope = 0
+            constrained = True
+        elif has_unmetered:
             envelope = requested
             constrained = False
         else:
@@ -187,6 +202,7 @@ def allocate(
             "active_projects": len(allocations),
             "critical_projects": sum(1 for row in allocations if row["critical"]),
             "constrained_projects": sum(1 for row in allocations if row["constrained"]),
+            "paused_projects": sum(1 for row in allocations if row.get("capacity_paused")),
             "requested_tokens": sum(row["requested_tokens"] for row in allocations),
             "allocated_tokens": sum(row["token_envelope"] for row in allocations),
         },

@@ -65,6 +65,8 @@ def record(
             "total_tokens": 0,
             "ema_tokens": 0.0,
             "ema_success": 0.0,
+            "failure_streak": 0,
+            "success_streak": 0,
         })
         samples = max(0, int(row.get("samples", 0) or 0))
         prev_tokens = max(0.0, float(row.get("ema_tokens", 0.0) or 0.0))
@@ -72,6 +74,8 @@ def record(
         observed_success = 1.0 if verified_success else 0.0
         ema_tokens = float(consumed) if samples == 0 else ALPHA * consumed + (1.0 - ALPHA) * prev_tokens
         ema_success = observed_success if samples == 0 else ALPHA * observed_success + (1.0 - ALPHA) * prev_success
+        previous_failure_streak = max(0, int(row.get("failure_streak", 0) or 0))
+        previous_success_streak = max(0, int(row.get("success_streak", 0) or 0))
         row = {
             "project_id": project,
             "provider": provider_name,
@@ -81,6 +85,8 @@ def record(
             "total_tokens": max(0, int(row.get("total_tokens", 0) or 0)) + consumed,
             "ema_tokens": round(ema_tokens, 3),
             "ema_success": round(max(0.0, min(1.0, ema_success)), 6),
+            "failure_streak": 0 if verified_success else previous_failure_streak + 1,
+            "success_streak": previous_success_streak + 1 if verified_success else 0,
         }
         data["rows"][key] = row
         if len(data["rows"]) > MAX_ROWS:

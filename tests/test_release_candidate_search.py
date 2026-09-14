@@ -234,6 +234,125 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
             self.assertEqual(source.read_text(), "base\n")
 
 
+    def test_progressive_quick_gates_stop_before_tests_when_analyze_fails(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source = root / "lib/app.dart"
+            source.parent.mkdir(parents=True)
+            source.write_text("base\n")
+            calls = []
+
+            class ProgressiveSandbox:
+                def __init__(self, root):
+                    self.root = root
+
+                def quick_dependency_gate(self):
+                    calls.append("dependency")
+                    return True, [{"command": ["flutter", "pub", "get"], "exit_code": 0, "output": ""}]
+
+                def quick_analyze_gate(self):
+                    calls.append("analyze")
+                    return False, [{"command": ["flutter", "analyze"], "exit_code": 1, "output": "analysis failed"}]
+
+                def quick_test_gate(self):
+                    calls.append("test")
+                    return True, []
+
+                def gates(self, name, journeys):
+                    calls.append("full")
+                    return True, []
+
+            def first_step(intermediate_failure=None):
+                source.write_text("broken\n")
+                return {"model_calls": 0}
+
+            def second_step(intermediate_failure=None):
+                source.write_text("should-not-run\n")
+                return {"model_calls": 1}
+
+            candidate = run_branch(
+                root,
+                strategy="agent_to_model",
+                strategy_prior_score=0,
+                steps=[first_step, second_step],
+                refine=None,
+                state=STATE,
+                app_name="demo_app",
+                sandbox_factory=ProgressiveSandbox,
+                strategy_row={
+                    "conservative_success_rate": 0.0,
+                    "risk": 1.0,
+                    "estimated_seconds": 100,
+                    "estimated_model_calls": 1,
+                },
+                remaining_model_calls=1,
+                step_model_calls=[0, 1],
+            )
+
+            self.assertFalse(candidate["passed"])
+            self.assertEqual(calls, ["dependency", "analyze"])
+            self.assertEqual(source.read_text(), "base\n")
+
+    def test_progressive_quick_gates_reach_tests_only_after_analyze_passes(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source = root / "lib/app.dart"
+            source.parent.mkdir(parents=True)
+            source.write_text("base\n")
+            calls = []
+
+            class ProgressiveSandbox:
+                def __init__(self, root):
+                    self.root = root
+
+                def quick_dependency_gate(self):
+                    calls.append("dependency")
+                    return True, []
+
+                def quick_analyze_gate(self):
+                    calls.append("analyze")
+                    return True, []
+
+                def quick_test_gate(self):
+                    calls.append("test")
+                    return False, [{"command": ["flutter", "test"], "exit_code": 1, "output": "unit failure"}]
+
+                def gates(self, name, journeys):
+                    calls.append("full")
+                    return True, []
+
+            def first_step(intermediate_failure=None):
+                source.write_text("candidate\n")
+                return {"model_calls": 0}
+
+            def second_step(intermediate_failure=None):
+                source.write_text("should-not-run\n")
+                return {"model_calls": 1}
+
+            candidate = run_branch(
+                root,
+                strategy="agent_to_model",
+                strategy_prior_score=0,
+                steps=[first_step, second_step],
+                refine=None,
+                state=STATE,
+                app_name="demo_app",
+                sandbox_factory=ProgressiveSandbox,
+                strategy_row={
+                    "conservative_success_rate": 0.0,
+                    "risk": 1.0,
+                    "estimated_seconds": 100,
+                    "estimated_model_calls": 1,
+                },
+                remaining_model_calls=1,
+                step_model_calls=[0, 1],
+            )
+
+            self.assertFalse(candidate["passed"])
+            self.assertEqual(calls, ["dependency", "analyze", "test"])
+            self.assertEqual(source.read_text(), "base\n")
+
+
     def test_failed_quick_gate_prunes_unpromising_branch_before_full_gates(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

@@ -47,9 +47,18 @@ def choose_execution_mode(
     agent_available: bool,
     strategy_data: dict | None = None,
     safe_rewrite_summary: dict | None = None,
+    force_diversify: bool = False,
 ) -> MetaRoute:
     if not agent_available:
         return MetaRoute("model_only", 0, 1.0, "no eligible external agent", "model_only")
+    if force_diversify:
+        return MetaRoute(
+            "dual",
+            2,
+            1.0,
+            "stagnation controller forced independent strategy diversification",
+            "dual",
+        )
     architecture_bias = 0.0
     if role == "implementation" and isinstance(safe_rewrite_summary, dict):
         origins = safe_rewrite_summary.get("origin_rankings")

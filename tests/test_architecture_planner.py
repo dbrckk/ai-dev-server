@@ -95,6 +95,66 @@ class ArchitecturePlannerTests(unittest.TestCase):
         ]}
         result=plan({"target_repo":"o/r","app_name":"demo"},recs,learning=learning)
         self.assertEqual(result["chosen"][1]["repo"],"c/stable")
+    def test_stack_history_does_not_cross_project_type(self):
+        recs={"matches":[
+            {"repo":"a/base","score":95.0,"quality_score":9.5,"tier":"core","domain":"mobile","capabilities":["mobile"]},
+            {"repo":"b/plain","score":91.0,"quality_score":9.0,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+            {"repo":"c/game","score":90.0,"quality_score":9.0,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+        ]}
+        learning={"stack_rankings":[
+            {
+                "repos":["a/base","c/game"],
+                "framework":"flutter",
+                "project_type":"game",
+                "primary_domain":"mobile",
+                "samples":8,
+                "success_rate":1.0,
+            }
+        ]}
+        result=plan(
+            {"target_repo":"o/r","app_name":"demo","brief":"Trading dashboard for XAUUSD"},
+            recs,
+            learning=learning,
+            framework="flutter",
+        )
+        self.assertEqual(result["constraints"]["project_type"],"trading")
+        self.assertEqual(result["chosen"][1]["repo"],"b/plain")
+        self.assertEqual(result["chosen"][1]["stack_synergy_bonus"],0.0)
+
+    def test_matching_project_type_can_apply_stack_history(self):
+        recs={"matches":[
+            {"repo":"a/base","score":95.0,"quality_score":9.5,"tier":"core","domain":"mobile","capabilities":["mobile"]},
+            {"repo":"b/plain","score":91.0,"quality_score":9.0,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+            {"repo":"c/game","score":90.0,"quality_score":9.0,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+        ]}
+        learning={"stack_rankings":[
+            {
+                "repos":["a/base","c/game"],
+                "framework":"flutter",
+                "project_type":"game",
+                "primary_domain":"mobile",
+                "samples":8,
+                "success_rate":1.0,
+            }
+        ]}
+        result=plan(
+            {"target_repo":"o/r","app_name":"demo","brief":"A multiplayer game for Android"},
+            recs,
+            learning=learning,
+            framework="flutter",
+        )
+        self.assertEqual(result["constraints"]["project_type"],"game")
+        self.assertEqual(result["chosen"][1]["repo"],"c/game")
+        self.assertEqual(result["chosen"][1]["stack_synergy_bonus"],2.0)
+
+    def test_primary_domain_is_recorded_in_constraints(self):
+        recs={"matches":[
+            {"repo":"a/one","score":95.0,"quality_score":9.5,"tier":"core","domain":"graphics","capabilities":["rendering"]},
+            {"repo":"b/two","score":94.0,"quality_score":9.4,"tier":"recommended","domain":"graphics","capabilities":["animation"]},
+            {"repo":"c/three","score":90.0,"quality_score":9.0,"tier":"recommended","domain":"mobile","capabilities":["mobile"]},
+        ]}
+        result=plan({"target_repo":"o/r","app_name":"demo","brief":"Vector animation app"},recs)
+        self.assertEqual(result["constraints"]["primary_domain"],"graphics")
 
 if __name__=="__main__":
     unittest.main()

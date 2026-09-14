@@ -44,6 +44,10 @@ def plan(req: dict, recommendations: dict) -> dict:
         if len(chosen)<MAX_CHOSEN:
             chosen.append({
                 "repo":repo,
+                "selection_score":row.get("score"),
+                "quality_score":row.get("quality_score"),
+                "tier":row.get("tier"),
+                "domain":row.get("domain"),
                 "reason":_reason(row),
                 "capabilities":list(row.get("capabilities", []))[:12],
                 "complements":list(row.get("complements", []))[:8],

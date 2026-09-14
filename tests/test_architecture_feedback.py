@@ -444,6 +444,89 @@ class ArchitectureFeedbackTests(unittest.TestCase):
         self.assertEqual(low["evidence"][0]["evidence_confidence"], 0.25)
         self.assertEqual(high["evidence"][0]["evidence_confidence"], 1.0)
 
+    def test_degraded_drift_removes_positive_historical_bonus(self):
+        recs = {"matches": [{
+            "repo": "a/core",
+            "domain": "mobile",
+            "score": 90.0,
+            "quality_score": 9.0,
+        }]}
+        learning = {"rankings": [{
+            "repo": "a/core",
+            "domain": "mobile",
+            "framework": "flutter",
+            "project_type": "general",
+            "primary_domain": "mobile",
+            "samples": 30,
+            "success_rate": 0.9,
+            "posterior_success_rate": 0.875,
+            "wilson_lower_95": 0.74,
+            "evidence_confidence": 1.0,
+            "quality_shrunk_mean": 85.0,
+            "drift": {"status": "degraded", "score": 1.0, "quality_delta": -30.0},
+        }]}
+        result = af.apply(
+            recs, learning,
+            framework="flutter",
+            project_type="general",
+            primary_domain="mobile",
+        )
+        row = result["matches"][0]
+        self.assertLess(row["feedback_score"], 90.0)
+        self.assertEqual(row["historical_evidence"]["drift"]["status"], "degraded")
+        self.assertGreater(row["historical_evidence"]["drift_penalty"], 0.0)
+
+    def test_stable_drift_keeps_positive_history_bonus(self):
+        recs = {"matches": [{
+            "repo": "a/core",
+            "domain": "mobile",
+            "score": 90.0,
+            "quality_score": 9.0,
+        }]}
+        learning = {"rankings": [{
+            "repo": "a/core",
+            "domain": "mobile",
+            "framework": "flutter",
+            "project_type": "general",
+            "primary_domain": "mobile",
+            "samples": 30,
+            "success_rate": 0.9,
+            "posterior_success_rate": 0.875,
+            "wilson_lower_95": 0.74,
+            "evidence_confidence": 1.0,
+            "quality_shrunk_mean": 85.0,
+            "drift": {"status": "stable", "score": 0.1},
+        }]}
+        result = af.apply(
+            recs, learning,
+            framework="flutter",
+            project_type="general",
+            primary_domain="mobile",
+        )
+        self.assertGreater(result["matches"][0]["feedback_score"], 90.0)
+
+    def test_degraded_stack_history_becomes_negative_synergy(self):
+        learning = {"stack_rankings": [{
+            "repos": ["a/core", "b/ui"],
+            "framework": "flutter",
+            "project_type": "game",
+            "primary_domain": "mobile",
+            "samples": 30,
+            "success_rate": 0.9,
+            "posterior_success_rate": 0.875,
+            "wilson_lower_95": 0.74,
+            "evidence_confidence": 1.0,
+            "quality_shrunk_mean": 85.0,
+            "drift": {"status": "degraded", "score": 1.0},
+        }]}
+        result = af.stack_adjustment(
+            "b/ui", ["a/core"], learning,
+            framework="flutter",
+            project_type="game",
+            primary_domain="mobile",
+        )
+        self.assertLess(result["bonus"], 0.0)
+        self.assertEqual(result["evidence"][0]["drift"]["status"], "degraded")
 
 if __name__ == "__main__":
     unittest.main()

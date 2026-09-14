@@ -70,6 +70,11 @@ from local_model_leaderboard import leaderboards as local_model_leaderboards
 from model_portfolio import choose as choose_model_portfolio
 from model_portfolio_audit import audit as audit_model_portfolio
 from portfolio_candidate_scheduler import choose_schedule as choose_candidate_schedule
+from candidate_portfolio_learning import (
+    load as load_candidate_portfolio_learning,
+    record as record_candidate_portfolio_learning,
+    recommendation as recommend_candidate_portfolio_width,
+)
 from provider_router import load_providers as load_direct_providers, candidates_for as direct_candidates_for
 from model_portfolio_learning import (
     load as load_model_portfolio_learning,
@@ -215,6 +220,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     local_model_reputation_path = out / ".autonomy" / "local-model-reputation.json"
     local_model_specialization_path = out / ".autonomy" / "local-model-specialization.json"
     model_portfolio_learning_path = out / ".autonomy" / "model-portfolio-learning.json"
+    candidate_portfolio_learning_path = out / ".autonomy" / "candidate-portfolio-learning.json"
     __import__("os").environ["STUDIO_SAFE_REWRITE_LEARNING_PATH"] = str(safe_rewrite_learning_path)
     __import__("os").environ["STUDIO_CONTEXTUAL_ROUTING_MEMORY_PATH"] = str(contextual_routing_path)
     __import__("os").environ["STUDIO_PROVIDER_COST_PATH"] = str(provider_cost_path)
@@ -446,6 +452,8 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         progress_trace = []
         agent_trace = []
         agent_used = None
+        round_candidate_portfolio = None
+        round_candidate_cost_seconds = 0.0
         current_plan = plan
         remaining_seconds = None if deadline is None else max(0.0, deadline - clock())
         drift_multiplier = drift_detector.exploration_multiplier()
@@ -632,6 +640,9 @@ Objective and current plan:
                     if preliminary_names
                     else (0.5 if available_direct_models > 1 else 1.0)
                 )
+                candidate_width_learning = recommend_candidate_portfolio_width(
+                    load_candidate_portfolio_learning(candidate_portfolio_learning_path)
+                )
                 candidate_schedule = choose_candidate_schedule(
                     capacity_status=state.get("capacity_status", {}),
                     route_confidence=scheduler_confidence,
@@ -648,7 +659,12 @@ Objective and current plan:
                         else 1
                     ),
                     strategy=meta_route.strategy,
+                    recommended_width=candidate_width_learning.get("recommended_width"),
                 )
+                round_candidate_portfolio = {
+                    "schedule": candidate_schedule.as_dict(),
+                    "learning_before": candidate_width_learning,
+                }
                 agent_trace.append({
                     "status":"candidate_portfolio_schedule",
                     "decision":candidate_schedule.as_dict(),
@@ -1124,6 +1140,14 @@ Objective and current plan:
                         restore_agent_workspace(work, before_agent)
 
                 fallback_elapsed = max(0, int(clock() - fallback_started))
+                round_candidate_cost_seconds = max(
+                    round_candidate_cost_seconds,
+                    float(fallback_elapsed),
+                )
+                if round_candidate_portfolio is not None:
+                    round_candidate_portfolio["candidate_count"] = len(candidate_records)
+                    round_candidate_portfolio["viable_count"] = len(viable)
+                    round_candidate_portfolio["winner"] = winner_id if viable else None
                 strategy_success = False
                 if viable:
                     selected = next((item for item in viable if item["id"] == winner_id), None)
@@ -1555,6 +1579,19 @@ Objective and current plan:
             implementation_model=primary_impl.get("model"),
         )
         round_portfolio_audit = audit_model_portfolio(round_portfolio.get("roles", {}))
+        if round_candidate_portfolio is not None:
+            actual_width = int(round_candidate_portfolio.get("candidate_count", 0) or 0)
+            if actual_width > 0:
+                record_candidate_portfolio_learning(
+                    candidate_portfolio_learning_path,
+                    width=actual_width,
+                    success=complete,
+                    cost_seconds=round_candidate_cost_seconds,
+                )
+            state["candidate_portfolio_learning"] = recommend_candidate_portfolio_width(
+                load_candidate_portfolio_learning(candidate_portfolio_learning_path)
+            )
+            round_candidate_portfolio["learning_after"] = state["candidate_portfolio_learning"]
         record_model_portfolio_outcome(
             model_portfolio_learning_path,
             audit=round_portfolio_audit,
@@ -1577,6 +1614,7 @@ Objective and current plan:
             "models": {"plan": plan_model, "implementation": implementation_models, "review": review_model},
             "model_portfolio": round_portfolio,
             "model_portfolio_audit": round_portfolio_audit,
+            "candidate_portfolio": round_candidate_portfolio,
         }
         state["rounds"].append(round_state)
         drift_decision = drift_detector.decision()

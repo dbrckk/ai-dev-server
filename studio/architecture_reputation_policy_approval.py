@@ -136,6 +136,24 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         raise ApprovalProvenanceError("required GitHub checks incomplete or failed")
     if checks.get("stale_checks"):
         raise ApprovalProvenanceError("required GitHub checks stale")
+    required_checks=checks.get("required_checks")
+    passed_checks=checks.get("passed_checks")
+    evidence=checks.get("check_evidence")
+    if not isinstance(required_checks,list) or not isinstance(passed_checks,list) or not isinstance(evidence,dict):
+        raise ApprovalProvenanceError("required GitHub check evidence missing")
+    if sorted(required_checks)!=sorted(passed_checks):
+        raise ApprovalProvenanceError("required GitHub checks are not fully passed")
+    for name in required_checks:
+        row=evidence.get(name)
+        if not isinstance(row,dict):
+            raise ApprovalProvenanceError("required GitHub check evidence missing")
+        if row.get("head_sha") not in (None,attestation.get("commit_sha")):
+            raise ApprovalProvenanceError("required GitHub check does not bind reviewed commit")
+        if row.get("status")!="completed" or row.get("conclusion")!="success":
+            raise ApprovalProvenanceError("required GitHub check is not successful")
+        check_timestamp=row.get("timestamp")
+        if not isinstance(check_timestamp,(int,float)) or check_timestamp<float(head_commit_timestamp):
+            raise ApprovalProvenanceError("required GitHub check predates latest PR head commit")
 
     target=plan.get("github_review_target") if isinstance(plan,dict) else None
     if isinstance(target,dict):

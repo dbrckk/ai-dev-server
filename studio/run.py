@@ -21,6 +21,7 @@ from idempotent_model import ask_value as checkpointed_ask
 from atomic_file import write_text as atomic_write_text
 from architecture_planner import write as write_architecture_plan
 from architecture_outcome import write as write_architecture_outcome
+from architecture_learning import write as write_architecture_learning
 
 class GitHub(API):
     def __init__(self, repo):
@@ -357,6 +358,11 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     sha = checkpoint(parent)
     state['checkpoint_commit'] = sha
     write_architecture_outcome(state, out)
+    learning_root = out if (out / "architecture-outcome.json").is_file() and out.name == "studio-output" else out.parent
+    try:
+        state["architecture_learning"] = write_architecture_learning(learning_root)
+    except OSError:
+        state["architecture_learning"] = {"status": "unavailable"}
     atomic_write_text(out / 'report.json', canonical(state))
     return state
 

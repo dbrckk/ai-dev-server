@@ -71,5 +71,14 @@ class ArchitectureOutcomeTests(unittest.TestCase):
             self.assertEqual(len(saved["decision_id"]), 64)
 
 
+    def test_verified_godot_preview_counts_as_success(self):
+        result = build({
+            "status": "godot_preview_validated",
+            "architecture_decision": {"status": "planned", "chosen": []},
+        })
+        self.assertTrue(result["outcome"]["successful"])
+
+
+
 if __name__ == "__main__":
     unittest.main()

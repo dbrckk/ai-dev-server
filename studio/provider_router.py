@@ -4,6 +4,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 import os
+import urllib.request
+import urllib.error
 from typing import Iterable
 
 
@@ -48,6 +50,39 @@ def _bool(value, default=True):
     if isinstance(value, str):
         return value.strip().lower() not in {"0", "false", "no", "off"}
     return default
+
+
+def _auto_omniroute() -> ProviderSpec | None:
+    if not _bool(os.environ.get("STUDIO_AUTO_DISCOVER_OMNIROUTE", "true"), True):
+        return None
+    base = os.environ.get("STUDIO_OMNIROUTE_BASE", "http://127.0.0.1:20128/v1").rstrip("/")
+    if not _is_local_base(base):
+        return None
+    try:
+        req = urllib.request.Request(
+            base + "/models",
+            headers={"Accept": "application/json", "User-Agent": "ai-dev-server"},
+        )
+        with urllib.request.urlopen(req, timeout=0.35) as response:
+            if response.status != 200:
+                return None
+            raw = response.read(200000)
+            value = json.loads(raw)
+    except (OSError, ValueError, urllib.error.URLError):
+        return None
+    if not isinstance(value, dict) or not isinstance(value.get("data"), list):
+        return None
+    return ProviderSpec(
+        name="omniroute",
+        base=base,
+        key="",
+        model="auto",
+        code_model="auto",
+        priority=98,
+        free_preferred=True,
+        unmetered=False,
+        monthly_token_quota=1_470_000_000,
+    )
 
 
 def _primary() -> ProviderSpec | None:
@@ -161,6 +196,9 @@ def load_providers(*, prefer_free: bool = True) -> tuple[ProviderSpec, ...]:
     primary = _primary()
     if primary:
         specs.append(primary)
+    auto_omniroute = _auto_omniroute()
+    if auto_omniroute:
+        specs.append(auto_omniroute)
     specs.extend(_json_specs(os.environ.get("STUDIO_PROVIDERS_JSON", "")))
 
     deduped = {}

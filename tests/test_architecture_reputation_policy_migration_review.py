@@ -8,6 +8,8 @@ class ReputationPolicyMigrationReviewTests(unittest.TestCase):
     def test_render_contains_human_review_information(self):
         plan={
             "migration_id":"abc",
+            "review_digest":"def",
+            "authorization_template":{"expires_at":12345},
             "risk":{"level":"PROMOTION_PATH_CHANGE","reinforced_review_required":True},
             "explanation":{
                 "review_action":"reinforced_review_required",
@@ -27,6 +29,9 @@ class ReputationPolicyMigrationReviewTests(unittest.TestCase):
         self.assertIn("minimum_confirmations",text)
         self.assertIn("TRUSTED -> DEGRADED",text)
         self.assertIn("reinforced review",text)
+        self.assertIn("Review digest",text)
+        self.assertIn("def",text)
+        self.assertIn("12345",text)
 
 if __name__=="__main__":
     unittest.main()

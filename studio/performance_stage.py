@@ -9,6 +9,7 @@ from completion import apply_completion, next_stage
 from core import StudioError, canonical
 from performance_qa import validate_performance
 from run import GitHub
+from release_stage_engine import apply_external_gate, evaluate_and_repair
 
 
 def advance(request_path: Path, root: Path, out: Path) -> dict:
@@ -22,9 +23,13 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
         report_path.write_text(canonical(state))
         return state
 
-    evidence = validate_performance(root, out)
+    evidence = evaluate_and_repair(root, out, state, req, 'performance_qa', validate_performance)
     state.setdefault('release_evidence', {})['performance_qa'] = evidence
+    state.pop('human_action', None)
+    if state.get('status') == 'human_action_required':
+        state['status'] = 'validated_preview'
     apply_completion(state)
+    apply_external_gate(state, 'performance_qa', evidence)
 
     parent = state.get('checkpoint_commit')
     if not parent:
@@ -50,6 +55,8 @@ def main() -> int:
         'performance_passed': evidence.get('passed') if isinstance(evidence, dict) else None,
         'metrics': evidence.get('metrics') if isinstance(evidence, dict) else None,
     }))
+    if state.get('status') == 'human_action_required':
+        return 2
     return 0 if isinstance(evidence, dict) and evidence.get('passed') else 1
 
 

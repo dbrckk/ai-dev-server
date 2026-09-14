@@ -28,7 +28,14 @@ class FakeGitHub:
         return copy.deepcopy(self.state), 'base'
     def publish(self, branch, parent, root, state):
         self.state = copy.deepcopy(state)
-        self.files = {p.relative_to(root).as_posix(): p.read_text() for p in root.rglob('*') if p.is_file() and allowed(p.relative_to(root).as_posix())}
+        self.files = {
+            p.relative_to(root).as_posix(): p.read_text()
+            for p in root.rglob('*')
+            if p.is_file() and (
+                allowed(p.relative_to(root).as_posix())
+                or p.relative_to(root).as_posix() == 'PROJECT_CONTEXT.md'
+            )
+        }
         self.published.append(copy.deepcopy(state))
         return 'commit'
 

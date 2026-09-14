@@ -106,6 +106,20 @@ class PortfolioCandidateSchedulerTests(unittest.TestCase):
         self.assertEqual(schedule.agent_limit, 0)
         self.assertTrue(schedule.include_model)
 
+    def test_model_only_can_compare_multiple_direct_models(self):
+        schedule = choose_schedule(
+            capacity_status={"unmetered_available": True, "providers": []},
+            route_confidence=0.5,
+            verification_seconds=60,
+            remaining_seconds=900,
+            available_agents=0,
+            available_models=3,
+            strategy="model_only",
+        )
+        self.assertEqual(schedule.candidate_limit, 2)
+        self.assertEqual(schedule.model_limit, 2)
+        self.assertEqual(schedule.agent_limit, 0)
+
     def test_agent_only_does_not_require_model_candidate(self):
         schedule = choose_schedule(
             capacity_status={"unmetered_available": True, "providers": []},

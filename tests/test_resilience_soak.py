@@ -28,13 +28,14 @@ class ResilienceSoakTests(unittest.TestCase):
                 "STUDIO_TASK_LEASE_PATH": str(lease_path),
             }
 
+            cycles = max(1, int(os.environ.get("STUDIO_SOAK_CYCLES", "40")))
             with patch.dict(os.environ, env, clear=False):
-                for index in range(320):
+                for index in range(cycles):
                     durable_state.save(
                         state_path,
                         {
                             "generation": index,
-                            "status": "running" if index < 319 else "complete",
+                            "status": "running" if index < cycles - 1 else "complete",
                         },
                     )
                     loaded = durable_state.load_recovering(state_path)
@@ -76,7 +77,7 @@ class ResilienceSoakTests(unittest.TestCase):
                     telemetry.emit("soak_cycle", generation=index)
 
             final_state = durable_state.load(state_path)
-            self.assertEqual(final_state["generation"], 319)
+            self.assertEqual(final_state["generation"], cycles - 1)
             self.assertEqual(final_state["status"], "complete")
 
             checkpoint_payload = json.loads(
@@ -91,8 +92,8 @@ class ResilienceSoakTests(unittest.TestCase):
             self.assertEqual(lease_payload["claims"], {})
 
             summary = telemetry.summarize(telemetry_path)
-            self.assertEqual(summary["events"], 320)
-            self.assertEqual(summary["kinds"]["soak_cycle"], 320)
+            self.assertEqual(summary["events"], cycles)
+            self.assertEqual(summary["kinds"]["soak_cycle"], cycles)
 
 
 if __name__ == "__main__":

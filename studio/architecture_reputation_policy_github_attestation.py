@@ -7,6 +7,7 @@ from __future__ import annotations
 import hashlib
 import json
 from architecture_reputation_policy_approval import ApprovalProvenanceError, validate_github_attestation
+from replacement_ci_policy import validate_check_runs
 
 def _canonical(v):
     return json.dumps(v,sort_keys=True,separators=(",",":"),ensure_ascii=False)
@@ -58,7 +59,7 @@ def successful_workflow(runs: list[dict], commit_sha: str) -> dict:
 
 def build(plan: dict, *, repository: str, pull_request: int, commit_sha: str,
           reviews: list[dict], permissions: dict[str,str], workflow_runs: list[dict],
-          reinforced: bool) -> dict:
+          check_runs: list[dict], pr_identity: dict, reinforced: bool) -> dict:
     approvals=latest_approvals(reviews,commit_sha)
     eligible=[a for a in approvals if permissions.get(a["login"]) in {"admin","maintain","write"}]
     if not eligible:
@@ -72,6 +73,9 @@ def build(plan: dict, *, repository: str, pull_request: int, commit_sha: str,
         second=eligible[1]
         second["permission"]=permissions[second["login"]]
     workflow=successful_workflow(workflow_runs,commit_sha)
+    checks=validate_check_runs(check_runs,repository)
+    if checks.get("valid") is not True:
+        raise ApprovalProvenanceError("required GitHub checks are not all successful")
     attestation={
         "repository":repository,
         "commit_sha":commit_sha,
@@ -81,6 +85,8 @@ def build(plan: dict, *, repository: str, pull_request: int, commit_sha: str,
         "migration_id":plan.get("migration_id"),
         "review_digest":plan.get("review_digest"),
         "reviewer":first,
+        "pr_identity":pr_identity,
+        "required_checks":checks,
         "workflow":{"head_sha":workflow["head_sha"],"conclusion":workflow["conclusion"],"name":workflow["name"]},
     }
     if second is not None: attestation["second_reviewer"]=second

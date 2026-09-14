@@ -75,6 +75,12 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
             break
         evidence = build_security_package(root, out)
 
+    evidence['auto_remediation'] = {
+        'attempted': bool(remediation_history),
+        'rounds': remediation_history,
+        'max_rounds': MAX_REMEDIATION_ROUNDS,
+        'converged': evidence.get('passed') is True,
+    }
     evidence['agentic_remediation'] = {
         'attempted': bool(agentic_history),
         'rounds': agentic_history,

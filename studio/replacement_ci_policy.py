@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime,timezone
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -52,9 +53,50 @@ def _trusted_check_run(run: dict, repository: str) -> bool:
         and parsed.path.startswith("/"+repository+"/actions/runs/")
     )
 
-def validate_check_runs(runs: list[dict], repository: str) -> dict:
+def _timestamp(value) -> float | None:
+    if isinstance(value,(int,float)):
+        return float(value)
+    if not isinstance(value,str) or not value:
+        return None
+    try:
+        text=value[:-1]+"+00:00" if value.endswith("Z") else value
+        dt=datetime.fromisoformat(text)
+        if dt.tzinfo is None:
+            dt=dt.replace(tzinfo=timezone.utc)
+        return dt.timestamp()
+    except ValueError:
+        return None
+
+def _check_timestamp(run: dict) -> float | None:
+    if not isinstance(run,dict):
+        return None
+    for key in ("started_at","completed_at","created_at","updated_at"):
+        ts=_timestamp(run.get(key))
+        if ts is not None:
+            return ts
+    return None
+
+def validate_check_runs(runs: list[dict], repository: str, *, commit_sha: str | None=None, head_commit_timestamp: float | None=None) -> dict:
     trusted=[run for run in runs if _trusted_check_run(run,repository)]
-    by_name={run.get("name"):run for run in trusted if isinstance(run.get("name"),str)}
+    if commit_sha is not None:
+        trusted=[
+            run for run in trusted
+            if run.get("head_sha") in (None,commit_sha)
+        ]
+    by_name={}
+    for run in trusted:
+        name=run.get("name")
+        if not isinstance(name,str):
+            continue
+        current=by_name.get(name)
+        current_ts=_check_timestamp(current) if current else None
+        run_ts=_check_timestamp(run)
+        current_id=int(current.get("id") or 0) if isinstance(current,dict) else -1
+        run_id=int(run.get("id") or 0)
+        current_key=(current_ts if current_ts is not None else float("-inf"),current_id)
+        run_key=(run_ts if run_ts is not None else float("-inf"),run_id)
+        if current is None or run_key>=current_key:
+            by_name[name]=run
     missing=sorted(REQUIRED_GITHUB_CHECKS-set(by_name))
     incomplete=sorted(
         name for name in REQUIRED_GITHUB_CHECKS
@@ -65,16 +107,38 @@ def validate_check_runs(runs: list[dict], repository: str) -> dict:
         if name in by_name and by_name[name].get("status")=="completed"
         and by_name[name].get("conclusion")!="success"
     )
+    stale=sorted(
+        name for name in REQUIRED_GITHUB_CHECKS
+        if name in by_name and head_commit_timestamp is not None
+        and (
+            _check_timestamp(by_name[name]) is None
+            or _check_timestamp(by_name[name])<float(head_commit_timestamp)
+        )
+    )
     passed=sorted(
         name for name in REQUIRED_GITHUB_CHECKS
         if name in by_name and by_name[name].get("status")=="completed"
         and by_name[name].get("conclusion")=="success"
+        and name not in stale
     )
+    evidence={
+        name:{
+            "id":by_name[name].get("id"),
+            "head_sha":by_name[name].get("head_sha"),
+            "timestamp":_check_timestamp(by_name[name]),
+            "status":by_name[name].get("status"),
+            "conclusion":by_name[name].get("conclusion"),
+        }
+        for name in sorted(REQUIRED_GITHUB_CHECKS)
+        if name in by_name
+    }
     return {
-        "valid":not missing and not incomplete and not failed,
+        "valid":not missing and not incomplete and not failed and not stale,
         "required_checks":sorted(REQUIRED_GITHUB_CHECKS),
         "passed_checks":passed,
         "missing_checks":missing,
         "incomplete_checks":incomplete,
         "failed_checks":failed,
+        "stale_checks":stale,
+        "check_evidence":evidence,
     }

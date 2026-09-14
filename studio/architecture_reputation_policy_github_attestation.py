@@ -12,10 +12,15 @@ def _canonical(v):
     return json.dumps(v,sort_keys=True,separators=(",",":"),ensure_ascii=False)
 
 def _login(review):
-    author=review.get("author") if isinstance(review,dict) else None
-    if isinstance(author,dict):
-        return author.get("login") or author.get("name")
-    return review.get("login") if isinstance(review,dict) else None
+    if not isinstance(review,dict):
+        return None
+    for key in ("author","user"):
+        value=review.get(key)
+        if isinstance(value,dict):
+            login=value.get("login") or value.get("name")
+            if login:
+                return login
+    return review.get("login")
 
 def _state(review):
     value=review.get("state") if isinstance(review,dict) else None
@@ -23,7 +28,7 @@ def _state(review):
 
 def _commit(review):
     if not isinstance(review,dict): return None
-    return review.get("commit_sha") or review.get("commitId") or review.get("commit_id")
+    return review.get("commit_sha") or review.get("commitId") or review.get("commit_id") or review.get("commit_oid")
 
 def latest_approvals(reviews: list[dict], commit_sha: str) -> list[dict]:
     latest={}

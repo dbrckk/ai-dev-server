@@ -169,6 +169,23 @@ class ReplacementReputationTests(unittest.TestCase):
         finally:
             arr.TRANSITION_POLICY=original
 
+    def test_policy_digest_is_stable_and_exported(self):
+        first=arr.transition_policy_digest()
+        second=arr.transition_policy_digest()
+        self.assertEqual(first,second)
+        self.assertEqual(len(first),64)
+        registry,entry=arr.apply(None,self.context(),self.strong(),now=100.0)
+        self.assertEqual(entry["transition_policy_digest"],first)
+        self.assertEqual(registry["policy"]["digest"],first)
+        self.assertEqual(registry["audit"][-1]["transition_policy_digest"],first)
+
+    def test_policy_digest_changes_when_policy_changes(self):
+        modified={state:dict(row) for state,row in arr.TRANSITION_POLICY.items()}
+        modified["TRUSTED"]={**modified["TRUSTED"],"EXPERIMENTAL":{
+            "allowed":False,"severity":"critical","required_gates":[]
+        }}
+        self.assertNotEqual(arr.transition_policy_digest(modified),arr.transition_policy_digest())
+
     def test_audit_records_every_transition(self):
         registry,_=arr.apply(None,self.context(),self.strong(),now=100.0)
         registry,_=arr.apply(registry,self.context(),{**self.strong(),"sequential_drift":True},now=200.0)

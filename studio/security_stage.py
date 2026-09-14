@@ -65,6 +65,11 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
     if not parent:
         raise StudioError('Privacy report has no checkpoint commit')
     github = GitHub(req['target_repo'])
+    manifest = root / 'android/app/src/main/AndroidManifest.xml'
+    if manifest.is_file() and not manifest.is_symlink():
+        github.native_files = {
+            'android/app/src/main/AndroidManifest.xml': manifest.read_bytes(),
+        }
     sha = github.publish('studio/' + req['id'], parent, root, state)
     state['checkpoint_commit'] = sha
     report_path.write_text(canonical(state))

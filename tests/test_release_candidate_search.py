@@ -653,12 +653,20 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
 
                 def gates(self, name, journeys):
                     full_calls["count"] += 1
+                    apk = self.root / "build/app/outputs/flutter-apk/app-debug.apk"
+                    apk.parent.mkdir(parents=True, exist_ok=True)
+                    apk.write_bytes(b"A" * 2048)
+                    goldens = self.root / "test/goldens"
+                    goldens.mkdir(parents=True, exist_ok=True)
+                    for index in range(4 * (1 + len(journeys))):
+                        (goldens / f"{index}.png").write_bytes(b"PNG" + bytes([index % 255]))
                     return True, [{"command": ["flutter", "test"], "exit_code": 0, "output": ""}]
 
             def mutate(intermediate_failure=None):
                 source.write_text("const value = 2;\n")
                 return {"model_calls": 0}
 
+            shared_artifact_cache = {}
             first = run_branch(
                 root,
                 strategy="agent_only",
@@ -672,6 +680,7 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
                 remaining_model_calls=0,
                 step_model_calls=[0],
                 full_gate_cache=shared_full_cache,
+                artifact_cache=shared_artifact_cache,
             )
             second = run_branch(
                 root,
@@ -686,12 +695,18 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
                 remaining_model_calls=0,
                 step_model_calls=[0],
                 full_gate_cache=shared_full_cache,
+                artifact_cache=shared_artifact_cache,
             )
 
             self.assertTrue(first["passed"])
             self.assertFalse(first["cached_full_validation"])
             self.assertTrue(second["passed"])
             self.assertTrue(second["cached_full_validation"])
+            self.assertIsNotNone(second["artifact_restore"])
+            self.assertIn(
+                "build/app/outputs/flutter-apk/app-debug.apk",
+                second["artifact_restore"]["restored"],
+            )
             self.assertEqual(full_calls["count"], 1)
 
 

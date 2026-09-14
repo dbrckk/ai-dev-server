@@ -224,6 +224,19 @@ class ObjectiveDagTests(unittest.TestCase):
         self.assertEqual(release["state"],"blocked")
         self.assertEqual(info["confidence_blockers"][0]["dependency"],"core")
 
+    def test_normal_release_revalidation_can_use_lower_threshold(self):
+        dag=new("demo","x",{"work_items":["one"]},"a"*40)
+        dag=mark_running(dag,"task-1")
+        dag=mark_verified(dag,"task-1",commit="b"*40,confidence=60)
+        dag=reopen_confidence_dependency(
+            dag,
+            "task-1",
+            minimum=65,
+            reason="release confidence revalidation required",
+        )
+        task=next(task for task in summary(dag)["tasks"] if task["id"]=="task-1")
+        self.assertEqual(task["state"],"ready")
+
     def test_cycle_is_rejected(self):
         with self.assertRaisesRegex(ObjectiveDagError,"cyclic"):
             new(

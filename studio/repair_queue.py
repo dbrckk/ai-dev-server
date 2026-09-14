@@ -147,8 +147,12 @@ def finish_attempt(
     if success:
         task["status"] = "completed"
         task["stagnation_count"] = 0
+        if improved:
+            task["improvement_count"] = int(task.get("improvement_count", 0)) + 1
         return task
-    if not improved:
+    if improved:
+        task["improvement_count"] = int(task.get("improvement_count", 0)) + 1
+    else:
         task["stagnation_count"] = int(task.get("stagnation_count", 0)) + 1
     if int(task.get("attempts", 0)) >= int(task.get("max_attempts", MAX_ATTEMPTS)):
         task["status"] = "exhausted"

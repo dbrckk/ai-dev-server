@@ -17,6 +17,8 @@ class ProviderSpec:
     vision_model: str = ""
     priority: int = 50
     free_preferred: bool = True
+    input_cost_per_million: float = 0.0
+    output_cost_per_million: float = 0.0
 
     def model_for(self, role: str, screenshots: bool = False) -> str:
         if screenshots:
@@ -55,6 +57,8 @@ def _primary() -> ProviderSpec | None:
         vision_model=vision,
         priority=100,
         free_preferred=_bool(os.environ.get("STUDIO_PROVIDER_FREE", "true")),
+        input_cost_per_million=max(0.0, float(os.environ.get("STUDIO_INPUT_COST_PER_MILLION", "0") or 0)),
+        output_cost_per_million=max(0.0, float(os.environ.get("STUDIO_OUTPUT_COST_PER_MILLION", "0") or 0)),
     )
 
 
@@ -73,7 +77,7 @@ def _json_specs(raw: str) -> list[ProviderSpec]:
             raise ValueError("Provider entries must be objects")
         allowed = {
             "name", "base", "key_env", "model", "code_model", "vision_model",
-            "priority", "free_preferred",
+            "priority", "free_preferred", "input_cost_per_million", "output_cost_per_million",
         }
         if set(item) - allowed:
             raise ValueError("Unknown provider configuration field")
@@ -98,6 +102,8 @@ def _json_specs(raw: str) -> list[ProviderSpec]:
             vision_model=(item.get("vision_model") or "").strip(),
             priority=priority,
             free_preferred=_bool(item.get("free_preferred", True)),
+            input_cost_per_million=max(0.0, float(item.get("input_cost_per_million", 0.0) or 0.0)),
+            output_cost_per_million=max(0.0, float(item.get("output_cost_per_million", 0.0) or 0.0)),
         ))
     return specs
 

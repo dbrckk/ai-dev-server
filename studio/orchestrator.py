@@ -11,6 +11,7 @@ from core import StudioError
 from evolution_executor import consume as consume_evolution_request
 from stage_registry import STAGES,get_stage
 from project_recommendations import recommend
+from architecture_evaluator import write as write_architecture_evaluation
 
 def _recommendation_context(request_path):
     try:
@@ -24,6 +25,21 @@ def _recommendation_context(request_path):
     platform='android' if 'android' in text or 'play store' in text else ('ios' if 'ios' in text or 'iphone' in text else None)
     language='dart' if 'flutter' in text else None
     return {'context_text': brief, 'platform': platform, 'language': language}
+
+def _evaluate_architecture(report,project_out):
+    path=project_out/'architecture-decision.json'
+    if not path.is_file():
+        return {'status':'unavailable','verdict':'insufficient_evidence','advisory_only':True}
+    try:
+        decision=json.loads(path.read_text())
+    except (OSError,json.JSONDecodeError):
+        return {'status':'invalid','verdict':'insufficient_evidence','advisory_only':True}
+    if not isinstance(decision,dict):
+        return {'status':'invalid','verdict':'insufficient_evidence','advisory_only':True}
+    evaluation=write_architecture_evaluation(decision,report,project_out)
+    report['architecture_evaluation']=evaluation
+    (project_out/'report.json').write_text(json.dumps(report,ensure_ascii=False,sort_keys=True,separators=(',',':')))
+    return evaluation
 
 def load_report(project_out):
     path=project_out/'report.json'
@@ -201,7 +217,8 @@ def run_registered_stages(request_path,project_out,work,report,deadline,runner,c
             return {'status':'human_action_required','report':updated,'next_stage':name,
                     'human_action':updated.get('human_action')}
         if result.returncode!=0: return {'status':stage.failed_status,'report':load_report(project_out),'next_stage':name}
-        updated=load_report(project_out); updated_completion=updated.get('completion',{}); next_name=updated_completion.get('next_stage') if isinstance(updated_completion,dict) else None
+        updated=load_report(project_out); _evaluate_architecture(updated,project_out)
+        updated_completion=updated.get('completion',{}); next_name=updated_completion.get('next_stage') if isinstance(updated_completion,dict) else None
         if next_name==name and not updated_completion.get('finished'): raise StudioError('Successful stage did not advance completion state: '+name)
         report=updated
 
@@ -212,10 +229,17 @@ def run_project(request_path,project_out,work,runner,deadline,clock=time.monoton
     except TimeoutError: return {'status':'deferred','report':{},'next_stage':'preview'}
     preview=runner([sys.executable,'studio/run.py',request_path,'--work',work,'--out',str(project_out)],timeout=remaining)
     if preview.returncode!=0:
-        report=load_report(project_out) if (project_out/'report.json').is_file() else {}; return {'status':'failed','report':report,'next_stage':'preview'}
+        report=load_report(project_out) if (project_out/'report.json').is_file() else {}
+        if report: _evaluate_architecture(report,project_out)
+        return {'status':'failed','report':report,'next_stage':'preview'}
+    report=load_report(project_out)
+    _evaluate_architecture(report,project_out)
     try: remaining=_remaining(deadline,clock)
     except TimeoutError: return {'status':'deferred_release','report':load_report(project_out),'next_stage':'release_build'}
     recommend('testing',project_out,**_recommendation_context(request_path))
     release=runner([sys.executable,'studio/post_preview.py',request_path,'--work',work,'--out',str(project_out)],timeout=remaining)
-    if release.returncode!=0: return {'status':'release_failed','report':load_report(project_out),'next_stage':'release_build'}
-    return run_registered_stages(request_path,project_out,work,load_report(project_out),deadline,runner,clock,baseline_sha)
+    if release.returncode!=0:
+        report=load_report(project_out); _evaluate_architecture(report,project_out)
+        return {'status':'release_failed','report':report,'next_stage':'release_build'}
+    report=load_report(project_out); _evaluate_architecture(report,project_out)
+    return run_registered_stages(request_path,project_out,work,report,deadline,runner,clock,baseline_sha)

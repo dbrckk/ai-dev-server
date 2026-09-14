@@ -188,6 +188,9 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
     workflow=attestation.get("workflow")
     if not isinstance(workflow,dict) or workflow.get("conclusion")!="success":
         raise ApprovalProvenanceError("github workflow is not successful")
+    from replacement_ci_policy import REQUIRED_WORKFLOW_NAME
+    if workflow.get("name")!=REQUIRED_WORKFLOW_NAME:
+        raise ApprovalProvenanceError("github workflow name is not trusted")
     if workflow.get("head_sha")!=attestation.get("commit_sha"):
         raise ApprovalProvenanceError("github workflow does not bind reviewed commit")
     workflow_timestamp=workflow.get("timestamp")
@@ -214,6 +217,7 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         "passed_checks":checks.get("passed_checks"),
         "check_evidence":checks.get("check_evidence"),
         "workflow_timestamp":workflow_timestamp,
+        "workflow_name":workflow.get("name"),
         "common_workflow_run_id":common_run_id,
         "attestation_digest":digest,
     }

@@ -55,6 +55,7 @@ class ArchitectureLearningTests(unittest.TestCase):
             self.assertEqual(row["mean_model_calls"], 3.6)
             self.assertEqual(row["mean_cycles"], 1.6)
             self.assertEqual(row["mean_blockers"], 0.6)
+            self.assertEqual(row["mean_quality_score"], 80.0)
             self.assertTrue(row["eligible_for_advisory_bias"])
 
     def test_better_evidence_ranks_higher(self):
@@ -130,7 +131,7 @@ class ArchitectureLearningTests(unittest.TestCase):
             for i in range(5):
                 self._write(root, f"p{i}", ["a/core", "b/helper"], True, 2, 1, 0)
             result = al.summarize(root)
-            self.assertEqual(result["schema"], 3)
+            self.assertEqual(result["schema"], 4)
             self.assertEqual(result["stack_rankings"][0]["repos"], ["a/core", "b/helper"])
             self.assertEqual(result["stack_rankings"][0]["samples"], 5)
             self.assertTrue(result["stack_rankings"][0]["eligible_for_advisory_bias"])
@@ -244,6 +245,42 @@ class ArchitectureLearningTests(unittest.TestCase):
             by_type = {x["project_type"]: x for x in rankings}
             self.assertEqual(by_type["game"]["success_rate"], 1.0)
             self.assertEqual(by_type["trading"]["success_rate"], 0.0)
+    def test_continuous_quality_distinguishes_successful_stacks(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            for i, quality in enumerate([95.0, 92.0, 90.0, 94.0, 93.0]):
+                out = root / f"good-{i}"
+                out.mkdir()
+                (out / "architecture-outcome.json").write_text(json.dumps({
+                    "schema": 3,
+                    "decision_constraints": {"framework": "flutter", "project_type": "general", "primary_domain": "mobile"},
+                    "chosen_repositories": ["good/a", "good/b"],
+                    "outcome": {
+                        "successful": True,
+                        "quality_score": quality,
+                        "model_calls_this_cycle": 2,
+                        "cycles": 1,
+                        "blocker_count": 0,
+                    },
+                }), encoding="utf-8")
+            for i, quality in enumerate([60.0, 62.0, 58.0, 61.0, 59.0]):
+                out = root / f"weak-{i}"
+                out.mkdir()
+                (out / "architecture-outcome.json").write_text(json.dumps({
+                    "schema": 3,
+                    "decision_constraints": {"framework": "flutter", "project_type": "general", "primary_domain": "mobile"},
+                    "chosen_repositories": ["weak/a", "weak/b"],
+                    "outcome": {
+                        "successful": True,
+                        "quality_score": quality,
+                        "model_calls_this_cycle": 10,
+                        "cycles": 5,
+                        "blocker_count": 1,
+                    },
+                }), encoding="utf-8")
+            stacks = al.summarize(root)["stack_rankings"]
+            self.assertEqual(stacks[0]["repos"], ["good/a", "good/b"])
+            self.assertGreater(stacks[0]["mean_quality_score"], stacks[1]["mean_quality_score"])
 
 if __name__ == "__main__":
     unittest.main()

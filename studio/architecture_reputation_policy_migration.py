@@ -425,7 +425,10 @@ def dry_run(registry: dict, learning: dict | None=None, *, now: float | None=Non
 def bind_github_review_target(plan: dict, target: dict, *, now: float | None=None) -> dict:
     if not isinstance(plan,dict) or plan.get("status")!="reputation_policy_migration_review_ready":
         raise ReputationPolicyMigrationError("migration plan invalid")
-    required=("repository","pull_request","commit_sha","head_ref","base_ref","author")
+    required=(
+        "repository","pull_request","commit_sha","head_ref","base_ref","author",
+        "workflow_path","workflow_blob_sha","workflow_sha256",
+    )
     if not isinstance(target,dict) or any(not target.get(key) for key in required):
         raise ReputationPolicyMigrationError("GitHub review target incomplete")
     if target.get("base_ref")!="main":
@@ -633,6 +636,9 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, approval
             "github_check_evidence":github_provenance["check_evidence"],
             "github_common_workflow_run_id":github_provenance["common_workflow_run_id"],
             "github_workflow_name":github_provenance["workflow_name"],
+            "github_workflow_path":github_provenance["workflow_path"],
+            "github_workflow_file_blob_sha":github_provenance["workflow_file_blob_sha"],
+            "github_workflow_file_sha256":github_provenance["workflow_file_sha256"],
             "github_workflow_timestamp":github_provenance["workflow_timestamp"],
             "reviewer_id":provenance["reviewer_id"],
             "second_reviewer_id":provenance["second_reviewer_id"],

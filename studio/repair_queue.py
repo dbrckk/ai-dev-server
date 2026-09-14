@@ -4,6 +4,8 @@ from __future__ import annotations
 import hashlib
 import json
 
+from task_lease import claim as claim_lease, recover as recover_lease, release as release_lease
+
 MAX_TASKS = 64
 MAX_ATTEMPTS = 4
 
@@ -101,8 +103,17 @@ def score_task(task: dict) -> int:
     return max(0, base - attempts * 5 - stagnation * 3 - dependency_penalty - cost_penalty)
 
 
+def recover_expired_leases(state: dict, *, now: float | None = None) -> int:
+    recovered = 0
+    for task in _queue(state):
+        if isinstance(task, dict) and recover_lease(task, now=now):
+            recovered += 1
+    return recovered
+
+
 def next_task(state: dict) -> dict | None:
     queue = _queue(state)
+    recover_expired_leases(state)
     completed = {x.get("id") for x in queue if x.get("status") == "completed"}
     candidates = []
     for task in queue:
@@ -121,7 +132,14 @@ def next_task(state: dict) -> dict | None:
     return sorted(candidates, key=lambda x: (-int(x.get("priority", 0)), x.get("id", "")))[0]
 
 
-def begin_attempt(task: dict) -> dict:
+def begin_attempt(
+    task: dict,
+    *,
+    worker_id: str | None = None,
+    lease_seconds: int | float | None = None,
+    now: float | None = None,
+) -> dict:
+    claim_lease(task, owner=worker_id, lease_seconds=lease_seconds, now=now)
     task["attempts"] = int(task.get("attempts", 0)) + 1
     task["status"] = "running"
     return task
@@ -155,6 +173,7 @@ def finish_attempt(
             task["last_provider"] = used[-1]
     if success:
         task["status"] = "completed"
+        release_lease(task)
         task["stagnation_count"] = 0
         if improved:
             task["improvement_count"] = int(task.get("improvement_count", 0)) + 1
@@ -171,6 +190,7 @@ def finish_attempt(
         task["strategy_generation"] = int(task.get("strategy_generation", 0)) + 1
         task["rotate_strategy"] = True
     task["priority"] = score_task(task)
+    release_lease(task)
     return task
 
 

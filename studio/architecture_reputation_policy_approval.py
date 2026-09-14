@@ -120,3 +120,24 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         "github_second_reviewer":second.get("login") if isinstance(second,dict) else None,
         "attestation_digest":digest,
     }
+
+def approval_from_github_attestation(attestation: dict, plan: dict, *, reinforced: bool) -> dict:
+    github=validate_github_attestation(attestation,plan,reinforced=reinforced)
+    approval={
+        "migration_id":plan.get("migration_id"),
+        "review_digest":plan.get("review_digest"),
+        "reviewer":{
+            "id":github["github_reviewer"],
+            "roles":[ROLE_REVIEWER],
+            "source":"github_verified",
+        },
+        "github_attestation_digest":github["attestation_digest"],
+    }
+    if reinforced:
+        approval["second_reviewer"]={
+            "id":github["github_second_reviewer"],
+            "roles":[ROLE_RISK_OWNER],
+            "source":"github_verified",
+        }
+    approval["approval_digest"]=approval_digest(approval)
+    return approval

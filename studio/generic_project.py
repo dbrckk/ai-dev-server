@@ -54,6 +54,7 @@ from contextual_routing_memory import (
 )
 from provider_cost import load as load_provider_cost
 from capacity_status import snapshot as capacity_snapshot
+from local_capacity_inventory import write as write_local_capacity_inventory
 from capacity_budget import expanded_call_limit
 
 PLAN_SYSTEM = """You are the senior autonomous maintainer of an existing software repository.
@@ -214,6 +215,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     resume_round = checkpoint.get("round", 0) if checkpoint.get("phase") in {"published", "complete"} else 0
     resumed_verification = checkpoint.get("last_verification") if resume_round else None
 
+    local_capacity_inventory = write_local_capacity_inventory(out)
     state = {
         "engine": "generic",
         "status": "working",
@@ -222,6 +224,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         "restore": restore,
         "portfolio_research": (portfolio or {}).get("similar", [])[:8],
         "toolchain": detect_toolchain(work),
+        "local_capacity_inventory": local_capacity_inventory,
         "budget_policy": {
             "max_api_cost_usd": (
                 float(max_api_cost)

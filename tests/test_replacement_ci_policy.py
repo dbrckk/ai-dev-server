@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
-from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, validate_workflow
+from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, validate_check_runs, validate_workflow
 
 class ReplacementCIPolicyTests(unittest.TestCase):
     def test_repository_ci_exposes_required_check_ids(self):
@@ -21,6 +21,24 @@ class ReplacementCIPolicyTests(unittest.TestCase):
             result=validate_workflow(path)
             self.assertFalse(result["valid"])
             self.assertIn("validate",result["missing_checks"])
+
+    def test_required_check_runs_must_be_trusted_and_successful(self):
+        runs=[
+            {"name":"validate","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/1"},
+            {"name":"python-tests","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/1"},
+        ]
+        result=validate_check_runs(runs,"o/r")
+        self.assertTrue(result["valid"])
+        self.assertEqual(set(result["passed_checks"]),set(REQUIRED_GITHUB_CHECKS))
+
+    def test_untrusted_check_run_does_not_satisfy_policy(self):
+        runs=[
+            {"name":"validate","status":"completed","conclusion":"success","app":{"slug":"other"},"details_url":"https://github.com/o/r/actions/runs/1"},
+            {"name":"python-tests","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/1"},
+        ]
+        result=validate_check_runs(runs,"o/r")
+        self.assertFalse(result["valid"])
+        self.assertIn("validate",result["missing_checks"])
 
 if __name__=="__main__":
     unittest.main()

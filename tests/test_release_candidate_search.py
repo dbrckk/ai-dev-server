@@ -26,6 +26,9 @@ class PassingSandbox:
     def __init__(self, root):
         self.root = root
 
+    def quick_gates(self):
+        return True, [{"command": ["flutter", "analyze"], "exit_code": 0, "output": ""}]
+
     def gates(self, name, journeys):
         return True, [{"command": ["flutter", "test"], "exit_code": 0, "output": ""}]
 
@@ -33,6 +36,9 @@ class PassingSandbox:
 class FailingSandbox:
     def __init__(self, root):
         self.root = root
+
+    def quick_gates(self):
+        return False, [{"command": ["flutter", "analyze"], "exit_code": 1, "output": "failed"}]
 
     def gates(self, name, journeys):
         return False, [{"command": ["flutter", "test"], "exit_code": 1, "output": "failed"}]
@@ -222,6 +228,58 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
             self.assertTrue(candidate["passed"])
             self.assertEqual(order, ["agent", "model"])
             self.assertEqual(candidate["model_calls"], 1)
+            self.assertEqual(source.read_text(), "base\n")
+
+
+    def test_failed_quick_gate_prunes_unpromising_branch_before_full_gates(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source = root / "lib/app.dart"
+            source.parent.mkdir(parents=True)
+            source.write_text("base\n")
+            full_gate_calls = {"count": 0}
+
+            class PruningSandbox:
+                def __init__(self, root):
+                    self.root = root
+
+                def quick_gates(self):
+                    return False, [{"command": ["flutter", "analyze"], "exit_code": 1, "output": "compile failure"}]
+
+                def gates(self, name, journeys):
+                    full_gate_calls["count"] += 1
+                    return True, []
+
+            def first_step():
+                source.write_text("broken\n")
+                return {"model_calls": 1}
+
+            def second_step():
+                source.write_text("should-not-run\n")
+                return {"model_calls": 1}
+
+            candidate = run_branch(
+                root,
+                strategy="model_to_agent",
+                strategy_prior_score=0,
+                steps=[first_step, second_step],
+                refine=None,
+                state=STATE,
+                app_name="demo_app",
+                sandbox_factory=PruningSandbox,
+                strategy_row={
+                    "conservative_success_rate": 0.0,
+                    "risk": 1.0,
+                    "estimated_seconds": 100,
+                    "estimated_model_calls": 1,
+                },
+                remaining_model_calls=2,
+                step_model_calls=[1, 1],
+            )
+
+            self.assertFalse(candidate["passed"])
+            self.assertEqual(full_gate_calls["count"], 0)
+            self.assertIn("pruned", candidate["failure"])
             self.assertEqual(source.read_text(), "base\n")
 
 

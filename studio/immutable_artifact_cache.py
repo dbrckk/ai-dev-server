@@ -143,6 +143,12 @@ def _referenced_digests(entries: dict) -> set[str]:
     return result
 
 
+
+def touch(entries: dict, validation_key: str) -> None:
+    if validation_key in entries:
+        value = entries.pop(validation_key)
+        entries[validation_key] = value
+
 def save(entries: dict) -> None:
     path = _path()
     if path is None:

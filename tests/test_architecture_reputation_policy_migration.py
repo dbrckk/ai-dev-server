@@ -97,7 +97,7 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
                 {"id":102,"name":"python-tests","head_sha":"a"*40,"status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:40Z","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/99"},
             ],
             pr_identity={"number":42,"state":"open","draft":False,"head_ref":"policy/migration","head_sha":"a"*40,"base_ref":"main","author":"reviewer-a"},
-            workflow_file={"path":".github/workflows/ci.yml","blob_sha":"blob123","size":44,"sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4","content_b64":"bmFtZTogQ0kKam9iczoKICB2YWxpZGF0ZToKICBweXRob24tdGVzdHM6Cg==","policy_validation":{"valid":True}},
+            workflow_file={"path":".github/workflows/ci.yml","blob_sha":"blob123","size":43,"sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4","content_b64":"bmFtZTogQ0kKam9iczoKICB2YWxpZGF0ZToKICBweXRob24tdGVzdHM6Cg==","policy_validation":{"valid":True}},
             head_commit_timestamp=1767225600.0,
             reinforced=reinforced,
         )

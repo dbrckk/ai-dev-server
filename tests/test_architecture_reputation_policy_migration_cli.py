@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
@@ -51,6 +52,38 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
             auth=root/"auth.json"; auth.write_text(json.dumps(plan_value["authorization_template"]))
             rc=cli.main(["apply",str(registry),str(plan),str(auth)])
             self.assertEqual(rc,1)
+
+    def test_apply_can_auto_collect_github_attestation(self):
+        from architecture_reputation_policy_github_attestation import build
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            registry_value=self.registry()
+            registry=root/"registry.json"; registry.write_text(json.dumps(registry_value))
+            plan_value=dry_run(registry_value,None,now=200.0)
+            plan=root/"plan.json"; plan.write_text(json.dumps(plan_value))
+            auth_value=dict(plan_value["authorization_template"]); auth_value["authorized"]=True
+            if plan_value.get("risk",{}).get("reinforced_review_required") is True:
+                auth_value["reinforced_reviewed"]=True
+            auth=root/"auth.json"; auth.write_text(json.dumps(auth_value))
+            reinforced=plan_value.get("risk",{}).get("reinforced_review_required") is True
+            reviews=[{"user":{"login":"alice"},"state":"APPROVED","commit_id":"a"*40}]
+            permissions={"alice":"write"}
+            if reinforced:
+                reviews.append({"user":{"login":"bob"},"state":"APPROVED","commit_id":"a"*40})
+                permissions["bob"]="maintain"
+            attestation=build(
+                plan_value,repository="dbrckk/ai-dev-server",pull_request=7,commit_sha="a"*40,
+                reviews=reviews,permissions=permissions,
+                workflow_runs=[{"id":9,"head_sha":"a"*40,"conclusion":"success","name":"CI"}],
+                reinforced=reinforced,
+            )
+            with patch.object(cli,"collect_github_attestation",return_value=attestation):
+                with patch.dict("os.environ",{"STUDIO_GITHUB_TOKEN":"token"},clear=False):
+                    rc=cli.main([
+                        "apply",str(registry),str(plan),str(auth),
+                        "--repository","dbrckk/ai-dev-server","--pull-request","7",
+                    ])
+            self.assertEqual(rc,0)
 
 if __name__=="__main__":
     unittest.main()

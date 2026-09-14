@@ -54,6 +54,34 @@ class PortfolioCandidateSchedulerTests(unittest.TestCase):
         self.assertEqual(schedule.agent_limit, 2)
         self.assertLessEqual(schedule.candidate_limit, MAX_CANDIDATES)
 
+    def test_three_candidate_portfolio_prefers_two_models_and_one_agent(self):
+        schedule = choose_schedule(
+            capacity_status={"unmetered_available": True, "providers": []},
+            route_confidence=0.1,
+            verification_seconds=40,
+            remaining_seconds=1200,
+            available_agents=2,
+            available_models=3,
+            strategy="dual",
+        )
+        self.assertEqual(schedule.candidate_limit, 3)
+        self.assertEqual(schedule.model_limit, 2)
+        self.assertEqual(schedule.agent_limit, 1)
+
+    def test_two_candidate_portfolio_prefers_model_agent_diversity(self):
+        schedule = choose_schedule(
+            capacity_status={"unmetered_available": True, "providers": []},
+            route_confidence=0.5,
+            verification_seconds=60,
+            remaining_seconds=600,
+            available_agents=2,
+            available_models=3,
+            strategy="dual",
+        )
+        self.assertEqual(schedule.candidate_limit, 2)
+        self.assertEqual(schedule.model_limit, 1)
+        self.assertEqual(schedule.agent_limit, 1)
+
     def test_expensive_verification_prevents_wide_portfolio(self):
         schedule = choose_schedule(
             capacity_status={"unmetered_available": True, "providers": []},

@@ -263,5 +263,13 @@ def routing_penalty(summary: dict, *, kind: str, name: str, role: str) -> float:
         if verify_rate >= 0.6:
             return 0.0
         severity = min(1.0, (0.6 - verify_rate) / 0.6)
-        return round(min(MAX_PENALTY, MAX_PENALTY * severity), 4)
+        effective_weight = row.get("effective_sample_weight")
+        if isinstance(effective_weight, (int, float)) and samples > 0:
+            freshness = max(0.1, min(1.0, float(effective_weight) / float(samples)))
+        else:
+            freshness = 1.0
+        return round(
+            min(MAX_PENALTY, MAX_PENALTY * severity * freshness),
+            4,
+        )
     return 0.0

@@ -69,5 +69,28 @@ class RuntimeHealthTests(unittest.TestCase):
             self.assertIn("leases:invalid", report["errors"])
 
 
+    def test_non_object_lease_state_is_degraded(self):
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "project"
+            autonomy = out / ".autonomy"
+            autonomy.mkdir(parents=True)
+            durable_state.save(
+                autonomy / "runtime-state.json",
+                {"goal_id": "demo", "status": "running", "attempt": 1},
+            )
+            (autonomy / "task-leases.json").write_text("[]", encoding="utf-8")
+            (autonomy / "telemetry.jsonl").write_text(
+                '{"ts":1,"kind":"goal_run_started"}\n',
+                encoding="utf-8",
+            )
+
+            report = runtime_health.inspect(out)
+
+            self.assertEqual(report["status"], "degraded")
+            self.assertFalse(report["leases"]["valid"])
+            self.assertIn("leases:invalid", report["errors"])
+
+
+
 if __name__ == "__main__":
     unittest.main()

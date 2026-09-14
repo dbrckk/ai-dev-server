@@ -49,6 +49,11 @@ def _clean_project(row: dict) -> dict | None:
     priority = max(1, min(100, int(row.get("priority", 50))))
     difficulty = str(row.get("difficulty_band") or "medium")
     critical = bool(row.get("critical")) or phase in CRITICAL_PHASES
+    try:
+        pressure = float(row.get("capacity_pressure", 0.0) or 0.0)
+    except (TypeError, ValueError):
+        pressure = 0.0
+    pressure = max(0.0, min(1.5, pressure))
     return {
         "id": project_id,
         "status": status,
@@ -57,6 +62,7 @@ def _clean_project(row: dict) -> dict | None:
         "priority": priority,
         "difficulty_band": difficulty,
         "critical": critical,
+        "capacity_pressure": round(pressure, 4),
     }
 
 
@@ -69,7 +75,15 @@ def _weight(project: dict) -> float:
     }.get(project["difficulty_band"], 1.10)
     critical_bonus = 1.45 if project["critical"] else 1.0
     failure_bonus = 1.15 if project["status"] == "failed" else 1.0
-    return max(0.01, project["priority"] * difficulty_bonus * critical_bonus * failure_bonus)
+    pressure_bonus = 1.0 + min(0.60, project.get("capacity_pressure", 0.0) * 0.40)
+    return max(
+        0.01,
+        project["priority"]
+        * difficulty_bonus
+        * critical_bonus
+        * failure_bonus
+        * pressure_bonus,
+    )
 
 
 def _finite_capacity(providers: list[ProviderCapacity]) -> int:
@@ -140,6 +154,7 @@ def allocate(
             "weight": round(weight, 3),
             "token_envelope": envelope,
             "constrained": constrained,
+            "capacity_pressure": project.get("capacity_pressure", 0.0),
             "provider_order": provider_order,
         })
 

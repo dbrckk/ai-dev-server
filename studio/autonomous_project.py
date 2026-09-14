@@ -162,6 +162,19 @@ def run_persistent_project(
 ):
     project_out = Path(project_out)
     project_out.mkdir(parents=True, exist_ok=True)
+    autonomy_root = project_out / AUTONOMY_DIR
+    autonomy_root.mkdir(parents=True, exist_ok=True)
+    runtime_paths = {
+        "STUDIO_QUICK_GATE_CACHE_PATH": autonomy_root / "quick-gate-cache.json",
+        "STUDIO_FULL_GATE_CACHE_PATH": autonomy_root / "full-gate-cache.json",
+        "STUDIO_ARTIFACT_CACHE_PATH": autonomy_root / "artifact-cache.json",
+        "STUDIO_ARTIFACT_CAS_PATH": autonomy_root / "artifact-cas",
+        "STUDIO_ARTIFACT_CAS_STATS_PATH": autonomy_root / "artifact-cas-stats.json",
+        "STUDIO_CHECKPOINT_PATH": autonomy_root / "workflow-checkpoints.json",
+    }
+    for env_name, env_path in runtime_paths.items():
+        os.environ.setdefault(env_name, str(env_path))
+    os.environ.setdefault("STUDIO_PROJECT_ID", str(goal_id))
     goal_path, registry_path, memory_path = ensure_project_goal(
         project_out, goal_id, objective, max_attempts=max_attempts
     )
@@ -207,7 +220,8 @@ def run_persistent_project(
                     "provenance":{"source":candidate["repo"],"kind":"owned_repository"},
                 })
         items=items[:20]
-        context_path.write_text(json.dumps(items, ensure_ascii=False, sort_keys=True, indent=2) + "\n")
+        from atomic_file import write_text as atomic_write_text
+        atomic_write_text(context_path, json.dumps(items, ensure_ascii=False, sort_keys=True, indent=2) + "\n")
         return items
 
     def execute_cycle(_goal_state):

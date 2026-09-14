@@ -6,7 +6,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 from core import StudioError
-from release_repair import attempt
+from release_repair import _persist_caches, attempt
 from unittest.mock import patch
 
 
@@ -155,6 +155,23 @@ class ReleaseRepairTests(unittest.TestCase):
         self.assertEqual(agent_candidate["model_calls"], 0)
         self.assertEqual(result["agent"]["agent"], "fake-agent")
         self.assertEqual(result["candidate_search"]["evaluated"], 1)
+
+
+
+    @patch("release_repair.save_artifact_cache", side_effect=StudioError("artifact cache unavailable"))
+    @patch("release_repair.save_full_gate_cache", side_effect=OSError("full cache disk error"))
+    @patch("release_repair.save_persistent_quick_cache", side_effect=OSError("quick cache disk error"))
+    def test_cache_persistence_failures_are_non_fatal(self, quick_save, full_save, artifact_save):
+        result = _persist_caches({"q": {}}, {"f": {}}, {"a": {}})
+
+        self.assertFalse(result["ok"])
+        self.assertEqual(
+            [item["cache"] for item in result["errors"]],
+            ["quick_gate", "full_gate", "artifact"],
+        )
+        quick_save.assert_called_once()
+        full_save.assert_called_once()
+        artifact_save.assert_called_once()
 
 
 

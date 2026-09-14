@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 
 from artifact_cas import gc as cas_gc, get as cas_get, put as cas_put
+from artifact_cas_stats import retention_score
 from core import StudioError, canonical
 
 SCHEMA = 2
@@ -34,7 +35,7 @@ def _read_artifacts(root: Path) -> dict[str, bytes]:
     return files
 
 
-def capture(root: Path, validation_key: str) -> dict:
+def capture(root: Path, validation_key: str, *, rebuild_cost_seconds: float = 0.0) -> dict:
     if not isinstance(validation_key, str) or len(validation_key) != 64:
         raise StudioError("Artifact cache validation key invalid")
     files = _read_artifacts(root)
@@ -50,7 +51,7 @@ def capture(root: Path, validation_key: str) -> dict:
     return {
         "validation_key": validation_key,
         "files": {
-            rel: cas_put(data)
+            rel: cas_put(data, rebuild_cost_seconds=rebuild_cost_seconds)
             for rel, data in files.items()
         },
     }
@@ -149,12 +150,69 @@ def touch(entries: dict, validation_key: str) -> None:
         value = entries.pop(validation_key)
         entries[validation_key] = value
 
+def _entry_value(entry: dict) -> float:
+    files = entry.get("files", {}) if isinstance(entry, dict) else {}
+    scores = []
+    for meta in files.values():
+        if not isinstance(meta, dict):
+            continue
+        digest = meta.get("sha256")
+        if isinstance(digest, str) and len(digest) == 64:
+            scores.append(retention_score(digest))
+    return sum(scores)
+
+
+def _trim_by_value(entries: dict) -> dict:
+    ranked = []
+    order = {key: index for index, key in enumerate(entries)}
+    for key, entry in entries.items():
+        if not isinstance(entry, dict):
+            continue
+        ranked.append((
+            -_entry_value(entry),
+            -order[key],
+            key,
+            entry,
+        ))
+    ranked.sort()
+
+    kept = {}
+    kept_digests = set()
+    used_bytes = 0
+    for _, _, key, entry in ranked:
+        if len(kept) >= MAX_ENTRIES:
+            continue
+        files = entry.get("files", {})
+        new_bytes = 0
+        new_digests = set()
+        valid = True
+        for meta in files.values():
+            if not isinstance(meta, dict):
+                valid = False
+                break
+            digest = meta.get("sha256")
+            size = meta.get("size")
+            if not isinstance(digest, str) or len(digest) != 64 or type(size) is not int or size < 0:
+                valid = False
+                break
+            if digest not in kept_digests:
+                new_digests.add(digest)
+                new_bytes += size
+        if not valid or used_bytes + new_bytes > MAX_TOTAL_BYTES:
+            continue
+        kept[key] = entry
+        kept_digests.update(new_digests)
+        used_bytes += new_bytes
+    return kept
+
+
 def save(entries: dict) -> None:
     path = _path()
     if path is None:
         return
-    items = list(entries.items())[-MAX_ENTRIES:]
-    trimmed = dict(items)
+    trimmed = _trim_by_value(entries)
+    entries.clear()
+    entries.update(trimmed)
     payload = {"schema": SCHEMA, "entries": trimmed}
     raw = canonical(payload).encode("utf-8")
     if len(raw) > 2 * 1024 * 1024:

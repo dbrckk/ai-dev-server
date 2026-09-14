@@ -18,7 +18,14 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
         return {"number":7,"state":"open","draft":False,"head_ref":"feature/policy","head_sha":"abc","base_ref":"main","author":"author"}
 
     def workflow_file(self):
-        return {"path":".github/workflows/ci.yml","blob_sha":"blob123","size":9,"sha256":"a"*64}
+        return {
+            "path":".github/workflows/ci.yml",
+            "blob_sha":"blob123",
+            "size":44,
+            "sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4",
+            "content_b64":"bmFtZTogQ0kKam9iczoKICB2YWxpZGF0ZToKICBweXRob24tdGVzdHM6Cg==",
+            "policy_validation":{"valid":True},
+        }
     def test_build_standard(self):
         a=build(self.plan,repository="o/r",pull_request=7,commit_sha="abc",
             reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:10Z"}],

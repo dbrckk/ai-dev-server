@@ -26,6 +26,7 @@ from architecture_learning import (
 )
 from architecture_evaluator import write as write_architecture_evaluation
 from architecture_benchmark import write as write_architecture_benchmark
+from architecture_preflight import write as write_architecture_preflight
 from architecture_outcome import write as write_architecture_outcome
 
 MAX_PUBLISH_FILE_BYTES = 1_000_000
@@ -60,6 +61,7 @@ def _context(req: dict, state: dict, root: Path) -> str:
         'previous_blockers':state.get('blockers',[]),
         'architecture_decision':state.get('architecture_decision', {'status':'unavailable','chosen':[]}),
         'architecture_autonomy_policy':state.get('architecture_autonomy_policy', {}),
+        'architecture_preflight':state.get('architecture_preflight', {'status':'unavailable','verdict':'unknown'}),
         'architecture_benchmark':state.get('architecture_benchmark', {'status':'unavailable','migration_candidates':[]}),
         'files':files,
     })
@@ -190,6 +192,14 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
         publication_target='google-play',
     )
     state['architecture_autonomy_policy'] = state['architecture_decision'].get('autonomy_policy', {})
+    state['architecture_preflight'] = write_architecture_preflight(
+        state['architecture_decision'],
+        architecture_recommendations,
+        out,
+    )
+    state['architecture_autonomy_policy']['architecture_changes_allowed'] = bool(
+        state['architecture_preflight'].get('architecture_changes_allowed')
+    )
 
     model = model_factory(req['max_calls']); sandbox = sandbox_factory(root); sandbox.create(req['app_name'])
     state['cycles'] += 1

@@ -12,6 +12,9 @@ ALPHA = 0.25
 MIN_SAMPLES = 4
 MAX_CONTEXT_BONUS = 12.0
 MAX_CONTEXT_PENALTY = 18.0
+MAX_BANDIT_EXPLORATION = 8.0
+BANDIT_C = 0.75
+HIGH_RISK_EXPLORATION_MULTIPLIER = 0.35
 
 
 def load(path: Path) -> dict:
@@ -88,6 +91,69 @@ def record(
     }
     _save(path, data)
     return data
+
+
+def contextual_bandit_score(
+    data: dict,
+    *,
+    weighted_contexts: list[tuple[str, float]],
+    kind: str,
+    name: str,
+) -> dict:
+    """Bounded contextual UCB-style exploration/exploitation signal."""
+    if not isinstance(data, dict):
+        return {"expected_success": 0.5, "uncertainty": 1.0, "exploration_bonus": 0.0, "evidence_mass": 0.0}
+
+    weighted_success = 0.0
+    weighted_uncertainty = 0.0
+    evidence_mass = 0.0
+    risk_multiplier = 1.0
+
+    for context, relevance in weighted_contexts:
+        relevance = max(0.0, float(relevance))
+        if relevance <= 0:
+            continue
+        if context == "architecture-risk:hold":
+            risk_multiplier = min(risk_multiplier, HIGH_RISK_EXPLORATION_MULTIPLIER)
+        rows = data.get(context)
+        if not isinstance(rows, dict):
+            continue
+        row = rows.get(kind + ":" + name)
+        if not isinstance(row, dict):
+            continue
+
+        samples = max(0, int(row.get("samples", 0) or 0))
+        rate = max(0.0, min(1.0, float(row.get("ema_success_rate", 0.5))))
+        confidence = min(1.0, samples / 12.0)
+        mass = relevance * max(0.1, confidence)
+        uncertainty = 1.0 / ((samples + 1) ** 0.5)
+
+        weighted_success += rate * mass
+        weighted_uncertainty += uncertainty * relevance
+        evidence_mass += mass
+
+    if evidence_mass <= 0:
+        return {
+            "expected_success": 0.5,
+            "uncertainty": 1.0,
+            "exploration_bonus": round(MAX_BANDIT_EXPLORATION * 0.5 * risk_multiplier, 4),
+            "evidence_mass": 0.0,
+        }
+
+    expected = max(0.0, min(1.0, weighted_success / evidence_mass))
+    relevance_total = max(1e-9, sum(max(0.0, float(weight)) for _, weight in weighted_contexts))
+    uncertainty = max(0.0, min(1.0, weighted_uncertainty / relevance_total))
+    bonus = min(
+        MAX_BANDIT_EXPLORATION,
+        BANDIT_C * uncertainty * MAX_BANDIT_EXPLORATION,
+    ) * risk_multiplier
+
+    return {
+        "expected_success": round(expected, 4),
+        "uncertainty": round(uncertainty, 4),
+        "exploration_bonus": round(bonus, 4),
+        "evidence_mass": round(evidence_mass, 4),
+    }
 
 
 def contextual_adjustment(

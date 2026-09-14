@@ -144,21 +144,6 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
         raise StudioError(
             "No provider remains: paid API budget and pooled monthly token quotas are exhausted"
         )
-    non_quarantined = []
-    quarantined = []
-    for provider in providers:
-        if provider.unmetered and ":" in provider.name:
-            status = local_model_quarantine_status(
-                local_model_reputation,
-                provider=provider.name.split(":", 1)[0],
-                model=provider.model_for(role),
-                role=role,
-            )
-            (quarantined if status["quarantined"] else non_quarantined).append(provider)
-        else:
-            non_quarantined.append(provider)
-    if non_quarantined:
-        providers = tuple(non_quarantined)
     provider_scores = {}
     for provider in providers:
         base = score_provider(
@@ -179,6 +164,14 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 role=role,
             )
             components["local_model_reputation"] = reputation_component
+            quarantine = local_model_quarantine_status(
+                local_model_reputation,
+                provider=gateway_name,
+                model=provider.model_for(role),
+                role=role,
+            )
+            if quarantine["quarantined"]:
+                components["quarantine_probation"] = -100.0
             if reputation_component == 0.0:
                 components["local_model_benchmark"] = local_model_benchmark_bonus(
                     local_model_benchmark,

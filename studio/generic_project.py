@@ -61,6 +61,12 @@ Return ONLY JSON using either:
 {"objective":"...","tasks":[{"id":"stable-id","title":"concrete subgoal","depends_on":["task-id"],"critical":false,"done_when":["task-specific observable acceptance criterion"]}],"done_when":["..."]}
 or the legacy-compatible shape {"objective":"...","work_items":["..."],"done_when":["..."]}.
 Prefer explicit tasks when the objective contains multiple dependent subgoals. Keep the DAG acyclic and dependencies minimal.
+When a task acceptance criterion is mechanically checkable, encode it as one of:
+- file:path/to/file
+- symbol:path/to/file#symbol_name
+- test:path/to/test.py::test_name
+- build:default
+Use natural-language done_when only for criteria that truly require semantic review.
 Choose concrete implementation work, not generic advice."""
 
 TASK_PLAN_SYSTEM = """You are maintaining one subgoal inside an already validated project objective DAG.
@@ -98,8 +104,10 @@ Treat active_task.done_when as the authoritative task acceptance contract.
 Do not require unrelated future DAG tasks to be complete.
 Tests passing is necessary evidence but is not sufficient if the active task's requested behavior is still missing.
 Return ONLY JSON {"complete":true|false,"criteria":[{"criterion":"exact done_when text","passed":true|false,"evidence":"specific repository/test evidence","evidence_refs":["exact path from allowed_evidence_refs"]}],"remaining":["task-specific missing work"],"reason":"..."}.
-Every active_task.done_when item MUST appear exactly once in criteria.
-Every passed criterion MUST cite at least one exact allowed_evidence_refs entry and MUST NOT invent refs."""
+If review_done_when is non-empty, review ONLY those criteria; deterministic_done_when has already been evaluated by the trusted runner.
+Every review_done_when item MUST appear exactly once in criteria.
+Do not re-judge deterministic_done_when criteria.
+Every passed reviewed criterion MUST cite at least one exact allowed_evidence_refs entry and MUST NOT invent refs."""
 
 
 def _snapshot(root: Path, limit_bytes: int = 420_000) -> dict:

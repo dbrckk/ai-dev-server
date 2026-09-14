@@ -41,6 +41,30 @@ class CapacitySchedulerTests(unittest.TestCase):
         order = [row["name"] for row in report["projects"][0]["provider_order"]]
         self.assertEqual(order, ["local", "free", "paid"])
 
+
+    def test_capacity_pressure_increases_scarce_capacity_share(self):
+        providers = [ProviderCapacity("omniroute", 1000, unmetered=False)]
+        report = allocate([
+            {
+                "id": "hot",
+                "requested_tokens": 1000,
+                "priority": 50,
+                "capacity_pressure": 1.0,
+            },
+            {
+                "id": "cold",
+                "requested_tokens": 1000,
+                "priority": 50,
+                "capacity_pressure": 0.0,
+            },
+        ], providers, critical_reserve_ratio=0.0)
+        by_id = {row["id"]: row for row in report["projects"]}
+        self.assertGreater(
+            by_id["hot"]["token_envelope"],
+            by_id["cold"]["token_envelope"],
+        )
+
+
     def test_terminal_projects_are_excluded(self):
         providers = [ProviderCapacity("free", 10_000)]
         report = allocate([

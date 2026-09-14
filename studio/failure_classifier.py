@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import re
 
+from user_input_required import extract_secret_names
+
 DEPENDENCY_PATTERNS = (
     "module not found",
     "modulenotfounderror",
@@ -58,6 +60,20 @@ REGRESSION_PATTERNS = (
     "baseline mismatch",
 )
 
+EXTERNAL_PREREQUISITE_PATTERNS = (
+    "api key required",
+    "missing api key",
+    "token required",
+    "missing token",
+    "secret required",
+    "missing secret",
+    "environment variable is required",
+    "environment variable required",
+    "environment variable is not set",
+    "environment variable not set",
+    "required environment variable",
+)
+
 _TIMEOUT_CODES = {124, 137, 143}
 
 
@@ -92,6 +108,24 @@ def classify(verification: dict | None, *, changed_files: list[str] | None = Non
             "reason": "verification evidence is invalid",
             "recovery": "replan",
         }
+
+    failed_result = _failed_result(verification)
+    failed_log_raw = str(failed_result.get("log_tail", "")) if isinstance(failed_result, dict) else ""
+    failed_log = _text(failed_result)
+    secret_names = extract_secret_names(failed_log_raw)
+    if (
+        verification.get("passed") is not True
+        and secret_names
+        and any(pattern in failed_log for pattern in EXTERNAL_PREREQUISITE_PATTERNS)
+    ):
+        return {
+            "category": "external_prerequisite",
+            "confidence": "high",
+            "reason": "verification requires an explicit external secret/environment prerequisite",
+            "recovery": "request_external_input",
+            "required_env": secret_names,
+        }
+
     if isinstance(progress, dict):
         progress_status = progress.get("status")
         if progress_status == "regression":
@@ -214,6 +248,8 @@ def policy(classification: dict, *, repeated_failures: int = 1) -> dict:
         return {"action": "reduce_scope", "priority": "high", "provider_switch": True}
     if category == "environment_failure":
         return {"action": "repair_environment_or_defer", "priority": "critical", "provider_switch": False}
+    if category == "external_prerequisite":
+        return {"action": "request_external_input", "priority": "critical", "provider_switch": False}
     if category == "no_progress":
         return {"action": "switch_strategy", "priority": "critical", "provider_switch": True}
     return {"action": "replan", "priority": "high", "provider_switch": repeated >= 2}

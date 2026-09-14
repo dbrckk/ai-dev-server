@@ -134,6 +134,8 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         raise ApprovalProvenanceError("required GitHub checks invalid")
     if checks.get("missing_checks") or checks.get("incomplete_checks") or checks.get("failed_checks"):
         raise ApprovalProvenanceError("required GitHub checks incomplete or failed")
+    if checks.get("stale_checks"):
+        raise ApprovalProvenanceError("required GitHub checks stale")
 
     target=plan.get("github_review_target") if isinstance(plan,dict) else None
     if isinstance(target,dict):
@@ -161,6 +163,9 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         raise ApprovalProvenanceError("github workflow is not successful")
     if workflow.get("head_sha")!=attestation.get("commit_sha"):
         raise ApprovalProvenanceError("github workflow does not bind reviewed commit")
+    workflow_timestamp=workflow.get("timestamp")
+    if not isinstance(workflow_timestamp,(int,float)) or workflow_timestamp<float(head_commit_timestamp):
+        raise ApprovalProvenanceError("github workflow predates latest PR head commit")
     payload={k:v for k,v in attestation.items() if k!="attestation_digest"}
     digest=hashlib.sha256(_canonical(payload).encode()).hexdigest()
     if attestation.get("attestation_digest")!=digest:
@@ -180,6 +185,8 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         "github_second_reviewer_submitted_at":second.get("submitted_at_epoch") if isinstance(second,dict) else None,
         "required_checks":checks.get("required_checks"),
         "passed_checks":checks.get("passed_checks"),
+        "check_evidence":checks.get("check_evidence"),
+        "workflow_timestamp":workflow_timestamp,
         "attestation_digest":digest,
     }
 

@@ -129,6 +129,7 @@ def benchmark(base: str, model: str, *, key: str = "") -> dict:
 
 
 def benchmark_gateway(
+    provider: str,
     base: str,
     models: list[str],
     out_path: Path,
@@ -141,15 +142,16 @@ def benchmark_gateway(
         return results
 
     for model in models[:MAX_BENCHMARK_MODELS]:
-        if model in results:
+        item_key = provider + "|" + model
+        if item_key in results:
             continue
-        results[model] = benchmark(base, model, key=key)
+        results[item_key] = benchmark(base, model, key=key)
     _save(out_path, results)
     return results
 
 
-def routing_bonus(data: dict, model: str) -> float:
-    row = data.get(model) if isinstance(data, dict) else None
+def routing_bonus(data: dict, provider: str, model: str) -> float:
+    row = data.get(provider + "|" + model) if isinstance(data, dict) else None
     if not isinstance(row, dict):
         return 0.0
     try:

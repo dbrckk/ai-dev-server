@@ -146,6 +146,27 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         with self.assertRaises(ReputationPolicyMigrationError):
             apply_migration(registry,plan,plan["authorization_template"],now=300.0)
 
+    def test_bind_target_rejects_untrusted_workflow_path(self):
+        plan=dry_run(self.registry(),self.learning(),now=200.0)
+        with self.assertRaises(ReputationPolicyMigrationError):
+            bind_github_review_target(plan,{
+                "repository":"dbrckk/ai-dev-server","pull_request":42,"commit_sha":"a"*40,
+                "head_ref":"policy/migration","base_ref":"main","author":"reviewer-a",
+                "workflow_path":".github/workflows/other.yml",
+                "workflow_blob_sha":"blob123",
+                "workflow_sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4",
+            },now=200.0)
+
+    def test_bind_target_rejects_invalid_workflow_digest(self):
+        plan=dry_run(self.registry(),self.learning(),now=200.0)
+        with self.assertRaises(ReputationPolicyMigrationError):
+            bind_github_review_target(plan,{
+                "repository":"dbrckk/ai-dev-server","pull_request":42,"commit_sha":"a"*40,
+                "head_ref":"policy/migration","base_ref":"main","author":"reviewer-a",
+                "workflow_path":".github/workflows/ci.yml",
+                "workflow_blob_sha":"blob123","workflow_sha256":"bad",
+            },now=200.0)
+
     def test_apply_rejects_unbound_github_review_target(self):
         registry=self.registry()
         plan=dry_run(registry,self.learning(),now=200.0)

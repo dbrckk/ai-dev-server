@@ -1,4 +1,7 @@
+import os
+import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 import sys
 
@@ -62,6 +65,17 @@ class TaskLeaseTests(unittest.TestCase):
         self.assertNotIn("lease_owner", task)
         self.assertNotIn("lease_token", task)
         self.assertNotIn("lease_expires_at", task)
+
+
+    def test_corrupted_persistent_lease_state_fails_closed(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "leases.json"
+            path.write_text("{broken", encoding="utf-8")
+            task = {"id": "task-1", "status": "pending"}
+            with patch.dict(os.environ, {"STUDIO_TASK_LEASE_PATH": str(path)}, clear=False):
+                with self.assertRaises(RuntimeError):
+                    claim(task, owner="worker-a", lease_seconds=60, now=100.0)
+
 
 
 if __name__ == "__main__":

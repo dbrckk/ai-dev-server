@@ -375,6 +375,7 @@ class Model:
             load as load_local_model_reputation,
             record as record_local_model_reputation,
             score as local_model_reputation_score,
+            quarantine_status as local_model_quarantine_status,
         )
         from local_model_benchmark import (
             load as load_local_model_benchmark,
@@ -437,6 +438,21 @@ class Model:
                 )['exhausted']
             )
         )
+        non_quarantined = []
+        quarantined = []
+        for provider in provider_candidates:
+            if provider.unmetered and ':' in provider.name:
+                status = local_model_quarantine_status(
+                    local_model_reputation,
+                    provider=provider.name.split(':', 1)[0],
+                    model=provider.model_for(role, bool(screenshots)),
+                    role=role,
+                )
+                (quarantined if status['quarantined'] else non_quarantined).append(provider)
+            else:
+                non_quarantined.append(provider)
+        if non_quarantined:
+            provider_candidates = tuple(non_quarantined)
         provider_scores = {}
         for provider in provider_candidates:
             trace = score_provider(

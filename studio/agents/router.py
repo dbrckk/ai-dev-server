@@ -6,7 +6,7 @@ from typing import Iterable
 
 from .registry import AgentRegistry, AgentSpec, DEFAULT_REGISTRY
 from adaptive_scoring import score_agent, ScoreTrace
-from safe_rewrite_learning import origin_violation_penalty, rewrite_recovery_bonus
+from safe_rewrite_learning import origin_violation_penalty, rewrite_recovery_bonus, exploration_bonus
 
 
 @dataclass(frozen=True)
@@ -52,6 +52,12 @@ def _score(
             role="implementation",
         )
         components["safe_rewrite_recovery"] = rewrite_recovery_bonus(
+            safe_rewrite_summary,
+            kind="agent",
+            name=spec.name,
+            role="implementation",
+        )
+        components["architecture_exploration"] = exploration_bonus(
             safe_rewrite_summary,
             kind="agent",
             name=spec.name,

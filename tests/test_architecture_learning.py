@@ -131,7 +131,7 @@ class ArchitectureLearningTests(unittest.TestCase):
             for i in range(5):
                 self._write(root, f"p{i}", ["a/core", "b/helper"], True, 2, 1, 0)
             result = al.summarize(root)
-            self.assertEqual(result["schema"], 5)
+            self.assertEqual(result["schema"], 6)
             self.assertEqual(result["stack_rankings"][0]["repos"], ["a/core", "b/helper"])
             self.assertEqual(result["stack_rankings"][0]["samples"], 5)
             self.assertTrue(result["stack_rankings"][0]["eligible_for_advisory_bias"])
@@ -294,6 +294,73 @@ class ArchitectureLearningTests(unittest.TestCase):
             self.assertLess(rows["small/repo"]["wilson_lower_95"], rows["large/repo"]["wilson_lower_95"])
             self.assertLess(rows["small/repo"]["evidence_confidence"], rows["large/repo"]["evidence_confidence"])
             self.assertLess(rows["small/repo"]["quality_shrunk_mean"], rows["large/repo"]["quality_shrunk_mean"])
+    def test_detects_recent_quality_degradation(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            qualities = [95, 94, 93, 92, 91, 60, 58, 55, 52, 50]
+            for i, quality in enumerate(qualities):
+                out = root / f"p{i}"
+                out.mkdir()
+                (out / "architecture-outcome.json").write_text(json.dumps({
+                    "schema": 3,
+                    "observed_at": float(i + 1),
+                    "decision_constraints": {
+                        "framework": "flutter",
+                        "project_type": "general",
+                        "primary_domain": "mobile",
+                    },
+                    "chosen_contexts": [{"repo": "a/core", "domain": "mobile"}],
+                    "outcome": {
+                        "successful": True,
+                        "quality_score": quality,
+                        "model_calls_this_cycle": 2,
+                        "cycles": 1,
+                        "blocker_count": 0,
+                    },
+                }), encoding="utf-8")
+            row = al.summarize(root)["rankings"][0]
+            self.assertEqual(row["drift"]["status"], "degraded")
+            self.assertLess(row["drift"]["quality_delta"], -15.0)
+            self.assertGreater(row["drift"]["score"], 0.0)
+
+    def test_detects_recent_success_degradation(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            successes = [True] * 5 + [True, False, False, False, False]
+            for i, success in enumerate(successes):
+                out = root / f"p{i}"
+                out.mkdir()
+                (out / "architecture-outcome.json").write_text(json.dumps({
+                    "schema": 3,
+                    "observed_at": float(i + 1),
+                    "chosen_repositories": ["a/core", "b/helper"],
+                    "outcome": {
+                        "successful": success,
+                        "quality_score": 90.0 if success else 30.0,
+                        "model_calls_this_cycle": 2,
+                        "cycles": 1,
+                        "blocker_count": 0 if success else 2,
+                    },
+                }), encoding="utf-8")
+            stack = al.summarize(root)["stack_rankings"][0]
+            self.assertEqual(stack["drift"]["status"], "degraded")
+            self.assertLess(stack["drift"]["success_delta"], -0.2)
+
+    def test_drift_requires_recent_and_baseline_windows(self):
+        observations = [
+            {"observed_at": float(i), "successful": True, "quality": 90.0}
+            for i in range(9)
+        ]
+        result = al._drift(observations)
+        self.assertEqual(result["status"], "insufficient_evidence")
+
+    def test_stable_history_is_not_marked_degraded(self):
+        observations = [
+            {"observed_at": float(i), "successful": True, "quality": 90.0 + (i % 2)}
+            for i in range(12)
+        ]
+        result = al._drift(observations)
+        self.assertEqual(result["status"], "stable")
 
 if __name__ == "__main__":
     unittest.main()

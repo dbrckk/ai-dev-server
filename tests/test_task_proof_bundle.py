@@ -6,7 +6,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from task_proof_bundle import TaskProofError, build, filename, load, save
+from task_proof_bundle import TaskProofError, build, filename, load, save, verify_evidence_files
 
 
 class TaskProofBundleTests(unittest.TestCase):
@@ -75,6 +75,31 @@ class TaskProofBundleTests(unittest.TestCase):
                     verification={"status":"passed","passed":True},
                     confidence={"score":80},
                 )
+
+    def test_changed_evidence_file_is_rejected(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            (root/"a.py").write_text("x=1\n")
+            proof=build(
+                project_root=root,
+                project_id="demo",
+                task={"id":"a","title":"a","done_when":["file:a.py"]},
+                commit="b"*40,
+                review={
+                    "complete":True,
+                    "criteria":[{
+                        "criterion":"file:a.py",
+                        "passed":True,
+                        "evidence":"exists",
+                        "evidence_refs":["a.py"],
+                    }],
+                },
+                verification={"status":"passed","passed":True},
+                confidence={"score":80},
+            )
+            (root/"a.py").write_text("x=2\n")
+            with self.assertRaisesRegex(TaskProofError,"evidence mismatch"):
+                verify_evidence_files(proof,root)
 
     def test_tampering_is_rejected(self):
         with tempfile.TemporaryDirectory() as td:

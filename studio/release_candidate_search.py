@@ -138,9 +138,11 @@ def run_branch(
         "agent": None,
     }
     try:
+        pending_failure = None
         for index, step in enumerate(steps, start=1):
             step_started = time.monotonic()
-            result = step()
+            result = step(pending_failure)
+            pending_failure = None
             if not isinstance(result, dict):
                 result = {}
             step_trace = {
@@ -165,6 +167,7 @@ def run_branch(
                     "failure": None if quick_passed else canonical(quick_logs[-1:])[-4000:],
                 }
                 if not quick_passed:
+                    pending_failure = canonical(quick_logs[-1:])[-4000:]
                     next_step_model_calls = step_model_calls[index]
                     if not should_continue_after_quick_failure(
                         next_step_model_calls=next_step_model_calls,

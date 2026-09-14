@@ -163,6 +163,22 @@ class CapacitySchedulerTests(unittest.TestCase):
         self.assertTrue(by_id["recovery"]["recovery_active"])
 
 
+
+    def test_recovery_cap_applies_even_with_unmetered_provider(self):
+        providers = [ProviderCapacity("local", None, unmetered=True)]
+        report = allocate([
+            {
+                "id": "recovery",
+                "requested_tokens": 10000,
+                "stagnation_multiplier": 0.15,
+                "recovery_active": True,
+            }
+        ], providers, critical_reserve_ratio=0.0)
+        row = report["projects"][0]
+        self.assertEqual(row["token_envelope"], 1500)
+        self.assertTrue(row["constrained"])
+
+
     def test_terminal_projects_are_excluded(self):
         providers = [ProviderCapacity("free", 10_000)]
         report = allocate([

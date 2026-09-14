@@ -24,6 +24,9 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
 
     evidence = build_privacy_package(root, out, state)
     state.setdefault('release_evidence', {})['privacy_policy'] = evidence
+    state.pop('human_action', None)
+    if state.get('status') == 'human_action_required':
+        state['status'] = 'validated_preview'
     apply_completion(state)
     if evidence.get('passed') is not True and evidence.get('data_safety', {}).get('status') == 'needs_verified_classification':
         audit=evidence.get('audit', {})

@@ -13,6 +13,7 @@ from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
 from architecture_reputation_policy_approval import ApprovalProvenanceError, approval_from_github_attestation, consume as consume_approval, validate_approval, validate_github_attestation, validate_ledger
+from replacement_ci_policy import REQUIRED_WORKFLOW_PATH
 from architecture_replacement_reputation import (
     DANGEROUS_STATE_GATES,
     MAX_AUDIT_EVENTS,
@@ -433,6 +434,12 @@ def bind_github_review_target(plan: dict, target: dict, *, now: float | None=Non
         raise ReputationPolicyMigrationError("GitHub review target incomplete")
     if target.get("base_ref")!="main":
         raise ReputationPolicyMigrationError("GitHub review target base must be main")
+    if target.get("workflow_path")!=REQUIRED_WORKFLOW_PATH:
+        raise ReputationPolicyMigrationError("GitHub review target workflow path is not trusted")
+    if not isinstance(target.get("workflow_sha256"),str) or len(target.get("workflow_sha256"))!=64:
+        raise ReputationPolicyMigrationError("GitHub review target workflow digest invalid")
+    if not isinstance(target.get("workflow_blob_sha"),str) or not target.get("workflow_blob_sha"):
+        raise ReputationPolicyMigrationError("GitHub review target workflow blob SHA missing")
     bound={
         **plan,
         "github_review_target":{key:target.get(key) for key in required},

@@ -247,12 +247,21 @@ def _fuse_histories(histories: list[dict], now: float | None = None) -> dict | N
             "evidence_confidence":history.get("evidence_confidence"),
             "latest_observed_at":history.get("latest_observed_at"),
             "recency_factor":_recency_factor(history,now=now),
+            "regime_shift":history.get("regime_shift") is True,
+            "regime_drop":history.get("regime_drop"),
+            "regime_window_days":history.get("regime_window_days"),
+            "regime_recent_success_rate":history.get("regime_recent_success_rate"),
             "normalized_weight":round(weight/total,4),
         })
     recency_weighted=sum(
         weight*_recency_factor(history,now=now)
         for weight,history in weighted
     )/total
+    regime_shift_weight=sum(
+        weight for weight,history in weighted
+        if history.get("regime_shift") is True
+    )/total
+    regime_shift=regime_shift_weight>=0.35
     return {
         "contributors":contributors,
         "contributor_count":len(contributors),
@@ -270,6 +279,8 @@ def _fuse_histories(histories: list[dict], now: float | None = None) -> dict | N
         "recency_floor":RECENCY_FLOOR,
         "temporal_confidence":round(recency_weighted,4),
         "stale_evidence":recency_weighted<0.40,
+        "regime_shift":regime_shift,
+        "regime_shift_weight":round(regime_shift_weight,4),
         "eligible_for_bias":effective_samples>=5.0,
         "evidence_conflict":evidence_conflict,
         "conflict_ratio":round(conflict_ratio,4),
@@ -351,7 +362,11 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             wilson=float(evidence.get("wilson_lower_95",0.0) or 0.0)
             confidence=float(evidence.get("evidence_confidence",0.0) or 0.0)
             empirical_priority_adjustment=max(-10.0,min(5.0,(wilson-0.5)*10.0-regression*10.0))*confidence*history_context_weight
-            if isinstance(fused_history,dict) and fused_history.get("evidence_conflict") is True:
+            if isinstance(fused_history,dict) and fused_history.get("regime_shift") is True:
+                empirical_priority_adjustment=min(0.0,empirical_priority_adjustment)
+                risk="high"
+                empirical_status="regime_shift_detected"
+            elif isinstance(fused_history,dict) and fused_history.get("evidence_conflict") is True:
                 empirical_priority_adjustment=min(0.0,empirical_priority_adjustment)
                 empirical_status="conflicting_history"
             elif history_context_weight>=MIN_TRANSFERABILITY_FOR_RISK and (regression>=0.25 or wilson<0.5):
@@ -377,6 +392,8 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             gates.insert(1, "missing_capabilities_resolved")
         if empirical_status=="historically_risky":
             gates.insert(0,"historical_replacement_risk_reviewed")
+        if empirical_status=="regime_shift_detected":
+            gates.insert(0,"replacement_regime_shift_revalidated")
         if empirical_status=="conflicting_history":
             gates.insert(0,"conflicting_replacement_evidence_reviewed")
         if isinstance(fused_history,dict) and fused_history.get("stale_evidence") is True:
@@ -434,7 +451,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
     ),reverse=True)
 
     return {
-        "version": 9,
+        "version": 10,
         "status": "planned",
         "advisory_only": True,
         "replacement_plans": plans,

@@ -51,6 +51,28 @@ class AgentRouterTests(unittest.TestCase):
         self.assertIsInstance(ranked[0].trace, dict)
         self.assertIn("reliability", ranked[0].trace["components"])
 
+    def test_architecture_discipline_penalizes_repeatedly_risky_agent(self):
+        summary = {
+            "origin_rankings": [{
+                "kind": "agent",
+                "name": "paid-code",
+                "samples": 10,
+                "verification_pass_rate": 0.0,
+                "eligible_for_routing_bias": True,
+            }],
+            "rewrite_rankings": [],
+        }
+        with patch("shutil.which", return_value="/bin/tool"):
+            ranked = rank_agents(
+                {"code_editing", "tests"},
+                registry=self.registry,
+                prefer_free=False,
+                safe_rewrite_summary=summary,
+            )
+        risky = next(item for item in ranked if item.agent.name == "paid-code")
+        self.assertIn("architecture_violation", risky.trace["components"])
+        self.assertLess(risky.trace["components"]["architecture_violation"], 0)
+
     def test_opencode_invocation_uses_secret_alias(self):
         env={
             "STUDIO_API_BASE":"https://example.invalid/v1",

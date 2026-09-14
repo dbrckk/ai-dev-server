@@ -200,6 +200,7 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
     os.environ['STUDIO_CONTEXTUAL_STRATEGY_EFFICIENCY_PATH']=str(out/'.autonomy/contextual-strategy-efficiency.json')
     os.environ['STUDIO_AGENT_PERFORMANCE_PATH']=str(out/'.autonomy/agent-performance.json')
     os.environ['STUDIO_QUICK_GATE_CACHE_PATH']=str(out/'.autonomy/quick-gate-cache.json')
+    os.environ['STUDIO_FULL_GATE_CACHE_PATH']=str(out/'.autonomy/full-gate-cache.json')
     adaptation_path=out/'.autonomy/capability-adaptation.json'
     memory_path=out/'.memory/memory.json'
     registry_path=out/'.autonomy/capabilities.json'

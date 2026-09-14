@@ -61,6 +61,29 @@ class FailureClassifierTests(unittest.TestCase):
         self.assertEqual(result["category"], "timeout")
         self.assertTrue(policy(result)["provider_switch"])
 
+    def test_explicit_external_secret_prerequisite(self):
+        result = classify(
+            verification("API key required: set OPENAI_API_KEY before running tests"),
+            changed_files=["a.py"],
+        )
+        self.assertEqual(result["category"], "external_prerequisite")
+        self.assertEqual(result["required_env"], ["OPENAI_API_KEY"])
+        self.assertEqual(policy(result)["action"], "request_external_input")
+
+    def test_unauthorized_without_explicit_env_name_is_not_user_input(self):
+        result = classify(
+            verification("401 unauthorized"),
+            changed_files=["a.py"],
+        )
+        self.assertNotEqual(result["category"], "external_prerequisite")
+
+    def test_env_name_without_required_signal_is_not_user_input(self):
+        result = classify(
+            verification("debug output mentions OPENAI_API_KEY"),
+            changed_files=["a.py"],
+        )
+        self.assertNotEqual(result["category"], "external_prerequisite")
+
     def test_environment_failure(self):
         result = classify(verification("Permission denied"), changed_files=["a.py"])
         self.assertEqual(result["category"], "environment_failure")

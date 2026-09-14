@@ -13,6 +13,8 @@ from stage_registry import STAGES,get_stage
 from project_recommendations import recommend
 from architecture_evaluator import write as write_architecture_evaluation
 from architecture_benchmark import write as write_architecture_benchmark
+from architecture_obsolescence import write as write_architecture_obsolescence
+from architecture_learning import summarize as summarize_architecture_learning, root_for_output as architecture_learning_root
 
 def _recommendation_context(request_path):
     try:
@@ -48,9 +50,13 @@ def _evaluate_architecture(report,project_out):
     if not isinstance(decision,dict):
         return {'status':'invalid','verdict':'insufficient_evidence','advisory_only':True}
     evaluation=write_architecture_evaluation(decision,report,project_out)
-    benchmark=write_architecture_benchmark(decision,evaluation,_load_recommendations(project_out),project_out)
+    recommendations=_load_recommendations(project_out)
+    benchmark=write_architecture_benchmark(decision,evaluation,recommendations,project_out)
+    learning=summarize_architecture_learning(architecture_learning_root(project_out))
+    obsolescence=write_architecture_obsolescence(learning,benchmark,recommendations,project_out)
     report['architecture_evaluation']=evaluation
     report['architecture_benchmark']=benchmark
+    report['architecture_obsolescence']=obsolescence
     (project_out/'report.json').write_text(json.dumps(report,ensure_ascii=False,sort_keys=True,separators=(',',':')))
     return evaluation
 

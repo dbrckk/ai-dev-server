@@ -24,6 +24,12 @@ from contextual_routing_memory import (
     contextual_bandit_score,
 )
 from contextual_utility import utility_score
+from provider_cost import (
+    load as load_provider_cost,
+    record as record_provider_cost,
+    ema_cost as provider_ema_cost,
+    estimate_call_cost,
+)
 
 
 def _decode(response: dict) -> dict:
@@ -59,6 +65,8 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     safe_rewrite_path = Path(safe_rewrite_raw) if safe_rewrite_raw else None
     contextual_routing_raw = os.environ.get("STUDIO_CONTEXTUAL_ROUTING_MEMORY_PATH", "")
     contextual_routing_path = Path(contextual_routing_raw) if contextual_routing_raw else None
+    provider_cost_raw = os.environ.get("STUDIO_PROVIDER_COST_PATH", "")
+    provider_cost_path = Path(provider_cost_raw) if provider_cost_raw else None
     try:
         weighted_contexts = json.loads(os.environ.get("STUDIO_ROUTING_CONTEXTS_JSON", "[]"))
     except json.JSONDecodeError:
@@ -78,6 +86,7 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     )
     safe_rewrite_summary = summarize_safe_rewrite_learning(safe_rewrite_path) if safe_rewrite_path is not None else {}
     contextual_routing = load_contextual_routing_memory(contextual_routing_path) if contextual_routing_path is not None else {}
+    provider_costs = load_provider_cost(provider_cost_path) if provider_cost_path is not None else {}
     weights = learned_weights(history, kind="provider", role=role)
     if health_path is not None:
         providers = tuple(provider for provider in providers if provider_eligible(health_path, provider.name))
@@ -140,14 +149,19 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 if isinstance(metric_row, dict)
                 else 0.0
             )
+            retry_probability = max(0.0, min(1.0, 1.0 - bandit["expected_success"]))
+            monetary_cost_usd = provider_ema_cost(provider_costs, provider.name, role)
             utility = utility_score(
                 expected_success=bandit["expected_success"],
                 execution_seconds=execution_seconds,
                 verification_seconds=verification_seconds,
                 architecture_hold=architecture_hold,
                 free_preferred=provider.free_preferred,
+                monetary_cost_usd=monetary_cost_usd,
+                retry_probability=retry_probability,
             )
             components["cost_aware_utility"] = utility["score"]
+            components["verified_value_per_unit_cost"] = utility["verified_value_per_unit_cost"]
         from adaptive_scoring import ScoreTrace
         provider_scores[provider.name] = ScoreTrace(
             name=provider.name,
@@ -194,6 +208,18 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
             elapsed = time.monotonic() - started
             if metrics_path is not None:
                 record_provider_latency(metrics_path, provider.name, role, elapsed)
+            usage = response.get("usage") if isinstance(response, dict) else None
+            if provider_cost_path is not None and isinstance(usage, dict):
+                try:
+                    call_cost = estimate_call_cost(
+                        prompt_tokens=int(usage.get("prompt_tokens", 0) or 0),
+                        completion_tokens=int(usage.get("completion_tokens", 0) or 0),
+                        input_cost_per_million=provider.input_cost_per_million,
+                        output_cost_per_million=provider.output_cost_per_million,
+                    )
+                except (TypeError, ValueError):
+                    call_cost = 0.0
+                record_provider_cost(provider_cost_path, provider.name, role, call_cost)
             decoded = _decode(response)
             if health_path is not None:
                 record_provider_success(health_path, provider.name)

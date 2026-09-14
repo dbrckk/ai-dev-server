@@ -535,6 +535,45 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         self.assertLess(fused["temporal_confidence"],0.4)
         self.assertIn("stale_replacement_evidence_revalidated",row["required_gates"])
 
+    def test_regime_shift_forces_high_risk_and_revalidation(self):
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter","project_type":"game","primary_domain":"mobile",
+            "platform":"android","current_major_version":3,"replacement_major_version":4,
+        })
+        history={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "framework":"flutter","project_type":"game","primary_domain":"mobile","platform":"android",
+            "current_major_version":3,"replacement_major_version":4,
+            "samples":30,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.9,"posterior_success_rate":0.88,"regression_rate":0.1,
+            "rollback_rate":0.0,"wilson_lower_95":0.75,"mean_quality_score":90.0,
+            "regime_shift":True,"regime_drop":0.45,"regime_window_days":30,
+            "regime_recent_success_rate":0.45,"latest_observed_at":time.time(),
+        }
+        row=plan(obs,self.recommendations(),learning={"rankings":[history]})["replacement_plans"][0]
+        self.assertEqual(row["empirical_status"],"regime_shift_detected")
+        self.assertEqual(row["risk"],"high")
+        self.assertLessEqual(row["empirical_priority_adjustment"],0.0)
+        self.assertTrue(row["fused_historical_evidence"]["regime_shift"])
+        self.assertIn("replacement_regime_shift_revalidated",row["required_gates"])
+
+    def test_minor_regime_signal_does_not_dominate_fusion(self):
+        obs=self.obsolescence()
+        common={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "samples":20,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.9,"posterior_success_rate":0.88,"regression_rate":0.05,
+            "rollback_rate":0.0,"wilson_lower_95":0.75,"mean_quality_score":90.0,
+            "latest_observed_at":time.time(),
+        }
+        stable={**common,"current_major_version":1,"replacement_major_version":2,"regime_shift":False}
+        shifted={**common,"framework":"python","current_major_version":1,"replacement_major_version":2,
+                 "regime_shift":True,"regime_drop":0.5,"regime_window_days":30,
+                 "regime_recent_success_rate":0.4}
+        row=plan(obs,self.recommendations(),learning={"rankings":[stable,shifted]})["replacement_plans"][0]
+        self.assertFalse(row["fused_historical_evidence"]["regime_shift"])
+
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)

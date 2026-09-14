@@ -24,6 +24,25 @@ class DiffQuickGateTests(unittest.TestCase):
         self.assertEqual(result["targeted_tests"], ["test/services/api_test.dart"])
         self.assertEqual(result["test_mode"], "targeted")
 
+    def test_import_impact_selects_non_matching_test_name(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            (root / "pubspec.yaml").write_text("name: demo_app\n")
+            test = root / "test/integration/network_flow_test.dart"
+            test.parent.mkdir(parents=True)
+            test.write_text(
+                "import 'package:demo_app/services/api.dart';\nvoid main() {}\n"
+            )
+
+            result = plan(root, ["lib/services/api.dart"])
+
+        self.assertEqual(
+            result["targeted_tests"],
+            ["test/integration/network_flow_test.dart"],
+        )
+        self.assertEqual(result["test_mode"], "targeted")
+
+
     def test_pubspec_change_requires_dependency_and_analyze_but_not_quick_tests(self):
         with tempfile.TemporaryDirectory() as td:
             result = plan(Path(td), ["pubspec.yaml"])

@@ -12,12 +12,12 @@ MEDIUM_RISK_DELTA = 8.0
 
 CONTEXT_WEIGHTS = {
     "framework": 0.25,
-    "project_type": 0.20,
-    "primary_domain": 0.15,
-    "platform": 0.15,
-    "current_major_version": 0.10,
-    "replacement_major_version": 0.10,
-    "version_jump": 0.05,
+    "project_type": 0.15,
+    "primary_domain": 0.10,
+    "platform": 0.10,
+    "current_major_version": 0.15,
+    "replacement_major_version": 0.15,
+    "version_jump": 0.10,
 }
 MIN_TRANSFERABILITY_FOR_RISK = 0.72
 MIN_TRANSFERABILITY_FOR_POSITIVE_BIAS = 0.55
@@ -42,6 +42,20 @@ def _version_similarity(expected, observed) -> float:
     if gap==1:
         return 0.65
     if gap==2:
+        return 0.35
+    return 0.0
+
+def _numeric_similarity(expected, observed) -> float:
+    if not isinstance(expected,(int,float)) or isinstance(expected,bool):
+        return 0.5
+    if not isinstance(observed,(int,float)) or isinstance(observed,bool):
+        return 0.5
+    gap=abs(float(expected)-float(observed))
+    if gap==0:
+        return 1.0
+    if gap<=1:
+        return 0.65
+    if gap<=2:
         return 0.35
     return 0.0
 
@@ -73,9 +87,19 @@ def _compatibility_distance(history: dict | None, context: dict) -> dict:
     observed_replacement=_major(history.get("replacement_major_version"))
     expected_jump=(expected_replacement-expected_current) if expected_current is not None and expected_replacement is not None else None
     observed_jump=(observed_replacement-observed_current) if observed_current is not None and observed_replacement is not None else None
-    components["version_jump"]=_version_similarity(expected_jump,observed_jump)
+    components["version_jump"]=_numeric_similarity(expected_jump,observed_jump)
 
     transferability=sum(CONTEXT_WEIGHTS[key]*components[key] for key in CONTEXT_WEIGHTS)
+
+    # Explicit categorical incompatibilities are stronger evidence than a merely
+    # nearby version number, so they cap cross-context transfer.
+    if context.get("framework") is not None and history.get("framework") is not None and context.get("framework")!=history.get("framework"):
+        transferability=min(transferability,0.35)
+    if context.get("project_type") is not None and history.get("project_type") is not None and context.get("project_type")!=history.get("project_type"):
+        transferability=min(transferability,0.60)
+    if context.get("platform") is not None and history.get("platform") is not None and context.get("platform")!=history.get("platform"):
+        transferability=min(transferability,0.65)
+
     transferability=max(0.0,min(1.0,transferability))
     return {
         "transferability": round(transferability,4),

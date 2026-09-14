@@ -924,9 +924,13 @@ Objective and current plan:
                     selected_strategy not in {"agent_only"}
                     and candidate_schedule.include_model
                 )
+                used_model_count = sum(
+                    1 for item in candidate_records
+                    if isinstance(item.get("model"), dict)
+                )
                 need_model_candidate = (
-                    not model_first
-                    and allow_model_fallback
+                    allow_model_fallback
+                    and used_model_count < candidate_schedule.model_limit
                     and len(candidate_records) < candidate_schedule.candidate_limit
                     and (
                         not (meta_route.mode == "agent_focus" and agent_verified)

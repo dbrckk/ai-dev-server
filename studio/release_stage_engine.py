@@ -5,6 +5,7 @@ from diagnostics import classify, repairable, retryable_environment
 from core import StudioError
 from release_repair import MAX_RELEASE_REPAIR_ROUNDS, attempt as repair_attempt
 from repair_planner import plan
+from repair_queue import begin_attempt, complete_stage_tasks, enqueue, finish_attempt, summarize
 
 
 def evaluate_and_repair(
@@ -42,6 +43,10 @@ def evaluate_and_repair(
             break
         if not repairable(stage, evidence):
             break
+        repair_plan = plan(stage, diagnostics)
+        task = enqueue(state, repair_plan, estimated_model_calls=1)
+        if task is not None:
+            begin_attempt(task)
         try:
             result = repair_attempt(
                 root,
@@ -51,6 +56,8 @@ def evaluate_and_repair(
                 req["app_name"],
             )
         except StudioError as exc:
+            if task is not None:
+                finish_attempt(task, success=False, model_calls=0, improved=False)
             history.append({
                 "round": round_index + 1,
                 "changed": False,
@@ -67,6 +74,13 @@ def evaluate_and_repair(
             "providers_used": dict(result.get("providers_used", {})),
             "gate_count": result.get("gate_count", 0),
         })
+        if task is not None:
+            finish_attempt(
+                task,
+                success=result.get("changed") is True,
+                model_calls=result.get("model_calls", 0),
+                improved=result.get("changed") is True,
+            )
         if result.get("changed") is not True:
             break
         evidence = {
@@ -80,6 +94,15 @@ def evaluate_and_repair(
     diagnostics = classify(stage, evidence)
     evidence["diagnostics"] = diagnostics
     evidence["repair_plan"] = plan(stage, diagnostics)
+    if evidence.get("passed") is True:
+        complete_stage_tasks(state, stage)
+    else:
+        enqueue(
+            state,
+            evidence["repair_plan"],
+            estimated_model_calls=1 if evidence["repair_plan"].get("action") == "repair_code" else 0,
+        )
+    evidence["repair_queue"] = summarize(state)
     evidence["environment_retry"] = {
         "attempted": bool(environment_retries),
         "retries": environment_retries,

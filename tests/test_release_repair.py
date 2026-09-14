@@ -79,7 +79,7 @@ class ReleaseRepairTests(unittest.TestCase):
             ],
         }
 
-        def edit(root, blockers, stage):
+        def edit(root, blockers, stage, failure=None):
             source = root / "lib/app.dart"
             source.write_text("const endpoint = 'https://example.com';\n")
             return {"agent": "fake-agent", "attempts": [], "changed": ["lib/app.dart"]}
@@ -119,7 +119,7 @@ class ReleaseRepairTests(unittest.TestCase):
             result = attempt(
                 root,
                 STATE,
-                {"passed": False, "blockers": ["cleartext_network_traffic_detected"]},
+                {"passed": False, "blockers": ["excessive_jank"]},
                 "performance_qa",
                 "demo_app",
                 model_factory=CandidateModel,

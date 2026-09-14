@@ -19,6 +19,7 @@ from objective_dag import (
     summary,
     task_context,
     append_amendments,
+    reopen_confidence_dependency,
 )
 
 
@@ -172,6 +173,33 @@ class ObjectiveDagTests(unittest.TestCase):
         dag=mark_verified(dag,"core",commit="b"*40,confidence=55)
         api=next(task for task in summary(dag)["tasks"] if task["id"]=="api")
         self.assertEqual(api["state"],"ready")
+
+    def test_low_confidence_dependency_can_be_reopened_for_revalidation(self):
+        dag=new(
+            "demo",
+            "build",
+            {
+                "tasks":[
+                    {"id":"core","title":"core","depends_on":[]},
+                    {"id":"release","title":"release","depends_on":["core"],"critical":True},
+                ]
+            },
+            "a"*40,
+        )
+        dag=mark_running(dag,"core")
+        dag=mark_verified(dag,"core",commit="b"*40,confidence=70)
+        info=summary(dag)
+        self.assertEqual(info["confidence_blockers"][0]["dependency"],"core")
+        dag=reopen_confidence_dependency(dag,"core")
+        core=next(task for task in summary(dag)["tasks"] if task["id"]=="core")
+        self.assertEqual(core["state"],"ready")
+
+    def test_high_confidence_dependency_cannot_be_reopened(self):
+        dag=new("demo","x",{"work_items":["one"]},"a"*40)
+        dag=mark_running(dag,"task-1")
+        dag=mark_verified(dag,"task-1",commit="b"*40,confidence=90)
+        with self.assertRaisesRegex(ObjectiveDagError,"already sufficient"):
+            reopen_confidence_dependency(dag,"task-1")
 
     def test_cycle_is_rejected(self):
         with self.assertRaisesRegex(ObjectiveDagError,"cyclic"):

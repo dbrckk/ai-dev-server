@@ -21,6 +21,7 @@ from safe_rewrite_learning import (
 from contextual_routing_memory import (
     load as load_contextual_routing_memory,
     contextual_adjustment,
+    contextual_bandit_score,
 )
 
 
@@ -104,16 +105,24 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 role=role,
             )
         if role == "implementation" and contextual_routing_path is not None:
+            parsed_contexts = [
+                (str(item[0]), float(item[1]))
+                for item in weighted_contexts
+                if isinstance(item, list) and len(item) == 2
+            ]
             components["contextual_performance"] = contextual_adjustment(
                 contextual_routing,
-                weighted_contexts=[
-                    (str(item[0]), float(item[1]))
-                    for item in weighted_contexts
-                    if isinstance(item, list) and len(item) == 2
-                ],
+                weighted_contexts=parsed_contexts,
                 kind="provider",
                 name=provider.name,
             )
+            bandit = contextual_bandit_score(
+                contextual_routing,
+                weighted_contexts=parsed_contexts,
+                kind="provider",
+                name=provider.name,
+            )
+            components["contextual_bandit_exploration"] = bandit["exploration_bonus"]
         from adaptive_scoring import ScoreTrace
         provider_scores[provider.name] = ScoreTrace(
             name=provider.name,

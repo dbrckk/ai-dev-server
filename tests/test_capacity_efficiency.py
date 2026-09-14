@@ -54,6 +54,67 @@ class CapacityEfficiencyTests(unittest.TestCase):
             row = efficiency.summarize(path)["rows"][0]
             self.assertLess(row["success_rate"], 0.5)
 
+
+    def test_routing_bonus_prefers_verified_efficient_model(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "efficiency.json"
+            for _ in range(4):
+                efficiency.record(
+                    path,
+                    project_id="a",
+                    provider="fast",
+                    model="m1",
+                    tokens=1000,
+                    verified_success=True,
+                )
+                efficiency.record(
+                    path,
+                    project_id="a",
+                    provider="slow",
+                    model="m2",
+                    tokens=4000,
+                    verified_success=True,
+                )
+            summary = efficiency.summarize(path)
+            fast = efficiency.routing_bonus(
+                summary,
+                project_id="a",
+                provider="fast",
+                model="m1",
+            )
+            slow = efficiency.routing_bonus(
+                summary,
+                project_id="a",
+                provider="slow",
+                model="m2",
+            )
+            self.assertGreater(fast, slow)
+            self.assertLessEqual(abs(fast), 8.0)
+            self.assertLessEqual(abs(slow), 8.0)
+
+    def test_routing_bonus_requires_mature_comparison(self):
+        summary = {
+            "rows": [
+                {
+                    "project_id": "a",
+                    "provider": "p",
+                    "model": "m",
+                    "samples": 2,
+                    "risk_adjusted_score": 100.0,
+                }
+            ]
+        }
+        self.assertEqual(
+            efficiency.routing_bonus(
+                summary,
+                project_id="a",
+                provider="p",
+                model="m",
+            ),
+            0.0,
+        )
+
+
     def test_sparse_projects_remain_neutral(self):
         summary = {
             "projects": {

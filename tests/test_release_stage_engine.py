@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from release_stage_engine import apply_external_gate, evaluate_and_repair
+from release_stage_engine import apply_external_gate, evaluate_and_repair, invalidate_for_source_change
 
 
 class ReleaseStageEngineTests(unittest.TestCase):
@@ -48,14 +48,12 @@ class ReleaseStageEngineTests(unittest.TestCase):
         self.assertTrue(evidence["environment_retry"]["converged"])
 
 
-    def test_code_failure_repairs_then_revalidates(self):
-        responses = iter([
-            {"passed": False, "blockers": ["excessive_jank"]},
-            {"passed": True, "blockers": []},
-        ])
+    def test_code_failure_repairs_then_requires_fresh_release_artifact(self):
+        calls = []
 
         def validator(root, out):
-            return next(responses)
+            calls.append(1)
+            return {"passed": False, "blockers": ["excessive_jank"]}
 
         with patch("release_stage_engine.repair_attempt") as repair:
             repair.return_value = {
@@ -72,9 +70,32 @@ class ReleaseStageEngineTests(unittest.TestCase):
             )
 
         repair.assert_called_once()
-        self.assertTrue(evidence["passed"])
-        self.assertTrue(evidence["agentic_remediation"]["attempted"])
-        self.assertTrue(evidence["agentic_remediation"]["converged"])
+        self.assertEqual(len(calls), 1)
+        self.assertFalse(evidence["passed"])
+        self.assertTrue(evidence["source_repaired"])
+        self.assertEqual(
+            evidence["blockers"],
+            ["release_artifact_rebuild_required"],
+        )
+        self.assertFalse(evidence["agentic_remediation"]["converged"])
+
+    def test_source_change_invalidates_all_old_release_evidence(self):
+        state = {
+            "release_evidence": {
+                "release_build": {"passed": True},
+                "real_device": {"passed": True},
+                "performance_qa": {"passed": False},
+                "privacy_policy": {"passed": True},
+            },
+            "release_status": "not_store_ready",
+        }
+        changed = invalidate_for_source_change(
+            state,
+            {"source_repaired": True},
+        )
+        self.assertTrue(changed)
+        self.assertEqual(state["release_evidence"], {})
+
 
     def test_external_evidence_becomes_human_action(self):
         state = {"status": "validated_preview", "release_status": "not_store_ready"}

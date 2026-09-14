@@ -9,6 +9,7 @@ MAX_STACK_SCORE_BONUS = 2.0
 MAX_EVIDENCE_AGE_SECONDS = 30 * 24 * 60 * 60
 SUCCESS_WEIGHT = 0.6
 QUALITY_WEIGHT = 0.4
+UNCERTAINTY_BLEND = 0.5
 
 def _context_weight(row: dict, framework: str | None, project_type: str | None, primary_domain: str | None) -> float:
     """Down-weight legacy/generic evidence; full bonus requires matching context."""

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import time
 from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
@@ -30,6 +31,7 @@ def build(state: dict) -> dict:
         evaluation = {}
     return {
         "schema": 1,
+        "observed_at": round(time.time(), 3),
         "decision_id": _decision_id(decision),
         "decision_status": decision.get("status"),
         "evaluation_verdict": evaluation.get("verdict"),

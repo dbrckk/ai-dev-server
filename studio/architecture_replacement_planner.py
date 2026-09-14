@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import math
+import time
 from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
@@ -23,6 +25,8 @@ MIN_TRANSFERABILITY_FOR_RISK = 0.72
 MIN_TRANSFERABILITY_FOR_POSITIVE_BIAS = 0.55
 MAX_FUSED_HISTORIES = 8
 MIN_FUSION_TRANSFERABILITY = 0.20
+RECENCY_HALF_LIFE_DAYS = 180.0
+RECENCY_FLOOR = 0.20
 
 def _major(value):
     if isinstance(value, bool):
@@ -161,21 +165,32 @@ def _replacement_history(learning: dict | None, current_repo: str, replacement_r
     histories=_replacement_histories(learning,current_repo,replacement_repo,context=context)
     return histories[0] if histories else None
 
-def _fusion_weight(history: dict) -> float:
+def _recency_factor(history: dict, now: float | None = None) -> float:
+    latest=history.get("latest_observed_at")
+    if not isinstance(latest,(int,float)):
+        return 0.5
+    now=float(now) if isinstance(now,(int,float)) else time.time()
+    age_seconds=max(0.0,now-float(latest))
+    age_days=age_seconds/86400.0
+    decay=math.pow(0.5,age_days/RECENCY_HALF_LIFE_DAYS)
+    return round(max(RECENCY_FLOOR,min(1.0,decay)),4)
+
+def _fusion_weight(history: dict, now: float | None = None) -> float:
     compatibility=history.get("compatibility") if isinstance(history.get("compatibility"),dict) else {}
     transferability=float(compatibility.get("transferability",0.0) or 0.0)
     confidence=float(history.get("evidence_confidence",0.0) or 0.0)
     samples=max(0,int(history.get("samples",0) or 0))
     sample_factor=min(1.0,samples/20.0)
     eligible_factor=1.0 if history.get("eligible_for_bias") is True else 0.35
-    return max(0.0,transferability*confidence*sample_factor*eligible_factor)
+    recency=_recency_factor(history,now=now)
+    return max(0.0,transferability*confidence*sample_factor*eligible_factor*recency)
 
-def _fuse_histories(histories: list[dict]) -> dict | None:
+def _fuse_histories(histories: list[dict], now: float | None = None) -> dict | None:
     weighted=[]
     for history in histories:
         if not isinstance(history,dict):
             continue
-        weight=_fusion_weight(history)
+        weight=_fusion_weight(history,now=now)
         if weight>0.0:
             weighted.append((weight,history))
     if not weighted:
@@ -194,6 +209,7 @@ def _fuse_histories(histories: list[dict]) -> dict | None:
         float(history.get("samples",0) or 0)
         * float(history.get("compatibility",{}).get("transferability",0.0) or 0.0)
         * (1.0 if history.get("eligible_for_bias") is True else 0.35)
+        * _recency_factor(history,now=now)
         for _,history in weighted
     )
     max_transfer=max(
@@ -229,6 +245,8 @@ def _fuse_histories(histories: list[dict]) -> dict | None:
             "samples":history.get("samples"),
             "transferability":compatibility.get("transferability"),
             "evidence_confidence":history.get("evidence_confidence"),
+            "latest_observed_at":history.get("latest_observed_at"),
+            "recency_factor":_recency_factor(history,now=now),
             "normalized_weight":round(weight/total,4),
         })
     return {
@@ -244,6 +262,8 @@ def _fuse_histories(histories: list[dict]) -> dict | None:
         "rollback_rate":round(avg("rollback_rate"),4),
         "mean_quality_score":round(avg("mean_quality_score"),3),
         "evidence_confidence":round(min(1.0,effective_samples/20.0),4),
+        "recency_half_life_days":RECENCY_HALF_LIFE_DAYS,
+        "recency_floor":RECENCY_FLOOR,
         "eligible_for_bias":effective_samples>=5.0,
         "evidence_conflict":evidence_conflict,
         "conflict_ratio":round(conflict_ratio,4),
@@ -406,7 +426,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
     ),reverse=True)
 
     return {
-        "version": 7,
+        "version": 8,
         "status": "planned",
         "advisory_only": True,
         "replacement_plans": plans,

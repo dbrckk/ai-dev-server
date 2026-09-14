@@ -15,14 +15,14 @@ STATE = {
         "journeys": [
             {
                 "id": "launch",
-                "title": "Launch",
-                "steps": ["Open the application"],
-                "expected": ["Main screen is visible"],
+                "steps": [
+                    {"action": "tap", "key": "start_button"},
+                    {"action": "expect_text", "value": "Ready"},
+                ],
             }
         ]
     }
 }
-
 
 class NeverModel:
     def __init__(self, limit):
@@ -44,7 +44,7 @@ class ReleaseRepairTests(unittest.TestCase):
                     {"passed": False, "blockers": ["excessive_jank"]},
                     "performance_qa",
                     "demo_app",
-                    model_factory=CandidateModel,
+                    model_factory=NeverModel,
                 )
 
     @patch("release_repair._agent_candidates", return_value=["fake-agent"])

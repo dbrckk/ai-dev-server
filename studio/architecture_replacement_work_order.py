@@ -92,4 +92,14 @@ def write(replacement_plan: dict, out: Path) -> dict:
         json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True)+"\n",
         encoding="utf-8",
     )
+    order_dir=out/"replacement-work-orders"
+    order_dir.mkdir(parents=True,exist_ok=True)
+    for order in result.get("work_orders",[]):
+        if not isinstance(order,dict) or not isinstance(order.get("id"),str):
+            continue
+        atomic_write_text(
+            order_dir/(order["id"]+".json"),
+            json.dumps(order,ensure_ascii=False,indent=2,sort_keys=True)+"\n",
+            encoding="utf-8",
+        )
     return result

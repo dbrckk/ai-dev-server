@@ -176,6 +176,44 @@ class FleetCapacityTests(unittest.TestCase):
         )
 
 
+
+    def test_project_rows_apply_stagnation_pause_and_throttle(self):
+        stagnation = {
+            "projects": {
+                "a": {
+                    "level": "pause",
+                    "capacity_multiplier": 0.0,
+                    "force_diversify": True,
+                    "pause": True,
+                },
+                "b": {
+                    "level": "throttle",
+                    "capacity_multiplier": 0.60,
+                    "force_diversify": True,
+                    "pause": False,
+                },
+            }
+        }
+        with patch("fleet_capacity.collect", return_value={"projects": [
+            {"id": "a", "runtime_status": "running"},
+            {"id": "b", "runtime_status": "running"},
+        ]}), patch("fleet_capacity.matrix", return_value=[
+            {"id": "a", "capacity_request_tokens": 1000},
+            {"id": "b", "capacity_request_tokens": 1000},
+        ]), patch("fleet_capacity._runtime_state", return_value={}):
+            rows = fleet_capacity._project_rows(
+                Path("out"),
+                Path("requests"),
+                stagnation_summary=stagnation,
+            )
+
+        by_id = {row["id"]: row for row in rows}
+        self.assertTrue(by_id["a"]["capacity_paused"])
+        self.assertEqual(by_id["a"]["stagnation_multiplier"], 0.0)
+        self.assertEqual(by_id["b"]["stagnation_multiplier"], 0.60)
+        self.assertTrue(by_id["b"]["force_diversify"])
+
+
     def test_persist_writes_machine_readable_plan(self):
         report = {
             "schema": 1,

@@ -9,6 +9,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 import star_scanner
 from project_recommendations import recommend
+from run import _load_star_recommendations, context as build_context
+from orchestrator import _recommendation_context
 
 
 CATALOG = {
@@ -84,6 +86,48 @@ class StarScannerTests(unittest.TestCase):
             written = json.loads((out / "star-recommendations.json").read_text())
             self.assertEqual(written["matches"][0]["repo"], "firecrawl/firecrawl")
             self.assertEqual(mocked.call_args.kwargs["platform"], "web")
+
+    def test_run_loads_bounded_recommendation_evidence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            payload = {
+                "status": "ok",
+                "phase": "planning",
+                "source_format": "catalog-v1",
+                "matches": [{
+                    "repo": "owner/repo",
+                    "score": 91,
+                    "quality_score": 9.7,
+                    "tier": "core",
+                    "domain": "software_engineering",
+                    "capabilities": ["code-analysis"],
+                    "best_for": ["repo analysis"],
+                    "avoid_when": [],
+                    "alternatives": ["owner/alt"],
+                    "complements": ["owner/helper"],
+                }]
+            }
+            (root / "star-recommendations.json").write_text(json.dumps(payload))
+            result = _load_star_recommendations(root)
+            self.assertTrue(result["advisory_only"])
+            self.assertEqual(result["matches"][0]["repo"], "owner/repo")
+            self.assertLessEqual(len(result["matches"]), 12)
+
+    def test_model_context_contains_recommendations_as_data(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            state = {"technical_recommendations": {"status": "ok", "matches": [{"repo": "owner/repo"}]}}
+            payload = json.loads(build_context({"brief": "test"}, state, root))
+            self.assertEqual(payload["technical_recommendations"]["matches"][0]["repo"], "owner/repo")
+
+    def test_recommendation_context_uses_project_brief(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "request.json"
+            path.write_text(json.dumps({"brief": "Flutter Android app for Play Store"}))
+            result = _recommendation_context(path)
+            self.assertEqual(result["platform"], "android")
+            self.assertEqual(result["language"], "dart")
+            self.assertIn("Flutter Android", result["context_text"])
 
 
 if __name__ == "__main__":

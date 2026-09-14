@@ -1,4 +1,5 @@
 import json
+import time
 from pathlib import Path
 import sys
 import tempfile
@@ -461,6 +462,62 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         self.assertEqual(row["empirical_status"],"conflicting_history")
         self.assertLessEqual(row["empirical_priority_adjustment"],0.0)
         self.assertIn("conflicting_replacement_evidence_reviewed",row["required_gates"])
+
+    def test_recent_history_outweighs_equivalent_old_history(self):
+        now=time.time()
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter","project_type":"game","primary_domain":"mobile",
+            "platform":"android","current_major_version":3,"replacement_major_version":4,
+        })
+        common={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "framework":"flutter","project_type":"game","primary_domain":"mobile","platform":"android",
+            "samples":20,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.9,"posterior_success_rate":0.86,"regression_rate":0.05,
+            "rollback_rate":0.0,"wilson_lower_95":0.70,"mean_quality_score":90.0,
+        }
+        recent={**common,"current_major_version":3,"replacement_major_version":4,"latest_observed_at":now}
+        old={**common,"current_major_version":2,"replacement_major_version":3,"latest_observed_at":now-720*86400}
+        row=plan(obs,self.recommendations(),learning={"rankings":[recent,old]})["replacement_plans"][0]
+        contributors=row["fused_historical_evidence"]["contributors"]
+        recent_row=next(x for x in contributors if x["current_major_version"]==3)
+        old_row=next(x for x in contributors if x["current_major_version"]==2)
+        self.assertGreater(recent_row["recency_factor"],old_row["recency_factor"])
+        self.assertGreater(recent_row["normalized_weight"],old_row["normalized_weight"])
+
+    def test_temporal_decay_has_nonzero_floor(self):
+        now=time.time()
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter","project_type":"game","primary_domain":"mobile",
+            "platform":"android","current_major_version":3,"replacement_major_version":4,
+        })
+        history={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "framework":"flutter","project_type":"game","primary_domain":"mobile","platform":"android",
+            "current_major_version":3,"replacement_major_version":4,
+            "samples":20,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":1.0,"posterior_success_rate":0.95,"regression_rate":0.0,
+            "rollback_rate":0.0,"wilson_lower_95":0.84,"mean_quality_score":98.0,
+            "latest_observed_at":now-3650*86400,
+        }
+        row=plan(obs,self.recommendations(),learning={"rankings":[history]})["replacement_plans"][0]
+        contributor=row["fused_historical_evidence"]["contributors"][0]
+        self.assertEqual(contributor["recency_factor"],0.2)
+        self.assertGreater(row["fused_historical_evidence"]["effective_samples"],0.0)
+
+    def test_missing_timestamp_is_neutral_conservative(self):
+        obs=self.obsolescence()
+        learning={"rankings":[{
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "samples":20,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":1.0,"posterior_success_rate":0.95,"regression_rate":0.0,
+            "rollback_rate":0.0,"wilson_lower_95":0.84,"mean_quality_score":98.0,
+        }]}
+        row=plan(obs,self.recommendations(),learning=learning)["replacement_plans"][0]
+        contributor=row["fused_historical_evidence"]["contributors"][0]
+        self.assertEqual(contributor["recency_factor"],0.5)
 
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:

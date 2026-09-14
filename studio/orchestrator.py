@@ -18,7 +18,8 @@ from architecture_replacement_planner import write as write_architecture_replace
 from architecture_replacement_work_order import write as write_architecture_replacement_work_orders
 from architecture_learning import summarize as summarize_architecture_learning, root_for_output as architecture_learning_root
 from architecture_replacement_learning import summarize as summarize_replacement_learning
-from architecture_replacement_reputation import load as load_replacement_reputation
+from architecture_replacement_reputation import TRANSITION_POLICY_VERSION, load as load_replacement_reputation, transition_policy_digest
+from architecture_reputation_policy_migration import write_dry_run as write_reputation_policy_migration_review
 from repo_maintenance import probe as probe_repo_maintenance
 from repo_version_probe import probe as probe_repo_versions
 
@@ -67,6 +68,17 @@ def _evaluate_architecture(report,project_out):
     historical_root=architecture_learning_root(project_out)
     replacement_learning=summarize_replacement_learning(historical_root)
     reputation_registry=load_replacement_reputation(historical_root/'architecture-replacement-reputation.json')
+    registry_policy=reputation_registry.get('policy') if isinstance(reputation_registry.get('policy'),dict) else {}
+    migration_review=None
+    if reputation_registry.get('entries') and (
+        registry_policy.get('version')!=TRANSITION_POLICY_VERSION
+        or registry_policy.get('digest')!=transition_policy_digest()
+    ):
+        migration_review=write_reputation_policy_migration_review(
+            reputation_registry,
+            replacement_learning,
+            project_out,
+        )
     replacement_plan=write_architecture_replacement_plan(obsolescence,recommendations,project_out,learning=replacement_learning,reputation_registry=reputation_registry)
     replacement_work_orders=write_architecture_replacement_work_orders(replacement_plan,project_out)
     report['architecture_evaluation']=evaluation
@@ -74,6 +86,16 @@ def _evaluate_architecture(report,project_out):
     report['architecture_obsolescence']=obsolescence
     report['architecture_replacement_learning']=replacement_learning
     report['architecture_replacement_reputation']={'entries':list(reputation_registry.get('entries',{}).values())[:50],'policy':reputation_registry.get('policy',{})}
+    report['architecture_reputation_policy_migration_review']=(
+        {
+            'status':migration_review.get('status'),
+            'migration_id':migration_review.get('migration_id'),
+            'summary':migration_review.get('summary'),
+            'authorization_required':True,
+        }
+        if isinstance(migration_review,dict)
+        else {'status':'not_required'}
+    )
     report['architecture_replacement_plan']=replacement_plan
     report['architecture_replacement_work_orders']=replacement_work_orders
     (project_out/'report.json').write_text(json.dumps(report,ensure_ascii=False,sort_keys=True,separators=(',',':')))

@@ -22,4 +22,39 @@ class ReplacementLearningTests(unittest.TestCase):
             self.assertTrue(row["eligible_for_bias"])
             self.assertGreater(row["wilson_lower_95"],0.5)
 
+    def test_same_pair_is_separated_by_context(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            rows=[
+                ("flutter","game","mobile","android",True),
+                ("flutter","game","mobile","android",True),
+                ("python","trading","backend","linux",False),
+                ("python","trading","backend","linux",False),
+            ]
+            for i,(framework,ptype,domain,platform,success) in enumerate(rows):
+                out=root/f"p{i}"; out.mkdir()
+                (out/"architecture-replacement-outcome.json").write_text(json.dumps({
+                    "status":"replacement_outcome_recorded",
+                    "current_repo":"a/current",
+                    "replacement_repo":"a/better",
+                    "framework":framework,
+                    "project_type":ptype,
+                    "primary_domain":domain,
+                    "platform":platform,
+                    "current_major_version":1,
+                    "replacement_major_version":2,
+                    "successful":success,
+                    "regressed":not success,
+                    "rollback_prepared":False,
+                    "rolled_back":False,
+                    "quality_score":95.0 if success else 20.0,
+                    "observed_at":float(i+1),
+                }))
+            rows=arl.summarize(root)["rankings"]
+            self.assertEqual(len(rows),2)
+            by_framework={x["framework"]:x for x in rows}
+            self.assertEqual(by_framework["flutter"]["success_rate"],1.0)
+            self.assertEqual(by_framework["python"]["success_rate"],0.0)
+            self.assertEqual(by_framework["flutter"]["platform"],"android")
+
 if __name__=="__main__": unittest.main()

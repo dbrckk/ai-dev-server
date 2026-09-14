@@ -119,7 +119,11 @@ def allocate(
 
         provider_order = []
         for provider in ordered_providers:
-            available = None if provider.unmetered else max(0, int(provider.available_tokens or 0))
+            available = (
+                None
+                if provider.available_tokens is None
+                else max(0, int(provider.available_tokens))
+            )
             if available == 0 and not provider.unmetered:
                 continue
             provider_order.append({
@@ -176,7 +180,10 @@ def provider_capacities(rows: list[dict]) -> list[ProviderCapacity]:
             continue
         unmetered = bool(row.get("unmetered"))
         raw_available = row.get("available_tokens")
-        available = None if unmetered else max(0, int(raw_available or 0))
+        if unmetered or raw_available is None:
+            available = None
+        else:
+            available = max(0, int(raw_available))
         result.append(ProviderCapacity(
             name=name,
             available_tokens=available,

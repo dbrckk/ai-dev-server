@@ -31,6 +31,9 @@ def ask(model, role: str, context: str, screenshots=(), *, namespace: str = "mod
     if cached is not None:
         value = cached.get("response")
         if isinstance(value, dict):
+            if hasattr(model, "calls"):
+                model.calls = int(getattr(model, "calls", 0)) + 1
+            model.checkpoint_replays = int(getattr(model, "checkpoint_replays", 0)) + 1
             return value, True, key
         discard(key)
 

@@ -21,7 +21,7 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
         return {
             "path":".github/workflows/ci.yml",
             "blob_sha":"blob123",
-            "size":44,
+            "size":43,
             "sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4",
             "content_b64":"bmFtZTogQ0kKam9iczoKICB2YWxpZGF0ZToKICBweXRob24tdGVzdHM6Cg==",
             "policy_validation":{"valid":True},

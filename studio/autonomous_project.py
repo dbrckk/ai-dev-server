@@ -171,6 +171,7 @@ def run_persistent_project(
         "STUDIO_ARTIFACT_CAS_PATH": autonomy_root / "artifact-cas",
         "STUDIO_ARTIFACT_CAS_STATS_PATH": autonomy_root / "artifact-cas-stats.json",
         "STUDIO_CHECKPOINT_PATH": autonomy_root / "workflow-checkpoints.json",
+        "STUDIO_TELEMETRY_PATH": autonomy_root / "telemetry.jsonl",
     }
     for env_name, env_path in runtime_paths.items():
         os.environ.setdefault(env_name, str(env_path))

@@ -19,6 +19,44 @@ def _selection_confidence(margin: float | None) -> str:
         return "medium"
     return "low"
 
+def _autonomy_policy(chosen: list[dict], rejected: list[dict]) -> dict:
+    ranked = [
+        item.get("selection_confidence")
+        for item in chosen
+        if item.get("selection_margin") is not None
+    ]
+    severity = {"high": 0, "medium": 1, "low": 2}
+    decision_confidence = max(
+        ranked,
+        key=lambda value: severity.get(value, 2),
+        default="high",
+    )
+    if decision_confidence == "low":
+        mode = "independent_review"
+        retain = 3
+    elif decision_confidence == "medium":
+        mode = "lightweight_review"
+        retain = 2
+    else:
+        mode = "standard"
+        retain = 1
+    fallback_repos = [
+        item.get("repo")
+        for item in rejected
+        if isinstance(item, dict) and isinstance(item.get("repo"), str)
+    ][:retain]
+    return {
+        "decision_confidence": decision_confidence,
+        "validation_required": decision_confidence != "high",
+        "validation_mode": mode,
+        "allow_architecture_changes_without_review": decision_confidence == "high",
+        "retain_fallback_count": retain,
+        "retained_fallback_repos": fallback_repos,
+        "scope": "architecture_changes_only",
+        "normal_code_changes_may_continue": True,
+    }
+
+
 def _clean_rows(value):
     if not isinstance(value, dict):
         return []
@@ -168,8 +206,10 @@ def plan(
     for row in pending[:max(0,MAX_REJECTED-len(rejected))]:
         rejected.append({"repo":row["repo"],"reason":"lower-ranked than selected candidates for this phase"})
 
+    autonomy_policy = _autonomy_policy(chosen, rejected)
+
     return {
-        "version":2,
+        "version":3,
         "status":"planned",
         "advisory_only":True,
         "feedback_applied": bool(recommendations.get("feedback_applied")),
@@ -183,6 +223,7 @@ def plan(
             "medium_confidence_margin":MEDIUM_CONFIDENCE_MARGIN,
         },
         "brief_fingerprint_source":"request.brief",
+        "autonomy_policy":autonomy_policy,
         "chosen":chosen,
         "rejected":rejected[:MAX_REJECTED],
         "dependency_policy":{

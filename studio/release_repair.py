@@ -174,6 +174,7 @@ def attempt(
     }
 
     candidates = []
+    quick_gate_cache = {}
     for strategy_index, strategy_name in enumerate(strategies):
         prior = _strategy_prior(selection, strategy_name)
 
@@ -233,6 +234,7 @@ def attempt(
                 budget_remaining(state, repair=True) - already_spent,
             ),
             step_model_calls=step_model_calls,
+            quick_gate_cache=quick_gate_cache,
             state=state,
             app_name=app_name,
             sandbox_factory=sandbox_factory,

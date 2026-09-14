@@ -130,7 +130,7 @@ class ArchitectureLearningTests(unittest.TestCase):
             for i in range(5):
                 self._write(root, f"p{i}", ["a/core", "b/helper"], True, 2, 1, 0)
             result = al.summarize(root)
-            self.assertEqual(result["schema"], 2)
+            self.assertEqual(result["schema"], 3)
             self.assertEqual(result["stack_rankings"][0]["repos"], ["a/core", "b/helper"])
             self.assertEqual(result["stack_rankings"][0]["samples"], 5)
             self.assertTrue(result["stack_rankings"][0]["eligible_for_advisory_bias"])
@@ -182,6 +182,68 @@ class ArchitectureLearningTests(unittest.TestCase):
             self.assertEqual(keyed[("godot", "mobile")]["success_rate"], 0.0)
 
 
+    def test_stack_learning_is_separated_by_project_type_and_domain(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            for i, (ptype, domain, success) in enumerate([
+                ("game", "game_dev", True),
+                ("game", "game_dev", True),
+                ("trading", "trading", False),
+                ("trading", "trading", False),
+            ]):
+                out = root / f"p{i}"
+                out.mkdir()
+                (out / "architecture-outcome.json").write_text(
+                    json.dumps({
+                        "schema": 1,
+                        "decision_constraints": {
+                            "framework": "flutter",
+                            "project_type": ptype,
+                            "primary_domain": domain,
+                        },
+                        "chosen_repositories": ["a/core", "b/helper"],
+                        "outcome": {
+                            "successful": success,
+                            "model_calls_this_cycle": 2,
+                            "cycles": 1,
+                            "blocker_count": 0 if success else 2,
+                        },
+                    }),
+                    encoding="utf-8",
+                )
+            stacks = al.summarize(root)["stack_rankings"]
+            by_context = {(x["project_type"], x["primary_domain"]): x for x in stacks}
+            self.assertEqual(by_context[("game", "game_dev")]["success_rate"], 1.0)
+            self.assertEqual(by_context[("trading", "trading")]["success_rate"], 0.0)
+
+    def test_repo_learning_is_separated_by_project_type(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            for i, ptype in enumerate(["game", "trading"]):
+                out = root / f"p{i}"
+                out.mkdir()
+                (out / "architecture-outcome.json").write_text(
+                    json.dumps({
+                        "schema": 1,
+                        "decision_constraints": {
+                            "framework": "flutter",
+                            "project_type": ptype,
+                            "primary_domain": "mobile",
+                        },
+                        "chosen_contexts": [{"repo": "a/core", "domain": "mobile"}],
+                        "outcome": {
+                            "successful": ptype == "game",
+                            "model_calls_this_cycle": 2,
+                            "cycles": 1,
+                            "blocker_count": 0,
+                        },
+                    }),
+                    encoding="utf-8",
+                )
+            rankings = al.summarize(root)["rankings"]
+            by_type = {x["project_type"]: x for x in rankings}
+            self.assertEqual(by_type["game"]["success_rate"], 1.0)
+            self.assertEqual(by_type["trading"]["success_rate"], 0.0)
 
 if __name__ == "__main__":
     unittest.main()

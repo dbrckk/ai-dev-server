@@ -28,9 +28,10 @@ def _recommendation_index(recommendations: dict) -> dict[str, dict]:
         if isinstance(row, dict) and isinstance(row.get("repo"), str)
     }
 
-def evaluate(learning: dict, benchmark: dict, recommendations: dict) -> dict:
+def evaluate(learning: dict, benchmark: dict, recommendations: dict, maintenance: dict[str, dict] | None = None) -> dict:
     drift = _repo_drift(learning)
     recs = _recommendation_index(recommendations)
+    maintenance = maintenance if isinstance(maintenance, dict) else {}
     comparisons = benchmark.get("comparisons", []) if isinstance(benchmark, dict) else []
 
     candidates = []
@@ -52,10 +53,11 @@ def evaluate(learning: dict, benchmark: dict, recommendations: dict) -> dict:
 
         current_meta = recs.get(current, {})
         alt_meta = recs.get(best, {})
-        maintenance_signal = current_meta.get("maintenanceStatus")
-        if maintenance_signal not in {"active", "stale", "archived", "unknown", None}:
-            maintenance_signal = "unknown"
-        if maintenance_signal is None:
+        maintenance_row = maintenance.get(current, {})
+        maintenance_signal = maintenance_row.get("status") if isinstance(maintenance_row, dict) else None
+        if maintenance_signal not in {"active", "aging", "stale", "archived", "unknown"}:
+            maintenance_signal = current_meta.get("maintenanceStatus")
+        if maintenance_signal not in {"active", "aging", "stale", "archived", "unknown"}:
             maintenance_signal = "unknown"
 
         candidates.append({
@@ -72,11 +74,13 @@ def evaluate(learning: dict, benchmark: dict, recommendations: dict) -> dict:
             ), None),
             "maintenance_signal": maintenance_signal,
             "maintenance_evidence_available": maintenance_signal != "unknown",
+            "maintenance_evidence": maintenance_row if isinstance(maintenance_row, dict) else {},
             "current_tier": current_meta.get("tier"),
             "replacement_tier": alt_meta.get("tier"),
             "reason": (
-                "runtime degradation and benchmark evidence both favor an alternative; "
-                "maintenance evidence should be checked before deprecation"
+                "runtime degradation and benchmark evidence both favor an alternative"
+                + ("; maintenance is also weak" if maintenance_signal in {"aging","stale","archived"} else
+                   "; maintenance evidence should be reviewed before deprecation")
             ),
         })
 
@@ -102,9 +106,9 @@ def evaluate(learning: dict, benchmark: dict, recommendations: dict) -> dict:
         },
     }
 
-def write(learning: dict, benchmark: dict, recommendations: dict, out: Path) -> dict:
+def write(learning: dict, benchmark: dict, recommendations: dict, out: Path, maintenance: dict[str, dict] | None = None) -> dict:
     out.mkdir(parents=True, exist_ok=True)
-    result = evaluate(learning, benchmark, recommendations)
+    result = evaluate(learning, benchmark, recommendations, maintenance=maintenance)
     atomic_write_text(
         out / "architecture-obsolescence.json",
         json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n",

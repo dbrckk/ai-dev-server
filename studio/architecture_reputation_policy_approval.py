@@ -206,6 +206,8 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         raise ApprovalProvenanceError("github workflow file content invalid") from exc
     if hashlib.sha256(workflow_raw).hexdigest()!=workflow_file.get("sha256"):
         raise ApprovalProvenanceError("github workflow file content digest mismatch")
+    if workflow_file.get("size")!=len(workflow_raw):
+        raise ApprovalProvenanceError("github workflow file size mismatch")
     from replacement_ci_policy import validate_workflow_text
     workflow_policy_validation=validate_workflow_text(workflow_text)
     if workflow_policy_validation.get("valid") is not True:

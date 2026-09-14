@@ -6,6 +6,8 @@ import socket
 import time
 import uuid
 
+from task_claim_store import claim as persist_claim, heartbeat as persist_heartbeat, release as persist_release
+
 DEFAULT_LEASE_SECONDS = 60 * 60
 MIN_LEASE_SECONDS = 30
 MAX_LEASE_SECONDS = 60 * 60
@@ -70,6 +72,9 @@ def claim(
     task["lease_started_at"] = now_value
     task["lease_heartbeat_at"] = now_value
     task["lease_expires_at"] = now_value + duration
+    task_id = task.get("id")
+    if isinstance(task_id, str) and task_id:
+        persist_claim(task_id, task["lease_owner"], token, task["lease_expires_at"], now=now_value)
     return task
 
 
@@ -89,6 +94,9 @@ def heartbeat(
     duration = _duration(lease_seconds)
     task["lease_heartbeat_at"] = now_value
     task["lease_expires_at"] = now_value + duration
+    task_id = task.get("id")
+    if isinstance(task_id, str) and task_id:
+        persist_heartbeat(task_id, owner, token, task["lease_expires_at"], now=now_value)
     return task
 
 
@@ -97,6 +105,11 @@ def release(task: dict, *, owner: str | None = None, token: str | None = None) -
         raise RuntimeError("task lease ownership mismatch")
     if token is not None and task.get("lease_token") not in {None, token}:
         raise RuntimeError("task lease token mismatch")
+    task_id = task.get("id")
+    current_owner = task.get("lease_owner")
+    current_token = task.get("lease_token")
+    if isinstance(task_id, str) and task_id:
+        persist_release(task_id, owner=current_owner if owner is None else owner, token=current_token if token is None else token)
     for key in (
         "lease_owner",
         "lease_token",

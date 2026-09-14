@@ -303,6 +303,8 @@ class Model:
                         files = patch_check(value)
                         if role == 'tests' and any(not f['path'].startswith('test/') or not f['path'].endswith('_test.dart') for f in files):
                             raise StudioError('QA may only write test/*_test.dart files')
+                        if role == 'security_fix' and any(f['path'].startswith(('test/', 'docs/')) for f in files):
+                            raise StudioError('Security repair may not edit tests or documentation')
                     elif role in ('review', 'visual'):
                         verdict(value)
                     return value

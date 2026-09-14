@@ -102,5 +102,24 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         self.assertEqual(migrated["last_policy_migration"]["migration_id"],plan["migration_id"])
         self.assertTrue(migrated["audit"][-1]["migration_authorized"])
 
+    def test_preserved_quarantine_keeps_revalidation_gate(self):
+        registry=self.registry()
+        entry=next(iter(registry["entries"].values()))
+        entry["state"]="QUARANTINED"
+        entry["promotion_eligible"]=False
+        plan=dry_run(registry,self.learning(strong=True),now=200.0)
+        migrated=apply_migration(registry,plan,self.authorize(plan),now=300.0)
+        migrated_entry=next(iter(migrated["entries"].values()))
+        self.assertEqual(migrated_entry["state"],"QUARANTINED")
+        self.assertIn("quarantined_replacement_revalidated",migrated_entry["required_transition_gates"])
+        self.assertFalse(migrated_entry["promotion_eligible"])
+
+    def test_policy_migration_does_not_mutate_source_registry(self):
+        registry=self.registry()
+        original=copy.deepcopy(registry)
+        plan=dry_run(registry,self.learning(),now=200.0)
+        apply_migration(registry,plan,self.authorize(plan),now=300.0)
+        self.assertEqual(registry,original)
+
 if __name__=="__main__":
     unittest.main()

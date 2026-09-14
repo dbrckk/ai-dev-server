@@ -91,7 +91,12 @@ def _evaluate_architecture(report,project_out):
             'status':migration_review.get('status'),
             'migration_id':migration_review.get('migration_id'),
             'summary':migration_review.get('summary'),
+            'risk':migration_review.get('risk'),
             'authorization_required':True,
+            'reinforced_review_required':(
+                isinstance(migration_review.get('risk'),dict)
+                and migration_review['risk'].get('reinforced_review_required') is True
+            ),
         }
         if isinstance(migration_review,dict)
         else {'status':'not_required'}

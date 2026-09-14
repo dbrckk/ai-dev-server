@@ -16,11 +16,14 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
 
     def pr_identity(self):
         return {"number":7,"state":"open","draft":False,"head_ref":"feature/policy","head_sha":"abc","base_ref":"main","author":"author"}
+
+    def workflow_file(self):
+        return {"path":".github/workflows/ci.yml","blob_sha":"blob123","size":9,"sha256":"a"*64}
     def test_build_standard(self):
         a=build(self.plan,repository="o/r",pull_request=7,commit_sha="abc",
             reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:10Z"}],
-            permissions={"alice":"write"},workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:25Z"}],
-            check_runs=self.check_runs(),pr_identity=self.pr_identity(),head_commit_timestamp=1767225600.0,reinforced=False)
+            permissions={"alice":"write"},workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/7/merge","created_at":"2026-01-01T00:00:25Z"}],
+            check_runs=self.check_runs(),pr_identity=self.pr_identity(),workflow_file=self.workflow_file(),head_commit_timestamp=1767225600.0,reinforced=False)
         self.assertEqual(a["reviewer"]["login"],"alice");self.assertEqual(a["workflow_run_id"],9)
     def test_latest_review_wins(self):
         rows=latest_approvals([
@@ -39,12 +42,12 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
             build(self.plan,repository="o/r",pull_request=7,commit_sha="abc",
                 reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc"}],
                 permissions={"alice":"write"},workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","created_at":"2026-01-01T00:00:25Z"}],
-                check_runs=self.check_runs(),pr_identity=self.pr_identity(),head_commit_timestamp=1767225600.0,reinforced=True)
+                check_runs=self.check_runs(),pr_identity=self.pr_identity(),workflow_file=self.workflow_file(),head_commit_timestamp=1767225600.0,reinforced=True)
     def test_missing_required_check_rejected(self):
         with self.assertRaises(ApprovalProvenanceError):
             build(self.plan,repository="o/r",pull_request=7,commit_sha="abc",
                 reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc"}],
-                permissions={"alice":"write"},workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:25Z"}],
+                permissions={"alice":"write"},workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/7/merge","created_at":"2026-01-01T00:00:25Z"}],
                 check_runs=self.check_runs()[:1],pr_identity=self.pr_identity(),reinforced=False)
 
     def test_draft_pr_rejected(self):
@@ -53,15 +56,15 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
         with self.assertRaises(ApprovalProvenanceError):
             build(self.plan,repository="o/r",pull_request=7,commit_sha="abc",
                 reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc"}],
-                permissions={"alice":"write"},workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:25Z"}],
-                check_runs=self.check_runs(),pr_identity=identity,reinforced=False)
+                permissions={"alice":"write"},workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/7/merge","created_at":"2026-01-01T00:00:25Z"}],
+                check_runs=self.check_runs(),pr_identity=identity,workflow_file=self.workflow_file(),head_commit_timestamp=1767225600.0,reinforced=False)
 
     def test_approval_before_head_commit_is_rejected(self):
         with self.assertRaises(ApprovalProvenanceError):
             build(self.plan,repository="o/r",pull_request=7,commit_sha="abc",
                 reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2025-12-31T23:59:59Z"}],
-                permissions={"alice":"write"},workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:25Z"}],
-                check_runs=self.check_runs(),pr_identity=self.pr_identity(),head_commit_timestamp=1767225600.0,reinforced=False)
+                permissions={"alice":"write"},workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/7/merge","created_at":"2026-01-01T00:00:25Z"}],
+                check_runs=self.check_runs(),pr_identity=self.pr_identity(),workflow_file=self.workflow_file(),head_commit_timestamp=1767225600.0,reinforced=False)
 
     def test_wrong_workflow_name_rejected(self):
         with self.assertRaises(ApprovalProvenanceError):
@@ -69,7 +72,15 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
                 reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:10Z"}],
                 permissions={"alice":"write"},
                 workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"Other","created_at":"2026-01-01T00:00:25Z"}],
-                check_runs=self.check_runs(),pr_identity=self.pr_identity(),head_commit_timestamp=1767225600.0,reinforced=False)
+                check_runs=self.check_runs(),pr_identity=self.pr_identity(),workflow_file=self.workflow_file(),head_commit_timestamp=1767225600.0,reinforced=False)
+
+    def test_wrong_workflow_path_rejected(self):
+        with self.assertRaises(ApprovalProvenanceError):
+            build(self.plan,repository="o/r",pull_request=7,commit_sha="abc",
+                reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:10Z"}],
+                permissions={"alice":"write"},
+                workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","path":".github/workflows/other.yml","created_at":"2026-01-01T00:00:25Z"}],
+                check_runs=self.check_runs(),pr_identity=self.pr_identity(),workflow_file=self.workflow_file(),head_commit_timestamp=1767225600.0,reinforced=False)
 
     def test_stale_workflow_time_rejected(self):
         with self.assertRaises(ApprovalProvenanceError):
@@ -77,7 +88,7 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
                 reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:10Z"}],
                 permissions={"alice":"write"},
                 workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","created_at":"2025-12-31T23:59:59Z"}],
-                check_runs=self.check_runs(),pr_identity=self.pr_identity(),head_commit_timestamp=1767225600.0,reinforced=False)
+                check_runs=self.check_runs(),pr_identity=self.pr_identity(),workflow_file=self.workflow_file(),head_commit_timestamp=1767225600.0,reinforced=False)
 
     def test_stale_check_time_rejected(self):
         checks=self.check_runs()
@@ -86,7 +97,7 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
             build(self.plan,repository="o/r",pull_request=7,commit_sha="abc",
                 reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:10Z"}],
                 permissions={"alice":"write"},
-                workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:25Z"}],
+                workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/7/merge","created_at":"2026-01-01T00:00:25Z"}],
                 check_runs=checks,pr_identity=self.pr_identity(),head_commit_timestamp=1767225600.0,reinforced=False)
 
     def test_required_checks_from_different_workflow_runs_rejected(self):
@@ -97,7 +108,7 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
                 reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:10Z"}],
                 permissions={"alice":"write"},
                 workflow_runs=[
-                    {"id":9,"head_sha":"abc","conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:25Z"},
+                    {"id":9,"head_sha":"abc","conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/7/merge","created_at":"2026-01-01T00:00:25Z"},
                     {"id":10,"head_sha":"abc","conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:26Z"},
                 ],
                 check_runs=checks,pr_identity=self.pr_identity(),head_commit_timestamp=1767225600.0,reinforced=False)

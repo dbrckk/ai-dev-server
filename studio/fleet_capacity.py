@@ -15,6 +15,7 @@ from capacity_ledger import detailed_snapshot as ledger_detailed_snapshot
 from capacity_efficiency import summarize as summarize_capacity_efficiency, project_multiplier as efficiency_multiplier
 from stagnation_controller import summarize as summarize_stagnation
 from recovery_controller import evaluate as evaluate_recovery
+from global_admission import decide as decide_global_admission
 from queue import matrix
 
 
@@ -97,6 +98,21 @@ def _project_rows(
             efficiency_summary or {},
             project_id,
         )
+        efficiency_project = (
+            (efficiency_summary or {}).get("projects", {}).get(project_id, {})
+            if isinstance((efficiency_summary or {}).get("projects", {}), dict)
+            else {}
+        )
+        predicted_success_probability = max(
+            0.05,
+            min(
+                0.95,
+                float(
+                    efficiency_project.get("predicted_success_probability", 0.50)
+                    or 0.50
+                ),
+            ),
+        )
         stagnation = (
             (stagnation_summary or {}).get("projects", {}).get(project_id, {})
             if isinstance((stagnation_summary or {}).get("projects", {}), dict)
@@ -150,6 +166,7 @@ def _project_rows(
             ),
             "capacity_pressure": round(pressure, 4),
             "efficiency_multiplier": verified_efficiency_multiplier,
+            "predicted_success_probability": round(predicted_success_probability, 6),
             "stagnation_multiplier": stagnation_multiplier,
             "capacity_paused": capacity_paused,
             "stagnation_level": str(stagnation.get("level") or "normal"),
@@ -271,6 +288,16 @@ def plan(
         providers,
         critical_reserve_ratio=critical_reserve_ratio,
     )
+    admission = decide_global_admission(report["projects"])
+    admission_by_id = {
+        row["id"]: row
+        for row in admission["decisions"]
+        if isinstance(row, dict) and isinstance(row.get("id"), str)
+    }
+    for row in report["projects"]:
+        decision = admission_by_id.get(row["id"], {})
+        row["admission"] = decision
+        row["admitted"] = decision.get("admitted") is True
     report["provider_capacity"] = [
         {
             "name": item.name,
@@ -287,6 +314,9 @@ def plan(
         1 for item in providers
         if item.unmetered or item.available_tokens is not None
     )
+    report["admission"] = admission
+    report["summary"]["admitted_projects"] = int(admission["summary"]["admitted"])
+    report["summary"]["deferred_by_admission"] = int(admission["summary"]["deferred"])
     report["rebalance"] = {
         "previous_plan_present": bool(previous_plan),
         "active_reservations": int(ledger.get("active_reservations", 0) or 0),

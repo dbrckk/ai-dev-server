@@ -637,6 +637,64 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
             self.assertEqual(calls["analyze"], 2)
 
 
+    def test_identical_full_candidate_validation_is_reused(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source = root / "lib/app.dart"
+            source.parent.mkdir(parents=True)
+            source.write_text("const value = 1;\n")
+            (root / "pubspec.yaml").write_text("name: demo_app\n")
+            full_calls = {"count": 0}
+            shared_full_cache = {}
+
+            class FullCacheSandbox:
+                def __init__(self, root):
+                    self.root = root
+
+                def gates(self, name, journeys):
+                    full_calls["count"] += 1
+                    return True, [{"command": ["flutter", "test"], "exit_code": 0, "output": ""}]
+
+            def mutate(intermediate_failure=None):
+                source.write_text("const value = 2;\n")
+                return {"model_calls": 0}
+
+            first = run_branch(
+                root,
+                strategy="agent_only",
+                strategy_prior_score=10,
+                steps=[mutate],
+                refine=None,
+                state=STATE,
+                app_name="demo_app",
+                sandbox_factory=FullCacheSandbox,
+                strategy_row={},
+                remaining_model_calls=0,
+                step_model_calls=[0],
+                full_gate_cache=shared_full_cache,
+            )
+            second = run_branch(
+                root,
+                strategy="agent_only",
+                strategy_prior_score=10,
+                steps=[mutate],
+                refine=None,
+                state=STATE,
+                app_name="demo_app",
+                sandbox_factory=FullCacheSandbox,
+                strategy_row={},
+                remaining_model_calls=0,
+                step_model_calls=[0],
+                full_gate_cache=shared_full_cache,
+            )
+
+            self.assertTrue(first["passed"])
+            self.assertFalse(first["cached_full_validation"])
+            self.assertTrue(second["passed"])
+            self.assertTrue(second["cached_full_validation"])
+            self.assertEqual(full_calls["count"], 1)
+
+
     def test_verified_candidate_with_better_score_wins(self):
         candidates = [
             {

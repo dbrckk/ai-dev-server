@@ -5,7 +5,7 @@ import json
 import os
 from pathlib import Path
 
-from artifact_cas import blob_path as cas_blob_path, gc as cas_gc, get as cas_get, put as cas_put, usage as cas_usage
+from artifact_cas import MAX_CAS_BYTES, blob_path as cas_blob_path, gc as cas_gc, get as cas_get, put as cas_put, usage as cas_usage
 from artifact_cas_stats import retention_score
 from core import StudioError, canonical
 
@@ -87,11 +87,12 @@ def _admit_under_quota(
                 missing += len(data)
         return missing
 
-    if cas_usage() + missing_bytes_now() <= MAX_TOTAL_BYTES:
+    quota = min(MAX_TOTAL_BYTES, MAX_CAS_BYTES)
+    if cas_usage() + missing_bytes_now() <= quota:
         return
 
     projected = _projected_entry_value(files, rebuild_cost_seconds)
-    while cas_usage() + missing_bytes_now() > MAX_TOTAL_BYTES:
+    while cas_usage() + missing_bytes_now() > quota:
         victims = [
             (float(_entry_value(entry)), key)
             for key, entry in entries.items()

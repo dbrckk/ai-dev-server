@@ -10,6 +10,7 @@ from core import StudioError, canonical
 from run import GitHub
 from security_audit import build_security_package
 from security_remediation import MAX_REMEDIATION_ROUNDS, remediate, remediation_candidate
+from security_agent import MAX_AGENTIC_ROUNDS, attempt as agentic_attempt, eligible_blockers as agentic_eligible_blockers
 
 
 def advance(request_path: Path, root: Path, out: Path) -> dict:
@@ -43,6 +44,41 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
         'attempted': bool(remediation_history),
         'rounds': remediation_history,
         'max_rounds': MAX_REMEDIATION_ROUNDS,
+        'converged': evidence.get('passed') is True,
+    }
+
+    agentic_history = []
+    for round_index in range(MAX_AGENTIC_ROUNDS):
+        if evidence.get('passed') is True or evidence.get('human_review_required') is True:
+            break
+        if not agentic_eligible_blockers(evidence):
+            break
+        try:
+            result = agentic_attempt(root, state, evidence, req['app_name'])
+        except StudioError as exc:
+            agentic_history.append({
+                'round': round_index + 1,
+                'changed': False,
+                'error': str(exc),
+            })
+            break
+        agentic_history.append({
+            'round': round_index + 1,
+            'changed': result.get('changed') is True,
+            'blockers': list(result.get('blockers', [])),
+            'model_calls': result.get('model_calls', 0),
+            'models_used': dict(result.get('models_used', {})),
+            'providers_used': dict(result.get('providers_used', {})),
+            'gate_count': result.get('gate_count', 0),
+        })
+        if result.get('changed') is not True:
+            break
+        evidence = build_security_package(root, out)
+
+    evidence['agentic_remediation'] = {
+        'attempted': bool(agentic_history),
+        'rounds': agentic_history,
+        'max_rounds': MAX_AGENTIC_ROUNDS,
         'converged': evidence.get('passed') is True,
     }
     state.setdefault('release_evidence', {})['security_scan'] = evidence

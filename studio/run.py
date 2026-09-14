@@ -22,6 +22,7 @@ from atomic_file import write_text as atomic_write_text
 from architecture_planner import write as write_architecture_plan
 from architecture_outcome import write as write_architecture_outcome
 from architecture_learning import write as write_architecture_learning
+from architecture_evaluator import write as write_architecture_evaluation
 
 class GitHub(API):
     def __init__(self, repo):
@@ -357,6 +358,11 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     (out / 'report.json').write_text(canonical(state))
     sha = checkpoint(parent)
     state['checkpoint_commit'] = sha
+    state["architecture_evaluation"] = write_architecture_evaluation(
+        state.get("architecture_decision", {}),
+        state,
+        out,
+    )
     write_architecture_outcome(state, out)
     learning_root = out if (out / "architecture-outcome.json").is_file() and out.name == "studio-output" else out.parent
     try:

@@ -43,11 +43,13 @@ def _context(root: Path, state: dict, blockers: list[str]) -> str:
 def attempt(
     root: Path,
     state: dict,
+    evidence: dict,
+    app_name: str,
     *,
     model_factory=Model,
     sandbox_factory=Sandbox,
 ) -> dict:
-    blockers = eligible_blockers(state.get("release_evidence", {}).get("security_scan", {}))
+    blockers = eligible_blockers(evidence)
     if not blockers:
         return {"attempted": False, "changed": False, "reason": "no_eligible_blockers"}
 
@@ -58,7 +60,7 @@ def attempt(
     journeys = validate_journeys(state.get("product", {}).get("journeys"))
     sandbox = sandbox_factory(root)
     passed, logs = sandbox.gates(
-        state.get("app_name") or state.get("request", {}).get("app_name") or "studio_app",
+        app_name,
         journeys,
     )
     if not passed:

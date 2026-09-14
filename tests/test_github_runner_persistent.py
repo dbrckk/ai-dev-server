@@ -108,30 +108,44 @@ class GithubRunnerPersistentTests(unittest.TestCase):
             root=Path(td); request=self.request(root); out=root/"out"
             out.mkdir(parents=True,exist_ok=True)
             state={"status":"blocked","human_action":None,"blocked_reason":"test-stop"}
-            with patch.dict(os.environ,{"STUDIO_PERSIST_REMOTE":"1","GITHUB_REPOSITORY":"owner/control"},clear=False), \
-                 patch("github_runner.RepoGitHub"), \
-                 patch("github_runner.restore_local"), \
-                 patch("github_runner.restore_memory_local"), \
-                 patch("github_runner.restore_agent_performance_local"), \
-                 patch("github_runner.restore_provider_health_local"), \
-                 patch("github_runner.restore_provider_metrics_local"), \
-                 patch("github_runner.restore_routing_history_local"), \
-                 patch("github_runner.restore_verification_cost_local"), \
-                 patch("github_runner.restore_phase_cost_baseline_local"), \
-                 patch("github_runner.restore_strategy_efficiency_local"), \
-                 patch("github_runner.restore_contextual_strategy_efficiency_local"), \
-                 patch("github_runner.restore_quick_gate_cache_local"), \
-                 patch("github_runner.restore_full_gate_cache_local"), \
-                 patch("github_runner.restore_artifact_cas_stats_local"), \
-                 patch("github_runner.restore_artifact_cas_audit_local"), \
-                 patch("github_runner.restore_execution_checkpoint_local"), \
-                 patch("github_runner.run_persistent_project",return_value=state), \
-                 patch("github_runner.load_project_memory",return_value={"memory":"before"}), \
-                 patch("github_runner.ingest_run",side_effect=ValueError("invalid learning")), \
-                 patch("github_runner.persist_local") as persist_state:
+            with ExitStack() as stack:
+                stack.enter_context(patch.dict(
+                    os.environ,
+                    {"STUDIO_PERSIST_REMOTE":"1","GITHUB_REPOSITORY":"owner/control"},
+                    clear=False,
+                ))
+                for name in (
+                    "RepoGitHub","restore_local","restore_memory_local",
+                    "restore_agent_performance_local","restore_provider_health_local",
+                    "restore_provider_metrics_local","restore_routing_history_local",
+                    "restore_verification_cost_local","restore_phase_cost_baseline_local",
+                    "restore_strategy_efficiency_local",
+                    "restore_contextual_strategy_efficiency_local",
+                    "restore_quick_gate_cache_local","restore_full_gate_cache_local",
+                    "restore_artifact_cas_stats_local","restore_artifact_cas_audit_local",
+                    "restore_execution_checkpoint_local",
+                ):
+                    stack.enter_context(patch("github_runner."+name))
+                stack.enter_context(patch(
+                    "github_runner.run_persistent_project",
+                    return_value=state,
+                ))
+                stack.enter_context(patch(
+                    "github_runner.load_project_memory",
+                    return_value={"memory":"before"},
+                ))
+                stack.enter_context(patch(
+                    "github_runner.ingest_run",
+                    side_effect=ValueError("invalid learning"),
+                ))
+                persist_state=stack.enter_context(patch("github_runner.persist_local"))
                 with self.assertRaisesRegex(Exception,"Project memory ingestion failed"):
-                    run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha="e"*40)
+                    run(
+                        request,out,runner=lambda *a,**k:None,
+                        clock=lambda:0,budget_seconds=100,baseline_sha="e"*40,
+                    )
                 persist_state.assert_not_called()
+
 
 
     def test_promotion_required_handoff_is_sealed_and_non_promoting(self):

@@ -59,6 +59,7 @@ def _context(req: dict, state: dict, root: Path) -> str:
         'design':state.get('design'),
         'previous_blockers':state.get('blockers',[]),
         'architecture_decision':state.get('architecture_decision', {'status':'unavailable','chosen':[]}),
+        'architecture_autonomy_policy':state.get('architecture_autonomy_policy', {}),
         'architecture_benchmark':state.get('architecture_benchmark', {'status':'unavailable','migration_candidates':[]}),
         'files':files,
     })
@@ -188,6 +189,7 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
         framework='godot',
         publication_target='google-play',
     )
+    state['architecture_autonomy_policy'] = state['architecture_decision'].get('autonomy_policy', {})
 
     model = model_factory(req['max_calls']); sandbox = sandbox_factory(root); sandbox.create(req['app_name'])
     state['cycles'] += 1

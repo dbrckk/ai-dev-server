@@ -49,7 +49,7 @@ class GitHubAttestationCollectorTests(unittest.TestCase):
             if "/actions/runs?" in url:
                 return {"workflow_runs":[{"id":99,"head_sha":"a"*40,"conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/7/merge","created_at":"2026-01-01T00:00:25Z"}]}
             if "/contents/.github/workflows/ci.yml?ref=" in url:
-                raw=b"name: CI\n"
+                raw=b"name: CI\njobs:\n  validate:\n  python-tests:\n"
                 return {
                     "path":".github/workflows/ci.yml",
                     "sha":"blob123",

@@ -68,3 +68,29 @@ A verifier recipe becomes reusable learning only after a real verification passe
 ## Resuming after required user input
 
 A missing secret remains the exceptional pause path. The project produces `USER_INPUT_REQUIRED.txt` and stays schedulable. Scheduled runs check whether the specifically requested secret is now available. Once it appears, the persisted goal is reactivated automatically and work resumes from the previous checkpoint.
+
+
+## Read-only project status
+
+The persisted autonomous state can be inspected without starting a model, verifier, or implementation round:
+
+```bash
+python studio/project_status.py /path/to/project-output
+```
+
+For scripts/mobile terminals:
+
+```bash
+python studio/project_status.py /path/to/project-output --compact
+```
+
+The JSON view includes:
+
+- objective DAG counts and next task;
+- stalled/confidence blockers;
+- latest round verification summary;
+- task/release confidence;
+- semantic task count;
+- task proof count and sealed release proof metadata.
+
+The command is read-only and never mutates project state.

@@ -163,6 +163,7 @@ def attempt(
     *,
     model_factory=Model,
     sandbox_factory=Sandbox,
+    artifact_cache_enabled: bool = False,
 ) -> dict:
     blockers = repairable(stage, evidence)
     if not blockers:
@@ -187,7 +188,7 @@ def attempt(
     quick_gate_cache = load_persistent_quick_cache()
     full_gate_cache = load_full_gate_cache()
     artifact_cache_enabled = (
-        os.environ.get("STUDIO_ARTIFACT_CACHE_ENABLED") == "1"
+        artifact_cache_enabled is True
         and bool(os.environ.get("STUDIO_ARTIFACT_CACHE_PATH"))
         and bool(os.environ.get("STUDIO_ARTIFACT_CAS_PATH"))
     )

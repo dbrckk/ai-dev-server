@@ -17,6 +17,39 @@ class GitHubAttestationCollectionError(RuntimeError):
 def _valid_repository(value: str) -> bool:
     return isinstance(value,str) and re.fullmatch(r"[^/]+/[^/]+",value) is not None
 
+def collect_review_target(*, token: str, repository: str, pull_request: int) -> dict:
+    if not token:
+        raise GitHubAttestationCollectionError("GitHub token missing")
+    if not _valid_repository(repository):
+        raise GitHubAttestationCollectionError("GitHub repository invalid")
+    if not isinstance(pull_request,int) or pull_request<1:
+        raise GitHubAttestationCollectionError("pull request invalid")
+    api="https://api.github.com/repos/"+repository
+    try:
+        pr=_request(api+f"/pulls/{pull_request}",token)
+    except ReplacementPersistenceError as exc:
+        raise GitHubAttestationCollectionError("GitHub PR target collection failed") from exc
+    if not isinstance(pr,dict):
+        raise GitHubAttestationCollectionError("pull request response malformed")
+    head=pr.get("head") if isinstance(pr.get("head"),dict) else {}
+    base=pr.get("base") if isinstance(pr.get("base"),dict) else {}
+    user=pr.get("user") if isinstance(pr.get("user"),dict) else {}
+    target={
+        "repository":repository,
+        "pull_request":pull_request,
+        "commit_sha":head.get("sha"),
+        "head_ref":head.get("ref"),
+        "base_ref":base.get("ref"),
+        "author":user.get("login"),
+    }
+    if any(not target.get(key) for key in target):
+        raise GitHubAttestationCollectionError("GitHub PR review target incomplete")
+    if pr.get("state")!="open" or pr.get("draft") is True:
+        raise GitHubAttestationCollectionError("GitHub PR review target is not review-ready")
+    if target["base_ref"]!="main":
+        raise GitHubAttestationCollectionError("GitHub PR review target base is not main")
+    return target
+
 def collect(plan: dict, *, token: str, repository: str, pull_request: int) -> dict:
     if not token:
         raise GitHubAttestationCollectionError("GitHub token missing")

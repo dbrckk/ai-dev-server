@@ -55,5 +55,43 @@ class ReplacementPostMergePipelineTests(unittest.TestCase):
             learning=json.loads((root/"studio-output"/"architecture-replacement-learning.json").read_text())
             self.assertEqual(learning["outcomes_observed"],0)
 
+    def test_terminal_outcome_persists_reputation_registry(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            work=root/"work.json"; merged=root/"merged.json"; package=root/"package.json"
+            work.write_text(json.dumps({
+                "id":"r1","current_repo":"a/current","replacement_repo":"a/better",
+                "framework":"flutter","project_type":"game","primary_domain":"mobile",
+                "platform":"android","current_major_version":1,"replacement_major_version":2,
+            }))
+            merged.write_text(json.dumps({"status":"replacement_merged","work_order_id":"r1","merge_sha":"3"*40}))
+            package.write_text(json.dumps({"status":"pr_package_ready","work_order_id":"r1"}))
+            post={"status":"post_merge_healthy","work_order_id":"r1","post_merge_healthy":True,"rollback_required":False}
+            out=root/"studio-output"/"p1"
+            with patch.object(pipeline,"verify_postmerge",return_value=post):
+                result=pipeline.run(work,merged,package,out,"token","owner/repo")
+            registry_path=root/"studio-output"/"architecture-replacement-reputation.json"
+            self.assertTrue(registry_path.is_file())
+            registry=json.loads(registry_path.read_text())
+            self.assertEqual(len(registry["entries"]),1)
+            entry=next(iter(registry["entries"].values()))
+            self.assertEqual(entry["current_repo"],"a/current")
+            self.assertEqual(result["replacement_reputation_state"],entry["state"])
+            self.assertEqual(len(registry["audit"]),1)
+
+    def test_nonterminal_state_does_not_write_reputation(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            work=root/"work.json"; merged=root/"merged.json"; package=root/"package.json"
+            work.write_text(json.dumps({"id":"r1","current_repo":"a/current","replacement_repo":"a/better"}))
+            merged.write_text(json.dumps({"status":"replacement_merged","work_order_id":"r1","merge_sha":"3"*40}))
+            package.write_text(json.dumps({"status":"pr_package_ready","work_order_id":"r1"}))
+            post={"status":"awaiting_post_merge_checks","work_order_id":"r1","post_merge_healthy":False,"rollback_required":False}
+            out=root/"studio-output"/"p1"
+            with patch.object(pipeline,"verify_postmerge",return_value=post):
+                result=pipeline.run(work,merged,package,out,"token","owner/repo")
+            self.assertIsNone(result["replacement_reputation_state"])
+            self.assertFalse((root/"studio-output"/"architecture-replacement-reputation.json").exists())
+
 if __name__=="__main__":
     unittest.main()

@@ -66,6 +66,40 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         result=plan(obs,self.recommendations())
         self.assertIn("maintenance_evidence_completed",result["replacement_plans"][0]["required_gates"])
 
+    def test_bad_historical_replacement_raises_risk(self):
+        learning={"rankings":[{
+            "current_repo":"a/current",
+            "replacement_repo":"a/better",
+            "samples":10,
+            "eligible_for_bias":True,
+            "evidence_confidence":0.5,
+            "regression_rate":0.4,
+            "wilson_lower_95":0.35,
+        }]}
+        result=plan(self.obsolescence(),self.recommendations(),learning=learning)
+        row=result["replacement_plans"][0]
+        self.assertEqual(row["risk"],"high")
+        self.assertEqual(row["empirical_status"],"historically_risky")
+        self.assertIn("historical_replacement_risk_reviewed",row["required_gates"])
+        self.assertLess(row["empirical_priority_adjustment"],0.0)
+
+    def test_strong_historical_replacement_is_recorded_but_does_not_skip_gates(self):
+        learning={"rankings":[{
+            "current_repo":"a/current",
+            "replacement_repo":"a/better",
+            "samples":20,
+            "eligible_for_bias":True,
+            "evidence_confidence":1.0,
+            "regression_rate":0.0,
+            "wilson_lower_95":0.82,
+        }]}
+        result=plan(self.obsolescence(),self.recommendations(),learning=learning)
+        row=result["replacement_plans"][0]
+        self.assertEqual(row["empirical_status"],"historically_supported")
+        self.assertGreater(row["priority_score"],row["benchmark_delta"])
+        self.assertIn("dependency_policy_approved",row["required_gates"])
+        self.assertEqual(row["go_no_go"],"NO_GO_PENDING_ISOLATED_BENCHMARK")
+
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)

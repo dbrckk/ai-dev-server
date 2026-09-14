@@ -87,9 +87,26 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     safe_rewrite_summary = summarize_safe_rewrite_learning(safe_rewrite_path) if safe_rewrite_path is not None else {}
     contextual_routing = load_contextual_routing_memory(contextual_routing_path) if contextual_routing_path is not None else {}
     provider_costs = load_provider_cost(provider_cost_path) if provider_cost_path is not None else {}
+    try:
+        max_api_cost_usd = float(os.environ.get("STUDIO_MAX_API_COST_USD", "0") or 0.0)
+    except ValueError:
+        max_api_cost_usd = 0.0
+    spent_api_cost_usd = sum(
+        max(0.0, float(row.get("total_cost_usd", 0.0) or 0.0))
+        for row in provider_costs.values()
+        if isinstance(row, dict)
+    )
     weights = learned_weights(history, kind="provider", role=role)
     if health_path is not None:
         providers = tuple(provider for provider in providers if provider_eligible(health_path, provider.name))
+    if max_api_cost_usd > 0 and spent_api_cost_usd >= max_api_cost_usd:
+        unmetered = tuple(provider for provider in providers if provider.unmetered)
+        if unmetered:
+            providers = unmetered
+        else:
+            raise StudioError(
+                "Paid API budget exhausted and no unmetered provider is configured"
+            )
     provider_scores = {}
     for provider in providers:
         base = score_provider(
@@ -159,9 +176,17 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 free_preferred=provider.free_preferred,
                 monetary_cost_usd=monetary_cost_usd,
                 retry_probability=retry_probability,
+                unmetered=provider.unmetered,
             )
             components["cost_aware_utility"] = utility["score"]
             components["verified_value_per_unit_cost"] = utility["verified_value_per_unit_cost"]
+            components["unmetered_capacity"] = utility["unmetered_bonus"]
+            if max_api_cost_usd > 0 and not provider.unmetered:
+                remaining_ratio = max(
+                    0.0,
+                    min(1.0, (max_api_cost_usd - spent_api_cost_usd) / max_api_cost_usd),
+                )
+                components["remaining_paid_budget"] = (remaining_ratio - 0.5) * 6.0
         from adaptive_scoring import ScoreTrace
         provider_scores[provider.name] = ScoreTrace(
             name=provider.name,
@@ -209,9 +234,10 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
             if metrics_path is not None:
                 record_provider_latency(metrics_path, provider.name, role, elapsed)
             usage = response.get("usage") if isinstance(response, dict) else None
+            call_cost = 0.0
             if provider_cost_path is not None and isinstance(usage, dict):
                 try:
-                    call_cost = estimate_call_cost(
+                    call_cost = 0.0 if provider.unmetered else estimate_call_cost(
                         prompt_tokens=int(usage.get("prompt_tokens", 0) or 0),
                         completion_tokens=int(usage.get("completion_tokens", 0) or 0),
                         input_cost_per_million=provider.input_cost_per_million,
@@ -239,6 +265,12 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                 "independent_preference_met": provider.name not in avoid_providers and model not in avoid_models,
                 "routing_score": provider_scores[provider.name].as_dict(),
                 "duration_seconds": elapsed,
+                "estimated_cost_usd": round(call_cost, 8),
+                "unmetered": provider.unmetered,
+                "paid_budget": {
+                    "limit_usd": max_api_cost_usd if max_api_cost_usd > 0 else None,
+                    "spent_before_call_usd": round(spent_api_cost_usd, 8),
+                },
             }
         except (APIError, StudioError, ProtocolError) as exc:
             elapsed = time.monotonic() - started

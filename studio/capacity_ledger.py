@@ -222,6 +222,60 @@ def release(path: Path, reservation_id: str, *, now: float | None = None) -> dic
         }
 
 
+
+def reservations_by_provider(data: dict) -> dict[str, int]:
+    result = {}
+    for row in (data.get("reservations") or {}).values():
+        if not isinstance(row, dict):
+            continue
+        provider = str(row.get("provider") or "").strip()
+        if not provider:
+            continue
+        result[provider] = result.get(provider, 0) + max(
+            0, int(row.get("reserved_tokens", 0) or 0)
+        )
+    return result
+
+
+def usage_by_project(data: dict) -> dict[str, dict]:
+    projects = {}
+    for row in (data.get("reservations") or {}).values():
+        if not isinstance(row, dict):
+            continue
+        project = str(row.get("project_id") or "").strip()
+        if not project:
+            continue
+        item = projects.setdefault(project, {"reserved_tokens": 0, "consumed_tokens": 0})
+        item["reserved_tokens"] += max(0, int(row.get("reserved_tokens", 0) or 0))
+    for key, value in (data.get("consumed") or {}).items():
+        if not isinstance(key, str) or "::" not in key:
+            continue
+        project, _provider = key.split("::", 1)
+        if not project:
+            continue
+        item = projects.setdefault(project, {"reserved_tokens": 0, "consumed_tokens": 0})
+        item["consumed_tokens"] += max(0, int(value or 0))
+    for project, item in projects.items():
+        item["committed_tokens"] = item["reserved_tokens"] + item["consumed_tokens"]
+    return projects
+
+
+def detailed_snapshot(path: Path, *, now: float | None = None) -> dict:
+    current = time.time() if now is None else float(now)
+    path = Path(path)
+    with exclusive(path):
+        data = _load_unlocked(path)
+        reaped = _reap(data, current)
+        _save_unlocked(path, data)
+    return {
+        "active_reservations": len(data["reservations"]),
+        "reserved_tokens": reserved_tokens(data),
+        "consumed_tokens": consumed_tokens(data),
+        "reservations_by_provider": reservations_by_provider(data),
+        "usage_by_project": usage_by_project(data),
+        "reaped": reaped,
+    }
+
 def snapshot(path: Path, *, now: float | None = None) -> dict:
     current = time.time() if now is None else float(now)
     path = Path(path)

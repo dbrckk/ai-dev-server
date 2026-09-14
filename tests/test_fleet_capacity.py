@@ -259,6 +259,17 @@ class FleetCapacityTests(unittest.TestCase):
         self.assertTrue(second[0]["force_diversify"])
 
 
+
+    def test_capacity_band_ignores_small_quota_drift(self):
+        self.assertEqual(fleet_capacity._capacity_band(900000), "normal")
+        self.assertEqual(fleet_capacity._capacity_band(899000), "normal")
+        self.assertEqual(fleet_capacity._capacity_band(0), "exhausted")
+        self.assertEqual(
+            fleet_capacity._capacity_band(None, unmetered=True),
+            "unmetered",
+        )
+
+
     def test_persist_writes_machine_readable_plan(self):
         report = {
             "schema": 1,

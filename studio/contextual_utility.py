@@ -8,6 +8,7 @@ REFERENCE_VERIFICATION_SECONDS = 120.0
 HIGH_RISK_MULTIPLIER = 1.35
 REFERENCE_CALL_COST_USD = 0.05
 REFERENCE_RETRY_RATE = 0.5
+UNMETERED_BONUS = 4.0
 
 
 def utility_score(
@@ -19,6 +20,7 @@ def utility_score(
     free_preferred: bool = True,
     monetary_cost_usd: float | None = None,
     retry_probability: float | None = None,
+    unmetered: bool = False,
 ) -> dict:
     success = max(0.0, min(1.0, float(expected_success)))
     execution = max(0.0, float(execution_seconds or 0.0))
@@ -34,8 +36,9 @@ def utility_score(
 
     quality_value = success * 1.2
     time_cost = (0.40 * execution_cost + 0.30 * verification_cost) * risk
-    paid_cost = 0.0 if free_preferred else 0.05
-    multi_cost = 0.20 * monetary_cost + 0.15 * retry_cost
+    paid_cost = 0.0 if (free_preferred or unmetered) else 0.05
+    multi_cost = 0.0 if unmetered else (0.20 * monetary_cost)
+    multi_cost += 0.15 * retry_cost
 
     normalized = quality_value - time_cost - paid_cost - multi_cost
     normalized = max(-1.0, min(1.0, normalized))
@@ -55,7 +58,14 @@ def utility_score(
         "monetary_cost": round(monetary_cost, 4),
         "retry_cost": round(retry_cost, 4),
         "verified_value_per_unit_cost": round(
-            success / max(0.05, execution_cost + verification_cost + monetary_cost + retry_cost),
+            success / max(
+                0.05,
+                execution_cost
+                + verification_cost
+                + (0.0 if unmetered else monetary_cost)
+                + retry_cost,
+            ),
             4,
         ),
+        "unmetered_bonus": UNMETERED_BONUS if unmetered else 0.0,
     }

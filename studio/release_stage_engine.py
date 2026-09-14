@@ -138,6 +138,10 @@ def evaluate_and_repair(
             "models_used": dict(result.get("models_used", {})),
             "providers_used": dict(result.get("providers_used", {})),
             "gate_count": result.get("gate_count", 0),
+            "strategy": result.get("strategy"),
+            "strategy_selection": result.get("strategy_selection"),
+            "strategy_cost_seconds": result.get("strategy_cost_seconds"),
+            "agent": result.get("agent"),
         })
         if task is not None:
             finish_attempt(
@@ -146,6 +150,8 @@ def evaluate_and_repair(
                 model_calls=result.get("model_calls", 0),
                 improved=result.get("changed") is True,
                 providers_used=result.get("providers_used", {}),
+                strategy=result.get("strategy"),
+                strategy_cost_seconds=result.get("strategy_cost_seconds"),
             )
         record_repair_outcome(
             state,

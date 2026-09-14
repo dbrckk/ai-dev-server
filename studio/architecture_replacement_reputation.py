@@ -36,11 +36,20 @@ def desired_state(evidence: dict | None) -> dict:
     wilson=float(evidence.get("wilson_lower_95",0.0) or 0.0)
     regression=float(evidence.get("regression_rate",0.0) or 0.0)
 
-    if evidence.get("sequential_drift") is True or evidence.get("regime_shift") is True:
+    sequential=evidence.get("sequential_drift")
+    sequential_detected=(
+        sequential is True
+        or (isinstance(sequential,dict) and sequential.get("drift_detected") is True)
+    )
+    recovery_detected=(
+        evidence.get("recovery_candidate") is True
+        or (isinstance(sequential,dict) and sequential.get("recovery_detected") is True)
+    )
+    if sequential_detected or evidence.get("regime_shift") is True:
         return {"state":"QUARANTINED","reason":"active_performance_deterioration"}
     if evidence.get("evidence_conflict") is True:
         return {"state":"DEGRADED","reason":"conflicting_historical_evidence"}
-    if evidence.get("recovery_candidate") is True:
+    if recovery_detected:
         return {"state":"RECOVERING","reason":"sustained_recent_recovery"}
     if evidence.get("stale_evidence") is True:
         return {"state":"DEGRADED","reason":"stale_historical_evidence"}

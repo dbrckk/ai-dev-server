@@ -137,9 +137,15 @@ def summarize(path_or_data: Path | dict) -> dict:
     project_scores = {}
     for row in rows:
         project = row["project_id"]
-        bucket = project_scores.setdefault(project, {"weighted_score": 0.0, "tokens": 0, "samples": 0})
+        bucket = project_scores.setdefault(project, {
+            "weighted_score": 0.0,
+            "weighted_success": 0.0,
+            "tokens": 0,
+            "samples": 0,
+        })
         tokens = max(1, int(row.get("total_tokens", 0) or 0))
         bucket["weighted_score"] += float(row["risk_adjusted_score"]) * tokens
+        bucket["weighted_success"] += float(row["success_rate"]) * tokens
         bucket["tokens"] += tokens
         bucket["samples"] += int(row["samples"])
     projects = {}
@@ -147,6 +153,10 @@ def summarize(path_or_data: Path | dict) -> dict:
         projects[project] = {
             "samples": bucket["samples"],
             "risk_adjusted_score": round(bucket["weighted_score"] / max(1, bucket["tokens"]), 6),
+            "predicted_success_probability": round(
+                max(0.05, min(0.95, bucket["weighted_success"] / max(1, bucket["tokens"]))),
+                6,
+            ),
         }
     return {"rows": rows, "projects": projects}
 

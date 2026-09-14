@@ -79,6 +79,13 @@ def _score(
             kind="agent",
             name=spec.name,
         )
+        bandit = contextual_bandit_score(
+            contextual_routing,
+            weighted_contexts=weighted_contexts,
+            kind="agent",
+            name=spec.name,
+        )
+        components["contextual_bandit_exploration"] = bandit["exploration_bonus"]
         trace = ScoreTrace(
             name=spec.name,
             total=sum(float(value) for value in components.values()),

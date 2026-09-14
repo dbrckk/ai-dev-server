@@ -9,7 +9,7 @@ MAX_STACK_SCORE_BONUS = 2.0
 MAX_EVIDENCE_AGE_SECONDS = 30 * 24 * 60 * 60
 
 
-def _learning_map(learning: dict, *, now: float) -> dict[tuple[str, str | None], dict]:
+def _learning_map(learning: dict, *, now: float) -> dict[tuple[str, str | None, str | None], dict]:
     if not isinstance(learning, dict):
         return {}
     rows = learning.get("rankings")
@@ -28,16 +28,31 @@ def _learning_map(learning: dict, *, now: float) -> dict[tuple[str, str | None],
             continue
         if not isinstance(success_rate, (int, float)):
             continue
+        row_framework = row.get("framework")
+        row_framework = row_framework if isinstance(row_framework, str) and row_framework else None
+        normalized_framework = framework if isinstance(framework, str) and framework else None
+        if row_framework is not None and normalized_framework is not None and row_framework != normalized_framework:
+            continue
+        if row_framework is not None and normalized_framework is None:
+            continue
         latest = row.get("latest_observed_at")
         if isinstance(latest, (int, float)) and now - float(latest) > MAX_EVIDENCE_AGE_SECONDS:
             continue
         domain = row.get("domain")
         domain = domain if isinstance(domain, str) and domain else None
-        out[(repo, domain)] = row
+        framework = row.get("framework")
+        framework = framework if isinstance(framework, str) and framework else None
+        out[(repo, domain, framework)] = row
     return out
 
 
-def apply(recommendations: dict, learning: dict | None, *, now: float | None = None) -> dict:
+def apply(
+    recommendations: dict,
+    learning: dict | None,
+    *,
+    framework: str | None = None,
+    now: float | None = None,
+) -> dict:
     if not isinstance(recommendations, dict):
         return {"matches": [], "feedback_applied": False}
     rows = recommendations.get("matches")
@@ -55,10 +70,15 @@ def apply(recommendations: dict, learning: dict | None, *, now: float | None = N
         domain = item.get("domain")
         domain = domain if isinstance(domain, str) and domain else None
         history = None
+        normalized_framework = framework if isinstance(framework, str) and framework else None
         if isinstance(repo, str):
-            history = evidence.get((repo, domain))
+            history = evidence.get((repo, domain, normalized_framework))
             if history is None:
-                history = evidence.get((repo, None))
+                history = evidence.get((repo, None, normalized_framework))
+            if history is None:
+                history = evidence.get((repo, domain, None))
+            if history is None:
+                history = evidence.get((repo, None, None))
         base = item.get("score")
         base_score = float(base) if isinstance(base, (int, float)) else 0.0
 
@@ -70,6 +90,7 @@ def apply(recommendations: dict, learning: dict | None, *, now: float | None = N
             bonus = max(-MAX_SCORE_BONUS, min(MAX_SCORE_BONUS, centered * MAX_SCORE_BONUS))
             item["historical_evidence"] = {
                 "domain": history.get("domain"),
+                "framework": history.get("framework"),
                 "samples": history["samples"],
                 "success_rate": success_rate,
                 "mean_model_calls": history.get("mean_model_calls"),
@@ -101,7 +122,14 @@ def apply(recommendations: dict, learning: dict | None, *, now: float | None = N
     return result
 
 
-def stack_adjustment(candidate_repo: str, chosen_repos: list[str], learning: dict | None, *, now: float | None = None) -> dict:
+def stack_adjustment(
+    candidate_repo: str,
+    chosen_repos: list[str],
+    learning: dict | None,
+    *,
+    framework: str | None = None,
+    now: float | None = None,
+) -> dict:
     """Return a bounded synergy adjustment from verified historical stack outcomes."""
     if not isinstance(candidate_repo, str) or not candidate_repo:
         return {"bonus": 0.0, "evidence": []}

@@ -34,6 +34,25 @@ STRONG_COPYLEFT = {'GPL-2.0', 'GPL-3.0', 'AGPL-3.0'}
 WEAK_COPYLEFT = {'LGPL-2.1', 'LGPL-3.0', 'MPL-2.0'}
 PERMISSIVE_LICENSES = {'MIT', 'BSD-2-Clause', 'BSD-3-Clause', 'Apache-2.0', 'ISC', 'Zlib'}
 
+HUMAN_REVIEW_BLOCKER_PREFIXES = (
+    'strong_copyleft_dependency_requires_review:',
+    'dependency_license_unresolved:',
+    'unreviewed_hosted_registry:',
+)
+HUMAN_REVIEW_BLOCKERS = {
+    'dangerous_android_permissions_require_explicit_review',
+    'unreviewed_git_or_path_dependency',
+}
+
+
+def human_review_reasons(blockers: list[str]) -> list[str]:
+    """Return blockers that require an explicit trust/legal decision by a person."""
+    return sorted({
+        blocker for blocker in blockers
+        if blocker in HUMAN_REVIEW_BLOCKERS
+        or blocker.startswith(HUMAN_REVIEW_BLOCKER_PREFIXES)
+    })
+
 
 
 def _candidate_files(root: Path) -> list[Path]:
@@ -295,9 +314,12 @@ def build_security_package(root: Path, out: Path) -> dict:
     sbom_path = folder / 'sbom.json'
     audit_path.write_text(json.dumps(audit, ensure_ascii=False, sort_keys=True, indent=2) + '\n')
     sbom_path.write_text(json.dumps(bom, ensure_ascii=False, sort_keys=True, indent=2) + '\n')
+    review_reasons = human_review_reasons(audit['blockers'])
     return {
         'passed': audit['passed'],
         'blockers': audit['blockers'],
+        'human_review_required': bool(review_reasons),
+        'human_review_reasons': review_reasons,
         'audit_sha256': hashlib.sha256(audit_path.read_bytes()).hexdigest(),
         'sbom_sha256': hashlib.sha256(sbom_path.read_bytes()).hexdigest(),
         'dependency_count': len(audit['dependencies']),

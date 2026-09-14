@@ -19,7 +19,7 @@ def keepalive(task: dict, *, interval_seconds: float = 120.0, lease_seconds: int
     errors = []
 
     def renew():
-        while not stop.wait(max(1.0, float(interval_seconds))):
+        while not stop.wait(max(0.01, float(interval_seconds))):
             try:
                 heartbeat(
                     task,

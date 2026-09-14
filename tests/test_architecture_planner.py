@@ -56,6 +56,45 @@ class ArchitecturePlannerTests(unittest.TestCase):
         self.assertEqual(result["chosen"][0]["selection_score"],93.0)
         self.assertEqual(result["chosen"][0]["historical_evidence"]["samples"],8)
 
+    def test_verified_stack_history_can_break_close_tie(self):
+        recs={"matches":[
+            {"repo":"a/base","score":95.0,"quality_score":9.5,"tier":"core","domain":"mobile","capabilities":["mobile"]},
+            {"repo":"b/plain","score":91.0,"quality_score":9.0,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+            {"repo":"c/synergy","score":90.0,"quality_score":9.0,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+        ]}
+        learning={"stack_rankings":[
+            {"repos":["a/base","c/synergy"],"samples":8,"success_rate":1.0}
+        ]}
+        result=plan({"target_repo":"o/r","app_name":"demo"},recs,learning=learning)
+        self.assertEqual(result["chosen"][0]["repo"],"a/base")
+        self.assertEqual(result["chosen"][1]["repo"],"c/synergy")
+        self.assertEqual(result["chosen"][1]["stack_synergy_bonus"],2.0)
+        self.assertTrue(result["chosen"][1]["stack_historical_evidence"])
+
+    def test_stack_history_below_threshold_is_ignored(self):
+        recs={"matches":[
+            {"repo":"a/base","score":95.0,"quality_score":9.5,"tier":"core","domain":"mobile","capabilities":["mobile"]},
+            {"repo":"b/plain","score":91.0,"quality_score":9.0,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+            {"repo":"c/synergy","score":90.0,"quality_score":9.0,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+        ]}
+        learning={"stack_rankings":[
+            {"repos":["a/base","c/synergy"],"samples":4,"success_rate":1.0}
+        ]}
+        result=plan({"target_repo":"o/r","app_name":"demo"},recs,learning=learning)
+        self.assertEqual(result["chosen"][1]["repo"],"b/plain")
+        self.assertEqual(result["chosen"][1]["stack_synergy_bonus"],0.0)
+
+    def test_negative_stack_history_can_demote_combination(self):
+        recs={"matches":[
+            {"repo":"a/base","score":95.0,"quality_score":9.5,"tier":"core","domain":"mobile","capabilities":["mobile"]},
+            {"repo":"b/risky","score":91.0,"quality_score":9.0,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+            {"repo":"c/stable","score":90.5,"quality_score":9.0,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+        ]}
+        learning={"stack_rankings":[
+            {"repos":["a/base","b/risky"],"samples":8,"success_rate":0.0}
+        ]}
+        result=plan({"target_repo":"o/r","app_name":"demo"},recs,learning=learning)
+        self.assertEqual(result["chosen"][1]["repo"],"c/stable")
 
 if __name__=="__main__":
     unittest.main()

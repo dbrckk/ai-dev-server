@@ -365,6 +365,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                 architecture_changes_allowed=bool(
                     state.get('architecture_autonomy_policy', {}).get('architecture_changes_allowed', True)
                 ),
+                root=root,
             )
             apply_patch(root, patch)
             if not any(not p.name.startswith('__studio') for p in (root / 'test').rglob('*_test.dart')):
@@ -375,6 +376,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                     architecture_changes_allowed=bool(
                         state.get('architecture_autonomy_policy', {}).get('architecture_changes_allowed', True)
                     ),
+                    root=root,
                 )
                 apply_patch(root, qa_patch)
             if not any(not p.name.startswith('__studio') for p in (root / 'test').rglob('*_test.dart')):

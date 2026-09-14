@@ -8,6 +8,7 @@ from pathlib import Path
 from objective_dag import ObjectiveDagError, load as load_objective_dag, summary as objective_dag_summary
 from release_proof_manifest import ReleaseProofError, load as load_release_proof
 from task_semantic_checkpoint import TaskSemanticCheckpointError, load as load_task_semantic_checkpoint
+from user_input_required import UserInputRequiredError, load as load_user_input_state, missing_env as missing_user_input_env
 
 
 def _read_json(path: Path) -> dict | None:
@@ -61,6 +62,20 @@ def inspect(root: Path) -> dict:
     if proof_dir.is_dir():
         proof_count=sum(1 for item in proof_dir.glob("*.json") if item.is_file())
 
+    user_input=None
+    user_input_error=None
+    user_input_path=root/"user-input-required.json"
+    if user_input_path.is_file():
+        try:
+            pending=load_user_input_state(user_input_path)
+            user_input={
+                "required_env":pending.get("required_env",[]),
+                "missing_env":missing_user_input_env(pending),
+                "reason":pending.get("reason"),
+            }
+        except UserInputRequiredError as exc:
+            user_input_error=str(exc)
+
     blockers=[]
     completion=report.get("completion") if isinstance(report.get("completion"),dict) else {}
     for blocker in completion.get("blockers",[]) if isinstance(completion.get("blockers"),list) else []:
@@ -89,6 +104,13 @@ def inspect(root: Path) -> dict:
         blockers.append("semantic checkpoint invalid: "+semantic_error)
     if release_proof_error:
         blockers.append("release proof invalid: "+release_proof_error)
+    if user_input_error:
+        blockers.append("user input state invalid: "+user_input_error)
+    if user_input and user_input.get("missing_env"):
+        blockers.append(
+            "external input required: "
+            + ", ".join(str(item) for item in user_input["missing_env"])
+        )
 
     next_task=dag_summary.get("next_task") if isinstance(dag_summary,dict) else None
     report_status=str(report.get("status") or "").strip()
@@ -96,6 +118,8 @@ def inspect(root: Path) -> dict:
 
     if release_proof and dag_complete and not blockers:
         status="complete"
+    elif user_input and user_input.get("missing_env"):
+        status="user_input_required"
     elif blockers:
         status="blocked"
     elif next_task:
@@ -136,6 +160,7 @@ def inspect(root: Path) -> dict:
             "release_proof":release_proof,
         },
         "semantic_task_count":semantic_tasks,
+        "user_input_required":user_input,
         "blockers":blockers,
     }
 

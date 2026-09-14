@@ -7,6 +7,7 @@ import time
 from flutter_workspace import snapshot as snapshot_workspace, restore as restore_workspace, delta as validate_delta
 from core import StudioError, apply_patch, canonical
 from journeys import validate_journeys
+from repair_search_policy import should_refine
 
 MAX_CANDIDATES = 2
 MAX_BRANCH_STEPS = 3
@@ -112,6 +113,8 @@ def run_branch(
     strategy_prior_score: float,
     steps: list,
     refine,
+    strategy_row: dict | None = None,
+    remaining_model_calls: int = 0,
     state: dict,
     app_name: str,
     sandbox_factory,
@@ -150,7 +153,17 @@ def run_branch(
         sandbox = sandbox_factory(root)
         passed, logs = sandbox.gates(app_name, journeys)
         refinements = 0
-        while not passed and refine is not None and refinements < MAX_LOCAL_REFINEMENTS:
+        while (
+            not passed
+            and refine is not None
+            and refinements < MAX_LOCAL_REFINEMENTS
+            and should_refine(
+                failure_present=True,
+                refinement_model_calls=1,
+                remaining_model_calls=max(0, int(remaining_model_calls) - int(metadata["model_calls"])),
+                strategy_row=strategy_row or {},
+            )
+        ):
             refinements += 1
             failure = canonical(logs[-1:])[-4000:]
             refine_started = time.monotonic()

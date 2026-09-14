@@ -5,6 +5,7 @@ from diagnostics import classify, repairable, retryable_environment
 from core import StudioError
 from release_repair import MAX_RELEASE_REPAIR_ROUNDS, attempt as repair_attempt
 from release_candidate_search import MAX_CANDIDATES
+from release_repair import MAX_MODEL_CALLS_PER_BRANCH
 from repair_planner import plan
 from repair_queue import begin_attempt, complete_stage_tasks, enqueue, finish_attempt, summarize
 from project_budget import branch_should_stop, budget_status, can_spend, configure as configure_budget, record_repair_outcome
@@ -31,7 +32,7 @@ def evaluate_and_repair(
         initial_task = enqueue(
             state,
             initial_plan,
-            estimated_model_calls=MAX_CANDIDATES if initial_plan.get("action") == "repair_code" else 0,
+            estimated_model_calls=MAX_CANDIDATES * MAX_MODEL_CALLS_PER_BRANCH if initial_plan.get("action") == "repair_code" else 0,
         )
 
     for retry_index in range(2):
@@ -75,7 +76,7 @@ def evaluate_and_repair(
             or task.get("action") != repair_plan.get("action")
             or sorted(task.get("blockers", [])) != sorted(repair_plan.get("blockers", []))
         ):
-            task = enqueue(state, repair_plan, estimated_model_calls=MAX_CANDIDATES)
+            task = enqueue(state, repair_plan, estimated_model_calls=MAX_CANDIDATES * MAX_MODEL_CALLS_PER_BRANCH)
         selected = scheduler_select(state)
         if task is None or selected is None or selected.get("id") != task.get("id"):
             history.append({
@@ -93,7 +94,7 @@ def evaluate_and_repair(
                 'error': 'repair_branch_efficiency_below_threshold',
             })
             break
-        if not can_spend(state, MAX_CANDIDATES, repair=True):
+        if not can_spend(state, MAX_CANDIDATES * MAX_MODEL_CALLS_PER_BRANCH, repair=True):
             history.append({
                 'round': round_index + 1,
                 'changed': False,
@@ -186,7 +187,7 @@ def evaluate_and_repair(
             enqueue(
                 state,
                 final_plan,
-                estimated_model_calls=MAX_CANDIDATES if final_plan.get("action") == "repair_code" else 0,
+                estimated_model_calls=MAX_CANDIDATES * MAX_MODEL_CALLS_PER_BRANCH if final_plan.get("action") == "repair_code" else 0,
             )
     evidence["scheduler"] = scheduler_dispatch(state)
     evidence["repair_queue"] = summarize(state)

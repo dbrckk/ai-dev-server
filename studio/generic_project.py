@@ -342,6 +342,10 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         round_weighted_contexts = weighted_task_contexts(req["brief"], state["toolchain"])
         round_weighted_contexts = list(round_weighted_contexts)
         round_weighted_contexts.append(("difficulty:" + str(difficulty.band), 0.30))
+        round_weighted_contexts.append((
+            "phase:repair" if previous_failures > 0 else "phase:implementation",
+            0.30,
+        ))
         architecture_risk = (
             "hold"
             if state.get("architecture_autonomy_policy", {}).get("architecture_changes_allowed") is False

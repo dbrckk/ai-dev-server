@@ -24,19 +24,37 @@ class ReplacementCIPolicyTests(unittest.TestCase):
 
     def test_required_check_runs_must_be_trusted_and_successful(self):
         runs=[
-            {"name":"validate","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/1"},
-            {"name":"python-tests","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/1"},
+            {"id":1,"name":"validate","head_sha":"abc","status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:10Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/1"},
+            {"id":2,"name":"python-tests","head_sha":"abc","status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:20Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/1"},
         ]
-        result=validate_check_runs(runs,"o/r")
+        result=validate_check_runs(runs,"o/r",commit_sha="abc",head_commit_timestamp=1767225600.0)
         self.assertTrue(result["valid"])
         self.assertEqual(set(result["passed_checks"]),set(REQUIRED_GITHUB_CHECKS))
 
     def test_untrusted_check_run_does_not_satisfy_policy(self):
         runs=[
             {"name":"validate","status":"completed","conclusion":"success","app":{"slug":"other"},"details_url":"https://github.com/o/r/actions/runs/1"},
-            {"name":"python-tests","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/1"},
+            {"id":2,"name":"python-tests","head_sha":"abc","status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:20Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/1"},
         ]
         result=validate_check_runs(runs,"o/r")
+        self.assertFalse(result["valid"])
+        self.assertIn("validate",result["missing_checks"])
+
+    def test_stale_check_run_is_rejected(self):
+        runs=[
+            {"id":1,"name":"validate","head_sha":"abc","status":"completed","conclusion":"success","started_at":"2025-12-31T23:59:59Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/1"},
+            {"id":2,"name":"python-tests","head_sha":"abc","status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:20Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/1"},
+        ]
+        result=validate_check_runs(runs,"o/r",commit_sha="abc",head_commit_timestamp=1767225600.0)
+        self.assertFalse(result["valid"])
+        self.assertIn("validate",result["stale_checks"])
+
+    def test_wrong_sha_check_run_is_rejected(self):
+        runs=[
+            {"id":1,"name":"validate","head_sha":"old","status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:10Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/1"},
+            {"id":2,"name":"python-tests","head_sha":"abc","status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:20Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/1"},
+        ]
+        result=validate_check_runs(runs,"o/r",commit_sha="abc",head_commit_timestamp=1767225600.0)
         self.assertFalse(result["valid"])
         self.assertIn("validate",result["missing_checks"])
 

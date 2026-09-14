@@ -35,10 +35,22 @@ def summarize(root:Path|str="studio-output")->dict:
         outcomes+=1
         current=row.get("current_repo"); replacement=row.get("replacement_repo")
         if not isinstance(current,str) or not isinstance(replacement,str): continue
-        key=(current,replacement)
+        framework=row.get("framework") if isinstance(row.get("framework"),str) else None
+        project_type=row.get("project_type") if isinstance(row.get("project_type"),str) else None
+        primary_domain=row.get("primary_domain") if isinstance(row.get("primary_domain"),str) else None
+        platform=row.get("platform") if isinstance(row.get("platform"),str) else None
+        current_major=row.get("current_major_version")
+        replacement_major=row.get("replacement_major_version")
+        key=(current,replacement,framework,project_type,primary_domain,platform,current_major,replacement_major)
         item=stats.setdefault(key,{
             "current_repo":current,
             "replacement_repo":replacement,
+            "framework":framework,
+            "project_type":project_type,
+            "primary_domain":primary_domain,
+            "platform":platform,
+            "current_major_version":current_major,
+            "replacement_major_version":replacement_major,
             "samples":0,
             "successes":0,
             "regressions":0,
@@ -70,7 +82,7 @@ def summarize(root:Path|str="studio-output")->dict:
         rollback_rate=item["rollbacks"]/n if n else 0.0
         mean_quality=item["quality_total"]/n if n else 0.0
         rankings.append({
-            **{k:item[k] for k in ("current_repo","replacement_repo","samples","successes","regressions","rollback_preparations","rollbacks","latest_observed_at")},
+            **{k:item[k] for k in ("current_repo","replacement_repo","framework","project_type","primary_domain","platform","current_major_version","replacement_major_version","samples","successes","regressions","rollback_preparations","rollbacks","latest_observed_at")},
             "success_rate":round(success_rate,4),
             "posterior_success_rate":round(posterior,4),
             "wilson_lower_95":round(_wilson_lower(successes,n),4),
@@ -90,7 +102,7 @@ def summarize(root:Path|str="studio-output")->dict:
         x["samples"],
     ),reverse=True)
     return {
-        "version":1,
+        "version":2,
         "outcomes_observed":outcomes,
         "minimum_samples":MIN_SAMPLES,
         "confidence_target":CONFIDENCE_TARGET,

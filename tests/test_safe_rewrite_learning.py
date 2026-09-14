@@ -200,5 +200,47 @@ class SafeRewriteLearningTests(unittest.TestCase):
             self.assertLess(penalty, srl.MAX_PENALTY)
 
 
+    def test_stale_actor_receives_bounded_exploration_bonus(self):
+        summary = {
+            "origin_rankings": [{
+                "kind": "provider",
+                "name": "stale",
+                "samples": 10,
+                "verification_pass_rate": 0.0,
+                "eligible_for_routing_bias": True,
+                "events_since_last_observation": srl.EXPLORATION_STALE_EVENTS + 15,
+            }]
+        }
+        bonus = srl.exploration_bonus(
+            summary,
+            kind="provider",
+            name="stale",
+            role="implementation",
+        )
+        self.assertGreater(bonus, 0.0)
+        self.assertLessEqual(bonus, srl.MAX_EXPLORATION_BONUS)
+
+    def test_recent_actor_has_no_exploration_bonus(self):
+        summary = {
+            "origin_rankings": [{
+                "kind": "agent",
+                "name": "recent",
+                "samples": 10,
+                "verification_pass_rate": 0.0,
+                "eligible_for_routing_bias": True,
+                "events_since_last_observation": 2,
+            }]
+        }
+        self.assertEqual(
+            srl.exploration_bonus(
+                summary,
+                kind="agent",
+                name="recent",
+                role="implementation",
+            ),
+            0.0,
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

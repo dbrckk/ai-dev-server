@@ -108,12 +108,13 @@ def _strategy_prior(selection: dict, strategy: str) -> float:
 
 
 def _model_mutation(root: Path, state: dict, stage: str, blockers: list[str], task: dict | None, model_factory, failure: str | None = None):
+    context = _context(root, state, stage, blockers, failure)
     model = model_factory(4)
     if task and task.get("rotate_strategy") is True:
         last_provider = task.get("last_provider")
         if isinstance(last_provider, str) and last_provider and hasattr(model, "avoid_providers"):
             model.avoid_providers.add(last_provider)
-    patch = model.ask("release_fix", _context(root, state, stage, blockers, failure))
+    patch = model.ask("release_fix", context)
     files = patch_check(patch)
     for item in files:
         if item["path"].startswith(("test/", "docs/")):

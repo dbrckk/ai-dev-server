@@ -66,6 +66,7 @@ When a task acceptance criterion is mechanically checkable, encode it as one of:
 - symbol:path/to/file#symbol_name
 - test:path/to/test.py::test_name
 - build:default
+- json:path/to/file.json#dot.path=<JSON literal>
 Use natural-language done_when only for criteria that truly require semantic review.
 Choose concrete implementation work, not generic advice."""
 
@@ -74,7 +75,7 @@ You receive the original plan, the exact validation error and the accepted task 
 Return ONLY a corrected JSON plan.
 Preserve valid task IDs/titles/dependencies where possible.
 Do not add unrelated work.
-Critical tasks must include at least one valid deterministic done_when criterion using file:, symbol:, test:, or build:.
+Critical tasks must include at least one valid deterministic done_when criterion using file:, symbol:, test:, build:, or json:.
 Structured paths must be repository-relative and must not contain '..' or absolute paths."""
 
 TASK_PLAN_SYSTEM = """You are maintaining one subgoal inside an already validated project objective DAG.
@@ -722,7 +723,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
                             "validation_error": initial_plan_error,
                             "rules": {
                                 "critical_requires_deterministic_done_when": True,
-                                "structured_prefixes": ["file:","symbol:","test:","build:"],
+                                "structured_prefixes": ["file:","symbol:","test:","build:","json:"],
                                 "paths_must_be_repository_relative": True,
                                 "max_tasks": 64,
                             },

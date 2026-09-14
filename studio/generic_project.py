@@ -345,6 +345,20 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             req["id"],
         )
         recovery_active = capacity_runtime_state.get("recovery_active") is True
+        admission = capacity_runtime_state.get("admission")
+        if (
+            isinstance(admission, dict)
+            and admission.get("admitted") is False
+            and not recovery_active
+        ):
+            state["status"] = "deferred_by_admission"
+            state["admission"] = admission
+            state["blockers"] = [str(admission.get("reason") or "global admission deferred")]
+            (out / "generic-report.json").parent.mkdir(parents=True, exist_ok=True)
+            (out / "generic-report.json").write_text(canonical(state))
+            break
+        if isinstance(admission, dict):
+            state["admission"] = admission
         if stagnation_state.get("pause") is True and not recovery_active:
             state["status"] = "stagnation_paused"
             state["stagnation"] = stagnation_state

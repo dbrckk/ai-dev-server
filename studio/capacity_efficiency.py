@@ -164,3 +164,40 @@ def project_multiplier(summary: dict, project_id: str) -> float:
         return 1.0
     ratio = max(0.5, min(1.5, float(row.get("risk_adjusted_score", 0.0) or 0.0) / mean))
     return round(max(0.75, min(1.25, ratio)), 4)
+
+
+def routing_bonus(
+    summary: dict,
+    *,
+    project_id: str,
+    provider: str,
+    model: str,
+) -> float:
+    rows = summary.get("rows") if isinstance(summary, dict) else None
+    if not isinstance(rows, list):
+        return 0.0
+    mature = [
+        row for row in rows
+        if isinstance(row, dict)
+        and row.get("project_id") == project_id
+        and int(row.get("samples", 0) or 0) >= 3
+    ]
+    if len(mature) < 2:
+        return 0.0
+    target = next(
+        (
+            row for row in mature
+            if row.get("provider") == provider and row.get("model") == model
+        ),
+        None,
+    )
+    if target is None:
+        return 0.0
+    scores = [max(0.0, float(row.get("risk_adjusted_score", 0.0) or 0.0)) for row in mature]
+    mean = sum(scores) / len(scores)
+    if mean <= 0:
+        return 0.0
+    ratio = float(target.get("risk_adjusted_score", 0.0) or 0.0) / mean
+    # Deliberately bounded: enough to influence close candidates, never enough
+    # to overpower health, capability, quarantine, or architecture safeguards.
+    return round(max(-8.0, min(8.0, (ratio - 1.0) * 8.0)), 6)

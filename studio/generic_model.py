@@ -39,6 +39,7 @@ from local_model_reputation import (
     load as load_local_model_reputation,
     record as record_local_model_reputation,
     score as local_model_reputation_score,
+    quarantine_status as local_model_quarantine_status,
 )
 from local_model_benchmark import (
     load as load_local_model_benchmark,
@@ -143,6 +144,21 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
         raise StudioError(
             "No provider remains: paid API budget and pooled monthly token quotas are exhausted"
         )
+    non_quarantined = []
+    quarantined = []
+    for provider in providers:
+        if provider.unmetered and ":" in provider.name:
+            status = local_model_quarantine_status(
+                local_model_reputation,
+                provider=provider.name.split(":", 1)[0],
+                model=provider.model_for(role),
+                role=role,
+            )
+            (quarantined if status["quarantined"] else non_quarantined).append(provider)
+        else:
+            non_quarantined.append(provider)
+    if non_quarantined:
+        providers = tuple(non_quarantined)
     provider_scores = {}
     for provider in providers:
         base = score_provider(

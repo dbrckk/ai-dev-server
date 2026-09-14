@@ -189,6 +189,11 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     __import__("os").environ["STUDIO_SAFE_REWRITE_LEARNING_PATH"] = str(safe_rewrite_learning_path)
     __import__("os").environ["STUDIO_CONTEXTUAL_ROUTING_MEMORY_PATH"] = str(contextual_routing_path)
     __import__("os").environ["STUDIO_PROVIDER_COST_PATH"] = str(provider_cost_path)
+    max_api_cost = req.get("max_api_cost_usd")
+    if isinstance(max_api_cost, (int, float)) and float(max_api_cost) > 0:
+        __import__("os").environ["STUDIO_MAX_API_COST_USD"] = str(float(max_api_cost))
+    else:
+        __import__("os").environ.pop("STUDIO_MAX_API_COST_USD", None)
     try:
         checkpoint = load_checkpoint(checkpoint_path) if checkpoint_path.is_file() else new_checkpoint(req["id"], "generic", base_sha)
     except ExecutionCheckpointError:
@@ -211,6 +216,15 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         "restore": restore,
         "portfolio_research": (portfolio or {}).get("similar", [])[:8],
         "toolchain": detect_toolchain(work),
+        "budget_policy": {
+            "max_api_cost_usd": (
+                float(max_api_cost)
+                if isinstance(max_api_cost, (int, float)) and float(max_api_cost) > 0
+                else None
+            ),
+            "unmetered_continues_after_paid_budget": True,
+            "prefer_unmetered": True,
+        },
     }
 
     architecture_root = _prepare_architecture(req, out, state)

@@ -42,6 +42,17 @@ def render(req: dict, state: dict) -> str:
     drift_alerts = state.get('architecture_drift_alerts') if isinstance(state.get('architecture_drift_alerts'), list) else []
     obsolescence = state.get('architecture_obsolescence') if isinstance(state.get('architecture_obsolescence'), dict) else {}
     deprecations = obsolescence.get('deprecation_candidates') if isinstance(obsolescence.get('deprecation_candidates'), list) else []
+    replacement_plan = state.get('architecture_replacement_plan') if isinstance(state.get('architecture_replacement_plan'), dict) else {}
+    replacement_rows = replacement_plan.get('replacement_plans') if isinstance(replacement_plan.get('replacement_plans'), list) else []
+    replacement_lines = []
+    for item in replacement_rows[:8]:
+        if not isinstance(item, dict) or not isinstance(item.get('current_repo'), str):
+            continue
+        replacement = item.get('replacement_repo')
+        risk = item.get('risk')
+        suffix = f" -> {replacement}" if isinstance(replacement, str) and replacement else ""
+        risk_text = f" [{risk}]" if isinstance(risk, str) and risk else ""
+        replacement_lines.append(f"{item['current_repo']}{suffix}{risk_text}")
     deprecation_lines = []
     for item in deprecations[:8]:
         if not isinstance(item, dict) or not isinstance(item.get('repo'), str):
@@ -109,6 +120,10 @@ Potential migration candidates:
 ### Deprecation candidates
 
 {_bullets(deprecation_lines, 'No evidence-backed deprecation candidate is currently identified.')}
+
+### Replacement plans
+
+{_bullets(replacement_lines, 'No replacement plan is currently pending isolated validation.')}
 
 ## Current validation / release evidence
 

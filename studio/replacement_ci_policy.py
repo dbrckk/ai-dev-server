@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 
 REQUIRED_GITHUB_CHECKS=frozenset({"validate","python-tests"})
 TRUSTED_CHECK_APP="github-actions"
+REQUIRED_WORKFLOW_NAME="CI"
 
 def workflow_job_ids(path: Path) -> set[str]:
     text=path.read_text(encoding="utf-8")

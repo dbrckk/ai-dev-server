@@ -229,6 +229,7 @@ def context(req, state, root):
                       'previous_blockers': state.get('blockers', []),
                       'technical_recommendations': state.get('technical_recommendations', {'status':'unavailable','matches':[]}),
                       'architecture_decision': state.get('architecture_decision', {'status':'unavailable','chosen':[]}),
+                      'architecture_autonomy_policy': state.get('architecture_autonomy_policy', {}),
                       'architecture_benchmark': state.get('architecture_benchmark', {'status':'unavailable','migration_candidates':[]}),
                       'files': files})
 
@@ -292,6 +293,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         framework="flutter",
         publication_target="google-play",
     )
+    state['architecture_autonomy_policy'] = state['architecture_decision'].get('autonomy_policy', {})
     state['cycles'] += 1
 
     def checkpoint(parent_sha):

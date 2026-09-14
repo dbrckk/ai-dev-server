@@ -387,6 +387,10 @@ class Model:
             load as load_local_model_specialization,
             specialization_score as local_model_specialization_score,
         )
+        from model_portfolio_learning import (
+            load as load_model_portfolio_learning,
+            diversity_bias as model_portfolio_diversity_bias,
+        )
         provider_candidates = tuple(
             provider for provider in candidates_for(role, screenshots=bool(screenshots), providers=self.providers)
             if provider.name not in self.avoid_providers
@@ -407,6 +411,8 @@ class Model:
         local_benchmark_path = Path(local_benchmark_raw) if local_benchmark_raw else None
         local_specialization_raw = os.environ.get('STUDIO_LOCAL_MODEL_SPECIALIZATION_PATH', '')
         local_specialization_path = Path(local_specialization_raw) if local_specialization_raw else None
+        portfolio_learning_raw = os.environ.get('STUDIO_MODEL_PORTFOLIO_LEARNING_PATH', '')
+        portfolio_learning_path = Path(portfolio_learning_raw) if portfolio_learning_raw else None
         try:
             local_weighted_contexts = json.loads(os.environ.get('STUDIO_ROUTING_CONTEXTS_JSON','[]'))
         except json.JSONDecodeError:
@@ -418,6 +424,8 @@ class Model:
         local_model_reputation = load_local_model_reputation(local_rep_path) if local_rep_path is not None else {}
         local_model_benchmark = load_local_model_benchmark(local_benchmark_path) if local_benchmark_path is not None else {}
         local_model_specialization = load_local_model_specialization(local_specialization_path) if local_specialization_path is not None else {}
+        portfolio_learning = load_model_portfolio_learning(portfolio_learning_path) if portfolio_learning_path is not None else {}
+        learned_diversity_bias = model_portfolio_diversity_bias(portfolio_learning)
         try:
             max_api_cost_usd = float(os.environ.get('STUDIO_MAX_API_COST_USD', '0') or 0.0)
         except ValueError:
@@ -501,6 +509,15 @@ class Model:
                         gateway_name,
                         model_name,
                     )
+            if role in ('tests', 'review', 'visual') and learned_diversity_bias > 0:
+                implementation_provider = self.providers_used.get('implementation')
+                implementation_model = self.models_used.get('implementation')
+                candidate_model = provider.model_for(role, bool(screenshots))
+                if (
+                    (not implementation_provider or provider.name != implementation_provider)
+                    and (not implementation_model or candidate_model != implementation_model)
+                ):
+                    components['learned_portfolio_diversity'] = learned_diversity_bias
             if provider.unmetered:
                 components['unmetered_capacity'] = 10.0
             elif provider.monthly_token_quota > 0:

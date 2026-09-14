@@ -62,7 +62,7 @@ class GenericModelCapacityTests(unittest.TestCase):
         self.assertEqual(settle.call_args.kwargs["actual_tokens"], 150)
         release.assert_not_called()
 
-    def test_protocol_failure_releases_transactional_reservation(self):
+    def test_protocol_failure_settles_consumed_tokens_without_double_release(self):
         _FakeAPI.response = {
             "choices": [{
                 "finish_reason": "stop",
@@ -80,10 +80,8 @@ class GenericModelCapacityTests(unittest.TestCase):
                 generic_model.ask("system", "user", role="product")
 
         settle.assert_called_once()
-        release.assert_called_once_with(
-            Path("/tmp/capacity-ledger-test.json"),
-            "r2",
-        )
+        self.assertEqual(settle.call_args.kwargs["actual_tokens"], 150)
+        release.assert_not_called()
 
     def test_denied_reservation_skips_provider_call(self):
         _FakeAPI.response = None

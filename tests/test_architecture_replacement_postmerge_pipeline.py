@@ -39,5 +39,21 @@ class ReplacementPostMergePipelineTests(unittest.TestCase):
                 result=pipeline.run(work,merged,package,root/"studio-output"/"p1","token","owner/repo")
             self.assertEqual(result["rollback_gate_status"],"rollback_authorization_required")
 
+    def test_nonterminal_postmerge_does_not_pollute_learning(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            work=root/"work.json"; merged=root/"merged.json"; package=root/"package.json"
+            work.write_text(json.dumps({"id":"r1","current_repo":"a/current","replacement_repo":"a/better"}))
+            merged.write_text(json.dumps({"status":"replacement_merged","work_order_id":"r1","merge_sha":"3"*40}))
+            package.write_text(json.dumps({"status":"pr_package_ready","work_order_id":"r1"}))
+            post={"status":"awaiting_post_merge_checks","work_order_id":"r1","post_merge_healthy":False,"rollback_required":False}
+            out=root/"studio-output"/"p1"
+            with patch.object(pipeline,"verify_postmerge",return_value=post):
+                result=pipeline.run(work,merged,package,out,"token","owner/repo")
+            self.assertIsNone(result["replacement_outcome"])
+            self.assertFalse((out/"architecture-replacement-outcome.json").exists())
+            learning=json.loads((root/"studio-output"/"architecture-replacement-learning.json").read_text())
+            self.assertEqual(learning["outcomes_observed"],0)
+
 if __name__=="__main__":
     unittest.main()

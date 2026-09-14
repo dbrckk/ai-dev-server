@@ -259,3 +259,36 @@ def retry_policy(value: dict, task_id: str) -> dict:
         "avoid_models": sorted(models),
         "repeated_failure_signature": repeated_signature,
     }
+
+
+def stagnation_guard(value: dict, task_id: str) -> dict:
+    validate(value)
+    row = value.get("tasks", {}).get(task_id)
+    if not isinstance(row, dict):
+        return {"active": False, "blocked_file_set": [], "failure_signature": None}
+    attempts = [
+        attempt for attempt in row.get("attempts", [])
+        if isinstance(attempt, dict) and attempt.get("status") != "verified"
+    ][-2:]
+    if len(attempts) < 2:
+        return {"active": False, "blocked_file_set": [], "failure_signature": None}
+    signatures = [attempt.get("failure_signature") for attempt in attempts]
+    file_sets = [sorted(set(attempt.get("changed_files", []))) for attempt in attempts]
+    if (
+        signatures[0]
+        and signatures[0] == signatures[1]
+        and file_sets[0]
+        and file_sets[0] == file_sets[1]
+    ):
+        return {
+            "active": True,
+            "blocked_file_set": file_sets[0],
+            "failure_signature": signatures[0],
+        }
+    return {"active": False, "blocked_file_set": [], "failure_signature": None}
+
+
+def reject_stagnant_surface(guard: dict, changed_files: list[str]) -> bool:
+    if not isinstance(guard, dict) or guard.get("active") is not True:
+        return False
+    return sorted(set(changed_files)) == sorted(set(guard.get("blocked_file_set", [])))

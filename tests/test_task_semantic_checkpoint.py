@@ -15,6 +15,8 @@ from task_semantic_checkpoint import (
     save,
     task_context,
     retry_policy,
+    stagnation_guard,
+    reject_stagnant_surface,
 )
 
 
@@ -106,6 +108,47 @@ class TaskSemanticCheckpointTests(unittest.TestCase):
         self.assertEqual(policy["failed_attempts"],0)
         self.assertEqual(policy["avoid_agents"],[])
         self.assertEqual(policy["avoid_models"],[])
+
+    def test_repeated_same_surface_and_signature_is_blocked(self):
+        state=new("demo","a"*64,"b"*40)
+        for _ in range(2):
+            state=record(
+                state,
+                task_id="api",
+                task_title="api",
+                commit=None,
+                status="failed",
+                changed_files=["src/api.py","src/core.py"],
+                impacted_tests=[],
+                models=[],
+                agents=[],
+                failure_signature="e"*64,
+                verification={"status":"failed","passed":False},
+                dependency_context={"level":"medium","max_coupling":4,"impacted_tests":[]},
+            )
+        guard=stagnation_guard(state,"api")
+        self.assertTrue(guard["active"])
+        self.assertTrue(reject_stagnant_surface(guard,["src/core.py","src/api.py"]))
+        self.assertFalse(reject_stagnant_surface(guard,["src/api.py"]))
+
+    def test_different_signature_does_not_block_surface(self):
+        state=new("demo","a"*64,"b"*40)
+        for signature in ("e"*64,"f"*64):
+            state=record(
+                state,
+                task_id="api",
+                task_title="api",
+                commit=None,
+                status="failed",
+                changed_files=["src/api.py"],
+                impacted_tests=[],
+                models=[],
+                agents=[],
+                failure_signature=signature,
+                verification={"status":"failed","passed":False},
+                dependency_context={"level":"low","max_coupling":1,"impacted_tests":[]},
+            )
+        self.assertFalse(stagnation_guard(state,"api")["active"])
 
     def test_identity_mismatch_resets(self):
         state=new("demo","a"*64,"b"*40)

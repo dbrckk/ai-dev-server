@@ -7,7 +7,7 @@ import time
 from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
-from architecture_replacement_reputation import desired_state as reputation_desired_state, lookup as lookup_reputation
+from architecture_replacement_reputation import TRANSITION_POLICY_VERSION, desired_state as reputation_desired_state, lookup as lookup_reputation, transition_policy_digest
 
 MAX_PLANS = 8
 LOW_RISK_DELTA = 15.0
@@ -407,6 +407,13 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
         }
         persisted_reputation=lookup_reputation(reputation_registry,context)
         if isinstance(persisted_reputation,dict):
+            current_policy_digest=transition_policy_digest()
+            persisted_policy_version=persisted_reputation.get("transition_policy_version")
+            persisted_policy_digest=persisted_reputation.get("transition_policy_digest")
+            policy_revalidation_required=(
+                persisted_policy_version!=TRANSITION_POLICY_VERSION
+                or persisted_policy_digest!=current_policy_digest
+            )
             reputation={
                 "state":persisted_reputation.get("state"),
                 "reason":persisted_reputation.get("reason"),
@@ -419,6 +426,9 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
                 "transition_policy_version":persisted_reputation.get("transition_policy_version"),
                 "transition_rule":persisted_reputation.get("transition_rule"),
                 "required_transition_gates":persisted_reputation.get("required_transition_gates",[]),
+                "policy_revalidation_required":policy_revalidation_required,
+                "current_transition_policy_version":TRANSITION_POLICY_VERSION,
+                "current_transition_policy_digest":current_policy_digest,
                 "updated_at":persisted_reputation.get("updated_at"),
                 "source":"persistent_registry",
             }
@@ -506,6 +516,10 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             gates.insert(0,"recovering_replacement_revalidated")
         if reputation.get("transition_pending") is True:
             gates.insert(0,"replacement_reputation_transition_completed")
+        if reputation.get("policy_revalidation_required") is True:
+            reputation["promotion_eligible"]=False
+            reputation["requires_revalidation"]=True
+            gates.insert(0,"replacement_reputation_policy_revalidated")
         transition_gates=reputation.get("required_transition_gates")
         if isinstance(transition_gates,list):
             for gate in reversed(transition_gates):
@@ -565,7 +579,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
     ),reverse=True)
 
     return {
-        "version": 17,
+        "version": 18,
         "status": "planned",
         "advisory_only": True,
         "replacement_plans": plans,

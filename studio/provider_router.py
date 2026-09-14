@@ -147,8 +147,9 @@ def load_providers(*, prefer_free: bool = True) -> tuple[ProviderSpec, ...]:
             deduped[key] = spec
 
     def sort_key(spec: ProviderSpec):
+        unmetered_bonus = 1 if spec.unmetered else 0
         free_bonus = 1 if (prefer_free and spec.free_preferred) else 0
-        return (-free_bonus, -spec.priority, spec.name)
+        return (-unmetered_bonus, -free_bonus, -spec.priority, spec.name)
 
     return tuple(sorted(deduped.values(), key=sort_key))
 
@@ -162,3 +163,17 @@ def candidates_for(
 ) -> tuple[ProviderSpec, ...]:
     specs = tuple(providers) if providers is not None else load_providers(prefer_free=prefer_free)
     return tuple(spec for spec in specs if spec.model_for(role, screenshots))
+
+
+def budget_eligible(
+    providers: Iterable[ProviderSpec],
+    *,
+    max_api_cost_usd: float,
+    spent_api_cost_usd: float,
+) -> tuple[ProviderSpec, ...]:
+    specs = tuple(providers)
+    limit = max(0.0, float(max_api_cost_usd))
+    spent = max(0.0, float(spent_api_cost_usd))
+    if limit <= 0 or spent < limit:
+        return specs
+    return tuple(spec for spec in specs if spec.unmetered)

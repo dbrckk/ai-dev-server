@@ -42,6 +42,7 @@ from local_model_specialization import (
     snapshot as local_model_specialization_snapshot,
     record_verified as record_local_model_specialization,
 )
+from local_model_leaderboard import leaderboards as local_model_leaderboards
 from task_context import weighted_contexts as weighted_task_contexts
 from safe_rewrite_learning import (
     record_attempt as record_safe_rewrite_attempt,
@@ -748,9 +749,13 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     state['project_budget_status'] = budget_status(state)
     state['models_used'] = getattr(model, 'models_used', {})
     state['providers_used'] = getattr(model, 'providers_used', {})
+    specialization_state = load_local_model_specialization(local_model_specialization_path)
     state['local_model_specialization'] = local_model_specialization_snapshot(
-        load_local_model_specialization(local_model_specialization_path)
+        specialization_state
     )[:80]
+    state['local_model_leaderboards'] = local_model_leaderboards(
+        specialization_state
+    )
     state['limits'] = {
         'requested_max_cycles': req['max_cycles'],
         'effective_max_cycles': state.get('effective_max_cycles', req['max_cycles']),

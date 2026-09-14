@@ -72,6 +72,22 @@ class ArtifactCasStatsTests(unittest.TestCase):
                     stats.retention_score(older),
                 )
 
+    def test_summary_reports_hits_bytes_and_protected_cost(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "stats.json"
+            env = {"STUDIO_ARTIFACT_CAS_STATS_PATH": str(path)}
+            with mock.patch.dict(os.environ, env, clear=False):
+                digest = "e" * 64
+                stats.record(digest, size=2048, hit=False, rebuild_cost_seconds=15)
+                stats.record(digest, size=2048, hit=True)
+                result = stats.summary()
+
+            self.assertEqual(result["blob_count"], 1)
+            self.assertEqual(result["tracked_bytes"], 2048)
+            self.assertEqual(result["hits"], 1)
+            self.assertEqual(result["protected_rebuild_seconds"], 15.0)
+            self.assertGreater(result["mean_retention_score"], 0.0)
+
 
 if __name__ == "__main__":
     unittest.main()

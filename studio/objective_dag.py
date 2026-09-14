@@ -296,6 +296,19 @@ def summary(value: dict) -> dict:
     for task in refreshed["tasks"]:
         counts[task["state"]] += 1
     current = next_task(refreshed)
+    task_by_id = {task["id"]: task for task in refreshed["tasks"]}
+    confidence_blockers = []
+    for task in refreshed["tasks"]:
+        if task["state"] != "blocked" or not task.get("critical"):
+            continue
+        for dep_id in task["depends_on"]:
+            dep = task_by_id[dep_id]
+            if dep["state"] == "verified" and int(dep.get("confidence") or 0) < 85:
+                confidence_blockers.append({
+                    "critical_task": task["id"],
+                    "dependency": dep_id,
+                    "confidence": dep.get("confidence"),
+                })
     stalled = [
         {
             "id": task["id"],
@@ -311,6 +324,7 @@ def summary(value: dict) -> dict:
         "complete": counts["verified"] == len(refreshed["tasks"]),
         "next_task": current,
         "stalled_tasks": stalled,
+        "confidence_blockers": confidence_blockers,
         "tasks": [
             {
                 "id": task["id"],
@@ -420,5 +434,30 @@ def append_amendments(value: dict, items: list[str]) -> dict:
         previous_new = task_id
         prefix_index += 1
 
+    unsigned["tasks"] = tasks
+    return refresh(_seal(unsigned))
+
+
+def reopen_confidence_dependency(value: dict, task_id: str) -> dict:
+    """Re-open a verified low-confidence task for one bounded revalidation attempt."""
+    validate(value)
+    unsigned = dict(value)
+    unsigned.pop("sha256", None)
+    tasks = [dict(task) for task in unsigned["tasks"]]
+    found = False
+    for task in tasks:
+        if task["id"] != task_id:
+            continue
+        if task["state"] != "verified":
+            raise ObjectiveDagError("confidence dependency is not verified")
+        if int(task.get("confidence") or 0) >= 85:
+            raise ObjectiveDagError("confidence dependency already sufficient")
+        if task["attempts"] >= MAX_TASK_ATTEMPTS:
+            raise ObjectiveDagError("objective task retry budget exhausted")
+        task["state"] = "ready"
+        task["last_error"] = "revalidation required for critical dependent"
+        found = True
+    if not found:
+        raise ObjectiveDagError("objective task missing")
     unsigned["tasks"] = tasks
     return refresh(_seal(unsigned))

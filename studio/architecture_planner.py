@@ -19,6 +19,34 @@ def _clean_rows(value):
             rows.append(row)
     return rows
 
+def _project_type(req: dict) -> str:
+    brief = req.get("brief") if isinstance(req.get("brief"), str) else ""
+    text = brief.lower()
+    rules = (
+        ("game", ("game", "jeu", "godot", "multiplayer", "rpg", "platformer")),
+        ("trading", ("trading", "xauusd", "gold", "forex", "crypto", "backtest")),
+        ("commerce", ("shop", "store", "ecommerce", "e-commerce", "marketplace", "commerce")),
+        ("social", ("social", "chat", "community", "messaging", "dating")),
+        ("media", ("video", "audio", "music", "photo", "camera", "streaming")),
+        ("education", ("education", "learning", "course", "quiz", "school", "study")),
+        ("health", ("health", "fitness", "wellness", "medical")),
+        ("productivity", ("productivity", "task", "todo", "calendar", "notes", "workflow")),
+    )
+    for name, terms in rules:
+        if any(term in text for term in terms):
+            return name
+    return "general"
+
+def _primary_domain(rows: list[dict]) -> str | None:
+    counts = {}
+    for row in rows:
+        domain = row.get("domain") if isinstance(row, dict) else None
+        if isinstance(domain, str) and domain:
+            counts[domain] = counts.get(domain, 0) + 1
+    if not counts:
+        return None
+    return sorted(counts.items(), key=lambda item: (-item[1], item[0]))[0][0]
+
 def _reason(row):
     parts=[]
     if row.get("tier"):
@@ -46,6 +74,7 @@ def plan(
         if isinstance(req.get("framework"), str) and req.get("framework")
         else "flutter"
     )
+    resolved_project_type = _project_type(req)
     resolved_publication = (
         publication_target
         if isinstance(publication_target, str) and publication_target
@@ -53,10 +82,14 @@ def plan(
         if isinstance(req.get("publication_target"), str) and req.get("publication_target")
         else "google-play" if resolved_framework in {"flutter", "godot"} else "unspecified"
     )
+    raw_rows = _clean_rows(recommendations)
+    resolved_primary_domain = _primary_domain(raw_rows)
     recommendations = apply_feedback(
         recommendations,
         learning,
         framework=resolved_framework,
+        project_type=resolved_project_type,
+        primary_domain=resolved_primary_domain,
     )
     rows=_clean_rows(recommendations)
     chosen=[]
@@ -84,6 +117,8 @@ def plan(
                 chosen_names,
                 learning,
                 framework=resolved_framework,
+                project_type=resolved_project_type,
+                primary_domain=resolved_primary_domain,
             )
             base=row.get("feedback_score", row.get("score"))
             base_score=float(base) if isinstance(base,(int,float)) else 0.0
@@ -144,6 +179,8 @@ def plan(
             "app_name":req.get("app_name"),
             "publication_target":resolved_publication,
             "framework":resolved_framework,
+            "project_type":resolved_project_type,
+            "primary_domain":resolved_primary_domain,
         },
     }
 

@@ -19,6 +19,7 @@ from repair_queue import complete_stage_tasks, enqueue, summarize
 from project_budget import budget_status, can_spend, configure as configure_budget, record_calls
 from idempotent_model import ask_value as checkpointed_ask
 from atomic_file import write_text as atomic_write_text
+from architecture_planner import write as write_architecture_plan
 
 class GitHub(API):
     def __init__(self, repo):
@@ -196,6 +197,7 @@ def context(req, state, root):
     return canonical({'request': req, 'product': state.get('product'), 'design': state.get('design'),
                       'previous_blockers': state.get('blockers', []),
                       'technical_recommendations': state.get('technical_recommendations', {'status':'unavailable','matches':[]}),
+                      'architecture_decision': state.get('architecture_decision', {'status':'unavailable','chosen':[]}),
                       'files': files})
 
 def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sandbox):
@@ -248,6 +250,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             elif p.is_file():
                 apply_patch(root, {'files': [{'path': p.relative_to(saved_root).as_posix(), 'content': p.read_text()}]})
     state['technical_recommendations'] = _load_star_recommendations(out)
+    state['architecture_decision'] = write_architecture_plan(req, state['technical_recommendations'], out)
     state['cycles'] += 1
 
     def checkpoint(parent_sha):

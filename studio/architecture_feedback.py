@@ -9,7 +9,7 @@ MAX_STACK_SCORE_BONUS = 2.0
 MAX_EVIDENCE_AGE_SECONDS = 30 * 24 * 60 * 60
 
 
-def _learning_map(learning: dict, *, now: float) -> dict[tuple[str, str | None, str | None], dict]:
+def _learning_map(learning: dict, *, now: float) -> dict[tuple[str, str | None, str | None, str | None, str | None], dict]:
     if not isinstance(learning, dict):
         return {}
     rows = learning.get("rankings")
@@ -35,7 +35,11 @@ def _learning_map(learning: dict, *, now: float) -> dict[tuple[str, str | None, 
         domain = domain if isinstance(domain, str) and domain else None
         framework = row.get("framework")
         framework = framework if isinstance(framework, str) and framework else None
-        out[(repo, domain, framework)] = row
+        project_type = row.get("project_type")
+        project_type = project_type if isinstance(project_type, str) and project_type else None
+        primary_domain = row.get("primary_domain")
+        primary_domain = primary_domain if isinstance(primary_domain, str) and primary_domain else None
+        out[(repo, domain, framework, project_type, primary_domain)] = row
     return out
 
 
@@ -44,6 +48,8 @@ def apply(
     learning: dict | None,
     *,
     framework: str | None = None,
+    project_type: str | None = None,
+    primary_domain: str | None = None,
     now: float | None = None,
 ) -> dict:
     if not isinstance(recommendations, dict):
@@ -64,14 +70,24 @@ def apply(
         domain = domain if isinstance(domain, str) and domain else None
         history = None
         normalized_framework = framework if isinstance(framework, str) and framework else None
+        normalized_project_type = project_type if isinstance(project_type, str) and project_type else None
+        normalized_primary_domain = primary_domain if isinstance(primary_domain, str) and primary_domain else None
         if isinstance(repo, str):
-            history = evidence.get((repo, domain, normalized_framework))
-            if history is None:
-                history = evidence.get((repo, None, normalized_framework))
-            if history is None:
-                history = evidence.get((repo, domain, None))
-            if history is None:
-                history = evidence.get((repo, None, None))
+            keys = [
+                (repo, domain, normalized_framework, normalized_project_type, normalized_primary_domain),
+                (repo, domain, normalized_framework, normalized_project_type, None),
+                (repo, domain, normalized_framework, None, normalized_primary_domain),
+                (repo, domain, normalized_framework, None, None),
+                (repo, domain, None, normalized_project_type, normalized_primary_domain),
+                (repo, domain, None, None, None),
+                (repo, None, normalized_framework, normalized_project_type, normalized_primary_domain),
+                (repo, None, normalized_framework, None, None),
+                (repo, None, None, None, None),
+            ]
+            for key in keys:
+                history = evidence.get(key)
+                if history is not None:
+                    break
         base = item.get("score")
         base_score = float(base) if isinstance(base, (int, float)) else 0.0
 
@@ -84,6 +100,8 @@ def apply(
             item["historical_evidence"] = {
                 "domain": history.get("domain"),
                 "framework": history.get("framework"),
+                "project_type": history.get("project_type"),
+                "primary_domain": history.get("primary_domain"),
                 "samples": history["samples"],
                 "success_rate": success_rate,
                 "mean_model_calls": history.get("mean_model_calls"),
@@ -121,6 +139,8 @@ def stack_adjustment(
     learning: dict | None,
     *,
     framework: str | None = None,
+    project_type: str | None = None,
+    primary_domain: str | None = None,
     now: float | None = None,
 ) -> dict:
     """Return a bounded synergy adjustment from verified historical stack outcomes."""
@@ -153,7 +173,17 @@ def stack_adjustment(
         row_framework = row.get("framework")
         row_framework = row_framework if isinstance(row_framework, str) and row_framework else None
         normalized_framework = framework if isinstance(framework, str) and framework else None
+        normalized_project_type = project_type if isinstance(project_type, str) and project_type else None
+        normalized_primary_domain = primary_domain if isinstance(primary_domain, str) and primary_domain else None
         if row_framework is not None and row_framework != normalized_framework:
+            continue
+        row_project_type = row.get("project_type")
+        row_project_type = row_project_type if isinstance(row_project_type, str) and row_project_type else None
+        if row_project_type is not None and row_project_type != normalized_project_type:
+            continue
+        row_primary_domain = row.get("primary_domain")
+        row_primary_domain = row_primary_domain if isinstance(row_primary_domain, str) and row_primary_domain else None
+        if row_primary_domain is not None and row_primary_domain != normalized_primary_domain:
             continue
         latest = row.get("latest_observed_at")
         if isinstance(latest, (int, float)) and now_value - float(latest) > MAX_EVIDENCE_AGE_SECONDS:
@@ -180,6 +210,9 @@ def stack_adjustment(
             "samples": samples,
             "success_rate": rate,
             "overlap_with_selected": overlap,
+            "framework": row_framework,
+            "project_type": row_project_type,
+            "primary_domain": row_primary_domain,
         })
 
     if total_weight <= 0:

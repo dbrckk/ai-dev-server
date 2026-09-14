@@ -4,7 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 import time
 
-from agents.workspace import snapshot as snapshot_workspace, restore as restore_workspace, validate_delta
+from flutter_workspace import snapshot as snapshot_workspace, restore as restore_workspace, delta as validate_delta
 from core import StudioError, apply_patch, canonical
 from journeys import validate_journeys
 

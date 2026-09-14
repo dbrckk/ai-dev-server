@@ -8,12 +8,12 @@ from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
 
-REGISTRY_VERSION=3
+REGISTRY_VERSION=4
 MAX_AUDIT_EVENTS=500
 RECOVERY_CONFIRMATIONS_REQUIRED=2
 RECOVERY_MIN_DWELL_SECONDS=7*24*60*60
 RECOVERY_MIN_NEW_EFFECTIVE_SAMPLES=2.0
-TRANSITION_POLICY_VERSION=1
+TRANSITION_POLICY_VERSION=2
 TRANSITION_POLICY={
     "UNOBSERVED":{
         "EXPERIMENTAL":{"allowed":True,"severity":"info","required_gates":[]},
@@ -61,6 +61,105 @@ TRANSITION_POLICY={
         "QUARANTINED":{"allowed":True,"severity":"critical","required_gates":["quarantined_replacement_revalidated"]},
     },
 }
+
+REPUTATION_STATES={"UNOBSERVED","EXPERIMENTAL","TRUSTED","DEGRADED","QUARANTINED","RECOVERING"}
+DANGEROUS_STATES={"DEGRADED","QUARANTINED","RECOVERING"}
+DANGEROUS_STATE_GATES={
+    "DEGRADED":"degraded_replacement_revalidated",
+    "QUARANTINED":"quarantined_replacement_revalidated",
+    "RECOVERING":"recovering_replacement_revalidated",
+}
+
+def validate_transition_policy(policy: dict | None=None) -> dict:
+    policy=TRANSITION_POLICY if policy is None else policy
+    errors=[]
+    warnings=[]
+    if not isinstance(policy,dict):
+        return {"valid":False,"errors":["policy_not_mapping"],"warnings":[]}
+
+    unknown_sources=sorted(set(policy)-REPUTATION_STATES)
+    if unknown_sources:
+        errors.append("unknown_source_states:"+",".join(unknown_sources))
+
+    adjacency={state:set() for state in REPUTATION_STATES}
+    for source,row in policy.items():
+        if source not in REPUTATION_STATES or not isinstance(row,dict):
+            if source in REPUTATION_STATES and not isinstance(row,dict):
+                errors.append(f"transition_row_not_mapping:{source}")
+            continue
+        for target,rule in row.items():
+            if target not in REPUTATION_STATES:
+                errors.append(f"unknown_target_state:{source}->{target}")
+                continue
+            if not isinstance(rule,dict):
+                errors.append(f"transition_rule_not_mapping:{source}->{target}")
+                continue
+            if rule.get("allowed") is not True:
+                continue
+            adjacency[source].add(target)
+            gates=rule.get("required_gates",[])
+            if not isinstance(gates,list) or any(not isinstance(g,str) or not g for g in gates):
+                errors.append(f"invalid_required_gates:{source}->{target}")
+                gates=[]
+            required=DANGEROUS_STATE_GATES.get(target)
+            if required and required not in gates:
+                errors.append(f"dangerous_state_missing_gate:{source}->{target}:{required}")
+            if source in {"DEGRADED","QUARANTINED"} and target=="TRUSTED":
+                errors.append(f"unsafe_direct_promotion:{source}->TRUSTED")
+            if source=="RECOVERING" and target=="TRUSTED":
+                if int(rule.get("minimum_dwell_seconds",0) or 0)<=0:
+                    errors.append("recovering_trusted_missing_dwell")
+                if float(rule.get("minimum_new_effective_samples",0.0) or 0.0)<=0:
+                    errors.append("recovering_trusted_missing_new_evidence")
+                if int(rule.get("minimum_confirmations",0) or 0)<2:
+                    errors.append("recovering_trusted_missing_confirmations")
+
+    # Reachability catches dead states and accidental policy partitions.
+    reachable={"UNOBSERVED"}
+    frontier=["UNOBSERVED"]
+    while frontier:
+        source=frontier.pop()
+        for target in adjacency.get(source,set()):
+            if target not in reachable:
+                reachable.add(target)
+                frontier.append(target)
+    unreachable=sorted(REPUTATION_STATES-reachable)
+    if unreachable:
+        errors.append("unreachable_states:"+",".join(unreachable))
+
+    # Every dangerous state must have a defined escape/recovery route.
+    for state in DANGEROUS_STATES:
+        if not adjacency.get(state):
+            errors.append(f"dead_end_dangerous_state:{state}")
+
+    # There must be no path from a degraded/quarantined state to TRUSTED
+    # that bypasses RECOVERING.
+    for origin in ("DEGRADED","QUARANTINED"):
+        frontier=[(origin,frozenset({origin}))]
+        while frontier:
+            source,seen=frontier.pop()
+            for target in adjacency.get(source,set()):
+                if target=="TRUSTED":
+                    errors.append(f"promotion_path_bypasses_recovering:{origin}")
+                    frontier=[]
+                    break
+                if target=="RECOVERING" or target in seen:
+                    continue
+                frontier.append((target,seen|{target}))
+
+    return {
+        "valid":not errors,
+        "errors":sorted(set(errors)),
+        "warnings":sorted(set(warnings)),
+        "states":sorted(REPUTATION_STATES),
+        "reachable_states":sorted(reachable),
+        "policy_version":TRANSITION_POLICY_VERSION,
+    }
+
+def assert_transition_policy_valid(policy: dict | None=None) -> None:
+    validation=validate_transition_policy(policy)
+    if not validation["valid"]:
+        raise ValueError("invalid replacement reputation transition policy: "+"; ".join(validation["errors"]))
 
 def transition_policy(previous: str | None, target: str) -> dict:
     previous=previous if isinstance(previous,str) else "UNOBSERVED"
@@ -252,6 +351,7 @@ def _transition(
     return desired,0,"desired_state_applied",meta
 
 def apply(registry: dict | None, context: dict, evidence: dict | None, *, now: float | None=None) -> tuple[dict,dict]:
+    assert_transition_policy_valid()
     now=float(now) if isinstance(now,(int,float)) else time.time()
     registry=registry if isinstance(registry,dict) else {}
     entries=registry.get("entries") if isinstance(registry.get("entries"),dict) else {}
@@ -341,6 +441,7 @@ def apply(registry: dict | None, context: dict, evidence: dict | None, *, now: f
             "fast_downward_transitions":True,
             "slow_upward_recovery":True,
             "upward_transition_requires_time_and_new_evidence":True,
+            "validation":validate_transition_policy(),
         },
     }
     return updated,entry

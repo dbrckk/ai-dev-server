@@ -9,6 +9,7 @@ from repair_planner import plan
 from repair_queue import begin_attempt, complete_stage_tasks, enqueue, finish_attempt, summarize
 from project_budget import branch_should_stop, budget_status, can_spend, configure as configure_budget, record_repair_outcome
 from task_scheduler import dispatch as scheduler_dispatch, select as scheduler_select
+from lease_keepalive import keepalive as lease_keepalive
 from lease_guard import maintain as maintain_lease
 from telemetry import emit as emit_telemetry
 
@@ -54,7 +55,8 @@ def evaluate_and_repair(
             "retry": retry_index + 1,
             "blockers": list(retryable),
         })
-        evidence = validator(root, out)
+        with lease_keepalive(initial_task):
+            evidence = validator(root, out)
         finish_attempt(
             initial_task,
             success=evidence.get("passed") is True,

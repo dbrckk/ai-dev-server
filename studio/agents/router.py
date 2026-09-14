@@ -7,7 +7,8 @@ from typing import Iterable
 from .registry import AgentRegistry, AgentSpec, DEFAULT_REGISTRY
 from adaptive_scoring import score_agent, ScoreTrace
 from safe_rewrite_learning import origin_violation_penalty, rewrite_recovery_bonus, exploration_bonus
-from contextual_routing_memory import contextual_adjustment
+from contextual_routing_memory import contextual_adjustment, contextual_bandit_score
+from contextual_utility import utility_score
 
 
 @dataclass(frozen=True)

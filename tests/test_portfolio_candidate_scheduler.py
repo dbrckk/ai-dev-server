@@ -120,6 +120,20 @@ class PortfolioCandidateSchedulerTests(unittest.TestCase):
         self.assertEqual(schedule.model_limit, 2)
         self.assertEqual(schedule.agent_limit, 0)
 
+    def test_three_local_models_can_fill_wide_portfolio_without_agents(self):
+        schedule = choose_schedule(
+            capacity_status={"unmetered_available": True, "providers": []},
+            route_confidence=0.1,
+            verification_seconds=40,
+            remaining_seconds=1200,
+            available_agents=0,
+            available_models=3,
+            strategy="model_only",
+        )
+        self.assertEqual(schedule.candidate_limit, 3)
+        self.assertEqual(schedule.model_limit, 3)
+        self.assertEqual(schedule.agent_limit, 0)
+
     def test_agent_only_does_not_require_model_candidate(self):
         schedule = choose_schedule(
             capacity_status={"unmetered_available": True, "providers": []},

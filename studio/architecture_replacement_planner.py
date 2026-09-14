@@ -7,7 +7,7 @@ import time
 from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
-from architecture_replacement_reputation import lookup as lookup_reputation
+from architecture_replacement_reputation import desired_state as reputation_desired_state, lookup as lookup_reputation
 
 MAX_PLANS = 8
 LOW_RISK_DELTA = 15.0
@@ -113,76 +113,6 @@ def _compatibility_distance(history: dict | None, context: dict) -> dict:
         "distance": round(1.0-transferability,4),
         "components": {key:round(value,4) for key,value in components.items()},
         "exact_context_match": all(value==1.0 for value in components.values()),
-    }
-
-def _reputation_state(evidence: dict | None) -> dict:
-    if not isinstance(evidence,dict):
-        return {
-            "state":"UNOBSERVED",
-            "reason":"no_historical_evidence",
-            "promotion_eligible":False,
-            "requires_revalidation":False,
-        }
-
-    samples=max(0,int(evidence.get("effective_samples",evidence.get("samples",0)) or 0))
-    confidence=float(evidence.get("evidence_confidence",0.0) or 0.0)
-    wilson=float(evidence.get("wilson_lower_95",0.0) or 0.0)
-    regression=float(evidence.get("regression_rate",0.0) or 0.0)
-
-    if evidence.get("sequential_drift") is True or evidence.get("regime_shift") is True:
-        return {
-            "state":"QUARANTINED",
-            "reason":"active_performance_deterioration",
-            "promotion_eligible":False,
-            "requires_revalidation":True,
-        }
-    if evidence.get("evidence_conflict") is True:
-        return {
-            "state":"DEGRADED",
-            "reason":"conflicting_historical_evidence",
-            "promotion_eligible":False,
-            "requires_revalidation":True,
-        }
-    if evidence.get("recovery_candidate") is True:
-        return {
-            "state":"RECOVERING",
-            "reason":"sustained_recent_recovery",
-            "promotion_eligible":False,
-            "requires_revalidation":True,
-        }
-    if evidence.get("stale_evidence") is True:
-        return {
-            "state":"DEGRADED",
-            "reason":"stale_historical_evidence",
-            "promotion_eligible":False,
-            "requires_revalidation":True,
-        }
-    if samples<5 or confidence<0.25:
-        return {
-            "state":"EXPERIMENTAL",
-            "reason":"insufficient_effective_evidence",
-            "promotion_eligible":False,
-            "requires_revalidation":False,
-        }
-    if wilson>=0.70 and regression<=0.10 and confidence>=0.50:
-        return {
-            "state":"TRUSTED",
-            "reason":"strong_consistent_historical_evidence",
-            "promotion_eligible":True,
-            "requires_revalidation":False,
-        }
-    if wilson<0.50 or regression>=0.25:
-        return {
-            "state":"DEGRADED",
-            "reason":"weak_or_regressive_historical_evidence",
-            "promotion_eligible":False,
-            "requires_revalidation":True,
-        }
-    return {
-        "state":"EXPERIMENTAL",
-        "reason":"mixed_or_maturing_evidence",
-        "promotion_eligible":False,
-        "requires_revalidation":False,
     }
 
 def _index(recommendations: dict) -> dict[str, dict]:
@@ -453,7 +383,12 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             else _history_context_weight(history,context)
         )
         evidence=fused_history if isinstance(fused_history,dict) else history
-        reputation=_reputation_state(evidence)
+        desired_reputation=reputation_desired_state(evidence)
+        reputation={
+            **desired_reputation,
+            "promotion_eligible":desired_reputation.get("state")=="TRUSTED",
+            "requires_revalidation":desired_reputation.get("state") in {"DEGRADED","QUARANTINED","RECOVERING"},
+        }
         persisted_reputation=lookup_reputation(reputation_registry,context)
         if isinstance(persisted_reputation,dict):
             reputation={
@@ -606,7 +541,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
     ),reverse=True)
 
     return {
-        "version": 16,
+        "version": 17,
         "status": "planned",
         "advisory_only": True,
         "replacement_plans": plans,

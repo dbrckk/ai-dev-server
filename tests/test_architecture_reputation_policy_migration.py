@@ -48,6 +48,27 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         auth["authorized"]=True
         return auth
 
+    def approval(self,plan,reinforced=False):
+        from architecture_reputation_policy_approval import approval_digest
+        value={
+            "migration_id":plan["migration_id"],
+            "review_digest":plan["review_digest"],
+            "reviewer":{"id":"reviewer-a","roles":["reviewer"]},
+        }
+        if reinforced:
+            value["second_reviewer"]={"id":"risk-owner-b","roles":["risk_owner"]}
+        value["approval_digest"]=approval_digest(value)
+        return value
+
+    def apply(self,registry,plan,auth,now=300.0,approval=None,ledger=None):
+        reinforced=plan.get("risk",{}).get("reinforced_review_required") is True
+        return apply_migration(
+            registry,plan,auth,
+            approval=approval or self.approval(plan,reinforced=reinforced),
+            approval_ledger=ledger,
+            now=now,
+        )
+
     def test_dry_run_is_content_bound_and_non_mutating(self):
         registry=self.registry()
         original=copy.deepcopy(registry)
@@ -88,12 +109,12 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         changed=copy.deepcopy(registry)
         next(iter(changed["entries"].values()))["updated_at"]=999.0
         with self.assertRaises(ReputationPolicyMigrationError):
-            apply_migration(changed,plan,self.authorize(plan),now=300.0)
+            self.apply(changed,plan,self.authorize(plan),now=300.0)
 
     def test_authorized_apply_updates_policy_and_audit(self):
         registry=self.registry()
         plan=dry_run(registry,self.learning(),now=200.0)
-        migrated=apply_migration(registry,plan,self.authorize(plan),now=300.0)
+        migrated=self.apply(registry,plan,self.authorize(plan),now=300.0)
         self.assertEqual(migrated["policy"]["version"],reputation.TRANSITION_POLICY_VERSION)
         self.assertEqual(migrated["policy"]["digest"],reputation.transition_policy_digest())
         entry=next(iter(migrated["entries"].values()))
@@ -109,7 +130,7 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         entry["state"]="QUARANTINED"
         entry["promotion_eligible"]=False
         plan=dry_run(registry,self.learning(strong=True),now=200.0)
-        migrated=apply_migration(registry,plan,self.authorize(plan),now=300.0)
+        migrated=self.apply(registry,plan,self.authorize(plan),now=300.0)
         migrated_entry=next(iter(migrated["entries"].values()))
         self.assertEqual(migrated_entry["state"],"QUARANTINED")
         self.assertIn("quarantined_replacement_revalidated",migrated_entry["required_transition_gates"])
@@ -119,7 +140,7 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         registry=self.registry()
         original=copy.deepcopy(registry)
         plan=dry_run(registry,self.learning(),now=200.0)
-        apply_migration(registry,plan,self.authorize(plan),now=300.0)
+        self.apply(registry,plan,self.authorize(plan),now=300.0)
         self.assertEqual(registry,original)
 
     def test_trust_downgrade_risk_classification(self):
@@ -152,9 +173,9 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         plan=dry_run(registry,self.learning(),now=200.0)
         auth=self.authorize(plan)
         with self.assertRaises(ReputationPolicyMigrationError):
-            apply_migration(registry,plan,auth,now=300.0)
+            self.apply(registry,plan,auth,now=300.0)
         auth["reinforced_reviewed"]=True
-        migrated=apply_migration(registry,plan,auth,now=300.0)
+        migrated=self.apply(registry,plan,auth,now=300.0)
         self.assertEqual(migrated["last_policy_migration"]["migration_id"],plan["migration_id"])
 
     def test_no_impact_when_registry_already_matches_current_policy(self):
@@ -204,21 +225,21 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         tampered=copy.deepcopy(plan)
         tampered["explanation"]["summary"]="tampered"
         with self.assertRaises(ReputationPolicyMigrationError):
-            apply_migration(registry,tampered,auth,now=300.0)
+            self.apply(registry,tampered,auth,now=300.0)
 
     def test_authorization_expires(self):
         registry=self.registry()
         plan=dry_run(registry,self.learning(),now=200.0)
         auth=self.authorize(plan)
         with self.assertRaises(ReputationPolicyMigrationError):
-            apply_migration(registry,plan,auth,now=200.0+24*60*60)
+            self.apply(registry,plan,auth,now=200.0+24*60*60)
 
     def test_authorization_rejects_future_issue_time(self):
         registry=self.registry()
         plan=dry_run(registry,self.learning(),now=200.0)
         auth=self.authorize(plan)
         with self.assertRaises(ReputationPolicyMigrationError):
-            apply_migration(registry,plan,auth,now=199.0)
+            self.apply(registry,plan,auth,now=199.0)
 
     def test_authorization_rejects_extended_expiry(self):
         registry=self.registry()
@@ -226,15 +247,35 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         auth=self.authorize(plan)
         auth["expires_at"]=auth["issued_at"]+24*60*60+1
         with self.assertRaises(ReputationPolicyMigrationError):
-            apply_migration(registry,plan,auth,now=300.0)
+            self.apply(registry,plan,auth,now=300.0)
 
     def test_review_digest_is_persisted_in_migration_audit(self):
         registry=self.registry()
         plan=dry_run(registry,self.learning(),now=200.0)
-        migrated=apply_migration(registry,plan,self.authorize(plan),now=300.0)
+        migrated=self.apply(registry,plan,self.authorize(plan),now=300.0)
         self.assertEqual(migrated["last_policy_migration"]["review_digest"],plan["review_digest"])
         self.assertEqual(migrated["last_policy_migration"]["authorization_issued_at"],200.0)
         self.assertEqual(migrated["last_policy_migration"]["authorization_expires_at"],200.0+24*60*60)
+
+    def test_apply_requires_reviewer_provenance(self):
+        registry=self.registry();plan=dry_run(registry,self.learning(),now=200.0)
+        with self.assertRaises(ReputationPolicyMigrationError):
+            apply_migration(registry,plan,self.authorize(plan),now=300.0)
+
+    def test_apply_records_reviewer_and_ledger(self):
+        registry=self.registry();plan=dry_run(registry,self.learning(),now=200.0)
+        migrated=self.apply(registry,plan,self.authorize(plan),now=300.0)
+        last=migrated["last_policy_migration"]
+        self.assertEqual(last["reviewer_id"],"reviewer-a")
+        self.assertTrue(migrated["policy_migration_approval_ledger"]["head"])
+        self.assertEqual(len(migrated["policy_migration_approval_ledger"]["events"]),1)
+
+    def test_replay_ledger_rejects_same_migration(self):
+        registry=self.registry();plan=dry_run(registry,self.learning(),now=200.0)
+        migrated=self.apply(registry,plan,self.authorize(plan),now=300.0)
+        ledger=migrated["policy_migration_approval_ledger"]
+        with self.assertRaises(ReputationPolicyMigrationError):
+            self.apply(registry,plan,self.authorize(plan),now=301.0,ledger=ledger)
 
 if __name__=="__main__":
     unittest.main()

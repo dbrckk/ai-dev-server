@@ -79,6 +79,24 @@ class ArchitectureOutcomeTests(unittest.TestCase):
         self.assertTrue(result["outcome"]["successful"])
 
 
+    def test_contextual_constraints_are_preserved(self):
+        result = build({
+            "status": "finished",
+            "architecture_decision": {
+                "status": "planned",
+                "chosen": [{"repo": "a/core", "domain": "mobile"}],
+                "constraints": {
+                    "framework": "flutter",
+                    "project_type": "game",
+                    "primary_domain": "mobile",
+                    "publication_target": "google-play",
+                },
+            },
+        })
+        self.assertEqual(result["schema"], 2)
+        self.assertEqual(result["decision_constraints"]["framework"], "flutter")
+        self.assertEqual(result["decision_constraints"]["project_type"], "game")
+        self.assertEqual(result["decision_constraints"]["primary_domain"], "mobile")
 
 if __name__ == "__main__":
     unittest.main()

@@ -88,6 +88,38 @@ class ReplacementReputationTests(unittest.TestCase):
         self.assertEqual(policy["recovery_min_dwell_seconds"],arr.RECOVERY_MIN_DWELL_SECONDS)
         self.assertEqual(policy["recovery_min_new_effective_samples"],arr.RECOVERY_MIN_NEW_EFFECTIVE_SAMPLES)
 
+    def test_transition_matrix_is_fail_closed(self):
+        rule=arr.transition_policy("TRUSTED","RECOVERING")
+        self.assertFalse(rule["allowed"])
+        self.assertEqual(rule["severity"],"critical")
+        self.assertIn("replacement_reputation_transition_reviewed",rule["required_gates"])
+
+    def test_recovery_policy_declares_all_upward_requirements(self):
+        rule=arr.transition_policy("RECOVERING","TRUSTED")
+        self.assertTrue(rule["allowed"])
+        self.assertEqual(rule["minimum_dwell_seconds"],arr.RECOVERY_MIN_DWELL_SECONDS)
+        self.assertEqual(rule["minimum_new_effective_samples"],arr.RECOVERY_MIN_NEW_EFFECTIVE_SAMPLES)
+        self.assertEqual(rule["minimum_confirmations"],arr.RECOVERY_CONFIRMATIONS_REQUIRED)
+        self.assertIn("replacement_reputation_transition_completed",rule["required_gates"])
+
+    def test_entry_exposes_versioned_transition_rule(self):
+        registry,entry=arr.apply(None,self.context(),self.strong(),now=100.0)
+        self.assertEqual(entry["transition_policy_version"],arr.TRANSITION_POLICY_VERSION)
+        self.assertTrue(entry["transition_rule"]["allowed"])
+        self.assertEqual(registry["policy"]["version"],arr.TRANSITION_POLICY_VERSION)
+        self.assertIn("transition_matrix",registry["policy"])
+
+    def test_quarantine_rule_is_critical(self):
+        registry,_=arr.apply(None,self.context(),self.strong(),now=100.0)
+        registry,entry=arr.apply(
+            registry,self.context(),
+            {**self.strong(),"sequential_drift":True},
+            now=101.0,
+        )
+        self.assertEqual(entry["state"],"QUARANTINED")
+        self.assertEqual(entry["transition_rule"]["severity"],"critical")
+        self.assertIn("quarantined_replacement_revalidated",entry["required_transition_gates"])
+
     def test_audit_records_every_transition(self):
         registry,_=arr.apply(None,self.context(),self.strong(),now=100.0)
         registry,_=arr.apply(registry,self.context(),{**self.strong(),"sequential_drift":True},now=200.0)

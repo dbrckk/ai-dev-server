@@ -7,6 +7,7 @@ from pathlib import Path
 import time
 
 from fleet_dashboard import collect
+from fleet_capacity import persist as persist_capacity_plan
 from fleet_maintenance import run as maintain
 from fleet_metrics import append as append_metrics, snapshot
 from fleet_regression import evaluate as evaluate_regression
@@ -31,6 +32,7 @@ def tick(
     metrics = append_metrics(history, metric_row)
     regression = evaluate_regression(history)
     maintenance = maintain(root)
+    capacity = persist_capacity_plan(root, request_dir)
 
     supervisor = apply_supervisor(
         root,
@@ -44,6 +46,7 @@ def tick(
         "metrics": metrics,
         "regression": regression,
         "maintenance": maintenance["summary"],
+        "capacity": capacity["summary"],
         "supervisor": {
             "apply": supervisor["apply"],
             "restarts_executed": supervisor["restarts_executed"],

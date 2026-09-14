@@ -26,6 +26,7 @@ def ask(model, role: str, context: str, screenshots=(), *, namespace: str = "mod
         "role": role,
         "context": context,
         "screenshots": _screenshots_fingerprint(screenshots),
+        "model_class": type(model).__module__ + "." + type(model).__qualname__,
     })
     cached = get(key)
     if cached is not None:

@@ -18,6 +18,7 @@ class ProviderRouterTests(unittest.TestCase):
         discovered = [{
             "name": "ollama",
             "base": "http://127.0.0.1:11434/v1",
+            "models": ["general", "qwen-coder"],
             "model": "general",
             "code_model": "qwen-coder",
             "vision_model": "",
@@ -29,9 +30,13 @@ class ProviderRouterTests(unittest.TestCase):
             return_value=discovered,
         ):
             providers = load_providers()
-        self.assertEqual([p.name for p in providers], ["ollama"])
-        self.assertTrue(providers[0].unmetered)
-        self.assertEqual(providers[0].code_model, "qwen-coder")
+        self.assertEqual(
+            {p.name for p in providers},
+            {"ollama:general", "ollama:qwen-coder"},
+        )
+        coder = next(p for p in providers if p.model == "qwen-coder")
+        self.assertTrue(coder.unmetered)
+        self.assertEqual(coder.code_model, "qwen-coder")
 
     def test_autodiscovers_omniroute_only_when_no_explicit_provider_exists(self):
         auto = ProviderSpec(

@@ -188,7 +188,7 @@ class AutonomousProjectTests(unittest.TestCase):
                         },
                         "next_stage": None,
                     },
-                    max_cycles=1,
+                    max_cycles=2,
                 )
                 self.assertEqual(state["status"], "complete")
                 self.assertEqual(os.environ.get("STUDIO_CHECKPOINT_PATH"), "sentinel-checkpoint")

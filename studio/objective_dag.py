@@ -7,6 +7,8 @@ import os
 import tempfile
 from pathlib import Path
 
+from done_when_evaluator import validate_contract
+
 VERSION = 1
 _STATES = {"blocked", "ready", "running", "verified", "failed"}
 MAX_TASKS = 64
@@ -47,16 +49,25 @@ def _normalized_tasks(plan: dict) -> list[dict]:
             done_when = raw.get("done_when", [])
             if not task_id or not title or not isinstance(deps, list) or not isinstance(done_when, list):
                 raise ObjectiveDagError("objective task fields invalid")
+            normalized_done_when = [
+                str(item).strip()
+                for item in done_when
+                if str(item).strip()
+            ][:12]
+            contract = validate_contract(
+                normalized_done_when,
+                critical=bool(raw.get("critical", False)),
+            )
+            if not contract["valid"]:
+                raise ObjectiveDagError(
+                    "objective task done_when invalid: " + "; ".join(contract["errors"])
+                )
             tasks.append({
                 "id": task_id,
                 "title": title,
                 "depends_on": sorted(set(str(x).strip() for x in deps if str(x).strip())),
                 "critical": bool(raw.get("critical", False)),
-                "done_when": [
-                    str(item).strip()
-                    for item in done_when
-                    if str(item).strip()
-                ][:12],
+                "done_when": normalized_done_when,
             })
     else:
         work_items = plan.get("work_items", []) if isinstance(plan, dict) else []

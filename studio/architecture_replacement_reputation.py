@@ -8,11 +8,90 @@ from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
 
-REGISTRY_VERSION=2
+REGISTRY_VERSION=3
 MAX_AUDIT_EVENTS=500
 RECOVERY_CONFIRMATIONS_REQUIRED=2
 RECOVERY_MIN_DWELL_SECONDS=7*24*60*60
 RECOVERY_MIN_NEW_EFFECTIVE_SAMPLES=2.0
+TRANSITION_POLICY_VERSION=1
+TRANSITION_POLICY={
+    "UNOBSERVED":{
+        "EXPERIMENTAL":{"allowed":True,"severity":"info","required_gates":[]},
+        "TRUSTED":{"allowed":True,"severity":"info","required_gates":[]},
+        "DEGRADED":{"allowed":True,"severity":"warning","required_gates":["degraded_replacement_revalidated"]},
+        "QUARANTINED":{"allowed":True,"severity":"critical","required_gates":["quarantined_replacement_revalidated"]},
+    },
+    "EXPERIMENTAL":{
+        "TRUSTED":{"allowed":True,"severity":"info","required_gates":[]},
+        "DEGRADED":{"allowed":True,"severity":"warning","required_gates":["degraded_replacement_revalidated"]},
+        "QUARANTINED":{"allowed":True,"severity":"critical","required_gates":["quarantined_replacement_revalidated"]},
+    },
+    "TRUSTED":{
+        "DEGRADED":{"allowed":True,"severity":"warning","required_gates":["degraded_replacement_revalidated"]},
+        "QUARANTINED":{"allowed":True,"severity":"critical","required_gates":["quarantined_replacement_revalidated"]},
+    },
+    "DEGRADED":{
+        "QUARANTINED":{"allowed":True,"severity":"critical","required_gates":["quarantined_replacement_revalidated"]},
+        "RECOVERING":{
+            "allowed":True,"severity":"warning",
+            "minimum_dwell_seconds":RECOVERY_MIN_DWELL_SECONDS,
+            "minimum_new_effective_samples":RECOVERY_MIN_NEW_EFFECTIVE_SAMPLES,
+            "minimum_confirmations":RECOVERY_CONFIRMATIONS_REQUIRED,
+            "required_gates":["recovering_replacement_revalidated","replacement_reputation_transition_completed"],
+        },
+    },
+    "QUARANTINED":{
+        "RECOVERING":{
+            "allowed":True,"severity":"critical",
+            "minimum_dwell_seconds":RECOVERY_MIN_DWELL_SECONDS,
+            "minimum_new_effective_samples":RECOVERY_MIN_NEW_EFFECTIVE_SAMPLES,
+            "minimum_confirmations":RECOVERY_CONFIRMATIONS_REQUIRED,
+            "required_gates":["recovering_replacement_revalidated","replacement_reputation_transition_completed"],
+        },
+    },
+    "RECOVERING":{
+        "TRUSTED":{
+            "allowed":True,"severity":"warning",
+            "minimum_dwell_seconds":RECOVERY_MIN_DWELL_SECONDS,
+            "minimum_new_effective_samples":RECOVERY_MIN_NEW_EFFECTIVE_SAMPLES,
+            "minimum_confirmations":RECOVERY_CONFIRMATIONS_REQUIRED,
+            "required_gates":["replacement_reputation_transition_completed"],
+        },
+        "DEGRADED":{"allowed":True,"severity":"warning","required_gates":["degraded_replacement_revalidated"]},
+        "QUARANTINED":{"allowed":True,"severity":"critical","required_gates":["quarantined_replacement_revalidated"]},
+    },
+}
+
+def transition_policy(previous: str | None, target: str) -> dict:
+    previous=previous if isinstance(previous,str) else "UNOBSERVED"
+    if previous==target:
+        return {
+            "allowed":True,
+            "severity":"info",
+            "minimum_dwell_seconds":0,
+            "minimum_new_effective_samples":0.0,
+            "minimum_confirmations":0,
+            "required_gates":[],
+        }
+    row=TRANSITION_POLICY.get(previous,{})
+    rule=row.get(target) if isinstance(row,dict) else None
+    if not isinstance(rule,dict):
+        return {
+            "allowed":False,
+            "severity":"critical",
+            "minimum_dwell_seconds":0,
+            "minimum_new_effective_samples":0.0,
+            "minimum_confirmations":0,
+            "required_gates":["replacement_reputation_transition_reviewed"],
+        }
+    return {
+        "allowed":rule.get("allowed") is True,
+        "severity":rule.get("severity","warning"),
+        "minimum_dwell_seconds":int(rule.get("minimum_dwell_seconds",0) or 0),
+        "minimum_new_effective_samples":float(rule.get("minimum_new_effective_samples",0.0) or 0.0),
+        "minimum_confirmations":int(rule.get("minimum_confirmations",0) or 0),
+        "required_gates":list(rule.get("required_gates",[])),
+    }
 
 def _identity(context: dict) -> str:
     payload={
@@ -181,9 +260,18 @@ def apply(registry: dict | None, context: dict, evidence: dict | None, *, now: f
     previous_entry=entries.get(key) if isinstance(entries.get(key),dict) else {}
     previous_state=previous_entry.get("state") if isinstance(previous_entry.get("state"),str) else "UNOBSERVED"
     desired=desired_state(evidence)
+    requested_rule=transition_policy(previous_state,desired["state"])
     new_state,new_confirmations,transition_reason,transition_meta=_transition(
         previous_entry,desired["state"],evidence,now
     )
+    applied_rule=transition_policy(previous_state,new_state)
+    if not applied_rule["allowed"]:
+        new_state=previous_state
+        new_confirmations=int(previous_entry.get("recovery_confirmations",0) or 0)
+        transition_reason="transition_blocked_by_policy"
+        transition_meta["transition_pending"]=True
+        transition_meta["state_since"]=previous_entry.get("state_since",previous_entry.get("updated_at",now))
+        applied_rule=transition_policy(previous_state,new_state)
 
     entry={
         "identity":key,
@@ -195,6 +283,10 @@ def apply(registry: dict | None, context: dict, evidence: dict | None, *, now: f
         "desired_state":desired["state"],
         "reason":desired["reason"],
         "transition_reason":transition_reason,
+        "transition_policy_version":TRANSITION_POLICY_VERSION,
+        "transition_rule":applied_rule,
+        "requested_transition_rule":requested_rule,
+        "required_transition_gates":applied_rule.get("required_gates",[]),
         "recovery_confirmations":new_confirmations,
         "state_since":transition_meta.get("state_since",now),
         "recovery_started_at":transition_meta.get("recovery_started_at"),
@@ -226,6 +318,8 @@ def apply(registry: dict | None, context: dict, evidence: dict | None, *, now: f
         "new_state":new_state,
         "transition_reason":transition_reason,
         "reason":desired["reason"],
+        "transition_policy_version":TRANSITION_POLICY_VERSION,
+        "transition_rule":applied_rule,
         "transition_pending":transition_meta.get("transition_pending") is True,
         "eligible_at":transition_meta.get("eligible_at"),
         "effective_samples":_effective_samples(evidence),
@@ -239,6 +333,8 @@ def apply(registry: dict | None, context: dict, evidence: dict | None, *, now: f
         "entries":entries,
         "audit":audit,
         "policy":{
+            "version":TRANSITION_POLICY_VERSION,
+            "transition_matrix":TRANSITION_POLICY,
             "recovery_confirmations_required":RECOVERY_CONFIRMATIONS_REQUIRED,
             "recovery_min_dwell_seconds":RECOVERY_MIN_DWELL_SECONDS,
             "recovery_min_new_effective_samples":RECOVERY_MIN_NEW_EFFECTIVE_SAMPLES,

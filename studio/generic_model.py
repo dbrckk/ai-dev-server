@@ -55,6 +55,8 @@ from model_portfolio_learning import (
     load as load_model_portfolio_learning,
     diversity_bias as model_portfolio_diversity_bias,
 )
+from capacity_ledger import reserve as reserve_capacity, settle as settle_capacity, release as release_capacity
+from capacity_runtime import project_envelope as load_project_envelope
 
 
 def _decode(response: dict) -> dict:
@@ -128,6 +130,14 @@ def ask(
     local_specialization_path = Path(local_specialization_raw) if local_specialization_raw else None
     portfolio_learning_raw = os.environ.get("STUDIO_MODEL_PORTFOLIO_LEARNING_PATH", "")
     portfolio_learning_path = Path(portfolio_learning_raw) if portfolio_learning_raw else None
+    capacity_ledger_raw = os.environ.get("STUDIO_CAPACITY_LEDGER_PATH", "")
+    capacity_ledger_path = Path(capacity_ledger_raw) if capacity_ledger_raw else None
+    capacity_plan_raw = os.environ.get("STUDIO_CAPACITY_PLAN_PATH", "")
+    project_id = os.environ.get("STUDIO_PROJECT_ID", "").strip() or None
+    project_capacity_envelope = load_project_envelope(
+        Path(capacity_plan_raw) if capacity_plan_raw else None,
+        project_id,
+    )
     try:
         weighted_contexts = json.loads(os.environ.get("STUDIO_ROUTING_CONTEXTS_JSON", "[]"))
     except json.JSONDecodeError:
@@ -365,6 +375,30 @@ def ask(
         }
         if api.base == "https://integrate.api.nvidia.com/v1" and model.startswith("nvidia/nemotron-3-"):
             params.update(chat_template_kwargs={"enable_thinking": True}, reasoning_budget=2048)
+        reservation = None
+        if capacity_ledger_path is not None and project_id is not None:
+            provider_remaining_tokens = None
+            if provider.monthly_token_quota > 0:
+                quota_now = provider_quota_status(
+                    quota_path if quota_path is not None else provider_quota_data,
+                    provider.name,
+                    provider.monthly_token_quota,
+                )
+                provider_remaining_tokens = quota_now["remaining_tokens"]
+            reservation = reserve_capacity(
+                capacity_ledger_path,
+                project_id=project_id,
+                provider=provider.name,
+                estimated_tokens=estimated_call_tokens,
+                provider_remaining_tokens=provider_remaining_tokens,
+                project_envelope_tokens=project_capacity_envelope,
+            )
+            if not reservation["admitted"]:
+                last = StudioError(
+                    "Capacity reservation denied: " + str(reservation.get("reason", "unknown"))
+                )
+                continue
+
         started = time.monotonic()
         try:
             response = api.call("POST", "/chat/completions", params, timeout_seconds=remaining)
@@ -372,6 +406,22 @@ def ask(
             if metrics_path is not None:
                 record_provider_latency(metrics_path, provider.name, role, elapsed)
             usage = response.get("usage") if isinstance(response, dict) else None
+            if reservation is not None:
+                actual_tokens = estimated_call_tokens
+                if isinstance(usage, dict):
+                    try:
+                        actual_tokens = max(
+                            0,
+                            int(usage.get("prompt_tokens", 0) or 0)
+                            + int(usage.get("completion_tokens", 0) or 0),
+                        )
+                    except (TypeError, ValueError):
+                        actual_tokens = estimated_call_tokens
+                settle_capacity(
+                    capacity_ledger_path,
+                    reservation["reservation_id"],
+                    actual_tokens=actual_tokens,
+                )
             call_cost = 0.0
             if provider_cost_path is not None and isinstance(usage, dict):
                 try:
@@ -428,6 +478,11 @@ def ask(
                 "duration_seconds": elapsed,
                 "estimated_cost_usd": round(call_cost, 8),
                 "unmetered": provider.unmetered,
+                "capacity": {
+                    "project_id": project_id,
+                    "project_envelope_tokens": project_capacity_envelope,
+                    "ledger_enabled": capacity_ledger_path is not None and project_id is not None,
+                },
                 "monthly_token_quota": (
                     provider_quota_status(
                         quota_path if quota_path is not None else provider_quota_data,
@@ -444,6 +499,11 @@ def ask(
             }
         except (APIError, StudioError, ProtocolError) as exc:
             elapsed = time.monotonic() - started
+            if reservation is not None:
+                release_capacity(
+                    capacity_ledger_path,
+                    reservation["reservation_id"],
+                )
             if local_rep_path is not None and provider.unmetered and ":" in provider.name:
                 record_local_model_reputation(
                     local_rep_path,

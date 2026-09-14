@@ -91,6 +91,21 @@ def branch_should_stop(task: dict) -> bool:
     return branch_efficiency(task) < MIN_GAIN_PER_CALL
 
 
+def apply_capacity_limit(state: dict, capacity_plan: dict, *, explicit_limit: bool) -> dict:
+    budget = state.setdefault("project_budget", {})
+    if not isinstance(capacity_plan, dict):
+        return budget
+    effective = capacity_plan.get("effective_limit")
+    if not isinstance(effective, int) or effective < 1:
+        return budget
+    if explicit_limit:
+        return budget
+    current = int(budget.get("model_call_limit", effective))
+    budget["model_call_limit"] = max(current, effective)
+    budget["capacity_scaling"] = dict(capacity_plan)
+    return budget
+
+
 def budget_status(state: dict) -> dict:
     budget = state.get("project_budget", {})
     total_limit = int(budget.get("model_call_limit", 0))

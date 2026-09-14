@@ -38,6 +38,7 @@ from architecture_learning import summarize as summarize_architecture_learning, 
 from architecture_evaluator import write as write_architecture_evaluation
 from architecture_benchmark import write as write_architecture_benchmark
 from architecture_preflight import write as write_architecture_preflight
+from architecture_change_guard import enforce as enforce_architecture_change_guard
 from architecture_outcome import write as write_architecture_outcome
 
 PLAN_SYSTEM = """You are the senior autonomous maintainer of an existing software repository.
@@ -91,7 +92,17 @@ def _snapshot(root: Path, limit_bytes: int = 420_000) -> dict:
     return {"files": files, "bytes": used}
 
 
-def _apply(root: Path, patch: dict) -> list[str]:
+def _apply(
+    root: Path,
+    patch: dict,
+    *,
+    architecture_changes_allowed: bool = True,
+) -> list[str]:
+    enforce_architecture_change_guard(
+        patch,
+        engine="generic",
+        architecture_changes_allowed=architecture_changes_allowed,
+    )
     changed = []
     for item in validate_patch(patch):
         target = (root / item["path"]).resolve()
@@ -506,7 +517,13 @@ Objective and current plan:
                         if isinstance(model_impl,dict):
                             cost_controller.record_model(float(model_impl.get("duration_seconds",0.0) or 0.0), phase="implementation")
                         model_files = validate_patch(model_patch)
-                        model_changed = _apply(work, {"files":model_files})
+                        model_changed = _apply(
+                            work,
+                            {"files":model_files},
+                            architecture_changes_allowed=bool(
+                                state.get("architecture_autonomy_policy", {}).get("architecture_changes_allowed", True)
+                            ),
+                        )
                     except (StudioError, ValueError) as exc:
                         agent_trace.append({"status":"model_candidate_failed","error":str(exc)[:1000]})
                         return None
@@ -751,7 +768,13 @@ Objective and current plan:
                             verified=[item for item in viable if item["verification"].get("passed") is True]
                             winner_id=(verified[0] if verified else viable[0])["id"]
                     winner=next(item for item in viable if item["id"]==winner_id)
-                    changed.extend(_apply(work,{"files":winner["files"]}))
+                    changed.extend(_apply(
+                        work,
+                        {"files":winner["files"]},
+                        architecture_changes_allowed=bool(
+                            state.get("architecture_autonomy_policy", {}).get("architecture_changes_allowed", True)
+                        ),
+                    ))
                     if winner.get("agent"):
                         agent_used=winner["agent"]
                         implementation_models.append({"agent":agent_used})
@@ -840,7 +863,13 @@ Objective and current plan:
                 )
                 if isinstance(impl_model,dict):
                     cost_controller.record_model(float(impl_model.get("duration_seconds",0.0) or 0.0), phase="implementation")
-                changed.extend(_apply(work, patch))
+                changed.extend(_apply(
+                    work,
+                    patch,
+                    architecture_changes_allowed=bool(
+                        state.get("architecture_autonomy_policy", {}).get("architecture_changes_allowed", True)
+                    ),
+                ))
                 implementation_models.append(impl_model)
             progress_timeout = bounded_timeout(
                 phase_remaining(

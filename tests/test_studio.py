@@ -24,7 +24,12 @@ class FakeGitHub:
         self.published = []
     def restore(self, branch, root):
         for p, content in self.files.items():
-            apply_patch(root, {'files': [{'path': p, 'content': content}]})
+            if p == 'PROJECT_CONTEXT.md':
+                target = root / p
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(content)
+            else:
+                apply_patch(root, {'files': [{'path': p, 'content': content}]})
         return copy.deepcopy(self.state), 'base'
     def publish(self, branch, parent, root, state):
         self.state = copy.deepcopy(state)

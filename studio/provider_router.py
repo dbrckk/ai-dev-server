@@ -1,7 +1,7 @@
 """Provider registry and ordered fallback policy for AI Dev Server."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 import os
 import urllib.request
@@ -25,10 +25,14 @@ class ProviderSpec:
     output_cost_per_million: float = 0.0
     unmetered: bool = False
     monthly_token_quota: int = 0
+    role_models: dict[str, str] = field(default_factory=dict)
 
     def model_for(self, role: str, screenshots: bool = False) -> str:
         if screenshots:
-            return self.vision_model
+            return self.role_models.get("visual") or self.vision_model
+        explicit = self.role_models.get(role)
+        if explicit:
+            return explicit
         if role in {"implementation", "tests", "security_fix", "release_fix"}:
             return self.code_model or self.model
         return self.model
@@ -100,6 +104,24 @@ def _primary() -> ProviderSpec | None:
     if vision == "disabled":
         vision = ""
     explicit_unmetered = os.environ.get("STUDIO_PROVIDER_UNMETERED")
+    role_models_raw = os.environ.get("STUDIO_ROLE_MODELS_JSON", "")
+    role_models = {}
+    if role_models_raw.strip():
+        try:
+            parsed_role_models = json.loads(role_models_raw)
+        except json.JSONDecodeError as exc:
+            raise ValueError("STUDIO_ROLE_MODELS_JSON must be valid JSON") from exc
+        if not isinstance(parsed_role_models, dict):
+            raise ValueError("STUDIO_ROLE_MODELS_JSON must be a JSON object")
+        for role_name, role_model in parsed_role_models.items():
+            if (
+                not isinstance(role_name, str)
+                or not role_name.strip()
+                or not isinstance(role_model, str)
+                or not role_model.strip()
+            ):
+                raise ValueError("STUDIO_ROLE_MODELS_JSON must map roles to non-empty model names")
+            role_models[role_name.strip()] = role_model.strip()
     quota_raw = os.environ.get("STUDIO_MONTHLY_TOKEN_QUOTA", "")
     if quota_raw:
         try:
@@ -127,6 +149,7 @@ def _primary() -> ProviderSpec | None:
             else (_is_local_base(base) and monthly_token_quota == 0)
         ),
         monthly_token_quota=monthly_token_quota,
+        role_models=role_models,
     )
 
 
@@ -145,7 +168,7 @@ def _json_specs(raw: str) -> list[ProviderSpec]:
             raise ValueError("Provider entries must be objects")
         allowed = {
             "name", "base", "key_env", "model", "code_model", "vision_model",
-            "priority", "free_preferred", "input_cost_per_million", "output_cost_per_million", "unmetered", "monthly_token_quota",
+            "priority", "free_preferred", "input_cost_per_million", "output_cost_per_million", "unmetered", "monthly_token_quota", "role_models",
         }
         if set(item) - allowed:
             raise ValueError("Unknown provider configuration field")
@@ -169,6 +192,19 @@ def _json_specs(raw: str) -> list[ProviderSpec]:
         priority = item.get("priority", 50)
         if type(priority) is not int:
             raise ValueError("Provider priority must be an integer")
+        role_models = item.get("role_models", {})
+        if not isinstance(role_models, dict):
+            raise ValueError("Provider role_models must be an object")
+        clean_role_models = {}
+        for role_name, role_model in role_models.items():
+            if (
+                not isinstance(role_name, str)
+                or not role_name.strip()
+                or not isinstance(role_model, str)
+                or not role_model.strip()
+            ):
+                raise ValueError("Provider role_models must map roles to non-empty model names")
+            clean_role_models[role_name.strip()] = role_model.strip()
         specs.append(ProviderSpec(
             name=name.strip(),
             base=base.strip(),
@@ -189,6 +225,7 @@ def _json_specs(raw: str) -> list[ProviderSpec]:
                 )
             ),
             monthly_token_quota=max(0, int(item.get("monthly_token_quota", 0) or 0)),
+            role_models=clean_role_models,
         ))
     return specs
 
@@ -261,7 +298,13 @@ def load_providers(*, prefer_free: bool = True) -> tuple[ProviderSpec, ...]:
 
     deduped = {}
     for spec in specs:
-        key = (spec.base.rstrip("/"), spec.model, spec.code_model, spec.vision_model)
+        key = (
+            spec.base.rstrip("/"),
+            spec.model,
+            spec.code_model,
+            spec.vision_model,
+            tuple(sorted(spec.role_models.items())),
+        )
         current = deduped.get(key)
         if current is None or spec.priority > current.priority:
             deduped[key] = spec

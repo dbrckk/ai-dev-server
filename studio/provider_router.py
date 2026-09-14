@@ -8,6 +8,8 @@ import urllib.request
 import urllib.error
 from typing import Iterable
 
+from local_capacity import discover as discover_local_capacity
+
 
 @dataclass(frozen=True)
 class ProviderSpec:
@@ -191,6 +193,27 @@ def _json_specs(raw: str) -> list[ProviderSpec]:
     return specs
 
 
+def _local_capacity_specs() -> list[ProviderSpec]:
+    specs = []
+    for row in discover_local_capacity():
+        try:
+            specs.append(ProviderSpec(
+                name=str(row["name"]),
+                base=str(row["base"]),
+                key="",
+                model=str(row["model"]),
+                code_model=str(row.get("code_model") or row["model"]),
+                vision_model=str(row.get("vision_model") or ""),
+                priority=99 if row.get("name") == "omniroute" else 95,
+                free_preferred=True,
+                unmetered=bool(row.get("unmetered")),
+                monthly_token_quota=max(0, int(row.get("monthly_token_quota", 0) or 0)),
+            ))
+        except (KeyError, TypeError, ValueError):
+            continue
+    return specs
+
+
 def load_providers(*, prefer_free: bool = True) -> tuple[ProviderSpec, ...]:
     specs = []
     primary = _primary()
@@ -198,9 +221,13 @@ def load_providers(*, prefer_free: bool = True) -> tuple[ProviderSpec, ...]:
     if primary:
         specs.append(primary)
     if primary is None and not explicit_json.strip():
-        auto_omniroute = _auto_omniroute()
-        if auto_omniroute:
-            specs.append(auto_omniroute)
+        local_specs = _local_capacity_specs()
+        if local_specs:
+            specs.extend(local_specs)
+        else:
+            auto_omniroute = _auto_omniroute()
+            if auto_omniroute:
+                specs.append(auto_omniroute)
     specs.extend(_json_specs(explicit_json))
 
     deduped = {}

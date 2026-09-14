@@ -523,6 +523,120 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
             self.assertEqual(source.read_text(), "base\n")
 
 
+    def test_identical_delta_reuses_quick_gate_cache_across_branches(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source = root / "lib/app.dart"
+            source.parent.mkdir(parents=True)
+            source.write_text("const value = 1;\n")
+            calls = {"analyze": 0, "test": 0}
+            shared_cache = {}
+
+            class CacheSandbox:
+                def __init__(self, root):
+                    self.root = root
+
+                def quick_analyze_gate(self):
+                    calls["analyze"] += 1
+                    return True, []
+
+                def quick_test_gate(self, targets=()):
+                    calls["test"] += 1
+                    return True, []
+
+                def gates(self, name, journeys):
+                    return True, []
+
+            def first_step(intermediate_failure=None):
+                source.write_text("const value = 2;\n")
+                return {"model_calls": 0}
+
+            def second_step(intermediate_failure=None):
+                source.write_text("const value = 3;\n")
+                return {"model_calls": 0}
+
+            for strategy in ("agent_only", "model_to_agent"):
+                candidate = run_branch(
+                    root,
+                    strategy=strategy,
+                    strategy_prior_score=10,
+                    steps=[first_step, second_step],
+                    refine=None,
+                    state=STATE,
+                    app_name="demo_app",
+                    sandbox_factory=CacheSandbox,
+                    strategy_row={
+                        "conservative_success_rate": 0.9,
+                        "risk": 0.1,
+                        "estimated_seconds": 10,
+                        "estimated_model_calls": 0,
+                    },
+                    remaining_model_calls=0,
+                    step_model_calls=[0, 0],
+                    quick_gate_cache=shared_cache,
+                )
+                self.assertTrue(candidate["passed"])
+
+            self.assertEqual(calls["analyze"], 1)
+            self.assertEqual(calls["test"], 1)
+
+    def test_different_delta_content_does_not_reuse_quick_gate_cache(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source = root / "lib/app.dart"
+            source.parent.mkdir(parents=True)
+            source.write_text("const value = 1;\n")
+            calls = {"analyze": 0}
+            shared_cache = {}
+
+            class CacheSandbox:
+                def __init__(self, root):
+                    self.root = root
+
+                def quick_analyze_gate(self):
+                    calls["analyze"] += 1
+                    return True, []
+
+                def quick_test_gate(self, targets=()):
+                    return True, []
+
+                def gates(self, name, journeys):
+                    return True, []
+
+            def run_with(value):
+                def first_step(intermediate_failure=None):
+                    source.write_text(f"const value = {value};\\n")
+                    return {"model_calls": 0}
+
+                def second_step(intermediate_failure=None):
+                    source.write_text(f"const value = {value + 10};\\n")
+                    return {"model_calls": 0}
+
+                return run_branch(
+                    root,
+                    strategy="agent_only",
+                    strategy_prior_score=10,
+                    steps=[first_step, second_step],
+                    refine=None,
+                    state=STATE,
+                    app_name="demo_app",
+                    sandbox_factory=CacheSandbox,
+                    strategy_row={
+                        "conservative_success_rate": 0.9,
+                        "risk": 0.1,
+                        "estimated_seconds": 10,
+                        "estimated_model_calls": 0,
+                    },
+                    remaining_model_calls=0,
+                    step_model_calls=[0, 0],
+                    quick_gate_cache=shared_cache,
+                )
+
+            self.assertTrue(run_with(2)["passed"])
+            self.assertTrue(run_with(3)["passed"])
+            self.assertEqual(calls["analyze"], 2)
+
+
     def test_verified_candidate_with_better_score_wins(self):
         candidates = [
             {

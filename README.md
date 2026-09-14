@@ -110,6 +110,26 @@ python studio/fleet_maintenance.py --root studio-output
 - `fleet_supervisor.py` produit des décisions déterministes `none/restart/quarantine/inspect` sans exécuter de redémarrage destructif ;
 - `fleet_maintenance.py` compacte la télémétrie et supprime uniquement des fichiers temporaires reconnus dans `.autonomy`.
 
+### Capacity scheduler global
+
+Le serveur peut maintenant répartir la capacité IA entre plusieurs projets actifs avant exécution :
+
+```bash
+python studio/capacity_scheduler.py \
+  --projects studio-output/projects-capacity.json \
+  --providers studio-output/providers-capacity.json \
+  --critical-reserve-ratio 0.10 \
+  --output studio-output/capacity-plan.json
+```
+
+Le planificateur :
+
+- exclut les projets terminés/bloqués ;
+- pondère priorité, difficulté, état et phase critique ;
+- réserve une part configurable de la capacité finie pour vérification/tests/review/réparations ;
+- préfère les capacités locales illimitées, puis les quotas gratuits mutualisés, puis les autres fournisseurs gratuits et enfin les fournisseurs payants ;
+- produit une enveloppe de tokens et un ordre de providers par projet.
+
 ### Exploitation V1.2
 
 La V1.2 ajoute supervision active, historique de métriques et détection de régressions :

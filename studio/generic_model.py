@@ -35,6 +35,11 @@ from provider_monthly_quota import (
     record as record_provider_monthly_quota,
     quota_status as provider_quota_status,
 )
+from local_model_reputation import (
+    load as load_local_model_reputation,
+    record as record_local_model_reputation,
+    score as local_model_reputation_score,
+)
 
 
 def _decode(response: dict) -> dict:
@@ -74,6 +79,8 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     provider_cost_path = Path(provider_cost_raw) if provider_cost_raw else None
     quota_raw = os.environ.get("STUDIO_PROVIDER_MONTHLY_QUOTA_PATH", "")
     quota_path = Path(quota_raw) if quota_raw else None
+    local_rep_raw = os.environ.get("STUDIO_LOCAL_MODEL_REPUTATION_PATH", "")
+    local_rep_path = Path(local_rep_raw) if local_rep_raw else None
     try:
         weighted_contexts = json.loads(os.environ.get("STUDIO_ROUTING_CONTEXTS_JSON", "[]"))
     except json.JSONDecodeError:
@@ -95,6 +102,7 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     contextual_routing = load_contextual_routing_memory(contextual_routing_path) if contextual_routing_path is not None else {}
     provider_costs = load_provider_cost(provider_cost_path) if provider_cost_path is not None else {}
     provider_quota_data = load_provider_monthly_quota(quota_path) if quota_path is not None else {"schema": 1, "months": {}}
+    local_model_reputation = load_local_model_reputation(local_rep_path) if local_rep_path is not None else {}
     try:
         max_api_cost_usd = float(os.environ.get("STUDIO_MAX_API_COST_USD", "0") or 0.0)
     except ValueError:
@@ -139,6 +147,13 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
             weights=weights,
         )
         components = dict(base.components)
+        if provider.unmetered and ":" in provider.name:
+            components["local_model_reputation"] = local_model_reputation_score(
+                local_model_reputation,
+                provider=provider.name.split(":", 1)[0],
+                model=provider.model_for(role),
+                role=role,
+            )
         if role == "implementation" and safe_rewrite_path is not None:
             violation = origin_violation_penalty(
                 safe_rewrite_summary,
@@ -293,6 +308,16 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
                         completion_tokens=completion_tokens,
                     )
             decoded = _decode(response)
+            if local_rep_path is not None and provider.unmetered and ":" in provider.name:
+                record_local_model_reputation(
+                    local_rep_path,
+                    provider=provider.name.split(":", 1)[0],
+                    model=model,
+                    role=role,
+                    success=True,
+                    latency_seconds=elapsed,
+                    protocol_failure=False,
+                )
             if health_path is not None:
                 record_provider_success(health_path, provider.name)
             if history_path is not None:
@@ -329,6 +354,16 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
             }
         except (APIError, StudioError, ProtocolError) as exc:
             elapsed = time.monotonic() - started
+            if local_rep_path is not None and provider.unmetered and ":" in provider.name:
+                record_local_model_reputation(
+                    local_rep_path,
+                    provider=provider.name.split(":", 1)[0],
+                    model=model,
+                    role=role,
+                    success=False,
+                    latency_seconds=elapsed,
+                    protocol_failure=isinstance(exc, ProtocolError),
+                )
             if metrics_path is not None:
                 record_provider_latency(metrics_path, provider.name, role, elapsed)
             if health_path is not None:

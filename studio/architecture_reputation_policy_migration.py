@@ -652,6 +652,8 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, approval
             "github_workflow_file_blob_sha":github_provenance["workflow_file_blob_sha"],
             "github_workflow_file_sha256":github_provenance["workflow_file_sha256"],
             "github_workflow_policy_validation":github_provenance["workflow_policy_validation"],
+            "github_ci_trust_policy_version":plan["github_review_target"]["ci_trust_policy_version"],
+            "github_ci_trust_policy_digest":plan["github_review_target"]["ci_trust_policy_digest"],
             "github_workflow_timestamp":github_provenance["workflow_timestamp"],
             "reviewer_id":provenance["reviewer_id"],
             "second_reviewer_id":provenance["second_reviewer_id"],

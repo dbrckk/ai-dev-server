@@ -116,6 +116,40 @@ class ProviderRouterTests(unittest.TestCase):
             providers = load_providers()
         self.assertTrue(providers[0].unmetered)
 
+    def test_omniroute_endpoint_gets_current_recurring_quota_by_default(self):
+        env = {
+            "STUDIO_API_BASE": "http://127.0.0.1:20128/v1",
+            "STUDIO_PROVIDER_NAME": "omniroute",
+            "STUDIO_MODEL": "auto",
+        }
+        with patch.dict(os.environ, env, clear=True):
+            providers = load_providers()
+        self.assertEqual(providers[0].monthly_token_quota, 1_470_000_000)
+        self.assertFalse(providers[0].unmetered)
+
+    def test_paid_budget_exhaustion_keeps_pooled_free_quota_provider(self):
+        providers = (
+            ProviderSpec(
+                "omniroute",
+                "http://127.0.0.1:20128/v1",
+                "",
+                "auto",
+                monthly_token_quota=1_470_000_000,
+            ),
+            ProviderSpec(
+                "paid",
+                "https://paid.invalid/v1",
+                "k",
+                "paid-model",
+            ),
+        )
+        eligible = budget_eligible(
+            providers,
+            max_api_cost_usd=1.0,
+            spent_api_cost_usd=1.2,
+        )
+        self.assertEqual([p.name for p in eligible], ["omniroute"])
+
     def test_paid_budget_exhaustion_keeps_only_unmetered(self):
         providers = (
             ProviderSpec(

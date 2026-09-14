@@ -123,7 +123,7 @@ def new(project_id: str, brief: str, plan: dict, base_sha: str) -> dict:
             "state": "ready" if not task["depends_on"] else "blocked",
             "critical": bool(task.get("critical", False)),
             "confidence": None,
-            "done_when": list(task.get("done_when", [])),
+            "done_when": list(task.get("done_when") or [task["title"]]),
             "attempts": 0,
             "last_commit": None,
             "last_error": None,
@@ -172,7 +172,9 @@ def validate(value: dict) -> dict:
         confidence = task.get("confidence")
         if confidence is not None and (type(confidence) is not int or confidence < 0 or confidence > 100):
             raise ObjectiveDagError("objective dag confidence invalid")
-        done_when = task.get("done_when", [])
+        done_when = task.get("done_when")
+        if done_when is None:
+            done_when = [str(task.get("title") or "").strip()]
         if not isinstance(done_when, list) or any(not isinstance(item, str) or not item for item in done_when):
             raise ObjectiveDagError("objective dag done_when invalid")
         structural.append({
@@ -343,7 +345,7 @@ def summary(value: dict) -> dict:
                 "title": task["title"],
                 "depends_on": task["depends_on"],
                 "critical": bool(task.get("critical", False)),
-                "done_when": list(task.get("done_when", [])),
+                "done_when": list(task.get("done_when") or [task["title"]]),
                 "confidence": task.get("confidence"),
                 "state": task["state"],
                 "attempts": task["attempts"],

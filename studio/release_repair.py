@@ -168,6 +168,11 @@ def attempt(
     if not blockers:
         return {"attempted": False, "changed": False, "reason": "no_repairable_code_diagnostics"}
 
+    # Fail before selecting either a model or an external agent. Both execution
+    # modes can inspect the workspace, so credential material must disable all
+    # autonomous source repair consistently.
+    _context(root, state, stage, blockers)
+
     agents = _agent_candidates()
     selection = choose_strategy(task, stage=stage, agent_available=bool(agents))
     preferred = selection["strategy"]

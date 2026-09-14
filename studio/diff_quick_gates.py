@@ -2,13 +2,31 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 DEPENDENCY_FILES = {"pubspec.yaml"}
 ANALYZE_FILES = {"analysis_options.yaml", "pubspec.yaml"}
 
 
+def _package_name(root: Path) -> str | None:
+    pubspec = root / "pubspec.yaml"
+    if not pubspec.is_file():
+        return None
+    try:
+        text = pubspec.read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return None
+    match = re.search(r"(?m)^name:\s*([a-zA-Z0-9_]+)\s*$", text)
+    return match.group(1) if match else None
+
+
 def _targeted_tests(root: Path, changed: list[str]) -> list[str]:
     targets: set[str] = set()
+    changed_lib = [
+        rel[len("lib/"):]
+        for rel in changed
+        if rel.startswith("lib/") and rel.endswith(".dart")
+    ]
     for rel in changed:
         if rel.startswith("test/") and rel.endswith("_test.dart"):
             if (root / rel).is_file():
@@ -21,6 +39,25 @@ def _targeted_tests(root: Path, changed: list[str]) -> list[str]:
             for candidate in (direct, leaf):
                 if (root / candidate).is_file():
                     targets.add(candidate)
+
+    if changed_lib:
+        package = _package_name(root)
+        for path in sorted((root / "test").rglob("*_test.dart")) if (root / "test").is_dir() else []:
+            if path.is_symlink() or not path.is_file():
+                continue
+            try:
+                text = path.read_text(encoding="utf-8")
+            except (OSError, UnicodeError):
+                continue
+            rel_test = path.relative_to(root).as_posix()
+            for lib_rel in changed_lib:
+                package_import = f"package:{package}/{lib_rel}" if package else None
+                if package_import and package_import in text:
+                    targets.add(rel_test)
+                    break
+                if re.search(r"['\"][^'\"]*" + re.escape(lib_rel) + r"['\"]", text):
+                    targets.add(rel_test)
+                    break
     return sorted(targets)
 
 

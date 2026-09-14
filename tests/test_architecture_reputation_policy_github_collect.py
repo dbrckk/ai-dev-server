@@ -72,6 +72,29 @@ class GitHubAttestationCollectorTests(unittest.TestCase):
             result=collector.collect(self.plan(True),token="t",repository="o/r",pull_request=7)
         self.assertEqual(result["second_reviewer"]["login"],"bob")
 
+    def test_collect_rejects_mutable_action_reference(self):
+        base=self.fake_request(False)
+        def req(url,token,method="GET",payload=None,allow_404=False):
+            if "/contents/.github/workflows/ci.yml?ref=" in url:
+                raw=(
+                    b"name: CI\n"
+                    b"jobs:\n"
+                    b"  validate:\n"
+                    b"    steps:\n"
+                    b"      - uses: actions/checkout@v4\n"
+                    b"  python-tests:\n"
+                )
+                return {
+                    "path":".github/workflows/ci.yml",
+                    "sha":"blob123",
+                    "encoding":"base64",
+                    "content":base64.b64encode(raw).decode(),
+                }
+            return base(url,token,method,payload,allow_404)
+        with patch.object(collector,"_request",side_effect=req):
+            with self.assertRaises(collector.GitHubAttestationCollectionError):
+                collector.collect(self.plan(False),token="t",repository="o/r",pull_request=7)
+
     def test_collect_rejects_workflow_file_without_required_job(self):
         base=self.fake_request(False)
         def req(url,token,method="GET",payload=None,allow_404=False):

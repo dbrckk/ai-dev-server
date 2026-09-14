@@ -14,6 +14,10 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertEqual(report["failures"], [])
         self.assertFalse(report["policy"]["automatic_dependency_addition"])
         self.assertFalse(report["policy"]["automatic_migration"])
+        self.assertLessEqual(
+            report["policy"]["max_feedback_age_seconds"],
+            90 * 24 * 60 * 60,
+        )
 
 
 if __name__ == "__main__":

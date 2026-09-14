@@ -315,7 +315,14 @@ class Model:
         self.api = API(primary.base, primary.key)
         self.model = primary.model
         self.code_model = primary.code_model or primary.model
-        self.vision = primary.vision_model
+        self.vision = next(
+            (
+                provider.model_for("visual", True)
+                for provider in self.providers
+                if provider.model_for("visual", True)
+            ),
+            "",
+        )
         self.models_used = {}
         self.providers_used = {}
         self.routing_portfolio = {}

@@ -44,7 +44,7 @@ class ReleaseRepairTests(unittest.TestCase):
                     {"passed": False, "blockers": ["excessive_jank"]},
                     "performance_qa",
                     "demo_app",
-                    model_factory=NeverModel,
+                    model_factory=CandidateModel,
                 )
 
     @patch("release_repair._agent_candidates", return_value=["fake-agent"])
@@ -73,9 +73,23 @@ class ReleaseRepairTests(unittest.TestCase):
             def gates(self, name, journeys):
                 return True, [{"command": ["flutter", "test"], "exit_code": 0, "output": ""}]
 
-        class NeverModel:
+        class CandidateModel:
             def __init__(self, limit):
-                raise AssertionError("model must not be constructed for agent_only")
+                self.calls = 0
+                self.models_used = {}
+                self.providers_used = {}
+                self.avoid_providers = set()
+
+            def ask(self, role, context, screenshots=()):
+                self.calls += 1
+                return {
+                    "files": [
+                        {
+                            "path": "lib/app.dart",
+                            "content": "const endpoint = 'https://model.example.com';\n",
+                        }
+                    ]
+                }
 
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
@@ -94,8 +108,13 @@ class ReleaseRepairTests(unittest.TestCase):
 
         self.assertTrue(result["changed"])
         self.assertEqual(result["strategy"], "agent_only")
-        self.assertEqual(result["model_calls"], 0)
+        agent_candidate = next(
+            item for item in result["candidate_search"]["candidates"]
+            if item["strategy"] == "agent_only"
+        )
+        self.assertEqual(agent_candidate["model_calls"], 0)
         self.assertEqual(result["agent"]["agent"], "fake-agent")
+        self.assertEqual(result["candidate_search"]["evaluated"], 2)
 
 
 

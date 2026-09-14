@@ -227,8 +227,6 @@ def next_task(value: dict) -> dict | None:
 
 def mark_running(value: dict, task_id: str) -> dict:
     validate(value)
-    if type(minimum) is not int or minimum < 0 or minimum > 100:
-        raise ObjectiveDagError("objective confidence threshold invalid")
     unsigned = dict(value)
     unsigned.pop("sha256", None)
     tasks = [dict(task) for task in unsigned["tasks"]]
@@ -443,6 +441,8 @@ def append_amendments(value: dict, items: list[str]) -> dict:
 def reopen_confidence_dependency(value: dict, task_id: str, *, minimum: int = 85, reason: str | None = None) -> dict:
     """Re-open a verified low-confidence task for one bounded revalidation attempt."""
     validate(value)
+    if type(minimum) is not int or minimum < 0 or minimum > 100:
+        raise ObjectiveDagError("objective confidence threshold invalid")
     unsigned = dict(value)
     unsigned.pop("sha256", None)
     tasks = [dict(task) for task in unsigned["tasks"]]

@@ -5,7 +5,8 @@ from dataclasses import dataclass
 from typing import Iterable
 
 from .registry import AgentRegistry, AgentSpec, DEFAULT_REGISTRY
-from adaptive_scoring import score_agent
+from adaptive_scoring import score_agent, ScoreTrace
+from safe_rewrite_learning import origin_violation_penalty, rewrite_recovery_bonus
 
 
 @dataclass(frozen=True)
@@ -17,7 +18,16 @@ class RouteDecision:
     trace: dict | None = None
 
 
-def _score(spec: AgentSpec, required: set[str], prefer_free: bool, long_task: bool, *, reliability: float = 0.0, weights: dict[str, float] | None = None) -> RouteDecision:
+def _score(
+    spec: AgentSpec,
+    required: set[str],
+    prefer_free: bool,
+    long_task: bool,
+    *,
+    reliability: float = 0.0,
+    weights: dict[str, float] | None = None,
+    safe_rewrite_summary: dict | None = None,
+) -> RouteDecision:
     matched = sorted(required & set(spec.capabilities))
     missing = sorted(required - set(spec.capabilities))
     coverage = len(matched) / max(1, len(required))
@@ -33,6 +43,25 @@ def _score(spec: AgentSpec, required: set[str], prefer_free: bool, long_task: bo
         reliability=reliability,
         weights=weights,
     )
+    components = dict(trace.components)
+    if isinstance(safe_rewrite_summary, dict):
+        components["architecture_violation"] = -origin_violation_penalty(
+            safe_rewrite_summary,
+            kind="agent",
+            name=spec.name,
+            role="implementation",
+        )
+        components["safe_rewrite_recovery"] = rewrite_recovery_bonus(
+            safe_rewrite_summary,
+            kind="agent",
+            name=spec.name,
+            role="implementation",
+        )
+        trace = ScoreTrace(
+            name=spec.name,
+            total=sum(float(value) for value in components.values()),
+            components=components,
+        )
     score = trace.total
     if not spec.available():
         score -= 1000.0
@@ -51,6 +80,7 @@ def rank_agents(
     long_task: bool = False,
     reliability: dict[str, float] | None = None,
     weights: dict[str, float] | None = None,
+    safe_rewrite_summary: dict | None = None,
 ) -> list[RouteDecision]:
     required_set = {x.strip() for x in required if x and x.strip()}
     reliability = reliability or {}
@@ -62,6 +92,7 @@ def rank_agents(
             long_task,
             reliability=float(reliability.get(spec.name, 0.0)),
             weights=weights,
+            safe_rewrite_summary=safe_rewrite_summary,
         )
         for spec in registry.all()
     ]

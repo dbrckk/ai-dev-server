@@ -92,6 +92,7 @@ def _evaluate_architecture(report,project_out):
             'migration_id':migration_review.get('migration_id'),
             'summary':migration_review.get('summary'),
             'risk':migration_review.get('risk'),
+            'explanation':migration_review.get('explanation'),
             'authorization_required':True,
             'reinforced_review_required':(
                 isinstance(migration_review.get('risk'),dict)

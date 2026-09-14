@@ -7,6 +7,7 @@ import time
 from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
+from architecture_replacement_reputation import lookup as lookup_reputation
 
 MAX_PLANS = 8
 LOW_RISK_DELTA = 15.0
@@ -416,7 +417,7 @@ def _impact(current: dict, replacement: dict) -> dict:
         },
     }
 
-def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None) -> dict:
+def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None, reputation_registry: dict | None = None) -> dict:
     recs = _index(recommendations)
     rows = obsolescence.get("deprecation_candidates", []) if isinstance(obsolescence, dict) else []
     plans = []
@@ -453,6 +454,19 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
         )
         evidence=fused_history if isinstance(fused_history,dict) else history
         reputation=_reputation_state(evidence)
+        persisted_reputation=lookup_reputation(reputation_registry,context)
+        if isinstance(persisted_reputation,dict):
+            reputation={
+                "state":persisted_reputation.get("state"),
+                "reason":persisted_reputation.get("reason"),
+                "promotion_eligible":persisted_reputation.get("promotion_eligible") is True,
+                "requires_revalidation":persisted_reputation.get("requires_revalidation") is True,
+                "transition_reason":persisted_reputation.get("transition_reason"),
+                "updated_at":persisted_reputation.get("updated_at"),
+                "source":"persistent_registry",
+            }
+        else:
+            reputation["source"]="derived_current_evidence"
         if isinstance(evidence,dict) and evidence.get("eligible_for_bias") is True:
             regression=float(evidence.get("regression_rate",0.0) or 0.0)
             wilson=float(evidence.get("wilson_lower_95",0.0) or 0.0)
@@ -561,7 +575,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
     ),reverse=True)
 
     return {
-        "version": 13,
+        "version": 14,
         "status": "planned",
         "advisory_only": True,
         "replacement_plans": plans,
@@ -575,9 +589,9 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
         },
     }
 
-def write(obsolescence: dict, recommendations: dict, out: Path, learning: dict | None = None) -> dict:
+def write(obsolescence: dict, recommendations: dict, out: Path, learning: dict | None = None, reputation_registry: dict | None = None) -> dict:
     out.mkdir(parents=True, exist_ok=True)
-    result = plan(obsolescence, recommendations, learning=learning)
+    result = plan(obsolescence, recommendations, learning=learning, reputation_registry=reputation_registry)
     atomic_write_text(
         out / "architecture-replacement-plan.json",
         json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n",

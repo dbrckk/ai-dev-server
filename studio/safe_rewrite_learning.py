@@ -12,6 +12,8 @@ MAX_PENALTY = 0.25
 DECAY_HALF_LIFE_EVENTS = 20.0
 MIN_EVENT_WEIGHT = 0.05
 RECENT_WINDOW = 8
+EXPLORATION_STALE_EVENTS = 20
+MAX_EXPLORATION_BONUS = 5.0
 
 
 def _decay_weight(age: int) -> float:
@@ -143,7 +145,9 @@ def summarize(path: Path) -> dict:
                 "review_passes": 0,
                 "_weighted_events": [],
                 "_events": [],
+                "_last_index": index,
             })
+            row["_last_index"] = index
             row["samples"] += 1
             row["guard_passes"] += int(event.get("guard_passed") is True)
             row["verification_passes"] += int(event.get("verification_passed") is True)
@@ -159,12 +163,15 @@ def summarize(path: Path) -> dict:
             row["review_pass_rate"] = round(row["review_passes"] / n, 4)
             weighted = row.pop("_weighted_events")
             raw_events = row.pop("_events")
+            last_index = row.pop("_last_index")
             row["decayed_guard_pass_rate"] = round(_weighted_rate(weighted, "guard_passed"), 4)
             row["decayed_verification_pass_rate"] = round(_weighted_rate(weighted, "verification_passed"), 4)
             row["decayed_review_pass_rate"] = round(_weighted_rate(weighted, "review_passed"), 4)
             row["effective_sample_weight"] = round(sum(weight for _, weight in weighted), 4)
             row["recent_verification_streak"] = _recent_success_streak(raw_events, "verification_passed")
             row["rehabilitating"] = row["recent_verification_streak"] >= 3
+            row["events_since_last_observation"] = max(0, newest_index - last_index)
+            row["stale_for_exploration"] = row["events_since_last_observation"] >= EXPLORATION_STALE_EVENTS
             row["eligible_for_routing_bias"] = row["samples"] >= MIN_SAMPLES
             result.append(row)
         result.sort(key=lambda x: (-x["verification_pass_rate"], -x["guard_pass_rate"], -x["samples"], x["name"]))
@@ -182,6 +189,8 @@ def summarize(path: Path) -> dict:
             "decay_half_life_events": DECAY_HALF_LIFE_EVENTS,
             "minimum_event_weight": MIN_EVENT_WEIGHT,
             "recent_window": RECENT_WINDOW,
+            "exploration_stale_events": EXPLORATION_STALE_EVENTS,
+            "max_exploration_bonus": MAX_EXPLORATION_BONUS,
         },
     }
 
@@ -213,6 +222,25 @@ def rewrite_recovery_bonus(summary: dict, *, kind: str, name: str, role: str) ->
         # Smaller than the maximum violation penalty: recovery skill must not
         # make architecture violations strategically desirable.
         return round(min(10.0, (quality - 0.6) / 0.4 * 10.0), 4)
+    return 0.0
+
+
+def exploration_bonus(summary: dict, *, kind: str, name: str, role: str) -> float:
+    if role != "implementation" or not isinstance(summary, dict):
+        return 0.0
+    rows = summary.get("origin_rankings")
+    if not isinstance(rows, list):
+        return 0.0
+    for row in rows:
+        if row.get("kind") != kind or row.get("name") != name:
+            continue
+        if row.get("eligible_for_routing_bias") is not True:
+            return 0.0
+        stale = int(row.get("events_since_last_observation", 0) or 0)
+        if stale < EXPLORATION_STALE_EVENTS:
+            return 0.0
+        excess = stale - EXPLORATION_STALE_EVENTS
+        return round(min(MAX_EXPLORATION_BONUS, 1.0 + excess / 10.0), 4)
     return 0.0
 
 

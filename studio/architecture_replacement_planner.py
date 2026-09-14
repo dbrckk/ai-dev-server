@@ -41,6 +41,8 @@ def _major(value):
 def _version_similarity(expected, observed) -> float:
     expected=_major(expected)
     observed=_major(observed)
+    if expected is None and observed is None:
+        return 1.0
     if expected is None or observed is None:
         return 0.5
     gap=abs(expected-observed)
@@ -53,9 +55,11 @@ def _version_similarity(expected, observed) -> float:
     return 0.0
 
 def _numeric_similarity(expected, observed) -> float:
-    if not isinstance(expected,(int,float)) or isinstance(expected,bool):
-        return 0.5
-    if not isinstance(observed,(int,float)) or isinstance(observed,bool):
+    expected_valid=isinstance(expected,(int,float)) and not isinstance(expected,bool)
+    observed_valid=isinstance(observed,(int,float)) and not isinstance(observed,bool)
+    if not expected_valid and not observed_valid:
+        return 1.0
+    if not expected_valid or not observed_valid:
         return 0.5
     gap=abs(float(expected)-float(observed))
     if gap==0:
@@ -67,6 +71,8 @@ def _numeric_similarity(expected, observed) -> float:
     return 0.0
 
 def _categorical_similarity(expected, observed) -> float:
+    if expected is None and observed is None:
+        return 1.0
     if expected is None or observed is None:
         return 0.5
     return 1.0 if expected==observed else 0.0
@@ -101,7 +107,7 @@ def _compatibility_distance(history: dict | None, context: dict) -> dict:
     # Explicit categorical incompatibilities are stronger evidence than a merely
     # nearby version number, so they cap cross-context transfer.
     if context.get("framework") is not None and history.get("framework") is not None and context.get("framework")!=history.get("framework"):
-        transferability=min(transferability,0.35)
+        transferability=min(transferability,0.20)
     if context.get("project_type") is not None and history.get("project_type") is not None and context.get("project_type")!=history.get("project_type"):
         transferability=min(transferability,0.60)
     if context.get("platform") is not None and history.get("platform") is not None and context.get("platform")!=history.get("platform"):
@@ -169,7 +175,7 @@ def _replacement_history(learning: dict | None, current_repo: str, replacement_r
 def _recency_factor(history: dict, now: float | None = None) -> float:
     latest=history.get("latest_observed_at")
     if not isinstance(latest,(int,float)):
-        return 0.5
+        return 1.0
     now=float(now) if isinstance(now,(int,float)) else time.time()
     age_seconds=max(0.0,now-float(latest))
     age_days=age_seconds/86400.0
@@ -267,20 +273,20 @@ def _fuse_histories(histories: list[dict], now: float | None = None) -> dict | N
         weight for weight,history in weighted
         if history.get("regime_shift") is True
     )/total
-    regime_shift=regime_shift_weight>=0.35
+    regime_shift=regime_shift_weight>=0.50
     sequential_drift_weight=sum(
         weight for weight,history in weighted
         if isinstance(history.get("sequential_drift"),dict)
         and history["sequential_drift"].get("drift_detected") is True
     )/total
-    sequential_drift=sequential_drift_weight>=0.35
+    sequential_drift=sequential_drift_weight>=0.50
     recovery_weight=sum(
         weight for weight,history in weighted
         if isinstance(history.get("sequential_drift"),dict)
         and history["sequential_drift"].get("recovery_detected") is True
     )/total
     recovery_candidate=(
-        recovery_weight>=0.35
+        recovery_weight>=0.50
         and not sequential_drift
         and not regime_shift
     )

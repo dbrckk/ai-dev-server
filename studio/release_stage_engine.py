@@ -4,6 +4,7 @@ from __future__ import annotations
 from diagnostics import classify, repairable
 from core import StudioError
 from release_repair import MAX_RELEASE_REPAIR_ROUNDS, attempt as repair_attempt
+from repair_planner import plan
 
 
 def evaluate_and_repair(
@@ -56,6 +57,7 @@ def evaluate_and_repair(
 
     diagnostics = classify(stage, evidence)
     evidence["diagnostics"] = diagnostics
+    evidence["repair_plan"] = plan(stage, diagnostics)
     evidence["agentic_remediation"] = {
         "attempted": bool(history),
         "rounds": history,

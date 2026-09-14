@@ -78,5 +78,50 @@ class ArchitectureLearningTests(unittest.TestCase):
 
 
 
+    def test_same_repo_is_separated_by_domain(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+
+            mobile = root / "mobile"
+            mobile.mkdir()
+            (mobile / "architecture-outcome.json").write_text(
+                json.dumps({
+                    "schema": 1,
+                    "chosen_contexts": [{"repo": "a/core", "domain": "mobile"}],
+                    "outcome": {
+                        "successful": True,
+                        "model_calls_this_cycle": 2,
+                        "cycles": 1,
+                        "blocker_count": 0,
+                    },
+                }),
+                encoding="utf-8",
+            )
+
+            backend = root / "backend"
+            backend.mkdir()
+            (backend / "architecture-outcome.json").write_text(
+                json.dumps({
+                    "schema": 1,
+                    "chosen_contexts": [{"repo": "a/core", "domain": "backend"}],
+                    "outcome": {
+                        "successful": False,
+                        "model_calls_this_cycle": 5,
+                        "cycles": 3,
+                        "blocker_count": 2,
+                    },
+                }),
+                encoding="utf-8",
+            )
+
+            rankings = al.summarize(root)["rankings"]
+
+            by_domain = {row["domain"]: row for row in rankings}
+            self.assertEqual(set(by_domain), {"mobile", "backend"})
+            self.assertEqual(by_domain["mobile"]["success_rate"], 1.0)
+            self.assertEqual(by_domain["backend"]["success_rate"], 0.0)
+
+
+
 if __name__ == "__main__":
     unittest.main()

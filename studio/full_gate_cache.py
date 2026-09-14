@@ -9,6 +9,7 @@ from pathlib import Path
 from atomic_file import write_text as atomic_write_text
 from core import IMAGE, canonical
 from flutter_workspace import snapshot as flutter_snapshot
+from file_lock import exclusive
 
 SCHEMA = 1
 MAX_ENTRIES = 128
@@ -98,20 +99,26 @@ def save(entries: dict) -> None:
     path = _path()
     if path is None:
         return
-    clean = [
-        (key, {"passed": True})
-        for key, row in entries.items()
-        if isinstance(key, str)
-        and len(key) == 64
-        and isinstance(row, dict)
-        and row.get("passed") is True
-    ][-MAX_ENTRIES:]
-    payload = {
-        "schema": SCHEMA,
-        "flutter_image": IMAGE,
-        "entries": dict(clean),
-    }
-    atomic_write_text(path, canonical(payload), encoding="utf-8")
+    with exclusive(path):
+        merged = load()
+        merged.update(entries)
+        clean = [
+            (key, {"passed": True})
+            for key, row in merged.items()
+            if isinstance(key, str)
+            and len(key) == 64
+            and isinstance(row, dict)
+            and row.get("passed") is True
+        ][-MAX_ENTRIES:]
+        clean_entries = dict(clean)
+        entries.clear()
+        entries.update(clean_entries)
+        payload = {
+            "schema": SCHEMA,
+            "flutter_image": IMAGE,
+            "entries": clean_entries,
+        }
+        atomic_write_text(path, canonical(payload), encoding="utf-8")
 
 
 def hit(entries: dict, key: str) -> bool:

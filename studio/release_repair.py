@@ -18,6 +18,7 @@ from persistent_quick_gate_cache import load as load_persistent_quick_cache, sav
 from full_gate_cache import load as load_full_gate_cache, save as save_full_gate_cache
 from immutable_artifact_cache import load as load_artifact_cache, save as save_artifact_cache
 from artifact_cas_stats import summary as artifact_cas_summary
+from idempotent_model import ask as checkpointed_model_ask
 
 MAX_RELEASE_REPAIR_ROUNDS = 2
 MAX_MODEL_CALLS_PER_BRANCH = 2
@@ -131,7 +132,7 @@ def _model_mutation(root: Path, state: dict, stage: str, blockers: list[str], ta
         last_provider = task.get("last_provider")
         if isinstance(last_provider, str) and last_provider and hasattr(model, "avoid_providers"):
             model.avoid_providers.add(last_provider)
-    patch = model.ask("release_fix", context)
+    patch, checkpoint_reused, checkpoint_key = checkpointed_model_ask(model, "release_fix", context, namespace="release_fix")
     files = patch_check(patch)
     for item in files:
         if item["path"].startswith(("test/", "docs/")):
@@ -141,6 +142,8 @@ def _model_mutation(root: Path, state: dict, stage: str, blockers: list[str], ta
         "model_calls": model.calls,
         "models_used": getattr(model, "models_used", {}),
         "providers_used": getattr(model, "providers_used", {}),
+        "checkpoint_reused": checkpoint_reused,
+        "checkpoint_key": checkpoint_key,
         "agent": None,
     }
 

@@ -44,11 +44,11 @@ class ArchitecturePlannerTests(unittest.TestCase):
 
     def test_verified_history_can_reorder_with_small_bounded_bonus(self):
         recs={"matches":[
-            {"repo":"a/core","score":90.0,"quality_score":9.0,"tier":"core","capabilities":["testing"]},
-            {"repo":"b/other","score":91.0,"quality_score":8.0,"tier":"core","capabilities":["ui"]},
+            {"repo":"a/core","score":90.0,"quality_score":9.0,"tier":"core","domain":"software_engineering","capabilities":["testing"]},
+            {"repo":"b/other","score":91.0,"quality_score":8.0,"tier":"core","domain":"software_engineering","capabilities":["ui"]},
         ]}
         learning={"rankings":[
-            {"repo":"a/core","samples":8,"success_rate":1.0,"mean_model_calls":2.0,"mean_cycles":1.0,"mean_blockers":0.0}
+            {"repo":"a/core","domain":"software_engineering","framework":"flutter","project_type":"general","primary_domain":"software_engineering","samples":8,"success_rate":1.0,"mean_model_calls":2.0,"mean_cycles":1.0,"mean_blockers":0.0}
         ]}
         result=plan({"target_repo":"o/r","app_name":"demo"},recs,learning=learning)
         self.assertTrue(result["feedback_applied"])
@@ -63,7 +63,7 @@ class ArchitecturePlannerTests(unittest.TestCase):
             {"repo":"c/synergy","score":90.0,"quality_score":9.0,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
         ]}
         learning={"stack_rankings":[
-            {"repos":["a/base","c/synergy"],"samples":8,"success_rate":1.0}
+            {"repos":["a/base","c/synergy"],"framework":"flutter","project_type":"general","primary_domain":"mobile","samples":8,"success_rate":1.0}
         ]}
         result=plan({"target_repo":"o/r","app_name":"demo"},recs,learning=learning)
         self.assertEqual(result["chosen"][0]["repo"],"a/base")
@@ -78,7 +78,7 @@ class ArchitecturePlannerTests(unittest.TestCase):
             {"repo":"c/synergy","score":90.0,"quality_score":9.0,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
         ]}
         learning={"stack_rankings":[
-            {"repos":["a/base","c/synergy"],"samples":4,"success_rate":1.0}
+            {"repos":["a/base","c/synergy"],"framework":"flutter","project_type":"general","primary_domain":"mobile","samples":4,"success_rate":1.0}
         ]}
         result=plan({"target_repo":"o/r","app_name":"demo"},recs,learning=learning)
         self.assertEqual(result["chosen"][1]["repo"],"b/plain")
@@ -91,7 +91,7 @@ class ArchitecturePlannerTests(unittest.TestCase):
             {"repo":"c/stable","score":90.5,"quality_score":9.0,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
         ]}
         learning={"stack_rankings":[
-            {"repos":["a/base","b/risky"],"samples":8,"success_rate":0.0}
+            {"repos":["a/base","b/risky"],"framework":"flutter","project_type":"general","primary_domain":"mobile","samples":8,"success_rate":0.0}
         ]}
         result=plan({"target_repo":"o/r","app_name":"demo"},recs,learning=learning)
         self.assertEqual(result["chosen"][1]["repo"],"c/stable")

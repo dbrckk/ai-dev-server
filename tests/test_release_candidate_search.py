@@ -64,6 +64,41 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
             self.assertEqual(source.read_text(), "base\n")
             self.assertEqual(candidate["changed_files"], ["lib/app.dart"])
 
+    def test_generated_flutter_artifacts_are_purged_between_candidates(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source = root / "lib/app.dart"
+            source.parent.mkdir(parents=True)
+            source.write_text("base\n")
+
+            def mutate():
+                source.write_text("candidate\n")
+                (root / "build").mkdir()
+                (root / "build/stale.txt").write_text("stale")
+                (root / ".dart_tool").mkdir()
+                (root / ".dart_tool/stale.txt").write_text("stale")
+                goldens = root / "test/goldens"
+                goldens.mkdir(parents=True)
+                (goldens / "stale.png").write_bytes(b"png")
+                return {"model_calls": 1}
+
+            candidate = run_candidate(
+                root,
+                strategy="model_only",
+                strategy_prior_score=10,
+                mutate=mutate,
+                state=STATE,
+                app_name="demo_app",
+                sandbox_factory=PassingSandbox,
+            )
+
+            self.assertTrue(candidate["passed"])
+            self.assertFalse((root / "build").exists())
+            self.assertFalse((root / ".dart_tool").exists())
+            self.assertFalse((root / "test/goldens").exists())
+            self.assertEqual(source.read_text(), "base\n")
+
+
     def test_failed_candidate_cannot_contaminate_next_candidate(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

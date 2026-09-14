@@ -9,7 +9,26 @@ from pathlib import Path
 from atomic_file import write_text as atomic_write_text
 
 
-SUCCESS_STATUSES = {"validated_preview", "finished", "complete", "technical_store_ready"}
+SUCCESS_STATUSES = {
+    "validated_preview",
+    "finished",
+    "complete",
+    "technical_store_ready",
+    "godot_preview_validated",
+    "godot_technical_store_ready",
+    "godot_play_validated",
+    "godot_published",
+}
+
+
+def _count(value) -> int:
+    if isinstance(value, bool):
+        return 0
+    if isinstance(value, int):
+        return max(0, value)
+    if isinstance(value, (list, tuple, set, dict)):
+        return len(value)
+    return 0
 
 
 def _decision_id(decision: dict) -> str:

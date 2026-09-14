@@ -186,9 +186,10 @@ def attempt(
     candidates = []
     quick_gate_cache = load_persistent_quick_cache()
     full_gate_cache = load_full_gate_cache()
-    artifact_cache_enabled = bool(
-        os.environ.get("STUDIO_ARTIFACT_CACHE_PATH")
-        and os.environ.get("STUDIO_ARTIFACT_CAS_PATH")
+    artifact_cache_enabled = (
+        os.environ.get("STUDIO_ARTIFACT_CACHE_ENABLED") == "1"
+        and bool(os.environ.get("STUDIO_ARTIFACT_CACHE_PATH"))
+        and bool(os.environ.get("STUDIO_ARTIFACT_CAS_PATH"))
     )
     artifact_cache = load_artifact_cache() if artifact_cache_enabled else None
     for strategy_index, strategy_name in enumerate(strategies):

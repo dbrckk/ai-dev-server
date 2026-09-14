@@ -59,6 +59,37 @@ class ProviderRouterTests(unittest.TestCase):
             providers = load_providers(prefer_free=True)
         self.assertEqual([p.name for p in providers], ["free", "primary"])
 
+    def test_local_endpoint_is_unmetered_by_default(self):
+        env = {
+            "STUDIO_API_KEY": "local-key",
+            "STUDIO_API_BASE": "http://127.0.0.1:11434/v1",
+            "STUDIO_MODEL": "local-model",
+        }
+        with patch.dict(os.environ, env, clear=True):
+            providers = load_providers()
+        self.assertTrue(providers[0].unmetered)
+
+    def test_remote_endpoint_is_metered_by_default(self):
+        env = {
+            "STUDIO_API_KEY": "remote-key",
+            "STUDIO_API_BASE": "https://example.invalid/v1",
+            "STUDIO_MODEL": "remote-model",
+        }
+        with patch.dict(os.environ, env, clear=True):
+            providers = load_providers()
+        self.assertFalse(providers[0].unmetered)
+
+    def test_unmetered_can_be_explicit_for_remote_self_hosted_gateway(self):
+        env = {
+            "STUDIO_API_KEY": "gateway-key",
+            "STUDIO_API_BASE": "https://gateway.example.invalid/v1",
+            "STUDIO_MODEL": "self-hosted-model",
+            "STUDIO_PROVIDER_UNMETERED": "true",
+        }
+        with patch.dict(os.environ, env, clear=True):
+            providers = load_providers()
+        self.assertTrue(providers[0].unmetered)
+
     def test_vision_candidates_exclude_text_only_provider(self):
         config = [{
             "name": "vision",

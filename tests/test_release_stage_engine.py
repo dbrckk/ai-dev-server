@@ -27,6 +27,27 @@ class ReleaseStageEngineTests(unittest.TestCase):
         self.assertEqual(evidence["diagnostics"]["environment"], ["adb_unavailable"])
         self.assertFalse(evidence["agentic_remediation"]["attempted"])
 
+    def test_transient_environment_failure_retries_without_model(self):
+        responses = iter([
+            {"passed": False, "blockers": ["emulator_boot_timeout"]},
+            {"passed": True, "blockers": []},
+        ])
+
+        def validator(root, out):
+            return next(responses)
+
+        with patch("release_stage_engine.repair_attempt") as repair:
+            evidence = evaluate_and_repair(
+                Path("."), Path("."), {}, {"app_name": "demo_app"},
+                "native_qa", validator,
+            )
+
+        repair.assert_not_called()
+        self.assertTrue(evidence["passed"])
+        self.assertTrue(evidence["environment_retry"]["attempted"])
+        self.assertTrue(evidence["environment_retry"]["converged"])
+
+
     def test_code_failure_repairs_then_revalidates(self):
         responses = iter([
             {"passed": False, "blockers": ["excessive_jank"]},

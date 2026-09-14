@@ -199,15 +199,25 @@ def stack_adjustment(
         normalized_framework = framework if isinstance(framework, str) and framework else None
         normalized_project_type = project_type if isinstance(project_type, str) and project_type else None
         normalized_primary_domain = primary_domain if isinstance(primary_domain, str) and primary_domain else None
-        if row_framework is not None and row_framework != normalized_framework:
-            continue
         row_project_type = row.get("project_type")
         row_project_type = row_project_type if isinstance(row_project_type, str) and row_project_type else None
-        if row_project_type is not None and row_project_type != normalized_project_type:
-            continue
         row_primary_domain = row.get("primary_domain")
         row_primary_domain = row_primary_domain if isinstance(row_primary_domain, str) and row_primary_domain else None
-        if row_primary_domain is not None and row_primary_domain != normalized_primary_domain:
+
+        requested_context = (
+            normalized_framework,
+            normalized_project_type,
+            normalized_primary_domain,
+        )
+        row_context = (
+            row_framework,
+            row_project_type,
+            row_primary_domain,
+        )
+        if any(value is not None for value in requested_context):
+            if row_context != requested_context:
+                continue
+        elif any(value is not None for value in row_context):
             continue
         latest = row.get("latest_observed_at")
         if isinstance(latest, (int, float)) and now_value - float(latest) > MAX_EVIDENCE_AGE_SECONDS:

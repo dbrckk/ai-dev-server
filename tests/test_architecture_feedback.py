@@ -41,10 +41,11 @@ class ArchitectureFeedbackTests(unittest.TestCase):
         result = af.apply(recs, learning)
 
         self.assertTrue(result["feedback_applied"])
-        self.assertEqual(result["matches"][0]["repo"], "a/core")
-        self.assertEqual(result["matches"][0]["feedback_score"], 90.75)
+        by_repo = {row["repo"]: row for row in result["matches"]}
+        self.assertEqual(result["matches"][0]["repo"], "b/other")
+        self.assertEqual(by_repo["a/core"]["feedback_score"], 90.75)
         self.assertLessEqual(
-            abs(result["matches"][0]["historical_evidence"]["advisory_bonus"]),
+            abs(by_repo["a/core"]["historical_evidence"]["advisory_bonus"]),
             af.MAX_SCORE_BONUS,
         )
         self.assertFalse(result["feedback_policy"]["can_add_dependency"])

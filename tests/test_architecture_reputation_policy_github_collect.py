@@ -16,10 +16,10 @@ class GitHubAttestationCollectorTests(unittest.TestCase):
 
     def responses(self,reinforced=False):
         reviews=[
-            {"user":{"login":"alice"},"state":"APPROVED","commit_id":"a"*40},
+            {"user":{"login":"alice"},"state":"APPROVED","commit_id":"a"*40,"submitted_at":"2026-01-01T00:00:10Z"},
         ]
         if reinforced:
-            reviews.append({"user":{"login":"bob"},"state":"APPROVED","commit_id":"a"*40})
+            reviews.append({"user":{"login":"bob"},"state":"APPROVED","commit_id":"a"*40,"submitted_at":"2026-01-01T00:00:20Z"})
         return reviews
 
     def fake_request(self,reinforced=False):
@@ -34,6 +34,8 @@ class GitHubAttestationCollectorTests(unittest.TestCase):
                     "base":{"ref":"main"},
                     "user":{"login":"alice"},
                 }
+            if "/commits/" in url and "/check-runs" not in url:
+                return {"commit":{"committer":{"date":"2026-01-01T00:00:00Z"}}}
             if "/collaborators/alice/permission" in url:
                 return {"permission":"write"}
             if "/collaborators/bob/permission" in url:
@@ -58,6 +60,16 @@ class GitHubAttestationCollectorTests(unittest.TestCase):
         with patch.object(collector,"_request",side_effect=self.fake_request(True)):
             result=collector.collect(self.plan(True),token="t",repository="o/r",pull_request=7)
         self.assertEqual(result["second_reviewer"]["login"],"bob")
+
+    def test_collect_rejects_review_older_than_head_commit(self):
+        base=self.fake_request(False)
+        def req(url,token,method="GET",payload=None,allow_404=False):
+            if "/pulls/7/reviews" in url:
+                return [{"user":{"login":"alice"},"state":"APPROVED","commit_id":"a"*40,"submitted_at":"2025-12-31T23:59:59Z"}]
+            return base(url,token,method,payload,allow_404)
+        with patch.object(collector,"_request",side_effect=req):
+            with self.assertRaises(collector.GitHubAttestationCollectionError):
+                collector.collect(self.plan(False),token="t",repository="o/r",pull_request=7)
 
     def test_collect_rejects_draft_pr(self):
         base=self.fake_request(False)

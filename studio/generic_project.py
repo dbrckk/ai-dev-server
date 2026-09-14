@@ -250,11 +250,16 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
 
     initial_remaining = None if deadline is None else max(0.0, deadline - clock())
     initial_capacity_status = capacity_snapshot(provider_monthly_quota_path)
-    base_model_calls = int(req.get("max_calls", 12))
+    explicit_project_limit = req.get("max_project_model_calls")
+    base_model_calls = int(
+        explicit_project_limit
+        if isinstance(explicit_project_limit, int)
+        else req.get("max_calls", 12)
+    )
     capacity_plan = expanded_call_limit(
         base_model_calls,
         initial_capacity_status,
-        explicit_limit=req.get("max_project_model_calls") is not None,
+        explicit_limit=explicit_project_limit is not None,
     )
     state["capacity_status"] = initial_capacity_status
     state["capacity_budget"] = capacity_plan

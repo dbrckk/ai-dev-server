@@ -86,6 +86,24 @@ class ApprovalProvenanceTests(unittest.TestCase):
         with self.assertRaises(ApprovalProvenanceError):
             validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
 
+    def test_github_attestation_rejects_workflow_content_with_mutable_action(self):
+        a=self.github_attestation()
+        raw=(
+            b"name: CI\n"
+            b"jobs:\n"
+            b"  validate:\n"
+            b"    steps:\n"
+            b"      - uses: actions/checkout@v4\n"
+            b"  python-tests:\n"
+        )
+        import base64
+        a["workflow_file"]["content_b64"]=base64.b64encode(raw).decode()
+        a["workflow_file"]["size"]=len(raw)
+        a["workflow_file"]["sha256"]=hashlib.sha256(raw).hexdigest()
+        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
+        with self.assertRaises(ApprovalProvenanceError):
+            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
+
     def test_github_attestation_rejects_wrong_workflow_file_digest(self):
         a=self.github_attestation()
         a["workflow_file"]["sha256"]="bad"

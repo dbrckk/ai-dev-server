@@ -292,3 +292,42 @@ def reject_stagnant_surface(guard: dict, changed_files: list[str]) -> bool:
     if not isinstance(guard, dict) or guard.get("active") is not True:
         return False
     return sorted(set(changed_files)) == sorted(set(guard.get("blocked_file_set", [])))
+
+
+def affected_verified_tasks(value: dict, changed_files: list[str], dependency_graph: dict | None) -> list[str]:
+    """Return previously verified tasks whose evidence surface is affected by new changes."""
+    validate(value)
+    changed = {str(x) for x in changed_files if x}
+    if not changed:
+        return []
+    edges = dependency_graph.get("edges", {}) if isinstance(dependency_graph, dict) else {}
+    reverse = dependency_graph.get("reverse", {}) if isinstance(dependency_graph, dict) else {}
+    affected = set(changed)
+    frontier = list(changed)
+    depth = 0
+    while frontier and depth < 2 and len(affected) < 300:
+        nxt = []
+        for rel in frontier:
+            for neighbor in [*edges.get(rel, []), *reverse.get(rel, [])]:
+                if neighbor not in affected:
+                    affected.add(neighbor)
+                    nxt.append(neighbor)
+        frontier = nxt
+        depth += 1
+
+    task_ids = []
+    for task_id, row in value.get("tasks", {}).items():
+        if not isinstance(row, dict) or row.get("last_status") != "verified":
+            continue
+        attempts = row.get("attempts", [])
+        verified_attempt = next(
+            (attempt for attempt in reversed(attempts) if isinstance(attempt, dict) and attempt.get("status") == "verified"),
+            None,
+        )
+        if not isinstance(verified_attempt, dict):
+            continue
+        evidence_files = set(verified_attempt.get("changed_files", []))
+        evidence_tests = set(verified_attempt.get("impacted_tests", []))
+        if affected & (evidence_files | evidence_tests):
+            task_ids.append(task_id)
+    return sorted(task_ids)

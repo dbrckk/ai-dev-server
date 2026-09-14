@@ -98,5 +98,30 @@ class ArchitectureObsolescenceTests(unittest.TestCase):
         self.assertEqual(result["deprecation_candidates"][0]["maintenance_signal"],"active")
         self.assertFalse(result["policy"]["auto_deprecate"])
 
+    def test_version_probe_context_is_propagated(self):
+        benchmark=self.benchmark()
+        benchmark["comparisons"][0].update({
+            "framework":"flutter",
+            "project_type":"game",
+            "primary_domain":"mobile",
+            "platform":"android",
+        })
+        versions={
+            "a/current":{"status":"known","major_version":1,"tag_name":"v1.9.0"},
+            "a/better":{"status":"known","major_version":3,"tag_name":"v3.1.0"},
+        }
+        result=evaluate(
+            self.learning(),
+            benchmark,
+            self.recommendations(),
+            versions=versions,
+        )
+        row=result["deprecation_candidates"][0]
+        self.assertEqual(row["framework"],"flutter")
+        self.assertEqual(row["platform"],"android")
+        self.assertEqual(row["current_major_version"],1)
+        self.assertEqual(row["replacement_major_version"],3)
+        self.assertEqual(row["replacement_version_evidence"]["tag_name"],"v3.1.0")
+
 if __name__=="__main__":
     unittest.main()

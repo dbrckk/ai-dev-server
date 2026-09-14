@@ -213,3 +213,49 @@ def load(path: Path) -> dict:
     except (OSError, json.JSONDecodeError) as exc:
         raise TaskSemanticCheckpointError("task semantic checkpoint unreadable") from exc
     return validate(value)
+
+
+def retry_policy(value: dict, task_id: str) -> dict:
+    """Derive bounded task-local routing diversification from recent failed attempts."""
+    validate(value)
+    row = value.get("tasks", {}).get(task_id)
+    if not isinstance(row, dict):
+        return {
+            "failed_attempts": 0,
+            "avoid_agents": [],
+            "avoid_providers": [],
+            "avoid_models": [],
+            "repeated_failure_signature": None,
+        }
+    attempts = [
+        attempt for attempt in row.get("attempts", [])
+        if isinstance(attempt, dict) and attempt.get("status") != "verified"
+    ][-3:]
+    agents = set()
+    providers = set()
+    models = set()
+    signatures = []
+    for attempt in attempts:
+        agents.update(str(x) for x in attempt.get("agents", []) if x)
+        for model in attempt.get("models", []):
+            if not isinstance(model, dict):
+                continue
+            provider = str(model.get("provider") or "").strip()
+            model_name = str(model.get("model") or "").strip()
+            if provider:
+                providers.add(provider)
+            if model_name:
+                models.add(model_name)
+        signature = attempt.get("failure_signature")
+        if isinstance(signature, str) and len(signature) == 64:
+            signatures.append(signature)
+    repeated_signature = None
+    if len(signatures) >= 2 and len(set(signatures[-2:])) == 1:
+        repeated_signature = signatures[-1]
+    return {
+        "failed_attempts": len(attempts),
+        "avoid_agents": sorted(agents),
+        "avoid_providers": sorted(providers),
+        "avoid_models": sorted(models),
+        "repeated_failure_signature": repeated_signature,
+    }

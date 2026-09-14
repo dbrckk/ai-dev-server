@@ -66,6 +66,8 @@ Prefer explicit tasks when the objective contains multiple dependent subgoals. K
 When a task acceptance criterion is mechanically checkable, encode it as one of:
 - file:path/to/file
 - symbol:path/to/file#symbol_name
+- no-symbol:path/to/file#symbol_name
+- absent:path/to/file
 - test:path/to/test.py::test_name
 - build:default
 - json:path/to/file.json#dot.path=<JSON literal>
@@ -77,7 +79,7 @@ You receive the original plan, the exact validation error and the accepted task 
 Return ONLY a corrected JSON plan.
 Preserve valid task IDs/titles/dependencies where possible.
 Do not add unrelated work.
-Critical tasks must include at least one strong deterministic done_when criterion using symbol:, test:, build:, or json:. A file: existence check alone is not sufficient for a critical task.
+Critical tasks must include at least one strong deterministic done_when criterion using symbol:, no-symbol:, test:, build:, or json:. file: or absent: alone is not sufficient for a critical task.
 Structured paths must be repository-relative and must not contain '..' or absolute paths."""
 
 TASK_PLAN_SYSTEM = """You are maintaining one subgoal inside an already validated project objective DAG.
@@ -782,7 +784,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
                             "validation_error": initial_plan_error,
                             "rules": {
                                 "critical_requires_strong_deterministic_done_when": True,
-                                "structured_prefixes": ["file:","symbol:","test:","build:","json:"],
+                                "structured_prefixes": ["file:","symbol:","no-symbol:","absent:","test:","build:","json:"],
                                 "paths_must_be_repository_relative": True,
                                 "max_tasks": 64,
                             },
@@ -1751,12 +1753,14 @@ Objective and current plan:
                 done_when_baseline,
                 first_attempt=int(active_task_contract.get("attempt", 1) or 1) == 1,
             )
-        deterministic_command_refs = [
+        deterministic_external_refs = [
             str(ref)
             for item in deterministic_done_when.get("deterministic", [])
             if isinstance(item, dict)
             for ref in item.get("evidence_refs", [])
-            if isinstance(ref, str) and ref.startswith("command:")
+            if isinstance(ref, str) and (
+                ref.startswith("command:") or ref.startswith("absent:")
+            )
         ]
         allowed_task_evidence_refs = sorted(set(
             [str(item) for item in changed if item]
@@ -1765,7 +1769,7 @@ Objective and current plan:
                 for item in targeted_impact.get("impacted_tests", [])
                 if item
             ]
-            + deterministic_command_refs
+            + deterministic_external_refs
         ))
         review_context = {
             "brief": req["brief"],

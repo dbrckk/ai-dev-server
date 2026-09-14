@@ -8,7 +8,7 @@ from pathlib import Path
 
 _NAME_RE=re.compile(r"^[A-Z][A-Z0-9_]{2,127}$")
 SECRET_NAME_RE=re.compile(
-    r"\\b([A-Z][A-Z0-9_]{2,}(?:API_KEY|TOKEN|SECRET|PASSWORD|ACCESS_KEY|PRIVATE_KEY))\\b"
+    r"\b([A-Z][A-Z0-9_]{2,}(?:API_KEY|TOKEN|SECRET|PASSWORD|ACCESS_KEY|PRIVATE_KEY))\b"
 )
 
 
@@ -67,17 +67,17 @@ def write(root: Path, value: dict) -> None:
     machine=root/"user-input-required.json"
     human=root/"USER_INPUT_REQUIRED.txt"
     machine.write_text(
-        json.dumps(value,sort_keys=True,ensure_ascii=False,indent=2)+"\\n",
+        json.dumps(value,sort_keys=True,ensure_ascii=False,indent=2)+"\n",
         encoding="utf-8",
     )
     human.write_text(
         "External input is required before autonomous work can continue.\\n\\n"
-        + "Required environment/secret names:\\n"
-        + "".join(f"- {name}\\n" for name in value["required_env"])
-        + "\\nReason:\\n"
+        + "Required environment/secret names:\n"
+        + "".join(f"- {name}\n" for name in value["required_env"])
+        + "\nReason:\n"
         + value["reason"]
-        + "\\n\\nAdd the required value(s) to the configured secret/environment manager. "
-          "Do not write secret values into these files. The next run will detect availability automatically.\\n",
+        + "\n\nAdd the required value(s) to the configured secret/environment manager. "
+          "Do not write secret values into these files. The next run will detect availability automatically.\n",
         encoding="utf-8",
     )
 

@@ -70,6 +70,7 @@ from local_model_leaderboard import leaderboards as local_model_leaderboards
 from model_portfolio import choose as choose_model_portfolio
 from model_portfolio_audit import audit as audit_model_portfolio
 from portfolio_candidate_scheduler import choose_schedule as choose_candidate_schedule
+from provider_router import load_providers as load_direct_providers, candidates_for as direct_candidates_for
 from model_portfolio_learning import (
     load as load_model_portfolio_learning,
     record as record_model_portfolio_outcome,
@@ -614,12 +615,25 @@ Objective and current plan:
                     predicted_reserve_seconds=difficulty.verification_reserve_seconds,
                 )
                 agent_trace.append({"status":"execution_budget","decision":route_budget.as_dict()})
+                try:
+                    direct_model_candidates = direct_candidates_for(
+                        "implementation",
+                        providers=load_direct_providers(prefer_free=True),
+                    )
+                    available_direct_models = len({
+                        (provider.name, provider.model_for("implementation"))
+                        for provider in direct_model_candidates
+                        if provider.model_for("implementation")
+                    })
+                except ValueError:
+                    available_direct_models = 1
                 candidate_schedule = choose_candidate_schedule(
                     capacity_status=state.get("capacity_status", {}),
                     route_confidence=meta_route.confidence,
                     verification_seconds=verification_seconds,
                     remaining_seconds=remaining_seconds,
                     available_agents=min(len(preliminary_names), route_budget.agent_limit),
+                    available_models=min(3, max(1, available_direct_models)),
                     strategy=meta_route.strategy,
                 )
                 agent_trace.append({
@@ -628,7 +642,11 @@ Objective and current plan:
                 })
                 ranked_names = preliminary_names[:candidate_schedule.agent_limit]
 
-                def evaluate_model_candidate():
+                def evaluate_model_candidate(
+                    *,
+                    avoid_models=None,
+                    avoid_providers=None,
+                ):
                     implementation_left = phase_remaining(
                         phase_quotas,
                         phase="implementation",
@@ -665,6 +683,8 @@ Objective and current plan:
                             canonical(implementation_context),
                             code=True,
                             role="implementation",
+                            avoid_models=set(avoid_models or ()),
+                            avoid_providers=set(avoid_providers or ()),
                             timeout_seconds=model_timeout,
                         )
                         if isinstance(model_impl,dict):
@@ -727,8 +747,19 @@ Objective and current plan:
                                 name=provider_name,
                                 success=model_success,
                             )
+                    model_provider = str(
+                        model_impl.get("provider") if isinstance(model_impl, dict) else "direct-model"
+                    )
+                    model_name = str(
+                        model_impl.get("model") if isinstance(model_impl, dict) else "unknown"
+                    )
+                    candidate_id = "model:" + model_provider + ":" + model_name
+                    if any(item.get("id") == candidate_id for item in candidate_records):
+                        if before_agent is not None:
+                            restore_agent_workspace(work, before_agent)
+                        return None
                     candidate = {
-                        "id":"model",
+                        "id":candidate_id,
                         "agent":None,
                         "files":model_files,
                         "changed":model_changed,
@@ -743,7 +774,7 @@ Objective and current plan:
                 model_first = selected_strategy in {"model_only","model_to_agent"}
                 model_candidate = (
                     evaluate_model_candidate()
-                    if model_first and candidate_schedule.include_model
+                    if model_first and candidate_schedule.model_limit > 0
                     else None
                 )
                 model_verified = bool(
@@ -903,7 +934,36 @@ Objective and current plan:
                     )
                 )
                 if need_model_candidate:
-                    evaluate_model_candidate()
+                    used_model_candidates = [
+                        item for item in candidate_records
+                        if isinstance(item.get("model"), dict)
+                    ]
+                    avoided_model_names = {
+                        str(item["model"].get("model"))
+                        for item in used_model_candidates
+                        if item["model"].get("model")
+                    }
+                    avoided_provider_names = {
+                        str(item["model"].get("provider"))
+                        for item in used_model_candidates
+                        if item["model"].get("provider")
+                    }
+                    while (
+                        len(used_model_candidates) < candidate_schedule.model_limit
+                        and len(candidate_records) < candidate_schedule.candidate_limit
+                    ):
+                        candidate = evaluate_model_candidate(
+                            avoid_models=avoided_model_names,
+                            avoid_providers=avoided_provider_names,
+                        )
+                        if candidate is None:
+                            break
+                        used_model_candidates.append(candidate)
+                        if isinstance(candidate.get("model"), dict):
+                            if candidate["model"].get("model"):
+                                avoided_model_names.add(str(candidate["model"]["model"]))
+                            if candidate["model"].get("provider"):
+                                avoided_provider_names.add(str(candidate["model"]["provider"]))
                 if before_agent is not None:
                     restore_agent_workspace(work, before_agent)
                 viable=[x for x in candidate_records if x.get("changed")]

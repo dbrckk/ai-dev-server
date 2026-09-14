@@ -186,7 +186,11 @@ def attempt(
     candidates = []
     quick_gate_cache = load_persistent_quick_cache()
     full_gate_cache = load_full_gate_cache()
-    artifact_cache = load_artifact_cache()
+    artifact_cache_enabled = bool(
+        os.environ.get("STUDIO_ARTIFACT_CACHE_PATH")
+        and os.environ.get("STUDIO_ARTIFACT_CAS_PATH")
+    )
+    artifact_cache = load_artifact_cache() if artifact_cache_enabled else None
     for strategy_index, strategy_name in enumerate(strategies):
         prior = _strategy_prior(selection, strategy_name)
 
@@ -285,7 +289,8 @@ def attempt(
 
     save_persistent_quick_cache(quick_gate_cache)
     save_full_gate_cache(full_gate_cache)
-    save_artifact_cache(artifact_cache)
+    if artifact_cache is not None:
+        save_artifact_cache(artifact_cache)
     winner = select_winner(candidates)
     if winner is None:
         raise StudioError(

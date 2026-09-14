@@ -23,6 +23,7 @@ HUMAN_OR_EXTERNAL_BLOCKERS = {
 
 PREREQUISITE_BLOCKERS = {
     "release_apk_missing",
+    "release_artifact_rebuild_required",
 }
 
 RETRYABLE_ENVIRONMENT_BLOCKERS = {

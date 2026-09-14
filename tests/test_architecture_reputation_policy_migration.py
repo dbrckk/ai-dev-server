@@ -344,6 +344,9 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         self.assertEqual(last["github_pull_request"],42)
         self.assertEqual(last["github_workflow_run_id"],99)
         self.assertEqual(last["github_reviewer"],"reviewer-a")
+        self.assertIn("validate",last["github_check_evidence"])
+        self.assertIn("python-tests",last["github_check_evidence"])
+        self.assertGreaterEqual(last["github_workflow_timestamp"],last["github_head_commit_timestamp"])
 
     def test_github_attestation_can_derive_approval_provenance(self):
         registry=self.registry()

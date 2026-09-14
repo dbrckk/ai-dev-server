@@ -519,6 +519,22 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         contributor=row["fused_historical_evidence"]["contributors"][0]
         self.assertEqual(contributor["recency_factor"],0.5)
 
+    def test_stale_fused_evidence_requires_revalidation(self):
+        now=time.time()
+        obs=self.obsolescence()
+        history={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "samples":20,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":1.0,"posterior_success_rate":0.95,"regression_rate":0.0,
+            "rollback_rate":0.0,"wilson_lower_95":0.84,"mean_quality_score":98.0,
+            "latest_observed_at":now-3650*86400,
+        }
+        row=plan(obs,self.recommendations(),learning={"rankings":[history]})["replacement_plans"][0]
+        fused=row["fused_historical_evidence"]
+        self.assertTrue(fused["stale_evidence"])
+        self.assertLess(fused["temporal_confidence"],0.4)
+        self.assertIn("stale_replacement_evidence_revalidated",row["required_gates"])
+
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)

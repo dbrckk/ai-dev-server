@@ -8,7 +8,7 @@ from pathlib import Path
 from atomic_file import write_text as atomic_write_text
 
 _NEGATIVE_STATUSES={"failed","blocked","repair_needed","release_failed","human_action_required"}
-_POSITIVE_STATUSES={"validated_preview","finished","complete"}
+_POSITIVE_STATUSES={"validated_preview","finished","complete","godot_preview_validated","godot_technical_store_ready","godot_play_validated","godot_published"}
 
 def _tokens(values):
     if isinstance(values,str):

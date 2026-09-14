@@ -135,6 +135,34 @@ class CapacitySchedulerTests(unittest.TestCase):
         self.assertEqual(report["summary"]["paused_projects"], 1)
 
 
+
+    def test_recovery_project_receives_bounded_nonzero_envelope(self):
+        providers = [ProviderCapacity("omniroute", 10000, unmetered=False)]
+        report = allocate([
+            {
+                "id": "recovery",
+                "requested_tokens": 10000,
+                "priority": 50,
+                "capacity_paused": False,
+                "stagnation_multiplier": 0.15,
+                "recovery_active": True,
+                "force_diversify": True,
+            },
+            {
+                "id": "healthy",
+                "requested_tokens": 10000,
+                "priority": 50,
+            },
+        ], providers, critical_reserve_ratio=0.0)
+        by_id = {row["id"]: row for row in report["projects"]}
+        self.assertGreater(by_id["recovery"]["token_envelope"], 0)
+        self.assertLess(
+            by_id["recovery"]["token_envelope"],
+            by_id["healthy"]["token_envelope"],
+        )
+        self.assertTrue(by_id["recovery"]["recovery_active"])
+
+
     def test_terminal_projects_are_excluded(self):
         providers = [ProviderCapacity("free", 10_000)]
         report = allocate([

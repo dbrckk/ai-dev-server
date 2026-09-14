@@ -14,6 +14,7 @@ from ci_provider import enabled
 from core import StudioError, canonical
 from orchestrator import run_project, run_registered_stages as _shared_run_registered_stages
 from queue import matrix
+from fleet_capacity import persist as persist_capacity_plan
 
 
 def bounded_run(args, timeout):
@@ -43,6 +44,17 @@ def bounded_run(args, timeout):
         except (OSError, subprocess.SubprocessError):
             raise StudioError('Timed-out worker stopped but container cleanup failed') from None
         raise
+
+
+def _admission_for_project(capacity_plan: dict, project_id: str) -> dict | None:
+    rows = capacity_plan.get("projects") if isinstance(capacity_plan, dict) else None
+    if not isinstance(rows, list):
+        return None
+    for row in rows:
+        if isinstance(row, dict) and row.get("id") == project_id:
+            admission = row.get("admission")
+            return admission if isinstance(admission, dict) else None
+    return None
 
 
 def save_report(out, results):
@@ -84,11 +96,18 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
               runner=bounded_run, clock=time.monotonic):
     projects = matrix(directory)
     out.mkdir(parents=True, exist_ok=True)
+    capacity_plan = persist_capacity_plan(out, directory)
     results = [{'id': p['id'], 'status': 'pending'} for p in projects]
     save_report(out, results)
     deadline = clock() + 70 * 60
     baseline_sha = os.environ.get('CIRCLE_SHA1')
     for index, project in enumerate(projects):
+        admission = _admission_for_project(capacity_plan, project["id"])
+        if isinstance(admission, dict) and admission.get("admitted") is False:
+            results[index]["status"] = "deferred_by_admission"
+            results[index]["admission_reason"] = admission.get("reason")
+            save_report(out, results)
+            continue
         if deadline - clock() <= 0:
             results[index]['status'] = 'deferred'
             save_report(out, results)

@@ -21,6 +21,8 @@ CONTEXT_WEIGHTS = {
 }
 MIN_TRANSFERABILITY_FOR_RISK = 0.72
 MIN_TRANSFERABILITY_FOR_POSITIVE_BIAS = 0.55
+MAX_FUSED_HISTORIES = 8
+MIN_FUSION_TRANSFERABILITY = 0.20
 
 def _major(value):
     if isinstance(value, bool):
@@ -127,12 +129,12 @@ def _risk(current: dict, replacement: dict, benchmark_delta: float | None) -> st
         return "medium"
     return "low"
 
-def _replacement_history(learning: dict | None, current_repo: str, replacement_repo: str, context: dict | None = None) -> dict | None:
+def _replacement_histories(learning: dict | None, current_repo: str, replacement_repo: str, context: dict | None = None) -> list[dict]:
     if not isinstance(learning, dict):
-        return None
+        return []
     rows=learning.get("rankings")
     if not isinstance(rows,list):
-        return None
+        return []
     context=context if isinstance(context,dict) else {}
     candidates=[]
     for row in rows:
@@ -141,18 +143,96 @@ def _replacement_history(learning: dict | None, current_repo: str, replacement_r
         if row.get("current_repo")!=current_repo or row.get("replacement_repo")!=replacement_repo:
             continue
         compatibility=_compatibility_distance(row,context)
-        candidates.append((compatibility["transferability"],row))
-    if not candidates:
-        return None
+        transferability=float(compatibility.get("transferability",0.0) or 0.0)
+        if transferability<MIN_FUSION_TRANSFERABILITY:
+            continue
+        item=dict(row)
+        item["compatibility"]=compatibility
+        candidates.append(item)
     candidates.sort(key=lambda item:(
-        item[0],
-        bool(item[1].get("eligible_for_bias")),
-        float(item[1].get("evidence_confidence",0.0) or 0.0),
-        int(item[1].get("samples",0) or 0),
+        float(item.get("compatibility",{}).get("transferability",0.0) or 0.0),
+        bool(item.get("eligible_for_bias")),
+        float(item.get("evidence_confidence",0.0) or 0.0),
+        int(item.get("samples",0) or 0),
     ),reverse=True)
-    best=dict(candidates[0][1])
-    best["compatibility"]=_compatibility_distance(best,context)
-    return best
+    return candidates[:MAX_FUSED_HISTORIES]
+
+def _replacement_history(learning: dict | None, current_repo: str, replacement_repo: str, context: dict | None = None) -> dict | None:
+    histories=_replacement_histories(learning,current_repo,replacement_repo,context=context)
+    return histories[0] if histories else None
+
+def _fusion_weight(history: dict) -> float:
+    compatibility=history.get("compatibility") if isinstance(history.get("compatibility"),dict) else {}
+    transferability=float(compatibility.get("transferability",0.0) or 0.0)
+    confidence=float(history.get("evidence_confidence",0.0) or 0.0)
+    samples=max(0,int(history.get("samples",0) or 0))
+    sample_factor=min(1.0,samples/20.0)
+    eligible_factor=1.0 if history.get("eligible_for_bias") is True else 0.35
+    return max(0.0,transferability*confidence*sample_factor*eligible_factor)
+
+def _fuse_histories(histories: list[dict]) -> dict | None:
+    weighted=[]
+    for history in histories:
+        if not isinstance(history,dict):
+            continue
+        weight=_fusion_weight(history)
+        if weight>0.0:
+            weighted.append((weight,history))
+    if not weighted:
+        return None
+    total=sum(weight for weight,_ in weighted)
+    if total<=0:
+        return None
+
+    def avg(field,default=0.0):
+        return sum(
+            weight*float(history.get(field,default) or default)
+            for weight,history in weighted
+        )/total
+
+    effective_samples=sum(
+        float(history.get("samples",0) or 0)
+        * float(history.get("compatibility",{}).get("transferability",0.0) or 0.0)
+        for _,history in weighted
+    )
+    max_transfer=max(
+        float(history.get("compatibility",{}).get("transferability",0.0) or 0.0)
+        for _,history in weighted
+    )
+    fused_transfer=sum(
+        weight*float(history.get("compatibility",{}).get("transferability",0.0) or 0.0)
+        for weight,history in weighted
+    )/total
+    contributors=[]
+    for weight,history in weighted:
+        compatibility=history.get("compatibility",{})
+        contributors.append({
+            "framework":history.get("framework"),
+            "project_type":history.get("project_type"),
+            "primary_domain":history.get("primary_domain"),
+            "platform":history.get("platform"),
+            "current_major_version":history.get("current_major_version"),
+            "replacement_major_version":history.get("replacement_major_version"),
+            "samples":history.get("samples"),
+            "transferability":compatibility.get("transferability"),
+            "evidence_confidence":history.get("evidence_confidence"),
+            "normalized_weight":round(weight/total,4),
+        })
+    return {
+        "contributors":contributors,
+        "contributor_count":len(contributors),
+        "effective_samples":round(effective_samples,3),
+        "transferability":round(fused_transfer,4),
+        "max_transferability":round(max_transfer,4),
+        "success_rate":round(avg("success_rate"),4),
+        "posterior_success_rate":round(avg("posterior_success_rate",0.5),4),
+        "wilson_lower_95":round(avg("wilson_lower_95"),4),
+        "regression_rate":round(avg("regression_rate"),4),
+        "rollback_rate":round(avg("rollback_rate"),4),
+        "mean_quality_score":round(avg("mean_quality_score"),3),
+        "evidence_confidence":round(min(1.0,effective_samples/20.0),4),
+        "eligible_for_bias":effective_samples>=5.0,
+    }
 
 def _history_context_weight(history: dict | None, context: dict) -> float:
     if not isinstance(history,dict):
@@ -212,14 +292,21 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             "current_major_version":row.get("current_major_version"),
             "replacement_major_version":row.get("replacement_major_version"),
         }
-        history = _replacement_history(learning,current_repo,replacement_repo,context=context)
+        histories = _replacement_histories(learning,current_repo,replacement_repo,context=context)
+        history = histories[0] if histories else None
+        fused_history = _fuse_histories(histories)
         empirical_status="unobserved"
         empirical_priority_adjustment=0.0
-        history_context_weight=_history_context_weight(history,context)
-        if isinstance(history,dict) and history.get("eligible_for_bias") is True:
-            regression=float(history.get("regression_rate",0.0) or 0.0)
-            wilson=float(history.get("wilson_lower_95",0.0) or 0.0)
-            confidence=float(history.get("evidence_confidence",0.0) or 0.0)
+        history_context_weight=(
+            float(fused_history.get("transferability",0.0) or 0.0)
+            if isinstance(fused_history,dict)
+            else _history_context_weight(history,context)
+        )
+        evidence=fused_history if isinstance(fused_history,dict) else history
+        if isinstance(evidence,dict) and evidence.get("eligible_for_bias") is True:
+            regression=float(evidence.get("regression_rate",0.0) or 0.0)
+            wilson=float(evidence.get("wilson_lower_95",0.0) or 0.0)
+            confidence=float(evidence.get("evidence_confidence",0.0) or 0.0)
             empirical_priority_adjustment=max(-10.0,min(5.0,(wilson-0.5)*10.0-regression*10.0))*confidence*history_context_weight
             if history_context_weight>=MIN_TRANSFERABILITY_FOR_RISK and (regression>=0.25 or wilson<0.5):
                 risk="high"
@@ -262,6 +349,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             "current_major_version": context.get("current_major_version"),
             "replacement_major_version": context.get("replacement_major_version"),
             "historical_replacement_evidence": history,
+            "fused_historical_evidence": fused_history,
             "history_context_weight": history_context_weight,
             "compatibility_distance": (
                 history.get("compatibility")
@@ -296,7 +384,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
     ),reverse=True)
 
     return {
-        "version": 5,
+        "version": 6,
         "status": "planned",
         "advisory_only": True,
         "replacement_plans": plans,

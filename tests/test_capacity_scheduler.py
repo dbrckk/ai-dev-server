@@ -89,6 +89,52 @@ class CapacitySchedulerTests(unittest.TestCase):
         )
 
 
+
+    def test_stagnation_throttle_reduces_capacity_share(self):
+        providers = [ProviderCapacity("omniroute", 1000, unmetered=False)]
+        report = allocate([
+            {
+                "id": "healthy",
+                "requested_tokens": 1000,
+                "priority": 50,
+                "stagnation_multiplier": 1.0,
+            },
+            {
+                "id": "stagnant",
+                "requested_tokens": 1000,
+                "priority": 50,
+                "stagnation_multiplier": 0.60,
+            },
+        ], providers, critical_reserve_ratio=0.0)
+        by_id = {row["id"]: row for row in report["projects"]}
+        self.assertGreater(
+            by_id["healthy"]["token_envelope"],
+            by_id["stagnant"]["token_envelope"],
+        )
+
+    def test_paused_stagnant_project_gets_zero_envelope(self):
+        providers = [ProviderCapacity("omniroute", 1000, unmetered=False)]
+        report = allocate([
+            {
+                "id": "paused",
+                "requested_tokens": 1000,
+                "priority": 100,
+                "capacity_paused": True,
+                "stagnation_multiplier": 0.0,
+                "stagnation_level": "pause",
+            },
+            {
+                "id": "active",
+                "requested_tokens": 1000,
+                "priority": 1,
+            },
+        ], providers, critical_reserve_ratio=0.0)
+        by_id = {row["id"]: row for row in report["projects"]}
+        self.assertEqual(by_id["paused"]["token_envelope"], 0)
+        self.assertTrue(by_id["paused"]["constrained"])
+        self.assertEqual(report["summary"]["paused_projects"], 1)
+
+
     def test_terminal_projects_are_excluded(self):
         providers = [ProviderCapacity("free", 10_000)]
         report = allocate([

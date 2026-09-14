@@ -37,6 +37,12 @@ from local_model_reputation import (
     snapshot as local_model_reputation_snapshot,
     record_verified_outcome as record_local_model_verified_outcome,
 )
+from local_model_specialization import (
+    load as load_local_model_specialization,
+    snapshot as local_model_specialization_snapshot,
+    record_verified as record_local_model_specialization,
+)
+from task_context import weighted_contexts as weighted_task_contexts
 from safe_rewrite_learning import (
     record_attempt as record_safe_rewrite_attempt,
     finalize as finalize_safe_rewrite,
@@ -372,6 +378,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         os.environ['STUDIO_PROVIDER_COST_PATH'] = str(autonomy_dir / 'provider-cost.json')
         os.environ['STUDIO_PROVIDER_MONTHLY_QUOTA_PATH'] = str(autonomy_dir / 'provider-monthly-quota.json')
         os.environ['STUDIO_LOCAL_MODEL_REPUTATION_PATH'] = str(autonomy_dir / 'local-model-reputation.json')
+        os.environ['STUDIO_LOCAL_MODEL_SPECIALIZATION_PATH'] = str(autonomy_dir / 'local-model-specialization.json')
         os.environ['STUDIO_LOCAL_MODEL_BENCHMARK_PATH'] = str(autonomy_dir / 'local-model-benchmark.json')
         state['local_capacity_inventory'] = write_local_capacity_inventory(out)
         state['capacity_status'] = capacity_snapshot(
@@ -447,6 +454,26 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                 apply_patch(root, {'files': [{'path': p.relative_to(saved_root).as_posix(), 'content': p.read_text()}]})
     safe_rewrite_learning_path = out / '.autonomy' / 'safe-rewrite-learning.json'
     local_model_reputation_path = out / '.autonomy' / 'local-model-reputation.json'
+    local_model_specialization_path = out / '.autonomy' / 'local-model-specialization.json'
+
+    def current_flutter_contexts():
+        contexts = list(weighted_task_contexts(
+            req.get('brief', ''),
+            {'stacks': ['flutter', 'dart']},
+        ))
+        architecture_risk = (
+            'hold'
+            if state.get('architecture_autonomy_policy', {}).get('architecture_changes_allowed') is False
+            else 'pass'
+        )
+        contexts.append(('architecture-risk:' + architecture_risk, 0.35))
+        total = sum(max(0.0, float(weight)) for _, weight in contexts)
+        if total <= 0:
+            return [('mobile', 1.0)]
+        return [
+            (name, max(0.0, float(weight)) / total)
+            for name, weight in contexts
+        ]
 
     def record_verified_implementation(success):
         provider_name = str(
@@ -457,12 +484,21 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         )
         if ':' not in provider_name or not model_name:
             return
+        gateway_name = provider_name.split(':', 1)[0]
         record_local_model_verified_outcome(
             local_model_reputation_path,
-            provider=provider_name.split(':', 1)[0],
+            provider=gateway_name,
             model=model_name,
             role='implementation',
             verified_success=bool(success),
+        )
+        record_local_model_specialization(
+            local_model_specialization_path,
+            provider=gateway_name,
+            model=model_name,
+            role='implementation',
+            contexts=current_flutter_contexts(),
+            success=bool(success),
         )
 
     state['technical_recommendations'] = _load_star_recommendations(out)
@@ -500,6 +536,9 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     state['architecture_autonomy_policy']['architecture_changes_allowed'] = bool(
         state['architecture_preflight'].get('architecture_changes_allowed')
     )
+    flutter_contexts = current_flutter_contexts()
+    os.environ['STUDIO_ROUTING_CONTEXTS_JSON'] = json.dumps(flutter_contexts)
+    state['routing_contexts'] = flutter_contexts
     state['cycles'] += 1
 
     def checkpoint(parent_sha):
@@ -702,6 +741,9 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     state['project_budget_status'] = budget_status(state)
     state['models_used'] = getattr(model, 'models_used', {})
     state['providers_used'] = getattr(model, 'providers_used', {})
+    state['local_model_specialization'] = local_model_specialization_snapshot(
+        load_local_model_specialization(local_model_specialization_path)
+    )[:80]
     state['limits'] = {
         'requested_max_cycles': req['max_cycles'],
         'effective_max_cycles': state.get('effective_max_cycles', req['max_cycles']),

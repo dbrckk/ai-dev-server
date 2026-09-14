@@ -14,6 +14,7 @@ from architecture_replacement_synthesis import consume as synthesize_candidate
 from architecture_replacement_executor import execute as execute_candidate, ReplacementExecutionError
 from architecture_replacement_candidate import ReplacementCandidateRejected
 from architecture_replacement_promotion import write as write_promotion_review, ReplacementPromotionError
+from architecture_replacement_pr_package import write as write_pr_package, ReplacementPRPackageError
 from core import StudioError, canonical
 
 def run(work_order_path: Path, repo_root: Path, out: Path) -> dict:
@@ -21,8 +22,10 @@ def run(work_order_path: Path, repo_root: Path, out: Path) -> dict:
     candidate=synthesize_candidate(work_order_path,repo_root,out)
     execution=execute_candidate(repo_root,order,candidate,out)
     promotion_review=None
+    pr_package=None
     if execution.get("go_no_go")=="GO_FOR_MANUAL_PROMOTION_REVIEW":
         promotion_review=write_promotion_review(order,candidate,execution,out)
+        pr_package=write_pr_package(promotion_review,candidate,out)
     result={
         "version":1,
         "status":"replacement_pipeline_complete",
@@ -31,6 +34,7 @@ def run(work_order_path: Path, repo_root: Path, out: Path) -> dict:
         "execution_status":execution.get("status"),
         "go_no_go":execution.get("go_no_go"),
         "promotion_review_status": promotion_review.get("status") if isinstance(promotion_review,dict) else "not_ready",
+        "pr_package_status": pr_package.get("status") if isinstance(pr_package,dict) else "not_ready",
         "auto_promoted":False,
         "default_branch_modified":False,
     }
@@ -48,7 +52,7 @@ def main(argv=None):
     out=Path(args.out)
     try:
         result=run(Path(args.work_order),Path(args.repo_root),out)
-    except (OSError,ValueError,json.JSONDecodeError,ReplacementExecutionError,ReplacementCandidateRejected,ReplacementPromotionError,StudioError):
+    except (OSError,ValueError,json.JSONDecodeError,ReplacementExecutionError,ReplacementCandidateRejected,ReplacementPromotionError,ReplacementPRPackageError,StudioError):
         out.mkdir(parents=True,exist_ok=True)
         (out/"architecture-replacement-pipeline-error.json").write_text(
             canonical({"status":"replacement_pipeline_blocked"})+"\n",encoding="utf-8"

@@ -142,7 +142,7 @@ class ReleaseRepairTests(unittest.TestCase):
                 {"passed": False, "blockers": ["excessive_jank"]},
                 "performance_qa",
                 "demo_app",
-                model_factory=CandidateModel,
+                model_factory=NeverModel,
                 sandbox_factory=PassingSandbox,
             )
 
@@ -154,7 +154,7 @@ class ReleaseRepairTests(unittest.TestCase):
         )
         self.assertEqual(agent_candidate["model_calls"], 0)
         self.assertEqual(result["agent"]["agent"], "fake-agent")
-        self.assertEqual(result["candidate_search"]["evaluated"], 2)
+        self.assertEqual(result["candidate_search"]["evaluated"], 1)
 
 
 

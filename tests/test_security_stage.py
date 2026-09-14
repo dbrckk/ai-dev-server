@@ -127,6 +127,37 @@ class SecurityStageTests(unittest.TestCase):
         self.assertEqual(result["completion"]["next_stage"], "security_scan")
         self.assertFalse(result["completion"]["finished"])
 
+    @patch("security_stage.GitHub", FakeGitHub)
+    @patch("security_stage.build_security_package")
+    def test_resolved_human_action_clears_gate_and_finishes(self, build):
+        build.return_value = {
+            "passed": True,
+            "human_review_required": False,
+            "human_review_reasons": [],
+            "dangerous_permissions": [],
+            "blockers": [],
+        }
+        state = state_before_security()
+        state["status"] = "human_action_required"
+        state["human_action"] = {
+            "action": "security_trust_review_required",
+            "reasons": ["dangerous_android_permissions_require_explicit_review"],
+        }
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            out = root / "out"
+            out.mkdir()
+            req = root / "request.json"
+            req.write_text(json.dumps(REQ))
+            (out / "report.json").write_text(json.dumps(state))
+            result = advance(req, root / "work", out)
+
+        self.assertNotIn("human_action", result)
+        self.assertEqual(result["status"], "finished")
+        self.assertTrue(result["completion"]["finished"])
+        self.assertIsNone(result["completion"]["next_stage"])
+
+
 
 if __name__ == "__main__":
     unittest.main()

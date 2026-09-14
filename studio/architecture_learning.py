@@ -53,12 +53,20 @@ def summarize(root: Path | str = "studio-output") -> dict:
         cycles = max(0, int(outcome.get("cycles", 0) or 0))
         blockers = max(0, int(outcome.get("blocker_count", 0) or 0))
 
+        constraints = row.get("decision_constraints")
+        framework = (
+            constraints.get("framework")
+            if isinstance(constraints, dict) and isinstance(constraints.get("framework"), str)
+            else None
+        )
+
         contexts = row.get("chosen_contexts")
         if isinstance(contexts, list) and contexts:
             observed = [
                 {
                     "repo": item.get("repo"),
                     "domain": item.get("domain"),
+                    "framework": framework,
                 }
                 for item in contexts
                 if isinstance(item, dict) and isinstance(item.get("repo"), str)
@@ -66,15 +74,17 @@ def summarize(root: Path | str = "studio-output") -> dict:
         else:
             repos = row.get("chosen_repositories")
             observed = [
-                {"repo": repo, "domain": None}
+                {"repo": repo, "domain": None, "framework": framework}
                 for repo in repos
                 if isinstance(repos, list) and isinstance(repo, str) and repo
             ] if isinstance(repos, list) else []
 
-        stack_key = tuple(sorted(item["repo"] for item in observed))
-        if stack_key:
+        stack_repos = tuple(sorted(item["repo"] for item in observed))
+        stack_key = (framework, stack_repos)
+        if stack_repos:
             stack = stack_stats.setdefault(stack_key, {
-                "repos": list(stack_key),
+                "framework": framework,
+                "repos": list(stack_repos),
                 "samples": 0,
                 "successes": 0,
                 "model_calls": 0,
@@ -94,10 +104,12 @@ def summarize(root: Path | str = "studio-output") -> dict:
         for observed_item in observed:
             repo = observed_item["repo"]
             domain = observed_item.get("domain")
-            key = (repo, domain)
+            item_framework = observed_item.get("framework")
+            key = (repo, domain, item_framework)
             item = stats.setdefault(key, {
                 "repo": repo,
                 "domain": domain,
+                "framework": item_framework,
                 "samples": 0,
                 "successes": 0,
                 "model_calls": 0,
@@ -119,12 +131,13 @@ def summarize(root: Path | str = "studio-output") -> dict:
                 )
 
     rankings = []
-    for (_repo, _domain), item in stats.items():
+    for (_repo, _domain, _framework), item in stats.items():
         samples = item["samples"]
         success_rate = item["successes"] / samples if samples else 0.0
         rankings.append({
             "repo": item["repo"],
             "domain": item.get("domain"),
+            "framework": item.get("framework"),
             "samples": samples,
             "success_rate": round(success_rate, 4),
             "mean_model_calls": round(item["model_calls"] / samples, 3) if samples else 0.0,
@@ -150,6 +163,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
         success_rate = item["successes"] / samples if samples else 0.0
         stack_rankings.append({
             "repos": item["repos"],
+            "framework": item.get("framework"),
             "samples": samples,
             "success_rate": round(success_rate, 4),
             "mean_model_calls": round(item["model_calls"] / samples, 3) if samples else 0.0,

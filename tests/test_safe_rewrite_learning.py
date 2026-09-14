@@ -126,5 +126,79 @@ class SafeRewriteLearningTests(unittest.TestCase):
         )
 
 
+    def test_recent_events_have_more_weight_than_old_events(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "learning.json"
+            for i in range(30):
+                srl.record_attempt(
+                    path,
+                    event_id=f"e{i}",
+                    engine="generic",
+                    origin_kind="provider",
+                    origin_name="p",
+                    rewrite_kind="provider",
+                    rewrite_name="r",
+                    guard_passed=True,
+                )
+                srl.finalize(
+                    path,
+                    event_id=f"e{i}",
+                    verification_passed=(i >= 25),
+                    review_passed=(i >= 25),
+                )
+            row = srl.summarize(path)["origin_rankings"][0]
+            self.assertGreater(
+                row["decayed_verification_pass_rate"],
+                row["verification_pass_rate"],
+            )
+
+    def test_recent_success_streak_marks_rehabilitation(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "learning.json"
+            outcomes = [False, False, False, False, False, True, True, True]
+            for i, outcome in enumerate(outcomes):
+                srl.record_attempt(
+                    path,
+                    event_id=f"e{i}",
+                    engine="generic",
+                    origin_kind="agent",
+                    origin_name="agent-a",
+                    rewrite_kind="provider",
+                    rewrite_name="r",
+                    guard_passed=True,
+                )
+                srl.finalize(
+                    path,
+                    event_id=f"e{i}",
+                    verification_passed=outcome,
+                    review_passed=outcome,
+                )
+            row = srl.summarize(path)["origin_rankings"][0]
+            self.assertTrue(row["rehabilitating"])
+            self.assertEqual(row["recent_verification_streak"], 3)
+
+    def test_old_failures_decay_toward_exploration_floor(self):
+        events = []
+        for i in range(40):
+            events.append({
+                "event_id": f"x{i}",
+                "engine": "generic",
+                "origin_kind": "provider" if i < 5 else "other",
+                "origin_name": "bad" if i < 5 else "other",
+                "rewrite_kind": "provider",
+                "rewrite_name": "r",
+                "guard_passed": True,
+                "verification_passed": False if i < 5 else True,
+                "review_passed": False if i < 5 else True,
+                "completed": True,
+            })
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "learning.json"
+            path.write_text(__import__("json").dumps({"schema":1,"events":events}))
+            summary = srl.summarize(path)
+            penalty = srl.routing_penalty(summary, kind="provider", name="bad", role="implementation")
+            self.assertLess(penalty, srl.MAX_PENALTY)
+
+
 if __name__ == "__main__":
     unittest.main()

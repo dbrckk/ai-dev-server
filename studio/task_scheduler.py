@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from project_budget import branch_efficiency, budget_status
+from repair_queue import recover_expired_leases
 
 TERMINAL = {"completed", "superseded", "exhausted"}
 RELEASE_STAGE_ORDER = (
@@ -84,6 +85,7 @@ def _score(task: dict) -> float:
 
 
 def candidates(state: dict) -> list[dict]:
+    recover_expired_leases(state)
     queue = state.get("repair_queue", [])
     if not isinstance(queue, list):
         return []

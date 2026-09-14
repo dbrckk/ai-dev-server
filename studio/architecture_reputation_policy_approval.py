@@ -102,6 +102,51 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
             raise ApprovalProvenanceError("github reinforced review requires separation of duties")
         if second.get("permission") not in {"admin","maintain","write"}:
             raise ApprovalProvenanceError("second github reviewer lacks write-level permission")
+    pr_identity=attestation.get("pr_identity")
+    if not isinstance(pr_identity,dict):
+        raise ApprovalProvenanceError("github PR identity missing")
+    if pr_identity.get("number")!=attestation.get("pull_request"):
+        raise ApprovalProvenanceError("github PR number mismatch")
+    if pr_identity.get("state")!="open":
+        raise ApprovalProvenanceError("github PR is not open")
+    if pr_identity.get("draft") is True:
+        raise ApprovalProvenanceError("github PR is still draft")
+    if pr_identity.get("base_ref")!="main":
+        raise ApprovalProvenanceError("github PR base is not main")
+    if pr_identity.get("head_sha")!=attestation.get("commit_sha"):
+        raise ApprovalProvenanceError("github PR head SHA mismatch")
+    if not isinstance(pr_identity.get("head_ref"),str) or not pr_identity.get("head_ref"):
+        raise ApprovalProvenanceError("github PR head branch missing")
+    if not isinstance(pr_identity.get("author"),str) or not pr_identity.get("author"):
+        raise ApprovalProvenanceError("github PR author missing")
+
+    checks=attestation.get("required_checks")
+    if not isinstance(checks,dict) or checks.get("valid") is not True:
+        raise ApprovalProvenanceError("required GitHub checks invalid")
+    if checks.get("missing_checks") or checks.get("incomplete_checks") or checks.get("failed_checks"):
+        raise ApprovalProvenanceError("required GitHub checks incomplete or failed")
+
+    target=plan.get("github_review_target") if isinstance(plan,dict) else None
+    if isinstance(target,dict):
+        expected={
+            "repository":target.get("repository"),
+            "pull_request":target.get("pull_request"),
+            "commit_sha":target.get("commit_sha"),
+            "head_ref":target.get("head_ref"),
+            "base_ref":target.get("base_ref"),
+            "author":target.get("author"),
+        }
+        actual={
+            "repository":attestation.get("repository"),
+            "pull_request":attestation.get("pull_request"),
+            "commit_sha":attestation.get("commit_sha"),
+            "head_ref":pr_identity.get("head_ref"),
+            "base_ref":pr_identity.get("base_ref"),
+            "author":pr_identity.get("author"),
+        }
+        if expected!=actual:
+            raise ApprovalProvenanceError("github attestation does not match migration plan review target")
+
     workflow=attestation.get("workflow")
     if not isinstance(workflow,dict) or workflow.get("conclusion")!="success":
         raise ApprovalProvenanceError("github workflow is not successful")
@@ -118,6 +163,11 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         "workflow_run_id":attestation["workflow_run_id"],
         "github_reviewer":reviewer.get("login"),
         "github_second_reviewer":second.get("login") if isinstance(second,dict) else None,
+        "github_head_ref":pr_identity.get("head_ref"),
+        "github_base_ref":pr_identity.get("base_ref"),
+        "github_pr_author":pr_identity.get("author"),
+        "required_checks":checks.get("required_checks"),
+        "passed_checks":checks.get("passed_checks"),
         "attestation_digest":digest,
     }
 

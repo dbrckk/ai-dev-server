@@ -34,6 +34,7 @@ from provider_monthly_quota import (
     load as load_provider_monthly_quota,
     record as record_provider_monthly_quota,
     quota_status as provider_quota_status,
+    quota_admission as provider_quota_admission,
 )
 from local_model_reputation import (
     load as load_local_model_reputation,
@@ -88,6 +89,23 @@ def ask(
         raise StudioError(str(exc)) from None
     role = role or ("implementation" if code else "product")
     providers = candidates_for(role, providers=providers)
+    max_completion_tokens = 16000 if code else 8192
+    estimated_prompt_tokens = max(1, (len(system) + len(user) + 3) // 4)
+    estimated_call_tokens = estimated_prompt_tokens + max_completion_tokens
+    try:
+        quota_reserve_ratio = float(os.environ.get("STUDIO_PROVIDER_QUOTA_RESERVE_RATIO", "0.03") or 0.03)
+    except ValueError:
+        quota_reserve_ratio = 0.03
+    quota_reserve_ratio = max(0.0, min(0.50, quota_reserve_ratio))
+    quota_reserve_roles = {
+        item.strip()
+        for item in os.environ.get(
+            "STUDIO_PROVIDER_QUOTA_RESERVE_ROLES",
+            "tests,review,security_fix,release_fix,verification",
+        ).split(",")
+        if item.strip()
+    }
+    allow_quota_reserve = role in quota_reserve_roles
     health_raw = os.environ.get("STUDIO_PROVIDER_HEALTH_PATH", "")
     metrics_raw = os.environ.get("STUDIO_PROVIDER_METRICS_PATH", "")
     health_path = Path(health_raw) if health_raw else None
@@ -158,11 +176,14 @@ def ask(
         for provider in providers
         if (
             provider.monthly_token_quota <= 0
-            or not provider_quota_status(
+            or provider_quota_admission(
                 provider_quota_data,
                 provider.name,
                 provider.monthly_token_quota,
-            )["exhausted"]
+                estimated_tokens=estimated_call_tokens,
+                reserve_ratio=quota_reserve_ratio,
+                allow_reserve=allow_quota_reserve,
+            )["admitted"]
         )
     )
     if not providers:
@@ -336,7 +357,7 @@ def ask(
         params = {
             "model": model,
             "stream": False,
-            "max_tokens": 16000 if code else 8192,
+            "max_tokens": max_completion_tokens,
             "messages": [
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},

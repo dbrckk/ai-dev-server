@@ -108,6 +108,24 @@ def classify(verification: dict | None, *, changed_files: list[str] | None = Non
             "reason": "verification evidence is invalid",
             "recovery": "replan",
         }
+
+    failed_result = _failed_result(verification)
+    failed_log_raw = str(failed_result.get("log_tail", "")) if isinstance(failed_result, dict) else ""
+    failed_log = _text(failed_result)
+    secret_names = extract_secret_names(failed_log_raw)
+    if (
+        verification.get("passed") is not True
+        and secret_names
+        and any(pattern in failed_log for pattern in EXTERNAL_PREREQUISITE_PATTERNS)
+    ):
+        return {
+            "category": "external_prerequisite",
+            "confidence": "high",
+            "reason": "verification requires an explicit external secret/environment prerequisite",
+            "recovery": "request_external_input",
+            "required_env": secret_names,
+        }
+
     if isinstance(progress, dict):
         progress_status = progress.get("status")
         if progress_status == "regression":
@@ -146,18 +164,6 @@ def classify(verification: dict | None, *, changed_files: list[str] | None = Non
             "confidence": "high",
             "reason": "no trusted verifier was available",
             "recovery": "synthesize_verifier",
-        }
-
-    secret_names = extract_secret_names(
-        str(result.get("log_tail", "")) if isinstance(result, dict) else ""
-    )
-    if secret_names and any(pattern in log for pattern in EXTERNAL_PREREQUISITE_PATTERNS):
-        return {
-            "category": "external_prerequisite",
-            "confidence": "high",
-            "reason": "verification requires an explicit external secret/environment prerequisite",
-            "recovery": "request_external_input",
-            "required_env": secret_names,
         }
 
     if rc in _TIMEOUT_CODES or "timeoutexpired" in log or "timed out" in log or "timeout" in log:

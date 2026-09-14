@@ -29,6 +29,11 @@ from architecture_benchmark import write as write_architecture_benchmark
 from architecture_preflight import write as write_architecture_preflight
 from architecture_change_guard import enforce as enforce_architecture_change_guard, ArchitectureChangeBlocked
 from architecture_safe_rewrite import build_context as build_architecture_safe_rewrite_context
+from safe_rewrite_learning import (
+    record_attempt as record_safe_rewrite_attempt,
+    finalize as finalize_safe_rewrite,
+    summarize as summarize_safe_rewrite_learning,
+)
 from architecture_outcome import write as write_architecture_outcome
 
 MAX_PUBLISH_FILE_BYTES = 1_000_000
@@ -196,6 +201,7 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
     )
     architecture_root = architecture_learning_root(out)
     historical_learning = summarize_architecture_learning(architecture_root)
+    safe_rewrite_learning_path = out / '.autonomy' / 'safe-rewrite-learning.json'
     state['architecture_recommendations'] = architecture_recommendations
     state['architecture_decision'] = write_architecture_plan(
         req,
@@ -274,6 +280,20 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
                     checkpoint()
                     continue
                 event['safe_rewrite_status'] = 'accepted'
+                event_id = f"{req['id']}:{state['rounds']}:godot"
+                model_name = str(getattr(model, 'models_used', {}).get('implementation') or 'unknown')
+                record_safe_rewrite_attempt(
+                    safe_rewrite_learning_path,
+                    event_id=event_id,
+                    engine='godot',
+                    origin_kind='model',
+                    origin_name=model_name,
+                    rewrite_kind='model',
+                    rewrite_name=model_name,
+                    guard_passed=True,
+                )
+                event['learning_event_id'] = event_id
+                state['pending_safe_rewrite_event_id'] = event_id
                 state.update(status='working', blockers=[])
             if not any(p.is_file() and not p.is_symlink() for p in (root / 'tests').rglob('*.gd')):
                 qa = model.ask('tests', _context(req,state,root)); _safe_apply(
@@ -291,11 +311,38 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
             passed, logs = sandbox.gates(req['app_name'], journeys)
             atomic_write_text(out / 'validation.json', canonical(logs))
             if not passed:
+                pending_safe_rewrite = state.pop('pending_safe_rewrite_event_id', None)
+                if pending_safe_rewrite:
+                    finalize_safe_rewrite(
+                        safe_rewrite_learning_path,
+                        event_id=pending_safe_rewrite,
+                        verification_passed=False,
+                        review_passed=None,
+                    )
+                    state['safe_rewrite_learning'] = summarize_safe_rewrite_learning(safe_rewrite_learning_path)
                 state.update(status='repair_needed',blockers=['Godot headless validation failed: ' + canonical(logs[-1:])[-16000:]])
                 checkpoint(); continue
             review = verdict(model.ask('review', _context(req,state,root))); state['code_review'] = review
             if not review['passed']:
+                pending_safe_rewrite = state.pop('pending_safe_rewrite_event_id', None)
+                if pending_safe_rewrite:
+                    finalize_safe_rewrite(
+                        safe_rewrite_learning_path,
+                        event_id=pending_safe_rewrite,
+                        verification_passed=True,
+                        review_passed=False,
+                    )
+                    state['safe_rewrite_learning'] = summarize_safe_rewrite_learning(safe_rewrite_learning_path)
                 state.update(status='repair_needed',blockers=review['blockers']); checkpoint(); continue
+            pending_safe_rewrite = state.pop('pending_safe_rewrite_event_id', None)
+            if pending_safe_rewrite:
+                finalize_safe_rewrite(
+                    safe_rewrite_learning_path,
+                    event_id=pending_safe_rewrite,
+                    verification_passed=True,
+                    review_passed=True,
+                )
+                state['safe_rewrite_learning'] = summarize_safe_rewrite_learning(safe_rewrite_learning_path)
             state.update(status='godot_preview_validated',blockers=[],validation_contract='godot-headless-v1')
             state['completion'] = {'finished':False,'next_stage':'godot_android_export_qa',
                                    'reason':'Headless Godot validation passed; Android export/device/visual journey evidence still required.'}

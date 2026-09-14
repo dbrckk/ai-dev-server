@@ -27,13 +27,21 @@ class ReplacementPipelineTests(unittest.TestCase):
                 "status":"replacement_isolated_benchmark_complete",
                 "go_no_go":"GO_FOR_MANUAL_PROMOTION_REVIEW",
             }
+            fake_review={"status":"promotion_review_ready"}
+            fake_package={"status":"pr_package_ready"}
             with patch.object(arp,"synthesize_candidate",return_value=fake_candidate), patch.object(
                 arp,"execute_candidate",return_value=fake_execution
+            ), patch.object(
+                arp,"write_promotion_review",return_value=fake_review
+            ), patch.object(
+                arp,"write_pr_package",return_value=fake_package
             ):
                 result=arp.run(order,root,root/"out")
             self.assertFalse(result["auto_promoted"])
             self.assertFalse(result["default_branch_modified"])
             self.assertEqual(result["go_no_go"],"GO_FOR_MANUAL_PROMOTION_REVIEW")
+            self.assertEqual(result["promotion_review_status"],"promotion_review_ready")
+            self.assertEqual(result["pr_package_status"],"pr_package_ready")
 
 if __name__=="__main__":
     unittest.main()

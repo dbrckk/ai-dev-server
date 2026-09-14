@@ -526,6 +526,12 @@ def write_dry_run(registry: dict, learning: dict | None, out: Path, *, now: floa
         json.dumps(result,ensure_ascii=False,indent=2,sort_keys=True)+"\n",
         encoding="utf-8",
     )
+    from architecture_reputation_policy_migration_review import render
+    atomic_write_text(
+        out/"architecture-reputation-policy-migration-review.md",
+        render(result),
+        encoding="utf-8",
+    )
     return result
 
 def write_applied(registry: dict, plan: dict, authorization: dict, path: Path, *, now: float | None=None) -> dict:

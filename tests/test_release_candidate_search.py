@@ -1,5 +1,7 @@
+import os
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 import sys
 
@@ -646,6 +648,11 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
             (root / "pubspec.yaml").write_text("name: demo_app\n")
             full_calls = {"count": 0}
             shared_full_cache = {}
+            shared_artifact_cache = {}
+            cache_env = {
+                "STUDIO_ARTIFACT_CAS_PATH": str(root / ".artifact-cas"),
+                "STUDIO_ARTIFACT_CACHE_PATH": str(root / ".artifact-cache.json"),
+            }
 
             class FullCacheSandbox:
                 def __init__(self, root):
@@ -666,8 +673,8 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
                 source.write_text("const value = 2;\n")
                 return {"model_calls": 0}
 
-            shared_artifact_cache = {}
-            first = run_branch(
+            with mock.patch.dict(os.environ, cache_env, clear=False):
+                first = run_branch(
                 root,
                 strategy="agent_only",
                 strategy_prior_score=10,
@@ -680,9 +687,9 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
                 remaining_model_calls=0,
                 step_model_calls=[0],
                 full_gate_cache=shared_full_cache,
-                artifact_cache=shared_artifact_cache,
-            )
-            second = run_branch(
+                    artifact_cache=shared_artifact_cache,
+                )
+                second = run_branch(
                 root,
                 strategy="agent_only",
                 strategy_prior_score=10,
@@ -695,8 +702,8 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
                 remaining_model_calls=0,
                 step_model_calls=[0],
                 full_gate_cache=shared_full_cache,
-                artifact_cache=shared_artifact_cache,
-            )
+                    artifact_cache=shared_artifact_cache,
+                )
 
             self.assertTrue(first["passed"])
             self.assertFalse(first["cached_full_validation"])

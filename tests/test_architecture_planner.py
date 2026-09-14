@@ -156,5 +156,27 @@ class ArchitecturePlannerTests(unittest.TestCase):
         result=plan({"target_repo":"o/r","app_name":"demo","brief":"Vector animation app"},recs)
         self.assertEqual(result["constraints"]["primary_domain"],"graphics")
 
+    def test_selection_margin_exposes_near_tie_confidence(self):
+        recs={"matches":[
+            {"repo":"a/first","score":90.4,"quality_score":9.0,"tier":"core","domain":"mobile","capabilities":["ui"]},
+            {"repo":"b/second","score":90.0,"quality_score":8.9,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+        ]}
+        result=plan({"target_repo":"o/r","app_name":"demo"},recs)
+        self.assertEqual(result["version"],2)
+        self.assertEqual(result["chosen"][0]["repo"],"a/first")
+        self.assertEqual(result["chosen"][0]["selection_margin"],0.4)
+        self.assertEqual(result["chosen"][0]["selection_confidence"],"low")
+        self.assertTrue(result["stack_feedback_policy"]["selection_margin_confidence"])
+
+    def test_selection_margin_marks_clear_winner_high_confidence(self):
+        recs={"matches":[
+            {"repo":"a/first","score":95.0,"quality_score":9.5,"tier":"core","domain":"mobile","capabilities":["ui"]},
+            {"repo":"b/second","score":90.0,"quality_score":8.9,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+        ]}
+        result=plan({"target_repo":"o/r","app_name":"demo"},recs)
+        self.assertEqual(result["chosen"][0]["selection_margin"],5.0)
+        self.assertEqual(result["chosen"][0]["selection_confidence"],"high")
+
+
 if __name__=="__main__":
     unittest.main()

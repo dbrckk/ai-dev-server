@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from runtime_health import inspect
+from architecture_learning import summarize as summarize_architecture_learning
 
 
 def collect(root: Path | str = "studio-output") -> dict:
@@ -26,6 +27,11 @@ def collect(root: Path | str = "studio-output") -> dict:
                 "telemetry_events": (report.get("telemetry") or {}).get("events", 0),
                 "errors": report.get("errors", []),
             })
+    architecture = summarize_architecture_learning(root)
+    eligible = [
+        row for row in architecture.get("rankings", [])
+        if isinstance(row, dict) and row.get("eligible_for_advisory_bias") is True
+    ]
     healthy = sum(1 for item in projects if item["status"] == "healthy")
     degraded = len(projects) - healthy
     running = sum(1 for item in projects if item.get("runtime_status") == "running")
@@ -33,6 +39,11 @@ def collect(root: Path | str = "studio-output") -> dict:
     blocked = sum(1 for item in projects if item.get("runtime_status") in {"blocked", "human_action_required"})
     return {
         "projects": projects,
+        "architecture_learning": {
+            "projects_observed": architecture.get("projects_observed", 0),
+            "eligible_recommendations": len(eligible),
+            "top_recommendations": eligible[:5],
+        },
         "summary": {
             "total": len(projects),
             "healthy": healthy,

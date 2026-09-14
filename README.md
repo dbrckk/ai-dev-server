@@ -96,6 +96,20 @@ Le pipeline inclut notamment :
 
 Le benchmark multi-engine couvre un vrai build Flutter, un smoke generic complet et les régressions Jumpy/Godot pinées.
 
+### Exploitation V1.1
+
+Commandes multi-projets :
+
+```bash
+python studio/fleet_dashboard.py --root studio-output
+python studio/fleet_supervisor.py --root studio-output
+python studio/fleet_maintenance.py --root studio-output
+```
+
+- `fleet_dashboard.py` agrège santé, état runtime, leases, checkpoints et télémétrie par projet ;
+- `fleet_supervisor.py` produit des décisions déterministes `none/restart/quarantine/inspect` sans exécuter de redémarrage destructif ;
+- `fleet_maintenance.py` compacte la télémétrie et supprime uniquement des fichiers temporaires reconnus dans `.autonomy`.
+
 ### Vérification opérationnelle V1
 
 Le serveur expose maintenant deux contrôles machine-readable :

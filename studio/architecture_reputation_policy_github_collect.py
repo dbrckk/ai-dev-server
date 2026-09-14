@@ -12,7 +12,7 @@ import urllib.parse
 from architecture_replacement_persist import _request, ReplacementPersistenceError
 from architecture_reputation_policy_approval import ApprovalProvenanceError
 from architecture_reputation_policy_github_attestation import build, latest_approvals
-from replacement_ci_policy import REQUIRED_WORKFLOW_PATH
+from replacement_ci_policy import REQUIRED_WORKFLOW_PATH, validate_workflow_text
 
 class GitHubAttestationCollectionError(RuntimeError):
     pass
@@ -34,11 +34,20 @@ def _collect_workflow_file(api: str, token: str, commit_sha: str) -> dict:
         raw=base64.b64decode(content,validate=False)
     except Exception as exc:
         raise GitHubAttestationCollectionError("workflow file content invalid") from exc
+    try:
+        text=raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise GitHubAttestationCollectionError("workflow file is not UTF-8") from exc
+    validation=validate_workflow_text(text)
+    if validation.get("valid") is not True:
+        raise GitHubAttestationCollectionError("workflow file does not satisfy replacement CI policy")
     return {
         "path":REQUIRED_WORKFLOW_PATH,
         "blob_sha":value.get("sha"),
         "size":len(raw),
         "sha256":hashlib.sha256(raw).hexdigest(),
+        "content_b64":base64.b64encode(raw).decode("ascii"),
+        "policy_validation":validation,
     }
 
 def collect_review_target(*, token: str, repository: str, pull_request: int) -> dict:

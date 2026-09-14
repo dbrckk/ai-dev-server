@@ -70,6 +70,15 @@ class FailureClassifierTests(unittest.TestCase):
         self.assertEqual(result["required_env"], ["OPENAI_API_KEY"])
         self.assertEqual(policy(result)["action"], "request_external_input")
 
+    def test_external_prerequisite_overrides_no_progress(self):
+        result = classify(
+            verification("API key required: set OPENAI_API_KEY"),
+            changed_files=[],
+            progress={"status":"no_progress"},
+        )
+        self.assertEqual(result["category"],"external_prerequisite")
+        self.assertEqual(result["required_env"],["OPENAI_API_KEY"])
+
     def test_unauthorized_without_explicit_env_name_is_not_user_input(self):
         result = classify(
             verification("401 unauthorized"),

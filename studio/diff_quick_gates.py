@@ -27,11 +27,18 @@ def _targeted_tests(root: Path, changed: list[str]) -> list[str]:
 def plan(root: Path, changed: list[str]) -> dict:
     changed = sorted({item for item in changed if isinstance(item, str) and item})
     dependency_changed = any(item in DEPENDENCY_FILES for item in changed)
-    code_changed = any(
-        item.startswith(("lib/", "test/")) and item.endswith(".dart")
+    lib_changed = any(
+        item.startswith("lib/") and item.endswith(".dart")
         for item in changed
     )
-    analyze_needed = code_changed or any(item in ANALYZE_FILES for item in changed)
+    test_changed = any(
+        item.startswith("test/") and item.endswith(".dart")
+        for item in changed
+    )
+    code_changed = lib_changed or test_changed
+    # Test-only deltas are compiled by their targeted quick test. Full project
+    # analysis remains mandatory in the final trusted gate set.
+    analyze_needed = lib_changed or any(item in ANALYZE_FILES for item in changed)
     tests_needed = code_changed
     targeted = _targeted_tests(root, changed) if tests_needed else []
 

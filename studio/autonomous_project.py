@@ -177,9 +177,6 @@ def run_persistent_project(
         "STUDIO_CHECKPOINT_PATH": autonomy_root / "workflow-checkpoints.json",
         "STUDIO_TELEMETRY_PATH": autonomy_root / "telemetry.jsonl",
     }
-    for env_name, env_path in runtime_paths.items():
-        os.environ.setdefault(env_name, str(env_path))
-    os.environ.setdefault("STUDIO_PROJECT_ID", str(goal_id))
     goal_path, registry_path, memory_path = ensure_project_goal(
         project_out, goal_id, objective, max_attempts=max_attempts
     )
@@ -274,25 +271,41 @@ def run_persistent_project(
 
     from durable_state import save as save_durable_state
     from telemetry import emit as emit_telemetry
-    emit_telemetry("goal_run_started", goal_id=goal_id, max_cycles=max_cycles)
-    result = run_goal(
-        goal_path,
-        registry_path,
-        execute_cycle,
-        max_cycles=max_cycles,
-        context_provider=context_provider,
-        cycle_observer=cycle_observer,
-        execute_registered_capability=execute_registered_capability,
-    )
-    save_durable_state(runtime_state_path, {
-        "goal_id": goal_id,
-        "objective": objective,
-        "status": result.get("status"),
-        "attempt": result.get("attempt"),
-        "evidence_keys": sorted((result.get("evidence") or {}).keys()),
-        "missing_capabilities": list(result.get("missing_capabilities") or []),
-        "human_action": result.get("human_action"),
-        "blocked_reason": result.get("blocked_reason"),
-    })
-    emit_telemetry("goal_run_finished", goal_id=goal_id, status=result.get("status"))
-    return result
+    previous_runtime = {name: os.environ.get(name) for name in runtime_paths}
+    previous_project_id = os.environ.get("STUDIO_PROJECT_ID")
+    for env_name, env_path in runtime_paths.items():
+        os.environ[env_name] = str(env_path)
+    os.environ["STUDIO_PROJECT_ID"] = str(goal_id)
+    try:
+        emit_telemetry("goal_run_started", goal_id=goal_id, max_cycles=max_cycles)
+        result = run_goal(
+            goal_path,
+            registry_path,
+            execute_cycle,
+            max_cycles=max_cycles,
+            context_provider=context_provider,
+            cycle_observer=cycle_observer,
+            execute_registered_capability=execute_registered_capability,
+        )
+        save_durable_state(runtime_state_path, {
+            "goal_id": goal_id,
+            "objective": objective,
+            "status": result.get("status"),
+            "attempt": result.get("attempt"),
+            "evidence_keys": sorted((result.get("evidence") or {}).keys()),
+            "missing_capabilities": list(result.get("missing_capabilities") or []),
+            "human_action": result.get("human_action"),
+            "blocked_reason": result.get("blocked_reason"),
+        })
+        emit_telemetry("goal_run_finished", goal_id=goal_id, status=result.get("status"))
+        return result
+    finally:
+        for env_name, previous in previous_runtime.items():
+            if previous is None:
+                os.environ.pop(env_name, None)
+            else:
+                os.environ[env_name] = previous
+        if previous_project_id is None:
+            os.environ.pop("STUDIO_PROJECT_ID", None)
+        else:
+            os.environ["STUDIO_PROJECT_ID"] = previous_project_id

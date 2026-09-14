@@ -40,6 +40,15 @@ def render(req: dict, state: dict) -> str:
     migration_candidates = architecture_benchmark.get('migration_candidates') if isinstance(architecture_benchmark.get('migration_candidates'), list) else []
     migration_repos = [x.get('best_alternative') for x in migration_candidates if isinstance(x, dict) and isinstance(x.get('best_alternative'), str)]
     drift_alerts = state.get('architecture_drift_alerts') if isinstance(state.get('architecture_drift_alerts'), list) else []
+    obsolescence = state.get('architecture_obsolescence') if isinstance(state.get('architecture_obsolescence'), dict) else {}
+    deprecations = obsolescence.get('deprecation_candidates') if isinstance(obsolescence.get('deprecation_candidates'), list) else []
+    deprecation_lines = []
+    for item in deprecations[:8]:
+        if not isinstance(item, dict) or not isinstance(item.get('repo'), str):
+            continue
+        replacement = item.get('replacement_candidate')
+        suffix = f" -> {replacement}" if isinstance(replacement, str) and replacement else ""
+        deprecation_lines.append(f"{item['repo']}{suffix}")
     drift_lines = []
     for item in drift_alerts[:10]:
         if not isinstance(item, dict):
@@ -96,6 +105,10 @@ Potential migration candidates:
 ### Architecture drift alerts
 
 {_bullets(drift_lines, 'No statistically supported architecture degradation is currently detected.')}
+
+### Deprecation candidates
+
+{_bullets(deprecation_lines, 'No evidence-backed deprecation candidate is currently identified.')}
 
 ## Current validation / release evidence
 

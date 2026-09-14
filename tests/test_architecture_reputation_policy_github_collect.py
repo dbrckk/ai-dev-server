@@ -42,11 +42,11 @@ class GitHubAttestationCollectorTests(unittest.TestCase):
                 return {"permission":"maintain"}
             if "/check-runs?per_page=100" in url:
                 return {"check_runs":[
-                    {"name":"validate","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/99"},
-                    {"name":"python-tests","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/99"},
+                    {"id":101,"name":"validate","head_sha":"a"*40,"status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:30Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/99"},
+                    {"id":102,"name":"python-tests","head_sha":"a"*40,"status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:40Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/99"},
                 ]}
             if "/actions/runs?" in url:
-                return {"workflow_runs":[{"id":99,"head_sha":"a"*40,"conclusion":"success","name":"CI"}]}
+                return {"workflow_runs":[{"id":99,"head_sha":"a"*40,"conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:25Z"}]}
             raise AssertionError(url)
         return _request
 
@@ -60,6 +60,29 @@ class GitHubAttestationCollectorTests(unittest.TestCase):
         with patch.object(collector,"_request",side_effect=self.fake_request(True)):
             result=collector.collect(self.plan(True),token="t",repository="o/r",pull_request=7)
         self.assertEqual(result["second_reviewer"]["login"],"bob")
+
+    def test_collect_rejects_stale_required_check(self):
+        base=self.fake_request(False)
+        def req(url,token,method="GET",payload=None,allow_404=False):
+            if "/check-runs?per_page=100" in url:
+                return {"check_runs":[
+                    {"id":101,"name":"validate","head_sha":"a"*40,"status":"completed","conclusion":"success","started_at":"2025-12-31T23:59:59Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/99"},
+                    {"id":102,"name":"python-tests","head_sha":"a"*40,"status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:40Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/99"},
+                ]}
+            return base(url,token,method,payload,allow_404)
+        with patch.object(collector,"_request",side_effect=req):
+            with self.assertRaises(collector.GitHubAttestationCollectionError):
+                collector.collect(self.plan(False),token="t",repository="o/r",pull_request=7)
+
+    def test_collect_rejects_stale_workflow(self):
+        base=self.fake_request(False)
+        def req(url,token,method="GET",payload=None,allow_404=False):
+            if "/actions/runs?" in url:
+                return {"workflow_runs":[{"id":99,"head_sha":"a"*40,"conclusion":"success","name":"CI","created_at":"2025-12-31T23:59:59Z"}]}
+            return base(url,token,method,payload,allow_404)
+        with patch.object(collector,"_request",side_effect=req):
+            with self.assertRaises(collector.GitHubAttestationCollectionError):
+                collector.collect(self.plan(False),token="t",repository="o/r",pull_request=7)
 
     def test_collect_rejects_review_older_than_head_commit(self):
         base=self.fake_request(False)

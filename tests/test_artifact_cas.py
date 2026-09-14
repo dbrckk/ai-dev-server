@@ -159,6 +159,49 @@ class ArtifactCasTests(unittest.TestCase):
             self.assertNotEqual(a, b)
 
 
+    def test_explicit_shared_root_is_reused_across_project_roots(self):
+        with tempfile.TemporaryDirectory() as td:
+            shared_root = Path(td) / "global-shared-cas"
+            first_env = {
+                "STUDIO_ARTIFACT_CAS_PATH": str(Path(td) / "project-a-cas"),
+                "STUDIO_SHARED_ARTIFACT_CAS_PATH": str(shared_root),
+                "STUDIO_ARTIFACT_CAS_STATS_PATH": str(Path(td) / "stats-a.json"),
+                "STUDIO_PROJECT_ID": "project-a",
+            }
+            second_env = {
+                "STUDIO_ARTIFACT_CAS_PATH": str(Path(td) / "project-b-cas"),
+                "STUDIO_SHARED_ARTIFACT_CAS_PATH": str(shared_root),
+                "STUDIO_ARTIFACT_CAS_STATS_PATH": str(Path(td) / "stats-b.json"),
+                "STUDIO_PROJECT_ID": "project-b",
+            }
+            with mock.patch.dict(os.environ, first_env, clear=False):
+                first = artifact_cas.put(
+                    b"public-template",
+                    shareable=True,
+                    artifact_class="toolchain-template",
+                )
+                first_path = artifact_cas.blob_path(
+                    first["sha256"],
+                    shareable=True,
+                    artifact_class="toolchain-template",
+                )
+            with mock.patch.dict(os.environ, second_env, clear=False):
+                second = artifact_cas.put(
+                    b"public-template",
+                    shareable=True,
+                    artifact_class="toolchain-template",
+                )
+                second_path = artifact_cas.blob_path(
+                    second["sha256"],
+                    shareable=True,
+                    artifact_class="toolchain-template",
+                )
+
+            self.assertEqual(first_path, second_path)
+            self.assertTrue(first_path.is_file())
+            self.assertTrue(first_path.is_relative_to(shared_root))
+
+
     def test_gc_keeps_only_referenced_digest(self):
         with tempfile.TemporaryDirectory() as td:
             env = {

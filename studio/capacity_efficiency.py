@@ -207,3 +207,35 @@ def routing_bonus(
     # Deliberately bounded: enough to influence close candidates, never enough
     # to overpower health, capability, quarantine, or architecture safeguards.
     return round(max(-8.0, min(8.0, (ratio - 1.0) * 8.0)), 6)
+
+
+def stagnation_routing_penalty(
+    summary: dict,
+    *,
+    project_id: str,
+    provider: str,
+    model: str,
+) -> float:
+    rows = summary.get("rows") if isinstance(summary, dict) else None
+    if not isinstance(rows, list):
+        return 0.0
+    target = next(
+        (
+            row for row in rows
+            if isinstance(row, dict)
+            and row.get("project_id") == project_id
+            and row.get("provider") == provider
+            and row.get("model") == model
+        ),
+        None,
+    )
+    if target is None or int(target.get("samples", 0) or 0) < 3:
+        return 0.0
+    streak = max(0, int(target.get("failure_streak", 0) or 0))
+    if streak >= 8:
+        return -24.0
+    if streak >= 5:
+        return -16.0
+    if streak >= 3:
+        return -10.0
+    return 0.0

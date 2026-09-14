@@ -13,6 +13,7 @@ from provider_monthly_quota import load as load_monthly_quota, quota_status
 from provider_router import load_providers
 from capacity_ledger import detailed_snapshot as ledger_detailed_snapshot
 from capacity_efficiency import summarize as summarize_capacity_efficiency, project_multiplier as efficiency_multiplier
+from stagnation_controller import summarize as summarize_stagnation
 from queue import matrix
 
 
@@ -37,6 +38,7 @@ def _project_rows(
     ledger_usage: dict | None = None,
     previous_plan: dict | None = None,
     efficiency_summary: dict | None = None,
+    stagnation_summary: dict | None = None,
 ) -> list[dict]:
     dashboard = collect(root)
     health = {row["id"]: row for row in dashboard.get("projects", [])}
@@ -92,6 +94,16 @@ def _project_rows(
             efficiency_summary or {},
             project_id,
         )
+        stagnation = (
+            (stagnation_summary or {}).get("projects", {}).get(project_id, {})
+            if isinstance((stagnation_summary or {}).get("projects", {}), dict)
+            else {}
+        )
+        stagnation_multiplier = max(
+            0.0,
+            min(1.0, float(stagnation.get("capacity_multiplier", 1.0) or 0.0)),
+        )
+        capacity_paused = bool(stagnation.get("pause", False))
 
         rows.append({
             "id": project_id,
@@ -106,6 +118,10 @@ def _project_rows(
             ),
             "capacity_pressure": round(pressure, 4),
             "efficiency_multiplier": verified_efficiency_multiplier,
+            "stagnation_multiplier": stagnation_multiplier,
+            "capacity_paused": capacity_paused,
+            "stagnation_level": str(stagnation.get("level") or "normal"),
+            "force_diversify": bool(stagnation.get("force_diversify", False)),
             "committed_tokens": committed,
             "previous_envelope_tokens": previous_envelope,
         })
@@ -173,12 +189,14 @@ def plan(
         previous_plan = {}
     ledger = ledger_detailed_snapshot(root / "capacity-ledger.json")
     efficiency = summarize_capacity_efficiency(root / "capacity-efficiency.json")
+    stagnation = summarize_stagnation(efficiency)
     projects = _project_rows(
         root,
         request_dir,
         ledger_usage=ledger.get("usage_by_project", {}),
         previous_plan=previous_plan,
         efficiency_summary=efficiency,
+        stagnation_summary=stagnation,
     )
     providers = _provider_rows(
         reservations_by_provider=ledger.get("reservations_by_provider", {}),
@@ -224,6 +242,9 @@ def plan(
             1 for row in report["projects"]
             if float(row.get("efficiency_multiplier", 1.0) or 1.0) < 1.0
         ),
+        "stagnation_paused_projects": int(stagnation.get("paused_projects", 0) or 0),
+        "stagnation_throttled_projects": int(stagnation.get("throttled_projects", 0) or 0),
+        "stagnation_diversifying_projects": int(stagnation.get("diversifying_projects", 0) or 0),
     }
     return report
 

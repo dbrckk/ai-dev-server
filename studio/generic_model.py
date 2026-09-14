@@ -40,6 +40,10 @@ from local_model_reputation import (
     record as record_local_model_reputation,
     score as local_model_reputation_score,
 )
+from local_model_benchmark import (
+    load as load_local_model_benchmark,
+    routing_bonus as local_model_benchmark_bonus,
+)
 
 
 def _decode(response: dict) -> dict:
@@ -81,6 +85,8 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     quota_path = Path(quota_raw) if quota_raw else None
     local_rep_raw = os.environ.get("STUDIO_LOCAL_MODEL_REPUTATION_PATH", "")
     local_rep_path = Path(local_rep_raw) if local_rep_raw else None
+    local_benchmark_raw = os.environ.get("STUDIO_LOCAL_MODEL_BENCHMARK_PATH", "")
+    local_benchmark_path = Path(local_benchmark_raw) if local_benchmark_raw else None
     try:
         weighted_contexts = json.loads(os.environ.get("STUDIO_ROUTING_CONTEXTS_JSON", "[]"))
     except json.JSONDecodeError:
@@ -103,6 +109,7 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     provider_costs = load_provider_cost(provider_cost_path) if provider_cost_path is not None else {}
     provider_quota_data = load_provider_monthly_quota(quota_path) if quota_path is not None else {"schema": 1, "months": {}}
     local_model_reputation = load_local_model_reputation(local_rep_path) if local_rep_path is not None else {}
+    local_model_benchmark = load_local_model_benchmark(local_benchmark_path) if local_benchmark_path is not None else {}
     try:
         max_api_cost_usd = float(os.environ.get("STUDIO_MAX_API_COST_USD", "0") or 0.0)
     except ValueError:
@@ -148,12 +155,20 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
         )
         components = dict(base.components)
         if provider.unmetered and ":" in provider.name:
-            components["local_model_reputation"] = local_model_reputation_score(
+            gateway_name = provider.name.split(":", 1)[0]
+            reputation_component = local_model_reputation_score(
                 local_model_reputation,
-                provider=provider.name.split(":", 1)[0],
+                provider=gateway_name,
                 model=provider.model_for(role),
                 role=role,
             )
+            components["local_model_reputation"] = reputation_component
+            if reputation_component == 0.0:
+                components["local_model_benchmark"] = local_model_benchmark_bonus(
+                    local_model_benchmark,
+                    gateway_name,
+                    provider.model_for(role),
+                )
         if role == "implementation" and safe_rewrite_path is not None:
             violation = origin_violation_penalty(
                 safe_rewrite_summary,

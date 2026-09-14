@@ -93,12 +93,14 @@ def latest_approvals(reviews: list[dict], commit_sha: str, *, head_commit_timest
         })
     return rows
 
-def successful_workflow(runs: list[dict], commit_sha: str, *, head_commit_timestamp: float | None=None) -> dict:
+def successful_workflow(runs: list[dict], commit_sha: str, *, required_run_id: int | None=None, head_commit_timestamp: float | None=None) -> dict:
     candidates=[]
     for run in runs if isinstance(runs,list) else []:
         head=run.get("head_sha")
         conclusion=str(run.get("conclusion") or "").lower()
         if head!=commit_sha or conclusion!="success":
+            continue
+        if required_run_id is not None and run.get("id")!=required_run_id:
             continue
         created=_timestamp(run.get("run_started_at") or run.get("created_at") or run.get("updated_at"))
         if head_commit_timestamp is not None:
@@ -133,11 +135,6 @@ def build(plan: dict, *, repository: str, pull_request: int, commit_sha: str,
             raise ApprovalProvenanceError("reinforced GitHub approval requires two eligible approvers")
         second=eligible[1]
         second["permission"]=permissions[second["login"]]
-    workflow=successful_workflow(
-        workflow_runs,
-        commit_sha,
-        head_commit_timestamp=float(head_commit_timestamp),
-    )
     checks=validate_check_runs(
         check_runs,
         repository,
@@ -146,12 +143,22 @@ def build(plan: dict, *, repository: str, pull_request: int, commit_sha: str,
     )
     if checks.get("valid") is not True:
         raise ApprovalProvenanceError("required GitHub checks are not all successful")
+    required_workflow_run_id=checks.get("common_workflow_run_id")
+    if not isinstance(required_workflow_run_id,int):
+        raise ApprovalProvenanceError("required checks do not share one workflow run")
+    workflow=successful_workflow(
+        workflow_runs,
+        commit_sha,
+        required_run_id=required_workflow_run_id,
+        head_commit_timestamp=float(head_commit_timestamp),
+    )
     attestation={
         "repository":repository,
         "commit_sha":commit_sha,
         "reviewed_commit_sha":commit_sha,
         "pull_request":pull_request,
         "workflow_run_id":workflow["id"],
+        "required_workflow_run_id":required_workflow_run_id,
         "migration_id":plan.get("migration_id"),
         "review_digest":plan.get("review_digest"),
         "reviewer":first,

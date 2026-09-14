@@ -5,7 +5,7 @@ import json
 import os
 from pathlib import Path
 
-from artifact_cas import MAX_CAS_BYTES, blob_path as cas_blob_path, gc as cas_gc, get as cas_get, put as cas_put, usage as cas_usage
+from artifact_cas import MAX_CAS_BYTES, blob_path as cas_blob_path, gc as cas_gc, get as cas_get, put as cas_put, stats_digest as cas_stats_digest, usage as cas_usage
 from artifact_cas_stats import retention_score
 from core import StudioError, canonical
 
@@ -207,7 +207,7 @@ def _entry_value(entry: dict) -> float:
             continue
         digest = meta.get("sha256")
         if isinstance(digest, str) and len(digest) == 64:
-            scores.append(retention_score(digest))
+            scores.append(retention_score(cas_stats_digest(digest)))
     return sum(scores)
 
 

@@ -75,20 +75,23 @@ def _admit_under_quota(
 ) -> None:
     import hashlib
 
-    missing_bytes = 0
-    for data in files.values():
-        digest = hashlib.sha256(data).hexdigest()
-        try:
-            exists = cas_blob_path(digest).is_file()
-        except StudioError:
-            exists = False
-        if not exists:
-            missing_bytes += len(data)
-    if cas_usage() + missing_bytes <= MAX_TOTAL_BYTES:
+    def missing_bytes_now():
+        missing = 0
+        for data in files.values():
+            digest = hashlib.sha256(data).hexdigest()
+            try:
+                exists = cas_blob_path(digest).is_file()
+            except StudioError:
+                exists = False
+            if not exists:
+                missing += len(data)
+        return missing
+
+    if cas_usage() + missing_bytes_now() <= MAX_TOTAL_BYTES:
         return
 
     projected = _projected_entry_value(files, rebuild_cost_seconds)
-    while cas_usage() + missing_bytes > MAX_TOTAL_BYTES:
+    while cas_usage() + missing_bytes_now() > MAX_TOTAL_BYTES:
         victims = [
             (float(_entry_value(entry)), key)
             for key, entry in entries.items()

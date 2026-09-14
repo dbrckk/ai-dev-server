@@ -16,7 +16,8 @@ from core import API, APIError, Model, Sandbox, StudioError, allowed, apply_patc
 from project_context import write as write_project_context
 from repair_planner import preview_plan
 from repair_queue import complete_stage_tasks, enqueue, summarize
-from project_budget import budget_status, can_spend, configure as configure_budget, record_calls
+from project_budget import budget_status, can_spend, configure as configure_budget, record_calls, apply_capacity_limit
+from capacity_budget import expanded_call_limit
 from idempotent_model import ask_value as checkpointed_ask
 from atomic_file import write_text as atomic_write_text
 from architecture_planner import write as write_architecture_plan
@@ -387,7 +388,21 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         state['capacity_status'] = capacity_snapshot(
             autonomy_dir / 'provider-monthly-quota.json'
         )
-        cycle_budget = min(req['max_calls'], max(0, budget_status(state)['model_calls_remaining']))
+        capacity_plan = expanded_call_limit(
+            int(state.get('project_budget', {}).get('model_call_limit', req['max_calls'] * req['max_cycles'])),
+            state['capacity_status'],
+            explicit_limit=req.get('max_project_model_calls') is not None,
+        )
+        apply_capacity_limit(
+            state,
+            capacity_plan,
+            explicit_limit=req.get('max_project_model_calls') is not None,
+        )
+        state['capacity_budget'] = capacity_plan
+        cycle_budget = min(
+            req['max_calls'],
+            max(0, budget_status(state)['model_calls_remaining']),
+        )
         if cycle_budget < 1:
             state.update(status='blocked', blockers=['Project model-call budget exhausted'])
             atomic_write_text(out / 'report.json', canonical(state))

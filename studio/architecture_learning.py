@@ -36,6 +36,8 @@ def summarize(root: Path | str = "studio-output") -> dict:
         outcome = row.get("outcome")
         if not isinstance(outcome, dict):
             continue
+        observed_at = row.get("observed_at")
+        observed_at = float(observed_at) if isinstance(observed_at, (int, float)) else None
         successful = outcome.get("successful") is True
         calls = max(0, int(outcome.get("model_calls_this_cycle", 0) or 0))
         cycles = max(0, int(outcome.get("cycles", 0) or 0))
@@ -71,12 +73,20 @@ def summarize(root: Path | str = "studio-output") -> dict:
                 "model_calls": 0,
                 "cycles": 0,
                 "blockers": 0,
+                "latest_observed_at": None,
             })
             item["samples"] += 1
             item["successes"] += int(successful)
             item["model_calls"] += calls
             item["cycles"] += cycles
             item["blockers"] += blockers
+            if observed_at is not None:
+                previous_ts = item.get("latest_observed_at")
+                item["latest_observed_at"] = (
+                    observed_at
+                    if not isinstance(previous_ts, (int, float))
+                    else max(float(previous_ts), observed_at)
+                )
 
     rankings = []
     for (_repo, _domain), item in stats.items():
@@ -90,6 +100,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
             "mean_model_calls": round(item["model_calls"] / samples, 3) if samples else 0.0,
             "mean_cycles": round(item["cycles"] / samples, 3) if samples else 0.0,
             "mean_blockers": round(item["blockers"] / samples, 3) if samples else 0.0,
+            "latest_observed_at": item.get("latest_observed_at"),
             "eligible_for_advisory_bias": samples >= MIN_SAMPLES,
         })
 

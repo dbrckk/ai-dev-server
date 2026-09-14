@@ -41,14 +41,52 @@ class ReplacementReputationTests(unittest.TestCase):
         self.assertEqual(entry["state"],"RECOVERING")
         self.assertFalse(entry["promotion_eligible"])
 
-    def test_recovery_requires_multiple_confirmations(self):
+    def test_recovery_requires_time_new_evidence_and_confirmations(self):
         registry,_=arr.apply(None,self.context(),self.strong(),now=100.0)
         registry,_=arr.apply(registry,self.context(),{**self.strong(),"sequential_drift":True},now=200.0)
         registry,first=arr.apply(registry,self.context(),self.strong(),now=300.0)
         self.assertEqual(first["state"],"RECOVERING")
-        registry,second=arr.apply(registry,self.context(),self.strong(),now=400.0)
-        self.assertEqual(second["state"],"TRUSTED")
-        self.assertTrue(second["promotion_eligible"])
+        self.assertTrue(first["transition_pending"])
+
+        # Time alone is insufficient because no new effective evidence arrived.
+        later=300.0+arr.RECOVERY_MIN_DWELL_SECONDS+1
+        registry,second=arr.apply(registry,self.context(),self.strong(),now=later)
+        self.assertEqual(second["state"],"RECOVERING")
+        self.assertEqual(second["transition_reason"],"recovery_new_evidence_pending")
+
+        stronger={**self.strong(),"effective_samples":22}
+        registry,third=arr.apply(registry,self.context(),stronger,now=later+1)
+        self.assertEqual(third["state"],"TRUSTED")
+        self.assertTrue(third["promotion_eligible"])
+        self.assertFalse(third["transition_pending"])
+
+    def test_recovery_dwell_blocks_fast_repromotion(self):
+        registry,_=arr.apply(None,self.context(),self.strong(),now=100.0)
+        registry,_=arr.apply(registry,self.context(),{**self.strong(),"regime_shift":True},now=200.0)
+        registry,entry=arr.apply(registry,self.context(),self.strong(),now=300.0)
+        self.assertEqual(entry["state"],"RECOVERING")
+        richer={**self.strong(),"effective_samples":25}
+        registry,entry=arr.apply(registry,self.context(),richer,now=301.0)
+        self.assertEqual(entry["state"],"RECOVERING")
+        self.assertEqual(entry["transition_reason"],"recovery_minimum_dwell_pending")
+        self.assertFalse(entry["promotion_eligible"])
+
+    def test_degradation_from_trusted_is_immediate(self):
+        registry,_=arr.apply(None,self.context(),self.strong(),now=100.0)
+        weak={
+            "effective_samples":20,"evidence_confidence":1.0,
+            "wilson_lower_95":0.30,"regression_rate":0.40,
+        }
+        registry,entry=arr.apply(registry,self.context(),weak,now=101.0)
+        self.assertEqual(entry["state"],"DEGRADED")
+        self.assertEqual(entry["transition_reason"],"trusted_degraded")
+
+    def test_policy_is_exported_in_registry(self):
+        registry,_=arr.apply(None,self.context(),self.strong(),now=100.0)
+        policy=registry["policy"]
+        self.assertEqual(policy["recovery_confirmations_required"],arr.RECOVERY_CONFIRMATIONS_REQUIRED)
+        self.assertEqual(policy["recovery_min_dwell_seconds"],arr.RECOVERY_MIN_DWELL_SECONDS)
+        self.assertEqual(policy["recovery_min_new_effective_samples"],arr.RECOVERY_MIN_NEW_EFFECTIVE_SAMPLES)
 
     def test_audit_records_every_transition(self):
         registry,_=arr.apply(None,self.context(),self.strong(),now=100.0)

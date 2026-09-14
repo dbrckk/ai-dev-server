@@ -1,15 +1,14 @@
 """Immutable artifact cache bound to a full validation key."""
 from __future__ import annotations
 
-import base64
-import hashlib
 import json
 import os
 from pathlib import Path
 
+from artifact_cas import gc as cas_gc, get as cas_get, put as cas_put
 from core import StudioError, canonical
 
-SCHEMA = 1
+SCHEMA = 2
 MAX_ENTRIES = 32
 MAX_TOTAL_BYTES = 64 * 1024 * 1024
 APK_REL = "build/app/outputs/flutter-apk/app-debug.apk"
@@ -19,10 +18,6 @@ GOLDEN_DIR = "test/goldens"
 def _path() -> Path | None:
     raw = os.environ.get("STUDIO_ARTIFACT_CACHE_PATH", "")
     return Path(raw) if raw else None
-
-
-def _sha(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
 
 
 def _read_artifacts(root: Path) -> dict[str, bytes]:
@@ -55,11 +50,7 @@ def capture(root: Path, validation_key: str) -> dict:
     return {
         "validation_key": validation_key,
         "files": {
-            rel: {
-                "sha256": _sha(data),
-                "size": len(data),
-                "content_base64": base64.b64encode(data).decode("ascii"),
-            }
+            rel: cas_put(data)
             for rel, data in files.items()
         },
     }
@@ -79,22 +70,16 @@ def verify_entry(entry: dict, validation_key: str) -> dict[str, bytes]:
         if (
             not isinstance(rel, str)
             or not isinstance(meta, dict)
-            or set(meta) != {"sha256", "size", "content_base64"}
+            or set(meta) != {"sha256", "size"}
             or not isinstance(meta["sha256"], str)
             or len(meta["sha256"]) != 64
             or type(meta["size"]) is not int
             or meta["size"] < 0
-            or not isinstance(meta["content_base64"], str)
         ):
             raise StudioError("Artifact cache file metadata invalid")
         if rel != APK_REL and not (rel.startswith(GOLDEN_DIR + "/") and rel.endswith(".png")):
             raise StudioError("Artifact cache path outside approved outputs")
-        try:
-            data = base64.b64decode(meta["content_base64"], validate=True)
-        except ValueError:
-            raise StudioError("Artifact cache base64 invalid") from None
-        if len(data) != meta["size"] or _sha(data) != meta["sha256"]:
-            raise StudioError("Artifact cache digest mismatch")
+        data = cas_get(meta["sha256"], meta["size"])
         total += len(data)
         if total > MAX_TOTAL_BYTES:
             raise StudioError("Artifact cache payload exceeds size limit")
@@ -108,18 +93,23 @@ def restore(root: Path, entry: dict, validation_key: str) -> dict:
     files = verify_entry(entry, validation_key)
     root = root.resolve()
     restored = []
+    apk_sha256 = None
     for rel, data in files.items():
         path = root / rel
         if not path.resolve().is_relative_to(root):
             raise StudioError("Artifact cache path escape")
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(data)
-        if _sha(path.read_bytes()) != _sha(data):
+        meta = entry["files"][rel]
+        restored_bytes = path.read_bytes()
+        if len(restored_bytes) != meta["size"]:
             raise StudioError("Artifact cache restore verification failed")
         restored.append(rel)
+        if rel == APK_REL:
+            apk_sha256 = meta["sha256"]
     return {
         "restored": sorted(restored),
-        "apk_sha256": _sha(files[APK_REL]),
+        "apk_sha256": apk_sha256,
     }
 
 
@@ -137,14 +127,32 @@ def load() -> dict:
     return dict(entries) if isinstance(entries, dict) else {}
 
 
+def _referenced_digests(entries: dict) -> set[str]:
+    result = set()
+    for entry in entries.values():
+        if not isinstance(entry, dict):
+            continue
+        files = entry.get("files")
+        if not isinstance(files, dict):
+            continue
+        for meta in files.values():
+            if isinstance(meta, dict):
+                digest = meta.get("sha256")
+                if isinstance(digest, str) and len(digest) == 64:
+                    result.add(digest)
+    return result
+
+
 def save(entries: dict) -> None:
     path = _path()
     if path is None:
         return
     items = list(entries.items())[-MAX_ENTRIES:]
-    payload = {"schema": SCHEMA, "entries": dict(items)}
+    trimmed = dict(items)
+    payload = {"schema": SCHEMA, "entries": trimmed}
     raw = canonical(payload).encode("utf-8")
-    if len(raw) > MAX_TOTAL_BYTES * 2:
+    if len(raw) > 2 * 1024 * 1024:
         raise StudioError("Artifact cache index exceeds storage limit")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(raw)
+    cas_gc(_referenced_digests(trimmed))

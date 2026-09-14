@@ -96,7 +96,8 @@ Judge only whether the provided active_task is fully satisfied by the repository
 Treat active_task.done_when as the authoritative task acceptance contract.
 Do not require unrelated future DAG tasks to be complete.
 Tests passing is necessary evidence but is not sufficient if the active task's requested behavior is still missing.
-Return ONLY JSON {"complete":true|false,"remaining":["task-specific missing work"],"reason":"..."}."""
+Return ONLY JSON {"complete":true|false,"criteria":[{"criterion":"exact done_when text","passed":true|false,"evidence":"specific repository/test evidence"}],"remaining":["task-specific missing work"],"reason":"..."}.
+Every active_task.done_when item MUST appear exactly once in criteria."""
 
 
 def _snapshot(root: Path, limit_bytes: int = 420_000) -> dict:
@@ -1854,6 +1855,7 @@ Objective and current plan:
                 verification=verification,
                 review=review,
                 changed_files=list(changed),
+                active_task=plan.get("active_task"),
             )
             stale_confidence_tasks = []
             if task_semantic is not None and changed:
@@ -1902,6 +1904,7 @@ Objective and current plan:
                     error=task_acceptance_failure_reason(
                         verification=verification,
                         review=review,
+                        active_task=plan.get("active_task"),
                     ),
                 )
             save_objective_dag(objective_dag_path, objective_dag)

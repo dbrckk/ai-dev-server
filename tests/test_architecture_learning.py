@@ -131,7 +131,7 @@ class ArchitectureLearningTests(unittest.TestCase):
             for i in range(5):
                 self._write(root, f"p{i}", ["a/core", "b/helper"], True, 2, 1, 0)
             result = al.summarize(root)
-            self.assertEqual(result["schema"], 4)
+            self.assertEqual(result["schema"], 5)
             self.assertEqual(result["stack_rankings"][0]["repos"], ["a/core", "b/helper"])
             self.assertEqual(result["stack_rankings"][0]["samples"], 5)
             self.assertTrue(result["stack_rankings"][0]["eligible_for_advisory_bias"])
@@ -281,6 +281,19 @@ class ArchitectureLearningTests(unittest.TestCase):
             stacks = al.summarize(root)["stack_rankings"]
             self.assertEqual(stacks[0]["repos"], ["good/a", "good/b"])
             self.assertGreater(stacks[0]["mean_quality_score"], stacks[1]["mean_quality_score"])
+    def test_uncertainty_metrics_favor_large_samples(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            for i in range(5):
+                self._write(root, f"small-{i}", ["small/repo"], True, 2, 1, 0)
+            for i in range(50):
+                self._write(root, f"large-{i}", ["large/repo"], i < 48, 2, 1, 0)
+            rows = {x["repo"]: x for x in al.summarize(root)["rankings"]}
+            self.assertEqual(rows["small/repo"]["success_rate"], 1.0)
+            self.assertEqual(rows["large/repo"]["success_rate"], 0.96)
+            self.assertLess(rows["small/repo"]["wilson_lower_95"], rows["large/repo"]["wilson_lower_95"])
+            self.assertLess(rows["small/repo"]["evidence_confidence"], rows["large/repo"]["evidence_confidence"])
+            self.assertLess(rows["small/repo"]["quality_shrunk_mean"], rows["large/repo"]["quality_shrunk_mean"])
 
 if __name__ == "__main__":
     unittest.main()

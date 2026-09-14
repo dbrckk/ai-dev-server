@@ -1843,6 +1843,7 @@ Objective and current plan:
                             failure_signature=verification_failure_signature(verification),
                             verification=verification,
                             dependency_context=targeted_impact,
+                            review=review,
                         )
                         save_task_semantic_checkpoint(task_semantic_path, task_semantic)
                 state["status"] = "regression_rejected"

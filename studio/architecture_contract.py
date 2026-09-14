@@ -13,7 +13,11 @@ import architecture_benchmark
 def validate() -> dict:
     failures = []
 
-    req = {"target_repo": "owner/app", "app_name": "demo"}
+    req = {
+        "target_repo": "owner/app",
+        "app_name": "demo",
+        "brief": "Build a Godot game with reliable testing.",
+    }
     recs = {
         "matches": [
             {
@@ -21,6 +25,7 @@ def validate() -> dict:
                 "score": 90.0,
                 "quality_score": 9.0,
                 "tier": "core",
+                "domain": "game-development",
                 "capabilities": ["testing"],
                 "alternatives": ["a/alt"],
             },
@@ -29,6 +34,7 @@ def validate() -> dict:
                 "score": 95.0,
                 "quality_score": 9.8,
                 "tier": "core",
+                "domain": "game-development",
                 "capabilities": ["testing"],
             },
         ]
@@ -46,7 +52,13 @@ def validate() -> dict:
         ]
     }
 
-    adjusted = architecture_feedback.apply(recs, learning)
+    adjusted = architecture_feedback.apply(
+        recs,
+        learning,
+        framework="godot",
+        project_type="game",
+        primary_domain="game-development",
+    )
     policy = adjusted.get("feedback_policy") or {}
     if policy.get("advisory_only") is not True:
         failures.append("feedback_not_advisory")
@@ -58,8 +70,21 @@ def validate() -> dict:
     if not isinstance(max_age, (int, float)) or max_age <= 0 or max_age > 90 * 24 * 60 * 60:
         failures.append("feedback_evidence_age_unbounded")
 
-    decision = architecture_planner.plan(req, recs, learning=learning)
+    decision = architecture_planner.plan(
+        req,
+        recs,
+        learning=learning,
+        framework="godot",
+        publication_target="google-play",
+    )
     dep_policy = decision.get("dependency_policy") or {}
+    constraints = decision.get("constraints") or {}
+    if constraints.get("framework") != "godot":
+        failures.append("planner_framework_context_missing")
+    if constraints.get("project_type") != "game":
+        failures.append("planner_project_type_context_missing")
+    if constraints.get("primary_domain") != "game-development":
+        failures.append("planner_primary_domain_context_missing")
     if decision.get("advisory_only") is not True:
         failures.append("planner_not_advisory")
     if dep_policy.get("allow_automatic_dependency_addition") is not False:
@@ -100,6 +125,7 @@ def validate() -> dict:
             "max_feedback_bonus": architecture_feedback.MAX_SCORE_BONUS,
             "minimum_feedback_samples": architecture_feedback.MIN_SAMPLES,
             "max_feedback_age_seconds": architecture_feedback.MAX_EVIDENCE_AGE_SECONDS,
+            "context_dimensions": ["framework", "project_type", "primary_domain"],
         },
     }
 

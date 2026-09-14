@@ -39,7 +39,24 @@ class FleetOperationsTests(unittest.TestCase):
                 },
             }
 
-            with patch("fleet_dashboard.inspect", side_effect=lambda p: reports[Path(p).name]):
+            with patch("fleet_dashboard.inspect", side_effect=lambda p: reports[Path(p).name]), patch(
+                "fleet_dashboard.summarize_architecture_learning",
+                return_value={
+                    "projects_observed": 3,
+                    "rankings": [
+                        {
+                            "repo": "a/core",
+                            "eligible_for_advisory_bias": True,
+                            "success_rate": 1.0,
+                        },
+                        {
+                            "repo": "b/other",
+                            "eligible_for_advisory_bias": False,
+                            "success_rate": 1.0,
+                        },
+                    ],
+                },
+            ):
                 report = fleet_dashboard.collect(root)
 
             self.assertEqual(report["summary"]["total"], 2)
@@ -47,6 +64,12 @@ class FleetOperationsTests(unittest.TestCase):
             self.assertEqual(report["summary"]["degraded"], 1)
             self.assertEqual(report["summary"]["complete"], 1)
             self.assertEqual(report["summary"]["running"], 1)
+            self.assertEqual(report["architecture_learning"]["projects_observed"], 3)
+            self.assertEqual(report["architecture_learning"]["eligible_recommendations"], 1)
+            self.assertEqual(
+                report["architecture_learning"]["top_recommendations"][0]["repo"],
+                "a/core",
+            )
 
     def test_supervisor_quarantines_state_integrity_failures(self):
         dashboard = {

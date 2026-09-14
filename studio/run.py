@@ -289,6 +289,8 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         state['technical_recommendations'],
         out,
         learning=historical_learning,
+        framework="flutter",
+        publication_target="google-play",
     )
     state['cycles'] += 1
 

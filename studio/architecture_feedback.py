@@ -1,11 +1,14 @@
 """Apply conservative historical outcome evidence to advisory architecture rankings."""
 from __future__ import annotations
 
+import time
+
 MIN_SAMPLES = 5
 MAX_SCORE_BONUS = 3.0
+MAX_EVIDENCE_AGE_SECONDS = 30 * 24 * 60 * 60
 
 
-def _learning_map(learning: dict) -> dict[tuple[str, str | None], dict]:
+def _learning_map(learning: dict, *, now: float) -> dict[tuple[str, str | None], dict]:
     if not isinstance(learning, dict):
         return {}
     rows = learning.get("rankings")
@@ -24,18 +27,22 @@ def _learning_map(learning: dict) -> dict[tuple[str, str | None], dict]:
             continue
         if not isinstance(success_rate, (int, float)):
             continue
+        latest = row.get("latest_observed_at")
+        if isinstance(latest, (int, float)) and now - float(latest) > MAX_EVIDENCE_AGE_SECONDS:
+            continue
         domain = row.get("domain")
         domain = domain if isinstance(domain, str) and domain else None
         out[(repo, domain)] = row
     return out
 
 
-def apply(recommendations: dict, learning: dict | None) -> dict:
+def apply(recommendations: dict, learning: dict | None, *, now: float | None = None) -> dict:
     if not isinstance(recommendations, dict):
         return {"matches": [], "feedback_applied": False}
     rows = recommendations.get("matches")
     rows = rows if isinstance(rows, list) else []
-    evidence = _learning_map(learning or {})
+    now_value = time.time() if now is None else float(now)
+    evidence = _learning_map(learning or {}, now=now_value)
 
     adjusted = []
     applied_count = 0
@@ -88,5 +95,6 @@ def apply(recommendations: dict, learning: dict | None) -> dict:
         "max_score_bonus": MAX_SCORE_BONUS,
         "advisory_only": True,
         "can_add_dependency": False,
+        "max_evidence_age_seconds": MAX_EVIDENCE_AGE_SECONDS,
     }
     return result

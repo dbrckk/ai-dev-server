@@ -87,17 +87,25 @@ def apply(
         normalized_project_type = project_type if isinstance(project_type, str) and project_type else None
         normalized_primary_domain = primary_domain if isinstance(primary_domain, str) and primary_domain else None
         if isinstance(repo, str):
-            keys = [
-                (repo, domain, normalized_framework, normalized_project_type, normalized_primary_domain),
-                (repo, domain, normalized_framework, normalized_project_type, None),
-                (repo, domain, normalized_framework, None, normalized_primary_domain),
-                (repo, domain, normalized_framework, None, None),
-                (repo, domain, None, normalized_project_type, normalized_primary_domain),
-                (repo, domain, None, None, None),
-                (repo, None, normalized_framework, normalized_project_type, normalized_primary_domain),
-                (repo, None, normalized_framework, None, None),
-                (repo, None, None, None, None),
-            ]
+            # Context-aware runs only consume evidence from the same context.
+            # Legacy unscoped evidence remains usable only for legacy/unscoped callers.
+            if any(x is not None for x in (
+                domain,
+                normalized_framework,
+                normalized_project_type,
+                normalized_primary_domain,
+            )):
+                keys = [
+                    (
+                        repo,
+                        domain,
+                        normalized_framework,
+                        normalized_project_type,
+                        normalized_primary_domain,
+                    ),
+                ]
+            else:
+                keys = [(repo, None, None, None, None)]
             for key in keys:
                 history = evidence.get(key)
                 if history is not None:

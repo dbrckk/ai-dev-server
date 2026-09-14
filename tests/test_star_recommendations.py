@@ -116,9 +116,10 @@ class StarScannerTests(unittest.TestCase):
     def test_model_context_contains_recommendations_as_data(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            state = {"technical_recommendations": {"status": "ok", "matches": [{"repo": "owner/repo"}]}}
+            state = {"technical_recommendations": {"status": "ok", "matches": [{"repo": "owner/repo"}]}, "architecture_decision": {"status": "planned", "chosen": [{"repo": "owner/repo"}]}}
             payload = json.loads(build_context({"brief": "test"}, state, root))
             self.assertEqual(payload["technical_recommendations"]["matches"][0]["repo"], "owner/repo")
+            self.assertEqual(payload["architecture_decision"]["chosen"][0]["repo"], "owner/repo")
 
     def test_recommendation_context_uses_project_brief(self):
         with tempfile.TemporaryDirectory() as tmp:

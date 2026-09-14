@@ -75,6 +75,11 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
                 plan_value,repository="dbrckk/ai-dev-server",pull_request=7,commit_sha="a"*40,
                 reviews=reviews,permissions=permissions,
                 workflow_runs=[{"id":9,"head_sha":"a"*40,"conclusion":"success","name":"CI"}],
+                check_runs=[
+                    {"name":"validate","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/9"},
+                    {"name":"python-tests","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/9"},
+                ],
+                pr_identity={"number":7,"state":"open","draft":False,"head_ref":"policy/migration","head_sha":"a"*40,"base_ref":"main","author":"alice"},
                 reinforced=reinforced,
             )
             with patch.object(cli,"collect_github_attestation",return_value=attestation):

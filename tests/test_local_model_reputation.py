@@ -171,6 +171,9 @@ class LocalModelReputationTests(unittest.TestCase):
             )
             self.assertFalse(status["quarantined"])
 
+    def test_quarantine_penalty_dominates_normal_provider_priority(self):
+        self.assertGreater(rep.QUARANTINE_ROUTING_PENALTY, 200.0)
+
     def test_benchmark_bonus_is_bounded(self):
         data = {
             "ollama|great": {"score": 100.0},

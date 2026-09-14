@@ -318,6 +318,7 @@ class Model:
         self.vision = primary.vision_model
         self.models_used = {}
         self.providers_used = {}
+        self.routing_portfolio = {}
         self.limit, self.calls = limit, 0
         self.avoid_providers = {name for name in avoid_providers if isinstance(name, str) and name}
 
@@ -518,10 +519,37 @@ class Model:
             provider_candidates,
             key=lambda provider: (-provider_scores[provider.name].total, provider.name),
         ))
+        if role in ('review', 'visual'):
+            implementation_provider = self.providers_used.get('implementation')
+            implementation_model = self.models_used.get('implementation')
+            independent_candidates = tuple(
+                provider
+                for provider in provider_candidates
+                if (
+                    (not implementation_provider or provider.name != implementation_provider)
+                    and (
+                        not implementation_model
+                        or provider.model_for(role, bool(screenshots)) != implementation_model
+                    )
+                )
+            )
+            if independent_candidates:
+                provider_candidates = independent_candidates
         if not provider_candidates:
             raise StudioError(
                 'No healthy provider remains for this role; paid budget or pooled token quota may be exhausted'
             )
+        self.routing_portfolio[role] = {
+            'candidates': [
+                {
+                    'provider': provider.name,
+                    'model': provider.model_for(role, bool(screenshots)),
+                    'score': round(provider_scores[provider.name].total, 4),
+                }
+                for provider in provider_candidates[:6]
+            ],
+            'independent_from_implementation': role in ('review', 'visual'),
+        }
         messages = [{'role': 'system', 'content': ROLES[role] + '\n' + (CONTRACT if role in ('product', 'implementation') else '') + schema}, {'role': 'user', 'content': content if screenshots else context}]
         r = None
         responded = False
@@ -579,6 +607,11 @@ class Model:
                 continue
             selected_provider = provider.name
             selected_provider_spec = provider
+            self.routing_portfolio.setdefault(role, {})['selected'] = {
+                'provider': provider.name,
+                'model': selected_model,
+                'score': round(provider_scores[provider.name].total, 4),
+            }
             usage = r.get('usage') if isinstance(r, dict) else None
             if isinstance(usage, dict):
                 try:

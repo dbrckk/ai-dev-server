@@ -58,13 +58,18 @@ def collect_review_target(*, token: str, repository: str, pull_request: int) -> 
     head=pr.get("head") if isinstance(pr.get("head"),dict) else {}
     base=pr.get("base") if isinstance(pr.get("base"),dict) else {}
     user=pr.get("user") if isinstance(pr.get("user"),dict) else {}
+    commit_sha=head.get("sha")
+    workflow_file=_collect_workflow_file(api,token,commit_sha) if isinstance(commit_sha,str) and commit_sha else None
     target={
         "repository":repository,
         "pull_request":pull_request,
-        "commit_sha":head.get("sha"),
+        "commit_sha":commit_sha,
         "head_ref":head.get("ref"),
         "base_ref":base.get("ref"),
         "author":user.get("login"),
+        "workflow_path":workflow_file["path"] if isinstance(workflow_file,dict) else None,
+        "workflow_blob_sha":workflow_file["blob_sha"] if isinstance(workflow_file,dict) else None,
+        "workflow_sha256":workflow_file["sha256"] if isinstance(workflow_file,dict) else None,
     }
     if any(not target.get(key) for key in target):
         raise GitHubAttestationCollectionError("GitHub PR review target incomplete")

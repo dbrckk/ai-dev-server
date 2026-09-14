@@ -77,3 +77,46 @@ def validate_ledger(ledger: dict | None) -> dict:
         seen.add(event.get("migration_id"))
         previous=digest
     return {"valid":ledger.get("head")==previous,"events":len(events),"head":previous}
+
+def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bool) -> dict:
+    """Validate already-fetched GitHub evidence. Network/API retrieval stays outside this pure validator."""
+    if not isinstance(attestation,dict):
+        raise ApprovalProvenanceError("github attestation missing")
+    required=("repository","commit_sha","pull_request","workflow_run_id")
+    if any(not attestation.get(k) for k in required):
+        raise ApprovalProvenanceError("github attestation incomplete")
+    if attestation.get("migration_id")!=plan.get("migration_id") or attestation.get("review_digest")!=plan.get("review_digest"):
+        raise ApprovalProvenanceError("github attestation binding mismatch")
+    if attestation.get("commit_sha")!=attestation.get("reviewed_commit_sha"):
+        raise ApprovalProvenanceError("review does not bind current commit")
+    reviewer=attestation.get("reviewer")
+    if not isinstance(reviewer,dict) or reviewer.get("review_state")!="APPROVED":
+        raise ApprovalProvenanceError("github approving review missing")
+    if reviewer.get("permission") not in {"admin","maintain","write"}:
+        raise ApprovalProvenanceError("github reviewer lacks write-level permission")
+    second=attestation.get("second_reviewer")
+    if reinforced:
+        if not isinstance(second,dict) or second.get("review_state")!="APPROVED":
+            raise ApprovalProvenanceError("second github approving review missing")
+        if second.get("login")==reviewer.get("login"):
+            raise ApprovalProvenanceError("github reinforced review requires separation of duties")
+        if second.get("permission") not in {"admin","maintain","write"}:
+            raise ApprovalProvenanceError("second github reviewer lacks write-level permission")
+    workflow=attestation.get("workflow")
+    if not isinstance(workflow,dict) or workflow.get("conclusion")!="success":
+        raise ApprovalProvenanceError("github workflow is not successful")
+    if workflow.get("head_sha")!=attestation.get("commit_sha"):
+        raise ApprovalProvenanceError("github workflow does not bind reviewed commit")
+    payload={k:v for k,v in attestation.items() if k!="attestation_digest"}
+    digest=hashlib.sha256(_canonical(payload).encode()).hexdigest()
+    if attestation.get("attestation_digest")!=digest:
+        raise ApprovalProvenanceError("github attestation digest mismatch")
+    return {
+        "repository":attestation["repository"],
+        "commit_sha":attestation["commit_sha"],
+        "pull_request":attestation["pull_request"],
+        "workflow_run_id":attestation["workflow_run_id"],
+        "github_reviewer":reviewer.get("login"),
+        "github_second_reviewer":second.get("login") if isinstance(second,dict) else None,
+        "attestation_digest":digest,
+    }

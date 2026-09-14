@@ -199,7 +199,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         cycle_budget = min(req['max_calls'], max(0, budget_status(state)['model_calls_remaining']))
         if cycle_budget < 1:
             state.update(status='blocked', blockers=['Project model-call budget exhausted'])
-            (out / 'report.json').write_text(canonical(state))
+            atomic_write_text(out / 'report.json', canonical(state))
             return state
         model = model_factory(cycle_budget)
         sandbox = sandbox_factory(root)

@@ -12,7 +12,12 @@ MIN_SAMPLES = 3
 
 
 def _rows(root: Path):
-    for path in sorted(root.glob("*/architecture-outcome.json")):
+    candidates = []
+    direct = root / "architecture-outcome.json"
+    if direct.is_file():
+        candidates.append(direct)
+    candidates.extend(sorted(root.glob("*/architecture-outcome.json")))
+    for path in candidates:
         try:
             value = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, UnicodeError, json.JSONDecodeError):

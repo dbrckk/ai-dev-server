@@ -120,16 +120,23 @@ def apply(
         if history is not None:
             applied_count += 1
             success_rate = max(0.0, min(1.0, float(history["success_rate"])))
-            mean_quality = history.get("mean_quality_score")
+            posterior = history.get("posterior_success_rate")
+            posterior_rate = max(0.0, min(1.0, float(posterior))) if isinstance(posterior, (int, float)) else success_rate
+            wilson = history.get("wilson_lower_95")
+            wilson_rate = max(0.0, min(1.0, float(wilson))) if isinstance(wilson, (int, float)) else posterior_rate
+            conservative_success = UNCERTAINTY_BLEND * posterior_rate + (1.0 - UNCERTAINTY_BLEND) * wilson_rate
+            mean_quality = history.get("quality_shrunk_mean", history.get("mean_quality_score"))
             quality_rate = (
                 max(0.0, min(1.0, float(mean_quality) / 100.0))
                 if isinstance(mean_quality, (int, float))
-                else success_rate
+                else conservative_success
             )
-            combined_rate = SUCCESS_WEIGHT * success_rate + QUALITY_WEIGHT * quality_rate
+            confidence = history.get("evidence_confidence")
+            confidence = max(0.0, min(1.0, float(confidence))) if isinstance(confidence, (int, float)) else 1.0
+            combined_rate = SUCCESS_WEIGHT * conservative_success + QUALITY_WEIGHT * quality_rate
             centered = (combined_rate - 0.5) * 2.0
             context_weight = _context_weight(history, normalized_framework, normalized_project_type, normalized_primary_domain)
-            bonus = max(-MAX_SCORE_BONUS, min(MAX_SCORE_BONUS, centered * MAX_SCORE_BONUS * context_weight))
+            bonus = max(-MAX_SCORE_BONUS, min(MAX_SCORE_BONUS, centered * MAX_SCORE_BONUS * context_weight * confidence))
             item["historical_evidence"] = {
                 "domain": history.get("domain"),
                 "framework": history.get("framework"),

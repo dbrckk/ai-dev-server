@@ -58,5 +58,17 @@ class ArchitectureFeedbackTests(unittest.TestCase):
         self.assertEqual(result["matches"][0]["feedback_score"], 87.0)
 
 
+    def test_unrelated_history_does_not_claim_feedback_applied(self):
+        recs = {"matches": [{"repo": "a/core", "score": 90.0}]}
+        learning = {"rankings": [{"repo": "other/repo", "samples": 10, "success_rate": 1.0}]}
+
+        result = af.apply(recs, learning)
+
+        self.assertFalse(result["feedback_applied"])
+        self.assertEqual(result["feedback_rows_applied"], 0)
+        self.assertEqual(result["matches"][0]["feedback_score"], 90.0)
+
+
+
 if __name__ == "__main__":
     unittest.main()

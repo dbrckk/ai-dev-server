@@ -27,6 +27,13 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
             {"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:10Z"},
             {"author":{"login":"alice"},"state":"CHANGES_REQUESTED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:20Z"}],"abc",head_commit_timestamp=1767225600.0)
         self.assertEqual(rows,[])
+    def test_latest_review_order_is_timestamp_driven(self):
+        rows=latest_approvals([
+            {"id":10,"author":{"login":"alice"},"state":"CHANGES_REQUESTED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:20Z"},
+            {"id":9,"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:10Z"},
+        ],"abc",head_commit_timestamp=1767225600.0)
+        self.assertEqual(rows,[])
+
     def test_reinforced_requires_two_eligible(self):
         with self.assertRaises(ApprovalProvenanceError):
             build(self.plan,repository="o/r",pull_request=7,commit_sha="abc",

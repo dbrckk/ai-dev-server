@@ -185,12 +185,39 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         if expected!=actual:
             raise ApprovalProvenanceError("github attestation does not match migration plan review target")
 
+    workflow_file=attestation.get("workflow_file")
+    if not isinstance(workflow_file,dict):
+        raise ApprovalProvenanceError("github workflow file evidence missing")
+    from replacement_ci_policy import REQUIRED_WORKFLOW_NAME, REQUIRED_WORKFLOW_PATH
+    if workflow_file.get("path")!=REQUIRED_WORKFLOW_PATH:
+        raise ApprovalProvenanceError("github workflow file path is not trusted")
+    if not isinstance(workflow_file.get("sha256"),str) or len(workflow_file.get("sha256"))!=64:
+        raise ApprovalProvenanceError("github workflow file digest invalid")
+    if not isinstance(workflow_file.get("blob_sha"),str) or not workflow_file.get("blob_sha"):
+        raise ApprovalProvenanceError("github workflow file blob SHA missing")
+
+    target=plan.get("github_review_target") if isinstance(plan,dict) else None
+    if isinstance(target,dict):
+        workflow_expected={
+            "path":target.get("workflow_path"),
+            "blob_sha":target.get("workflow_blob_sha"),
+            "sha256":target.get("workflow_sha256"),
+        }
+        workflow_actual={
+            "path":workflow_file.get("path"),
+            "blob_sha":workflow_file.get("blob_sha"),
+            "sha256":workflow_file.get("sha256"),
+        }
+        if workflow_expected!=workflow_actual:
+            raise ApprovalProvenanceError("github workflow file does not match migration review target")
+
     workflow=attestation.get("workflow")
     if not isinstance(workflow,dict) or workflow.get("conclusion")!="success":
         raise ApprovalProvenanceError("github workflow is not successful")
-    from replacement_ci_policy import REQUIRED_WORKFLOW_NAME
     if workflow.get("name")!=REQUIRED_WORKFLOW_NAME:
         raise ApprovalProvenanceError("github workflow name is not trusted")
+    if workflow.get("path")!=REQUIRED_WORKFLOW_PATH:
+        raise ApprovalProvenanceError("github workflow path is not trusted")
     if workflow.get("head_sha")!=attestation.get("commit_sha"):
         raise ApprovalProvenanceError("github workflow does not bind reviewed commit")
     workflow_timestamp=workflow.get("timestamp")
@@ -218,6 +245,9 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         "check_evidence":checks.get("check_evidence"),
         "workflow_timestamp":workflow_timestamp,
         "workflow_name":workflow.get("name"),
+        "workflow_path":workflow.get("path"),
+        "workflow_file_blob_sha":workflow_file.get("blob_sha"),
+        "workflow_file_sha256":workflow_file.get("sha256"),
         "common_workflow_run_id":common_run_id,
         "attestation_digest":digest,
     }

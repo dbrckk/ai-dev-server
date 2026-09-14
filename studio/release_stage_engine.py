@@ -9,6 +9,8 @@ from repair_planner import plan
 from repair_queue import begin_attempt, complete_stage_tasks, enqueue, finish_attempt, summarize
 from project_budget import branch_should_stop, budget_status, can_spend, configure as configure_budget, record_repair_outcome
 from task_scheduler import dispatch as scheduler_dispatch, select as scheduler_select
+from lease_guard import maintain as maintain_lease
+from telemetry import emit as emit_telemetry
 
 
 def evaluate_and_repair(
@@ -110,15 +112,17 @@ def evaluate_and_repair(
             begin_attempt(task)
         blockers_before = len(evidence.get('blockers', []))
         try:
-            result = repair_attempt(
-                root,
-                state,
-                evidence,
-                stage,
-                req["app_name"],
-                task=task,
-                artifact_cache_enabled=True,
-            )
+            emit_telemetry("repair_attempt_started", stage=stage, task_id=(task or {}).get("id"))
+            with maintain_lease(task):
+                result = repair_attempt(
+                    root,
+                    state,
+                    evidence,
+                    stage,
+                    req["app_name"],
+                    task=task,
+                    artifact_cache_enabled=True,
+                )
         except StudioError as exc:
             if task is not None:
                 finish_attempt(task, success=False, model_calls=0, improved=False)
@@ -129,6 +133,7 @@ def evaluate_and_repair(
                 blockers_before=blockers_before,
                 blockers_after=blockers_before,
             )
+            emit_telemetry("repair_attempt_failed", stage=stage, task_id=(task or {}).get("id"), error=str(exc))
             history.append({
                 "round": round_index + 1,
                 "changed": False,
@@ -136,6 +141,15 @@ def evaluate_and_repair(
             })
             break
 
+        emit_telemetry(
+            "repair_attempt_finished",
+            stage=stage,
+            task_id=(task or {}).get("id"),
+            changed=result.get("changed") is True,
+            model_calls=result.get("model_calls", 0),
+            gate_count=result.get("gate_count", 0),
+            strategy=result.get("strategy"),
+        )
         history.append({
             "round": round_index + 1,
             "changed": result.get("changed") is True,

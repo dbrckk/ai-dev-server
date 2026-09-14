@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from artifact_cas import get as cas_get, put as cas_put
 from artifact_share_policy import validate_shareable_payload
+from artifact_cas_audit import record as record_promotion
 from core import StudioError
 
 
@@ -27,9 +28,17 @@ def promote_private(
     )
     if shared.get("sha256") != digest or shared.get("size") != size:
         raise StudioError("Artifact CAS promotion changed content identity")
+    project_id = __import__("os").environ.get("STUDIO_PROJECT_ID", "local-project")
+    audit = record_promotion(
+        project_id=project_id,
+        artifact_class=artifact_class,
+        digest=digest,
+        size=size,
+    )
     return {
         "status": "promoted",
         "artifact_class": artifact_class,
         "sha256": digest,
         "size": size,
+        "audit_sequence": audit["sequence"],
     }

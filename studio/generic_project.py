@@ -222,6 +222,9 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     __import__("os").environ["STUDIO_LOCAL_MODEL_BENCHMARK_PATH"] = str(
         out / ".autonomy" / "local-model-benchmark.json"
     )
+    __import__("os").environ["STUDIO_MODEL_PORTFOLIO_LEARNING_PATH"] = str(
+        model_portfolio_learning_path
+    )
     max_api_cost = req.get("max_api_cost_usd")
     if isinstance(max_api_cost, (int, float)) and float(max_api_cost) > 0:
         __import__("os").environ["STUDIO_MAX_API_COST_USD"] = str(float(max_api_cost))

@@ -178,7 +178,6 @@ def summarize(root: Path | str = "studio-output") -> dict:
         key=lambda x: (
             x["eligible_for_advisory_bias"],
             x["mean_quality_score"],
-            x["mean_quality_score"],
             x["success_rate"],
             -x["mean_blockers"],
             -x["mean_model_calls"],
@@ -207,6 +206,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
     stack_rankings.sort(
         key=lambda x: (
             x["eligible_for_advisory_bias"],
+            x["mean_quality_score"],
             x["success_rate"],
             -x["mean_blockers"],
             -x["mean_model_calls"],

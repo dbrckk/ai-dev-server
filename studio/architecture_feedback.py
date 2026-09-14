@@ -8,6 +8,20 @@ MAX_SCORE_BONUS = 3.0
 MAX_STACK_SCORE_BONUS = 2.0
 MAX_EVIDENCE_AGE_SECONDS = 30 * 24 * 60 * 60
 
+def _context_weight(row: dict, framework: str | None, project_type: str | None, primary_domain: str | None) -> float:
+    """Down-weight legacy/generic evidence; full bonus requires matching context."""
+    requested = (framework, project_type, primary_domain)
+    fields = ("framework", "project_type", "primary_domain")
+    explicit = 0
+    for field, expected in zip(fields, requested):
+        value = row.get(field)
+        if isinstance(value, str) and value:
+            if expected is not None and value != expected:
+                return 0.0
+            explicit += 1
+    return min(1.0, 0.25 + explicit * 0.25)
+
+
 
 def _learning_map(learning: dict, *, now: float) -> dict[tuple[str, str | None, str | None, str | None, str | None], dict]:
     if not isinstance(learning, dict):
@@ -96,7 +110,8 @@ def apply(
             applied_count += 1
             success_rate = max(0.0, min(1.0, float(history["success_rate"])))
             centered = (success_rate - 0.5) * 2.0
-            bonus = max(-MAX_SCORE_BONUS, min(MAX_SCORE_BONUS, centered * MAX_SCORE_BONUS))
+            context_weight = _context_weight(history, normalized_framework, normalized_project_type, normalized_primary_domain)
+            bonus = max(-MAX_SCORE_BONUS, min(MAX_SCORE_BONUS, centered * MAX_SCORE_BONUS * context_weight))
             item["historical_evidence"] = {
                 "domain": history.get("domain"),
                 "framework": history.get("framework"),
@@ -108,6 +123,7 @@ def apply(
                 "mean_cycles": history.get("mean_cycles"),
                 "mean_blockers": history.get("mean_blockers"),
                 "advisory_bonus": round(bonus, 4),
+                "context_weight": round(context_weight, 4),
             }
         item["feedback_score"] = round(base_score + bonus, 4)
         adjusted.append(item)
@@ -202,7 +218,10 @@ def stack_adjustment(
 
         rate = max(0.0, min(1.0, float(success_rate)))
         centered = (rate - 0.5) * 2.0
-        weight = min(1.0, samples / 10.0) * min(1.0, overlap / max(1, len(chosen)))
+        context_weight = _context_weight(row, normalized_framework, normalized_project_type, normalized_primary_domain)
+        if context_weight <= 0:
+            continue
+        weight = min(1.0, samples / 10.0) * min(1.0, overlap / max(1, len(chosen))) * context_weight
         weighted += centered * weight
         total_weight += weight
         evidence.append({
@@ -213,6 +232,7 @@ def stack_adjustment(
             "framework": row_framework,
             "project_type": row_project_type,
             "primary_domain": row_primary_domain,
+            "context_weight": round(context_weight, 4),
         })
 
     if total_weight <= 0:

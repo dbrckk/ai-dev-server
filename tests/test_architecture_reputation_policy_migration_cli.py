@@ -70,10 +70,10 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
                 auth_value["reinforced_reviewed"]=True
             auth=root/"auth.json"; auth.write_text(json.dumps(auth_value))
             reinforced=plan_value.get("risk",{}).get("reinforced_review_required") is True
-            reviews=[{"user":{"login":"alice"},"state":"APPROVED","commit_id":"a"*40}]
+            reviews=[{"user":{"login":"alice"},"state":"APPROVED","commit_id":"a"*40,"submitted_at":"2026-01-01T00:00:10Z"}]
             permissions={"alice":"write"}
             if reinforced:
-                reviews.append({"user":{"login":"bob"},"state":"APPROVED","commit_id":"a"*40})
+                reviews.append({"user":{"login":"bob"},"state":"APPROVED","commit_id":"a"*40,"submitted_at":"2026-01-01T00:00:20Z"})
                 permissions["bob"]="maintain"
             attestation=build(
                 plan_value,repository="dbrckk/ai-dev-server",pull_request=7,commit_sha="a"*40,
@@ -84,6 +84,7 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
                     {"name":"python-tests","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/9"},
                 ],
                 pr_identity={"number":7,"state":"open","draft":False,"head_ref":"policy/migration","head_sha":"a"*40,"base_ref":"main","author":"alice"},
+                head_commit_timestamp=1767225600.0,
                 reinforced=reinforced,
             )
             with patch.object(cli,"collect_github_attestation",return_value=attestation):

@@ -23,6 +23,7 @@ from architecture_planner import write as write_architecture_plan
 from architecture_outcome import write as write_architecture_outcome
 from architecture_learning import write as write_architecture_learning, summarize as summarize_architecture_learning
 from architecture_evaluator import write as write_architecture_evaluation
+from architecture_benchmark import write as write_architecture_benchmark
 
 class GitHub(API):
     def __init__(self, repo):
@@ -390,12 +391,15 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     if state['status'] in ('validated_preview', 'awaiting_visual_review') and apk.is_file():
         shutil.copyfile(apk, out / 'app-debug.apk')
         state['apk_sha256'] = hashlib.sha256(apk.read_bytes()).hexdigest()
-    (out / 'report.json').write_text(canonical(state))
-    sha = checkpoint(parent)
-    state['checkpoint_commit'] = sha
     state["architecture_evaluation"] = write_architecture_evaluation(
         state.get("architecture_decision", {}),
         state,
+        out,
+    )
+    state["architecture_benchmark"] = write_architecture_benchmark(
+        state.get("architecture_decision", {}),
+        state.get("architecture_evaluation", {}),
+        state.get("technical_recommendations", {}),
         out,
     )
     write_architecture_outcome(state, out)
@@ -404,6 +408,9 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         state["architecture_learning"] = write_architecture_learning(learning_root)
     except OSError:
         state["architecture_learning"] = {"status": "unavailable"}
+
+    sha = checkpoint(parent)
+    state['checkpoint_commit'] = sha
     atomic_write_text(out / 'report.json', canonical(state))
     return state
 

@@ -106,3 +106,62 @@ def quota_status(
         "remaining_ratio": round(ratio, 6) if ratio is not None else None,
         "exhausted": bool(quota and used >= quota),
     }
+
+
+def quota_admission(
+    path_or_data: Path | dict,
+    provider: str,
+    monthly_token_quota: int,
+    *,
+    estimated_tokens: int,
+    reserve_ratio: float = DEFAULT_RESERVE_RATIO,
+    allow_reserve: bool = False,
+    now: datetime | None = None,
+) -> dict:
+    """Decide whether a metered pooled provider may accept another call.
+
+    Non-critical work cannot consume the configured reserve. Critical work may
+    use it, while still refusing calls that would exceed the remaining quota.
+    """
+    quota = max(0, int(monthly_token_quota))
+    estimate = max(1, int(estimated_tokens))
+    try:
+        ratio = float(reserve_ratio)
+    except (TypeError, ValueError):
+        ratio = DEFAULT_RESERVE_RATIO
+    ratio = max(0.0, min(0.50, ratio))
+
+    status = quota_status(path_or_data, provider, quota, now=now)
+    if quota <= 0:
+        return {
+            **status,
+            "estimated_tokens": estimate,
+            "reserve_tokens": 0,
+            "spendable_tokens": None,
+            "allow_reserve": bool(allow_reserve),
+            "admitted": True,
+            "reason": "unlimited_or_untracked",
+        }
+
+    remaining = int(status["remaining_tokens"] or 0)
+    reserve = min(quota, max(0, int(quota * ratio)))
+    spendable = remaining if allow_reserve else max(0, remaining - reserve)
+    admitted = estimate <= spendable
+    if admitted:
+        reason = "within_remaining_quota"
+    elif allow_reserve:
+        reason = "insufficient_remaining_quota"
+    elif remaining >= estimate:
+        reason = "reserved_for_critical_work"
+    else:
+        reason = "insufficient_remaining_quota"
+
+    return {
+        **status,
+        "estimated_tokens": estimate,
+        "reserve_tokens": reserve,
+        "spendable_tokens": spendable,
+        "allow_reserve": bool(allow_reserve),
+        "admitted": admitted,
+        "reason": reason,
+    }

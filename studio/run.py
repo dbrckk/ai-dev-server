@@ -162,6 +162,35 @@ class GitHub(API):
             self.call('POST', self.repo + '/git/refs', {'ref': 'refs/heads/' + branch, 'sha': commit['sha']})
         return commit['sha']
 
+def _load_architecture_replacement_plan(out: Path) -> dict:
+    path = Path(out) / 'architecture-replacement-plan.json'
+    if not path.is_file():
+        return {'status': 'unavailable', 'replacement_plans': []}
+    try:
+        value = json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return {'status': 'invalid', 'replacement_plans': []}
+    if not isinstance(value, dict):
+        return {'status': 'invalid', 'replacement_plans': []}
+    plans = []
+    for row in value.get('replacement_plans', [])[:8]:
+        if not isinstance(row, dict):
+            continue
+        plans.append({
+            'current_repo': row.get('current_repo'),
+            'replacement_repo': row.get('replacement_repo'),
+            'risk': row.get('risk'),
+            'benchmark_delta': row.get('benchmark_delta'),
+            'estimated_change_scope': row.get('estimated_change_scope'),
+            'go_no_go': row.get('go_no_go'),
+            'required_gates': row.get('required_gates', [])[:12],
+        })
+    return {
+        'status': value.get('status', 'planned'),
+        'replacement_plans': plans,
+        'advisory_only': True,
+    }
+
 def _load_architecture_obsolescence(out: Path) -> dict:
     path = Path(out) / 'architecture-obsolescence.json'
     if not path.is_file():
@@ -263,6 +292,7 @@ def context(req, state, root):
                       'architecture_preflight': state.get('architecture_preflight', {'status':'unavailable','verdict':'unknown'}),
                       'architecture_benchmark': state.get('architecture_benchmark', {'status':'unavailable','migration_candidates':[]}),
                       'architecture_obsolescence': state.get('architecture_obsolescence', {'status':'unavailable','deprecation_candidates':[]}),
+                      'architecture_replacement_plan': state.get('architecture_replacement_plan', {'status':'unavailable','replacement_plans':[]}),
                       'architecture_drift_alerts': state.get('architecture_drift_alerts', []),
                       'files': files})
 

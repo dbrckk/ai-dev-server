@@ -14,6 +14,7 @@ from provider_router import load_providers
 from capacity_ledger import detailed_snapshot as ledger_detailed_snapshot
 from capacity_efficiency import summarize as summarize_capacity_efficiency, project_multiplier as efficiency_multiplier
 from stagnation_controller import summarize as summarize_stagnation
+from recovery_controller import evaluate as evaluate_recovery
 from queue import matrix
 
 
@@ -39,6 +40,8 @@ def _project_rows(
     previous_plan: dict | None = None,
     efficiency_summary: dict | None = None,
     stagnation_summary: dict | None = None,
+    recovery_state_path: Path | None = None,
+    provider_context: list[dict] | None = None,
 ) -> list[dict]:
     dashboard = collect(root)
     health = {row["id"]: row for row in dashboard.get("projects", [])}
@@ -104,6 +107,35 @@ def _project_rows(
             min(1.0, float(stagnation.get("capacity_multiplier", 1.0) or 0.0)),
         )
         capacity_paused = bool(stagnation.get("pause", False))
+        recovery = {
+            "recover": False,
+            "capacity_multiplier": 0.0,
+            "force_diversify": False,
+            "reason": "recovery_disabled",
+        }
+        if recovery_state_path is not None:
+            recovery_context = {
+                "base_sha": str(
+                    runtime.get("base_sha")
+                    or runtime.get("checkpoint_commit")
+                    or runtime.get("last_commit")
+                    or ""
+                ),
+                "phase": str(phase),
+                "providers": provider_context or [],
+            }
+            recovery = evaluate_recovery(
+                recovery_state_path,
+                project_id=project_id,
+                paused=capacity_paused,
+                context=recovery_context,
+            )
+            if capacity_paused and recovery.get("recover") is True:
+                capacity_paused = False
+                stagnation_multiplier = max(
+                    stagnation_multiplier,
+                    float(recovery.get("capacity_multiplier", 0.15) or 0.15),
+                )
 
         rows.append({
             "id": project_id,
@@ -121,7 +153,10 @@ def _project_rows(
             "stagnation_multiplier": stagnation_multiplier,
             "capacity_paused": capacity_paused,
             "stagnation_level": str(stagnation.get("level") or "normal"),
-            "force_diversify": bool(stagnation.get("force_diversify", False)),
+            "force_diversify": bool(stagnation.get("force_diversify", False))
+            or bool(recovery.get("force_diversify", False)),
+            "recovery_active": bool(recovery.get("recover", False)),
+            "recovery_reason": str(recovery.get("reason") or ""),
             "committed_tokens": committed,
             "previous_envelope_tokens": previous_envelope,
         })
@@ -190,6 +225,19 @@ def plan(
     ledger = ledger_detailed_snapshot(root / "capacity-ledger.json")
     efficiency = summarize_capacity_efficiency(root / "capacity-efficiency.json")
     stagnation = summarize_stagnation(efficiency)
+    providers = _provider_rows(
+        reservations_by_provider=ledger.get("reservations_by_provider", {}),
+        quota_path=root / "provider-monthly-quota.json",
+    )
+    provider_context = [
+        {
+            "name": item.name,
+            "available_tokens": item.available_tokens,
+            "unmetered": item.unmetered,
+            "paid": item.paid,
+        }
+        for item in providers
+    ]
     projects = _project_rows(
         root,
         request_dir,
@@ -197,10 +245,8 @@ def plan(
         previous_plan=previous_plan,
         efficiency_summary=efficiency,
         stagnation_summary=stagnation,
-    )
-    providers = _provider_rows(
-        reservations_by_provider=ledger.get("reservations_by_provider", {}),
-        quota_path=root / "provider-monthly-quota.json",
+        recovery_state_path=root / "recovery-state.json",
+        provider_context=provider_context,
     )
     report = allocate(
         projects,
@@ -245,6 +291,10 @@ def plan(
         "stagnation_paused_projects": int(stagnation.get("paused_projects", 0) or 0),
         "stagnation_throttled_projects": int(stagnation.get("throttled_projects", 0) or 0),
         "stagnation_diversifying_projects": int(stagnation.get("diversifying_projects", 0) or 0),
+        "recovery_active_projects": sum(
+            1 for row in report["projects"]
+            if row.get("recovery_active") is True
+        ),
     }
     return report
 

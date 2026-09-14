@@ -14,6 +14,7 @@ from repair_strategy import choose as choose_strategy, record_outcome as record_
 from release_candidate_search import MAX_CANDIDATES, apply_winner, run_branch, select_winner
 from repair_search_policy import should_expand
 from project_budget import remaining as budget_remaining
+from persistent_quick_gate_cache import load as load_persistent_quick_cache, save as save_persistent_quick_cache
 
 MAX_RELEASE_REPAIR_ROUNDS = 2
 MAX_MODEL_CALLS_PER_BRANCH = 2
@@ -174,7 +175,7 @@ def attempt(
     }
 
     candidates = []
-    quick_gate_cache = {}
+    quick_gate_cache = load_persistent_quick_cache()
     for strategy_index, strategy_name in enumerate(strategies):
         prior = _strategy_prior(selection, strategy_name)
 
@@ -269,6 +270,7 @@ def attempt(
                     strategies.append(name)
                 break
 
+    save_persistent_quick_cache(quick_gate_cache)
     winner = select_winner(candidates)
     if winner is None:
         raise StudioError(

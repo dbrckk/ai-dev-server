@@ -11,8 +11,7 @@ TRUSTED_CHECK_APP="github-actions"
 REQUIRED_WORKFLOW_NAME="CI"
 REQUIRED_WORKFLOW_PATH=".github/workflows/ci.yml"
 
-def workflow_job_ids(path: Path) -> set[str]:
-    text=path.read_text(encoding="utf-8")
+def workflow_job_ids_text(text: str) -> set[str]:
     jobs=set()
     in_jobs=False
     for line in text.splitlines():
@@ -28,15 +27,25 @@ def workflow_job_ids(path: Path) -> set[str]:
             jobs.add(match.group(1))
     return jobs
 
-def validate_workflow(path: Path) -> dict:
-    jobs=workflow_job_ids(path)
+def workflow_job_ids(path: Path) -> set[str]:
+    return workflow_job_ids_text(path.read_text(encoding="utf-8"))
+
+def validate_workflow_text(text: str) -> dict:
+    jobs=workflow_job_ids_text(text)
     missing=sorted(REQUIRED_GITHUB_CHECKS-jobs)
+    name_match=re.search(r"(?m)^name:\s*([^#\n]+?)\s*$",text)
+    workflow_name=name_match.group(1).strip().strip("'\"") if name_match else None
     return {
-        "valid":not missing,
+        "valid":not missing and workflow_name==REQUIRED_WORKFLOW_NAME,
         "required_checks":sorted(REQUIRED_GITHUB_CHECKS),
         "workflow_jobs":sorted(jobs),
         "missing_checks":missing,
+        "workflow_name":workflow_name,
+        "expected_workflow_name":REQUIRED_WORKFLOW_NAME,
     }
+
+def validate_workflow(path: Path) -> dict:
+    return validate_workflow_text(path.read_text(encoding="utf-8"))
 
 
 def _workflow_run_id_from_details(run: dict, repository: str) -> int | None:

@@ -142,6 +142,36 @@ def summarize(path: Path) -> dict:
     }
 
 
+def origin_violation_penalty(summary: dict, *, kind: str, name: str, role: str) -> float:
+    """Bounded score-point penalty for repeatedly triggering architecture-safe recovery."""
+    fraction = routing_penalty(summary, kind=kind, name=name, role=role)
+    return round(fraction * 100.0, 4)
+
+
+def rewrite_recovery_bonus(summary: dict, *, kind: str, name: str, role: str) -> float:
+    """Conservative bonus for models/providers that repeatedly recover rejected patches."""
+    if role != "implementation" or not isinstance(summary, dict):
+        return 0.0
+    rows = summary.get("rewrite_rankings")
+    if not isinstance(rows, list):
+        return 0.0
+    for row in rows:
+        if row.get("kind") != kind or row.get("name") != name:
+            continue
+        samples = row.get("samples")
+        if not isinstance(samples, int) or samples < MIN_SAMPLES:
+            return 0.0
+        verify_rate = float(row.get("verification_pass_rate", 0.0))
+        review_rate = float(row.get("review_pass_rate", 0.0))
+        quality = min(verify_rate, review_rate if row.get("review_passes", 0) else verify_rate)
+        if quality <= 0.6:
+            return 0.0
+        # Smaller than the maximum violation penalty: recovery skill must not
+        # make architecture violations strategically desirable.
+        return round(min(10.0, (quality - 0.6) / 0.4 * 10.0), 4)
+    return 0.0
+
+
 def routing_penalty(summary: dict, *, kind: str, name: str, role: str) -> float:
     if role != "implementation" or not isinstance(summary, dict):
         return 0.0

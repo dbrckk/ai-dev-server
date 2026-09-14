@@ -68,6 +68,35 @@ class ArchitectureObsolescenceTests(unittest.TestCase):
             result=write(self.learning(),self.benchmark(),self.recommendations(),out)
             saved=json.loads((out/"architecture-obsolescence.json").read_text())
             self.assertEqual(saved,result)
+    def test_stale_maintenance_strengthens_candidate(self):
+        maintenance={"a/current":{
+            "repo":"a/current",
+            "status":"stale",
+            "reason":"push_recency",
+            "age_days":500.0,
+        }}
+        result=evaluate(
+            self.learning(),
+            self.benchmark(),
+            self.recommendations(),
+            maintenance=maintenance,
+        )
+        row=result["deprecation_candidates"][0]
+        self.assertEqual(row["maintenance_signal"],"stale")
+        self.assertTrue(row["maintenance_evidence_available"])
+        self.assertEqual(row["maintenance_evidence"]["age_days"],500.0)
+        self.assertIn("maintenance is also weak",row["reason"])
+
+    def test_active_maintenance_does_not_auto_deprecate(self):
+        maintenance={"a/current":{"repo":"a/current","status":"active","age_days":10.0}}
+        result=evaluate(
+            self.learning(),
+            self.benchmark(),
+            self.recommendations(),
+            maintenance=maintenance,
+        )
+        self.assertEqual(result["deprecation_candidates"][0]["maintenance_signal"],"active")
+        self.assertFalse(result["policy"]["auto_deprecate"])
 
 if __name__=="__main__":
     unittest.main()

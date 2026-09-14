@@ -41,13 +41,31 @@ def summarize(root: Path | str = "studio-output") -> dict:
         cycles = max(0, int(outcome.get("cycles", 0) or 0))
         blockers = max(0, int(outcome.get("blocker_count", 0) or 0))
 
-        repos = row.get("chosen_repositories")
-        if not isinstance(repos, list):
-            continue
-        for repo in repos:
-            if not isinstance(repo, str) or not repo:
-                continue
-            item = stats.setdefault(repo, {
+        contexts = row.get("chosen_contexts")
+        if isinstance(contexts, list) and contexts:
+            observed = [
+                {
+                    "repo": item.get("repo"),
+                    "domain": item.get("domain"),
+                }
+                for item in contexts
+                if isinstance(item, dict) and isinstance(item.get("repo"), str)
+            ]
+        else:
+            repos = row.get("chosen_repositories")
+            observed = [
+                {"repo": repo, "domain": None}
+                for repo in repos
+                if isinstance(repos, list) and isinstance(repo, str) and repo
+            ] if isinstance(repos, list) else []
+
+        for observed_item in observed:
+            repo = observed_item["repo"]
+            domain = observed_item.get("domain")
+            key = (repo, domain)
+            item = stats.setdefault(key, {
+                "repo": repo,
+                "domain": domain,
                 "samples": 0,
                 "successes": 0,
                 "model_calls": 0,
@@ -61,11 +79,12 @@ def summarize(root: Path | str = "studio-output") -> dict:
             item["blockers"] += blockers
 
     rankings = []
-    for repo, item in stats.items():
+    for (_repo, _domain), item in stats.items():
         samples = item["samples"]
         success_rate = item["successes"] / samples if samples else 0.0
         rankings.append({
-            "repo": repo,
+            "repo": item["repo"],
+            "domain": item.get("domain"),
             "samples": samples,
             "success_rate": round(success_rate, 4),
             "mean_model_calls": round(item["model_calls"] / samples, 3) if samples else 0.0,

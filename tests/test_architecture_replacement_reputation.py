@@ -64,5 +64,19 @@ class ReplacementReputationTests(unittest.TestCase):
             loaded=arr.load(path)
             self.assertEqual(arr.lookup(loaded,self.context())["state"],entry["state"])
 
+    def test_learning_style_sequential_dict_drives_quarantine(self):
+        evidence={**self.strong(),"sequential_drift":{"drift_detected":True,"status":"drift"}}
+        state=arr.desired_state(evidence)
+        self.assertEqual(state["state"],"QUARANTINED")
+
+    def test_learning_style_recovery_dict_drives_recovering(self):
+        evidence={
+            "effective_samples":20,"evidence_confidence":1.0,
+            "wilson_lower_95":0.30,"regression_rate":0.30,
+            "sequential_drift":{"drift_detected":False,"recovery_detected":True,"status":"recovery"},
+        }
+        state=arr.desired_state(evidence)
+        self.assertEqual(state["state"],"RECOVERING")
+
 if __name__=="__main__":
     unittest.main()

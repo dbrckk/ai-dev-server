@@ -41,6 +41,11 @@ jobs:
           PYTHONPATH: studio
         run: python -m unittest discover -s tests -p "test_architecture_replacement_reputation_state_machine.py" -v
 
+      - name: Run reputation policy migration safety tests
+        env:
+          PYTHONPATH: studio
+        run: python -m unittest discover -s tests -p "test_architecture_reputation_policy_migration*.py" -v
+
   python-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 20

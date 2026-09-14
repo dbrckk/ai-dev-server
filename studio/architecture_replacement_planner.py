@@ -365,6 +365,8 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
         impact = _impact(current, replacement)
         risk = _risk(current, replacement, row.get("benchmark_delta"))
         context={
+            "current_repo":current_repo,
+            "replacement_repo":replacement_repo,
             "framework":row.get("framework"),
             "project_type":row.get("project_type"),
             "primary_domain":row.get("primary_domain"),

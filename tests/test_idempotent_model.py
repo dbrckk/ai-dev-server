@@ -13,9 +13,11 @@ from idempotent_model import ask
 class FakeModel:
     def __init__(self):
         self.calls = 0
+        self.network_calls = 0
 
     def ask(self, role, context, screenshots=()):
         self.calls += 1
+        self.network_calls += 1
         return {"files": [{"path": "lib/app.dart", "content": "ok"}]}
 
 
@@ -36,7 +38,9 @@ class IdempotentModelTests(unittest.TestCase):
                     restarted_model, "implementation", '{"task":"x"}', namespace="preview-implementation"
                 )
 
-                self.assertEqual(restarted_model.calls, 0)
+                self.assertEqual(restarted_model.network_calls, 0)
+                self.assertEqual(restarted_model.calls, 1)
+                self.assertEqual(restarted_model.checkpoint_replays, 1)
                 self.assertTrue(reused_second)
                 self.assertEqual(first, second)
                 self.assertEqual(key_first, key_second)

@@ -42,7 +42,7 @@ class ArchitectureFeedbackTests(unittest.TestCase):
 
         self.assertTrue(result["feedback_applied"])
         self.assertEqual(result["matches"][0]["repo"], "a/core")
-        self.assertEqual(result["matches"][0]["feedback_score"], 93.0)
+        self.assertEqual(result["matches"][0]["feedback_score"], 90.75)
         self.assertLessEqual(
             abs(result["matches"][0]["historical_evidence"]["advisory_bonus"]),
             af.MAX_SCORE_BONUS,
@@ -55,7 +55,7 @@ class ArchitectureFeedbackTests(unittest.TestCase):
 
         result = af.apply(recs, learning)
 
-        self.assertEqual(result["matches"][0]["feedback_score"], 87.0)
+        self.assertEqual(result["matches"][0]["feedback_score"], 89.25)
 
 
     def test_unrelated_history_does_not_claim_feedback_applied(self):
@@ -120,7 +120,7 @@ class ArchitectureFeedbackTests(unittest.TestCase):
         result = af.apply(recs, learning)
 
         self.assertTrue(result["feedback_applied"])
-        self.assertEqual(result["matches"][0]["feedback_score"], 93.0)
+        self.assertEqual(result["matches"][0]["feedback_score"], 91.5)
         self.assertEqual(
             result["matches"][0]["historical_evidence"]["domain"],
             "mobile",
@@ -166,7 +166,7 @@ class ArchitectureFeedbackTests(unittest.TestCase):
         result = af.apply(recs, learning, now=now)
 
         self.assertTrue(result["feedback_applied"])
-        self.assertEqual(result["matches"][0]["feedback_score"], 93.0)
+        self.assertEqual(result["matches"][0]["feedback_score"], 91.5)
 
 
 
@@ -206,7 +206,7 @@ class ArchitectureFeedbackTests(unittest.TestCase):
         result = af.apply(recs, learning, framework="godot")
 
         self.assertTrue(result["feedback_applied"])
-        self.assertEqual(result["matches"][0]["feedback_score"], 93.0)
+        self.assertEqual(result["matches"][0]["feedback_score"], 92.25)
         self.assertEqual(result["matches"][0]["historical_evidence"]["framework"], "godot")
 
     def test_stack_synergy_is_framework_scoped(self):
@@ -226,8 +226,67 @@ class ArchitectureFeedbackTests(unittest.TestCase):
 
         self.assertEqual(mismatch["bonus"], 0.0)
         self.assertGreater(matching["bonus"], 0.0)
+    def test_project_type_mismatch_does_not_bias(self):
+        recs = {"matches": [{"repo": "a/core", "domain": "mobile", "score": 90.0}]}
+        learning = {"rankings": [{
+            "repo": "a/core",
+            "domain": "mobile",
+            "framework": "flutter",
+            "project_type": "game",
+            "primary_domain": "mobile",
+            "samples": 10,
+            "success_rate": 1.0,
+        }]}
+        result = af.apply(
+            recs,
+            learning,
+            framework="flutter",
+            project_type="trading",
+            primary_domain="mobile",
+        )
+        self.assertFalse(result["feedback_applied"])
+        self.assertEqual(result["matches"][0]["feedback_score"], 90.0)
 
+    def test_full_context_gets_full_bonus(self):
+        recs = {"matches": [{"repo": "a/core", "domain": "mobile", "score": 90.0}]}
+        learning = {"rankings": [{
+            "repo": "a/core",
+            "domain": "mobile",
+            "framework": "flutter",
+            "project_type": "game",
+            "primary_domain": "mobile",
+            "samples": 10,
+            "success_rate": 1.0,
+        }]}
+        result = af.apply(
+            recs,
+            learning,
+            framework="flutter",
+            project_type="game",
+            primary_domain="mobile",
+        )
+        self.assertEqual(result["matches"][0]["feedback_score"], 93.0)
+        self.assertEqual(result["matches"][0]["historical_evidence"]["context_weight"], 1.0)
 
+    def test_stack_synergy_is_project_type_scoped(self):
+        learning = {"stack_rankings": [{
+            "repos": ["a/core", "b/ui"],
+            "framework": "flutter",
+            "project_type": "game",
+            "primary_domain": "mobile",
+            "samples": 10,
+            "success_rate": 1.0,
+        }]}
+        mismatch = af.stack_adjustment(
+            "b/ui", ["a/core"], learning,
+            framework="flutter", project_type="trading", primary_domain="mobile"
+        )
+        matching = af.stack_adjustment(
+            "b/ui", ["a/core"], learning,
+            framework="flutter", project_type="game", primary_domain="mobile"
+        )
+        self.assertEqual(mismatch["bonus"], 0.0)
+        self.assertEqual(matching["bonus"], 2.0)
 
 if __name__ == "__main__":
     unittest.main()

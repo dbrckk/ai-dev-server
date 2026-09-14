@@ -25,6 +25,7 @@ _PREFERRED_REPOS = {
     "vllm-project/vllm",
     "ggerganov/llama.cpp",
     "Alisharvr1/free-claude-code",
+    "diegosouzapw/OmniRoute",
 }
 
 

@@ -16,6 +16,7 @@ from core import API, APIError, Model, Sandbox, StudioError, allowed, apply_patc
 from project_context import write as write_project_context
 from repair_planner import preview_plan
 from repair_queue import complete_stage_tasks, enqueue, summarize
+from project_budget import budget_status, can_spend, configure as configure_budget, record_calls
 
 class GitHub(API):
     def __init__(self, repo):
@@ -181,6 +182,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         if state and state.get('request_hash') != fingerprint:
             raise StudioError('Brief changed for existing id; use a new id and fresh target')
         state = state or {'request_hash': fingerprint, 'status': 'pending', 'cycles': 0, 'rounds': 0, 'blockers': []}
+        configure_budget(state, req)
         state['publication_request'] = dict(req.get('play_publish', {'enabled': False, 'track': 'internal', 'commit': False}))
         if state['status'] == 'human_action_required' and state.get('validation_contract') == 2:
             state['status'] = 'validated_preview'
@@ -192,7 +194,12 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             (out / 'report.json').write_text(canonical(state))
             return state
         clear_preview_evidence(state)
-        model = model_factory(req['max_calls'])
+        cycle_budget = min(req['max_calls'], max(0, budget_status(state)['model_calls_remaining']))
+        if cycle_budget < 1:
+            state.update(status='blocked', blockers=['Project model-call budget exhausted'])
+            (out / 'report.json').write_text(canonical(state))
+            return state
+        model = model_factory(cycle_budget)
         sandbox = sandbox_factory(root)
         sandbox.create(req['app_name'])
         github.native_files = getattr(sandbox, 'native_files', {})
@@ -287,6 +294,8 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         state.update(status='blocked', blockers=[str(e)])
 
     state['model_calls_this_cycle'] = model.calls
+    record_calls(state, model.calls)
+    state['project_budget_status'] = budget_status(state)
     state['models_used'] = getattr(model, 'models_used', {})
     state['providers_used'] = getattr(model, 'providers_used', {})
     state['limits'] = {'max_cycles': req['max_cycles'], 'max_calls_per_cycle': req['max_calls'], 'max_rounds_per_cycle': req['max_rounds']}

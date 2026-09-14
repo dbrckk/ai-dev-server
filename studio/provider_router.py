@@ -197,18 +197,47 @@ def _local_capacity_specs() -> list[ProviderSpec]:
     specs = []
     for row in discover_local_capacity():
         try:
-            specs.append(ProviderSpec(
-                name=str(row["name"]),
-                base=str(row["base"]),
-                key="",
-                model=str(row["model"]),
-                code_model=str(row.get("code_model") or row["model"]),
-                vision_model=str(row.get("vision_model") or ""),
-                priority=99 if row.get("name") == "omniroute" else 95,
-                free_preferred=True,
-                unmetered=bool(row.get("unmetered")),
-                monthly_token_quota=max(0, int(row.get("monthly_token_quota", 0) or 0)),
-            ))
+            name = str(row["name"])
+            base = str(row["base"])
+            quota = max(0, int(row.get("monthly_token_quota", 0) or 0))
+            if quota > 0:
+                specs.append(ProviderSpec(
+                    name=name,
+                    base=base,
+                    key="",
+                    model=str(row.get("model") or "auto"),
+                    code_model=str(row.get("code_model") or row.get("model") or "auto"),
+                    vision_model=str(row.get("vision_model") or ""),
+                    priority=99,
+                    free_preferred=True,
+                    unmetered=False,
+                    monthly_token_quota=quota,
+                ))
+                continue
+
+            models = [
+                str(model)
+                for model in (row.get("models") or [])
+                if isinstance(model, str) and model.strip()
+            ][:12]
+            if not models:
+                models = [str(row["model"])]
+            vision_model = str(row.get("vision_model") or "")
+            for index, model in enumerate(models):
+                is_code = any(hint in model.lower() for hint in ("coder","code","qwen","deepseek","starcoder","codestral","devstral"))
+                is_vision = bool(vision_model and model == vision_model)
+                specs.append(ProviderSpec(
+                    name=f"{name}:{model}",
+                    base=base,
+                    key="",
+                    model=model,
+                    code_model=model if is_code else "",
+                    vision_model=model if is_vision else "",
+                    priority=max(70, 96 - index),
+                    free_preferred=True,
+                    unmetered=True,
+                    monthly_token_quota=0,
+                ))
         except (KeyError, TypeError, ValueError):
             continue
     return specs

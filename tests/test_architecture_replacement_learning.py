@@ -72,4 +72,44 @@ class ReplacementLearningTests(unittest.TestCase):
             self.assertEqual(row["first_observed_at"],100.0)
             self.assertEqual(row["latest_observed_at"],300.0)
 
+    def test_detects_recent_regime_shift(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); now=2_000_000_000.0
+            outcomes=[]
+            for i in range(12):
+                outcomes.append((now-200*86400-i,True,False))
+            for i in range(5):
+                outcomes.append((now-10*86400-i,False,True))
+            for i,(ts,successful,regressed) in enumerate(outcomes):
+                out=root/f"p{i}"; out.mkdir()
+                (out/"architecture-replacement-outcome.json").write_text(json.dumps({
+                    "status":"replacement_outcome_recorded",
+                    "current_repo":"a/current","replacement_repo":"a/better",
+                    "successful":successful,"regressed":regressed,
+                    "rollback_prepared":False,"rolled_back":False,
+                    "quality_score":100.0 if successful else 0.0,"observed_at":ts,
+                }))
+            row=arl.summarize(root,now=now)["rankings"][0]
+            self.assertTrue(row["regime_shift"])
+            self.assertEqual(row["regime_window_days"],30)
+            self.assertEqual(row["regime_recent_success_rate"],0.0)
+            self.assertGreater(row["regime_drop"],0.2)
+
+    def test_small_recent_sample_does_not_trigger_regime_shift(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); now=2_000_000_000.0
+            outcomes=[(now-200*86400-i,True,False) for i in range(10)]
+            outcomes += [(now-5*86400,False,True),(now-4*86400,False,True)]
+            for i,(ts,successful,regressed) in enumerate(outcomes):
+                out=root/f"p{i}"; out.mkdir()
+                (out/"architecture-replacement-outcome.json").write_text(json.dumps({
+                    "status":"replacement_outcome_recorded",
+                    "current_repo":"a/current","replacement_repo":"a/better",
+                    "successful":successful,"regressed":regressed,
+                    "rollback_prepared":False,"rolled_back":False,
+                    "quality_score":100.0 if successful else 0.0,"observed_at":ts,
+                }))
+            row=arl.summarize(root,now=now)["rankings"][0]
+            self.assertFalse(row["regime_shift"])
+
 if __name__=="__main__": unittest.main()

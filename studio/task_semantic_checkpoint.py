@@ -118,6 +118,7 @@ def record(
     failure_signature: str | None,
     verification: dict | None,
     dependency_context: dict | None,
+    review: dict | None = None,
 ) -> dict:
     validate(value)
     if not isinstance(task_id, str) or not task_id:
@@ -160,6 +161,24 @@ def record(
             "max_coupling": dependency_context.get("max_coupling"),
             "impacted_tests": dependency_context.get("impacted_tests", [])[:50],
         } if isinstance(dependency_context, dict) else None,
+        "acceptance_review": {
+            "complete": review.get("complete") is True,
+            "reason": str(review.get("reason") or "")[:1000],
+            "remaining": [
+                str(item)[:500]
+                for item in review.get("remaining", [])
+                if isinstance(item, str)
+            ][:20],
+            "criteria": [
+                {
+                    "criterion": str(item.get("criterion") or "")[:500],
+                    "passed": item.get("passed") is True,
+                    "evidence": str(item.get("evidence") or "")[:2000],
+                }
+                for item in review.get("criteria", [])
+                if isinstance(item, dict)
+            ][:20],
+        } if isinstance(review, dict) else None,
     }
     attempts = list(row.get("attempts", []))
     attempts.append(attempt)

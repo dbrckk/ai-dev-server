@@ -44,6 +44,40 @@ class TaskSemanticCheckpointTests(unittest.TestCase):
         self.assertEqual(ctx["recent_attempts"][0]["changed_files"],["src/core.py"])
         self.assertEqual(ctx["recent_attempts"][0]["impacted_tests"],["tests/test_core.py"])
 
+    def test_acceptance_review_evidence_is_persisted(self):
+        state=new("demo","a"*64,"b"*40)
+        state=record(
+            state,
+            task_id="api",
+            task_title="api",
+            commit="c"*40,
+            status="verified",
+            changed_files=["src/api.py"],
+            impacted_tests=["tests/test_api.py"],
+            models=[],
+            agents=[],
+            failure_signature=None,
+            verification={"status":"passed","passed":True},
+            dependency_context={"level":"low","max_coupling":1,"impacted_tests":["tests/test_api.py"]},
+            review={
+                "complete":True,
+                "criteria":[
+                    {
+                        "criterion":"returns 200",
+                        "passed":True,
+                        "evidence":"tests/test_api.py::test_ok passed",
+                    }
+                ],
+                "remaining":[],
+                "reason":"criterion satisfied",
+            },
+        )
+        ctx=task_context(state,"api")
+        review=ctx["recent_attempts"][0]["acceptance_review"]
+        self.assertTrue(review["complete"])
+        self.assertEqual(review["criteria"][0]["criterion"],"returns 200")
+        self.assertTrue(review["criteria"][0]["passed"])
+
     def test_failed_attempt_is_resumable(self):
         state=new("demo","a"*64,"b"*40)
         state=record(

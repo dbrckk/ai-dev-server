@@ -7,6 +7,7 @@ from release_repair import MAX_RELEASE_REPAIR_ROUNDS, attempt as repair_attempt
 from repair_planner import plan
 from repair_queue import begin_attempt, complete_stage_tasks, enqueue, finish_attempt, summarize
 from project_budget import branch_should_stop, budget_status, can_spend, configure as configure_budget, record_repair_outcome
+from task_scheduler import dispatch as scheduler_dispatch, select as scheduler_select
 
 
 def evaluate_and_repair(
@@ -22,6 +23,16 @@ def evaluate_and_repair(
     history = []
     environment_retries = []
 
+    initial_diagnostics = classify(stage, evidence)
+    initial_plan = plan(stage, initial_diagnostics)
+    initial_task = None
+    if evidence.get("passed") is not True:
+        initial_task = enqueue(
+            state,
+            initial_plan,
+            estimated_model_calls=1 if initial_plan.get("action") == "repair_code" else 0,
+        )
+
     for retry_index in range(2):
         retryable = retryable_environment(stage, evidence)
         diagnostics = classify(stage, evidence)
@@ -29,11 +40,22 @@ def evaluate_and_repair(
             break
         if diagnostics["human_or_external"] or diagnostics["prerequisite"] or diagnostics["code"]:
             break
+        selected = scheduler_select(state)
+        if initial_task is None or selected is None or selected.get("id") != initial_task.get("id"):
+            break
+        if initial_task.get("status") in {"pending", "retry"}:
+            begin_attempt(initial_task)
         environment_retries.append({
             "retry": retry_index + 1,
             "blockers": list(retryable),
         })
         evidence = validator(root, out)
+        finish_attempt(
+            initial_task,
+            success=evidence.get("passed") is True,
+            model_calls=0,
+            improved=evidence.get("passed") is True,
+        )
         if evidence.get("passed") is True:
             break
 
@@ -46,7 +68,22 @@ def evaluate_and_repair(
         if not repairable(stage, evidence):
             break
         repair_plan = plan(stage, diagnostics)
-        task = enqueue(state, repair_plan, estimated_model_calls=1)
+        task = initial_task
+        if (
+            task is None
+            or task.get("action") != repair_plan.get("action")
+            or sorted(task.get("blockers", [])) != sorted(repair_plan.get("blockers", []))
+        ):
+            task = enqueue(state, repair_plan, estimated_model_calls=1)
+        selected = scheduler_select(state)
+        if task is None or selected is None or selected.get("id") != task.get("id"):
+            history.append({
+                "round": round_index + 1,
+                "changed": False,
+                "deferred": True,
+                "scheduler": scheduler_dispatch(state),
+            })
+            break
         if task is not None and branch_should_stop(task):
             task['status'] = 'exhausted'
             history.append({
@@ -133,11 +170,18 @@ def evaluate_and_repair(
     if evidence.get("passed") is True:
         complete_stage_tasks(state, stage)
     else:
-        enqueue(
-            state,
-            evidence["repair_plan"],
-            estimated_model_calls=1 if evidence["repair_plan"].get("action") == "repair_code" else 0,
-        )
+        final_plan = evidence["repair_plan"]
+        if (
+            initial_task is None
+            or initial_task.get("action") != final_plan.get("action")
+            or sorted(initial_task.get("blockers", [])) != sorted(final_plan.get("blockers", []))
+        ):
+            enqueue(
+                state,
+                final_plan,
+                estimated_model_calls=1 if final_plan.get("action") == "repair_code" else 0,
+            )
+    evidence["scheduler"] = scheduler_dispatch(state)
     evidence["repair_queue"] = summarize(state)
     evidence["project_budget"] = budget_status(state)
     evidence["environment_retry"] = {

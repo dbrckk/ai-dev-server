@@ -162,7 +162,7 @@ class ArchitecturePlannerTests(unittest.TestCase):
             {"repo":"b/second","score":90.0,"quality_score":8.9,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
         ]}
         result=plan({"target_repo":"o/r","app_name":"demo"},recs)
-        self.assertEqual(result["version"],2)
+        self.assertEqual(result["version"],3)
         self.assertEqual(result["chosen"][0]["repo"],"a/first")
         self.assertEqual(result["chosen"][0]["selection_margin"],0.4)
         self.assertEqual(result["chosen"][0]["selection_confidence"],"low")
@@ -176,6 +176,39 @@ class ArchitecturePlannerTests(unittest.TestCase):
         result=plan({"target_repo":"o/r","app_name":"demo"},recs)
         self.assertEqual(result["chosen"][0]["selection_margin"],5.0)
         self.assertEqual(result["chosen"][0]["selection_confidence"],"high")
+
+
+    def test_low_confidence_requires_independent_architecture_review(self):
+        recs={"matches":[
+            {"repo":"a/first","score":90.4,"quality_score":9.0,"tier":"core","domain":"mobile","capabilities":["ui"]},
+            {"repo":"b/second","score":90.0,"quality_score":8.9,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+            {"repo":"c/third","score":89.8,"quality_score":8.8,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+            {"repo":"d/fourth","score":89.6,"quality_score":8.7,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+            {"repo":"e/fifth","score":89.4,"quality_score":8.6,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+            {"repo":"f/sixth","score":89.2,"quality_score":8.5,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+            {"repo":"g/fallback","score":89.0,"quality_score":8.4,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+        ]}
+        result=plan({"target_repo":"o/r","app_name":"demo"},recs)
+        policy=result["autonomy_policy"]
+        self.assertEqual(policy["decision_confidence"],"low")
+        self.assertTrue(policy["validation_required"])
+        self.assertEqual(policy["validation_mode"],"independent_review")
+        self.assertFalse(policy["allow_architecture_changes_without_review"])
+        self.assertTrue(policy["normal_code_changes_may_continue"])
+        self.assertEqual(policy["scope"],"architecture_changes_only")
+        self.assertLessEqual(len(policy["retained_fallback_repos"]),3)
+
+    def test_clear_architecture_choice_allows_normal_autonomous_flow(self):
+        recs={"matches":[
+            {"repo":"a/first","score":95.0,"quality_score":9.5,"tier":"core","domain":"mobile","capabilities":["ui"]},
+            {"repo":"b/second","score":90.0,"quality_score":8.9,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
+        ]}
+        result=plan({"target_repo":"o/r","app_name":"demo"},recs)
+        policy=result["autonomy_policy"]
+        self.assertEqual(policy["decision_confidence"],"high")
+        self.assertFalse(policy["validation_required"])
+        self.assertEqual(policy["validation_mode"],"standard")
+        self.assertTrue(policy["allow_architecture_changes_without_review"])
 
 
 if __name__=="__main__":

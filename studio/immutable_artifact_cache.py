@@ -59,6 +59,49 @@ def capture(root: Path, validation_key: str, *, rebuild_cost_seconds: float = 0.
     }
 
 
+def _projected_entry_value(files: dict[str, bytes], rebuild_cost_seconds: float) -> float:
+    value = 0.0
+    for data in files.values():
+        size_mb = max(1.0, len(data) / (1024.0 * 1024.0))
+        value += ((max(0.0, rebuild_cost_seconds) * 2.0) + 8.0) / size_mb
+    return value
+
+
+def _admit_under_quota(
+    entries: dict,
+    files: dict[str, bytes],
+    rebuild_cost_seconds: float,
+    validation_key: str,
+) -> None:
+    import hashlib
+
+    missing_bytes = 0
+    for data in files.values():
+        digest = hashlib.sha256(data).hexdigest()
+        try:
+            exists = cas_blob_path(digest).is_file()
+        except StudioError:
+            exists = False
+        if not exists:
+            missing_bytes += len(data)
+    if cas_usage() + missing_bytes <= MAX_TOTAL_BYTES:
+        return
+
+    projected = _projected_entry_value(files, rebuild_cost_seconds)
+    while cas_usage() + missing_bytes > MAX_TOTAL_BYTES:
+        victims = [
+            (float(_entry_value(entry)), key)
+            for key, entry in entries.items()
+            if key != validation_key and isinstance(entry, dict)
+        ]
+        if not victims:
+            raise StudioError("Artifact CAS quota exceeded with no evictable entry")
+        victim_value, victim_key = min(victims, key=lambda row: (row[0], row[1]))
+        if victim_value > projected:
+            raise StudioError("Artifact CAS admission rejected by retention policy")
+        entries.pop(victim_key, None)
+        cas_gc(_referenced_digests(entries))
+
 def verify_entry(entry: dict, validation_key: str) -> dict[str, bytes]:
     if not isinstance(entry, dict) or set(entry) != {"validation_key", "files"}:
         raise StudioError("Artifact cache entry invalid")

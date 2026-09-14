@@ -31,6 +31,21 @@ def snapshot(root: Path | str = "studio-output", *, ts: float | None = None) -> 
     report = collect(root)
     summary = dict(report["summary"])
     summary["ts"] = round(time.time() if ts is None else float(ts), 3)
+    architecture = report.get("architecture_learning") or {}
+    summary["architecture_projects_observed"] = int(
+        architecture.get("projects_observed", 0) or 0
+    )
+    summary["architecture_eligible_recommendations"] = int(
+        architecture.get("eligible_recommendations", 0) or 0
+    )
+    top = architecture.get("top_recommendations") or []
+    if top and isinstance(top[0], dict):
+        value = top[0].get("success_rate")
+        summary["architecture_top_success_rate"] = (
+            float(value) if isinstance(value, (int, float)) else None
+        )
+    else:
+        summary["architecture_top_success_rate"] = None
     summary["active_leases"] = sum(
         int(project.get("active_leases") or 0)
         for project in report["projects"]

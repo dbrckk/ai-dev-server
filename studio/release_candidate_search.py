@@ -7,7 +7,7 @@ import time
 from flutter_workspace import snapshot as snapshot_workspace, restore as restore_workspace, delta as validate_delta
 from core import StudioError, apply_patch, canonical
 from journeys import validate_journeys
-from repair_search_policy import should_refine
+from repair_search_policy import should_continue_after_quick_failure, should_refine
 
 MAX_CANDIDATES = 2
 MAX_BRANCH_STEPS = 3
@@ -136,11 +136,11 @@ def run_branch(
             result = step()
             if not isinstance(result, dict):
                 result = {}
-            metadata["steps"].append({
+            step_trace = {
                 "step": index,
                 "metadata": result,
                 "elapsed_seconds": round(max(0.0, time.monotonic() - step_started), 3),
-            })
+            }
             metadata["model_calls"] += max(0, int(result.get("model_calls", 0)))
             if isinstance(result.get("models_used"), dict):
                 metadata["models_used"].update(result["models_used"])
@@ -148,6 +148,28 @@ def run_branch(
                 metadata["providers_used"].update(result["providers_used"])
             if result.get("agent") is not None:
                 metadata["agent"] = result.get("agent")
+
+            if index < len(steps):
+                quick_sandbox = sandbox_factory(root)
+                quick_passed, quick_logs = quick_sandbox.quick_gates()
+                step_trace["quick_gates"] = {
+                    "passed": quick_passed is True,
+                    "gate_count": len(quick_logs),
+                    "failure": None if quick_passed else canonical(quick_logs[-1:])[-4000:],
+                }
+                if not quick_passed:
+                    next_step_model_calls = 1
+                    if not should_continue_after_quick_failure(
+                        next_step_model_calls=next_step_model_calls,
+                        remaining_model_calls=max(
+                            0,
+                            int(remaining_model_calls) - int(metadata["model_calls"]),
+                        ),
+                        strategy_row=strategy_row or {},
+                    ):
+                        metadata["steps"].append(step_trace)
+                        raise StudioError("Repair branch pruned after failed quick gates")
+            metadata["steps"].append(step_trace)
 
         journeys = validate_journeys(state.get("product", {}).get("journeys"))
         sandbox = sandbox_factory(root)

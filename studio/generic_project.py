@@ -69,6 +69,14 @@ When a task acceptance criterion is mechanically checkable, encode it as one of:
 Use natural-language done_when only for criteria that truly require semantic review.
 Choose concrete implementation work, not generic advice."""
 
+PLAN_REPAIR_SYSTEM = """You repair an invalid objective DAG plan without changing the user's objective.
+You receive the original plan, the exact validation error and the accepted task contract rules.
+Return ONLY a corrected JSON plan.
+Preserve valid task IDs/titles/dependencies where possible.
+Do not add unrelated work.
+Critical tasks must include at least one valid deterministic done_when criterion using file:, symbol:, test:, or build:.
+Structured paths must be repository-relative and must not contain '..' or absolute paths."""
+
 TASK_PLAN_SYSTEM = """You are maintaining one subgoal inside an already validated project objective DAG.
 Do NOT redesign the global objective and do NOT invent replacement tasks.
 Plan only the provided active_task, respecting its verified dependencies, repository state, dependency guard, fragility guard and previous verification evidence.
@@ -683,6 +691,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         if isinstance(plan_model,dict):
             cost_controller.record_model(float(plan_model.get("duration_seconds",0.0) or 0.0), phase="planning")
         if objective_dag is None:
+            initial_plan_error = None
             try:
                 objective_dag = new_objective_dag(
                     req["id"],
@@ -690,6 +699,82 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
                     plan,
                     base_sha,
                 )
+            except ObjectiveDagError as exc:
+                initial_plan_error = str(exc)
+
+            if objective_dag is None and initial_plan_error is not None:
+                repair_remaining = phase_remaining(
+                    preplan_quotas,
+                    phase="planning",
+                    elapsed_seconds=clock() - planning_started,
+                )
+                repair_timeout = bounded_timeout(
+                    repair_remaining,
+                    minimum=30,
+                    maximum=120,
+                )
+                if repair_timeout >= 30:
+                    repaired_plan, repair_model = ask(
+                        PLAN_REPAIR_SYSTEM,
+                        canonical({
+                            "brief": req["brief"],
+                            "original_plan": plan,
+                            "validation_error": initial_plan_error,
+                            "rules": {
+                                "critical_requires_deterministic_done_when": True,
+                                "structured_prefixes": ["file:","symbol:","test:","build:"],
+                                "paths_must_be_repository_relative": True,
+                                "max_tasks": 64,
+                            },
+                        }),
+                        code=False,
+                        avoid_models=loop_avoid_models,
+                        avoid_providers=loop_avoid_providers,
+                        timeout_seconds=repair_timeout,
+                    )
+                    if isinstance(repair_model, dict):
+                        cost_controller.record_model(
+                            float(repair_model.get("duration_seconds",0.0) or 0.0),
+                            phase="planning",
+                        )
+                    try:
+                        objective_dag = new_objective_dag(
+                            req["id"],
+                            req["brief"],
+                            repaired_plan,
+                            base_sha,
+                        )
+                        plan = repaired_plan
+                        state["objective_plan_repair"] = {
+                            "attempted": True,
+                            "succeeded": True,
+                            "initial_error": initial_plan_error,
+                            "model": repair_model,
+                        }
+                    except ObjectiveDagError as repair_exc:
+                        state["objective_plan_repair"] = {
+                            "attempted": True,
+                            "succeeded": False,
+                            "initial_error": initial_plan_error,
+                            "repair_error": str(repair_exc),
+                            "model": repair_model,
+                        }
+                        raise StudioError(
+                            "Generic objective DAG invalid after one repair: "
+                            + initial_plan_error
+                            + " | repair: "
+                            + str(repair_exc)
+                        ) from None
+                else:
+                    state["objective_plan_repair"] = {
+                        "attempted": False,
+                        "succeeded": False,
+                        "initial_error": initial_plan_error,
+                        "reason": "planning repair budget exhausted",
+                    }
+                    raise StudioError("Generic objective DAG invalid: " + initial_plan_error) from None
+
+            if objective_dag is not None:
                 save_objective_dag(objective_dag_path, objective_dag)
                 task_semantic = new_task_semantic_checkpoint(
                     req["id"],
@@ -697,8 +782,6 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
                     base_sha,
                 )
                 save_task_semantic_checkpoint(task_semantic_path, task_semantic)
-            except ObjectiveDagError as exc:
-                raise StudioError("Generic objective DAG invalid: " + str(exc)) from None
         active_objective_task = (
             preselected_objective_task
             if preselected_objective_task is not None

@@ -16,6 +16,7 @@ from architecture_learning import root_for_output
 from architecture_replacement_postmerge import verify as verify_postmerge, ReplacementPostMergeError
 from architecture_replacement_outcome import write as write_replacement_outcome
 from architecture_replacement_learning import summarize as summarize_replacement_learning
+from architecture_replacement_reputation import update as update_replacement_reputation
 from architecture_replacement_rollback_gate import write as write_rollback_gate, ReplacementRollbackGateError
 from core import canonical
 
@@ -47,11 +48,34 @@ def run(work_order_path: Path, merged_path: Path, package_path: Path, out: Path,
     outcome=None
     if terminal:
         outcome=write_replacement_outcome(work_order,merged,postmerge,out)
-    learning=summarize_replacement_learning(root_for_output(out))
-    (root_for_output(out)/"architecture-replacement-learning.json").write_text(
+    historical_root=root_for_output(out)
+    learning=summarize_replacement_learning(historical_root)
+    (historical_root/"architecture-replacement-learning.json").write_text(
         json.dumps(learning,ensure_ascii=False,indent=2,sort_keys=True)+"\n",
         encoding="utf-8",
     )
+
+    reputation_entry=None
+    if terminal:
+        context={
+            "current_repo":work_order.get("current_repo"),
+            "replacement_repo":work_order.get("replacement_repo"),
+            "framework":work_order.get("framework"),
+            "project_type":work_order.get("project_type"),
+            "primary_domain":work_order.get("primary_domain"),
+            "platform":work_order.get("platform"),
+            "current_major_version":work_order.get("current_major_version"),
+            "replacement_major_version":work_order.get("replacement_major_version"),
+        }
+        evidence=next((
+            row for row in learning.get("rankings",[])
+            if all(row.get(key)==value for key,value in context.items())
+        ),None)
+        reputation_entry=update_replacement_reputation(
+            historical_root/"architecture-replacement-reputation.json",
+            context,
+            evidence,
+        )
 
     return {
         "version":1,
@@ -65,6 +89,8 @@ def run(work_order_path: Path, merged_path: Path, package_path: Path, out: Path,
             and row.get("replacement_repo")==work_order.get("replacement_repo")
         ),0),
         "rollback_gate_status":rollback_gate.get("status") if isinstance(rollback_gate,dict) else "not_required",
+        "replacement_reputation_state":reputation_entry.get("state") if isinstance(reputation_entry,dict) else None,
+        "replacement_reputation_transition":reputation_entry.get("transition_reason") if isinstance(reputation_entry,dict) else None,
     }
 
 def main(argv=None):

@@ -54,6 +54,7 @@ def evaluate_and_repair(
                 evidence,
                 stage,
                 req["app_name"],
+                task=task,
             )
         except StudioError as exc:
             if task is not None:
@@ -80,6 +81,7 @@ def evaluate_and_repair(
                 success=result.get("changed") is True,
                 model_calls=result.get("model_calls", 0),
                 improved=result.get("changed") is True,
+                providers_used=result.get("providers_used", {}),
             )
         if result.get("changed") is not True:
             break

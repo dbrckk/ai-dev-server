@@ -59,5 +59,76 @@ class ContextualRoutingMemoryTests(unittest.TestCase):
             self.assertGreater(row["ema_success_rate"], 0.5)
 
 
+    def test_bandit_bonus_is_higher_with_less_evidence(self):
+        sparse = {
+            "backend": {
+                "provider:p": {
+                    "samples": 1,
+                    "successes": 1,
+                    "ema_success_rate": 0.8,
+                }
+            }
+        }
+        dense = {
+            "backend": {
+                "provider:p": {
+                    "samples": 20,
+                    "successes": 16,
+                    "ema_success_rate": 0.8,
+                }
+            }
+        }
+        sparse_score = crm.contextual_bandit_score(
+            sparse,
+            weighted_contexts=[("backend", 1.0)],
+            kind="provider",
+            name="p",
+        )
+        dense_score = crm.contextual_bandit_score(
+            dense,
+            weighted_contexts=[("backend", 1.0)],
+            kind="provider",
+            name="p",
+        )
+        self.assertGreater(
+            sparse_score["exploration_bonus"],
+            dense_score["exploration_bonus"],
+        )
+
+    def test_architecture_hold_reduces_exploration(self):
+        data = {
+            "backend": {
+                "agent:a": {
+                    "samples": 1,
+                    "successes": 1,
+                    "ema_success_rate": 0.8,
+                }
+            },
+            "architecture-risk:hold": {
+                "agent:a": {
+                    "samples": 1,
+                    "successes": 1,
+                    "ema_success_rate": 0.8,
+                }
+            },
+        }
+        normal = crm.contextual_bandit_score(
+            data,
+            weighted_contexts=[("backend", 1.0)],
+            kind="agent",
+            name="a",
+        )
+        risky = crm.contextual_bandit_score(
+            data,
+            weighted_contexts=[("backend", 0.7), ("architecture-risk:hold", 0.3)],
+            kind="agent",
+            name="a",
+        )
+        self.assertLess(
+            risky["exploration_bonus"],
+            normal["exploration_bonus"],
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

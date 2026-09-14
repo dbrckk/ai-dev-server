@@ -27,7 +27,7 @@ from architecture_learning import (
 from architecture_evaluator import write as write_architecture_evaluation
 from architecture_benchmark import write as write_architecture_benchmark
 from architecture_preflight import write as write_architecture_preflight
-from architecture_change_guard import enforce as enforce_architecture_change_guard
+from architecture_change_guard import enforce as enforce_architecture_change_guard, ArchitectureChangeBlocked
 from architecture_outcome import write as write_architecture_outcome
 
 MAX_PUBLISH_FILE_BYTES = 1_000_000
@@ -231,14 +231,26 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
                 state[role] = result; state['status'] = role + '_complete'; checkpoint()
         for _ in range(req['max_rounds']):
             state['rounds'] += 1
-            patch = model.ask('implementation', _context(req,state,root)); _safe_apply(
-                root,
-                patch,
-                'implementation',
-                architecture_changes_allowed=bool(
-                    state.get('architecture_autonomy_policy', {}).get('architecture_changes_allowed', True)
-                ),
-            )
+            patch = model.ask('implementation', _context(req,state,root))
+            try:
+                _safe_apply(
+                    root,
+                    patch,
+                    'implementation',
+                    architecture_changes_allowed=bool(
+                        state.get('architecture_autonomy_policy', {}).get('architecture_changes_allowed', True)
+                    ),
+                )
+            except ArchitectureChangeBlocked as exc:
+                state.setdefault('architecture_guard_events', []).append({
+                    'round': state['rounds'],
+                    'role': 'implementation',
+                    'status': 'blocked_architecture_change',
+                    'detail': str(exc)[:2000],
+                })
+                state.update(status='architecture_review_hold', blockers=[str(exc)])
+                checkpoint()
+                continue
             if not any(p.is_file() and not p.is_symlink() for p in (root / 'tests').rglob('*.gd')):
                 qa = model.ask('tests', _context(req,state,root)); _safe_apply(
                     root,

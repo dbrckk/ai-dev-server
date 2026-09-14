@@ -9,6 +9,7 @@ from artifact_cas import MAX_CAS_BYTES, blob_path as cas_blob_path, gc as cas_gc
 from artifact_cas_stats import retention_score
 from atomic_file import write_bytes as atomic_write_bytes
 from core import StudioError, canonical
+from file_lock import exclusive
 
 SCHEMA = 2
 MAX_ENTRIES = 32
@@ -260,12 +261,15 @@ def save(entries: dict) -> None:
     path = _path()
     if path is None:
         return
-    trimmed = _trim_by_value(entries)
-    entries.clear()
-    entries.update(trimmed)
-    payload = {"schema": SCHEMA, "entries": trimmed}
-    raw = canonical(payload).encode("utf-8")
-    if len(raw) > 2 * 1024 * 1024:
-        raise StudioError("Artifact cache index exceeds storage limit")
-    atomic_write_bytes(path, raw)
-    cas_gc(_referenced_digests(trimmed))
+    with exclusive(path):
+        merged = load()
+        merged.update(entries)
+        trimmed = _trim_by_value(merged)
+        entries.clear()
+        entries.update(trimmed)
+        payload = {"schema": SCHEMA, "entries": trimmed}
+        raw = canonical(payload).encode("utf-8")
+        if len(raw) > 2 * 1024 * 1024:
+            raise StudioError("Artifact cache index exceeds storage limit")
+        atomic_write_bytes(path, raw)
+        cas_gc(_referenced_digests(trimmed))

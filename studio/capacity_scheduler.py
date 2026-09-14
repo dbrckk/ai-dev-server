@@ -54,6 +54,11 @@ def _clean_project(row: dict) -> dict | None:
     except (TypeError, ValueError):
         pressure = 0.0
     pressure = max(0.0, min(1.5, pressure))
+    try:
+        efficiency = float(row.get("efficiency_multiplier", 1.0) or 1.0)
+    except (TypeError, ValueError):
+        efficiency = 1.0
+    efficiency = max(0.75, min(1.25, efficiency))
     return {
         "id": project_id,
         "status": status,
@@ -63,6 +68,7 @@ def _clean_project(row: dict) -> dict | None:
         "difficulty_band": difficulty,
         "critical": critical,
         "capacity_pressure": round(pressure, 4),
+        "efficiency_multiplier": round(efficiency, 4),
     }
 
 
@@ -76,13 +82,15 @@ def _weight(project: dict) -> float:
     critical_bonus = 1.45 if project["critical"] else 1.0
     failure_bonus = 1.15 if project["status"] == "failed" else 1.0
     pressure_bonus = 1.0 + min(0.60, project.get("capacity_pressure", 0.0) * 0.40)
+    efficiency_bonus = max(0.75, min(1.25, project.get("efficiency_multiplier", 1.0)))
     return max(
         0.01,
         project["priority"]
         * difficulty_bonus
         * critical_bonus
         * failure_bonus
-        * pressure_bonus,
+        * pressure_bonus
+        * efficiency_bonus,
     )
 
 

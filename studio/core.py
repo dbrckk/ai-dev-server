@@ -18,7 +18,7 @@ from journeys import CONTRACT, encoded_journeys, validate_journeys
 from provider_health import eligible as provider_eligible, load as load_provider_health, reliability_bonus, record_failure as record_provider_failure, record_success as record_provider_success
 from provider_metrics import latency_bonus, load as load_provider_metrics, record as record_provider_latency
 from routing_history import learned_weights, load as load_routing_history, record as record_routing_event
-from adaptive_scoring import score_provider
+from adaptive_scoring import score_provider, ScoreTrace
 
 IMAGE = 'ghcr.io/cirruslabs/flutter:3.44.0@sha256:0a9de3b70b5b7b921a346eb2793e363dc22280849a4fd690d9dde99ce1c2b1b8'
 ROLES = {
@@ -422,8 +422,9 @@ class Model:
                 )['exhausted']
             )
         )
-        provider_scores = {
-            provider.name: score_provider(
+        provider_scores = {}
+        for provider in provider_candidates:
+            trace = score_provider(
                 name=provider.name,
                 priority=provider.priority,
                 free_preferred=provider.free_preferred,
@@ -431,8 +432,21 @@ class Model:
                 latency=latency_bonus(metrics, provider.name, role),
                 weights=weights,
             )
-            for provider in provider_candidates
-        }
+            components = dict(trace.components)
+            if provider.unmetered:
+                components['unmetered_capacity'] = 10.0
+            elif provider.monthly_token_quota > 0:
+                quota = provider_quota_status(
+                    quota_data,
+                    provider.name,
+                    provider.monthly_token_quota,
+                )
+                components['pooled_free_capacity'] = 8.0 * float(quota['remaining_ratio'] or 0.0)
+            provider_scores[provider.name] = ScoreTrace(
+                name=provider.name,
+                total=sum(float(value) for value in components.values()),
+                components=components,
+            )
         provider_candidates = tuple(sorted(
             provider_candidates,
             key=lambda provider: (-provider_scores[provider.name].total, provider.name),

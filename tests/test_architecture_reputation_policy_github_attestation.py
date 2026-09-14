@@ -48,7 +48,7 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
             build(self.plan,repository="o/r",pull_request=7,commit_sha="abc",
                 reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc"}],
                 permissions={"alice":"write"},workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/7/merge","created_at":"2026-01-01T00:00:25Z"}],
-                check_runs=self.check_runs()[:1],pr_identity=self.pr_identity(),reinforced=False)
+                check_runs=self.check_runs()[:1],pr_identity=self.pr_identity(),workflow_file=self.workflow_file(),head_commit_timestamp=1767225600.0,reinforced=False)
 
     def test_draft_pr_rejected(self):
         identity=self.pr_identity()
@@ -98,7 +98,7 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
                 reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:10Z"}],
                 permissions={"alice":"write"},
                 workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/7/merge","created_at":"2026-01-01T00:00:25Z"}],
-                check_runs=checks,pr_identity=self.pr_identity(),head_commit_timestamp=1767225600.0,reinforced=False)
+                check_runs=checks,pr_identity=self.pr_identity(),workflow_file=self.workflow_file(),head_commit_timestamp=1767225600.0,reinforced=False)
 
     def test_required_checks_from_different_workflow_runs_rejected(self):
         checks=self.check_runs()
@@ -111,7 +111,7 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
                     {"id":9,"head_sha":"abc","conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/7/merge","created_at":"2026-01-01T00:00:25Z"},
                     {"id":10,"head_sha":"abc","conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:26Z"},
                 ],
-                check_runs=checks,pr_identity=self.pr_identity(),head_commit_timestamp=1767225600.0,reinforced=False)
+                check_runs=checks,pr_identity=self.pr_identity(),workflow_file=self.workflow_file(),head_commit_timestamp=1767225600.0,reinforced=False)
 
     def test_stale_workflow_rejected(self):
         with self.assertRaises(ApprovalProvenanceError):

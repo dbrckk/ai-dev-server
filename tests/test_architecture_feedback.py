@@ -170,5 +170,64 @@ class ArchitectureFeedbackTests(unittest.TestCase):
 
 
 
+    def test_framework_mismatch_does_not_bias(self):
+        recs = {"matches": [{"repo": "a/core", "domain": "mobile", "score": 90.0}]}
+        learning = {
+            "rankings": [
+                {
+                    "repo": "a/core",
+                    "domain": "mobile",
+                    "framework": "flutter",
+                    "samples": 10,
+                    "success_rate": 1.0,
+                }
+            ]
+        }
+
+        result = af.apply(recs, learning, framework="godot")
+
+        self.assertFalse(result["feedback_applied"])
+        self.assertEqual(result["matches"][0]["feedback_score"], 90.0)
+
+    def test_matching_framework_can_bias(self):
+        recs = {"matches": [{"repo": "a/core", "domain": "mobile", "score": 90.0}]}
+        learning = {
+            "rankings": [
+                {
+                    "repo": "a/core",
+                    "domain": "mobile",
+                    "framework": "godot",
+                    "samples": 10,
+                    "success_rate": 1.0,
+                }
+            ]
+        }
+
+        result = af.apply(recs, learning, framework="godot")
+
+        self.assertTrue(result["feedback_applied"])
+        self.assertEqual(result["matches"][0]["feedback_score"], 93.0)
+        self.assertEqual(result["matches"][0]["historical_evidence"]["framework"], "godot")
+
+    def test_stack_synergy_is_framework_scoped(self):
+        learning = {
+            "stack_rankings": [
+                {
+                    "repos": ["a/core", "b/ui"],
+                    "framework": "flutter",
+                    "samples": 10,
+                    "success_rate": 1.0,
+                }
+            ]
+        }
+
+        mismatch = af.stack_adjustment("b/ui", ["a/core"], learning, framework="godot")
+        matching = af.stack_adjustment("b/ui", ["a/core"], learning, framework="flutter")
+
+        self.assertEqual(mismatch["bonus"], 0.0)
+        self.assertGreater(matching["bonus"], 0.0)
+
+
+
 if __name__ == "__main__":
     unittest.main()

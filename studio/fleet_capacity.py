@@ -11,6 +11,7 @@ from durable_state import load_recovering
 from fleet_dashboard import collect
 from provider_monthly_quota import load as load_monthly_quota, quota_status
 from provider_router import load_providers
+from capacity_ledger import detailed_snapshot as ledger_detailed_snapshot
 from queue import matrix
 
 
@@ -28,7 +29,13 @@ def _runtime_state(project_out: Path) -> dict:
     return value if isinstance(value, dict) else {}
 
 
-def _project_rows(root: Path, request_dir: Path) -> list[dict]:
+def _project_rows(
+    root: Path,
+    request_dir: Path,
+    *,
+    ledger_usage: dict | None = None,
+    previous_plan: dict | None = None,
+) -> list[dict]:
     dashboard = collect(root)
     health = {row["id"]: row for row in dashboard.get("projects", [])}
     rows = []
@@ -58,22 +65,47 @@ def _project_rows(root: Path, request_dir: Path) -> list[dict]:
         else:
             requested_tokens = max(1, int(explicit_tokens))
 
+        usage = (ledger_usage or {}).get(project_id, {})
+        committed = max(0, int(usage.get("committed_tokens", 0) or 0))
+        previous_rows = (
+            previous_plan.get("projects", [])
+            if isinstance(previous_plan, dict)
+            and isinstance(previous_plan.get("projects"), list)
+            else []
+        )
+        previous_envelope = next(
+            (
+                int(row.get("token_envelope", 0) or 0)
+                for row in previous_rows
+                if isinstance(row, dict) and row.get("id") == project_id
+            ),
+            0,
+        )
+        pressure = (
+            min(1.5, committed / previous_envelope)
+            if previous_envelope > 0
+            else 0.0
+        )
+
         rows.append({
             "id": project_id,
             "status": status,
             "phase": str(phase),
-            "requested_tokens": requested_tokens,
+            "requested_tokens": max(requested_tokens, committed),
             "priority": max(1, min(100, int(request.get("priority", 50)))),
             "difficulty_band": str(
                 runtime.get("difficulty_band")
                 or request.get("difficulty_band")
                 or "medium"
             ),
+            "capacity_pressure": round(pressure, 4),
+            "committed_tokens": committed,
+            "previous_envelope_tokens": previous_envelope,
         })
     return rows
 
 
-def _provider_rows() -> list[ProviderCapacity]:
+def _provider_rows(*, reservations_by_provider: dict | None = None) -> list[ProviderCapacity]:
     quota_raw = os.environ.get("STUDIO_PROVIDER_MONTHLY_QUOTA_PATH", "")
     quota_path = Path(quota_raw) if quota_raw else None
     quota_data = (
@@ -91,6 +123,11 @@ def _provider_rows() -> list[ProviderCapacity]:
                 provider.name,
                 provider.monthly_token_quota,
             )["remaining_tokens"]
+            reserved = max(
+                0,
+                int((reservations_by_provider or {}).get(provider.name, 0) or 0),
+            )
+            available = max(0, int(available or 0) - reserved)
         capacities.append(ProviderCapacity(
             name=provider.name,
             available_tokens=available,
@@ -117,8 +154,21 @@ def plan(
 ) -> dict:
     root = Path(root)
     request_dir = Path(request_dir)
-    projects = _project_rows(root, request_dir)
-    providers = _provider_rows()
+    plan_path = root / "capacity-plan.json"
+    try:
+        previous_plan = json.loads(plan_path.read_text(encoding="utf-8")) if plan_path.is_file() else {}
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        previous_plan = {}
+    ledger = ledger_detailed_snapshot(root / "capacity-ledger.json")
+    projects = _project_rows(
+        root,
+        request_dir,
+        ledger_usage=ledger.get("usage_by_project", {}),
+        previous_plan=previous_plan,
+    )
+    providers = _provider_rows(
+        reservations_by_provider=ledger.get("reservations_by_provider", {}),
+    )
     report = allocate(
         projects,
         providers,
@@ -140,6 +190,17 @@ def plan(
         1 for item in providers
         if item.unmetered or item.available_tokens is not None
     )
+    report["rebalance"] = {
+        "previous_plan_present": bool(previous_plan),
+        "active_reservations": int(ledger.get("active_reservations", 0) or 0),
+        "reserved_tokens": int(ledger.get("reserved_tokens", 0) or 0),
+        "consumed_tokens": int(ledger.get("consumed_tokens", 0) or 0),
+        "reaped_reservations": int(ledger.get("reaped", 0) or 0),
+        "pressured_projects": sum(
+            1 for row in report["projects"]
+            if float(row.get("capacity_pressure", 0.0) or 0.0) >= 0.80
+        ),
+    }
     return report
 
 

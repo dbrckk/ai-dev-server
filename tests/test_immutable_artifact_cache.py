@@ -18,6 +18,7 @@ class ImmutableArtifactCacheTests(unittest.TestCase):
             "STUDIO_ARTIFACT_CAS_PATH": str(root / "cas"),
             "STUDIO_ARTIFACT_CACHE_PATH": str(root / "artifact-cache.json"),
             "STUDIO_ARTIFACT_CAS_STATS_PATH": str(root / "artifact-cas-stats.json"),
+            "STUDIO_PROJECT_ID": "test-project",
         }
     def _root(self, td):
         root = Path(td)
@@ -54,7 +55,8 @@ class ImmutableArtifactCacheTests(unittest.TestCase):
             with unittest.mock.patch.dict(os.environ, self._cas_env(root), clear=False):
                 entry = capture(root, key)
                 apk_meta = entry["files"][APK_REL]
-                blob = root / "cas" / apk_meta["sha256"][:2] / apk_meta["sha256"][2:]
+                from artifact_cas import blob_path
+                blob = blob_path(apk_meta["sha256"])
                 payload = bytearray(blob.read_bytes())
                 payload[0] ^= 0x01
                 blob.write_bytes(bytes(payload))
@@ -128,7 +130,8 @@ class ImmutableArtifactCacheTests(unittest.TestCase):
 
                 self.assertNotIn(first_key, entries)
                 self.assertIn(second_key, entries)
-                old_blob = root / "cas" / old_apk_digest[:2] / old_apk_digest[2:]
+                from artifact_cas import blob_path
+                old_blob = blob_path(old_apk_digest)
                 self.assertFalse(old_blob.exists())
 
 

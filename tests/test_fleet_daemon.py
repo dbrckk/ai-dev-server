@@ -16,6 +16,7 @@ class FleetDaemonTests(unittest.TestCase):
              patch("fleet_daemon.evaluate_regression", return_value={"regressed": True, "regressions": ["healthy_projects_decreased"]}), \
              patch("fleet_daemon.maintain", return_value={"summary": {"projects": 1}}), \
              patch("fleet_daemon.persist_capacity_plan", return_value={"summary": {"active_projects": 1, "allocated_tokens": 100}}), \
+             patch("fleet_daemon.capacity_ledger_snapshot", return_value={"active_reservations": 0, "reserved_tokens": 0, "consumed_tokens": 0, "reaped": 0}), \
              patch("fleet_daemon.apply_supervisor", return_value={"apply": False, "restarts_executed": 0, "results": []}) as supervisor:
             report = fleet_daemon.tick("out", "requests", apply_restarts=True, max_restarts=2)
 
@@ -30,6 +31,7 @@ class FleetDaemonTests(unittest.TestCase):
              patch("fleet_daemon.evaluate_regression", return_value={"regressed": False, "regressions": []}), \
              patch("fleet_daemon.maintain", return_value={"summary": {"projects": 1}}), \
              patch("fleet_daemon.persist_capacity_plan", return_value={"summary": {"active_projects": 1, "allocated_tokens": 100}}), \
+             patch("fleet_daemon.capacity_ledger_snapshot", return_value={"active_reservations": 0, "reserved_tokens": 0, "consumed_tokens": 0, "reaped": 0}), \
              patch("fleet_daemon.apply_supervisor", return_value={"apply": True, "restarts_executed": 1, "results": []}) as supervisor:
             report = fleet_daemon.tick("out", "requests", apply_restarts=True, max_restarts=1)
 
@@ -45,11 +47,13 @@ class FleetDaemonTests(unittest.TestCase):
              patch("fleet_daemon.evaluate_regression", return_value={"regressed": False, "regressions": []}), \
              patch("fleet_daemon.maintain", return_value={"summary": {"projects": 1}}), \
              patch("fleet_daemon.persist_capacity_plan", return_value={"summary": {"active_projects": 1, "allocated_tokens": 32000}}) as capacity, \
+             patch("fleet_daemon.capacity_ledger_snapshot", return_value={"active_reservations": 2, "reserved_tokens": 2000, "consumed_tokens": 4000, "reaped": 1}), \
              patch("fleet_daemon.apply_supervisor", return_value={"apply": False, "restarts_executed": 0, "results": []}):
             report = fleet_daemon.tick("out", "requests")
 
         capacity.assert_called_once()
         self.assertEqual(report["capacity"]["allocated_tokens"], 32000)
+        self.assertEqual(report["capacity"]["ledger"]["active_reservations"], 2)
 
 
     def test_run_loop_enforces_minimum_interval(self):

@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
 
 from core import StudioError
 from github_runner import main as github_main, run as github_run
-from orchestrator import run_project
+from orchestrator import run_project, run_registered_stages
 
 BASELINE = 'a' * 40
 MISSING_STAGE = 'future_capability_qa'
@@ -146,6 +146,67 @@ class OrchestratorTests(unittest.TestCase):
             self.assertEqual(result['status'], 'human_action_required')
             self.assertEqual(result['human_action']['action'], 'play_access_token_required')
             self.assertEqual(result['next_stage'], 'play_publish')
+
+    def test_scheduler_rewind_can_revisit_release_build_boundedly(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            out = root / 'out'
+            request = root / 'request.json'
+            request.write_text('{}')
+            calls = []
+            release_build_calls = 0
+
+            def runner(args, timeout):
+                nonlocal release_build_calls
+                calls.append(args)
+                out.mkdir(parents=True, exist_ok=True)
+                if 'studio/post_preview.py' in args:
+                    release_build_calls += 1
+                    if release_build_calls == 1:
+                        report = {
+                            'status': 'validated_preview',
+                            'completion': {'finished': False, 'next_stage': 'performance_qa'},
+                        }
+                    else:
+                        report = {
+                            'status': 'validated_preview',
+                            'completion': {'finished': False, 'next_stage': 'security_scan'},
+                        }
+                elif 'studio/performance_stage.py' in args:
+                    report = {
+                        'status': 'validated_preview',
+                        'completion': {'finished': False, 'next_stage': 'release_build'},
+                    }
+                elif 'studio/security_stage.py' in args:
+                    report = {
+                        'status': 'finished',
+                        'completion': {'finished': True, 'next_stage': None},
+                    }
+                else:
+                    self.fail('unexpected stage ' + str(args))
+                (out / 'report.json').write_text(json.dumps(report))
+                return subprocess.CompletedProcess(args, 0)
+
+            initial = {
+                'status': 'validated_preview',
+                'completion': {'finished': False, 'next_stage': 'release_build'},
+            }
+            result = run_registered_stages(
+                str(request), out, str(root / 'work'), initial,
+                1000, runner, lambda: 0, BASELINE,
+            )
+            self.assertEqual(result['status'], 'complete')
+            self.assertEqual(release_build_calls, 2)
+            self.assertEqual(
+                [next(arg for arg in call if arg.startswith('studio/')) for call in calls],
+                [
+                    'studio/post_preview.py',
+                    'studio/performance_stage.py',
+                    'studio/post_preview.py',
+                    'studio/security_stage.py',
+                ],
+            )
+
 
     def test_successful_stage_must_advance(self):
         with tempfile.TemporaryDirectory() as tmp:

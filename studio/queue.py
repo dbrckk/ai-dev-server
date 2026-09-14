@@ -20,7 +20,17 @@ def matrix(directory, terminal_ids=()):
             raise StudioError('Only one active brief per target, with a unique id')
         targets.add(target)
         ids.add(req['id'])
-        requests.append({'file': str(p), 'id': req['id'], 'target': target})
+        requests.append({
+            'file': str(p),
+            'id': req['id'],
+            'target': target,
+            'priority': req['priority'],
+            'max_calls': req['max_calls'],
+            'max_rounds': req['max_rounds'],
+            'max_cycles': req['max_cycles'],
+            'max_project_model_calls': req.get('max_project_model_calls'),
+            'max_api_cost_usd': req.get('max_api_cost_usd'),
+        })
     if len(requests) > 5:
         raise StudioError('At most five active projects')
     return requests

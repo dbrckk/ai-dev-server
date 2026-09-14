@@ -33,6 +33,22 @@ def _contextual_routing_state()->tuple[dict,list[tuple[str,float]]]:
                     pass
     return data,weighted
 
+
+def _verification_seconds()->float:
+    try:
+        return max(0.0,float(os.environ.get("STUDIO_EXPECTED_VERIFICATION_SECONDS","0") or 0.0))
+    except ValueError:
+        return 0.0
+
+
+def _agent_execution_seconds(perf:dict,role:str)->dict[str,float]:
+    result={}
+    for spec in DEFAULT_REGISTRY.all():
+        row=perf.get(spec.name+":"+role)
+        if isinstance(row,dict) and int(row.get("runs",0) or 0)>0:
+            result[spec.name]=float(row.get("duration_total",0.0) or 0.0)/max(1,int(row.get("runs",0)))
+    return result
+
 def _opencode_runtime(prompt:str)->tuple[list[str],dict[str,str]]:
     model=os.environ.get("STUDIO_CODE_MODEL") or os.environ.get("STUDIO_MODEL","")
     base=os.environ.get("STUDIO_API_BASE","")
@@ -91,6 +107,8 @@ def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,ti
         safe_rewrite_summary=_safe_rewrite_summary(),
         contextual_routing=contextual_routing,
         weighted_contexts=weighted_contexts,
+        execution_seconds=_agent_execution_seconds(perf,role),
+        verification_seconds=_verification_seconds(),
     )
     attempts=[]
     for decision in ranked:

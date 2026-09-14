@@ -1478,7 +1478,7 @@ Objective and current plan:
             )
         complete = review.get("complete") is True and verification.get("passed") is True
 
-        efficiency_seen = set()
+        verified_round_progress = verification.get("passed") is True
         for model_meta in implementation_models:
             if not isinstance(model_meta, dict):
                 continue
@@ -1494,17 +1494,13 @@ Objective and current plan:
                 or usage_tokens <= 0
             ):
                 continue
-            key = (provider_name, model_name, usage_tokens)
-            if key in efficiency_seen:
-                continue
-            efficiency_seen.add(key)
             record_capacity_efficiency(
                 capacity_efficiency_path,
                 project_id=req["id"],
                 provider=provider_name,
                 model=model_name,
                 tokens=usage_tokens,
-                verified_success=complete,
+                verified_success=verified_round_progress,
             )
 
         verified_local_models = set()

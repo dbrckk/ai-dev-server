@@ -8,6 +8,7 @@ from flutter_workspace import snapshot as snapshot_workspace, restore as restore
 from core import StudioError, apply_patch, canonical
 from journeys import validate_journeys
 from repair_search_policy import should_continue_after_quick_failure, should_refine
+from diff_quick_gates import plan as plan_quick_gates
 
 MAX_CANDIDATES = 2
 MAX_BRANCH_STEPS = 3
@@ -140,6 +141,7 @@ def run_branch(
     try:
         pending_failure = None
         for index, step in enumerate(steps, start=1):
+            before_step = snapshot_workspace(root)
             step_started = time.monotonic()
             result = step(pending_failure)
             pending_failure = None
@@ -159,15 +161,28 @@ def run_branch(
                 metadata["agent"] = result.get("agent")
 
             if index < len(steps):
+                step_delta = validate_delta(root, before_step)
+                quick_plan = plan_quick_gates(root, list(step_delta.get("changed", [])))
+                step_trace["delta"] = quick_plan
                 quick_sandbox = sandbox_factory(root)
                 progressive = []
                 quick_passed = True
                 quick_failure = None
-                for gate_name, gate_method_name in (
-                    ("dependency", "quick_dependency_gate"),
-                    ("analyze", "quick_analyze_gate"),
-                    ("test", "quick_test_gate"),
-                ):
+                gate_specs = (
+                    ("dependency", "quick_dependency_gate", quick_plan["dependency"]),
+                    ("analyze", "quick_analyze_gate", quick_plan["analyze"]),
+                    ("test", "quick_test_gate", quick_plan["test"]),
+                )
+                for gate_name, gate_method_name, required in gate_specs:
+                    if not required:
+                        progressive.append({
+                            "gate": gate_name,
+                            "passed": True,
+                            "skipped": True,
+                            "reason": "delta_not_relevant",
+                            "logs": [],
+                        })
+                        continue
                     gate_method = getattr(quick_sandbox, gate_method_name, None)
                     if gate_method is None:
                         fallback = getattr(quick_sandbox, "quick_gates")
@@ -175,16 +190,26 @@ def run_branch(
                         progressive.append({
                             "gate": "compatibility",
                             "passed": gate_ok is True,
+                            "skipped": False,
                             "logs": gate_logs,
                         })
                         quick_passed = gate_ok is True
                         if not quick_passed:
                             quick_failure = canonical(gate_logs[-1:])[-4000:]
                         break
-                    gate_ok, gate_logs = gate_method()
+                    if gate_name == "test":
+                        try:
+                            gate_ok, gate_logs = gate_method(quick_plan["targeted_tests"])
+                        except TypeError:
+                            gate_ok, gate_logs = gate_method()
+                    else:
+                        gate_ok, gate_logs = gate_method()
                     progressive.append({
                         "gate": gate_name,
                         "passed": gate_ok is True,
+                        "skipped": False,
+                        "mode": quick_plan["test_mode"] if gate_name == "test" else None,
+                        "targets": quick_plan["targeted_tests"] if gate_name == "test" else [],
                         "logs": gate_logs,
                     })
                     if not gate_ok:

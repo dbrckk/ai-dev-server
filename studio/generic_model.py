@@ -7,7 +7,7 @@ import time
 from pathlib import Path
 
 from core import API, APIError, ProtocolError, StudioError
-from provider_router import candidates_for, load_providers
+from provider_router import candidates_for, load_providers, budget_eligible
 from provider_health import eligible as provider_eligible, load as load_provider_health, reliability_bonus, record_failure as record_provider_failure, record_success as record_provider_success
 from provider_metrics import latency_bonus, load as load_provider_metrics, record as record_provider_latency
 from adaptive_scoring import score_provider
@@ -99,14 +99,15 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     weights = learned_weights(history, kind="provider", role=role)
     if health_path is not None:
         providers = tuple(provider for provider in providers if provider_eligible(health_path, provider.name))
-    if max_api_cost_usd > 0 and spent_api_cost_usd >= max_api_cost_usd:
-        unmetered = tuple(provider for provider in providers if provider.unmetered)
-        if unmetered:
-            providers = unmetered
-        else:
-            raise StudioError(
-                "Paid API budget exhausted and no unmetered provider is configured"
-            )
+    providers = budget_eligible(
+        providers,
+        max_api_cost_usd=max_api_cost_usd,
+        spent_api_cost_usd=spent_api_cost_usd,
+    )
+    if not providers:
+        raise StudioError(
+            "Paid API budget exhausted and no unmetered provider is configured"
+        )
     provider_scores = {}
     for provider in providers:
         base = score_provider(

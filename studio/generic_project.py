@@ -48,7 +48,7 @@ from dependency_scheduler import hotspot_plan as dependency_hotspot_plan, patch_
 from dependency_ledger import DependencyLedgerError, advance as advance_dependency_ledger, load as load_dependency_ledger, new as new_dependency_ledger, resume as resume_dependency_ledger, save as save_dependency_ledger, suggestions as dependency_ledger_suggestions
 from targeted_verify import run as run_targeted_verify
 from objective_dag import ObjectiveDagError, append_amendments as append_objective_amendments, load as load_objective_dag, mark_failed as mark_objective_failed, mark_running as mark_objective_running, mark_verified as mark_objective_verified, new as new_objective_dag, next_task as next_objective_task, resume as resume_objective_dag, save as save_objective_dag, summary as objective_dag_summary, task_context as objective_task_context
-from task_semantic_checkpoint import TaskSemanticCheckpointError, load as load_task_semantic_checkpoint, new as new_task_semantic_checkpoint, record as record_task_semantic_checkpoint, resume as resume_task_semantic_checkpoint, retry_policy as task_retry_policy, save as save_task_semantic_checkpoint, task_context as task_semantic_context
+from task_semantic_checkpoint import TaskSemanticCheckpointError, load as load_task_semantic_checkpoint, new as new_task_semantic_checkpoint, record as record_task_semantic_checkpoint, reject_stagnant_surface, resume as resume_task_semantic_checkpoint, retry_policy as task_retry_policy, save as save_task_semantic_checkpoint, stagnation_guard as task_stagnation_guard, task_context as task_semantic_context
 from task_context_bundle import build as build_task_context_bundle
 
 PLAN_SYSTEM = """You are the senior autonomous maintainer of an existing software repository.
@@ -413,6 +413,12 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         loop_avoid_models.update(semantic_retry.get("avoid_models", []))
         loop_avoid_providers.update(semantic_retry.get("avoid_providers", []))
         state["task_retry_policy"] = semantic_retry
+        semantic_stagnation = (
+            task_stagnation_guard(task_semantic, retry_task["id"])
+            if task_semantic is not None and retry_task is not None
+            else {"active": False, "blocked_file_set": [], "failure_signature": None}
+        )
+        state["task_stagnation_guard"] = semantic_stagnation
         agent_perf = load_agent_performance(out/".autonomy/agent-performance.json")
         agent_zone_perf_path = out/".autonomy/agent-zone-performance.json"
         agent_zone_perf = load_zone_agent_performance(agent_zone_perf_path)
@@ -576,6 +582,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             "objective_dag": objective_dag_summary(objective_dag) if objective_dag is not None else None,
             "active_task": focused_objective_context,
             "task_retry_policy": semantic_retry,
+            "task_stagnation_guard": semantic_stagnation,
             "task_context_mode": (
                 task_repository_context.get("mode")
                 if isinstance(task_repository_context, dict)
@@ -1026,6 +1033,14 @@ Objective and current plan:
                             continue
                         if not delta["changed"]:
                             continue
+                        if reject_stagnant_surface(semantic_stagnation, list(delta["changed"])):
+                            restore_agent_workspace(work, before_agent)
+                            agent_trace.append({
+                                "status":"rejected_task_stagnant_surface",
+                                "agent":candidate_name,
+                                "changed_files":list(delta["changed"]),
+                            })
+                            continue
                         if len(delta["changed"]) > effective_max_files:
                             restore_agent_workspace(work, before_agent)
                             agent_trace.append({
@@ -1292,7 +1307,17 @@ Objective and current plan:
                 )
                 if isinstance(impl_model,dict):
                     cost_controller.record_model(float(impl_model.get("duration_seconds",0.0) or 0.0), phase="implementation")
-                changed.extend(_apply(work, patch, max_files=effective_max_files, dependency_graph=dependency_graph, max_batch_files=effective_max_files))
+                patch_items = validate_patch(patch)
+                patch_paths = [item["path"] for item in patch_items]
+                if reject_stagnant_surface(semantic_stagnation, patch_paths):
+                    raise StudioError("Generic patch repeats a stagnant task surface")
+                changed.extend(_apply(
+                    work,
+                    {"files": patch_items},
+                    max_files=effective_max_files,
+                    dependency_graph=dependency_graph,
+                    max_batch_files=effective_max_files,
+                ))
                 implementation_models.append(impl_model)
             progress_timeout = bounded_timeout(
                 phase_remaining(

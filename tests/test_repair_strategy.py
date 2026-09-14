@@ -60,6 +60,18 @@ class RepairStrategyTests(unittest.TestCase):
         self.assertEqual(result["strategy"], "agent_only")
         self.assertEqual(result["mode"], "stagnation_rotation")
 
+    def test_agent_to_model_is_available_when_agent_exists(self):
+        result = choose(
+            None,
+            stage="native_qa",
+            agent_available=True,
+        )
+        self.assertIn("agent_to_model", result["allowed"])
+        self.assertTrue(
+            any(row["strategy"] == "agent_to_model" for row in result["candidate_ranking"])
+        )
+
+
     def test_without_agent_bootstraps_model_only(self):
         result = choose(
             None,

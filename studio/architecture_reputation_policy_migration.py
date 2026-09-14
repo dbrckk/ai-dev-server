@@ -12,6 +12,7 @@ import time
 from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
+from architecture_reputation_policy_approval import ApprovalProvenanceError, consume as consume_approval, validate_approval, validate_ledger
 from architecture_replacement_reputation import (
     DANGEROUS_STATE_GATES,
     MAX_AUDIT_EVENTS,
@@ -421,7 +422,7 @@ def dry_run(registry: dict, learning: dict | None=None, *, now: float | None=Non
     result["authorization_template"]=authorization_template(result,now=now)
     return result
 
-def apply_migration(registry: dict, plan: dict, authorization: dict, *, now: float | None=None) -> dict:
+def apply_migration(registry: dict, plan: dict, authorization: dict, *, approval: dict | None=None, approval_ledger: dict | None=None, now: float | None=None) -> dict:
     if not isinstance(plan,dict) or plan.get("status")!="reputation_policy_migration_review_ready":
         raise ReputationPolicyMigrationError("migration plan invalid")
     if not isinstance(authorization,dict):
@@ -442,6 +443,16 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, now: flo
     if risk.get("reinforced_review_required") is True:
         if authorization.get("reinforced_reviewed") is not True:
             raise ReputationPolicyMigrationError("reinforced migration review absent")
+    try:
+        provenance=validate_approval(
+            approval,
+            plan,
+            reinforced=risk.get("reinforced_review_required") is True,
+        )
+        if approval_ledger is not None and validate_ledger(approval_ledger).get("valid") is not True:
+            raise ApprovalProvenanceError("approval ledger invalid")
+    except ApprovalProvenanceError as exc:
+        raise ReputationPolicyMigrationError(str(exc)) from None
 
     now=float(now) if isinstance(now,(int,float)) else time.time()
     issued_at=authorization.get("issued_at")
@@ -452,6 +463,17 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, now: flo
         raise ReputationPolicyMigrationError("migration authorization lifetime invalid")
     if now<issued_at or now>=expires_at:
         raise ReputationPolicyMigrationError("migration authorization expired or not yet valid")
+
+    try:
+        next_approval_ledger=consume_approval(
+            approval_ledger,
+            migration_id=str(plan.get("migration_id")),
+            review_digest=expected_review_digest,
+            approval_digest_value=provenance["approval_digest"],
+            applied_at=now,
+        )
+    except ApprovalProvenanceError as exc:
+        raise ReputationPolicyMigrationError(str(exc)) from None
 
     current_digest=registry_digest(registry)
     if current_digest!=plan.get("source_registry_digest"):
@@ -540,6 +562,7 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, now: flo
             "upward_transition_requires_time_and_new_evidence":True,
             "validation":validate_transition_policy(),
         },
+        "policy_migration_approval_ledger":next_approval_ledger,
         "last_policy_migration":{
             "migration_id":plan.get("migration_id"),
             "risk_level":risk.get("level"),
@@ -548,6 +571,10 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, now: flo
             "review_digest":expected_review_digest,
             "authorization_issued_at":issued_at,
             "authorization_expires_at":expires_at,
+            "approval_digest":provenance["approval_digest"],
+            "reviewer_id":provenance["reviewer_id"],
+            "second_reviewer_id":provenance["second_reviewer_id"],
+            "approval_ledger_head":next_approval_ledger["head"],
             "applied_at":now,
             "source_registry_digest":plan.get("source_registry_digest"),
             "target_policy_digest":plan.get("target_policy_digest"),
@@ -572,8 +599,8 @@ def write_dry_run(registry: dict, learning: dict | None, out: Path, *, now: floa
     )
     return result
 
-def write_applied(registry: dict, plan: dict, authorization: dict, path: Path, *, now: float | None=None) -> dict:
-    migrated=apply_migration(registry,plan,authorization,now=now)
+def write_applied(registry: dict, plan: dict, authorization: dict, path: Path, *, approval: dict | None=None, approval_ledger: dict | None=None, now: float | None=None) -> dict:
+    migrated=apply_migration(registry,plan,authorization,approval=approval,approval_ledger=approval_ledger,now=now)
     atomic_write_text(
         path,
         json.dumps(migrated,ensure_ascii=False,indent=2,sort_keys=True)+"\n",

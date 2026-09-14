@@ -57,4 +57,19 @@ class ReplacementLearningTests(unittest.TestCase):
             self.assertEqual(by_framework["python"]["success_rate"],0.0)
             self.assertEqual(by_framework["flutter"]["platform"],"android")
 
+    def test_observation_window_is_preserved(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            for i,ts in enumerate((100.0,300.0,200.0)):
+                out=root/f"p{i}"; out.mkdir()
+                (out/"architecture-replacement-outcome.json").write_text(json.dumps({
+                    "status":"replacement_outcome_recorded",
+                    "current_repo":"a/current","replacement_repo":"a/better",
+                    "successful":True,"regressed":False,"rollback_prepared":False,"rolled_back":False,
+                    "quality_score":100.0,"observed_at":ts,
+                }))
+            row=arl.summarize(root)["rankings"][0]
+            self.assertEqual(row["first_observed_at"],100.0)
+            self.assertEqual(row["latest_observed_at"],300.0)
+
 if __name__=="__main__": unittest.main()

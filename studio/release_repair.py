@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from core import Model, Sandbox, StudioError, allowed, apply_patch, canonical, patch_check
+from core import Model, Sandbox, StudioError, SECRET, allowed, apply_patch, canonical, patch_check
 from diagnostics import repairable
 from journeys import validate_journeys
 
@@ -18,7 +18,10 @@ def _context(root: Path, state: dict, stage: str, blockers: list[str]) -> str:
         rel = path.relative_to(root).as_posix()
         if not allowed(rel) or rel.startswith(("test/", "docs/")):
             continue
-        files[rel] = path.read_text(errors="replace")
+        text = path.read_text(errors="replace")
+        if SECRET.search(text):
+            raise StudioError("Release repair context contains credential material")
+        files[rel] = text
     return canonical({
         "task": "Repair only the supplied release-stage code defects. Do not fake or bypass QA.",
         "stage": stage,

@@ -44,6 +44,7 @@ def _safe_apply(
         value,
         engine='godot',
         architecture_changes_allowed=architecture_changes_allowed,
+        root=root,
     )
     files = validate_patch(value, 'godot', role)
     root = root.resolve(); targets = []

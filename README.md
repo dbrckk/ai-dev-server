@@ -49,6 +49,14 @@ Stacks de vérification détectées notamment : Node/npm, Python, Go, Rust, Mave
 
 Documentation : **[Generic autonomous project engine](docs/GENERIC_ENGINE.md)**.
 
+Statut read-only d'un projet autonome :
+
+```bash
+python studio/project_status.py /chemin/vers/le/output
+```
+
+Utiliser `--compact` pour obtenir une seule ligne JSON facilement exploitable depuis Android, Termux, Codespaces ou un script.
+
 ## Mode autonome jusqu'à la fin
 
 AI Dev Server vise désormais à prendre en charge **un nouveau projet ou un projet existant supporté**, à travailler dessus sans intervention de routine et à continuer jusqu'à satisfaction de la définition de fini vérifiée.

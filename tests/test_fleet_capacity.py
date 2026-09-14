@@ -148,6 +148,34 @@ class FleetCapacityTests(unittest.TestCase):
         self.assertEqual(providers[0].available_tokens, 700)
 
 
+
+    def test_project_rows_include_verified_efficiency_multiplier(self):
+        efficiency = {
+            "projects": {
+                "a": {"samples": 4, "risk_adjusted_score": 20.0},
+                "b": {"samples": 4, "risk_adjusted_score": 10.0},
+            }
+        }
+        with patch("fleet_capacity.collect", return_value={"projects": [
+            {"id": "a", "runtime_status": "running"},
+            {"id": "b", "runtime_status": "running"},
+        ]}), patch("fleet_capacity.matrix", return_value=[
+            {"id": "a", "capacity_request_tokens": 1000},
+            {"id": "b", "capacity_request_tokens": 1000},
+        ]), patch("fleet_capacity._runtime_state", return_value={}):
+            rows = fleet_capacity._project_rows(
+                Path("out"),
+                Path("requests"),
+                efficiency_summary=efficiency,
+            )
+
+        by_id = {row["id"]: row for row in rows}
+        self.assertGreater(
+            by_id["a"]["efficiency_multiplier"],
+            by_id["b"]["efficiency_multiplier"],
+        )
+
+
     def test_persist_writes_machine_readable_plan(self):
         report = {
             "schema": 1,

@@ -249,6 +249,10 @@ def _fuse_histories(histories: list[dict], now: float | None = None) -> dict | N
             "recency_factor":_recency_factor(history,now=now),
             "normalized_weight":round(weight/total,4),
         })
+    recency_weighted=sum(
+        weight*_recency_factor(history,now=now)
+        for weight,history in weighted
+    )/total
     return {
         "contributors":contributors,
         "contributor_count":len(contributors),
@@ -264,6 +268,8 @@ def _fuse_histories(histories: list[dict], now: float | None = None) -> dict | N
         "evidence_confidence":round(min(1.0,effective_samples/20.0),4),
         "recency_half_life_days":RECENCY_HALF_LIFE_DAYS,
         "recency_floor":RECENCY_FLOOR,
+        "temporal_confidence":round(recency_weighted,4),
+        "stale_evidence":recency_weighted<0.40,
         "eligible_for_bias":effective_samples>=5.0,
         "evidence_conflict":evidence_conflict,
         "conflict_ratio":round(conflict_ratio,4),
@@ -373,6 +379,8 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             gates.insert(0,"historical_replacement_risk_reviewed")
         if empirical_status=="conflicting_history":
             gates.insert(0,"conflicting_replacement_evidence_reviewed")
+        if isinstance(fused_history,dict) and fused_history.get("stale_evidence") is True:
+            gates.insert(0,"stale_replacement_evidence_revalidated")
         if row.get("maintenance_evidence_available") is not True:
             gates.insert(0, "maintenance_evidence_completed")
 
@@ -426,7 +434,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
     ),reverse=True)
 
     return {
-        "version": 8,
+        "version": 9,
         "status": "planned",
         "advisory_only": True,
         "replacement_plans": plans,

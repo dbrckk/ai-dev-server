@@ -16,6 +16,7 @@ from repair_search_policy import should_expand
 from project_budget import remaining as budget_remaining
 from persistent_quick_gate_cache import load as load_persistent_quick_cache, save as save_persistent_quick_cache
 from full_gate_cache import load as load_full_gate_cache, save as save_full_gate_cache
+from immutable_artifact_cache import load as load_artifact_cache, save as save_artifact_cache
 
 MAX_RELEASE_REPAIR_ROUNDS = 2
 MAX_MODEL_CALLS_PER_BRANCH = 2
@@ -178,6 +179,7 @@ def attempt(
     candidates = []
     quick_gate_cache = load_persistent_quick_cache()
     full_gate_cache = load_full_gate_cache()
+    artifact_cache = load_artifact_cache()
     for strategy_index, strategy_name in enumerate(strategies):
         prior = _strategy_prior(selection, strategy_name)
 
@@ -239,6 +241,7 @@ def attempt(
             step_model_calls=step_model_calls,
             quick_gate_cache=quick_gate_cache,
             full_gate_cache=full_gate_cache,
+            artifact_cache=artifact_cache,
             state=state,
             app_name=app_name,
             sandbox_factory=sandbox_factory,
@@ -275,6 +278,7 @@ def attempt(
 
     save_persistent_quick_cache(quick_gate_cache)
     save_full_gate_cache(full_gate_cache)
+    save_artifact_cache(artifact_cache)
     winner = select_winner(candidates)
     if winner is None:
         raise StudioError(

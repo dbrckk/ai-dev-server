@@ -15,6 +15,7 @@ from journeys import validate_journeys
 from core import API, APIError, Model, Sandbox, StudioError, allowed, apply_patch, canonical, request_check, verdict, SECRET, require_clean_patch_workspace
 from project_context import write as write_project_context
 from repair_planner import preview_plan
+from repair_queue import complete_stage_tasks, enqueue, summarize
 
 class GitHub(API):
     def __init__(self, repo):
@@ -239,6 +240,8 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             if not passed:
                 state['blockers'] = ['Validation failed: ' + canonical(logs[-1:])[-16000:]]
                 state['repair_plan'] = preview_plan('preview_validation', state['blockers'])
+                enqueue(state, state['repair_plan'], estimated_model_calls=1)
+                state['repair_queue_summary'] = summarize(state)
                 parent = checkpoint(parent)
                 continue
             state['validation_contract'] = 2
@@ -247,6 +250,8 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             if not review['passed']:
                 state['blockers'] = review['blockers']
                 state['repair_plan'] = preview_plan('code_review', state['blockers'])
+                enqueue(state, state['repair_plan'], estimated_model_calls=1)
+                state['repair_queue_summary'] = summarize(state)
                 parent = checkpoint(parent)
                 continue
             screenshots = sorted((root / 'test/goldens').glob('*.png'))
@@ -268,10 +273,15 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             if not visual['passed']:
                 state['blockers'] = visual['blockers']
                 state['repair_plan'] = preview_plan('visual_review', state['blockers'])
+                enqueue(state, state['repair_plan'], estimated_model_calls=1)
+                state['repair_queue_summary'] = summarize(state)
                 parent = checkpoint(parent)
                 continue
             state.update(status='validated_preview', blockers=[])
             state['repair_plan'] = preview_plan('preview', [])
+            for completed_stage in ('preview_validation', 'code_review', 'visual_review'):
+                complete_stage_tasks(state, completed_stage)
+            state['repair_queue_summary'] = summarize(state)
             break
     except StudioError as e:
         state.update(status='blocked', blockers=[str(e)])

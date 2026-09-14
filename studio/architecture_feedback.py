@@ -5,6 +5,7 @@ import time
 
 MIN_SAMPLES = 5
 MAX_SCORE_BONUS = 3.0
+MAX_STACK_SCORE_BONUS = 2.0
 MAX_EVIDENCE_AGE_SECONDS = 30 * 24 * 60 * 60
 
 
@@ -98,3 +99,74 @@ def apply(recommendations: dict, learning: dict | None, *, now: float | None = N
         "max_evidence_age_seconds": MAX_EVIDENCE_AGE_SECONDS,
     }
     return result
+
+
+def stack_adjustment(candidate_repo: str, chosen_repos: list[str], learning: dict | None, *, now: float | None = None) -> dict:
+    """Return a bounded synergy adjustment from verified historical stack outcomes."""
+    if not isinstance(candidate_repo, str) or not candidate_repo:
+        return {"bonus": 0.0, "evidence": []}
+    if not isinstance(learning, dict):
+        return {"bonus": 0.0, "evidence": []}
+    rows = learning.get("stack_rankings")
+    if not isinstance(rows, list):
+        return {"bonus": 0.0, "evidence": []}
+
+    now_value = time.time() if now is None else float(now)
+    chosen = {x for x in chosen_repos if isinstance(x, str) and x}
+    evidence = []
+    weighted = 0.0
+    total_weight = 0.0
+
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        repos = row.get("repos")
+        samples = row.get("samples")
+        success_rate = row.get("success_rate")
+        if not isinstance(repos, list) or candidate_repo not in repos:
+            continue
+        if not isinstance(samples, int) or samples < MIN_SAMPLES:
+            continue
+        if not isinstance(success_rate, (int, float)):
+            continue
+        latest = row.get("latest_observed_at")
+        if isinstance(latest, (int, float)) and now_value - float(latest) > MAX_EVIDENCE_AGE_SECONDS:
+            continue
+
+        repo_set = {x for x in repos if isinstance(x, str)}
+        overlap = len(chosen & repo_set)
+        if chosen and overlap == 0:
+            continue
+
+        # Require at least candidate + one selected repo before claiming synergy.
+        if chosen and overlap < 1:
+            continue
+        if not chosen:
+            continue
+
+        rate = max(0.0, min(1.0, float(success_rate)))
+        centered = (rate - 0.5) * 2.0
+        weight = min(1.0, samples / 10.0) * min(1.0, overlap / max(1, len(chosen)))
+        weighted += centered * weight
+        total_weight += weight
+        evidence.append({
+            "repos": sorted(repo_set)[:12],
+            "samples": samples,
+            "success_rate": rate,
+            "overlap_with_selected": overlap,
+        })
+
+    if total_weight <= 0:
+        return {"bonus": 0.0, "evidence": []}
+
+    raw = (weighted / total_weight) * MAX_STACK_SCORE_BONUS
+    bonus = max(-MAX_STACK_SCORE_BONUS, min(MAX_STACK_SCORE_BONUS, raw))
+    return {
+        "bonus": round(bonus, 4),
+        "evidence": evidence[:5],
+        "policy": {
+            "minimum_samples": MIN_SAMPLES,
+            "max_stack_score_bonus": MAX_STACK_SCORE_BONUS,
+            "advisory_only": True,
+        },
+    }

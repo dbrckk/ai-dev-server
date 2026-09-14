@@ -379,5 +379,71 @@ class ArchitectureFeedbackTests(unittest.TestCase):
         result = af.apply(recs, learning)
         self.assertFalse(result["feedback_policy"]["can_add_dependency"])
 
+    def test_repo_feedback_attenuates_low_confidence_evidence(self):
+        recs = {"matches": [
+            {"repo": "small/repo", "domain": "mobile", "score": 90.0},
+            {"repo": "large/repo", "domain": "mobile", "score": 90.0},
+        ]}
+        common = {
+            "domain": "mobile",
+            "framework": "flutter",
+            "project_type": "general",
+            "primary_domain": "mobile",
+            "samples": 20,
+            "success_rate": 1.0,
+            "posterior_success_rate": 0.9,
+            "wilson_lower_95": 0.8,
+            "quality_shrunk_mean": 85.0,
+        }
+        learning = {"rankings": [
+            {**common, "repo": "small/repo", "evidence_confidence": 0.25},
+            {**common, "repo": "large/repo", "evidence_confidence": 1.0},
+        ]}
+        result = af.apply(
+            recs,
+            learning,
+            framework="flutter",
+            project_type="general",
+            primary_domain="mobile",
+        )
+        by_repo = {x["repo"]: x for x in result["matches"]}
+        self.assertGreater(
+            by_repo["large/repo"]["historical_evidence"]["advisory_bonus"],
+            by_repo["small/repo"]["historical_evidence"]["advisory_bonus"],
+        )
+
+    def test_stack_synergy_attenuates_low_confidence_evidence(self):
+        base = {
+            "repos": ["a/core", "b/ui"],
+            "framework": "flutter",
+            "project_type": "game",
+            "primary_domain": "mobile",
+            "samples": 20,
+            "success_rate": 1.0,
+            "posterior_success_rate": 0.9,
+            "wilson_lower_95": 0.8,
+            "quality_shrunk_mean": 85.0,
+        }
+        low = af.stack_adjustment(
+            "b/ui",
+            ["a/core"],
+            {"stack_rankings": [{**base, "evidence_confidence": 0.25}]},
+            framework="flutter",
+            project_type="game",
+            primary_domain="mobile",
+        )
+        high = af.stack_adjustment(
+            "b/ui",
+            ["a/core"],
+            {"stack_rankings": [{**base, "evidence_confidence": 1.0}]},
+            framework="flutter",
+            project_type="game",
+            primary_domain="mobile",
+        )
+        self.assertGreater(high["bonus"], low["bonus"])
+        self.assertEqual(low["evidence"][0]["evidence_confidence"], 0.25)
+        self.assertEqual(high["evidence"][0]["evidence_confidence"], 1.0)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -59,6 +59,16 @@ def summarize(root: Path | str = "studio-output") -> dict:
             if isinstance(constraints, dict) and isinstance(constraints.get("framework"), str)
             else None
         )
+        project_type = (
+            constraints.get("project_type")
+            if isinstance(constraints, dict) and isinstance(constraints.get("project_type"), str)
+            else None
+        )
+        primary_domain = (
+            constraints.get("primary_domain")
+            if isinstance(constraints, dict) and isinstance(constraints.get("primary_domain"), str)
+            else None
+        )
 
         contexts = row.get("chosen_contexts")
         if isinstance(contexts, list) and contexts:
@@ -67,6 +77,8 @@ def summarize(root: Path | str = "studio-output") -> dict:
                     "repo": item.get("repo"),
                     "domain": item.get("domain"),
                     "framework": framework,
+                    "project_type": project_type,
+                    "primary_domain": primary_domain,
                 }
                 for item in contexts
                 if isinstance(item, dict) and isinstance(item.get("repo"), str)
@@ -74,16 +86,18 @@ def summarize(root: Path | str = "studio-output") -> dict:
         else:
             repos = row.get("chosen_repositories")
             observed = [
-                {"repo": repo, "domain": None, "framework": framework}
+                {"repo": repo, "domain": None, "framework": framework, "project_type": project_type, "primary_domain": primary_domain}
                 for repo in repos
                 if isinstance(repos, list) and isinstance(repo, str) and repo
             ] if isinstance(repos, list) else []
 
         stack_repos = tuple(sorted(item["repo"] for item in observed))
-        stack_key = (framework, stack_repos)
+        stack_key = (framework, project_type, primary_domain, stack_repos)
         if stack_repos:
             stack = stack_stats.setdefault(stack_key, {
                 "framework": framework,
+                "project_type": project_type,
+                "primary_domain": primary_domain,
                 "repos": list(stack_repos),
                 "samples": 0,
                 "successes": 0,
@@ -105,11 +119,15 @@ def summarize(root: Path | str = "studio-output") -> dict:
             repo = observed_item["repo"]
             domain = observed_item.get("domain")
             item_framework = observed_item.get("framework")
-            key = (repo, domain, item_framework)
+            item_project_type = observed_item.get("project_type")
+            item_primary_domain = observed_item.get("primary_domain")
+            key = (repo, domain, item_framework, item_project_type, item_primary_domain)
             item = stats.setdefault(key, {
                 "repo": repo,
                 "domain": domain,
                 "framework": item_framework,
+                "project_type": item_project_type,
+                "primary_domain": item_primary_domain,
                 "samples": 0,
                 "successes": 0,
                 "model_calls": 0,
@@ -131,13 +149,15 @@ def summarize(root: Path | str = "studio-output") -> dict:
                 )
 
     rankings = []
-    for (_repo, _domain, _framework), item in stats.items():
+    for (_repo, _domain, _framework, _project_type, _primary_domain), item in stats.items():
         samples = item["samples"]
         success_rate = item["successes"] / samples if samples else 0.0
         rankings.append({
             "repo": item["repo"],
             "domain": item.get("domain"),
             "framework": item.get("framework"),
+            "project_type": item.get("project_type"),
+            "primary_domain": item.get("primary_domain"),
             "samples": samples,
             "success_rate": round(success_rate, 4),
             "mean_model_calls": round(item["model_calls"] / samples, 3) if samples else 0.0,
@@ -164,6 +184,8 @@ def summarize(root: Path | str = "studio-output") -> dict:
         stack_rankings.append({
             "repos": item["repos"],
             "framework": item.get("framework"),
+            "project_type": item.get("project_type"),
+            "primary_domain": item.get("primary_domain"),
             "samples": samples,
             "success_rate": round(success_rate, 4),
             "mean_model_calls": round(item["model_calls"] / samples, 3) if samples else 0.0,
@@ -184,7 +206,7 @@ def summarize(root: Path | str = "studio-output") -> dict:
     )
 
     return {
-        "schema": 2,
+        "schema": 3,
         "projects_observed": projects,
         "minimum_samples": MIN_SAMPLES,
         "advisory_only": True,

@@ -188,6 +188,113 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         self.assertLess(row["history_context_weight"],0.75)
         self.assertEqual(row["risk"],"low")
 
+    def test_nearby_major_versions_are_partially_transferable(self):
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter",
+            "project_type":"game",
+            "primary_domain":"mobile",
+            "platform":"android",
+            "current_major_version":2,
+            "replacement_major_version":4,
+        })
+        learning={"rankings":[{
+            "current_repo":"a/current",
+            "replacement_repo":"a/better",
+            "framework":"flutter",
+            "project_type":"game",
+            "primary_domain":"mobile",
+            "platform":"android",
+            "current_major_version":1,
+            "replacement_major_version":3,
+            "samples":20,
+            "eligible_for_bias":True,
+            "evidence_confidence":1.0,
+            "regression_rate":0.0,
+            "wilson_lower_95":0.85,
+        }]}
+        row=plan(obs,self.recommendations(),learning=learning)["replacement_plans"][0]
+        self.assertGreater(row["compatibility_distance"]["transferability"],0.75)
+        self.assertLess(row["compatibility_distance"]["transferability"],1.0)
+        self.assertFalse(row["compatibility_distance"]["exact_context_match"])
+        self.assertEqual(row["empirical_status"],"historically_supported")
+
+    def test_large_version_distance_is_strongly_downweighted(self):
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter",
+            "project_type":"game",
+            "primary_domain":"mobile",
+            "platform":"android",
+            "current_major_version":7,
+            "replacement_major_version":11,
+        })
+        learning={"rankings":[{
+            "current_repo":"a/current",
+            "replacement_repo":"a/better",
+            "framework":"flutter",
+            "project_type":"game",
+            "primary_domain":"mobile",
+            "platform":"android",
+            "current_major_version":1,
+            "replacement_major_version":2,
+            "samples":30,
+            "eligible_for_bias":True,
+            "evidence_confidence":1.0,
+            "regression_rate":0.0,
+            "wilson_lower_95":0.9,
+        }]}
+        row=plan(obs,self.recommendations(),learning=learning)["replacement_plans"][0]
+        self.assertLess(row["compatibility_distance"]["transferability"],0.85)
+        self.assertGreater(row["compatibility_distance"]["distance"],0.15)
+        self.assertLess(row["empirical_priority_adjustment"],5.0)
+
+    def test_closest_history_is_selected_instead_of_largest_sample(self):
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter",
+            "project_type":"game",
+            "primary_domain":"mobile",
+            "platform":"android",
+            "current_major_version":3,
+            "replacement_major_version":4,
+        })
+        learning={"rankings":[
+            {
+                "current_repo":"a/current",
+                "replacement_repo":"a/better",
+                "framework":"flutter",
+                "project_type":"game",
+                "primary_domain":"mobile",
+                "platform":"android",
+                "current_major_version":3,
+                "replacement_major_version":4,
+                "samples":5,
+                "eligible_for_bias":True,
+                "evidence_confidence":0.25,
+                "regression_rate":0.0,
+                "wilson_lower_95":0.56,
+            },
+            {
+                "current_repo":"a/current",
+                "replacement_repo":"a/better",
+                "framework":"python",
+                "project_type":"trading",
+                "primary_domain":"backend",
+                "platform":"linux",
+                "current_major_version":3,
+                "replacement_major_version":4,
+                "samples":100,
+                "eligible_for_bias":True,
+                "evidence_confidence":1.0,
+                "regression_rate":0.0,
+                "wilson_lower_95":0.95,
+            },
+        ]}
+        row=plan(obs,self.recommendations(),learning=learning)["replacement_plans"][0]
+        self.assertEqual(row["historical_replacement_evidence"]["framework"],"flutter")
+        self.assertTrue(row["compatibility_distance"]["exact_context_match"])
+
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)

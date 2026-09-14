@@ -408,17 +408,17 @@ def ask(
             if metrics_path is not None:
                 record_provider_latency(metrics_path, provider.name, role, elapsed)
             usage = response.get("usage") if isinstance(response, dict) else None
+            actual_tokens = estimated_call_tokens
+            if isinstance(usage, dict):
+                try:
+                    actual_tokens = max(
+                        0,
+                        int(usage.get("prompt_tokens", 0) or 0)
+                        + int(usage.get("completion_tokens", 0) or 0),
+                    )
+                except (TypeError, ValueError):
+                    actual_tokens = estimated_call_tokens
             if reservation is not None:
-                actual_tokens = estimated_call_tokens
-                if isinstance(usage, dict):
-                    try:
-                        actual_tokens = max(
-                            0,
-                            int(usage.get("prompt_tokens", 0) or 0)
-                            + int(usage.get("completion_tokens", 0) or 0),
-                        )
-                    except (TypeError, ValueError):
-                        actual_tokens = estimated_call_tokens
                 settle_capacity(
                     capacity_ledger_path,
                     reservation["reservation_id"],
@@ -480,6 +480,7 @@ def ask(
                 "routing_score": provider_scores[provider.name].as_dict(),
                 "duration_seconds": elapsed,
                 "estimated_cost_usd": round(call_cost, 8),
+                "usage_tokens": actual_tokens,
                 "unmetered": provider.unmetered,
                 "capacity": {
                     "project_id": project_id,

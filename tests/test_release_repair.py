@@ -48,6 +48,26 @@ class ReleaseRepairTests(unittest.TestCase):
                 )
 
     @patch("release_repair._agent_candidates", return_value=["fake-agent"])
+    @patch("release_repair._run_agent")
+    def test_credentials_abort_before_agent_access(self, run_agent, candidates):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source = root / "lib/app.dart"
+            source.parent.mkdir(parents=True)
+            source.write_text("const token = 'sk-abcdefghijklmnopqrstuvwxyz123456';\n")
+
+            with self.assertRaises(StudioError):
+                attempt(
+                    root,
+                    STATE,
+                    {"passed": False, "blockers": ["excessive_jank"]},
+                    "performance_qa",
+                    "demo_app",
+                )
+
+        run_agent.assert_not_called()
+
+    @patch("release_repair._agent_candidates", return_value=["fake-agent"])
     @patch("release_repair.choose_strategy")
     @patch("release_repair._run_agent")
     def test_agent_only_strategy_uses_no_model_call(self, run_agent, choose_strategy, candidates):

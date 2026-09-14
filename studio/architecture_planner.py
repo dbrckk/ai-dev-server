@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from architecture_feedback import apply as apply_feedback
+from architecture_feedback import apply as apply_feedback, stack_adjustment
 from atomic_file import write_text as atomic_write_text
 
 MAX_CHOSEN = 6
@@ -43,6 +43,7 @@ def plan(
     rows=_clean_rows(recommendations)
     chosen=[]
     rejected=[]
+    pending=[]
     for row in rows:
         repo=row["repo"]
         avoid=row.get("avoid_when") if isinstance(row.get("avoid_when"),list) else []
@@ -52,22 +53,45 @@ def plan(
                 "reason":"has avoidWhen constraints; requires explicit fit review: " + "; ".join(str(x) for x in avoid[:3])
             })
             continue
-        if len(chosen)<MAX_CHOSEN:
-            chosen.append({
-                "repo":repo,
-                "selection_score":row.get("feedback_score", row.get("score")),
-                "base_selection_score":row.get("score"),
-                "historical_evidence":row.get("historical_evidence"),
-                "quality_score":row.get("quality_score"),
-                "tier":row.get("tier"),
-                "domain":row.get("domain"),
-                "reason":_reason(row),
-                "capabilities":list(row.get("capabilities", []))[:12],
-                "complements":list(row.get("complements", []))[:8],
-                "alternatives":list(row.get("alternatives", []))[:8],
-            })
-        elif len(rejected)<MAX_REJECTED:
-            rejected.append({"repo":repo,"reason":"lower-ranked than selected candidates for this phase"})
+        pending.append(dict(row))
+
+    # Greedy selection: base recommendation/history score first, then a tightly bounded
+    # bonus for combinations that repeatedly succeeded together in prior projects.
+    while pending and len(chosen)<MAX_CHOSEN:
+        chosen_names=[x["repo"] for x in chosen]
+        scored=[]
+        for row in pending:
+            synergy=stack_adjustment(row["repo"], chosen_names, learning)
+            base=row.get("feedback_score", row.get("score"))
+            base_score=float(base) if isinstance(base,(int,float)) else 0.0
+            effective=round(base_score + float(synergy.get("bonus",0.0)),4)
+            scored.append((effective,row,synergy))
+        scored.sort(key=lambda item: (
+            item[0],
+            float(item[1].get("quality_score",0.0) or 0.0),
+            item[1]["repo"],
+        ), reverse=True)
+        effective,row,synergy=scored[0]
+        pending=[x for x in pending if x["repo"]!=row["repo"]]
+        chosen.append({
+            "repo":row["repo"],
+            "selection_score":effective,
+            "base_selection_score":row.get("score"),
+            "repo_feedback_score":row.get("feedback_score", row.get("score")),
+            "stack_synergy_bonus":synergy.get("bonus",0.0),
+            "stack_historical_evidence":synergy.get("evidence",[]),
+            "historical_evidence":row.get("historical_evidence"),
+            "quality_score":row.get("quality_score"),
+            "tier":row.get("tier"),
+            "domain":row.get("domain"),
+            "reason":_reason(row),
+            "capabilities":list(row.get("capabilities", []))[:12],
+            "complements":list(row.get("complements", []))[:8],
+            "alternatives":list(row.get("alternatives", []))[:8],
+        })
+
+    for row in pending[:max(0,MAX_REJECTED-len(rejected))]:
+        rejected.append({"repo":row["repo"],"reason":"lower-ranked than selected candidates for this phase"})
 
     resolved_framework = (
         framework
@@ -90,6 +114,11 @@ def plan(
         "advisory_only":True,
         "feedback_applied": bool(recommendations.get("feedback_applied")),
         "feedback_policy": recommendations.get("feedback_policy"),
+        "stack_feedback_policy":{
+            "advisory_only":True,
+            "can_add_dependency":False,
+            "greedy_synergy_rerank":True,
+        },
         "brief_fingerprint_source":"request.brief",
         "chosen":chosen,
         "rejected":rejected[:MAX_REJECTED],

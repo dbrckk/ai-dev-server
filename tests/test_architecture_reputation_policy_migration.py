@@ -9,6 +9,7 @@ import architecture_replacement_reputation as reputation
 from architecture_reputation_policy_migration import (
     ReputationPolicyMigrationError,
     apply_migration,
+    classify_migration_risk,
     dry_run,
 )
 
@@ -120,6 +121,54 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         plan=dry_run(registry,self.learning(),now=200.0)
         apply_migration(registry,plan,self.authorize(plan),now=300.0)
         self.assertEqual(registry,original)
+
+    def test_trust_downgrade_risk_classification(self):
+        registry=self.registry()
+        plan=dry_run(registry,self.learning(strong=False),now=200.0)
+        self.assertEqual(plan["risk"]["level"],"TRUST_DOWNGRADE")
+        self.assertEqual(plan["risk"]["trusted_downgrades"],1)
+        self.assertFalse(plan["risk"]["reinforced_review_required"])
+
+    def test_promotion_path_change_requires_reinforced_review(self):
+        registry=self.registry()
+        # Simulate an older policy whose RECOVERING -> TRUSTED rule differs.
+        registry["policy"]["transition_matrix"]=copy.deepcopy(reputation.TRANSITION_POLICY)
+        registry["policy"]["transition_matrix"]["RECOVERING"]["TRUSTED"]={
+            **registry["policy"]["transition_matrix"]["RECOVERING"]["TRUSTED"],
+            "minimum_confirmations":1,
+        }
+        plan=dry_run(registry,self.learning(),now=200.0)
+        self.assertEqual(plan["risk"]["level"],"PROMOTION_PATH_CHANGE")
+        self.assertTrue(plan["risk"]["reinforced_review_required"])
+        self.assertFalse(plan["authorization_template"]["reinforced_reviewed"])
+
+    def test_reinforced_review_is_required_for_promotion_path_change(self):
+        registry=self.registry()
+        registry["policy"]["transition_matrix"]=copy.deepcopy(reputation.TRANSITION_POLICY)
+        registry["policy"]["transition_matrix"]["RECOVERING"]["TRUSTED"]={
+            **registry["policy"]["transition_matrix"]["RECOVERING"]["TRUSTED"],
+            "minimum_confirmations":1,
+        }
+        plan=dry_run(registry,self.learning(),now=200.0)
+        auth=self.authorize(plan)
+        with self.assertRaises(ReputationPolicyMigrationError):
+            apply_migration(registry,plan,auth,now=300.0)
+        auth["reinforced_reviewed"]=True
+        migrated=apply_migration(registry,plan,auth,now=300.0)
+        self.assertEqual(migrated["last_policy_migration"]["migration_id"],plan["migration_id"])
+
+    def test_no_impact_when_registry_already_matches_current_policy(self):
+        registry,_=reputation.apply(None,self.context(),self.learning()["rankings"][0],now=100.0)
+        plan=dry_run(registry,self.learning(),now=200.0)
+        self.assertEqual(plan["risk"]["level"],"NO_IMPACT")
+        self.assertEqual(plan["summary"]["changed"],0)
+
+    def test_source_invalid_policy_is_critical(self):
+        registry=self.registry()
+        registry["policy"]["validation"]={"valid":False}
+        plan=dry_run(registry,self.learning(),now=200.0)
+        self.assertEqual(plan["risk"]["level"],"CRITICAL")
+        self.assertTrue(plan["risk"]["reinforced_review_required"])
 
 if __name__=="__main__":
     unittest.main()

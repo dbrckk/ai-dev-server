@@ -11,6 +11,7 @@ from journeys import validate_journeys
 from agents.orchestrator import execute_named as execute_named_agent, ranked_agent_names
 from agents.workspace import snapshot as snapshot_agent_workspace, restore as restore_agent_workspace, validate_delta as validate_agent_delta
 from repair_strategy import choose as choose_strategy, record_outcome as record_strategy_outcome
+from release_candidate_search import MAX_CANDIDATES, apply_winner, run_candidate, select_winner
 
 MAX_RELEASE_REPAIR_ROUNDS = 2
 
@@ -90,6 +91,49 @@ def _run_agent(root: Path, blockers: list[str], stage: str) -> dict:
     }
 
 
+def _strategy_prior(selection: dict, strategy: str) -> float:
+    for row in selection.get("candidate_ranking", []):
+        if row.get("strategy") == strategy:
+            return float(row.get("score", 0.0))
+    return 0.0
+
+
+def _model_mutation(root: Path, state: dict, stage: str, blockers: list[str], task: dict | None, model_factory):
+    model = model_factory(4)
+    if task and task.get("rotate_strategy") is True:
+        last_provider = task.get("last_provider")
+        if isinstance(last_provider, str) and last_provider and hasattr(model, "avoid_providers"):
+            model.avoid_providers.add(last_provider)
+    patch = model.ask("release_fix", _context(root, state, stage, blockers))
+    files = patch_check(patch)
+    for item in files:
+        if item["path"].startswith(("test/", "docs/")):
+            raise StudioError("Release repair may not edit tests or documentation")
+    apply_patch(root, patch)
+    return {
+        "model_calls": model.calls,
+        "models_used": getattr(model, "models_used", {}),
+        "providers_used": getattr(model, "providers_used", {}),
+        "agent": None,
+    }
+
+
+def _agent_mutation(root: Path, blockers: list[str], stage: str):
+    evidence = _run_agent(root, blockers, stage)
+    return {
+        "model_calls": 0,
+        "models_used": {},
+        "providers_used": {},
+        "agent": evidence,
+    }
+
+
+def _hybrid_mutation(root: Path, state: dict, stage: str, blockers: list[str], task: dict | None, model_factory):
+    metadata = _model_mutation(root, state, stage, blockers, task, model_factory)
+    metadata["agent"] = _run_agent(root, blockers, stage)
+    return metadata
+
+
 def attempt(
     root: Path,
     state: dict,
@@ -106,78 +150,93 @@ def attempt(
         return {"attempted": False, "changed": False, "reason": "no_repairable_code_diagnostics"}
 
     agents = _agent_candidates()
-    strategy = choose_strategy(task, stage=stage, agent_available=bool(agents))
-    strategy_name = strategy["strategy"]
-    started = time.monotonic()
-    model = None
-    model_calls = 0
-    models_used = {}
-    providers_used = {}
-    agent_evidence = None
-    before_strategy = snapshot_agent_workspace(root)
+    selection = choose_strategy(task, stage=stage, agent_available=bool(agents))
+    preferred = selection["strategy"]
 
-    try:
-        if strategy_name in {"model_only", "model_to_agent"}:
-            model = model_factory(4)
-            if task and task.get("rotate_strategy") is True:
-                last_provider = task.get("last_provider")
-                if isinstance(last_provider, str) and last_provider and hasattr(model, "avoid_providers"):
-                    model.avoid_providers.add(last_provider)
-            patch = model.ask("release_fix", _context(root, state, stage, blockers))
-            files = patch_check(patch)
-            for item in files:
-                if item["path"].startswith(("test/", "docs/")):
-                    raise StudioError("Release repair may not edit tests or documentation")
-            apply_patch(root, patch)
-            model_calls = model.calls
-            models_used = getattr(model, "models_used", {})
-            providers_used = getattr(model, "providers_used", {})
+    strategies = [preferred]
+    if len(strategies) < MAX_CANDIDATES:
+        for row in selection.get("candidate_ranking", []):
+            name = row.get("strategy")
+            if name in {"model_only", "agent_only", "model_to_agent"} and name not in strategies:
+                if name == "agent_only" and not agents:
+                    continue
+                if name == "model_to_agent" and not agents:
+                    continue
+                strategies.append(name)
+                if len(strategies) >= MAX_CANDIDATES:
+                    break
 
-        if strategy_name in {"agent_only", "model_to_agent"}:
-            agent_evidence = _run_agent(root, blockers, stage)
+    candidates = []
+    for strategy_name in strategies:
+        prior = _strategy_prior(selection, strategy_name)
+        if strategy_name == "model_only":
+            mutate = lambda s=state, st=stage, b=blockers, t=task: _model_mutation(root, s, st, b, t, model_factory)
+        elif strategy_name == "agent_only":
+            mutate = lambda st=stage, b=blockers: _agent_mutation(root, b, st)
+        else:
+            mutate = lambda s=state, st=stage, b=blockers, t=task: _hybrid_mutation(root, s, st, b, t, model_factory)
 
-        journeys = validate_journeys(state.get("product", {}).get("journeys"))
-        sandbox = sandbox_factory(root)
-        passed, logs = sandbox.gates(app_name, journeys)
-        if not passed:
-            raise StudioError(
-                "Release repair failed trusted Flutter gates: " + canonical(logs[-1:])[-4000:]
-            )
-    except BaseException:
-        restore_agent_workspace(root, before_strategy)
+        candidate = run_candidate(
+            root,
+            strategy=strategy_name,
+            strategy_prior_score=prior,
+            mutate=mutate,
+            state=state,
+            app_name=app_name,
+            sandbox_factory=sandbox_factory,
+        )
+        candidates.append(candidate)
         record_strategy_outcome(
             strategy_name,
             stage=stage,
-            success=False,
-            cost_seconds=max(0.0, time.monotonic() - started),
+            success=candidate.get("passed") is True,
+            cost_seconds=float(candidate.get("elapsed_seconds", 0.0)),
         )
-        raise
 
-    changed = validate_agent_delta(root, before_strategy).get("changed", [])
-    if not changed:
-        restore_agent_workspace(root, before_strategy)
-        record_strategy_outcome(
-            strategy_name,
-            success=False,
-            cost_seconds=max(0.0, time.monotonic() - started),
+    winner = select_winner(candidates)
+    if winner is None:
+        raise StudioError(
+            "No isolated release repair candidate passed trusted gates: "
+            + canonical([
+                {
+                    "strategy": item.get("strategy"),
+                    "failure": item.get("failure"),
+                }
+                for item in candidates
+            ])[-4000:]
         )
-        raise StudioError("Release repair strategy produced no source delta")
 
-    elapsed = max(0.0, time.monotonic() - started)
-    record_strategy_outcome(strategy_name, success=True, cost_seconds=elapsed)
+    apply_winner(root, winner)
     return {
         "attempted": True,
         "changed": True,
-        "changed_files": changed,
+        "changed_files": winner.get("changed_files", []),
         "blockers": blockers,
-        "model_calls": model_calls,
-        "models_used": models_used,
-        "providers_used": providers_used,
-        "agent": agent_evidence,
-        "strategy": strategy_name,
-        "strategy_selection": strategy,
-        "strategy_cost_seconds": round(elapsed, 3),
-        "gate_count": len(logs),
+        "model_calls": sum(max(0, int(item.get("model_calls", 0))) for item in candidates),
+        "models_used": winner.get("models_used", {}),
+        "providers_used": winner.get("providers_used", {}),
+        "agent": winner.get("agent"),
+        "strategy": winner.get("strategy"),
+        "strategy_selection": selection,
+        "strategy_cost_seconds": round(sum(float(item.get("elapsed_seconds", 0.0)) for item in candidates), 3),
+        "candidate_search": {
+            "evaluated": len(candidates),
+            "winner": winner.get("strategy"),
+            "candidates": [
+                {
+                    "strategy": item.get("strategy"),
+                    "passed": item.get("passed"),
+                    "candidate_score": item.get("candidate_score"),
+                    "changed_files": item.get("changed_files", []),
+                    "model_calls": item.get("model_calls", 0),
+                    "gate_count": item.get("gate_count", 0),
+                    "elapsed_seconds": item.get("elapsed_seconds", 0.0),
+                    "failure": item.get("failure"),
+                }
+                for item in candidates
+            ],
+        },
+        "gate_count": winner.get("gate_count", 0),
     }
 
 def _restore(root: Path, snapshot: dict[str, bytes | None]) -> None:

@@ -79,6 +79,8 @@ def _clean_project(row: dict) -> dict | None:
         "capacity_paused": paused,
         "stagnation_level": str(row.get("stagnation_level") or "normal"),
         "force_diversify": bool(row.get("force_diversify", False)),
+        "recovery_active": bool(row.get("recovery_active", False)),
+        "recovery_reason": str(row.get("recovery_reason") or ""),
     }
 
 

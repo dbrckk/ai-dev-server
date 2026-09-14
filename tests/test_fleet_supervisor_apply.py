@@ -66,6 +66,28 @@ class FleetSupervisorApplyTests(unittest.TestCase):
         self.assertEqual(statuses["c"], "skipped_quarantine")
         self.assertEqual(report["restarts_executed"], 1)
 
+
+    def test_admission_denial_blocks_supervisor_restart(self):
+        decisions = {"actions": [{"id": "a", "action": "restart"}]}
+        denied = {
+            "admitted": False,
+            "reason": "fleet_admission_slots_saturated",
+        }
+        with patch("fleet_supervisor_apply.plan", return_value=decisions), patch(
+            "fleet_supervisor_apply.matrix", return_value=self._projects()
+        ), patch(
+            "fleet_supervisor_apply._capacity_admission", return_value=denied
+        ), patch("fleet_supervisor_apply._run_project_for_queue") as run:
+            report = fsa.execute("out", "requests", apply=True)
+
+        run.assert_not_called()
+        self.assertEqual(report["results"][0]["status"], "deferred_by_admission")
+        self.assertEqual(
+            report["results"][0]["admission_reason"],
+            "fleet_admission_slots_saturated",
+        )
+
+
     def test_missing_request_is_not_executed(self):
         decisions = {"actions": [{"id": "missing", "action": "restart"}]}
         with patch("fleet_supervisor_apply.plan", return_value=decisions), patch(

@@ -320,5 +320,33 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         self.assertEqual(last["github_workflow_run_id"],99)
         self.assertEqual(last["github_reviewer"],"reviewer-a")
 
+    def test_github_attestation_can_derive_approval_provenance(self):
+        registry=self.registry()
+        plan=dry_run(registry,self.learning(),now=200.0)
+        reinforced=plan.get("risk",{}).get("reinforced_review_required") is True
+        migrated=apply_migration(
+            registry,plan,self.authorize(plan),
+            approval=None,
+            github_attestation=self.github_attestation(plan,reinforced=reinforced),
+            now=300.0,
+        )
+        self.assertEqual(migrated["last_policy_migration"]["reviewer_id"],"reviewer-a")
+
+    def test_manual_approval_identity_must_match_github(self):
+        registry=self.registry()
+        plan=dry_run(registry,self.learning(),now=200.0)
+        reinforced=plan.get("risk",{}).get("reinforced_review_required") is True
+        approval=self.approval(plan,reinforced=reinforced)
+        approval["reviewer"]["id"]="mallory"
+        from architecture_reputation_policy_approval import approval_digest
+        approval["approval_digest"]=approval_digest(approval)
+        with self.assertRaises(ReputationPolicyMigrationError):
+            apply_migration(
+                registry,plan,self.authorize(plan),
+                approval=approval,
+                github_attestation=self.github_attestation(plan,reinforced=reinforced),
+                now=300.0,
+            )
+
 if __name__=="__main__":
     unittest.main()

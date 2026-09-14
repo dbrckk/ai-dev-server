@@ -992,6 +992,11 @@ Objective and current plan:
                             for item in viable
                             if isinstance(item.get("model"),dict) and isinstance(item.get("model",{}).get("model"),str)
                         }
+                        avoided_providers={
+                            item.get("model",{}).get("provider")
+                            for item in viable
+                            if isinstance(item.get("model"),dict) and isinstance(item.get("model",{}).get("provider"),str)
+                        }
                         candidate_review_timeout = bounded_timeout(
                             phase_remaining(
                                 phase_quotas,
@@ -1017,6 +1022,7 @@ Objective and current plan:
                                 code=False,
                                 role="review",
                                 avoid_models=avoided_models,
+                                avoid_providers=avoided_providers,
                                 timeout_seconds=candidate_review_timeout,
                             )
                             if isinstance(candidate_review_model,dict):

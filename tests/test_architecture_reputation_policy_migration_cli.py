@@ -10,6 +10,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 import architecture_replacement_reputation as reputation
 import architecture_reputation_policy_migration_cli as cli
 from architecture_reputation_policy_migration import bind_github_review_target, dry_run
+from replacement_ci_policy import CI_TRUST_POLICY_VERSION, ci_trust_policy_digest
 
 class ReputationPolicyMigrationCLITests(unittest.TestCase):
     def registry(self):
@@ -66,6 +67,8 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
                 "workflow_path":".github/workflows/ci.yml",
                 "workflow_blob_sha":"blob123",
                 "workflow_sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4",
+                "ci_trust_policy_version":CI_TRUST_POLICY_VERSION,
+                "ci_trust_policy_digest":ci_trust_policy_digest(),
             },now=200.0)
             plan=root/"plan.json"; plan.write_text(json.dumps(plan_value))
             auth_value=dict(plan_value["authorization_template"]); auth_value["authorized"]=True
@@ -112,6 +115,8 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
                 "workflow_path":".github/workflows/ci.yml",
                 "workflow_blob_sha":"blob123",
                 "workflow_sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4",
+                "ci_trust_policy_version":CI_TRUST_POLICY_VERSION,
+                "ci_trust_policy_digest":ci_trust_policy_digest(),
             }
             out=root/"bound.json"
             with patch.object(cli,"collect_review_target",return_value=target):

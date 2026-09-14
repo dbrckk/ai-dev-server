@@ -749,6 +749,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     state['project_budget_status'] = budget_status(state)
     state['models_used'] = getattr(model, 'models_used', {})
     state['providers_used'] = getattr(model, 'providers_used', {})
+    state['routing_portfolio'] = getattr(model, 'routing_portfolio', {})
     specialization_state = load_local_model_specialization(local_model_specialization_path)
     state['local_model_specialization'] = local_model_specialization_snapshot(
         specialization_state

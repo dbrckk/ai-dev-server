@@ -103,6 +103,38 @@ class AgentRouterTests(unittest.TestCase):
             paid_code.trace["components"]["contextual_performance"],
         )
 
+    def test_cost_aware_utility_prefers_faster_agent_when_context_quality_is_equal(self):
+        contextual = {
+            "backend": {
+                "agent:free-code": {
+                    "samples": 12,
+                    "successes": 10,
+                    "ema_success_rate": 0.8,
+                },
+                "agent:paid-code": {
+                    "samples": 12,
+                    "successes": 10,
+                    "ema_success_rate": 0.8,
+                },
+            }
+        }
+        with patch("shutil.which", return_value="/bin/tool"):
+            ranked = rank_agents(
+                {"code_editing", "tests"},
+                registry=self.registry,
+                prefer_free=False,
+                contextual_routing=contextual,
+                weighted_contexts=[("backend", 1.0)],
+                execution_seconds={"free-code": 5.0, "paid-code": 90.0},
+                verification_seconds=30.0,
+            )
+        free_code = next(item for item in ranked if item.agent.name == "free-code")
+        paid_code = next(item for item in ranked if item.agent.name == "paid-code")
+        self.assertGreater(
+            free_code.trace["components"]["cost_aware_utility"],
+            paid_code.trace["components"]["cost_aware_utility"],
+        )
+
     def test_opencode_invocation_uses_secret_alias(self):
         env={
             "STUDIO_API_BASE":"https://example.invalid/v1",

@@ -32,6 +32,8 @@ class ApprovalProvenanceTests(unittest.TestCase):
             "repository":"dbrckk/ai-dev-server","commit_sha":"abc","reviewed_commit_sha":"abc",
             "pull_request":42,"workflow_run_id":99,"migration_id":"m1","review_digest":"r1",
             "reviewer":{"login":"alice","review_state":"APPROVED","permission":"write"},
+            "pr_identity":{"number":42,"state":"open","draft":False,"head_ref":"policy/migration","head_sha":"abc","base_ref":"main","author":"author"},
+            "required_checks":{"valid":True,"required_checks":["validate","python-tests"],"passed_checks":["validate","python-tests"],"missing_checks":[],"incomplete_checks":[],"failed_checks":[]},
             "workflow":{"head_sha":"abc","conclusion":"success"},
         }
         if reinforced:a["second_reviewer"]={"login":"bob","review_state":"APPROVED","permission":"maintain"}
@@ -50,5 +52,20 @@ class ApprovalProvenanceTests(unittest.TestCase):
     def test_github_reinforced_requires_distinct_approver(self):
         a=self.github_attestation(True);a["second_reviewer"]["login"]="alice";a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
         with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=True)
+
+    def test_github_attestation_rejects_draft_pr(self):
+        a=self.github_attestation()
+        a["pr_identity"]["draft"]=True
+        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
+        with self.assertRaises(ApprovalProvenanceError):
+            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
+
+    def test_github_attestation_rejects_failed_required_check(self):
+        a=self.github_attestation()
+        a["required_checks"]["valid"]=False
+        a["required_checks"]["failed_checks"]=["validate"]
+        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
+        with self.assertRaises(ApprovalProvenanceError):
+            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
 
 if __name__=="__main__":unittest.main()

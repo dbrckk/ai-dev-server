@@ -45,6 +45,8 @@ class RepairStrategyTests(unittest.TestCase):
 
         self.assertEqual(result["strategy"], "agent_only")
         self.assertEqual(result["evidence_source"], "stage_context")
+        self.assertEqual(result["candidate_ranking"][0]["strategy"], "agent_only")
+        self.assertTrue(result["candidate_ranking"][0]["mature"])
 
     def test_stagnation_rotates_away_from_last_strategy(self):
         result = choose(
@@ -66,6 +68,7 @@ class RepairStrategyTests(unittest.TestCase):
         )
         self.assertEqual(result["strategy"], "model_only")
         self.assertEqual(result["allowed"], ["model_only"])
+        self.assertEqual(result["candidate_ranking"][0]["strategy"], "model_only")
 
 
 if __name__ == "__main__":

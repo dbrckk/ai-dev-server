@@ -54,9 +54,9 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Build Android and render actual Flutter screens without secrets
-          no_output_timeout: 30m
-          command: python3 studio/smoke.py
+          name: Build Android and validate sequential isolated Flutter projects
+          no_output_timeout: 35m
+          command: python3 studio/multi_project_smoke.py
       - store_artifacts:
           path: studio-output
           destination: flutter-smoke

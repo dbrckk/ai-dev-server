@@ -143,17 +143,25 @@ def allocate(
     for project in cleaned:
         weight = _weight(project)
         requested = project["requested_tokens"]
+        stagnation_cap = max(
+            0,
+            int(requested * max(
+                0.0,
+                min(1.0, float(project.get("stagnation_multiplier", 1.0) or 0.0)),
+            )),
+        )
+        max_envelope = min(requested, stagnation_cap)
 
         if project.get("capacity_paused"):
             envelope = 0
             constrained = True
         elif has_unmetered:
-            envelope = requested
-            constrained = False
+            envelope = max_envelope
+            constrained = envelope < requested
         else:
             pool = finite if project["critical"] else ordinary_pool
             fair_share = int(pool * (weight / total_weight))
-            envelope = min(requested, max(0, fair_share))
+            envelope = min(max_envelope, max(0, fair_share))
             constrained = envelope < requested
 
         provider_order = []

@@ -5,7 +5,7 @@ import hashlib
 import os
 from pathlib import Path
 
-from artifact_cas_namespace import project_namespace
+from artifact_cas_namespace import project_namespace, scoped_digest
 from artifact_cas_stats import forget as forget_stats, record as record_stats
 from core import StudioError
 
@@ -35,6 +35,12 @@ def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def stats_digest(digest: str, *, shareable: bool = False) -> str:
+    if shareable:
+        return digest
+    return scoped_digest(_project_id(), digest)
+
+
 def blob_path(digest: str, *, shareable: bool = False) -> Path:
     if (
         not isinstance(digest, str)
@@ -62,7 +68,7 @@ def put(
         if sha256(existing) != digest:
             raise StudioError("Artifact CAS existing blob corrupted")
         record_stats(
-            digest,
+            stats_digest(digest, shareable=shareable),
             size=len(data),
             hit=False,
             rebuild_cost_seconds=rebuild_cost_seconds,
@@ -98,7 +104,7 @@ def get(digest: str, expected_size: int, *, shareable: bool = False) -> bytes:
     data = path.read_bytes()
     if len(data) != expected_size or sha256(data) != digest:
         raise StudioError("Artifact CAS blob verification failed")
-    record_stats(digest, size=len(data), hit=True)
+    record_stats(stats_digest(digest, shareable=shareable), size=len(data), hit=True)
     return data
 
 
@@ -130,7 +136,7 @@ def gc(referenced: set[str], *, shareable: bool = False) -> dict:
                 removed += 1
                 bytes_removed += size
                 if len(digest) == 64:
-                    removed_digests.add(digest)
+                    removed_digests.add(stats_digest(digest, shareable=shareable))
         elif path.is_dir():
             try:
                 path.rmdir()

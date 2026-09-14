@@ -102,6 +102,7 @@ def _apply(
         patch,
         engine="generic",
         architecture_changes_allowed=architecture_changes_allowed,
+        root=root,
     )
     changed = []
     for item in validate_patch(patch):

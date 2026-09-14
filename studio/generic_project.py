@@ -47,8 +47,8 @@ from dependency_graph import assess as assess_dependency_graph, build as build_d
 from dependency_scheduler import hotspot_plan as dependency_hotspot_plan, patch_batch_guard
 from dependency_ledger import DependencyLedgerError, advance as advance_dependency_ledger, load as load_dependency_ledger, new as new_dependency_ledger, resume as resume_dependency_ledger, save as save_dependency_ledger, suggestions as dependency_ledger_suggestions
 from targeted_verify import run as run_targeted_verify
-from objective_dag import ObjectiveDagError, append_amendments as append_objective_amendments, load as load_objective_dag, mark_failed as mark_objective_failed, mark_running as mark_objective_running, mark_verified as mark_objective_verified, new as new_objective_dag, next_task as next_objective_task, reopen_confidence_dependency, resume as resume_objective_dag, save as save_objective_dag, summary as objective_dag_summary, task_context as objective_task_context
-from task_semantic_checkpoint import TaskSemanticCheckpointError, load as load_task_semantic_checkpoint, new as new_task_semantic_checkpoint, record as record_task_semantic_checkpoint, reject_stagnant_surface, resume as resume_task_semantic_checkpoint, retry_policy as task_retry_policy, save as save_task_semantic_checkpoint, stagnation_guard as task_stagnation_guard, task_context as task_semantic_context
+from objective_dag import ObjectiveDagError, append_amendments as append_objective_amendments, invalidate_confidence as invalidate_objective_confidence, load as load_objective_dag, mark_failed as mark_objective_failed, mark_running as mark_objective_running, mark_verified as mark_objective_verified, new as new_objective_dag, next_task as next_objective_task, reopen_confidence_dependency, resume as resume_objective_dag, save as save_objective_dag, summary as objective_dag_summary, task_context as objective_task_context
+from task_semantic_checkpoint import TaskSemanticCheckpointError, affected_verified_tasks, load as load_task_semantic_checkpoint, new as new_task_semantic_checkpoint, record as record_task_semantic_checkpoint, reject_stagnant_surface, resume as resume_task_semantic_checkpoint, retry_policy as task_retry_policy, save as save_task_semantic_checkpoint, stagnation_guard as task_stagnation_guard, task_context as task_semantic_context
 from task_context_bundle import build as build_task_context_bundle
 from task_confidence import score as score_task_confidence
 
@@ -1806,6 +1806,23 @@ Objective and current plan:
         base_sha = repo.publish(base_sha, work, "Autonomous generic project round " + str(round_index))
         if objective_dag is not None and active_task_id:
             task_verified = verification.get("passed") is True and bool(changed)
+            stale_confidence_tasks = []
+            if task_semantic is not None and changed:
+                stale_confidence_tasks = [
+                    task_id for task_id in affected_verified_tasks(
+                        task_semantic,
+                        list(changed),
+                        build_dependency_graph(work),
+                    )
+                    if task_id != active_task_id
+                ]
+                if stale_confidence_tasks:
+                    objective_dag = invalidate_objective_confidence(
+                        objective_dag,
+                        stale_confidence_tasks,
+                    )
+                    round_state["invalidated_task_confidence"] = stale_confidence_tasks
+                    state["invalidated_task_confidence"] = stale_confidence_tasks
             active_task_row_before = next(
                 task for task in objective_dag["tasks"]
                 if task["id"] == active_task_id

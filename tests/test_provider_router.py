@@ -241,6 +241,46 @@ class ProviderRouterTests(unittest.TestCase):
         )
         self.assertEqual([p.name for p in eligible], ["local", "paid"])
 
+    def test_role_specific_model_overrides_default(self):
+        provider = ProviderSpec(
+            "portfolio",
+            "https://example.invalid/v1",
+            "k",
+            "general",
+            code_model="coder",
+            vision_model="vision",
+            role_models={
+                "review": "reviewer",
+                "tests": "test-specialist",
+                "visual": "visual-specialist",
+            },
+        )
+        self.assertEqual(provider.model_for("product"), "general")
+        self.assertEqual(provider.model_for("implementation"), "coder")
+        self.assertEqual(provider.model_for("review"), "reviewer")
+        self.assertEqual(provider.model_for("tests"), "test-specialist")
+        self.assertEqual(provider.model_for("visual", screenshots=True), "visual-specialist")
+
+    def test_json_provider_accepts_role_models(self):
+        config = [{
+            "name": "portfolio",
+            "base": "http://127.0.0.1:9999/v1",
+            "model": "general",
+            "role_models": {
+                "review": "reviewer",
+                "tests": "tester",
+            },
+        }]
+        with patch.dict(
+            os.environ,
+            {"STUDIO_PROVIDERS_JSON": json.dumps(config)},
+            clear=True,
+        ):
+            providers = load_providers()
+        provider = providers[0]
+        self.assertEqual(provider.model_for("review"), "reviewer")
+        self.assertEqual(provider.model_for("tests"), "tester")
+
     def test_vision_candidates_exclude_text_only_provider(self):
         config = [{
             "name": "vision",

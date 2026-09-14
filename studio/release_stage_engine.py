@@ -6,6 +6,7 @@ from core import StudioError
 from release_repair import MAX_RELEASE_REPAIR_ROUNDS, attempt as repair_attempt
 from repair_planner import plan
 from repair_queue import begin_attempt, complete_stage_tasks, enqueue, finish_attempt, summarize
+from project_budget import branch_should_stop, budget_status, can_spend, configure as configure_budget, record_repair_outcome
 
 
 def evaluate_and_repair(
@@ -16,6 +17,7 @@ def evaluate_and_repair(
     stage: str,
     validator,
 ) -> dict:
+    configure_budget(state, req)
     evidence = validator(root, out)
     history = []
     environment_retries = []
@@ -45,8 +47,26 @@ def evaluate_and_repair(
             break
         repair_plan = plan(stage, diagnostics)
         task = enqueue(state, repair_plan, estimated_model_calls=1)
+        if task is not None and branch_should_stop(task):
+            task['status'] = 'exhausted'
+            history.append({
+                'round': round_index + 1,
+                'changed': False,
+                'error': 'repair_branch_efficiency_below_threshold',
+            })
+            break
+        if not can_spend(state, 1, repair=True):
+            history.append({
+                'round': round_index + 1,
+                'changed': False,
+                'error': 'project_repair_budget_exhausted',
+            })
+            if task is not None:
+                task['status'] = 'exhausted'
+            break
         if task is not None:
             begin_attempt(task)
+        blockers_before = len(evidence.get('blockers', []))
         try:
             result = repair_attempt(
                 root,
@@ -59,6 +79,13 @@ def evaluate_and_repair(
         except StudioError as exc:
             if task is not None:
                 finish_attempt(task, success=False, model_calls=0, improved=False)
+            record_repair_outcome(
+                state,
+                success=False,
+                calls=0,
+                blockers_before=blockers_before,
+                blockers_after=blockers_before,
+            )
             history.append({
                 "round": round_index + 1,
                 "changed": False,
@@ -83,6 +110,13 @@ def evaluate_and_repair(
                 improved=result.get("changed") is True,
                 providers_used=result.get("providers_used", {}),
             )
+        record_repair_outcome(
+            state,
+            success=result.get("changed") is True,
+            calls=result.get("model_calls", 0),
+            blockers_before=blockers_before,
+            blockers_after=0 if result.get("changed") is True else blockers_before,
+        )
         if result.get("changed") is not True:
             break
         evidence = {
@@ -105,6 +139,7 @@ def evaluate_and_repair(
             estimated_model_calls=1 if evidence["repair_plan"].get("action") == "repair_code" else 0,
         )
     evidence["repair_queue"] = summarize(state)
+    evidence["project_budget"] = budget_status(state)
     evidence["environment_retry"] = {
         "attempted": bool(environment_retries),
         "retries": environment_retries,

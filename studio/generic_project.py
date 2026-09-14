@@ -52,6 +52,7 @@ from task_semantic_checkpoint import TaskSemanticCheckpointError, affected_verif
 from task_context_bundle import build as build_task_context_bundle
 from task_confidence import score as score_task_confidence
 from task_proof_bundle import TaskProofError, build as build_task_proof, filename as task_proof_filename, save as save_task_proof
+from release_proof_manifest import ReleaseProofError, build as build_release_proof, save as save_release_proof
 from release_confidence import assess as assess_release_confidence
 from task_acceptance import accepted as task_acceptance_passed, failure_reason as task_acceptance_failure_reason
 from done_when_evaluator import apply_causality as apply_done_when_causality, baseline_static as baseline_done_when_static, evaluate as evaluate_done_when
@@ -559,6 +560,25 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
                         cost_controller.record_review(duration)
                     state["final_objective_review"] = final_review
                     if final_review.get("complete") is True:
+                        try:
+                            release_proof = build_release_proof(
+                                proof_dir=out / ".autonomy" / "proofs",
+                                project_id=req["id"],
+                                objective_dag=objective_dag,
+                                release_commit=base_sha,
+                            )
+                            release_proof_path = out / ".autonomy" / "release-proof.json"
+                            save_release_proof(release_proof_path, release_proof)
+                            state["release_proof"] = {
+                                "path": ".autonomy/release-proof.json",
+                                "sha256": release_proof["sha256"],
+                                "task_count": release_proof["task_count"],
+                                "release_commit": base_sha,
+                            }
+                        except (ReleaseProofError, OSError) as exc:
+                            state["status"] = "release_proof_blocked"
+                            state["release_proof_error"] = str(exc)
+                            break
                         checkpoint = advance_checkpoint(
                             checkpoint,
                             base_sha=base_sha,
@@ -2295,6 +2315,10 @@ Objective and current plan:
     elif state.get("status") == "release_confidence_blocked":
         deferred_blockers = [
             str(state.get("release_confidence_error") or "release confidence requirement blocked")
+        ]
+    elif state.get("status") == "release_proof_blocked":
+        deferred_blockers = [
+            str(state.get("release_proof_error") or "release proof manifest requirement blocked")
         ]
     else:
         deferred_blockers = ["verified work remains"]

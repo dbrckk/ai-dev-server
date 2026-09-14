@@ -66,6 +66,9 @@ def choose_schedule(
 ) -> PortfolioSchedule:
     confidence = max(0.0, min(1.0, float(route_confidence or 0.0)))
     uncertainty = 1.0 - confidence
+    available_agents = max(0, int(available_agents))
+    available_models = max(0, int(available_models))
+    available_candidate_count = available_agents + available_models
     capacity = _free_capacity(capacity_status)
     verification = max(0.0, float(verification_seconds or 0.0))
     verification_pressure = min(1.0, verification / 300.0)
@@ -89,13 +92,11 @@ def choose_schedule(
         and capacity >= 0.80
         and verification <= 120.0
         and enough_time_for_three
-        and available_agents >= 2
+        and available_candidate_count >= 3
     ):
         candidate_limit = 3
         reason = "high uncertainty, abundant free capacity, cheap verification"
 
-    available_agents = max(0, int(available_agents))
-    available_models = max(0, int(available_models))
     include_model = strategy != "agent_only" and available_models > 0
 
     if recommended_width is not None:

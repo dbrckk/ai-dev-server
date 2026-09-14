@@ -465,6 +465,9 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
                 "transition_pending":persisted_reputation.get("transition_pending") is True,
                 "eligible_at":persisted_reputation.get("eligible_at"),
                 "new_effective_samples_since_recovery":persisted_reputation.get("new_effective_samples_since_recovery"),
+                "transition_policy_version":persisted_reputation.get("transition_policy_version"),
+                "transition_rule":persisted_reputation.get("transition_rule"),
+                "required_transition_gates":persisted_reputation.get("required_transition_gates",[]),
                 "updated_at":persisted_reputation.get("updated_at"),
                 "source":"persistent_registry",
             }
@@ -544,6 +547,11 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             gates.insert(0,"recovering_replacement_revalidated")
         if reputation.get("transition_pending") is True:
             gates.insert(0,"replacement_reputation_transition_completed")
+        transition_gates=reputation.get("required_transition_gates")
+        if isinstance(transition_gates,list):
+            for gate in reversed(transition_gates):
+                if isinstance(gate,str) and gate and gate not in gates:
+                    gates.insert(0,gate)
         if row.get("maintenance_evidence_available") is not True:
             gates.insert(0, "maintenance_evidence_completed")
 
@@ -598,7 +606,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
     ),reverse=True)
 
     return {
-        "version": 15,
+        "version": 16,
         "status": "planned",
         "advisory_only": True,
         "replacement_plans": plans,

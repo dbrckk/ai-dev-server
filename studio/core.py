@@ -342,7 +342,17 @@ class Model:
                             raise StudioError('Repair roles may not edit tests or documentation')
                     elif role in ('review', 'visual'):
                         verdict(value)
-                    return value
+                    if local_rep_path is not None and selected_provider_spec is not None and selected_provider_spec.unmetered and ':' in selected_provider_spec.name:
+                record_local_model_reputation(
+                    local_rep_path,
+                    provider=selected_provider_spec.name.split(':', 1)[0],
+                    model=selected_model,
+                    role=role,
+                    success=True,
+                    latency_seconds=elapsed if 'elapsed' in locals() else 0.0,
+                    protocol_failure=False,
+                )
+            return value
                 except (ValueError, StudioError) as e:
                     error = str(e)
             if attempt or self.calls >= self.limit:
@@ -371,6 +381,11 @@ class Model:
             quota_status as provider_quota_status,
             record as record_provider_monthly_quota,
         )
+        from local_model_reputation import (
+            load as load_local_model_reputation,
+            record as record_local_model_reputation,
+            score as local_model_reputation_score,
+        )
         provider_candidates = tuple(
             provider for provider in candidates_for(role, screenshots=bool(screenshots), providers=self.providers)
             if provider.name not in self.avoid_providers
@@ -385,8 +400,11 @@ class Model:
         cost_path = Path(cost_raw) if cost_raw else None
         quota_raw = os.environ.get('STUDIO_PROVIDER_MONTHLY_QUOTA_PATH', '')
         quota_path = Path(quota_raw) if quota_raw else None
+        local_rep_raw = os.environ.get('STUDIO_LOCAL_MODEL_REPUTATION_PATH', '')
+        local_rep_path = Path(local_rep_raw) if local_rep_raw else None
         provider_costs = load_provider_cost(cost_path) if cost_path is not None else {}
         quota_data = load_provider_monthly_quota(quota_path) if quota_path is not None else {'schema': 1, 'months': {}}
+        local_model_reputation = load_local_model_reputation(local_rep_path) if local_rep_path is not None else {}
         try:
             max_api_cost_usd = float(os.environ.get('STUDIO_MAX_API_COST_USD', '0') or 0.0)
         except ValueError:
@@ -433,6 +451,13 @@ class Model:
                 weights=weights,
             )
             components = dict(trace.components)
+            if provider.unmetered and ':' in provider.name:
+                components['local_model_reputation'] = local_model_reputation_score(
+                    local_model_reputation,
+                    provider=provider.name.split(':', 1)[0],
+                    model=provider.model_for(role, bool(screenshots)),
+                    role=role,
+                )
             if provider.unmetered:
                 components['unmetered_capacity'] = 10.0
             elif provider.monthly_token_quota > 0:
@@ -484,6 +509,16 @@ class Model:
                 responded = True
             except (APIError, StudioError) as exc:
                 elapsed = time.monotonic() - started
+                if local_rep_path is not None and provider.unmetered and ':' in provider.name:
+                    record_local_model_reputation(
+                        local_rep_path,
+                        provider=provider.name.split(':', 1)[0],
+                        model=selected_model,
+                        role=role,
+                        success=False,
+                        latency_seconds=elapsed,
+                        protocol_failure=False,
+                    )
                 if metrics_path is not None:
                     record_provider_latency(metrics_path, provider.name, role, elapsed)
                 if health_path is not None:
@@ -537,6 +572,16 @@ class Model:
             raise StudioError('All configured providers are unavailable') from None
         try:
             if not isinstance(r, dict) or not isinstance(r.get('choices'), list) or not r['choices']:
+                if local_rep_path is not None and selected_provider_spec is not None and selected_provider_spec.unmetered and ':' in selected_provider_spec.name:
+                    record_local_model_reputation(
+                        local_rep_path,
+                        provider=selected_provider_spec.name.split(':', 1)[0],
+                        model=selected_model,
+                        role=role,
+                        success=False,
+                        latency_seconds=0.0,
+                        protocol_failure=True,
+                    )
                 raise ProtocolError('Provider returned invalid completion envelope')
             choice = r['choices'][0]
             if not isinstance(choice, dict) or not isinstance(choice.get('message'), dict):

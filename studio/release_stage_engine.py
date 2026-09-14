@@ -42,7 +42,9 @@ def evaluate_and_repair(
         if diagnostics["human_or_external"] or diagnostics["prerequisite"] or diagnostics["code"]:
             break
         selected = scheduler_select(state)
-        if initial_task is None or selected is None or selected.get("id") != initial_task.get("id"):
+        if initial_task is None:
+            break
+        if selected is not None and selected.get("id") != initial_task.get("id"):
             break
         if initial_task.get("status") in {"pending", "retry"}:
             begin_attempt(initial_task)
@@ -77,7 +79,9 @@ def evaluate_and_repair(
         ):
             task = enqueue(state, repair_plan, estimated_model_calls=MAX_MODEL_CALLS_PER_BRANCH)
         selected = scheduler_select(state)
-        if task is None or selected is None or selected.get("id") != task.get("id"):
+        if task is None or (
+            selected is not None and selected.get("id") != task.get("id")
+        ):
             history.append({
                 "round": round_index + 1,
                 "changed": False,

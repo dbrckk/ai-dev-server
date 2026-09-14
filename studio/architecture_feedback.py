@@ -36,6 +36,7 @@ def apply(recommendations: dict, learning: dict | None) -> dict:
     evidence = _learning_map(learning or {})
 
     adjusted = []
+    applied_count = 0
     for row in rows:
         if not isinstance(row, dict):
             continue
@@ -47,6 +48,7 @@ def apply(recommendations: dict, learning: dict | None) -> dict:
 
         bonus = 0.0
         if history is not None:
+            applied_count += 1
             success_rate = max(0.0, min(1.0, float(history["success_rate"])))
             centered = (success_rate - 0.5) * 2.0
             bonus = max(-MAX_SCORE_BONUS, min(MAX_SCORE_BONUS, centered * MAX_SCORE_BONUS))
@@ -70,7 +72,8 @@ def apply(recommendations: dict, learning: dict | None) -> dict:
     )
     result = dict(recommendations)
     result["matches"] = adjusted
-    result["feedback_applied"] = bool(evidence)
+    result["feedback_applied"] = applied_count > 0
+    result["feedback_rows_applied"] = applied_count
     result["feedback_policy"] = {
         "minimum_samples": MIN_SAMPLES,
         "max_score_bonus": MAX_SCORE_BONUS,

@@ -49,6 +49,15 @@ def collect(plan: dict, *, token: str, repository: str, pull_request: int) -> di
             if isinstance(permission,str):
                 permissions[login]=permission
 
+        checks_response=_request(api+f"/commits/{commit_sha}/check-runs?per_page=100",token)
+        check_runs=(
+            checks_response.get("check_runs")
+            if isinstance(checks_response,dict) and isinstance(checks_response.get("check_runs"),list)
+            else None
+        )
+        if check_runs is None:
+            raise GitHubAttestationCollectionError("check runs malformed")
+
         query=urllib.parse.urlencode({
             "head_sha":commit_sha,
             "event":"pull_request",
@@ -65,6 +74,18 @@ def collect(plan: dict, *, token: str, repository: str, pull_request: int) -> di
 
         risk=plan.get("risk") if isinstance(plan,dict) and isinstance(plan.get("risk"),dict) else {}
         reinforced=risk.get("reinforced_review_required") is True
+        head=pr.get("head") if isinstance(pr.get("head"),dict) else {}
+        base=pr.get("base") if isinstance(pr.get("base"),dict) else {}
+        user=pr.get("user") if isinstance(pr.get("user"),dict) else {}
+        pr_identity={
+            "number":pull_request,
+            "state":pr.get("state"),
+            "draft":pr.get("draft") is True,
+            "head_ref":head.get("ref"),
+            "head_sha":head.get("sha"),
+            "base_ref":base.get("ref"),
+            "author":user.get("login"),
+        }
         return build(
             plan,
             repository=repository,
@@ -73,6 +94,8 @@ def collect(plan: dict, *, token: str, repository: str, pull_request: int) -> di
             reviews=reviews,
             permissions=permissions,
             workflow_runs=workflow_runs,
+            check_runs=check_runs,
+            pr_identity=pr_identity,
             reinforced=reinforced,
         )
     except ReplacementPersistenceError as exc:

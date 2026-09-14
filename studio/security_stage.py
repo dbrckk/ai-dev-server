@@ -9,6 +9,7 @@ from completion import apply_completion, next_stage
 from core import StudioError, canonical
 from run import GitHub
 from security_audit import build_security_package
+from security_remediation import MAX_REMEDIATION_ROUNDS, remediate, remediation_candidate
 
 
 def advance(request_path: Path, root: Path, out: Path) -> dict:
@@ -22,7 +23,28 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
         report_path.write_text(canonical(state))
         return state
 
+    remediation_history = []
     evidence = build_security_package(root, out)
+    for round_index in range(MAX_REMEDIATION_ROUNDS):
+        if evidence.get('passed') is True or evidence.get('human_review_required') is True:
+            break
+        if not remediation_candidate(evidence):
+            break
+        result = remediate(root, evidence)
+        remediation_history.append({
+            'round': round_index + 1,
+            'changed': result.get('changed') is True,
+            'actions': list(result.get('actions', [])),
+        })
+        if result.get('changed') is not True:
+            break
+        evidence = build_security_package(root, out)
+    evidence['auto_remediation'] = {
+        'attempted': bool(remediation_history),
+        'rounds': remediation_history,
+        'max_rounds': MAX_REMEDIATION_ROUNDS,
+        'converged': evidence.get('passed') is True,
+    }
     state.setdefault('release_evidence', {})['security_scan'] = evidence
     state.pop('human_action', None)
     if state.get('status') == 'human_action_required':

@@ -12,13 +12,19 @@ class TaskAcceptanceTests(unittest.TestCase):
         task={"title":"api","done_when":["endpoint returns 200"]}
         review={
             "complete":True,
-            "criteria":[{"criterion":"endpoint returns 200","passed":True,"evidence":"integration test passed"}],
+            "criteria":[{
+                "criterion":"endpoint returns 200",
+                "passed":True,
+                "evidence":"integration test passed",
+                "evidence_refs":["tests/test_api.py"],
+            }],
         }
         self.assertTrue(accepted(
             verification={"passed":True},
             review=review,
             changed_files=["src/api.py"],
             active_task=task,
+            allowed_evidence_refs=["src/api.py","tests/test_api.py"],
         ))
 
     def test_green_tests_without_task_review_do_not_verify_task(self):
@@ -72,6 +78,51 @@ class TaskAcceptanceTests(unittest.TestCase):
             review=review,
             active_task=task,
         ))
+
+    def test_unknown_evidence_ref_rejects_task(self):
+        task={"title":"api","done_when":["returns 200"]}
+        review={
+            "complete":True,
+            "criteria":[{
+                "criterion":"returns 200",
+                "passed":True,
+                "evidence":"claimed evidence",
+                "evidence_refs":["imaginary/test.py"],
+            }],
+        }
+        evidence=criteria_evidence(
+            task,
+            review,
+            allowed_evidence_refs=["src/api.py","tests/test_api.py"],
+        )
+        self.assertFalse(evidence["complete"])
+        self.assertEqual(evidence["invalid_refs"][0]["ref"],"imaginary/test.py")
+        self.assertFalse(accepted(
+            verification={"passed":True},
+            review=review,
+            changed_files=["src/api.py"],
+            active_task=task,
+            allowed_evidence_refs=["src/api.py","tests/test_api.py"],
+        ))
+
+    def test_passed_criterion_without_ref_is_rejected(self):
+        task={"title":"api","done_when":["returns 200"]}
+        review={
+            "complete":True,
+            "criteria":[{
+                "criterion":"returns 200",
+                "passed":True,
+                "evidence":"no concrete ref",
+                "evidence_refs":[],
+            }],
+        }
+        evidence=criteria_evidence(
+            task,
+            review,
+            allowed_evidence_refs=["src/api.py"],
+        )
+        self.assertEqual(evidence["missing_refs"],["returns 200"])
+        self.assertFalse(evidence["complete"])
 
     def test_review_cannot_override_failed_verification(self):
         self.assertFalse(accepted(

@@ -96,8 +96,9 @@ Judge only whether the provided active_task is fully satisfied by the repository
 Treat active_task.done_when as the authoritative task acceptance contract.
 Do not require unrelated future DAG tasks to be complete.
 Tests passing is necessary evidence but is not sufficient if the active task's requested behavior is still missing.
-Return ONLY JSON {"complete":true|false,"criteria":[{"criterion":"exact done_when text","passed":true|false,"evidence":"specific repository/test evidence"}],"remaining":["task-specific missing work"],"reason":"..."}.
-Every active_task.done_when item MUST appear exactly once in criteria."""
+Return ONLY JSON {"complete":true|false,"criteria":[{"criterion":"exact done_when text","passed":true|false,"evidence":"specific repository/test evidence","evidence_refs":["exact path from allowed_evidence_refs"]}],"remaining":["task-specific missing work"],"reason":"..."}.
+Every active_task.done_when item MUST appear exactly once in criteria.
+Every passed criterion MUST cite at least one exact allowed_evidence_refs entry and MUST NOT invent refs."""
 
 
 def _snapshot(root: Path, limit_bytes: int = 420_000) -> dict:
@@ -1566,6 +1567,14 @@ Objective and current plan:
             last_verification=verification,
         )
         save_checkpoint(checkpoint_path, checkpoint)
+        allowed_task_evidence_refs = sorted(set(
+            [str(item) for item in changed if item]
+            + [
+                str(item)
+                for item in targeted_impact.get("impacted_tests", [])
+                if item
+            ]
+        ))
         review_context = {
             "brief": req["brief"],
             "plan": plan,
@@ -1574,6 +1583,7 @@ Objective and current plan:
             "verification": verification,
             "repository": _snapshot(work, 300_000),
             "review_scope": "task" if active_task_id else "objective",
+            "allowed_evidence_refs": allowed_task_evidence_refs,
         }
         review_started = clock()
         review_remaining = phase_remaining(
@@ -1858,6 +1868,7 @@ Objective and current plan:
                 review=review,
                 changed_files=list(changed),
                 active_task=plan.get("active_task"),
+                allowed_evidence_refs=allowed_task_evidence_refs,
             )
             stale_confidence_tasks = []
             if task_semantic is not None and changed:
@@ -1907,6 +1918,7 @@ Objective and current plan:
                         verification=verification,
                         review=review,
                         active_task=plan.get("active_task"),
+                        allowed_evidence_refs=allowed_task_evidence_refs,
                     ),
                 )
             save_objective_dag(objective_dag_path, objective_dag)

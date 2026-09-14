@@ -81,6 +81,22 @@ class ReleaseProofManifestTests(unittest.TestCase):
                     release_commit="c"*40,
                 )
 
+    def test_changed_project_evidence_blocks_release(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            proof_dir,_=self._write_task_proof(root,"core","a"*40)
+            project=root/"project"
+            (project/"core.py").write_text("x=2\n")
+            dag={"tasks":[{"id":"core","state":"verified","last_commit":"a"*40}]}
+            with self.assertRaisesRegex(ReleaseProofError,"evidence invalid: core"):
+                build(
+                    proof_dir=proof_dir,
+                    project_id="demo",
+                    objective_dag=dag,
+                    release_commit="c"*40,
+                    project_root=project,
+                )
+
     def test_tampered_task_proof_blocks_release(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td)

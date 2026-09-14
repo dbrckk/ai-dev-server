@@ -7,7 +7,7 @@ import os
 import tempfile
 from pathlib import Path
 
-from task_proof_bundle import TaskProofError, filename as task_proof_filename, load as load_task_proof
+from task_proof_bundle import TaskProofError, filename as task_proof_filename, load as load_task_proof, verify_evidence_files
 
 VERSION=1
 
@@ -27,7 +27,7 @@ def _seal(value: dict) -> dict:
     return item
 
 
-def build(*, proof_dir: Path, project_id: str, objective_dag: dict, release_commit: str) -> dict:
+def build(*, proof_dir: Path, project_id: str, objective_dag: dict, release_commit: str, project_root: Path | None = None) -> dict:
     if not isinstance(project_id,str) or not project_id.strip():
         raise ReleaseProofError("release proof project invalid")
     if not isinstance(release_commit,str) or len(release_commit)!=40:
@@ -56,6 +56,11 @@ def build(*, proof_dir: Path, project_id: str, objective_dag: dict, release_comm
             proof=load_task_proof(proof_path)
         except TaskProofError as exc:
             raise ReleaseProofError("release task proof invalid: "+task_id+": "+str(exc)) from None
+        if project_root is not None:
+            try:
+                verify_evidence_files(proof,project_root)
+            except TaskProofError as exc:
+                raise ReleaseProofError("release task proof evidence invalid: "+task_id+": "+str(exc)) from None
         if proof.get("project_id")!=project_id:
             raise ReleaseProofError("release task proof project mismatch: "+task_id)
         if proof.get("commit")!=commit:

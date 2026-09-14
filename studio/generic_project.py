@@ -52,7 +52,7 @@ from task_semantic_checkpoint import TaskSemanticCheckpointError, affected_verif
 from task_context_bundle import build as build_task_context_bundle
 from task_confidence import score as score_task_confidence
 from task_proof_bundle import TaskProofError, build as build_task_proof, filename as task_proof_filename, save as save_task_proof
-from release_proof_manifest import ReleaseProofError, build as build_release_proof, save as save_release_proof
+from release_proof_manifest import ReleaseProofError, build as build_release_proof, load as load_release_proof, save as save_release_proof
 from release_confidence import assess as assess_release_confidence
 from task_acceptance import accepted as task_acceptance_passed, failure_reason as task_acceptance_failure_reason
 from done_when_evaluator import apply_causality as apply_done_when_causality, baseline_static as baseline_done_when_static, evaluate as evaluate_done_when
@@ -276,6 +276,43 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         "portfolio_research": (portfolio or {}).get("similar", [])[:8],
         "toolchain": detect_toolchain(work),
     }
+
+    if checkpoint.get("phase") == "complete" and objective_dag is not None:
+        release_proof_path = out / ".autonomy" / "release-proof.json"
+        try:
+            persisted_release_proof = load_release_proof(release_proof_path)
+            rebuilt_release_proof = build_release_proof(
+                proof_dir=out / ".autonomy" / "proofs",
+                project_id=req["id"],
+                objective_dag=objective_dag,
+                release_commit=base_sha,
+                project_root=work,
+            )
+            if persisted_release_proof.get("sha256") != rebuilt_release_proof.get("sha256"):
+                raise ReleaseProofError("release proof does not match rebuilt task evidence")
+            if persisted_release_proof.get("release_commit") != base_sha:
+                raise ReleaseProofError("release proof commit does not match authoritative Git head")
+            state["status"] = "complete"
+            state["objective_dag"] = objective_dag_summary(objective_dag)
+            state["release_proof"] = {
+                "path": ".autonomy/release-proof.json",
+                "sha256": persisted_release_proof["sha256"],
+                "task_count": persisted_release_proof["task_count"],
+                "release_commit": base_sha,
+                "revalidated_on_resume": True,
+            }
+            state["checkpoint_commit"] = base_sha
+            return {
+                "status": "complete",
+                "report": {
+                    **state,
+                    "completion": {"finished": True, "next_stage": None, "blockers": []},
+                    "release_status": "verified_project_complete",
+                },
+                "next_stage": None,
+            }
+        except (ReleaseProofError, OSError):
+            state["resume_release_proof_invalid"] = True
 
     bootstrap_evidence = []
     for command in bootstrap_commands(work):
@@ -566,6 +603,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
                                 project_id=req["id"],
                                 objective_dag=objective_dag,
                                 release_commit=base_sha,
+                                project_root=work,
                             )
                             release_proof_path = out / ".autonomy" / "release-proof.json"
                             save_release_proof(release_proof_path, release_proof)

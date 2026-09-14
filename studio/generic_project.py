@@ -17,6 +17,7 @@ from run import GitHub
 from project_recommendations import recommend
 from learning_context import load_context
 from agents.router import rank_agents
+from agents.registry import DEFAULT_REGISTRY
 from agents.performance import load as load_agent_performance, bonus as agent_bonus, record as record_agent_performance
 from agents.orchestrator import execute as execute_agent, execute_named as execute_named_agent, ranked_agent_names, routing_trace_for
 from agents.workspace import snapshot as snapshot_agent_workspace, validate_delta as validate_agent_delta, restore as restore_agent_workspace
@@ -294,7 +295,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         agent_perf = load_agent_performance(out/".autonomy/agent-performance.json")
         safe_rewrite_summary = summarize_safe_rewrite_learning(safe_rewrite_learning_path)
         agent_execution_seconds = {}
-        for agent_name in {spec.name for spec in __import__("studio.agents.registry", fromlist=["DEFAULT_REGISTRY"]).DEFAULT_REGISTRY.all()}:
+        for agent_name in {spec.name for spec in DEFAULT_REGISTRY.all()}:
             row = agent_perf.get(agent_name + ":implementation")
             if isinstance(row, dict) and int(row.get("runs", 0) or 0) > 0:
                 agent_execution_seconds[agent_name] = (

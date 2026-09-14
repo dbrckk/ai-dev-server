@@ -78,10 +78,10 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
             attestation=build(
                 plan_value,repository="dbrckk/ai-dev-server",pull_request=7,commit_sha="a"*40,
                 reviews=reviews,permissions=permissions,
-                workflow_runs=[{"id":9,"head_sha":"a"*40,"conclusion":"success","name":"CI"}],
+                workflow_runs=[{"id":9,"head_sha":"a"*40,"conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:25Z"}],
                 check_runs=[
-                    {"name":"validate","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/9"},
-                    {"name":"python-tests","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/9"},
+                    {"id":11,"name":"validate","head_sha":"a"*40,"status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:30Z","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/9"},
+                    {"id":12,"name":"python-tests","head_sha":"a"*40,"status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:40Z","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/9"},
                 ],
                 pr_identity={"number":7,"state":"open","draft":False,"head_ref":"policy/migration","head_sha":"a"*40,"base_ref":"main","author":"alice"},
                 head_commit_timestamp=1767225600.0,

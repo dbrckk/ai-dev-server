@@ -15,6 +15,7 @@ from architecture_evaluator import write as write_architecture_evaluation
 from architecture_benchmark import write as write_architecture_benchmark
 from architecture_obsolescence import write as write_architecture_obsolescence
 from architecture_learning import summarize as summarize_architecture_learning, root_for_output as architecture_learning_root
+from repo_maintenance import probe as probe_repo_maintenance
 
 def _recommendation_context(request_path):
     try:
@@ -53,7 +54,9 @@ def _evaluate_architecture(report,project_out):
     recommendations=_load_recommendations(project_out)
     benchmark=write_architecture_benchmark(decision,evaluation,recommendations,project_out)
     learning=summarize_architecture_learning(architecture_learning_root(project_out))
-    obsolescence=write_architecture_obsolescence(learning,benchmark,recommendations,project_out)
+    current_repos=[x.get('current_repo') for x in benchmark.get('comparisons',[]) if isinstance(x,dict) and isinstance(x.get('current_repo'),str)]
+    maintenance=probe_repo_maintenance(current_repos)
+    obsolescence=write_architecture_obsolescence(learning,benchmark,recommendations,project_out,maintenance=maintenance)
     report['architecture_evaluation']=evaluation
     report['architecture_benchmark']=benchmark
     report['architecture_obsolescence']=obsolescence

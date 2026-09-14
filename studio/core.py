@@ -547,18 +547,38 @@ class Sandbox:
         self.native_files = {p.relative_to(self.root).as_posix(): p.read_bytes()
                              for folder in ('android', 'ios') for p in (self.root / folder).rglob('*')
                              if p.is_file() and not p.is_symlink() and p.name != 'local.properties'}
+    def quick_dependency_gate(self):
+        args = ['flutter', 'pub', 'get']
+        print('Quick dependency gate: ' + ' '.join(args), flush=True)
+        rc, out = self.run(args, network=True, timeout=600)
+        log = {'command': args, 'exit_code': rc, 'output': out}
+        return rc == 0, [log]
+
+    def quick_analyze_gate(self):
+        args = ['flutter', 'analyze', '--no-pub']
+        print('Quick analyze gate: ' + ' '.join(args), flush=True)
+        rc, out = self.run(args, network=False, timeout=600)
+        log = {'command': args, 'exit_code': rc, 'output': out}
+        return rc == 0, [log]
+
+    def quick_test_gate(self):
+        args = ['flutter', 'test', '--no-pub', '--exclude-tags=studio-visual']
+        print('Quick test gate: ' + ' '.join(args), flush=True)
+        rc, out = self.run(args, network=False, timeout=600)
+        log = {'command': args, 'exit_code': rc, 'output': out}
+        return rc == 0, [log]
+
     def quick_gates(self):
-        """Cheap intermediate validation used to prune repair branches early."""
+        """Compatibility wrapper over progressive intermediate gates."""
         logs = []
-        for args, network in [
-            (['flutter', 'pub', 'get'], True),
-            (['flutter', 'analyze', '--no-pub'], False),
-            (['flutter', 'test', '--no-pub', '--exclude-tags=studio-visual'], False),
-        ]:
-            print('Quick gate: ' + ' '.join(args), flush=True)
-            rc, out = self.run(args, network=network, timeout=600)
-            logs.append({'command': args, 'exit_code': rc, 'output': out})
-            if rc:
+        for gate in (
+            self.quick_dependency_gate,
+            self.quick_analyze_gate,
+            self.quick_test_gate,
+        ):
+            passed, gate_logs = gate()
+            logs.extend(gate_logs)
+            if not passed:
                 return False, logs
         return True, logs
 

@@ -621,6 +621,21 @@ class Model:
                     success=True,
                     duration_seconds=elapsed,
                 )
+            if (
+                local_rep_path is not None
+                and selected_provider_spec is not None
+                and selected_provider_spec.unmetered
+                and ':' in selected_provider_spec.name
+            ):
+                record_local_model_reputation(
+                    local_rep_path,
+                    provider=selected_provider_spec.name.split(':', 1)[0],
+                    model=selected_model,
+                    role=role,
+                    success=True,
+                    latency_seconds=elapsed,
+                    protocol_failure=False,
+                )
             return value
         except ProtocolError:
             if health_path is not None and selected_provider is not None:

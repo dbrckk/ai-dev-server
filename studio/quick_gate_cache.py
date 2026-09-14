@@ -23,10 +23,34 @@ def delta_hash(files: list[dict]) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
-def cache_key(delta_digest: str, gate: str, targets: list[str] | None = None) -> str:
+def workspace_hash(snapshot: dict[str, str]) -> str:
+    raw = json.dumps(
+        sorted(
+            [
+                {"path": path, "content": content}
+                for path, content in snapshot.items()
+                if isinstance(path, str) and isinstance(content, str)
+            ],
+            key=lambda item: item["path"],
+        ),
+        sort_keys=True,
+        ensure_ascii=False,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def cache_key(
+    delta_digest: str,
+    gate: str,
+    targets: list[str] | None = None,
+    *,
+    workspace_digest: str = "",
+) -> str:
     raw = json.dumps(
         {
             "delta": delta_digest,
+            "workspace": workspace_digest,
             "gate": gate,
             "targets": sorted(targets or []),
         },

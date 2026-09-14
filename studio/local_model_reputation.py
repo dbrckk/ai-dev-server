@@ -34,6 +34,15 @@ def load(path: Path) -> dict:
             protocol_failures = max(0, int(row.get("protocol_failures", 0)))
             ema_success = max(0.0, min(1.0, float(row.get("ema_success", 0.0))))
             ema_latency = max(0.0, float(row.get("ema_latency_seconds", 0.0)))
+            verified_samples = max(0, int(row.get("verified_samples", 0)))
+            verified_successes = min(
+                verified_samples,
+                max(0, int(row.get("verified_successes", 0))),
+            )
+            ema_verified = max(
+                0.0,
+                min(1.0, float(row.get("ema_verified_success", 0.0))),
+            )
         except (TypeError, ValueError):
             continue
         clean[key] = {
@@ -42,6 +51,9 @@ def load(path: Path) -> dict:
             "protocol_failures": protocol_failures,
             "ema_success": ema_success,
             "ema_latency_seconds": ema_latency,
+            "verified_samples": verified_samples,
+            "verified_successes": verified_successes,
+            "ema_verified_success": ema_verified,
         }
     return clean
 
@@ -82,6 +94,9 @@ def record(
         "protocol_failures": 0,
         "ema_success": 0.0,
         "ema_latency_seconds": 0.0,
+        "verified_samples": 0,
+        "verified_successes": 0,
+        "ema_verified_success": 0.0,
     })
     samples = int(row["samples"])
     observed = 1.0 if success else 0.0
@@ -96,7 +111,46 @@ def record(
         "protocol_failures": int(row["protocol_failures"]) + int(protocol_failure),
         "ema_success": ema_success,
         "ema_latency_seconds": ema_latency,
+        "verified_samples": int(row.get("verified_samples", 0)),
+        "verified_successes": int(row.get("verified_successes", 0)),
+        "ema_verified_success": float(row.get("ema_verified_success", 0.0)),
     }
+    _save(path, data)
+    return data
+
+
+def record_verified_outcome(
+    path: Path,
+    *,
+    provider: str,
+    model: str,
+    role: str,
+    verified_success: bool,
+) -> dict:
+    data = load(path)
+    key = _key(provider, model, role)
+    row = data.get(key, {
+        "samples": 0,
+        "successes": 0,
+        "protocol_failures": 0,
+        "ema_success": 0.0,
+        "ema_latency_seconds": 0.0,
+        "verified_samples": 0,
+        "verified_successes": 0,
+        "ema_verified_success": 0.0,
+    })
+    verified_samples = int(row.get("verified_samples", 0))
+    observed = 1.0 if verified_success else 0.0
+    previous = float(row.get("ema_verified_success", 0.0))
+    ema_verified = (
+        observed
+        if verified_samples == 0
+        else ALPHA * observed + (1.0 - ALPHA) * previous
+    )
+    row["verified_samples"] = verified_samples + 1
+    row["verified_successes"] = int(row.get("verified_successes", 0)) + int(verified_success)
+    row["ema_verified_success"] = ema_verified
+    data[key] = row
     _save(path, data)
     return data
 
@@ -106,11 +160,23 @@ def score(data: dict, *, provider: str, model: str, role: str) -> float:
     if not isinstance(row, dict):
         return 0.0
     samples = int(row.get("samples", 0) or 0)
-    if samples < MIN_SAMPLES:
+    verified_samples = int(row.get("verified_samples", 0) or 0)
+    if samples < MIN_SAMPLES and verified_samples < MIN_SAMPLES:
         return 0.0
-    success = max(0.0, min(1.0, float(row.get("ema_success", 0.0))))
+
+    protocol_success = max(0.0, min(1.0, float(row.get("ema_success", 0.0))))
     protocol_rate = min(1.0, int(row.get("protocol_failures", 0) or 0) / max(1, samples))
-    centered = (success - 0.5) * 2.0
+    verified_success = max(
+        0.0,
+        min(1.0, float(row.get("ema_verified_success", 0.0))),
+    )
+
+    if verified_samples >= MIN_SAMPLES:
+        blended = 0.75 * verified_success + 0.25 * protocol_success
+    else:
+        blended = protocol_success
+
+    centered = (blended - 0.5) * 2.0
     base = centered * (MAX_BONUS if centered >= 0 else MAX_PENALTY)
     penalty = protocol_rate * 8.0
     return round(max(-MAX_PENALTY, min(MAX_BONUS, base - penalty)), 4)

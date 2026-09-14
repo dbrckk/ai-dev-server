@@ -9,6 +9,7 @@ import architecture_replacement_reputation as reputation
 from architecture_reputation_policy_migration import (
     ReputationPolicyMigrationError,
     apply_migration,
+    bind_github_review_target,
     classify_migration_risk,
     dry_run,
 )
@@ -44,6 +45,17 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         }]}
 
     def authorize(self,plan):
+        if not isinstance(plan.get("github_review_target"),dict):
+            bound=bind_github_review_target(plan,{
+                "repository":"dbrckk/ai-dev-server",
+                "pull_request":42,
+                "commit_sha":"a"*40,
+                "head_ref":"policy/migration",
+                "base_ref":"main",
+                "author":"reviewer-a",
+            },now=200.0)
+            plan.clear()
+            plan.update(bound)
         auth=dict(plan["authorization_template"])
         auth["authorized"]=True
         return auth
@@ -128,6 +140,13 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         plan=dry_run(registry,self.learning(),now=200.0)
         with self.assertRaises(ReputationPolicyMigrationError):
             apply_migration(registry,plan,plan["authorization_template"],now=300.0)
+
+    def test_apply_rejects_unbound_github_review_target(self):
+        registry=self.registry()
+        plan=dry_run(registry,self.learning(),now=200.0)
+        auth=dict(plan["authorization_template"]); auth["authorized"]=True
+        with self.assertRaises(ReputationPolicyMigrationError):
+            apply_migration(registry,plan,auth,now=300.0)
 
     def test_apply_is_bound_to_exact_registry(self):
         registry=self.registry()

@@ -212,6 +212,7 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
     os.environ['STUDIO_ARTIFACT_CACHE_PATH']=str(out/'.autonomy/artifact-cache.json')
     os.environ['STUDIO_ARTIFACT_CAS_PATH']=str(out/'.autonomy/artifact-cas')
     os.environ['STUDIO_ARTIFACT_CAS_STATS_PATH']=str(out/'.autonomy/artifact-cas-stats.json')
+    os.environ['STUDIO_ARTIFACT_CAS_AUDIT_PATH']=str(out/'.autonomy/artifact-cas-audit.json')
     adaptation_path=out/'.autonomy/capability-adaptation.json'
     memory_path=out/'.memory/memory.json'
     registry_path=out/'.autonomy/capabilities.json'

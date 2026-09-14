@@ -6,6 +6,7 @@ import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
 import architecture_replacement_reputation as reputation
+from replacement_ci_policy import CI_TRUST_POLICY_VERSION, ci_trust_policy_digest
 from architecture_reputation_policy_migration import (
     ReputationPolicyMigrationError,
     apply_migration,
@@ -56,6 +57,8 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
                 "workflow_path":".github/workflows/ci.yml",
                 "workflow_blob_sha":"blob123",
                 "workflow_sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4",
+                "ci_trust_policy_version":CI_TRUST_POLICY_VERSION,
+                "ci_trust_policy_digest":ci_trust_policy_digest(),
             },now=200.0)
             plan.clear()
             plan.update(bound)
@@ -155,6 +158,8 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
                 "workflow_path":".github/workflows/other.yml",
                 "workflow_blob_sha":"blob123",
                 "workflow_sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4",
+                "ci_trust_policy_version":CI_TRUST_POLICY_VERSION,
+                "ci_trust_policy_digest":ci_trust_policy_digest(),
             },now=200.0)
 
     def test_bind_target_rejects_invalid_workflow_digest(self):
@@ -165,6 +170,8 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
                 "head_ref":"policy/migration","base_ref":"main","author":"reviewer-a",
                 "workflow_path":".github/workflows/ci.yml",
                 "workflow_blob_sha":"blob123","workflow_sha256":"bad",
+                "ci_trust_policy_version":CI_TRUST_POLICY_VERSION,
+                "ci_trust_policy_digest":ci_trust_policy_digest(),
             },now=200.0)
 
     def test_apply_rejects_unbound_github_review_target(self):

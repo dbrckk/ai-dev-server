@@ -10,6 +10,7 @@ MAX_EVIDENCE_AGE_SECONDS = 30 * 24 * 60 * 60
 SUCCESS_WEIGHT = 0.6
 QUALITY_WEIGHT = 0.4
 UNCERTAINTY_BLEND = 0.5
+MAX_DRIFT_PENALTY = 2.0
 
 def _context_weight(row: dict, framework: str | None, project_type: str | None, primary_domain: str | None) -> float:
     """Down-weight legacy/generic evidence; full bonus requires matching context."""
@@ -137,6 +138,15 @@ def apply(
             centered = (combined_rate - 0.5) * 2.0
             context_weight = _context_weight(history, normalized_framework, normalized_project_type, normalized_primary_domain)
             bonus = max(-MAX_SCORE_BONUS, min(MAX_SCORE_BONUS, centered * MAX_SCORE_BONUS * context_weight * confidence))
+            drift = history.get("drift") if isinstance(history.get("drift"), dict) else {}
+            drift_status = drift.get("status")
+            drift_score = drift.get("score")
+            drift_score = max(0.0, min(1.0, float(drift_score))) if isinstance(drift_score, (int, float)) else 0.0
+            drift_penalty = 0.0
+            if drift_status == "degraded":
+                drift_penalty = MAX_DRIFT_PENALTY * drift_score * confidence * context_weight
+                bonus = min(0.0, bonus) - drift_penalty
+                bonus = max(-MAX_SCORE_BONUS, bonus)
             item["historical_evidence"] = {
                 "domain": history.get("domain"),
                 "framework": history.get("framework"),
@@ -155,6 +165,8 @@ def apply(
                 "combined_outcome_rate": round(combined_rate, 4),
                 "advisory_bonus": round(bonus, 4),
                 "context_weight": round(context_weight, 4),
+                "drift": drift,
+                "drift_penalty": round(drift_penalty, 4),
             }
         item["feedback_score"] = round(base_score + bonus, 4)
         adjusted.append(item)
@@ -179,6 +191,7 @@ def apply(
         "success_weight": SUCCESS_WEIGHT,
         "quality_weight": QUALITY_WEIGHT,
         "uncertainty_blend": UNCERTAINTY_BLEND,
+        "max_drift_penalty": MAX_DRIFT_PENALTY,
     }
     return result
 
@@ -276,6 +289,13 @@ def stack_adjustment(
         confidence = max(0.0, min(1.0, float(confidence))) if isinstance(confidence, (int, float)) else 1.0
         combined_rate = SUCCESS_WEIGHT * conservative_success + QUALITY_WEIGHT * quality_rate
         centered = (combined_rate - 0.5) * 2.0
+        drift = row.get("drift") if isinstance(row.get("drift"), dict) else {}
+        drift_status = drift.get("status")
+        drift_score = drift.get("score")
+        drift_score = max(0.0, min(1.0, float(drift_score))) if isinstance(drift_score, (int, float)) else 0.0
+        drift_signal = -drift_score if drift_status == "degraded" else 0.0
+        if drift_status == "degraded":
+            centered = min(0.0, centered) + drift_signal
         context_weight = _context_weight(row, normalized_framework, normalized_project_type, normalized_primary_domain)
         if context_weight <= 0:
             continue
@@ -298,6 +318,8 @@ def stack_adjustment(
             "project_type": row_project_type,
             "primary_domain": row_primary_domain,
             "context_weight": round(context_weight, 4),
+            "drift": drift,
+            "drift_signal": round(drift_signal, 4),
         })
 
     if total_weight <= 0:

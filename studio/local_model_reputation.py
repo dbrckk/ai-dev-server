@@ -11,6 +11,9 @@ MIN_SAMPLES = 3
 MAX_BONUS = 16.0
 MAX_PENALTY = 18.0
 MAX_ROWS = 256
+QUARANTINE_MIN_VERIFIED = 5
+QUARANTINE_VERIFIED_RATE = 0.20
+QUARANTINE_PROTOCOL_RATE = 0.60
 
 
 def _key(provider: str, model: str, role: str) -> str:
@@ -182,6 +185,49 @@ def score(data: dict, *, provider: str, model: str, role: str) -> float:
     return round(max(-MAX_PENALTY, min(MAX_BONUS, base - penalty)), 4)
 
 
+def quarantine_status(
+    data: dict,
+    *,
+    provider: str,
+    model: str,
+    role: str,
+) -> dict:
+    row = data.get(_key(provider, model, role)) if isinstance(data, dict) else None
+    if not isinstance(row, dict):
+        return {"quarantined": False, "reason": None}
+
+    samples = int(row.get("samples", 0) or 0)
+    verified_samples = int(row.get("verified_samples", 0) or 0)
+    verified_success = max(
+        0.0,
+        min(1.0, float(row.get("ema_verified_success", 0.0))),
+    )
+    protocol_rate = min(
+        1.0,
+        int(row.get("protocol_failures", 0) or 0) / max(1, samples),
+    )
+
+    if (
+        verified_samples >= QUARANTINE_MIN_VERIFIED
+        and verified_success < QUARANTINE_VERIFIED_RATE
+    ):
+        return {
+            "quarantined": True,
+            "reason": "repeated_verified_failure",
+        }
+
+    if (
+        samples >= QUARANTINE_MIN_VERIFIED
+        and protocol_rate >= QUARANTINE_PROTOCOL_RATE
+    ):
+        return {
+            "quarantined": True,
+            "reason": "protocol_instability",
+        }
+
+    return {"quarantined": False, "reason": None}
+
+
 def snapshot(data: dict) -> list[dict]:
     rows = []
     for key, row in data.items():
@@ -197,6 +243,12 @@ def snapshot(data: dict) -> list[dict]:
             "role": role,
             **row,
             "routing_score": score(data, provider=provider, model=model, role=role),
+            "quarantine": quarantine_status(
+                data,
+                provider=provider,
+                model=model,
+                role=role,
+            ),
         })
     rows.sort(key=lambda item: (-item["routing_score"], -item["samples"], item["provider"], item["model"]))
     return rows

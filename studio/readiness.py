@@ -20,8 +20,9 @@ REQUIRED_STATE_ENV = (
 )
 
 
-def check(root: Path | str = ".") -> dict:
+def check(root: Path | str = ".", project_out: Path | str | None = None) -> dict:
     root = Path(root).resolve()
+    project_out = Path(project_out).resolve() if project_out is not None else None
     checks = {}
 
     checks["python_3_12_plus"] = sys.version_info >= (3, 12)
@@ -52,7 +53,18 @@ def check(root: Path | str = ".") -> dict:
     checks["model_provider_configured"] = bool(providers)
 
     for name in REQUIRED_STATE_ENV:
-        checks["env_" + name.lower()] = bool(os.environ.get(name, "").strip())
+        configured = bool(os.environ.get(name, "").strip())
+        if not configured and project_out is not None:
+            autonomy = project_out / ".autonomy"
+            defaults = {
+                "STUDIO_QUICK_GATE_CACHE_PATH": autonomy / "quick-gate-cache.json",
+                "STUDIO_FULL_GATE_CACHE_PATH": autonomy / "full-gate-cache.json",
+                "STUDIO_ARTIFACT_CACHE_PATH": autonomy / "artifact-cache.json",
+                "STUDIO_ARTIFACT_CAS_PATH": autonomy / "artifact-cas",
+                "STUDIO_CHECKPOINT_PATH": autonomy / "workflow-checkpoints.json",
+            }
+            configured = name in defaults
+        checks["env_" + name.lower()] = configured
 
     required = list(checks)
     passed = all(checks[name] for name in required)
@@ -64,6 +76,10 @@ def check(root: Path | str = ".") -> dict:
 
 
 if __name__ == "__main__":
-    report = check()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--project-out")
+    args = parser.parse_args()
+    report = check(project_out=args.project_out)
     print(json.dumps(report, sort_keys=True))
     raise SystemExit(0 if report["ready"] else 1)

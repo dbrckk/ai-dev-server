@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from star_scanner import scan
+from atomic_file import write_text as atomic_write_text
 
 _PHASE_NEEDS = {
     "planning": ["agent", "research", "memory", "architecture"],
@@ -46,7 +47,8 @@ def recommend(phase: str, out: Path, *, domain: str | None = None,
             "error": type(exc).__name__,
             "matches": [],
         }
-    (out / "star-recommendations.json").write_text(
+    atomic_write_text(
+        out / "star-recommendations.json",
         json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )

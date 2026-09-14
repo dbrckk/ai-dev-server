@@ -29,5 +29,25 @@ class CapacityRuntimeTests(unittest.TestCase):
             self.assertIsNone(project_envelope(path, "a"))
 
 
+    def test_reads_full_project_state_for_recovery(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "plan.json"
+            path.write_text(json.dumps({
+                "projects": [
+                    {
+                        "id": "a",
+                        "token_envelope": 1500,
+                        "recovery_active": True,
+                        "recovery_reason": "material_context_change",
+                    }
+                ]
+            }), encoding="utf-8")
+            from capacity_runtime import project_state
+            row = project_state(path, "a")
+            self.assertTrue(row["recovery_active"])
+            self.assertEqual(row["token_envelope"], 1500)
+
+
+
 if __name__ == "__main__":
     unittest.main()

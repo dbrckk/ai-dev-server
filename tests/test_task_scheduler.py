@@ -134,5 +134,37 @@ class TaskSchedulerTests(unittest.TestCase):
         self.assertEqual(pipeline_stage_for_task(task), "preview")
 
 
+    def test_expired_running_task_is_recovered_before_selection(self):
+        state = state_with_budget()
+        state["repair_queue"] = [
+            {
+                "id": "stale",
+                "stage": "performance_qa",
+                "action": "repair_code",
+                "blockers": ["excessive_jank"],
+                "status": "running",
+                "attempts": 1,
+                "max_attempts": 4,
+                "dependencies": [],
+                "estimated_model_calls": 1,
+                "priority": 80,
+                "lease_owner": "dead-worker",
+                "lease_token": "dead-token",
+                "lease_started_at": 0.0,
+                "lease_heartbeat_at": 0.0,
+                "lease_expires_at": 1.0,
+            }
+        ]
+
+        selected = select(state)
+
+        self.assertIsNotNone(selected)
+        self.assertEqual(selected["id"], "stale")
+        self.assertEqual(selected["status"], "retry")
+        self.assertEqual(selected["lease_recovery_count"], 1)
+        self.assertNotIn("lease_owner", selected)
+
+
+
 if __name__ == "__main__":
     unittest.main()

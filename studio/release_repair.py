@@ -12,6 +12,8 @@ from agents.orchestrator import execute_named as execute_named_agent, ranked_age
 from flutter_workspace import snapshot as snapshot_agent_workspace, restore as restore_agent_workspace, delta as validate_agent_delta
 from repair_strategy import choose as choose_strategy, record_outcome as record_strategy_outcome
 from release_candidate_search import MAX_CANDIDATES, apply_winner, run_branch, select_winner
+from repair_search_policy import should_expand
+from project_budget import remaining as budget_remaining
 
 MAX_RELEASE_REPAIR_ROUNDS = 2
 MAX_MODEL_CALLS_PER_BRANCH = 2
@@ -166,20 +168,13 @@ def attempt(
     preferred = selection["strategy"]
 
     strategies = [preferred]
-    if len(strategies) < MAX_CANDIDATES:
-        for row in selection.get("candidate_ranking", []):
-            name = row.get("strategy")
-            if name in {"model_only", "agent_only", "model_to_agent", "agent_to_model"} and name not in strategies:
-                if name == "agent_only" and not agents:
-                    continue
-                if name in {"model_to_agent", "agent_to_model"} and not agents:
-                    continue
-                strategies.append(name)
-                if len(strategies) >= MAX_CANDIDATES:
-                    break
+    ranking = selection.get("candidate_ranking", [])
+    row_by_strategy = {
+        row.get("strategy"): row for row in ranking if isinstance(row, dict)
+    }
 
     candidates = []
-    for strategy_name in strategies:
+    for strategy_index, strategy_name in enumerate(strategies):
         prior = _strategy_prior(selection, strategy_name)
 
         if strategy_name == "model_only":
@@ -225,6 +220,8 @@ def attempt(
             strategy_prior_score=prior,
             steps=steps,
             refine=refine,
+            strategy_row=row_by_strategy.get(strategy_name, {}),
+            remaining_model_calls=budget_remaining(state, repair=True),
             state=state,
             app_name=app_name,
             sandbox_factory=sandbox_factory,
@@ -236,6 +233,28 @@ def attempt(
             success=candidate.get("passed") is True,
             cost_seconds=float(candidate.get("elapsed_seconds", 0.0)),
         )
+
+        if strategy_index == 0 and len(strategies) < MAX_CANDIDATES:
+            current_winner = select_winner(candidates)
+            for row in ranking:
+                name = row.get("strategy")
+                if name in strategies or name not in {"model_only", "agent_only", "model_to_agent", "agent_to_model"}:
+                    continue
+                if name == "agent_only" and not agents:
+                    continue
+                if name in {"model_to_agent", "agent_to_model"} and not agents:
+                    continue
+                if should_expand(
+                    current_winner=current_winner,
+                    candidate_row=row,
+                    remaining_model_calls=max(
+                        0,
+                        budget_remaining(state, repair=True)
+                        - sum(max(0, int(item.get("model_calls", 0))) for item in candidates),
+                    ),
+                ):
+                    strategies.append(name)
+                break
 
     winner = select_winner(candidates)
     if winner is None:

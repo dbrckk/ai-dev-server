@@ -1671,12 +1671,12 @@ Objective and current plan:
             "reviewer": [],
             "all_deterministic_passed": True,
         }
-        deterministic_refs = [
-            ref
+        deterministic_command_refs = [
+            str(ref)
             for item in deterministic_done_when.get("deterministic", [])
             if isinstance(item, dict)
             for ref in item.get("evidence_refs", [])
-            if ref
+            if isinstance(ref, str) and ref.startswith("command:")
         ]
         allowed_task_evidence_refs = sorted(set(
             [str(item) for item in changed if item]
@@ -1685,7 +1685,7 @@ Objective and current plan:
                 for item in targeted_impact.get("impacted_tests", [])
                 if item
             ]
-            + deterministic_refs
+            + deterministic_command_refs
         ))
         review_context = {
             "brief": req["brief"],

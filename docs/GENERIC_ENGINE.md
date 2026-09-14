@@ -67,7 +67,24 @@ A verifier recipe becomes reusable learning only after a real verification passe
 
 ## Resuming after required user input
 
-A missing secret remains the exceptional pause path. The project produces `USER_INPUT_REQUIRED.txt` and stays schedulable. Scheduled runs check whether the specifically requested secret is now available. Once it appears, the persisted goal is reactivated automatically and work resumes from the previous checkpoint.
+A missing secret is the exceptional pause path and is triggered only from explicit trusted failure evidence: the verification log must both state that an external secret/environment prerequisite is required and name the required environment variable.
+
+The generic engine then:
+
+1. rejects publication of the failing round and restores the pre-round editable workspace when available;
+2. writes `USER_INPUT_REQUIRED.txt` with human-readable instructions containing secret **names only**;
+3. writes `user-input-required.json` with the project id, reason and required environment-variable names;
+4. returns `user_input_required` instead of looping through providers or implementation strategies.
+
+No secret value is written to either file.
+
+On the next run, the engine checks those exact environment-variable names **before model/bootstrap work**. If any remain unavailable, it exits again without consuming model work. Once all are present, both user-input files are cleared and autonomous work resumes from the persisted checkpoint/DAG task.
+
+The read-only status command also exposes this state:
+
+```bash
+python studio/project_status.py /path/to/project-output --compact
+```
 
 
 ## Read-only project status

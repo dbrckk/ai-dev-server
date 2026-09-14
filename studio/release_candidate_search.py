@@ -333,11 +333,17 @@ def run_branch(
                     )
 
             sandbox = sandbox_factory(root)
+            gate_started = time.monotonic()
             gate_passed, gate_logs = sandbox.gates(app_name, journeys)
+            gate_cost_seconds = max(0.0, time.monotonic() - gate_started)
             if gate_passed:
                 full_cache_record_success(full_gate_cache, key)
                 if artifact_cache_enabled:
-                    artifact_cache[key] = capture_artifacts(root, key)
+                    artifact_cache[key] = capture_artifacts(
+                        root,
+                        key,
+                        rebuild_cost_seconds=gate_cost_seconds,
+                    )
             return (
                 gate_passed,
                 gate_logs,

@@ -702,7 +702,7 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         ]
         for evidence,expected in cases:
             with self.subTest(expected=expected):
-                self.assertEqual(arp._reputation_state(evidence)["state"],expected)
+                self.assertEqual(arp.reputation_desired_state(evidence)["state"],expected)
 
     def test_quarantined_reputation_adds_explicit_gate(self):
         obs=self.obsolescence()
@@ -740,7 +740,12 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
             "wilson_lower_95":0.90,"regression_rate":0.0,
             "recovery_candidate":True,
         }
-        reputation=arp._reputation_state(evidence)
+        reputation_state=arp.reputation_desired_state(evidence)
+        reputation={
+            **reputation_state,
+            "promotion_eligible":reputation_state["state"]=="TRUSTED",
+            "requires_revalidation":reputation_state["state"] in {"DEGRADED","QUARANTINED","RECOVERING"},
+        }
         self.assertEqual(reputation["state"],"RECOVERING")
         self.assertFalse(reputation["promotion_eligible"])
         self.assertTrue(reputation["requires_revalidation"])
@@ -836,6 +841,21 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         self.assertEqual(row["replacement_reputation"]["state"],"DEGRADED")
         self.assertLessEqual(row["empirical_priority_adjustment"],0.0)
         self.assertIn("degraded_replacement_revalidated",row["required_gates"])
+
+    def test_planner_uses_canonical_reputation_engine(self):
+        obs=self.obsolescence()
+        history={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "samples":20,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.95,"posterior_success_rate":0.93,"regression_rate":0.02,
+            "rollback_rate":0.0,"wilson_lower_95":0.80,"mean_quality_score":95.0,
+            "latest_observed_at":time.time(),
+        }
+        row=plan(obs,self.recommendations(),learning={"rankings":[history]})["replacement_plans"][0]
+        canonical=arp.reputation_desired_state(row["fused_historical_evidence"])
+        self.assertEqual(row["replacement_reputation"]["state"],canonical["state"])
+        self.assertEqual(row["replacement_reputation"]["reason"],canonical["reason"])
+        self.assertEqual(row["replacement_reputation"]["source"],"derived_current_evidence")
 
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:

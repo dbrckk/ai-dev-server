@@ -10,7 +10,7 @@ from architecture_benchmark import benchmark, write
 
 class ArchitectureBenchmarkTests(unittest.TestCase):
     def decision(self):
-        return {"chosen":[{
+        return {"constraints":{"framework":"flutter","project_type":"game","primary_domain":"mobile","platform":"android"},"chosen":[{
             "repo":"a/current",
             "selection_score":60,
             "quality_score":8.5,
@@ -34,6 +34,14 @@ class ArchitectureBenchmarkTests(unittest.TestCase):
         self.assertTrue(row["migration_candidate"])
         self.assertEqual(row["best_alternative"],"a/better")
         self.assertFalse(result["policy"]["auto_migrate"])
+
+    def test_benchmark_carries_project_context(self):
+        result=benchmark(self.decision(),{"verdict":"review","blockers":["x"]},self.recommendations())
+        row=result["comparisons"][0]
+        self.assertEqual(row["framework"],"flutter")
+        self.assertEqual(row["project_type"],"game")
+        self.assertEqual(row["primary_domain"],"mobile")
+        self.assertEqual(row["platform"],"android")
 
     def test_clean_evidence_does_not_propose_migration(self):
         evaluation={"verdict":"retain","blockers":[]}

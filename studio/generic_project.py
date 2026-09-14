@@ -1784,6 +1784,13 @@ Objective and current plan:
             last_verification=verification,
         )
         save_checkpoint(checkpoint_path, checkpoint)
+        pre_review_classification = classify_failure(
+            verification,
+            changed_files=changed,
+        )
+        external_prerequisite_before_review = (
+            pre_review_classification.get("category") == "external_prerequisite"
+        )
         active_task_contract = plan.get("active_task") if isinstance(plan.get("active_task"), dict) else None
         deterministic_done_when = evaluate_done_when(
             work,
@@ -1842,7 +1849,19 @@ Objective and current plan:
             and deterministic_done_when.get("deterministic")
             and not deterministic_done_when.get("reviewer")
         )
-        if deterministic_only_task:
+        if external_prerequisite_before_review:
+            review = {
+                "complete": False,
+                "criteria": [],
+                "remaining": ["external prerequisite must be supplied"],
+                "reason": pre_review_classification.get(
+                    "reason",
+                    "explicit external prerequisite required",
+                ),
+                "review_source": "trusted_failure_classification",
+            }
+            review_model = None
+        elif deterministic_only_task:
             deterministic_passed = deterministic_done_when.get("all_deterministic_passed") is True
             review = {
                 "complete": deterministic_passed,

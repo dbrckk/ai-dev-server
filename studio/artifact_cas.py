@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 from artifact_cas_namespace import project_namespace, scoped_digest
-from artifact_share_policy import validate_shareable_class
+from artifact_share_policy import validate_shareable_class, validate_shareable_payload
 from artifact_cas_stats import forget as forget_stats, record as record_stats
 from core import StudioError
 
@@ -66,6 +66,8 @@ def put(
     if not isinstance(data, (bytes, bytearray)):
         raise StudioError("Artifact CAS payload invalid")
     data = bytes(data)
+    if shareable:
+        artifact_class = validate_shareable_payload(data, artifact_class)
     digest = sha256(data)
     path = blob_path(digest, shareable=shareable, artifact_class=artifact_class)
     if path.is_file():

@@ -353,6 +353,90 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         self.assertEqual(row["compatibility_distance"]["components"]["version_jump"],1.0)
         self.assertGreater(row["compatibility_distance"]["transferability"],0.8)
 
+    def test_multiple_nearby_histories_are_fused(self):
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter","project_type":"game","primary_domain":"mobile",
+            "platform":"android","current_major_version":3,"replacement_major_version":4,
+        })
+        learning={"rankings":[
+            {
+                "current_repo":"a/current","replacement_repo":"a/better",
+                "framework":"flutter","project_type":"game","primary_domain":"mobile","platform":"android",
+                "current_major_version":3,"replacement_major_version":4,
+                "samples":10,"eligible_for_bias":True,"evidence_confidence":0.5,
+                "success_rate":1.0,"posterior_success_rate":0.92,"regression_rate":0.0,
+                "rollback_rate":0.0,"wilson_lower_95":0.72,"mean_quality_score":95.0,
+            },
+            {
+                "current_repo":"a/current","replacement_repo":"a/better",
+                "framework":"flutter","project_type":"game","primary_domain":"mobile","platform":"android",
+                "current_major_version":2,"replacement_major_version":3,
+                "samples":20,"eligible_for_bias":True,"evidence_confidence":1.0,
+                "success_rate":0.9,"posterior_success_rate":0.86,"regression_rate":0.05,
+                "rollback_rate":0.0,"wilson_lower_95":0.70,"mean_quality_score":90.0,
+            },
+        ]}
+        row=plan(obs,self.recommendations(),learning=learning)["replacement_plans"][0]
+        fused=row["fused_historical_evidence"]
+        self.assertEqual(fused["contributor_count"],2)
+        self.assertGreater(fused["effective_samples"],20)
+        self.assertGreater(fused["success_rate"],0.9)
+        self.assertEqual(row["empirical_status"],"historically_supported")
+
+    def test_distant_framework_history_has_small_fusion_weight(self):
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter","project_type":"game","primary_domain":"mobile",
+            "platform":"android","current_major_version":3,"replacement_major_version":4,
+        })
+        learning={"rankings":[
+            {
+                "current_repo":"a/current","replacement_repo":"a/better",
+                "framework":"flutter","project_type":"game","primary_domain":"mobile","platform":"android",
+                "current_major_version":3,"replacement_major_version":4,
+                "samples":10,"eligible_for_bias":True,"evidence_confidence":0.5,
+                "success_rate":1.0,"posterior_success_rate":0.92,"regression_rate":0.0,
+                "rollback_rate":0.0,"wilson_lower_95":0.72,"mean_quality_score":95.0,
+            },
+            {
+                "current_repo":"a/current","replacement_repo":"a/better",
+                "framework":"python","project_type":"trading","primary_domain":"backend","platform":"linux",
+                "current_major_version":3,"replacement_major_version":4,
+                "samples":100,"eligible_for_bias":True,"evidence_confidence":1.0,
+                "success_rate":0.0,"posterior_success_rate":0.01,"regression_rate":1.0,
+                "rollback_rate":1.0,"wilson_lower_95":0.0,"mean_quality_score":0.0,
+            },
+        ]}
+        row=plan(obs,self.recommendations(),learning=learning)["replacement_plans"][0]
+        contributors=row["fused_historical_evidence"]["contributors"]
+        exact=next(x for x in contributors if x["framework"]=="flutter")
+        distant=next(x for x in contributors if x["framework"]=="python")
+        self.assertGreater(exact["normalized_weight"],distant["normalized_weight"])
+        self.assertGreater(row["fused_historical_evidence"]["success_rate"],0.5)
+
+    def test_low_sample_histories_can_accumulate_effective_evidence(self):
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter","project_type":"game","primary_domain":"mobile",
+            "platform":"android","current_major_version":3,"replacement_major_version":4,
+        })
+        rows=[]
+        for current,replacement in [(3,4),(2,3),(4,5)]:
+            rows.append({
+                "current_repo":"a/current","replacement_repo":"a/better",
+                "framework":"flutter","project_type":"game","primary_domain":"mobile","platform":"android",
+                "current_major_version":current,"replacement_major_version":replacement,
+                "samples":4,"eligible_for_bias":False,"evidence_confidence":0.2,
+                "success_rate":1.0,"posterior_success_rate":0.83,"regression_rate":0.0,
+                "rollback_rate":0.0,"wilson_lower_95":0.51,"mean_quality_score":95.0,
+            })
+        row=plan(obs,self.recommendations(),learning={"rankings":rows})["replacement_plans"][0]
+        fused=row["fused_historical_evidence"]
+        self.assertEqual(fused["contributor_count"],3)
+        self.assertGreater(fused["effective_samples"],5)
+        self.assertTrue(fused["eligible_for_bias"])
+
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)

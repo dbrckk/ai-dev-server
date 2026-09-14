@@ -9,10 +9,29 @@ from .registry import DEFAULT_REGISTRY
 from .router import rank_agents
 from routing_history import learned_weights, load as load_routing_history
 from safe_rewrite_learning import summarize as summarize_safe_rewrite_learning
+from contextual_routing_memory import load as load_contextual_routing_memory
 
 def _safe_rewrite_summary()->dict:
     raw=os.environ.get("STUDIO_SAFE_REWRITE_LEARNING_PATH","")
     return summarize_safe_rewrite_learning(Path(raw)) if raw else {}
+
+
+def _contextual_routing_state()->tuple[dict,list[tuple[str,float]]]:
+    raw=os.environ.get("STUDIO_CONTEXTUAL_ROUTING_MEMORY_PATH","")
+    data=load_contextual_routing_memory(Path(raw)) if raw else {}
+    try:
+        value=json.loads(os.environ.get("STUDIO_ROUTING_CONTEXTS_JSON","[]"))
+    except json.JSONDecodeError:
+        value=[]
+    weighted=[]
+    if isinstance(value,list):
+        for item in value:
+            if isinstance(item,list) and len(item)==2:
+                try:
+                    weighted.append((str(item[0]),float(item[1])))
+                except (TypeError,ValueError):
+                    pass
+    return data,weighted
 
 def _opencode_runtime(prompt:str)->tuple[list[str],dict[str,str]]:
     model=os.environ.get("STUDIO_CODE_MODEL") or os.environ.get("STUDIO_MODEL","")
@@ -61,6 +80,7 @@ def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,ti
     history=load_routing_history(Path(history_raw)) if history_raw else []
     weights=learned_weights(history,kind="agent",role=role)
     reliability={spec.name:bonus(perf,spec.name,role) for spec in DEFAULT_REGISTRY.all()}
+    contextual_routing,weighted_contexts=_contextual_routing_state()
     ranked=rank_agents(
         required,
         registry=DEFAULT_REGISTRY,
@@ -69,6 +89,8 @@ def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,ti
         reliability=reliability,
         weights=weights,
         safe_rewrite_summary=_safe_rewrite_summary(),
+        contextual_routing=contextual_routing,
+        weighted_contexts=weighted_contexts,
     )
     attempts=[]
     for decision in ranked:

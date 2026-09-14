@@ -43,6 +43,12 @@ from local_model_specialization import (
     record_verified as record_local_model_specialization,
 )
 from local_model_leaderboard import leaderboards as local_model_leaderboards
+from model_portfolio_audit import audit as audit_model_portfolio
+from model_portfolio_learning import (
+    load as load_model_portfolio_learning,
+    record as record_model_portfolio_outcome,
+    recommendation as recommend_model_portfolio,
+)
 from task_context import weighted_contexts as weighted_task_contexts
 from safe_rewrite_learning import (
     record_attempt as record_safe_rewrite_attempt,
@@ -456,6 +462,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     safe_rewrite_learning_path = out / '.autonomy' / 'safe-rewrite-learning.json'
     local_model_reputation_path = out / '.autonomy' / 'local-model-reputation.json'
     local_model_specialization_path = out / '.autonomy' / 'local-model-specialization.json'
+    model_portfolio_learning_path = out / '.autonomy' / 'model-portfolio-learning.json'
 
     def current_flutter_contexts():
         contexts = list(weighted_task_contexts(
@@ -750,6 +757,20 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     state['models_used'] = getattr(model, 'models_used', {})
     state['providers_used'] = getattr(model, 'providers_used', {})
     state['routing_portfolio'] = getattr(model, 'routing_portfolio', {})
+    selected_portfolio = {
+        role: row.get('selected')
+        for role, row in state['routing_portfolio'].items()
+        if isinstance(row, dict) and isinstance(row.get('selected'), dict)
+    }
+    state['model_portfolio_audit'] = audit_model_portfolio(selected_portfolio)
+    record_model_portfolio_outcome(
+        model_portfolio_learning_path,
+        audit=state['model_portfolio_audit'],
+        success=state.get('status') == 'validated_preview',
+    )
+    state['model_portfolio_learning'] = recommend_model_portfolio(
+        load_model_portfolio_learning(model_portfolio_learning_path)
+    )
     specialization_state = load_local_model_specialization(local_model_specialization_path)
     state['local_model_specialization'] = local_model_specialization_snapshot(
         specialization_state

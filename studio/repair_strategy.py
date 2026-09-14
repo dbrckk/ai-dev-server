@@ -4,11 +4,44 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from strategy_efficiency import load, record, select_strategy
+from strategy_efficiency import load, metrics as strategy_metrics, record, select_strategy
 from contextual_strategy_efficiency import load as load_contextual, record as record_contextual, rows_for
 
 DEFAULT_STRATEGY = "model_only"
 REPAIR_STRATEGIES = {"model_only", "agent_only", "model_to_agent"}
+
+RISK_PRIOR = {
+    "model_only": 0.15,
+    "agent_only": 0.25,
+    "model_to_agent": 0.35,
+}
+CALL_COST_PRIOR = {
+    "model_only": 1,
+    "agent_only": 0,
+    "model_to_agent": 1,
+}
+
+
+def rank_candidates(data: dict, allowed: set[str]) -> list[dict]:
+    rows = []
+    for strategy in sorted(allowed):
+        info = strategy_metrics(data, strategy)
+        success = float(info.get("conservative_success_rate", 0.5)) if info else 0.5
+        seconds = float(info.get("ema_cost_seconds", 30.0)) if info else 30.0
+        risk = float(RISK_PRIOR.get(strategy, 0.4))
+        calls = int(CALL_COST_PRIOR.get(strategy, 1))
+        score = success * 100.0 - min(25.0, seconds / 12.0) - risk * 30.0 - calls * 4.0
+        rows.append({
+            "strategy": strategy,
+            "score": round(score, 3),
+            "conservative_success_rate": round(success, 4),
+            "estimated_seconds": round(seconds, 3),
+            "risk": risk,
+            "estimated_model_calls": calls,
+            "mature": info is not None,
+        })
+    return sorted(rows, key=lambda row: (-row["score"], row["strategy"]))
+
 
 
 def _path() -> Path | None:
@@ -65,12 +98,14 @@ def choose(task: dict | None, *, stage: str, agent_available: bool) -> dict:
             name = alternatives[0]
             mode = "stagnation_rotation"
 
+    ranking_source = contextual_rows if source == "stage_context" else data
     return {
         "strategy": name,
         "mode": mode,
         "metrics": metrics,
         "allowed": sorted(allowed),
         "evidence_source": source,
+        "candidate_ranking": rank_candidates(ranking_source, allowed),
     }
 
 

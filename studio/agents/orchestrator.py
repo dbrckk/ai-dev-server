@@ -8,6 +8,11 @@ from .performance import bonus,eligible,load
 from .registry import DEFAULT_REGISTRY
 from .router import rank_agents
 from routing_history import learned_weights, load as load_routing_history
+from safe_rewrite_learning import summarize as summarize_safe_rewrite_learning
+
+def _safe_rewrite_summary()->dict:
+    raw=os.environ.get("STUDIO_SAFE_REWRITE_LEARNING_PATH","")
+    return summarize_safe_rewrite_learning(Path(raw)) if raw else {}
 
 def _opencode_runtime(prompt:str)->tuple[list[str],dict[str,str]]:
     model=os.environ.get("STUDIO_CODE_MODEL") or os.environ.get("STUDIO_MODEL","")
@@ -63,6 +68,7 @@ def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,ti
         long_task="long_task" in required,
         reliability=reliability,
         weights=weights,
+        safe_rewrite_summary=_safe_rewrite_summary(),
     )
     attempts=[]
     for decision in ranked:

@@ -13,6 +13,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  reputation-policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+
+      - name: Validate replacement reputation policy
+        env:
+          PYTHONPATH: studio
+        run: python studio/reputation_policy_check.py
+
+      - name: Run exhaustive reputation state-machine tests
+        env:
+          PYTHONPATH: studio
+        run: python -m unittest tests.test_architecture_replacement_reputation_state_machine -v
+
   python-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 20

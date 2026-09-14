@@ -71,7 +71,7 @@ def write(root: Path, value: dict) -> None:
         encoding="utf-8",
     )
     human.write_text(
-        "External input is required before autonomous work can continue.\\n\\n"
+        "External input is required before autonomous work can continue.\n\n"
         + "Required environment/secret names:\n"
         + "".join(f"- {name}\n" for name in value["required_env"])
         + "\nReason:\n"

@@ -11,9 +11,7 @@ from pathlib import Path
 from urllib.parse import quote, urlparse
 
 from architecture_replacement_persist import _request, ReplacementPersistenceError
-
-REQUIRED_CHECKS={"validate","python-tests"}
-TRUSTED_CHECK_APP="github-actions"
+from replacement_ci_policy import REQUIRED_GITHUB_CHECKS as REQUIRED_CHECKS, TRUSTED_CHECK_APP
 
 class ReplacementPRValidationError(RuntimeError):
     pass

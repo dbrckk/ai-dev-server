@@ -34,7 +34,7 @@ from strategy_efficiency import load as load_strategy_efficiency, record as reco
 from contextual_strategy_efficiency import load as load_contextual_strategy_efficiency, record as record_contextual_strategy_efficiency, rows_for as contextual_rows_for, blend_rows as blend_contextual_rows
 from task_context import classify as classify_task_context, hierarchy as task_context_hierarchy, weighted_contexts as weighted_task_contexts
 from architecture_planner import write as write_architecture_plan
-from architecture_learning import summarize as summarize_architecture_learning, write as write_architecture_learning
+from architecture_learning import summarize as summarize_architecture_learning, write as write_architecture_learning, root_for_output as architecture_learning_root
 from architecture_evaluator import write as write_architecture_evaluation
 from architecture_benchmark import write as write_architecture_benchmark
 from architecture_outcome import write as write_architecture_outcome
@@ -136,7 +136,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         out,
         context_text=req.get("brief"),
     )
-    architecture_root = out.parent if out.parent != Path(".") else out
+    architecture_root = architecture_learning_root(out)
     architecture_learning = summarize_architecture_learning(architecture_root)
     state["architecture_recommendations"] = architecture_recommendations
     state["architecture_decision"] = write_architecture_plan(

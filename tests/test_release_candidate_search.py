@@ -162,7 +162,8 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
                         return False, [{"command": ["flutter", "test"], "exit_code": 1, "output": "first failure"}]
                     return True, [{"command": ["flutter", "test"], "exit_code": 0, "output": ""}]
 
-            def first_step():
+            def first_step(intermediate_failure=None):
+                self.assertIsNone(intermediate_failure)
                 source.write_text("first\n")
                 return {"model_calls": 1}
 
@@ -203,12 +204,14 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
             source.write_text("base\n")
             order = []
 
-            def agent_step():
+            def agent_step(intermediate_failure=None):
+                self.assertIsNone(intermediate_failure)
                 order.append("agent")
                 source.write_text("agent\n")
                 return {"model_calls": 0, "agent": {"agent": "fake"}}
 
-            def model_step():
+            def model_step(intermediate_failure=None):
+                self.assertIsNone(intermediate_failure)
                 order.append("model")
                 self.assertEqual(source.read_text(), "agent\n")
                 source.write_text("agent+model\n")
@@ -250,11 +253,12 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
                     full_gate_calls["count"] += 1
                     return True, []
 
-            def first_step():
+            def first_step(intermediate_failure=None):
+                self.assertIsNone(intermediate_failure)
                 source.write_text("broken\n")
                 return {"model_calls": 1}
 
-            def second_step():
+            def second_step(intermediate_failure=None):
                 source.write_text("should-not-run\n")
                 return {"model_calls": 1}
 
@@ -280,6 +284,59 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
             self.assertFalse(candidate["passed"])
             self.assertEqual(full_gate_calls["count"], 0)
             self.assertIn("pruned", candidate["failure"])
+            self.assertEqual(source.read_text(), "base\n")
+
+
+    def test_quick_gate_failure_is_passed_to_next_step_when_continuing(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source = root / "lib/app.dart"
+            source.parent.mkdir(parents=True)
+            source.write_text("base\n")
+            received = []
+
+            class RecoverableSandbox:
+                def __init__(self, root):
+                    self.root = root
+
+                def quick_gates(self):
+                    return False, [{"command": ["flutter", "analyze"], "exit_code": 1, "output": "Undefined name foo"}]
+
+                def gates(self, name, journeys):
+                    return True, [{"command": ["flutter", "test"], "exit_code": 0, "output": ""}]
+
+            def first_step(intermediate_failure=None):
+                self.assertIsNone(intermediate_failure)
+                source.write_text("broken\n")
+                return {"model_calls": 0}
+
+            def second_step(intermediate_failure=None):
+                received.append(intermediate_failure)
+                source.write_text("fixed\n")
+                return {"model_calls": 1}
+
+            candidate = run_branch(
+                root,
+                strategy="agent_to_model",
+                strategy_prior_score=20,
+                steps=[first_step, second_step],
+                refine=None,
+                state=STATE,
+                app_name="demo_app",
+                sandbox_factory=RecoverableSandbox,
+                strategy_row={
+                    "conservative_success_rate": 0.9,
+                    "risk": 0.1,
+                    "estimated_seconds": 10,
+                    "estimated_model_calls": 1,
+                },
+                remaining_model_calls=1,
+                step_model_calls=[0, 1],
+            )
+
+            self.assertTrue(candidate["passed"])
+            self.assertEqual(len(received), 1)
+            self.assertIn("Undefined name foo", received[0])
             self.assertEqual(source.read_text(), "base\n")
 
 

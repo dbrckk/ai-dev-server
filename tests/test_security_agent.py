@@ -48,14 +48,14 @@ STATE = {
         "journeys": [
             {
                 "id": "launch",
-                "title": "Launch",
-                "steps": ["Open the application"],
-                "expected": ["Main screen is visible"],
+                "steps": [
+                    {"action": "tap", "key": "start_button"},
+                    {"action": "expect_text", "value": "Ready"},
+                ],
             }
         ]
     }
 }
-
 
 class SecurityAgentTests(unittest.TestCase):
     def test_credentials_disable_external_agentic_repair(self):

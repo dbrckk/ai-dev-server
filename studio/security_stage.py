@@ -25,6 +25,16 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
     evidence = build_security_package(root, out)
     state.setdefault('release_evidence', {})['security_scan'] = evidence
     apply_completion(state)
+    if evidence.get('passed') is not True and evidence.get('human_review_required') is True:
+        state['human_action'] = {
+            'action': 'security_trust_review_required',
+            'detail': 'Review security, dependency, permission, registry, or licensing decisions that cannot be safely auto-approved.',
+            'reasons': list(evidence.get('human_review_reasons', [])),
+            'dangerous_permissions': list(evidence.get('dangerous_permissions', [])),
+            'blockers': list(evidence.get('blockers', [])),
+        }
+        state['status'] = 'human_action_required'
+        state['release_status'] = 'human_action_required'
 
     parent = state.get('checkpoint_commit')
     if not parent:
@@ -50,6 +60,8 @@ def main() -> int:
         'next_stage': state.get('completion', {}).get('next_stage'),
         'security_passed': evidence.get('passed') if isinstance(evidence, dict) else None,
     }))
+    if state.get('status') == 'human_action_required':
+        return 2
     return 0 if isinstance(evidence, dict) and evidence.get('passed') else 1
 
 

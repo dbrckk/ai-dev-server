@@ -158,6 +158,54 @@ class SecurityStageTests(unittest.TestCase):
         self.assertIsNone(result["completion"]["next_stage"])
 
 
+    @patch("security_stage.GitHub", FakeGitHub)
+    @patch("security_stage.remediate")
+    @patch("security_stage.build_security_package")
+    def test_auto_remediation_rescans_until_converged(self, build, remediate_fn):
+        build.side_effect = [
+            {
+                "passed": False,
+                "human_review_required": False,
+                "human_review_reasons": [],
+                "dangerous_permissions": [],
+                "blockers": ["release_manifest_debuggable"],
+            },
+            {
+                "passed": True,
+                "human_review_required": False,
+                "human_review_reasons": [],
+                "dangerous_permissions": [],
+                "blockers": [],
+            },
+        ]
+        remediate_fn.return_value = {
+            "changed": True,
+            "actions": [
+                {
+                    "action": "remove_release_debuggable_true",
+                    "path": "android/app/src/main/AndroidManifest.xml",
+                    "changes": 1,
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            out = root / "out"
+            out.mkdir()
+            req = root / "request.json"
+            req.write_text(json.dumps(REQ))
+            (out / "report.json").write_text(json.dumps(state_before_security()))
+            result = advance(req, root / "work", out)
+
+        evidence = result["release_evidence"]["security_scan"]
+        self.assertEqual(build.call_count, 2)
+        remediate_fn.assert_called_once()
+        self.assertTrue(evidence["passed"])
+        self.assertTrue(evidence["auto_remediation"]["attempted"])
+        self.assertTrue(evidence["auto_remediation"]["converged"])
+        self.assertEqual(result["status"], "finished")
+
+
 
 if __name__ == "__main__":
     unittest.main()

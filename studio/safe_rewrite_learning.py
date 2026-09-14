@@ -9,6 +9,32 @@ from pathlib import Path
 MAX_EVENTS = 500
 MIN_SAMPLES = 5
 MAX_PENALTY = 0.25
+DECAY_HALF_LIFE_EVENTS = 20.0
+MIN_EVENT_WEIGHT = 0.05
+RECENT_WINDOW = 8
+
+
+def _decay_weight(age: int) -> float:
+    age = max(0, int(age))
+    weight = 0.5 ** (age / DECAY_HALF_LIFE_EVENTS)
+    return max(MIN_EVENT_WEIGHT, weight)
+
+
+def _weighted_rate(rows: list[tuple[dict, float]], field: str) -> float:
+    total = sum(weight for _, weight in rows)
+    if total <= 0:
+        return 0.0
+    return sum(weight * int(event.get(field) is True) for event, weight in rows) / total
+
+
+def _recent_success_streak(events: list[dict], field: str) -> int:
+    streak = 0
+    for event in reversed(events[-RECENT_WINDOW:]):
+        if event.get(field) is True:
+            streak += 1
+        else:
+            break
+    return streak
 
 
 def load(path: Path) -> dict:
@@ -65,6 +91,7 @@ def record_attempt(
         "verification_passed": None,
         "review_passed": None,
         "completed": False,
+        "sequence": len(data["events"]),
     }
     data["events"] = [x for x in data["events"] if x.get("event_id") != event["event_id"]]
     data["events"].append(event)
@@ -97,10 +124,11 @@ def finalize(
 def summarize(path: Path) -> dict:
     events = load(path)["events"]
     completed = [e for e in events if e.get("completed") is True]
+    newest_index = max(0, len(completed) - 1)
 
     def rows(kind_key: str, name_key: str) -> list[dict]:
         grouped = {}
-        for event in completed:
+        for index, event in enumerate(completed):
             name = event.get(name_key)
             kind = event.get(kind_key)
             if not isinstance(name, str) or not name:
@@ -113,17 +141,30 @@ def summarize(path: Path) -> dict:
                 "guard_passes": 0,
                 "verification_passes": 0,
                 "review_passes": 0,
+                "_weighted_events": [],
+                "_events": [],
             })
             row["samples"] += 1
             row["guard_passes"] += int(event.get("guard_passed") is True)
             row["verification_passes"] += int(event.get("verification_passed") is True)
             row["review_passes"] += int(event.get("review_passed") is True)
+            weight = _decay_weight(newest_index - index)
+            row["_weighted_events"].append((event, weight))
+            row["_events"].append(event)
         result = []
         for row in grouped.values():
             n = max(1, row["samples"])
             row["guard_pass_rate"] = round(row["guard_passes"] / n, 4)
             row["verification_pass_rate"] = round(row["verification_passes"] / n, 4)
             row["review_pass_rate"] = round(row["review_passes"] / n, 4)
+            weighted = row.pop("_weighted_events")
+            raw_events = row.pop("_events")
+            row["decayed_guard_pass_rate"] = round(_weighted_rate(weighted, "guard_passed"), 4)
+            row["decayed_verification_pass_rate"] = round(_weighted_rate(weighted, "verification_passed"), 4)
+            row["decayed_review_pass_rate"] = round(_weighted_rate(weighted, "review_passed"), 4)
+            row["effective_sample_weight"] = round(sum(weight for _, weight in weighted), 4)
+            row["recent_verification_streak"] = _recent_success_streak(raw_events, "verification_passed")
+            row["rehabilitating"] = row["recent_verification_streak"] >= 3
             row["eligible_for_routing_bias"] = row["samples"] >= MIN_SAMPLES
             result.append(row)
         result.sort(key=lambda x: (-x["verification_pass_rate"], -x["guard_pass_rate"], -x["samples"], x["name"]))
@@ -138,6 +179,9 @@ def summarize(path: Path) -> dict:
         "policy": {
             "minimum_samples": MIN_SAMPLES,
             "max_penalty": MAX_PENALTY,
+            "decay_half_life_events": DECAY_HALF_LIFE_EVENTS,
+            "minimum_event_weight": MIN_EVENT_WEIGHT,
+            "recent_window": RECENT_WINDOW,
         },
     }
 
@@ -161,8 +205,8 @@ def rewrite_recovery_bonus(summary: dict, *, kind: str, name: str, role: str) ->
         samples = row.get("samples")
         if not isinstance(samples, int) or samples < MIN_SAMPLES:
             return 0.0
-        verify_rate = float(row.get("verification_pass_rate", 0.0))
-        review_rate = float(row.get("review_pass_rate", 0.0))
+        verify_rate = float(row.get("decayed_verification_pass_rate", row.get("verification_pass_rate", 0.0)))
+        review_rate = float(row.get("decayed_review_pass_rate", row.get("review_pass_rate", 0.0)))
         quality = min(verify_rate, review_rate if row.get("review_passes", 0) else verify_rate)
         if quality <= 0.6:
             return 0.0
@@ -184,7 +228,9 @@ def routing_penalty(summary: dict, *, kind: str, name: str, role: str) -> float:
         samples = row.get("samples")
         if not isinstance(samples, int) or samples < MIN_SAMPLES:
             return 0.0
-        verify_rate = float(row.get("verification_pass_rate", 0.0))
+        verify_rate = float(row.get("decayed_verification_pass_rate", row.get("verification_pass_rate", 0.0)))
+        if row.get("rehabilitating") is True:
+            verify_rate = min(1.0, verify_rate + 0.15)
         # Penalize only repeatedly poor origins; never reward architecture violations.
         if verify_rate >= 0.6:
             return 0.0

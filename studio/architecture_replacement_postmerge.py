@@ -10,10 +10,10 @@ from __future__ import annotations
 import base64
 import hashlib
 import re
-from urllib.parse import quote, urlparse
+from urllib.parse import quote
 
 from architecture_replacement_persist import _request
-from replacement_ci_policy import REQUIRED_GITHUB_CHECKS as REQUIRED_CHECKS, TRUSTED_CHECK_APP
+from replacement_ci_policy import REQUIRED_GITHUB_CHECKS as REQUIRED_CHECKS, validate_check_runs
 
 class ReplacementPostMergeError(RuntimeError):
     pass
@@ -22,22 +22,6 @@ def _sha(value,label):
     if not isinstance(value,str) or not re.fullmatch(r"[0-9a-f]{40}",value):
         raise ReplacementPostMergeError(label+" SHA invalid")
     return value
-
-def _trusted_check(run,repository):
-    if not isinstance(run,dict):
-        return False
-    app=run.get("app")
-    if not isinstance(app,dict) or app.get("slug")!=TRUSTED_CHECK_APP:
-        return False
-    details=run.get("details_url")
-    if not isinstance(details,str):
-        return False
-    parsed=urlparse(details)
-    return (
-        parsed.scheme=="https"
-        and parsed.netloc=="github.com"
-        and parsed.path.startswith("/"+repository+"/actions/runs/")
-    )
 
 def _expected_files(package):
     rows=package.get("files") if isinstance(package,dict) else None
@@ -107,19 +91,10 @@ def verify(merged,package,token,repository,requester=_request):
     runs=checks.get("check_runs") if isinstance(checks,dict) else None
     if not isinstance(runs,list):
         raise ReplacementPostMergeError("post-merge check evidence malformed")
-    trusted=[run for run in runs if _trusted_check(run,repository)]
-    by_name={run.get("name"):run for run in trusted if isinstance(run.get("name"),str)}
-    missing=sorted(REQUIRED_CHECKS-set(by_name))
-    incomplete=sorted(
-        name for name in REQUIRED_CHECKS
-        if name in by_name and by_name[name].get("status")!="completed"
-    )
-    failed=sorted(
-        name for name in REQUIRED_CHECKS
-        if name in by_name
-        and by_name[name].get("status")=="completed"
-        and by_name[name].get("conclusion")!="success"
-    )
+    check_result=validate_check_runs(runs,repository)
+    missing=check_result["missing_checks"]
+    incomplete=check_result["incomplete_checks"]
+    failed=check_result["failed_checks"]
 
     if mismatches or failed:
         status="post_merge_regression"

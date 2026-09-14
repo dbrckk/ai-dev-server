@@ -17,6 +17,7 @@ class ArtifactCasTests(unittest.TestCase):
             env = {
                 "STUDIO_ARTIFACT_CAS_PATH": str(Path(td) / "cas"),
                 "STUDIO_ARTIFACT_CAS_STATS_PATH": str(Path(td) / "stats.json"),
+                "STUDIO_PROJECT_ID": "project-a",
             }
             with mock.patch.dict(os.environ, env, clear=False):
                 first = artifact_cas.put(b"payload")
@@ -37,6 +38,7 @@ class ArtifactCasTests(unittest.TestCase):
             env = {
                 "STUDIO_ARTIFACT_CAS_PATH": str(Path(td) / "cas"),
                 "STUDIO_ARTIFACT_CAS_STATS_PATH": str(Path(td) / "stats.json"),
+                "STUDIO_PROJECT_ID": "project-a",
             }
             with mock.patch.dict(os.environ, env, clear=False):
                 meta = artifact_cas.put(b"payload")
@@ -49,6 +51,7 @@ class ArtifactCasTests(unittest.TestCase):
             env = {
                 "STUDIO_ARTIFACT_CAS_PATH": str(Path(td) / "cas"),
                 "STUDIO_ARTIFACT_CAS_STATS_PATH": str(Path(td) / "stats.json"),
+                "STUDIO_PROJECT_ID": "project-a",
             }
             with mock.patch.dict(os.environ, env, clear=False), mock.patch.object(
                 artifact_cas, "MAX_CAS_BYTES", 10
@@ -58,11 +61,46 @@ class ArtifactCasTests(unittest.TestCase):
                     artifact_cas.put(b"abcdefghij")
                 self.assertEqual(artifact_cas.usage(), 5)
 
+    def test_private_same_blob_is_physically_isolated_per_project(self):
+        with tempfile.TemporaryDirectory() as td:
+            base = {
+                "STUDIO_ARTIFACT_CAS_PATH": str(Path(td) / "cas"),
+                "STUDIO_ARTIFACT_CAS_STATS_PATH": str(Path(td) / "stats.json"),
+            }
+            with mock.patch.dict(os.environ, {**base, "STUDIO_PROJECT_ID": "project-a"}, clear=False):
+                first = artifact_cas.put(b"same")
+                first_path = artifact_cas.blob_path(first["sha256"])
+            with mock.patch.dict(os.environ, {**base, "STUDIO_PROJECT_ID": "project-b"}, clear=False):
+                second = artifact_cas.put(b"same")
+                second_path = artifact_cas.blob_path(second["sha256"])
+
+            self.assertEqual(first["sha256"], second["sha256"])
+            self.assertNotEqual(first_path, second_path)
+            self.assertTrue(first_path.is_file())
+            self.assertTrue(second_path.is_file())
+
+    def test_shareable_blob_uses_common_scope_only_when_explicit(self):
+        with tempfile.TemporaryDirectory() as td:
+            base = {
+                "STUDIO_ARTIFACT_CAS_PATH": str(Path(td) / "cas"),
+                "STUDIO_ARTIFACT_CAS_STATS_PATH": str(Path(td) / "stats.json"),
+            }
+            with mock.patch.dict(os.environ, {**base, "STUDIO_PROJECT_ID": "project-a"}, clear=False):
+                first = artifact_cas.put(b"public", shareable=True)
+                first_path = artifact_cas.blob_path(first["sha256"], shareable=True)
+            with mock.patch.dict(os.environ, {**base, "STUDIO_PROJECT_ID": "project-b"}, clear=False):
+                second = artifact_cas.put(b"public", shareable=True)
+                second_path = artifact_cas.blob_path(second["sha256"], shareable=True)
+
+            self.assertEqual(first_path, second_path)
+            self.assertIn("/shared/", first_path.as_posix())
+
     def test_gc_keeps_only_referenced_digest(self):
         with tempfile.TemporaryDirectory() as td:
             env = {
                 "STUDIO_ARTIFACT_CAS_PATH": str(Path(td) / "cas"),
                 "STUDIO_ARTIFACT_CAS_STATS_PATH": str(Path(td) / "stats.json"),
+                "STUDIO_PROJECT_ID": "project-a",
             }
             with mock.patch.dict(os.environ, env, clear=False):
                 keep = artifact_cas.put(b"keep")

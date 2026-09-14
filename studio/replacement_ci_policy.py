@@ -11,6 +11,86 @@ TRUSTED_CHECK_APP="github-actions"
 REQUIRED_WORKFLOW_NAME="CI"
 REQUIRED_WORKFLOW_PATH=".github/workflows/ci.yml"
 
+# Explicit allowlist: third-party actions and mutable refs are fail-closed.
+TRUSTED_ACTION_REVISIONS={
+    "actions/checkout":"11d5960a326750d5838078e36cf38b85af677262",
+    "actions/setup-python":"a26af69be951a213d495a4c3e4e4022e16d87065",
+}
+
+def workflow_action_uses_text(text: str) -> list[dict]:
+    rows=[]
+    pattern=re.compile(r"(?m)^\s*(?:-\s*)?uses:\s*([^#\s]+)\s*(?:#.*)?$")
+    for match in pattern.finditer(text):
+        value=match.group(1).strip().strip("'\"")
+        if value.startswith("./"):
+            rows.append({
+                "uses":value,
+                "action":value,
+                "revision":None,
+                "kind":"local",
+            })
+            continue
+        if "@" not in value:
+            rows.append({
+                "uses":value,
+                "action":value,
+                "revision":None,
+                "kind":"remote",
+            })
+            continue
+        action,revision=value.rsplit("@",1)
+        rows.append({
+            "uses":value,
+            "action":action,
+            "revision":revision,
+            "kind":"remote",
+        })
+    return rows
+
+def validate_action_pinning_text(text: str) -> dict:
+    uses=workflow_action_uses_text(text)
+    violations=[]
+    trusted=[]
+    for row in uses:
+        action=row["action"]
+        revision=row["revision"]
+        if row["kind"]=="local":
+            violations.append({
+                "uses":row["uses"],
+                "reason":"local_action_not_allowlisted",
+            })
+            continue
+        expected=TRUSTED_ACTION_REVISIONS.get(action)
+        if expected is None:
+            violations.append({
+                "uses":row["uses"],
+                "reason":"action_not_allowlisted",
+            })
+            continue
+        if not isinstance(revision,str) or re.fullmatch(r"[0-9a-fA-F]{40}",revision) is None:
+            violations.append({
+                "uses":row["uses"],
+                "reason":"mutable_or_non_sha_revision",
+            })
+            continue
+        if revision.lower()!=expected.lower():
+            violations.append({
+                "uses":row["uses"],
+                "reason":"unapproved_action_revision",
+                "expected_revision":expected,
+            })
+            continue
+        trusted.append({
+            "action":action,
+            "revision":revision.lower(),
+        })
+    return {
+        "valid":not violations,
+        "trusted_actions":trusted,
+        "violations":violations,
+        "allowlist":dict(sorted(TRUSTED_ACTION_REVISIONS.items())),
+    }
+
 def workflow_job_ids_text(text: str) -> set[str]:
     jobs=set()
     in_jobs=False
@@ -35,13 +115,15 @@ def validate_workflow_text(text: str) -> dict:
     missing=sorted(REQUIRED_GITHUB_CHECKS-jobs)
     name_match=re.search(r"(?m)^name:\s*([^#\n]+?)\s*$",text)
     workflow_name=name_match.group(1).strip().strip("'\"") if name_match else None
+    action_policy=validate_action_pinning_text(text)
     return {
-        "valid":not missing and workflow_name==REQUIRED_WORKFLOW_NAME,
+        "valid":not missing and workflow_name==REQUIRED_WORKFLOW_NAME and action_policy["valid"],
         "required_checks":sorted(REQUIRED_GITHUB_CHECKS),
         "workflow_jobs":sorted(jobs),
         "missing_checks":missing,
         "workflow_name":workflow_name,
         "expected_workflow_name":REQUIRED_WORKFLOW_NAME,
+        "action_pinning":action_policy,
     }
 
 def validate_workflow(path: Path) -> dict:

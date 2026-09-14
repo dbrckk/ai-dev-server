@@ -39,6 +39,16 @@ def render(req: dict, state: dict) -> str:
     architecture_benchmark = state.get('architecture_benchmark') if isinstance(state.get('architecture_benchmark'), dict) else {}
     migration_candidates = architecture_benchmark.get('migration_candidates') if isinstance(architecture_benchmark.get('migration_candidates'), list) else []
     migration_repos = [x.get('best_alternative') for x in migration_candidates if isinstance(x, dict) and isinstance(x.get('best_alternative'), str)]
+    drift_alerts = state.get('architecture_drift_alerts') if isinstance(state.get('architecture_drift_alerts'), list) else []
+    drift_lines = []
+    for item in drift_alerts[:10]:
+        if not isinstance(item, dict):
+            continue
+        if item.get('type') == 'repository' and isinstance(item.get('repo'), str):
+            drift_lines.append(f"{item['repo']}: degraded (score={item.get('score')})")
+        elif item.get('type') == 'stack' and isinstance(item.get('repos'), list):
+            repos = ', '.join(str(x) for x in item.get('repos', [])[:6])
+            drift_lines.append(f"{repos}: stack degraded (score={item.get('score')})")
 
     immediate = (
         f'Execute and validate `{next_stage}`.'
@@ -82,6 +92,10 @@ Architecture evaluation: `{architecture_verdict}`
 Potential migration candidates:
 
 {_bullets(migration_repos, 'No benchmark-backed migration candidate is currently recommended.')}
+
+### Architecture drift alerts
+
+{_bullets(drift_lines, 'No statistically supported architecture degradation is currently detected.')}
 
 ## Current validation / release evidence
 

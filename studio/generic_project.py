@@ -230,6 +230,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     __import__("os").environ["STUDIO_PROJECT_ID"] = str(req["id"])
     __import__("os").environ["STUDIO_CAPACITY_PLAN_PATH"] = str(out.parent / "capacity-plan.json")
     __import__("os").environ["STUDIO_CAPACITY_LEDGER_PATH"] = str(out.parent / "capacity-ledger.json")
+    __import__("os").environ["STUDIO_CAPACITY_EFFICIENCY_PATH"] = str(out.parent / "capacity-efficiency.json")
     __import__("os").environ["STUDIO_LOCAL_MODEL_REPUTATION_PATH"] = str(local_model_reputation_path)
     __import__("os").environ["STUDIO_LOCAL_MODEL_SPECIALIZATION_PATH"] = str(local_model_specialization_path)
     __import__("os").environ["STUDIO_LOCAL_MODEL_BENCHMARK_PATH"] = str(

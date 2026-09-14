@@ -12,6 +12,19 @@ from evolution_executor import consume as consume_evolution_request
 from stage_registry import STAGES,get_stage
 from project_recommendations import recommend
 
+def _recommendation_context(request_path):
+    try:
+        value=json.loads(Path(request_path).read_text())
+    except (OSError,json.JSONDecodeError):
+        return {}
+    if not isinstance(value,dict):
+        return {}
+    brief=value.get('brief') if isinstance(value.get('brief'),str) else ''
+    text=brief.lower()
+    platform='android' if 'android' in text or 'play store' in text else ('ios' if 'ios' in text or 'iphone' in text else None)
+    language='dart' if 'flutter' in text else None
+    return {'context_text': brief, 'platform': platform, 'language': language}
+
 def load_report(project_out):
     path=project_out/'report.json'
     if not path.is_file(): raise StudioError('Stage did not produce report.json')
@@ -155,7 +168,7 @@ def run_registered_stages(request_path,project_out,work,report,deadline,runner,c
         if completion.get('finished'): return {'status':'complete','report':report,'next_stage':None}
         name=completion.get('next_stage'); stage=get_stage(name) if isinstance(name,str) else None
         if stage is None:
-            recommend('adaptation',project_out)
+            recommend('adaptation',project_out,**_recommendation_context(request_path))
             request=_write_adaptation_handoff(report,project_out,baseline_sha)
             if request.get('status')=='adaptation_required':
                 pending_status=_run_adaptation_pending(project_out,deadline,runner,clock)
@@ -194,7 +207,7 @@ def run_registered_stages(request_path,project_out,work,report,deadline,runner,c
 
 def run_project(request_path,project_out,work,runner,deadline,clock=time.monotonic,baseline_sha=None):
     project_out.mkdir(parents=True,exist_ok=True)
-    recommend('planning',project_out)
+    recommend('planning',project_out,**_recommendation_context(request_path))
     try: remaining=_remaining(deadline,clock)
     except TimeoutError: return {'status':'deferred','report':{},'next_stage':'preview'}
     preview=runner([sys.executable,'studio/run.py',request_path,'--work',work,'--out',str(project_out)],timeout=remaining)
@@ -202,7 +215,7 @@ def run_project(request_path,project_out,work,runner,deadline,clock=time.monoton
         report=load_report(project_out) if (project_out/'report.json').is_file() else {}; return {'status':'failed','report':report,'next_stage':'preview'}
     try: remaining=_remaining(deadline,clock)
     except TimeoutError: return {'status':'deferred_release','report':load_report(project_out),'next_stage':'release_build'}
-    recommend('testing',project_out)
+    recommend('testing',project_out,**_recommendation_context(request_path))
     release=runner([sys.executable,'studio/post_preview.py',request_path,'--work',work,'--out',str(project_out)],timeout=remaining)
     if release.returncode!=0: return {'status':'release_failed','report':load_report(project_out),'next_stage':'release_build'}
     return run_registered_stages(request_path,project_out,work,load_report(project_out),deadline,runner,clock,baseline_sha)

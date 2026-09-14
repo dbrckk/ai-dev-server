@@ -21,8 +21,10 @@ _PHASE_CAPABILITIES = {
 
 def recommend(phase: str, out: Path, *, domain: str | None = None,
               platform: str | None = None, language: str | None = None,
-              self_hosted: bool = False) -> dict:
-    needs = _PHASE_NEEDS.get(phase, ["agent", "code"])
+              self_hosted: bool = False, context_text: str | None = None) -> dict:
+    needs = list(_PHASE_NEEDS.get(phase, ["agent", "code"]))
+    if isinstance(context_text, str) and context_text.strip():
+        needs.append(context_text[:4000])
     out.mkdir(parents=True, exist_ok=True)
     try:
         result = scan(

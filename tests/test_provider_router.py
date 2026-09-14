@@ -10,7 +10,7 @@ STUDIO = ROOT / "studio"
 if str(STUDIO) not in sys.path:
     sys.path.insert(0, str(STUDIO))
 
-from provider_router import candidates_for, load_providers
+from provider_router import candidates_for, load_providers, budget_eligible, ProviderSpec
 
 
 class ProviderRouterTests(unittest.TestCase):
@@ -89,6 +89,42 @@ class ProviderRouterTests(unittest.TestCase):
         with patch.dict(os.environ, env, clear=True):
             providers = load_providers()
         self.assertTrue(providers[0].unmetered)
+
+    def test_paid_budget_exhaustion_keeps_only_unmetered(self):
+        providers = (
+            ProviderSpec(
+                "local",
+                "http://127.0.0.1:11434/v1",
+                "k",
+                "local-model",
+                unmetered=True,
+            ),
+            ProviderSpec(
+                "paid",
+                "https://paid.invalid/v1",
+                "k",
+                "paid-model",
+                unmetered=False,
+            ),
+        )
+        eligible = budget_eligible(
+            providers,
+            max_api_cost_usd=1.0,
+            spent_api_cost_usd=1.2,
+        )
+        self.assertEqual([p.name for p in eligible], ["local"])
+
+    def test_paid_budget_not_exhausted_keeps_all(self):
+        providers = (
+            ProviderSpec("local", "http://127.0.0.1:11434/v1", "k", "local", unmetered=True),
+            ProviderSpec("paid", "https://paid.invalid/v1", "k", "paid", unmetered=False),
+        )
+        eligible = budget_eligible(
+            providers,
+            max_api_cost_usd=1.0,
+            spent_api_cost_usd=0.2,
+        )
+        self.assertEqual([p.name for p in eligible], ["local", "paid"])
 
     def test_vision_candidates_exclude_text_only_provider(self):
         config = [{

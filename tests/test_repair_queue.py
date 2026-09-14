@@ -4,7 +4,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from repair_queue import begin_attempt, enqueue, finish_attempt, next_task, summarize
+from repair_queue import begin_attempt, enqueue, finish_attempt, next_task, recover_expired_leases, summarize
 
 
 class RepairQueueTests(unittest.TestCase):
@@ -62,6 +62,50 @@ class RepairQueueTests(unittest.TestCase):
         finish_attempt(task, success=False, improved=False)
         self.assertEqual(task["status"], "exhausted")
         self.assertIsNone(next_task(state))
+
+
+    def test_begin_attempt_claims_worker_lease_and_finish_releases_it(self):
+        state = {}
+        task = enqueue(
+            state,
+            {
+                "stage": "performance_qa",
+                "action": "repair_code",
+                "blockers": ["excessive_jank"],
+            },
+        )
+
+        begin_attempt(task, worker_id="worker-a", lease_seconds=60, now=100.0)
+
+        self.assertEqual(task["status"], "running")
+        self.assertEqual(task["lease_owner"], "worker-a")
+        self.assertEqual(task["lease_expires_at"], 160.0)
+
+        finish_attempt(task, success=False, improved=False)
+
+        self.assertEqual(task["status"], "retry")
+        self.assertNotIn("lease_owner", task)
+        self.assertNotIn("lease_token", task)
+
+    def test_expired_running_task_is_recovered_and_selected(self):
+        state = {}
+        task = enqueue(
+            state,
+            {
+                "stage": "performance_qa",
+                "action": "repair_code",
+                "blockers": ["excessive_jank"],
+            },
+        )
+        begin_attempt(task, worker_id="dead-worker", lease_seconds=30, now=100.0)
+
+        recovered = recover_expired_leases(state, now=131.0)
+
+        self.assertEqual(recovered, 1)
+        self.assertEqual(task["status"], "retry")
+        self.assertEqual(task["lease_recovery_count"], 1)
+        self.assertEqual(next_task(state)["id"], task["id"])
+
 
 
 if __name__ == "__main__":

@@ -69,6 +69,32 @@ class ProviderRouterTests(unittest.TestCase):
             providers = load_providers()
         self.assertTrue(providers[0].unmetered)
 
+    def test_local_primary_can_be_keyless(self):
+        env = {
+            "STUDIO_API_BASE": "http://127.0.0.1:11434/v1",
+            "STUDIO_MODEL": "qwen-local",
+        }
+        with patch.dict(os.environ, env, clear=True):
+            providers = load_providers()
+        self.assertEqual(len(providers), 1)
+        self.assertEqual(providers[0].key, "")
+        self.assertTrue(providers[0].unmetered)
+
+    def test_local_json_provider_can_be_keyless(self):
+        config = [{
+            "name": "ollama",
+            "base": "http://localhost:11434/v1",
+            "model": "qwen-local",
+        }]
+        with patch.dict(
+            os.environ,
+            {"STUDIO_PROVIDERS_JSON": json.dumps(config)},
+            clear=True,
+        ):
+            providers = load_providers()
+        self.assertEqual([p.name for p in providers], ["ollama"])
+        self.assertTrue(providers[0].unmetered)
+
     def test_remote_endpoint_is_metered_by_default(self):
         env = {
             "STUDIO_API_KEY": "remote-key",

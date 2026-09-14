@@ -437,6 +437,31 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         self.assertLess(fused["effective_samples"],5)
         self.assertFalse(fused["eligible_for_bias"])
 
+    def test_conflicting_fused_history_blocks_positive_bias(self):
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter","project_type":"game","primary_domain":"mobile",
+            "platform":"android","current_major_version":3,"replacement_major_version":4,
+        })
+        common={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "framework":"flutter","project_type":"game","primary_domain":"mobile","platform":"android",
+            "samples":20,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "rollback_rate":0.0,
+        }
+        good={**common,"current_major_version":3,"replacement_major_version":4,
+              "success_rate":1.0,"posterior_success_rate":0.95,"regression_rate":0.0,
+              "wilson_lower_95":0.84,"mean_quality_score":98.0}
+        bad={**common,"current_major_version":2,"replacement_major_version":3,
+             "success_rate":0.2,"posterior_success_rate":0.23,"regression_rate":0.6,
+             "wilson_lower_95":0.08,"mean_quality_score":20.0}
+        row=plan(obs,self.recommendations(),learning={"rankings":[good,bad]})["replacement_plans"][0]
+        fused=row["fused_historical_evidence"]
+        self.assertTrue(fused["evidence_conflict"])
+        self.assertEqual(row["empirical_status"],"conflicting_history")
+        self.assertLessEqual(row["empirical_priority_adjustment"],0.0)
+        self.assertIn("conflicting_replacement_evidence_reviewed",row["required_gates"])
+
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)

@@ -8,6 +8,7 @@ import time
 
 from fleet_dashboard import collect
 from fleet_capacity import persist as persist_capacity_plan
+from capacity_ledger import snapshot as capacity_ledger_snapshot
 from fleet_maintenance import run as maintain
 from fleet_metrics import append as append_metrics, snapshot
 from fleet_regression import evaluate as evaluate_regression
@@ -33,6 +34,7 @@ def tick(
     regression = evaluate_regression(history)
     maintenance = maintain(root)
     capacity = persist_capacity_plan(root, request_dir)
+    capacity_ledger = capacity_ledger_snapshot(root / "capacity-ledger.json")
 
     supervisor = apply_supervisor(
         root,
@@ -46,7 +48,10 @@ def tick(
         "metrics": metrics,
         "regression": regression,
         "maintenance": maintenance["summary"],
-        "capacity": capacity["summary"],
+        "capacity": {
+            **capacity["summary"],
+            "ledger": capacity_ledger,
+        },
         "supervisor": {
             "apply": supervisor["apply"],
             "restarts_executed": supervisor["restarts_executed"],

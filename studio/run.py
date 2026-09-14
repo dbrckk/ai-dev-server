@@ -20,6 +20,7 @@ from project_budget import budget_status, can_spend, configure as configure_budg
 from idempotent_model import ask_value as checkpointed_ask
 from atomic_file import write_text as atomic_write_text
 from architecture_planner import write as write_architecture_plan
+from architecture_outcome import write as write_architecture_outcome
 
 class GitHub(API):
     def __init__(self, repo):
@@ -355,7 +356,8 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     (out / 'report.json').write_text(canonical(state))
     sha = checkpoint(parent)
     state['checkpoint_commit'] = sha
-    (out / 'report.json').write_text(canonical(state))
+    write_architecture_outcome(state, out)
+    atomic_write_text(out / 'report.json', canonical(state))
     return state
 
 def main():

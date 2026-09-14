@@ -171,7 +171,7 @@ def load_providers(*, prefer_free: bool = True) -> tuple[ProviderSpec, ...]:
             deduped[key] = spec
 
     def sort_key(spec: ProviderSpec):
-        unmetered_bonus = 1 if spec.unmetered else 0
+        unmetered_bonus = 2 if spec.unmetered else (1 if spec.monthly_token_quota > 0 else 0)
         free_bonus = 1 if (prefer_free and spec.free_preferred) else 0
         return (-unmetered_bonus, -free_bonus, -spec.priority, spec.name)
 
@@ -200,4 +200,8 @@ def budget_eligible(
     spent = max(0.0, float(spent_api_cost_usd))
     if limit <= 0 or spent < limit:
         return specs
-    return tuple(spec for spec in specs if spec.unmetered)
+    return tuple(
+        spec
+        for spec in specs
+        if spec.unmetered or spec.monthly_token_quota > 0
+    )

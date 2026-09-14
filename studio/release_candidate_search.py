@@ -9,7 +9,7 @@ from core import StudioError, apply_patch, canonical
 from journeys import validate_journeys
 from repair_search_policy import should_continue_after_quick_failure, should_refine
 from diff_quick_gates import plan as plan_quick_gates
-from quick_gate_cache import cache_key, delta_hash, get as cache_get, put as cache_put
+from quick_gate_cache import cache_key, delta_hash, get as cache_get, put as cache_put, workspace_hash
 
 MAX_CANDIDATES = 2
 MAX_BRANCH_STEPS = 3
@@ -168,6 +168,7 @@ def run_branch(
                 step_delta = validate_delta(root, before_step)
                 quick_plan = plan_quick_gates(root, list(step_delta.get("changed", [])))
                 digest = delta_hash(list(step_delta.get("files", [])))
+                workspace_digest = workspace_hash(snapshot_workspace(root))
                 step_trace["delta"] = quick_plan
                 quick_sandbox = sandbox_factory(root)
                 progressive = []
@@ -203,7 +204,7 @@ def run_branch(
                             quick_failure = canonical(gate_logs[-1:])[-4000:]
                         break
                     targets = quick_plan["targeted_tests"] if gate_name == "test" else []
-                    key = cache_key(digest, gate_name, targets)
+                    key = cache_key(digest, gate_name, targets, workspace_digest=workspace_digest)
                     cached = cache_get(quick_gate_cache, key)
                     if cached is not None:
                         gate_ok = cached["passed"]

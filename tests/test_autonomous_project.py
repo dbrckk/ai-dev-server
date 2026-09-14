@@ -165,5 +165,40 @@ class AutonomousProjectTests(unittest.TestCase):
             self.assertEqual(memory_path, root / ".autonomy" / "memory.json")
 
 
+    def test_runtime_environment_is_restored_after_project_run(self):
+        import os
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            previous = os.environ.get("STUDIO_CHECKPOINT_PATH")
+            os.environ["STUDIO_CHECKPOINT_PATH"] = "sentinel-checkpoint"
+            try:
+                state = run_persistent_project(
+                    "request.json",
+                    root / "out",
+                    str(root / "work"),
+                    runner=lambda *a, **k: None,
+                    deadline=100,
+                    clock=lambda: 0,
+                    run_once=lambda *a: {
+                        "status": "complete",
+                        "report": {
+                            "status": "finished",
+                            "completion": {"finished": True},
+                            "release_status": "store_ready",
+                        },
+                        "next_stage": None,
+                    },
+                    max_cycles=1,
+                )
+                self.assertEqual(state["status"], "complete")
+                self.assertEqual(os.environ.get("STUDIO_CHECKPOINT_PATH"), "sentinel-checkpoint")
+            finally:
+                if previous is None:
+                    os.environ.pop("STUDIO_CHECKPOINT_PATH", None)
+                else:
+                    os.environ["STUDIO_CHECKPOINT_PATH"] = previous
+
+
+
 if __name__ == "__main__":
     unittest.main()

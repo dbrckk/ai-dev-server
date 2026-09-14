@@ -57,6 +57,26 @@ class ReleaseRepairTests(unittest.TestCase):
             "metrics": {},
             "allowed": ["agent_only", "model_only"],
             "evidence_source": "global",
+            "candidate_ranking": [
+                {
+                    "strategy": "agent_only",
+                    "score": 50.0,
+                    "conservative_success_rate": 0.8,
+                    "estimated_seconds": 10.0,
+                    "risk": 0.2,
+                    "estimated_model_calls": 0,
+                    "mature": True,
+                },
+                {
+                    "strategy": "model_only",
+                    "score": 40.0,
+                    "conservative_success_rate": 0.7,
+                    "estimated_seconds": 20.0,
+                    "risk": 0.15,
+                    "estimated_model_calls": 1,
+                    "mature": True,
+                },
+            ],
         }
 
         def edit(root, blockers, stage):
@@ -102,7 +122,7 @@ class ReleaseRepairTests(unittest.TestCase):
                 {"passed": False, "blockers": ["cleartext_network_traffic_detected"]},
                 "performance_qa",
                 "demo_app",
-                model_factory=NeverModel,
+                model_factory=CandidateModel,
                 sandbox_factory=PassingSandbox,
             )
 

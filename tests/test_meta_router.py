@@ -130,5 +130,26 @@ class MetaRouterTests(unittest.TestCase):
         self.assertEqual(decision.agent_limit, 2)
 
 
+    def test_force_diversify_overrides_learned_single_strategy(self):
+        route = choose_execution_mode(
+            [],
+            role="implementation",
+            agent_available=True,
+            strategy_data={
+                "model_only": {
+                    "samples": 20,
+                    "successes": 20,
+                    "ema_cost_seconds": 10.0,
+                    "ema_success_rate": 1.0,
+                }
+            },
+            force_diversify=True,
+        )
+        self.assertEqual(route.mode, "dual")
+        self.assertEqual(route.strategy, "dual")
+        self.assertEqual(route.agent_limit, 2)
+
+
+
 if __name__ == "__main__":
     unittest.main()

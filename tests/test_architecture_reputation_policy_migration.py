@@ -53,6 +53,9 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
                 "head_ref":"policy/migration",
                 "base_ref":"main",
                 "author":"reviewer-a",
+                "workflow_path":".github/workflows/ci.yml",
+                "workflow_blob_sha":"blob123",
+                "workflow_sha256":"a"*64,
             },now=200.0)
             plan.clear()
             plan.update(bound)
@@ -88,12 +91,13 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
             commit_sha="a"*40,
             reviews=reviews,
             permissions=permissions,
-            workflow_runs=[{"id":99,"head_sha":"a"*40,"conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:25Z"}],
+            workflow_runs=[{"id":99,"head_sha":"a"*40,"conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/42/merge","created_at":"2026-01-01T00:00:25Z"}],
             check_runs=[
                 {"id":101,"name":"validate","head_sha":"a"*40,"status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:30Z","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/99"},
                 {"id":102,"name":"python-tests","head_sha":"a"*40,"status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:40Z","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/99"},
             ],
             pr_identity={"number":42,"state":"open","draft":False,"head_ref":"policy/migration","head_sha":"a"*40,"base_ref":"main","author":"reviewer-a"},
+            workflow_file={"path":".github/workflows/ci.yml","blob_sha":"blob123","size":9,"sha256":"a"*64},
             head_commit_timestamp=1767225600.0,
             reinforced=reinforced,
         )
@@ -347,6 +351,9 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         self.assertIn("validate",last["github_check_evidence"])
         self.assertIn("python-tests",last["github_check_evidence"])
         self.assertGreaterEqual(last["github_workflow_timestamp"],last["github_head_commit_timestamp"])
+        self.assertEqual(last["github_workflow_path"],".github/workflows/ci.yml")
+        self.assertEqual(last["github_workflow_file_blob_sha"],"blob123")
+        self.assertEqual(last["github_workflow_file_sha256"],"a"*64)
 
     def test_github_attestation_can_derive_approval_provenance(self):
         registry=self.registry()

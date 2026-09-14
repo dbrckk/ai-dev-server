@@ -6,8 +6,12 @@ import os
 from pathlib import Path
 import time
 
-from core import canonical
-from file_lock import exclusive
+try:
+    from .core import canonical
+    from .file_lock import exclusive
+except ImportError:
+    from core import canonical
+    from file_lock import exclusive
 
 MAX_EVENT_BYTES = 64 * 1024
 

@@ -46,6 +46,17 @@ def render(req: dict, state: dict) -> str:
     replacement_rows = replacement_plan.get('replacement_plans') if isinstance(replacement_plan.get('replacement_plans'), list) else []
     replacement_learning = state.get('architecture_replacement_learning') if isinstance(state.get('architecture_replacement_learning'), dict) else {}
     learned_replacements = replacement_learning.get('rankings') if isinstance(replacement_learning.get('rankings'), list) else []
+    replacement_reputation = state.get('architecture_replacement_reputation') if isinstance(state.get('architecture_replacement_reputation'), dict) else {}
+    reputation_entries = replacement_reputation.get('entries') if isinstance(replacement_reputation.get('entries'), list) else []
+    reputation_lines = []
+    for item in reputation_entries[:8]:
+        if not isinstance(item, dict):
+            continue
+        current = item.get('current_repo')
+        replacement = item.get('replacement_repo')
+        state_name = item.get('state')
+        if isinstance(current, str) and isinstance(replacement, str) and isinstance(state_name, str):
+            reputation_lines.append(f"{current} -> {replacement}: {state_name}")
     learned_replacement_lines = []
     for item in learned_replacements[:8]:
         if not isinstance(item, dict):
@@ -140,6 +151,10 @@ Potential migration candidates:
 ### Historical replacement evidence
 
 {_bullets(learned_replacement_lines, 'No terminal replacement outcome has been learned yet.')}
+
+### Replacement reputation
+
+{_bullets(reputation_lines, 'No persistent replacement reputation state has been recorded yet.')}
 
 ## Current validation / release evidence
 

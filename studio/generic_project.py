@@ -266,8 +266,14 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         )
         learned_context = load_context()
         agent_perf = load_agent_performance(out/".autonomy/agent-performance.json")
+        safe_rewrite_summary = summarize_safe_rewrite_learning(safe_rewrite_learning_path)
         agent_candidates = []
-        for decision in rank_agents({"code_editing","repo_analysis"}, prefer_free=True, long_task=True):
+        for decision in rank_agents(
+            {"code_editing","repo_analysis"},
+            prefer_free=True,
+            long_task=True,
+            safe_rewrite_summary=safe_rewrite_summary,
+        ):
             if decision.agent.available():
                 agent_candidates.append({
                     "name":decision.agent.name,
@@ -287,6 +293,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             "bootstrap": state["bootstrap"],
             "previous_rounds": state["rounds"][-3:],
             "available_agent_candidates": agent_candidates[:6],
+            "safe_rewrite_learning": safe_rewrite_summary,
         }
         planning_started = clock()
         preplan_remaining = None if deadline is None else max(0.0, deadline - clock())

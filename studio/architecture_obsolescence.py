@@ -28,10 +28,11 @@ def _recommendation_index(recommendations: dict) -> dict[str, dict]:
         if isinstance(row, dict) and isinstance(row.get("repo"), str)
     }
 
-def evaluate(learning: dict, benchmark: dict, recommendations: dict, maintenance: dict[str, dict] | None = None) -> dict:
+def evaluate(learning: dict, benchmark: dict, recommendations: dict, maintenance: dict[str, dict] | None = None, versions: dict[str, dict] | None = None) -> dict:
     drift = _repo_drift(learning)
     recs = _recommendation_index(recommendations)
     maintenance = maintenance if isinstance(maintenance, dict) else {}
+    versions = versions if isinstance(versions, dict) else {}
     comparisons = benchmark.get("comparisons", []) if isinstance(benchmark, dict) else []
 
     candidates = []
@@ -86,8 +87,18 @@ def evaluate(learning: dict, benchmark: dict, recommendations: dict, maintenance
                     if isinstance(value, str) and value
                 ), None) if isinstance(current_meta.get("platforms"), list) else None
             ),
-            "current_major_version": current_meta.get("majorVersion"),
-            "replacement_major_version": alt_meta.get("majorVersion"),
+            "current_major_version": (
+                versions.get(current, {}).get("major_version")
+                if isinstance(versions.get(current), dict)
+                else current_meta.get("majorVersion")
+            ),
+            "replacement_major_version": (
+                versions.get(best, {}).get("major_version")
+                if isinstance(versions.get(best), dict)
+                else alt_meta.get("majorVersion")
+            ),
+            "current_version_evidence": versions.get(current, {}) if isinstance(versions.get(current), dict) else {},
+            "replacement_version_evidence": versions.get(best, {}) if isinstance(versions.get(best), dict) else {},
             "reason": (
                 "runtime degradation and benchmark evidence both favor an alternative"
                 + ("; maintenance is also weak" if maintenance_signal in {"aging","stale","archived"} else
@@ -103,7 +114,7 @@ def evaluate(learning: dict, benchmark: dict, recommendations: dict, maintenance
         reverse=True,
     )
     return {
-        "version": 2,
+        "version": 3,
         "status": "evaluated",
         "advisory_only": True,
         "deprecation_candidates": candidates[:20],
@@ -117,9 +128,9 @@ def evaluate(learning: dict, benchmark: dict, recommendations: dict, maintenance
         },
     }
 
-def write(learning: dict, benchmark: dict, recommendations: dict, out: Path, maintenance: dict[str, dict] | None = None) -> dict:
+def write(learning: dict, benchmark: dict, recommendations: dict, out: Path, maintenance: dict[str, dict] | None = None, versions: dict[str, dict] | None = None) -> dict:
     out.mkdir(parents=True, exist_ok=True)
-    result = evaluate(learning, benchmark, recommendations, maintenance=maintenance)
+    result = evaluate(learning, benchmark, recommendations, maintenance=maintenance, versions=versions)
     atomic_write_text(
         out / "architecture-obsolescence.json",
         json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n",

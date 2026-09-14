@@ -161,6 +161,34 @@ class GitHub(API):
             self.call('POST', self.repo + '/git/refs', {'ref': 'refs/heads/' + branch, 'sha': commit['sha']})
         return commit['sha']
 
+def _load_architecture_obsolescence(out: Path) -> dict:
+    path = Path(out) / 'architecture-obsolescence.json'
+    if not path.is_file():
+        return {'status': 'unavailable', 'deprecation_candidates': []}
+    try:
+        value = json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return {'status': 'invalid', 'deprecation_candidates': []}
+    if not isinstance(value, dict):
+        return {'status': 'invalid', 'deprecation_candidates': []}
+    candidates = []
+    for row in value.get('deprecation_candidates', [])[:8]:
+        if not isinstance(row, dict):
+            continue
+        candidates.append({
+            'repo': row.get('repo'),
+            'replacement_candidate': row.get('replacement_candidate'),
+            'drift_score': row.get('drift_score'),
+            'benchmark_delta': row.get('benchmark_delta'),
+            'maintenance_signal': row.get('maintenance_signal'),
+            'reason': row.get('reason'),
+        })
+    return {
+        'status': value.get('status', 'evaluated'),
+        'deprecation_candidates': candidates,
+        'advisory_only': True,
+    }
+
 def _load_architecture_benchmark(out: Path) -> dict:
     path = Path(out) / 'architecture-benchmark.json'
     if not path.is_file():
@@ -233,6 +261,7 @@ def context(req, state, root):
                       'architecture_autonomy_policy': state.get('architecture_autonomy_policy', {}),
                       'architecture_preflight': state.get('architecture_preflight', {'status':'unavailable','verdict':'unknown'}),
                       'architecture_benchmark': state.get('architecture_benchmark', {'status':'unavailable','migration_candidates':[]}),
+                      'architecture_obsolescence': state.get('architecture_obsolescence', {'status':'unavailable','deprecation_candidates':[]}),
                       'architecture_drift_alerts': state.get('architecture_drift_alerts', []),
                       'files': files})
 

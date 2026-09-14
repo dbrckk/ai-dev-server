@@ -358,3 +358,52 @@ def validate_contract(criteria: list[str], *, critical: bool = False) -> dict:
         "strong_deterministic_count": strong_deterministic_count,
         "review_count": review_count,
     }
+
+
+def baseline_static(root: Path, criteria: list[str]) -> dict:
+    """Capture static done_when truth before task implementation."""
+    rows=[]
+    for criterion in criteria:
+        item=classify(criterion)
+        if item["kind"] not in {"file","symbol","json"}:
+            continue
+        evidence=evaluate_static(root,item["raw"])
+        rows.append({
+            "criterion":item["raw"],
+            "kind":item["kind"],
+            "passed":bool(evidence and evidence.get("passed") is True),
+            "evidence_refs":list(evidence.get("evidence_refs", [])) if isinstance(evidence,dict) else [],
+        })
+    return {"static":rows}
+
+
+def apply_causality(result: dict, baseline: dict | None, *, first_attempt: bool) -> dict:
+    """Reject first-attempt static criteria that were already true before work."""
+    if not isinstance(result,dict) or not first_attempt:
+        return result
+    before={}
+    if isinstance(baseline,dict):
+        for row in baseline.get("static",[]):
+            if isinstance(row,dict) and row.get("criterion"):
+                before[str(row["criterion"])]=row.get("passed") is True
+
+    deterministic=[]
+    preexisting=[]
+    for row in result.get("deterministic",[]):
+        if not isinstance(row,dict):
+            continue
+        item=dict(row)
+        if item.get("kind") in {"file","symbol","json"} and item.get("passed") is True and before.get(str(item.get("criterion"))) is True:
+            item["passed"]=False
+            item["preexisting"]=True
+            item["evidence"]="criterion was already true before first task attempt"
+            preexisting.append(str(item.get("criterion")))
+        deterministic.append(item)
+
+    updated=dict(result)
+    updated["deterministic"]=deterministic
+    updated["preexisting_static_criteria"]=preexisting
+    updated["all_deterministic_passed"]=all(
+        row.get("passed") is True for row in deterministic
+    )
+    return updated

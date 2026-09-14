@@ -61,8 +61,8 @@ def build(state: dict) -> dict:
         "outcome": {
             "status": status,
             "successful": status in SUCCESS_STATUSES,
-            "cycles": int(state.get("cycles", 0) or 0),
-            "rounds": int(state.get("rounds", 0) or 0),
+            "cycles": _count(state.get("cycles", 0)),
+            "rounds": _count(state.get("rounds", 0)),
             "model_calls_this_cycle": int(state.get("model_calls_this_cycle", 0) or 0),
             "checkpoint_replays_this_cycle": int(state.get("checkpoint_replays_this_cycle", 0) or 0),
             "blocker_count": len(blockers),

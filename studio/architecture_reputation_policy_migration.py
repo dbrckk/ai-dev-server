@@ -425,8 +425,6 @@ def dry_run(registry: dict, learning: dict | None=None, *, now: float | None=Non
 def bind_github_review_target(plan: dict, target: dict, *, now: float | None=None) -> dict:
     if not isinstance(plan,dict) or plan.get("status")!="reputation_policy_migration_review_ready":
         raise ReputationPolicyMigrationError("migration plan invalid")
-    if not isinstance(plan.get("github_review_target"),dict):
-        raise ReputationPolicyMigrationError("migration plan is not bound to a GitHub review target")
     required=("repository","pull_request","commit_sha","head_ref","base_ref","author")
     if not isinstance(target,dict) or any(not target.get(key) for key in required):
         raise ReputationPolicyMigrationError("GitHub review target incomplete")
@@ -452,6 +450,8 @@ def bind_github_review_target(plan: dict, target: dict, *, now: float | None=Non
 def apply_migration(registry: dict, plan: dict, authorization: dict, *, approval: dict | None=None, github_attestation: dict | None=None, approval_ledger: dict | None=None, now: float | None=None) -> dict:
     if not isinstance(plan,dict) or plan.get("status")!="reputation_policy_migration_review_ready":
         raise ReputationPolicyMigrationError("migration plan invalid")
+    if not isinstance(plan.get("github_review_target"),dict):
+        raise ReputationPolicyMigrationError("migration plan is not bound to a GitHub review target")
     if not isinstance(authorization,dict):
         raise ReputationPolicyMigrationError("migration authorization missing")
     if authorization.get("version")!=AUTHORIZATION_VERSION:

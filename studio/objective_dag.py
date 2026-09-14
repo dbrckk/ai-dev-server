@@ -227,6 +227,8 @@ def next_task(value: dict) -> dict | None:
 
 def mark_running(value: dict, task_id: str) -> dict:
     validate(value)
+    if type(minimum) is not int or minimum < 0 or minimum > 100:
+        raise ObjectiveDagError("objective confidence threshold invalid")
     unsigned = dict(value)
     unsigned.pop("sha256", None)
     tasks = [dict(task) for task in unsigned["tasks"]]
@@ -438,7 +440,7 @@ def append_amendments(value: dict, items: list[str]) -> dict:
     return refresh(_seal(unsigned))
 
 
-def reopen_confidence_dependency(value: dict, task_id: str) -> dict:
+def reopen_confidence_dependency(value: dict, task_id: str, *, minimum: int = 85, reason: str | None = None) -> dict:
     """Re-open a verified low-confidence task for one bounded revalidation attempt."""
     validate(value)
     unsigned = dict(value)
@@ -450,12 +452,12 @@ def reopen_confidence_dependency(value: dict, task_id: str) -> dict:
             continue
         if task["state"] != "verified":
             raise ObjectiveDagError("confidence dependency is not verified")
-        if int(task.get("confidence") or 0) >= 85:
+        if int(task.get("confidence") or 0) >= minimum:
             raise ObjectiveDagError("confidence dependency already sufficient")
         if task["attempts"] >= MAX_TASK_ATTEMPTS:
             raise ObjectiveDagError("objective task retry budget exhausted")
         task["state"] = "ready"
-        task["last_error"] = "revalidation required for critical dependent"
+        task["last_error"] = str(reason or "revalidation required for confidence gate")[:1000]
         found = True
     if not found:
         raise ObjectiveDagError("objective task missing")

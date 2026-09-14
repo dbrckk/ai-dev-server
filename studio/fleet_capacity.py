@@ -163,6 +163,21 @@ def _project_rows(
     return rows
 
 
+def _capacity_band(value: int | None, *, unmetered: bool = False) -> str:
+    if unmetered:
+        return "unmetered"
+    if value is None:
+        return "unknown"
+    amount = max(0, int(value))
+    if amount == 0:
+        return "exhausted"
+    if amount < 32_000:
+        return "low"
+    if amount < 1_000_000:
+        return "normal"
+    return "high"
+
+
 def _provider_rows(
     *,
     reservations_by_provider: dict | None = None,
@@ -232,7 +247,10 @@ def plan(
     provider_context = [
         {
             "name": item.name,
-            "available_tokens": item.available_tokens,
+            "capacity_band": _capacity_band(
+                item.available_tokens,
+                unmetered=item.unmetered,
+            ),
             "unmetered": item.unmetered,
             "paid": item.paid,
         }

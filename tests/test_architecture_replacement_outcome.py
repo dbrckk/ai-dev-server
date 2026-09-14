@@ -6,7 +6,7 @@ from architecture_replacement_outcome import build
 
 class ReplacementOutcomeTests(unittest.TestCase):
     def fixtures(self):
-        work={"id":"r1","current_repo":"a/current","replacement_repo":"a/better","risk":"low","scope":"narrow"}
+        work={"id":"r1","current_repo":"a/current","replacement_repo":"a/better","risk":"low","scope":"narrow","framework":"flutter","project_type":"game","primary_domain":"mobile","platform":"android","current_major_version":1,"replacement_major_version":2}
         merged={"status":"replacement_merged","work_order_id":"r1","merge_sha":"3"*40}
         return work,merged
     def test_healthy_merge_is_success(self):
@@ -17,5 +17,14 @@ class ReplacementOutcomeTests(unittest.TestCase):
         work,merged=self.fixtures()
         result=build(work,merged,{"status":"post_merge_regression","work_order_id":"r1","rollback_required":True,"failed_checks":["validate"]})
         self.assertFalse(result["successful"]); self.assertTrue(result["regressed"]); self.assertLess(result["quality_score"],50.0)
+
+    def test_context_is_preserved(self):
+        work,merged=self.fixtures()
+        result=build(work,merged,{"status":"post_merge_healthy","work_order_id":"r1","post_merge_healthy":True})
+        self.assertEqual(result["framework"],"flutter")
+        self.assertEqual(result["project_type"],"game")
+        self.assertEqual(result["platform"],"android")
+        self.assertEqual(result["current_major_version"],1)
+        self.assertEqual(result["replacement_major_version"],2)
 
 if __name__=="__main__": unittest.main()

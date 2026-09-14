@@ -434,6 +434,9 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, now: flo
         },
         "last_policy_migration":{
             "migration_id":plan.get("migration_id"),
+            "risk_level":risk.get("level"),
+            "reinforced_review_required":risk.get("reinforced_review_required") is True,
+            "reinforced_reviewed":authorization.get("reinforced_reviewed") is True,
             "applied_at":now,
             "source_registry_digest":plan.get("source_registry_digest"),
             "target_policy_digest":plan.get("target_policy_digest"),

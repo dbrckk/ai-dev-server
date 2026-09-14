@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
-from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, validate_check_runs, validate_workflow
+from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, validate_check_runs, validate_workflow, validate_workflow_text
 
 class ReplacementCIPolicyTests(unittest.TestCase):
     def test_repository_ci_exposes_required_check_ids(self):
@@ -68,6 +68,20 @@ class ReplacementCIPolicyTests(unittest.TestCase):
         self.assertTrue(result["mixed_workflow_runs"])
         self.assertEqual(result["workflow_run_ids"],[11,12])
         self.assertIsNone(result["common_workflow_run_id"])
+
+    def test_workflow_text_requires_canonical_name_and_jobs(self):
+        result=validate_workflow_text("name: CI\njobs:\n  validate:\n  python-tests:\n")
+        self.assertTrue(result["valid"])
+        self.assertEqual(result["workflow_name"],"CI")
+
+    def test_workflow_text_rejects_wrong_name(self):
+        result=validate_workflow_text("name: Other\njobs:\n  validate:\n  python-tests:\n")
+        self.assertFalse(result["valid"])
+
+    def test_workflow_text_rejects_missing_required_job(self):
+        result=validate_workflow_text("name: CI\njobs:\n  python-tests:\n")
+        self.assertFalse(result["valid"])
+        self.assertIn("validate",result["missing_checks"])
 
 if __name__=="__main__":
     unittest.main()

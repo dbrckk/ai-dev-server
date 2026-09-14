@@ -106,7 +106,7 @@ def attempt(
         return {"attempted": False, "changed": False, "reason": "no_repairable_code_diagnostics"}
 
     agents = _agent_candidates()
-    strategy = choose_strategy(task, agent_available=bool(agents))
+    strategy = choose_strategy(task, stage=stage, agent_available=bool(agents))
     strategy_name = strategy["strategy"]
     started = time.monotonic()
     model = None
@@ -147,6 +147,7 @@ def attempt(
         restore_agent_workspace(root, before_strategy)
         record_strategy_outcome(
             strategy_name,
+            stage=stage,
             success=False,
             cost_seconds=max(0.0, time.monotonic() - started),
         )

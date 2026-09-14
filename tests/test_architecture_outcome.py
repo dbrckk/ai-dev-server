@@ -36,6 +36,16 @@ class ArchitectureOutcomeTests(unittest.TestCase):
         self.assertEqual(result["outcome"]["model_calls_this_cycle"], 4)
         self.assertEqual(result["outcome"]["checkpoint_replays_this_cycle"], 1)
 
+    def test_finished_outcome_is_successful(self):
+        result = build({
+            "status": "finished",
+            "architecture_decision": {"status": "planned", "chosen": []},
+            "architecture_benchmark": {"status": "benchmarked", "migration_candidates": []},
+        })
+        self.assertTrue(result["outcome"]["successful"])
+        self.assertEqual(result["benchmark_status"], "benchmarked")
+        self.assertEqual(result["migration_candidate_count"], 0)
+
     def test_blocked_outcome_is_not_successful(self):
         result = build({
             "status": "blocked",

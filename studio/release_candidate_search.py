@@ -118,9 +118,16 @@ def run_branch(
     sandbox_factory,
     strategy_row: dict | None = None,
     remaining_model_calls: int = 0,
+    step_model_calls: list[int] | None = None,
 ) -> dict:
     if not 1 <= len(steps) <= MAX_BRANCH_STEPS:
         raise StudioError("Repair branch step count invalid")
+    if step_model_calls is None:
+        step_model_calls = [1] * len(steps)
+    if len(step_model_calls) != len(steps) or any(
+        type(value) is not int or value < 0 for value in step_model_calls
+    ):
+        raise StudioError("Repair branch step-cost metadata invalid")
     baseline = snapshot_workspace(root)
     started = time.monotonic()
     metadata = {
@@ -158,7 +165,7 @@ def run_branch(
                     "failure": None if quick_passed else canonical(quick_logs[-1:])[-4000:],
                 }
                 if not quick_passed:
-                    next_step_model_calls = 1
+                    next_step_model_calls = step_model_calls[index]
                     if not should_continue_after_quick_failure(
                         next_step_model_calls=next_step_model_calls,
                         remaining_model_calls=max(

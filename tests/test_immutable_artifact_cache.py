@@ -8,7 +8,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 from core import StudioError
-from immutable_artifact_cache import APK_REL, capture, restore, verify_entry, save
+from immutable_artifact_cache import APK_REL, capture, restore, verify_entry, save, touch
 
 
 class ImmutableArtifactCacheTests(unittest.TestCase):
@@ -98,6 +98,14 @@ class ImmutableArtifactCacheTests(unittest.TestCase):
                 self.assertTrue(stale_path.exists())
                 save({"2" * 64: second})
                 self.assertFalse(stale_path.exists())
+
+    def test_touch_moves_entry_to_most_recent_position(self):
+        entries = {
+            "a" * 64: {"validation_key": "a" * 64, "files": {}},
+            "b" * 64: {"validation_key": "b" * 64, "files": {}},
+        }
+        touch(entries, "a" * 64)
+        self.assertEqual(list(entries)[-1], "a" * 64)
 
 
 if __name__ == "__main__":

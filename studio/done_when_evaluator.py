@@ -188,7 +188,11 @@ def evaluate_command(root: Path, criterion: str, *, timeout: int=120) -> dict | 
     result=run_command(command,root,timeout=max(30,min(300,int(timeout))),network=False)
     return {
         "criterion":item["raw"],"kind":item["kind"],"passed":result.get("passed") is True,
-        "evidence_refs":[ref] if ref and result.get("passed") is True else [],
+        "evidence_refs":(
+            [ref]
+            if ref and result.get("passed") is True
+            else ([("command:" + " ".join(command))] if result.get("passed") is True else [])
+        ),
         "evidence":"deterministic command passed" if result.get("passed") is True else "deterministic command failed",
         "command":command,
         "result":result,
@@ -234,7 +238,7 @@ def _reuse_verification(criterion: str, verification: dict | None) -> dict | Non
                         "criterion":item["raw"],
                         "kind":"build",
                         "passed":True,
-                        "evidence_refs":[],
+                        "evidence_refs":["command:" + " ".join(command)],
                         "evidence":"reused trusted build verification",
                         "source":"verification_reuse",
                         "command":command,
@@ -275,6 +279,7 @@ def validate_contract(criteria: list[str], *, critical: bool = False) -> dict:
 
     errors = []
     deterministic_count = 0
+    strong_deterministic_count = 0
     review_count = 0
 
     for raw in criteria:
@@ -291,6 +296,8 @@ def validate_contract(criteria: list[str], *, critical: bool = False) -> dict:
             continue
 
         deterministic_count += 1
+        if kind in {"symbol","test","build","json"}:
+            strong_deterministic_count += 1
 
         if kind == "file":
             if not spec:
@@ -341,12 +348,13 @@ def validate_contract(criteria: list[str], *, critical: bool = False) -> dict:
                     except json.JSONDecodeError:
                         errors.append(f"invalid json expected value: {criterion}")
 
-    if critical and deterministic_count < 1:
-        errors.append("critical task requires at least one deterministic done_when criterion")
+    if critical and strong_deterministic_count < 1:
+        errors.append("critical task requires at least one strong deterministic done_when criterion")
 
     return {
         "valid": not errors,
         "errors": errors,
         "deterministic_count": deterministic_count,
+        "strong_deterministic_count": strong_deterministic_count,
         "review_count": review_count,
     }

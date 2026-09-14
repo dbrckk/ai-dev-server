@@ -11,6 +11,7 @@ from run import GitHub
 from security_audit import build_security_package
 from security_remediation import MAX_REMEDIATION_ROUNDS, remediate, remediation_candidate
 from security_agent import MAX_AGENTIC_ROUNDS, attempt as agentic_attempt, eligible_blockers as agentic_eligible_blockers
+from project_budget import budget_status, can_spend, configure as configure_budget, record_repair_outcome
 
 
 def advance(request_path: Path, root: Path, out: Path) -> dict:
@@ -24,6 +25,7 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
         report_path.write_text(canonical(state))
         return state
 
+    configure_budget(state, req)
     remediation_history = []
     evidence = build_security_package(root, out)
     for round_index in range(MAX_REMEDIATION_ROUNDS):
@@ -37,6 +39,13 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
             'changed': result.get('changed') is True,
             'actions': list(result.get('actions', [])),
         })
+        record_repair_outcome(
+            state,
+            success=result.get('changed') is True,
+            calls=result.get('model_calls', 0),
+            blockers_before=blockers_before,
+            blockers_after=0 if result.get('changed') is True else blockers_before,
+        )
         if result.get('changed') is not True:
             break
         evidence = build_security_package(root, out)
@@ -53,9 +62,24 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
             break
         if not agentic_eligible_blockers(evidence):
             break
+        if not can_spend(state, 1, repair=True):
+            agentic_history.append({
+                'round': round_index + 1,
+                'changed': False,
+                'error': 'project_repair_budget_exhausted',
+            })
+            break
+        blockers_before = len(evidence.get('blockers', []))
         try:
             result = agentic_attempt(root, state, evidence, req['app_name'])
         except StudioError as exc:
+            record_repair_outcome(
+                state,
+                success=False,
+                calls=0,
+                blockers_before=blockers_before,
+                blockers_after=blockers_before,
+            )
             agentic_history.append({
                 'round': round_index + 1,
                 'changed': False,
@@ -87,6 +111,7 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
         'max_rounds': MAX_AGENTIC_ROUNDS,
         'converged': evidence.get('passed') is True,
     }
+    evidence['project_budget'] = budget_status(state)
     state.setdefault('release_evidence', {})['security_scan'] = evidence
     state.pop('human_action', None)
     if state.get('status') == 'human_action_required':

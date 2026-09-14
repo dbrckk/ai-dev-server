@@ -65,7 +65,7 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
                 "head_ref":"policy/migration","base_ref":"main","author":"alice",
                 "workflow_path":".github/workflows/ci.yml",
                 "workflow_blob_sha":"blob123",
-                "workflow_sha256":"a"*64,
+                "workflow_sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4",
             },now=200.0)
             plan=root/"plan.json"; plan.write_text(json.dumps(plan_value))
             auth_value=dict(plan_value["authorization_template"]); auth_value["authorized"]=True
@@ -87,7 +87,7 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
                     {"id":12,"name":"python-tests","head_sha":"a"*40,"status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:40Z","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/9"},
                 ],
                 pr_identity={"number":7,"state":"open","draft":False,"head_ref":"policy/migration","head_sha":"a"*40,"base_ref":"main","author":"alice"},
-                workflow_file={"path":".github/workflows/ci.yml","blob_sha":"blob123","size":9,"sha256":"a"*64},
+                workflow_file={"path":".github/workflows/ci.yml","blob_sha":"blob123","size":44,"sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4","content_b64":"bmFtZTogQ0kKam9iczoKICB2YWxpZGF0ZToKICBweXRob24tdGVzdHM6Cg==","policy_validation":{"valid":True}},
                 head_commit_timestamp=1767225600.0,
                 reinforced=reinforced,
             )
@@ -111,7 +111,7 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
                 "head_ref":"policy/migration","base_ref":"main","author":"alice",
                 "workflow_path":".github/workflows/ci.yml",
                 "workflow_blob_sha":"blob123",
-                "workflow_sha256":"a"*64,
+                "workflow_sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4",
             }
             out=root/"bound.json"
             with patch.object(cli,"collect_review_target",return_value=target):

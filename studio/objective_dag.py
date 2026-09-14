@@ -50,6 +50,7 @@ def _normalized_tasks(plan: dict) -> list[dict]:
                 "id": task_id,
                 "title": title,
                 "depends_on": sorted(set(str(x).strip() for x in deps if str(x).strip())),
+                "critical": bool(raw.get("critical", False)),
             })
     else:
         work_items = plan.get("work_items", []) if isinstance(plan, dict) else []
@@ -65,13 +66,14 @@ def _normalized_tasks(plan: dict) -> list[dict]:
                 "id": task_id,
                 "title": title,
                 "depends_on": [previous] if previous else [],
+                "critical": False,
             })
             previous = task_id
 
     if not tasks:
         objective = str(plan.get("objective", "")).strip() if isinstance(plan, dict) else ""
         if objective:
-            tasks = [{"id": "task-1", "title": objective, "depends_on": []}]
+            tasks = [{"id": "task-1", "title": objective, "depends_on": [], "critical": False}]
     if not tasks or len(tasks) > MAX_TASKS:
         raise ObjectiveDagError("objective task count invalid")
     return tasks
@@ -112,6 +114,8 @@ def new(project_id: str, brief: str, plan: dict, base_sha: str) -> dict:
         rows.append({
             **task,
             "state": "ready" if not task["depends_on"] else "blocked",
+            "critical": bool(task.get("critical", False)),
+            "confidence": None,
             "attempts": 0,
             "last_commit": None,
             "last_error": None,
@@ -157,10 +161,14 @@ def validate(value: dict) -> dict:
         attempts = task.get("attempts")
         if type(attempts) is not int or attempts < 0:
             raise ObjectiveDagError("objective dag attempts invalid")
+        confidence = task.get("confidence")
+        if confidence is not None and (type(confidence) is not int or confidence < 0 or confidence > 100):
+            raise ObjectiveDagError("objective dag confidence invalid")
         structural.append({
             "id": task.get("id"),
             "title": task.get("title"),
             "depends_on": task.get("depends_on"),
+            "critical": bool(task.get("critical", False)),
         })
     _validate_acyclic(structural)
     return value
@@ -187,10 +195,18 @@ def refresh(value: dict) -> dict:
     unsigned.pop("sha256", None)
     tasks = [dict(task) for task in unsigned["tasks"]]
     verified = {task["id"] for task in tasks if task["state"] == "verified"}
+    task_by_id = {task["id"]: task for task in tasks}
     for task in tasks:
         if task["state"] in {"verified", "running", "failed"}:
             continue
-        task["state"] = "ready" if set(task["depends_on"]) <= verified else "blocked"
+        dependencies_verified = set(task["depends_on"]) <= verified
+        confidence_ok = True
+        if task.get("critical") and dependencies_verified:
+            confidence_ok = all(
+                int(task_by_id[dep].get("confidence") or 0) >= 85
+                for dep in task["depends_on"]
+            )
+        task["state"] = "ready" if dependencies_verified and confidence_ok else "blocked"
     unsigned["tasks"] = tasks
     return _seal(unsigned)
 
@@ -232,10 +248,12 @@ def mark_running(value: dict, task_id: str) -> dict:
     return _seal(unsigned)
 
 
-def mark_verified(value: dict, task_id: str, *, commit: str) -> dict:
+def mark_verified(value: dict, task_id: str, *, commit: str, confidence: int | None = None) -> dict:
     validate(value)
     if not isinstance(commit, str) or len(commit) != 40:
         raise ObjectiveDagError("objective task commit invalid")
+    if confidence is not None and (type(confidence) is not int or confidence < 0 or confidence > 100):
+        raise ObjectiveDagError("objective task confidence invalid")
     unsigned = dict(value)
     unsigned.pop("sha256", None)
     tasks = [dict(task) for task in unsigned["tasks"]]
@@ -245,6 +263,7 @@ def mark_verified(value: dict, task_id: str, *, commit: str) -> dict:
             task["state"] = "verified"
             task["last_commit"] = commit
             task["last_error"] = None
+            task["confidence"] = confidence
             found = True
     if not found:
         raise ObjectiveDagError("objective task missing")
@@ -297,6 +316,8 @@ def summary(value: dict) -> dict:
                 "id": task["id"],
                 "title": task["title"],
                 "depends_on": task["depends_on"],
+                "critical": bool(task.get("critical", False)),
+                "confidence": task.get("confidence"),
                 "state": task["state"],
                 "attempts": task["attempts"],
             }
@@ -347,6 +368,7 @@ def task_context(value: dict, task_id: str) -> dict:
             "title": dep["title"],
             "state": dep["state"],
             "last_commit": dep.get("last_commit"),
+            "confidence": dep.get("confidence"),
         })
     return {
         "id": task["id"],
@@ -354,6 +376,8 @@ def task_context(value: dict, task_id: str) -> dict:
         "state": task["state"],
         "attempts": task["attempts"],
         "depends_on": task["depends_on"],
+        "critical": bool(task.get("critical", False)),
+        "confidence": task.get("confidence"),
         "verified_dependencies": dependencies,
     }
 
@@ -386,6 +410,8 @@ def append_amendments(value: dict, items: list[str]) -> dict:
             "title": title,
             "depends_on": dependencies,
             "state": "ready" if not dependencies or all(dep in all_previous for dep in dependencies) else "blocked",
+            "critical": False,
+            "confidence": None,
             "attempts": 0,
             "last_commit": None,
             "last_error": None,

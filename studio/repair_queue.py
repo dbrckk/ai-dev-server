@@ -53,11 +53,19 @@ def enqueue(
     task_id = _fingerprint(stage, str(action), blockers)
     queue = _queue(state)
     for task in queue:
-        if task.get("id") == task_id and task.get("status") not in {"completed", "superseded"}:
-            task["seen_count"] = int(task.get("seen_count", 1)) + 1
+        if task.get("id") != task_id:
+            continue
+        task["seen_count"] = int(task.get("seen_count", 1)) + 1
+        if task.get("status") == "completed":
+            task["status"] = "retry"
             task["stagnation_count"] = int(task.get("stagnation_count", 0)) + 1
-            task["priority"] = score_task(task)
-            return task
+        elif task.get("status") != "superseded":
+            task["stagnation_count"] = int(task.get("stagnation_count", 0)) + 1
+        if int(task.get("stagnation_count", 0)) >= 2:
+            task["strategy_generation"] = int(task.get("strategy_generation", 0)) + 1
+            task["rotate_strategy"] = True
+        task["priority"] = score_task(task)
+        return task
 
     task = {
         "id": task_id,
@@ -119,8 +127,23 @@ def begin_attempt(task: dict) -> dict:
     return task
 
 
-def finish_attempt(task: dict, *, success: bool, model_calls: int = 0, improved: bool = True) -> dict:
+def finish_attempt(
+    task: dict,
+    *,
+    success: bool,
+    model_calls: int = 0,
+    improved: bool = True,
+    providers_used: dict | None = None,
+) -> dict:
     task["model_calls_spent"] = int(task.get("model_calls_spent", 0)) + max(0, int(model_calls))
+    providers = providers_used or {}
+    if isinstance(providers, dict):
+        used = [name for name in providers.values() if isinstance(name, str) and name]
+        if used:
+            history = list(task.get("providers_history", []))
+            history.extend(used)
+            task["providers_history"] = history[-8:]
+            task["last_provider"] = used[-1]
     if success:
         task["status"] = "completed"
         task["stagnation_count"] = 0

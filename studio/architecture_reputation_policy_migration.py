@@ -422,6 +422,33 @@ def dry_run(registry: dict, learning: dict | None=None, *, now: float | None=Non
     result["authorization_template"]=authorization_template(result,now=now)
     return result
 
+def bind_github_review_target(plan: dict, target: dict, *, now: float | None=None) -> dict:
+    if not isinstance(plan,dict) or plan.get("status")!="reputation_policy_migration_review_ready":
+        raise ReputationPolicyMigrationError("migration plan invalid")
+    if not isinstance(plan.get("github_review_target"),dict):
+        raise ReputationPolicyMigrationError("migration plan is not bound to a GitHub review target")
+    required=("repository","pull_request","commit_sha","head_ref","base_ref","author")
+    if not isinstance(target,dict) or any(not target.get(key) for key in required):
+        raise ReputationPolicyMigrationError("GitHub review target incomplete")
+    if target.get("base_ref")!="main":
+        raise ReputationPolicyMigrationError("GitHub review target base must be main")
+    bound={
+        **plan,
+        "github_review_target":{key:target.get(key) for key in required},
+    }
+    bound.pop("authorization_template",None)
+    bound.pop("review_digest",None)
+    bound.pop("migration_id",None)
+    # Re-bind the plan identity to the exact GitHub review target.
+    migration_id=hashlib.sha256(_canonical(bound).encode("utf-8")).hexdigest()
+    bound["migration_id"]=migration_id
+    bound["review_digest"]=review_digest(bound)
+    bound["authorization_template"]=authorization_template(
+        bound,
+        now=float(now) if isinstance(now,(int,float)) else time.time(),
+    )
+    return bound
+
 def apply_migration(registry: dict, plan: dict, authorization: dict, *, approval: dict | None=None, github_attestation: dict | None=None, approval_ledger: dict | None=None, now: float | None=None) -> dict:
     if not isinstance(plan,dict) or plan.get("status")!="reputation_policy_migration_review_ready":
         raise ReputationPolicyMigrationError("migration plan invalid")

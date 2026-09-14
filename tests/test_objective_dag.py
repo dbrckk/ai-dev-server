@@ -237,6 +237,35 @@ class ObjectiveDagTests(unittest.TestCase):
         task=next(task for task in summary(dag)["tasks"] if task["id"]=="task-1")
         self.assertEqual(task["state"],"ready")
 
+    def test_explicit_task_done_when_is_persisted(self):
+        dag=new(
+            "demo",
+            "build",
+            {
+                "tasks":[
+                    {
+                        "id":"api",
+                        "title":"build api",
+                        "depends_on":[],
+                        "done_when":["endpoint returns 200","tests cover invalid input"],
+                    }
+                ]
+            },
+            "a"*40,
+        )
+        task=summary(dag)["tasks"][0]
+        self.assertEqual(
+            task["done_when"],
+            ["endpoint returns 200","tests cover invalid input"],
+        )
+        ctx=task_context(dag,"api")
+        self.assertEqual(ctx["done_when"],task["done_when"])
+
+    def test_legacy_work_item_uses_title_as_done_when(self):
+        dag=new("demo","x",{"work_items":["implement parser"]},"a"*40)
+        task=summary(dag)["tasks"][0]
+        self.assertEqual(task["done_when"],["implement parser"])
+
     def test_cycle_is_rejected(self):
         with self.assertRaisesRegex(ObjectiveDagError,"cyclic"):
             new(

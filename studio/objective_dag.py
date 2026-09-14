@@ -44,13 +44,19 @@ def _normalized_tasks(plan: dict) -> list[dict]:
             task_id = str(raw.get("id") or f"task-{index}").strip()
             title = str(raw.get("title") or raw.get("work") or "").strip()
             deps = raw.get("depends_on", [])
-            if not task_id or not title or not isinstance(deps, list):
+            done_when = raw.get("done_when", [])
+            if not task_id or not title or not isinstance(deps, list) or not isinstance(done_when, list):
                 raise ObjectiveDagError("objective task fields invalid")
             tasks.append({
                 "id": task_id,
                 "title": title,
                 "depends_on": sorted(set(str(x).strip() for x in deps if str(x).strip())),
                 "critical": bool(raw.get("critical", False)),
+                "done_when": [
+                    str(item).strip()
+                    for item in done_when
+                    if str(item).strip()
+                ][:12],
             })
     else:
         work_items = plan.get("work_items", []) if isinstance(plan, dict) else []
@@ -67,13 +73,14 @@ def _normalized_tasks(plan: dict) -> list[dict]:
                 "title": title,
                 "depends_on": [previous] if previous else [],
                 "critical": False,
+                "done_when": [title],
             })
             previous = task_id
 
     if not tasks:
         objective = str(plan.get("objective", "")).strip() if isinstance(plan, dict) else ""
         if objective:
-            tasks = [{"id": "task-1", "title": objective, "depends_on": [], "critical": False}]
+            tasks = [{"id": "task-1", "title": objective, "depends_on": [], "critical": False, "done_when": [objective]}]
     if not tasks or len(tasks) > MAX_TASKS:
         raise ObjectiveDagError("objective task count invalid")
     return tasks
@@ -116,6 +123,7 @@ def new(project_id: str, brief: str, plan: dict, base_sha: str) -> dict:
             "state": "ready" if not task["depends_on"] else "blocked",
             "critical": bool(task.get("critical", False)),
             "confidence": None,
+            "done_when": list(task.get("done_when") or [task["title"]]),
             "attempts": 0,
             "last_commit": None,
             "last_error": None,
@@ -164,11 +172,17 @@ def validate(value: dict) -> dict:
         confidence = task.get("confidence")
         if confidence is not None and (type(confidence) is not int or confidence < 0 or confidence > 100):
             raise ObjectiveDagError("objective dag confidence invalid")
+        done_when = task.get("done_when")
+        if done_when is None:
+            done_when = [str(task.get("title") or "").strip()]
+        if not isinstance(done_when, list) or any(not isinstance(item, str) or not item for item in done_when):
+            raise ObjectiveDagError("objective dag done_when invalid")
         structural.append({
             "id": task.get("id"),
             "title": task.get("title"),
             "depends_on": task.get("depends_on"),
             "critical": bool(task.get("critical", False)),
+            "done_when": done_when,
         })
     _validate_acyclic(structural)
     return value
@@ -331,6 +345,7 @@ def summary(value: dict) -> dict:
                 "title": task["title"],
                 "depends_on": task["depends_on"],
                 "critical": bool(task.get("critical", False)),
+                "done_when": list(task.get("done_when") or [task["title"]]),
                 "confidence": task.get("confidence"),
                 "state": task["state"],
                 "attempts": task["attempts"],
@@ -391,6 +406,7 @@ def task_context(value: dict, task_id: str) -> dict:
         "attempts": task["attempts"],
         "depends_on": task["depends_on"],
         "critical": bool(task.get("critical", False)),
+        "done_when": list(task.get("done_when", [])),
         "confidence": task.get("confidence"),
         "verified_dependencies": dependencies,
     }
@@ -425,6 +441,7 @@ def append_amendments(value: dict, items: list[str]) -> dict:
             "depends_on": dependencies,
             "state": "ready" if not dependencies or all(dep in all_previous for dep in dependencies) else "blocked",
             "critical": False,
+            "done_when": [title],
             "confidence": None,
             "attempts": 0,
             "last_commit": None,

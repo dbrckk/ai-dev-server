@@ -128,6 +128,22 @@ class ArtifactCasTests(unittest.TestCase):
                         artifact_class="private-apk",
                     )
 
+    def test_direct_shared_write_rejects_binary_payload(self):
+        with tempfile.TemporaryDirectory() as td:
+            env = {
+                "STUDIO_ARTIFACT_CAS_PATH": str(Path(td) / "cas"),
+                "STUDIO_ARTIFACT_CAS_STATS_PATH": str(Path(td) / "stats.json"),
+                "STUDIO_PROJECT_ID": "project-a",
+            }
+            with mock.patch.dict(os.environ, env, clear=False):
+                with self.assertRaises(StudioError):
+                    artifact_cas.put(
+                        b"\x00\xff\x00",
+                        shareable=True,
+                        artifact_class="public-test-fixture",
+                    )
+
+
     def test_shared_classes_are_physically_separated(self):
         with tempfile.TemporaryDirectory() as td:
             env = {

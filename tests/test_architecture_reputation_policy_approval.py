@@ -35,7 +35,7 @@ class ApprovalProvenanceTests(unittest.TestCase):
             "head_commit_timestamp":1767225600.0,
             "pr_identity":{"number":42,"state":"open","draft":False,"head_ref":"policy/migration","head_sha":"abc","base_ref":"main","author":"author"},
             "required_checks":{"valid":True,"required_checks":["validate","python-tests"],"passed_checks":["validate","python-tests"],"missing_checks":[],"incomplete_checks":[],"failed_checks":[],"stale_checks":[],"workflow_run_ids":[99],"common_workflow_run_id":99,"mixed_workflow_runs":False,"check_evidence":{"validate":{"id":1,"head_sha":"abc","timestamp":1767225630.0,"status":"completed","conclusion":"success","workflow_run_id":99},"python-tests":{"id":2,"head_sha":"abc","timestamp":1767225640.0,"status":"completed","conclusion":"success","workflow_run_id":99}}},
-            "workflow":{"head_sha":"abc","conclusion":"success","timestamp":1767225625.0},
+            "workflow":{"head_sha":"abc","conclusion":"success","name":"CI","timestamp":1767225625.0},
         }
         if reinforced:a["second_reviewer"]={"login":"bob","review_state":"APPROVED","permission":"maintain","submitted_at_epoch":1767225620.0}
         payload={k:v for k,v in a.items() if k!="attestation_digest"}
@@ -81,6 +81,13 @@ class ApprovalProvenanceTests(unittest.TestCase):
     def test_github_attestation_rejects_attested_workflow_id_mismatch(self):
         a=self.github_attestation()
         a["workflow_run_id"]=100
+        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
+        with self.assertRaises(ApprovalProvenanceError):
+            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
+
+    def test_github_attestation_rejects_untrusted_workflow_name(self):
+        a=self.github_attestation()
+        a["workflow"]["name"]="Other"
         a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
         with self.assertRaises(ApprovalProvenanceError):
             validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)

@@ -376,6 +376,7 @@ def ask(
         if api.base == "https://integrate.api.nvidia.com/v1" and model.startswith("nvidia/nemotron-3-"):
             params.update(chat_template_kwargs={"enable_thinking": True}, reasoning_budget=2048)
         reservation = None
+        reservation_open = False
         if capacity_ledger_path is not None and project_id is not None:
             provider_remaining_tokens = None
             if provider.monthly_token_quota > 0:
@@ -398,6 +399,7 @@ def ask(
                     "Capacity reservation denied: " + str(reservation.get("reason", "unknown"))
                 )
                 continue
+            reservation_open = True
 
         started = time.monotonic()
         try:
@@ -422,6 +424,7 @@ def ask(
                     reservation["reservation_id"],
                     actual_tokens=actual_tokens,
                 )
+                reservation_open = False
             call_cost = 0.0
             if provider_cost_path is not None and isinstance(usage, dict):
                 try:
@@ -499,11 +502,12 @@ def ask(
             }
         except (APIError, StudioError, ProtocolError) as exc:
             elapsed = time.monotonic() - started
-            if reservation is not None:
+            if reservation is not None and reservation_open:
                 release_capacity(
                     capacity_ledger_path,
                     reservation["reservation_id"],
                 )
+                reservation_open = False
             if local_rep_path is not None and provider.unmetered and ":" in provider.name:
                 record_local_model_reputation(
                     local_rep_path,

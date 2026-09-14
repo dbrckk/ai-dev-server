@@ -18,6 +18,7 @@ from repair_planner import preview_plan
 from repair_queue import complete_stage_tasks, enqueue, summarize
 from project_budget import budget_status, can_spend, configure as configure_budget, record_calls
 from idempotent_model import ask_value as checkpointed_ask
+from atomic_file import write_text as atomic_write_text
 
 class GitHub(API):
     def __init__(self, repo):
@@ -192,7 +193,7 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         if state.get('product') and 'journeys' not in state['product']:
             state.pop('product')
         if state['status'] == 'validated_preview' or state['cycles'] >= req['max_cycles']:
-            (out / 'report.json').write_text(canonical(state))
+            atomic_write_text(out / 'report.json', canonical(state))
             return state
         clear_preview_evidence(state)
         cycle_budget = min(req['max_calls'], max(0, budget_status(state)['model_calls_remaining']))
@@ -294,8 +295,10 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
     except StudioError as e:
         state.update(status='blocked', blockers=[str(e)])
 
-    state['model_calls_this_cycle'] = model.calls
-    record_calls(state, model.calls)
+    effective_model_calls = max(0, int(model.calls) - int(getattr(model, 'checkpoint_replays', 0)))
+    state['model_calls_this_cycle'] = effective_model_calls
+    state['checkpoint_replays_this_cycle'] = int(getattr(model, 'checkpoint_replays', 0))
+    record_calls(state, effective_model_calls)
     state['project_budget_status'] = budget_status(state)
     state['models_used'] = getattr(model, 'models_used', {})
     state['providers_used'] = getattr(model, 'providers_used', {})
@@ -332,7 +335,7 @@ def main():
         return 0 if state['status'] in ('disabled', 'validated_preview', 'awaiting_visual_review') else 1
     except (StudioError, ValueError, OSError) as e:
         Path(args.out).mkdir(parents=True, exist_ok=True)
-        (Path(args.out) / 'error.json').write_text(canonical({'status': 'blocked', 'error': type(e).__name__, 'detail': str(e) if isinstance(e, StudioError) else 'Invalid configuration or local IO failure'}))
+        atomic_write_text(Path(args.out) / 'error.json', canonical({'status': 'blocked', 'error': type(e).__name__, 'detail': str(e) if isinstance(e, StudioError) else 'Invalid configuration or local IO failure'}))
         print('Studio blocked; see error.json and existing checkpoint.', file=sys.stderr)
         return 1
 

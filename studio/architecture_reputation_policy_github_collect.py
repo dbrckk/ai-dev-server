@@ -4,18 +4,42 @@ This module performs read-only GitHub API calls. It never approves, merges, or m
 """
 from __future__ import annotations
 
+import base64
+import hashlib
 import re
 import urllib.parse
 
 from architecture_replacement_persist import _request, ReplacementPersistenceError
 from architecture_reputation_policy_approval import ApprovalProvenanceError
 from architecture_reputation_policy_github_attestation import build, latest_approvals
+from replacement_ci_policy import REQUIRED_WORKFLOW_PATH
 
 class GitHubAttestationCollectionError(RuntimeError):
     pass
 
 def _valid_repository(value: str) -> bool:
     return isinstance(value,str) and re.fullmatch(r"[^/]+/[^/]+",value) is not None
+
+def _collect_workflow_file(api: str, token: str, commit_sha: str) -> dict:
+    encoded_path=urllib.parse.quote(REQUIRED_WORKFLOW_PATH,safe="/")
+    value=_request(api+f"/contents/{encoded_path}?ref={urllib.parse.quote(commit_sha,safe='')}",token)
+    if not isinstance(value,dict):
+        raise GitHubAttestationCollectionError("workflow file response malformed")
+    if value.get("path")!=REQUIRED_WORKFLOW_PATH:
+        raise GitHubAttestationCollectionError("workflow file path mismatch")
+    content=value.get("content")
+    if not isinstance(content,str) or value.get("encoding")!="base64":
+        raise GitHubAttestationCollectionError("workflow file content missing")
+    try:
+        raw=base64.b64decode(content,validate=False)
+    except Exception as exc:
+        raise GitHubAttestationCollectionError("workflow file content invalid") from exc
+    return {
+        "path":REQUIRED_WORKFLOW_PATH,
+        "blob_sha":value.get("sha"),
+        "size":len(raw),
+        "sha256":hashlib.sha256(raw).hexdigest(),
+    }
 
 def collect_review_target(*, token: str, repository: str, pull_request: int) -> dict:
     if not token:
@@ -118,6 +142,8 @@ def collect(plan: dict, *, token: str, repository: str, pull_request: int) -> di
         if workflow_runs is None:
             raise GitHubAttestationCollectionError("workflow runs malformed")
 
+        workflow_file=_collect_workflow_file(api,token,commit_sha)
+
         risk=plan.get("risk") if isinstance(plan,dict) and isinstance(plan.get("risk"),dict) else {}
         reinforced=risk.get("reinforced_review_required") is True
         head=pr.get("head") if isinstance(pr.get("head"),dict) else {}
@@ -142,6 +168,7 @@ def collect(plan: dict, *, token: str, repository: str, pull_request: int) -> di
             workflow_runs=workflow_runs,
             check_runs=check_runs,
             pr_identity=pr_identity,
+            workflow_file=workflow_file,
             head_commit_timestamp=head_commit_timestamp,
             reinforced=reinforced,
         )

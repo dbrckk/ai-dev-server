@@ -2,10 +2,14 @@
 from __future__ import annotations
 
 import json
+import time
 from pathlib import Path
 
 MIN_SAMPLES=5
 CONFIDENCE_TARGET=20
+REGIME_WINDOWS_DAYS=(30,90,180)
+REGIME_MIN_SAMPLES=3
+REGIME_DROP_THRESHOLD=0.20
 
 def _wilson_lower(successes:int,samples:int,z:float=1.96)->float:
     if samples<=0: return 0.0
@@ -27,9 +31,11 @@ def _rows(root:Path):
         if isinstance(value,dict) and value.get("status")=="replacement_outcome_recorded":
             yield value
 
-def summarize(root:Path|str="studio-output")->dict:
+def summarize(root:Path|str="studio-output", now:float|None=None)->dict:
     root=Path(root)
+    now=float(now) if isinstance(now,(int,float)) else time.time()
     stats={}
+    raw_by_key={}
     outcomes=0
     for row in _rows(root):
         outcomes+=1
@@ -60,6 +66,7 @@ def summarize(root:Path|str="studio-output")->dict:
             "first_observed_at":None,
             "latest_observed_at":None,
         })
+        raw_by_key.setdefault(key,[]).append(row)
         item["samples"]+=1
         item["successes"]+=int(row.get("successful") is True)
         item["regressions"]+=int(row.get("regressed") is True)
@@ -85,6 +92,43 @@ def summarize(root:Path|str="studio-output")->dict:
         rollback_preparation_rate=item["rollback_preparations"]/n if n else 0.0
         rollback_rate=item["rollbacks"]/n if n else 0.0
         mean_quality=item["quality_total"]/n if n else 0.0
+        windows={}
+        for days in REGIME_WINDOWS_DAYS:
+            cutoff=now-days*86400.0
+            recent=[
+                row for row in raw_by_key.get((
+                    item["current_repo"],item["replacement_repo"],item["framework"],
+                    item["project_type"],item["primary_domain"],item["platform"],
+                    item["current_major_version"],item["replacement_major_version"]
+                ),[])
+                if isinstance(row.get("observed_at"),(int,float)) and float(row["observed_at"])>=cutoff
+            ]
+            rn=len(recent)
+            rs=sum(int(row.get("successful") is True) for row in recent)
+            rr=sum(int(row.get("regressed") is True) for row in recent)
+            windows[str(days)]={
+                "samples":rn,
+                "success_rate":round(rs/rn,4) if rn else None,
+                "regression_rate":round(rr/rn,4) if rn else None,
+                "wilson_lower_95":round(_wilson_lower(rs,rn),4) if rn else None,
+            }
+        comparable=[
+            (int(days),window)
+            for days,window in windows.items()
+            if window["samples"]>=REGIME_MIN_SAMPLES and isinstance(window["success_rate"],(int,float))
+        ]
+        recent_window=min(comparable,key=lambda pair:pair[0]) if comparable else None
+        recent_rate=recent_window[1]["success_rate"] if recent_window else None
+        regime_drop=(success_rate-float(recent_rate)) if isinstance(recent_rate,(int,float)) else 0.0
+        recent_regression=recent_window[1]["regression_rate"] if recent_window else None
+        regime_shift=bool(
+            recent_window
+            and regime_drop>=REGIME_DROP_THRESHOLD
+            and (
+                float(recent_rate)<0.70
+                or (isinstance(recent_regression,(int,float)) and float(recent_regression)>=0.25)
+            )
+        )
         rankings.append({
             **{k:item[k] for k in ("current_repo","replacement_repo","framework","project_type","primary_domain","platform","current_major_version","replacement_major_version","samples","successes","regressions","rollback_preparations","rollbacks","first_observed_at","latest_observed_at")},
             "success_rate":round(success_rate,4),
@@ -96,6 +140,11 @@ def summarize(root:Path|str="studio-output")->dict:
             "rollback_rate":round(rollback_rate,4),
             "mean_quality_score":round(mean_quality,3),
             "eligible_for_bias":n>=MIN_SAMPLES,
+            "recent_windows":windows,
+            "regime_shift":regime_shift,
+            "regime_drop":round(regime_drop,4),
+            "regime_window_days":recent_window[0] if recent_window else None,
+            "regime_recent_success_rate":recent_rate,
         })
     rankings.sort(key=lambda x:(
         x["eligible_for_bias"],
@@ -106,10 +155,13 @@ def summarize(root:Path|str="studio-output")->dict:
         x["samples"],
     ),reverse=True)
     return {
-        "version":3,
+        "version":4,
         "outcomes_observed":outcomes,
         "minimum_samples":MIN_SAMPLES,
         "confidence_target":CONFIDENCE_TARGET,
+        "regime_windows_days":list(REGIME_WINDOWS_DAYS),
+        "regime_min_samples":REGIME_MIN_SAMPLES,
+        "regime_drop_threshold":REGIME_DROP_THRESHOLD,
         "advisory_only":True,
         "rankings":rankings[:200],
     }

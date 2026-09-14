@@ -14,6 +14,25 @@ from provider_router import candidates_for, load_providers, budget_eligible, Pro
 
 
 class ProviderRouterTests(unittest.TestCase):
+    def test_discovered_local_capacity_becomes_provider_specs(self):
+        discovered = [{
+            "name": "ollama",
+            "base": "http://127.0.0.1:11434/v1",
+            "model": "general",
+            "code_model": "qwen-coder",
+            "vision_model": "",
+            "unmetered": True,
+            "monthly_token_quota": 0,
+        }]
+        with patch.dict(os.environ, {}, clear=True), patch(
+            "provider_router.discover_local_capacity",
+            return_value=discovered,
+        ):
+            providers = load_providers()
+        self.assertEqual([p.name for p in providers], ["ollama"])
+        self.assertTrue(providers[0].unmetered)
+        self.assertEqual(providers[0].code_model, "qwen-coder")
+
     def test_autodiscovers_omniroute_only_when_no_explicit_provider_exists(self):
         auto = ProviderSpec(
             "omniroute",

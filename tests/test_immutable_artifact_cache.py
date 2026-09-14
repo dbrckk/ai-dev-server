@@ -105,7 +105,7 @@ class ImmutableArtifactCacheTests(unittest.TestCase):
             root = self._root(td)
             entries = {}
             with mock.patch.dict(os.environ, self._cas_env(root), clear=False):
-                with mock.patch("immutable_artifact_cache.MAX_TOTAL_BYTES", 3000):
+                with mock.patch("immutable_artifact_cache.MAX_TOTAL_BYTES", 3000), mock.patch("immutable_artifact_cache.MAX_CAS_BYTES", 3000):
                     first_key = "7" * 64
                     first = capture(
                         root,

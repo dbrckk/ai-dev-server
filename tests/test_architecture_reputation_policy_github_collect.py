@@ -28,11 +28,21 @@ class GitHubAttestationCollectorTests(unittest.TestCase):
             if "/pulls/7/reviews" in url:
                 return reviews
             if url.endswith("/pulls/7"):
-                return {"head":{"sha":"a"*40}}
+                return {
+                    "state":"open","draft":False,
+                    "head":{"sha":"a"*40,"ref":"policy/migration"},
+                    "base":{"ref":"main"},
+                    "user":{"login":"alice"},
+                }
             if "/collaborators/alice/permission" in url:
                 return {"permission":"write"}
             if "/collaborators/bob/permission" in url:
                 return {"permission":"maintain"}
+            if "/check-runs?per_page=100" in url:
+                return {"check_runs":[
+                    {"name":"validate","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/99"},
+                    {"name":"python-tests","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/99"},
+                ]}
             if "/actions/runs?" in url:
                 return {"workflow_runs":[{"id":99,"head_sha":"a"*40,"conclusion":"success","name":"CI"}]}
             raise AssertionError(url)
@@ -48,6 +58,18 @@ class GitHubAttestationCollectorTests(unittest.TestCase):
         with patch.object(collector,"_request",side_effect=self.fake_request(True)):
             result=collector.collect(self.plan(True),token="t",repository="o/r",pull_request=7)
         self.assertEqual(result["second_reviewer"]["login"],"bob")
+
+    def test_collect_rejects_draft_pr(self):
+        base=self.fake_request(False)
+        def req(url,token,method="GET",payload=None,allow_404=False):
+            if url.endswith("/pulls/7"):
+                value=base(url,token,method,payload,allow_404)
+                value["draft"]=True
+                return value
+            return base(url,token,method,payload,allow_404)
+        with patch.object(collector,"_request",side_effect=req):
+            with self.assertRaises(collector.GitHubAttestationCollectionError):
+                collector.collect(self.plan(False),token="t",repository="o/r",pull_request=7)
 
     def test_missing_token_is_fail_closed(self):
         with self.assertRaises(collector.GitHubAttestationCollectionError):

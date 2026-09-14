@@ -214,6 +214,51 @@ class FleetCapacityTests(unittest.TestCase):
         self.assertTrue(by_id["b"]["force_diversify"])
 
 
+
+    def test_paused_project_gets_bounded_recovery_after_context_change(self):
+        stagnation = {
+            "projects": {
+                "a": {
+                    "level": "pause",
+                    "capacity_multiplier": 0.0,
+                    "force_diversify": True,
+                    "pause": True,
+                }
+            }
+        }
+        with tempfile.TemporaryDirectory() as td, \
+             patch("fleet_capacity.collect", return_value={"projects": [
+                 {"id": "a", "runtime_status": "running"}
+             ]}), \
+             patch("fleet_capacity.matrix", return_value=[
+                 {"id": "a", "capacity_request_tokens": 10000}
+             ]), \
+             patch("fleet_capacity._runtime_state", return_value={"base_sha": "sha-1"}):
+            recovery_path = Path(td) / "recovery.json"
+            first = fleet_capacity._project_rows(
+                Path(td),
+                Path("requests"),
+                stagnation_summary=stagnation,
+                recovery_state_path=recovery_path,
+                provider_context=[{"name": "p1", "available_tokens": 1000}],
+            )
+            with patch("fleet_capacity._runtime_state", return_value={"base_sha": "sha-2"}):
+                second = fleet_capacity._project_rows(
+                    Path(td),
+                    Path("requests"),
+                    stagnation_summary=stagnation,
+                    recovery_state_path=recovery_path,
+                    provider_context=[{"name": "p1", "available_tokens": 1000}],
+                )
+
+        self.assertTrue(first[0]["capacity_paused"])
+        self.assertFalse(first[0]["recovery_active"])
+        self.assertFalse(second[0]["capacity_paused"])
+        self.assertTrue(second[0]["recovery_active"])
+        self.assertEqual(second[0]["stagnation_multiplier"], 0.15)
+        self.assertTrue(second[0]["force_diversify"])
+
+
     def test_persist_writes_machine_readable_plan(self):
         report = {
             "schema": 1,

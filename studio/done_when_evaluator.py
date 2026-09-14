@@ -161,3 +161,73 @@ def evaluate(root: Path, criteria: list[str], *, timeout: int=120) -> dict:
         "reviewer":reviewer,
         "all_deterministic_passed":all(item and item.get("passed") is True for item in deterministic),
     }
+
+
+def validate_contract(criteria: list[str], *, critical: bool = False) -> dict:
+    """Validate structured acceptance criteria before implementation starts."""
+    if not isinstance(criteria, list) or not criteria:
+        return {
+            "valid": False,
+            "errors": ["done_when must contain at least one criterion"],
+            "deterministic_count": 0,
+            "review_count": 0,
+        }
+
+    errors = []
+    deterministic_count = 0
+    review_count = 0
+
+    for raw in criteria:
+        criterion = str(raw or "").strip()
+        if not criterion:
+            errors.append("empty done_when criterion")
+            continue
+        item = classify(criterion)
+        kind = item["kind"]
+        spec = item["spec"]
+
+        if kind == "review":
+            review_count += 1
+            continue
+
+        deterministic_count += 1
+
+        if kind == "file":
+            if not spec:
+                errors.append(f"invalid file criterion: {criterion}")
+            elif spec.startswith("/") or ".." in Path(spec).parts:
+                errors.append(f"unsafe file criterion: {criterion}")
+
+        elif kind == "symbol":
+            if "#" not in spec:
+                errors.append(f"invalid symbol criterion: {criterion}")
+            else:
+                rel, symbol = spec.split("#", 1)
+                rel = rel.strip()
+                symbol = symbol.strip()
+                if not rel or not symbol:
+                    errors.append(f"invalid symbol criterion: {criterion}")
+                elif rel.startswith("/") or ".." in Path(rel).parts:
+                    errors.append(f"unsafe symbol criterion: {criterion}")
+
+        elif kind == "test":
+            if not spec:
+                errors.append(f"invalid test criterion: {criterion}")
+            else:
+                path = spec.split("::", 1)[0].strip()
+                if not path or path.startswith("/") or ".." in Path(path).parts:
+                    errors.append(f"unsafe test criterion: {criterion}")
+
+        elif kind == "build":
+            if spec.strip().lower() not in {"default", "project", "build"}:
+                errors.append(f"unsupported build criterion: {criterion}")
+
+    if critical and deterministic_count < 1:
+        errors.append("critical task requires at least one deterministic done_when criterion")
+
+    return {
+        "valid": not errors,
+        "errors": errors,
+        "deterministic_count": deterministic_count,
+        "review_count": review_count,
+    }

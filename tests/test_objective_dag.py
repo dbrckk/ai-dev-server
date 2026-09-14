@@ -130,7 +130,7 @@ class ObjectiveDagTests(unittest.TestCase):
             {
                 "tasks":[
                     {"id":"core","title":"core","depends_on":[]},
-                    {"id":"release","title":"release","depends_on":["core"],"critical":True},
+                    {"id":"release","title":"release","depends_on":["core"],"critical":True,"done_when":["build:default"]},
                 ]
             },
             "a"*40,
@@ -148,7 +148,7 @@ class ObjectiveDagTests(unittest.TestCase):
             {
                 "tasks":[
                     {"id":"core","title":"core","depends_on":[]},
-                    {"id":"release","title":"release","depends_on":["core"],"critical":True},
+                    {"id":"release","title":"release","depends_on":["core"],"critical":True,"done_when":["build:default"]},
                 ]
             },
             "a"*40,
@@ -182,7 +182,7 @@ class ObjectiveDagTests(unittest.TestCase):
             {
                 "tasks":[
                     {"id":"core","title":"core","depends_on":[]},
-                    {"id":"release","title":"release","depends_on":["core"],"critical":True},
+                    {"id":"release","title":"release","depends_on":["core"],"critical":True,"done_when":["build:default"]},
                 ]
             },
             "a"*40,
@@ -209,7 +209,7 @@ class ObjectiveDagTests(unittest.TestCase):
             {
                 "tasks":[
                     {"id":"core","title":"core","depends_on":[]},
-                    {"id":"release","title":"release","depends_on":["core"],"critical":True},
+                    {"id":"release","title":"release","depends_on":["core"],"critical":True,"done_when":["build:default"]},
                 ]
             },
             "a"*40,

@@ -6,7 +6,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from done_when_evaluator import classify, evaluate, evaluate_static
+from done_when_evaluator import classify, evaluate, evaluate_static, validate_contract
 
 
 class DoneWhenEvaluatorTests(unittest.TestCase):
@@ -49,6 +49,27 @@ class DoneWhenEvaluatorTests(unittest.TestCase):
             self.assertTrue(result["deterministic"][0]["passed"])
             args,_=run_command.call_args
             self.assertEqual(args[0],["npm","run","build"])
+
+    def test_contract_rejects_malformed_symbol(self):
+        result=validate_contract(["symbol:app.py"])
+        self.assertFalse(result["valid"])
+        self.assertIn("invalid symbol criterion",result["errors"][0])
+
+    def test_critical_contract_requires_deterministic_criterion(self):
+        result=validate_contract(["manual UX review"],critical=True)
+        self.assertFalse(result["valid"])
+        self.assertIn("critical task requires",result["errors"][-1])
+
+    def test_critical_contract_accepts_structured_evidence(self):
+        result=validate_contract(["test:tests/test_api.py::test_ok","manual UX review"],critical=True)
+        self.assertTrue(result["valid"])
+        self.assertEqual(result["deterministic_count"],1)
+        self.assertEqual(result["review_count"],1)
+
+    def test_contract_rejects_path_escape(self):
+        result=validate_contract(["file:../secret.txt"])
+        self.assertFalse(result["valid"])
+        self.assertIn("unsafe file criterion",result["errors"][0])
 
     def test_mixed_criteria_split_deterministic_and_reviewer(self):
         with tempfile.TemporaryDirectory() as td:

@@ -8,7 +8,7 @@ from pathlib import Path
 
 from generic_sandbox import run as run_command
 
-_PREFIXES=("file:","symbol:","test:","build:","json:")
+_PREFIXES=("file:","symbol:","no-symbol:","absent:","test:","build:","json:")
 
 
 def classify(criterion: str) -> dict:
@@ -85,6 +85,14 @@ def evaluate_static(root: Path, criterion: str) -> dict | None:
             "evidence_refs":[spec] if passed else [],
             "evidence":f"file exists: {spec}" if passed else f"file missing: {spec}",
         }
+    if kind=="absent":
+        target=_safe_path(root,spec)
+        passed=bool(target is not None and not target.exists())
+        return {
+            "criterion":item["raw"],"kind":"absent","passed":passed,
+            "evidence_refs":[f"absent:{spec}"] if passed else [],
+            "evidence":f"path absent: {spec}" if passed else f"path still exists: {spec}",
+        }
     if kind=="symbol":
         if "#" not in spec:
             return {"criterion":item["raw"],"kind":"symbol","passed":False,"evidence_refs":[],"evidence":"symbol spec must be path#symbol"}
@@ -96,6 +104,18 @@ def evaluate_static(root: Path, criterion: str) -> dict | None:
             "criterion":item["raw"],"kind":"symbol","passed":passed,
             "evidence_refs":[rel] if passed else [],
             "evidence":f"symbol {symbol} found in {rel}" if passed else f"symbol {symbol} not found in {rel}",
+        }
+    if kind=="no-symbol":
+        if "#" not in spec:
+            return {"criterion":item["raw"],"kind":"no-symbol","passed":False,"evidence_refs":[],"evidence":"no-symbol spec must be path#symbol"}
+        rel,symbol=spec.split("#",1)
+        rel=rel.strip(); symbol=symbol.strip()
+        target=_safe_path(root,rel)
+        passed=bool(target and target.is_file() and symbol and not _symbol_exists(target,symbol))
+        return {
+            "criterion":item["raw"],"kind":"no-symbol","passed":passed,
+            "evidence_refs":[rel] if passed else [],
+            "evidence":f"symbol {symbol} absent from {rel}" if passed else f"symbol {symbol} still present in {rel}",
         }
     if kind=="json":
         if "#" not in spec or "=" not in spec:
@@ -296,7 +316,7 @@ def validate_contract(criteria: list[str], *, critical: bool = False) -> dict:
             continue
 
         deterministic_count += 1
-        if kind in {"symbol","test","build","json"}:
+        if kind in {"symbol","no-symbol","test","build","json"}:
             strong_deterministic_count += 1
 
         if kind == "file":
@@ -305,17 +325,23 @@ def validate_contract(criteria: list[str], *, critical: bool = False) -> dict:
             elif spec.startswith("/") or ".." in Path(spec).parts:
                 errors.append(f"unsafe file criterion: {criterion}")
 
-        elif kind == "symbol":
+        elif kind in {"symbol","no-symbol"}:
             if "#" not in spec:
-                errors.append(f"invalid symbol criterion: {criterion}")
+                errors.append(f"invalid {kind} criterion: {criterion}")
             else:
                 rel, symbol = spec.split("#", 1)
                 rel = rel.strip()
                 symbol = symbol.strip()
                 if not rel or not symbol:
-                    errors.append(f"invalid symbol criterion: {criterion}")
+                    errors.append(f"invalid {kind} criterion: {criterion}")
                 elif rel.startswith("/") or ".." in Path(rel).parts:
-                    errors.append(f"unsafe symbol criterion: {criterion}")
+                    errors.append(f"unsafe {kind} criterion: {criterion}")
+
+        elif kind == "absent":
+            if not spec:
+                errors.append(f"invalid absent criterion: {criterion}")
+            elif spec.startswith("/") or ".." in Path(spec).parts:
+                errors.append(f"unsafe absent criterion: {criterion}")
 
         elif kind == "test":
             if not spec:
@@ -365,7 +391,7 @@ def baseline_static(root: Path, criteria: list[str]) -> dict:
     rows=[]
     for criterion in criteria:
         item=classify(criterion)
-        if item["kind"] not in {"file","symbol","json"}:
+        if item["kind"] not in {"file","symbol","no-symbol","absent","json"}:
             continue
         evidence=evaluate_static(root,item["raw"])
         rows.append({
@@ -393,7 +419,7 @@ def apply_causality(result: dict, baseline: dict | None, *, first_attempt: bool)
         if not isinstance(row,dict):
             continue
         item=dict(row)
-        if item.get("kind") in {"file","symbol","json"} and item.get("passed") is True and before.get(str(item.get("criterion"))) is True:
+        if item.get("kind") in {"file","symbol","no-symbol","absent","json"} and item.get("passed") is True and before.get(str(item.get("criterion"))) is True:
             item["passed"]=False
             item["preexisting"]=True
             item["evidence"]="criterion was already true before first task attempt"

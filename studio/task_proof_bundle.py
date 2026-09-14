@@ -39,6 +39,16 @@ def _safe_file(root: Path, rel: str) -> Path | None:
     return target
 
 
+def _path_absent(root: Path, rel: str) -> bool:
+    root=root.resolve()
+    target=(root/rel).resolve()
+    try:
+        target.relative_to(root)
+    except ValueError:
+        return False
+    return not target.exists() and not target.is_symlink()
+
+
 def _file_proof(root: Path, rel: str) -> dict | None:
     target=_safe_file(root,rel)
     if target is None:
@@ -102,8 +112,12 @@ def build(
     if not criteria or any(item["passed"] is not True for item in criteria):
         raise TaskProofError("proof acceptance criteria incomplete")
 
-    file_refs=sorted({ref for ref in refs if not ref.startswith("command:")})
+    file_refs=sorted({
+        ref for ref in refs
+        if not ref.startswith("command:") and not ref.startswith("absent:")
+    })
     command_refs=sorted({ref for ref in refs if ref.startswith("command:")})
+    absent_refs=sorted({ref for ref in refs if ref.startswith("absent:")})
     files=[]
     missing=[]
     for rel in file_refs:
@@ -114,6 +128,17 @@ def build(
             files.append(proof)
     if missing:
         raise TaskProofError("proof evidence file missing: "+", ".join(missing[:10]))
+
+    states=[]
+    invalid_absent=[]
+    for ref in absent_refs:
+        rel=ref[len("absent:"):]
+        if not rel or not _path_absent(Path(project_root),rel):
+            invalid_absent.append(rel or ref)
+        else:
+            states.append({"ref":ref,"state":"absent"})
+    if invalid_absent:
+        raise TaskProofError("proof absence evidence invalid: "+", ".join(invalid_absent[:10]))
 
     verification_record={
         "status":verification.get("status"),
@@ -138,6 +163,7 @@ def build(
         "criteria":criteria,
         "evidence_files":files,
         "evidence_commands":command_refs,
+        "evidence_states":states,
         "verification":verification_record,
         "verification_sha256":verification_digest,
         "confidence":confidence,
@@ -164,6 +190,8 @@ def validate(value: dict) -> dict:
         raise TaskProofError("proof criteria failed")
     if not isinstance(value.get("evidence_files"),list):
         raise TaskProofError("proof files invalid")
+    if not isinstance(value.get("evidence_states",[]),list):
+        raise TaskProofError("proof states invalid")
     return value
 
 
@@ -221,9 +249,20 @@ def verify_evidence_files(value: dict, project_root: Path) -> dict:
                 "expected_sha256":item.get("sha256"),
                 "actual_sha256":current.get("sha256"),
             })
-    if mismatches:
-        raise TaskProofError(
-            "proof evidence mismatch: "
-            + ", ".join(str(item.get("ref")) for item in mismatches[:10])
-        )
-    return {"valid":True,"checked_files":len(value.get("evidence_files",[]))}
+    state_mismatches=[]
+    for item in value.get("evidence_states",[]):
+        if not isinstance(item,dict):
+            continue
+        ref=str(item.get("ref") or "")
+        if item.get("state")=="absent" and ref.startswith("absent:"):
+            rel=ref[len("absent:"):]
+            if not _path_absent(Path(project_root),rel):
+                state_mismatches.append(ref)
+    if mismatches or state_mismatches:
+        refs=[str(item.get("ref")) for item in mismatches[:10]] + state_mismatches[:10]
+        raise TaskProofError("proof evidence mismatch: " + ", ".join(refs))
+    return {
+        "valid":True,
+        "checked_files":len(value.get("evidence_files",[])),
+        "checked_states":len(value.get("evidence_states",[])),
+    }

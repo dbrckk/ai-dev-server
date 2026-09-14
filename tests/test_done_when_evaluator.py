@@ -183,6 +183,42 @@ class DoneWhenEvaluatorTests(unittest.TestCase):
             causal=apply_causality(result,before,first_attempt=False)
             self.assertTrue(causal["deterministic"][0]["passed"])
 
+    def test_absent_criterion_becomes_true_after_deletion(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            target=root/"old.py"
+            target.write_text("x=1\n")
+            criteria=["absent:old.py"]
+            before=baseline_static(root,criteria)
+            target.unlink()
+            result=evaluate(root,criteria)
+            causal=apply_causality(result,before,first_attempt=True)
+            self.assertTrue(causal["deterministic"][0]["passed"])
+            self.assertEqual(causal["deterministic"][0]["evidence_refs"],["absent:old.py"])
+
+    def test_preexisting_absence_is_not_first_attempt_proof(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            criteria=["absent:old.py"]
+            before=baseline_static(root,criteria)
+            result=evaluate(root,criteria)
+            causal=apply_causality(result,before,first_attempt=True)
+            self.assertFalse(causal["deterministic"][0]["passed"])
+            self.assertTrue(causal["deterministic"][0]["preexisting"])
+
+    def test_no_symbol_criterion(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            (root/"app.py").write_text("def keep():\n    return 1\n")
+            result=evaluate_static(root,"no-symbol:app.py#removed")
+            self.assertTrue(result["passed"])
+            self.assertEqual(result["evidence_refs"],["app.py"])
+
+    def test_critical_contract_accepts_no_symbol_as_strong_evidence(self):
+        result=validate_contract(["no-symbol:src/api.py#legacy_handler"],critical=True)
+        self.assertTrue(result["valid"])
+        self.assertEqual(result["strong_deterministic_count"],1)
+
     def test_mixed_criteria_split_deterministic_and_reviewer(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td)

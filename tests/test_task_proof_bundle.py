@@ -76,6 +76,36 @@ class TaskProofBundleTests(unittest.TestCase):
                     confidence={"score":80},
                 )
 
+    def test_absence_evidence_is_persisted_and_revalidated(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            proof=build(
+                project_root=root,
+                project_id="demo",
+                task={"id":"cleanup","title":"cleanup","done_when":["absent:old.py"]},
+                commit="c"*40,
+                review={
+                    "complete":True,
+                    "criteria":[{
+                        "criterion":"absent:old.py",
+                        "passed":True,
+                        "evidence":"path absent",
+                        "evidence_refs":["absent:old.py"],
+                        "source":"deterministic",
+                    }],
+                },
+                verification={"status":"passed","passed":True},
+                confidence={"score":90},
+            )
+            self.assertEqual(
+                proof["evidence_states"],
+                [{"ref":"absent:old.py","state":"absent"}],
+            )
+            self.assertEqual(verify_evidence_files(proof,root)["checked_states"],1)
+            (root/"old.py").write_text("restored\n")
+            with self.assertRaisesRegex(TaskProofError,"evidence mismatch"):
+                verify_evidence_files(proof,root)
+
     def test_changed_evidence_file_is_rejected(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td)

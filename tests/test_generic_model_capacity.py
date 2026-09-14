@@ -8,15 +8,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 import generic_model
 from provider_router import ProviderSpec
+from core import APIError
 
 
 class _FakeAPI:
     response = None
+    error = None
 
     def __init__(self, base, key):
         self.base = base
 
     def call(self, method, path, params, timeout_seconds=None):
+        if self.error is not None:
+            raise self.error
         return self.response
 
 
@@ -39,6 +43,7 @@ class GenericModelCapacityTests(unittest.TestCase):
         }
 
     def test_success_settles_transactional_reservation_with_actual_usage(self):
+        _FakeAPI.error = None
         _FakeAPI.response = {
             "choices": [{
                 "finish_reason": "stop",
@@ -63,6 +68,7 @@ class GenericModelCapacityTests(unittest.TestCase):
         release.assert_not_called()
 
     def test_protocol_failure_settles_consumed_tokens_without_double_release(self):
+        _FakeAPI.error = None
         _FakeAPI.response = {
             "choices": [{
                 "finish_reason": "stop",
@@ -82,6 +88,31 @@ class GenericModelCapacityTests(unittest.TestCase):
         settle.assert_called_once()
         self.assertEqual(settle.call_args.kwargs["actual_tokens"], 150)
         release.assert_not_called()
+
+    def test_transport_failure_releases_open_reservation(self):
+        _FakeAPI.response = None
+        _FakeAPI.error = APIError(503)
+        reservation = {
+            "admitted": True,
+            "reservation_id": "r3",
+            "reason": "reserved",
+        }
+        with patch.dict(os.environ, self._env(), clear=True), \
+             patch("generic_model.load_providers", return_value=(self._provider(),)), \
+             patch("generic_model.load_project_envelope", return_value=50_000), \
+             patch("generic_model.reserve_capacity", return_value=reservation), \
+             patch("generic_model.settle_capacity") as settle, \
+             patch("generic_model.release_capacity") as release, \
+             patch("generic_model.API", _FakeAPI):
+            with self.assertRaisesRegex(Exception, "All generic-project providers failed"):
+                generic_model.ask("system", "user", role="product")
+
+        settle.assert_not_called()
+        release.assert_called_once_with(
+            Path("/tmp/capacity-ledger-test.json"),
+            "r3",
+        )
+        _FakeAPI.error = None
 
     def test_denied_reservation_skips_provider_call(self):
         _FakeAPI.response = None

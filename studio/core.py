@@ -27,6 +27,7 @@ ROLES = {
     'implementation': 'Senior Flutter engineering team: implement the entire agreed app, real navigation, state, persistence when needed, error handling and meaningful widget/unit tests. Use lib/app.dart exposing const StudioApp({super.key}) and main.dart calling runApp(const StudioApp()). No placeholder buttons or fake backend success. Never weaken tests to hide defects. Use Flutter SDK packages only unless dependencies were explicitly approved in the brief. Do not add network permissions implicitly.',
     'tests': 'Senior Flutter QA engineer: read the supplied app source and acceptance journeys. Return real unit/widget tests covering primary actions, navigation and timer/state changes, using flutter_test and existing SDK dependencies. Every returned file must be under test/ and end in _test.dart. Do not change application source. Do not use vacuous assertions, skipped tests or mocked-away behavior. Tests must match the actual public APIs and widgets in the supplied source.',
     'security_fix': 'Senior Flutter application security engineer: repair only the concrete technical security blockers supplied in context. Preserve product behavior. Never weaken tests, disable security checks, remove required functionality, invent credentials, or touch native platform files. Do not claim a finding is fixed unless the returned source change directly addresses it.',
+    'release_fix': 'Senior Flutter reliability engineer: repair only the concrete release-stage blockers supplied in context. Preserve agreed product behavior and tests. Do not bypass QA, weaken assertions, fake external evidence, or modify native platform files. Return the smallest source-level fix that directly addresses the reported runtime, performance, notification, billing-integration, or platform-view defect.',
     'review': 'Independent senior mobile reviewer: inspect implementation against every acceptance criterion, security, data durability, accessibility and maintainability. List concrete blocking defects, including absent features. Passing compilation alone is not completion.',
     'visual': 'Independent mobile visual QA: inspect the attached actual rendered screenshots against the design. Reject overflow, clipping, bad alignment, illegible text, low contrast, inconsistent spacing, generic unfinished visuals. Evaluate only screens actually shown. Never claim unseen interactions were tested.',
 }
@@ -299,12 +300,12 @@ class Model:
                 try:
                     if role == 'product':
                         validate_journeys(value.get('journeys'))
-                    elif role in ('implementation', 'tests', 'security_fix'):
+                    elif role in ('implementation', 'tests', 'security_fix', 'release_fix'):
                         files = patch_check(value)
                         if role == 'tests' and any(not f['path'].startswith('test/') or not f['path'].endswith('_test.dart') for f in files):
                             raise StudioError('QA may only write test/*_test.dart files')
-                        if role == 'security_fix' and any(f['path'].startswith(('test/', 'docs/')) for f in files):
-                            raise StudioError('Security repair may not edit tests or documentation')
+                        if role in ('security_fix', 'release_fix') and any(f['path'].startswith(('test/', 'docs/')) for f in files):
+                            raise StudioError('Repair roles may not edit tests or documentation')
                     elif role in ('review', 'visual'):
                         verdict(value)
                     return value
@@ -377,7 +378,7 @@ class Model:
             # receive isolated clients with their own credentials/base URL.
             api = self.api if provider_index == 0 else API(provider.base, provider.key)
             params = {'model': selected_model, 'stream': False,
-                'max_tokens': 16000 if role in ('implementation', 'security_fix') else 8192,
+                'max_tokens': 16000 if role in ('implementation', 'security_fix', 'release_fix') else 8192,
                 'messages': messages}
             if api.base == 'https://integrate.api.nvidia.com/v1' and selected_model.startswith('nvidia/nemotron-3-'):
                 params.update(chat_template_kwargs={'enable_thinking': True}, reasoning_budget=2048)

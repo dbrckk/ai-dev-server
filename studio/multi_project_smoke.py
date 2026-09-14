@@ -24,7 +24,7 @@ def main() -> int:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
-                timeout=35 * 60,
+                timeout=25 * 60,
             )
             print(f"project-{index + 1}: exit={result.returncode}")
             print(result.stdout[-12000:])

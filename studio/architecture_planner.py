@@ -31,7 +31,14 @@ def _reason(row):
         parts.append("best for: " + "; ".join(str(x) for x in best[:2]))
     return " | ".join(parts) or "ranked recommendation"
 
-def plan(req: dict, recommendations: dict, learning: dict | None = None) -> dict:
+def plan(
+    req: dict,
+    recommendations: dict,
+    learning: dict | None = None,
+    *,
+    framework: str | None = None,
+    publication_target: str | None = None,
+) -> dict:
     recommendations = apply_feedback(recommendations, learning)
     rows=_clean_rows(recommendations)
     chosen=[]
@@ -62,6 +69,21 @@ def plan(req: dict, recommendations: dict, learning: dict | None = None) -> dict
         elif len(rejected)<MAX_REJECTED:
             rejected.append({"repo":repo,"reason":"lower-ranked than selected candidates for this phase"})
 
+    resolved_framework = (
+        framework
+        if isinstance(framework, str) and framework
+        else req.get("framework")
+        if isinstance(req.get("framework"), str) and req.get("framework")
+        else "flutter"
+    )
+    resolved_publication = (
+        publication_target
+        if isinstance(publication_target, str) and publication_target
+        else req.get("publication_target")
+        if isinstance(req.get("publication_target"), str) and req.get("publication_target")
+        else "google-play" if resolved_framework in {"flutter", "godot"} else "unspecified"
+    )
+
     return {
         "version":1,
         "status":"planned",
@@ -83,14 +105,28 @@ def plan(req: dict, recommendations: dict, learning: dict | None = None) -> dict
         "constraints":{
             "target_repo":req.get("target_repo"),
             "app_name":req.get("app_name"),
-            "publication_target":"google-play",
-            "framework":"flutter",
+            "publication_target":resolved_publication,
+            "framework":resolved_framework,
         },
     }
 
-def write(req: dict, recommendations: dict, out: Path, learning: dict | None = None) -> dict:
+def write(
+    req: dict,
+    recommendations: dict,
+    out: Path,
+    learning: dict | None = None,
+    *,
+    framework: str | None = None,
+    publication_target: str | None = None,
+) -> dict:
     out.mkdir(parents=True, exist_ok=True)
-    decision=plan(req,recommendations,learning=learning)
+    decision=plan(
+        req,
+        recommendations,
+        learning=learning,
+        framework=framework,
+        publication_target=publication_target,
+    )
     atomic_write_text(
         out/"architecture-decision.json",
         json.dumps(decision,ensure_ascii=False,indent=2,sort_keys=True)+"\n",

@@ -17,6 +17,7 @@ from project_budget import remaining as budget_remaining
 from persistent_quick_gate_cache import load as load_persistent_quick_cache, save as save_persistent_quick_cache
 from full_gate_cache import load as load_full_gate_cache, save as save_full_gate_cache
 from immutable_artifact_cache import load as load_artifact_cache, save as save_artifact_cache
+from artifact_cas_stats import summary as artifact_cas_summary
 
 MAX_RELEASE_REPAIR_ROUNDS = 2
 MAX_MODEL_CALLS_PER_BRANCH = 2
@@ -308,6 +309,7 @@ def attempt(
         "candidate_search": {
             "evaluated": len(candidates),
             "winner": winner.get("strategy"),
+            "artifact_cas": artifact_cas_summary(),
             "candidates": [
                 {
                     "strategy": item.get("strategy"),

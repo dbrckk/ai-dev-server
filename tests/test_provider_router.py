@@ -14,6 +14,37 @@ from provider_router import candidates_for, load_providers, budget_eligible, Pro
 
 
 class ProviderRouterTests(unittest.TestCase):
+    def test_autodiscovers_omniroute_only_when_no_explicit_provider_exists(self):
+        auto = ProviderSpec(
+            "omniroute",
+            "http://127.0.0.1:20128/v1",
+            "",
+            "auto",
+            code_model="auto",
+            priority=98,
+            monthly_token_quota=1_470_000_000,
+        )
+        with patch.dict(os.environ, {}, clear=True), patch(
+            "provider_router._auto_omniroute",
+            return_value=auto,
+        ) as discover:
+            providers = load_providers()
+        discover.assert_called_once()
+        self.assertEqual([p.name for p in providers], ["omniroute"])
+
+    def test_explicit_primary_skips_omniroute_autodiscovery(self):
+        env = {
+            "STUDIO_API_KEY": "test-key",
+            "STUDIO_API_BASE": "https://example.invalid/v1",
+            "STUDIO_MODEL": "general",
+        }
+        with patch.dict(os.environ, env, clear=True), patch(
+            "provider_router._auto_omniroute"
+        ) as discover:
+            providers = load_providers()
+        discover.assert_not_called()
+        self.assertEqual([p.name for p in providers], ["primary"])
+
     def test_primary_provider_is_loaded(self):
         env = {
             "STUDIO_API_KEY": "test-key",

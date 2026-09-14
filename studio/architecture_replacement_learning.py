@@ -13,6 +13,9 @@ REGIME_DROP_THRESHOLD=0.20
 SEQUENTIAL_MIN_SAMPLES=8
 EWMA_ALPHA=0.35
 EWMA_DROP_THRESHOLD=0.18
+EWMA_RECOVERY_THRESHOLD=0.18
+RECOVERY_BASELINE_MAX=0.65
+RECOVERY_FINAL_MIN=0.70
 CUSUM_ALLOWANCE=0.05
 CUSUM_THRESHOLD=0.75
 
@@ -38,8 +41,11 @@ def _sequential_drift(rows:list[dict])->dict:
             "samples":n,
             "ewma":None,
             "ewma_drop":0.0,
+            "ewma_rise":0.0,
             "cusum_negative":0.0,
+            "cusum_positive":0.0,
             "drift_detected":False,
+            "recovery_detected":False,
         }
 
     baseline_count=max(3,min(5,n//2))
@@ -47,29 +53,50 @@ def _sequential_drift(rows:list[dict])->dict:
     baseline=sum(1.0 if row.get("successful") is True else 0.0 for row in baseline_rows)/baseline_count
     ewma=baseline
     min_ewma=ewma
+    max_ewma=ewma
     negative_cusum=0.0
+    positive_cusum=0.0
     max_negative_cusum=0.0
+    max_positive_cusum=0.0
     for row in timed[baseline_count:]:
         x=1.0 if row.get("successful") is True else 0.0
         ewma=EWMA_ALPHA*x+(1.0-EWMA_ALPHA)*ewma
         min_ewma=min(min_ewma,ewma)
+        max_ewma=max(max_ewma,ewma)
         negative_cusum=max(0.0,negative_cusum+(baseline-x-CUSUM_ALLOWANCE))
+        positive_cusum=max(0.0,positive_cusum+(x-baseline-CUSUM_ALLOWANCE))
         max_negative_cusum=max(max_negative_cusum,negative_cusum)
+        max_positive_cusum=max(max_positive_cusum,positive_cusum)
 
     ewma_drop=max(0.0,baseline-ewma)
+    ewma_rise=max(0.0,ewma-baseline)
     detected=bool(
         ewma_drop>=EWMA_DROP_THRESHOLD
         or max_negative_cusum>=CUSUM_THRESHOLD
     )
+    recovery=bool(
+        not detected
+        and baseline<=RECOVERY_BASELINE_MAX
+        and ewma>=RECOVERY_FINAL_MIN
+        and (
+            ewma_rise>=EWMA_RECOVERY_THRESHOLD
+            or max_positive_cusum>=CUSUM_THRESHOLD
+        )
+    )
+    status="recovery" if recovery else "drift" if detected else "stable"
     return {
-        "status":"drift" if detected else "stable",
+        "status":status,
         "samples":n,
         "baseline_success_rate":round(baseline,4),
         "ewma":round(ewma,4),
         "minimum_ewma":round(min_ewma,4),
+        "maximum_ewma":round(max_ewma,4),
         "ewma_drop":round(ewma_drop,4),
+        "ewma_rise":round(ewma_rise,4),
         "cusum_negative":round(max_negative_cusum,4),
+        "cusum_positive":round(max_positive_cusum,4),
         "drift_detected":detected,
+        "recovery_detected":recovery,
     }
 
 def _rows(root:Path):
@@ -213,7 +240,7 @@ def summarize(root:Path|str="studio-output", now:float|None=None)->dict:
         x["samples"],
     ),reverse=True)
     return {
-        "version":5,
+        "version":6,
         "outcomes_observed":outcomes,
         "minimum_samples":MIN_SAMPLES,
         "confidence_target":CONFIDENCE_TARGET,
@@ -223,6 +250,9 @@ def summarize(root:Path|str="studio-output", now:float|None=None)->dict:
         "sequential_min_samples":SEQUENTIAL_MIN_SAMPLES,
         "ewma_alpha":EWMA_ALPHA,
         "ewma_drop_threshold":EWMA_DROP_THRESHOLD,
+        "ewma_recovery_threshold":EWMA_RECOVERY_THRESHOLD,
+        "recovery_baseline_max":RECOVERY_BASELINE_MAX,
+        "recovery_final_min":RECOVERY_FINAL_MIN,
         "cusum_allowance":CUSUM_ALLOWANCE,
         "cusum_threshold":CUSUM_THRESHOLD,
         "advisory_only":True,

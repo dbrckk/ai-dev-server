@@ -20,6 +20,7 @@ from objective_dag import (
     task_context,
     append_amendments,
     reopen_confidence_dependency,
+    invalidate_confidence,
 )
 
 
@@ -200,6 +201,28 @@ class ObjectiveDagTests(unittest.TestCase):
         dag=mark_verified(dag,"task-1",commit="b"*40,confidence=90)
         with self.assertRaisesRegex(ObjectiveDagError,"already sufficient"):
             reopen_confidence_dependency(dag,"task-1")
+
+    def test_invalidated_confidence_blocks_critical_dependent(self):
+        dag=new(
+            "demo",
+            "build",
+            {
+                "tasks":[
+                    {"id":"core","title":"core","depends_on":[]},
+                    {"id":"release","title":"release","depends_on":["core"],"critical":True},
+                ]
+            },
+            "a"*40,
+        )
+        dag=mark_running(dag,"core")
+        dag=mark_verified(dag,"core",commit="b"*40,confidence=95)
+        dag=invalidate_confidence(dag,["core"])
+        info=summary(dag)
+        core=next(task for task in info["tasks"] if task["id"]=="core")
+        release=next(task for task in info["tasks"] if task["id"]=="release")
+        self.assertIsNone(core["confidence"])
+        self.assertEqual(release["state"],"blocked")
+        self.assertEqual(info["confidence_blockers"][0]["dependency"],"core")
 
     def test_cycle_is_rejected(self):
         with self.assertRaisesRegex(ObjectiveDagError,"cyclic"):

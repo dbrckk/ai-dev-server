@@ -17,6 +17,7 @@ from task_semantic_checkpoint import (
     retry_policy,
     stagnation_guard,
     reject_stagnant_surface,
+    affected_verified_tasks,
 )
 
 
@@ -149,6 +150,52 @@ class TaskSemanticCheckpointTests(unittest.TestCase):
                 dependency_context={"level":"low","max_coupling":1,"impacted_tests":[]},
             )
         self.assertFalse(stagnation_guard(state,"api")["active"])
+
+    def test_changed_dependency_invalidates_verified_task_surface(self):
+        state=new("demo","a"*64,"b"*40)
+        state=record(
+            state,
+            task_id="core",
+            task_title="core",
+            commit="c"*40,
+            status="verified",
+            changed_files=["src/core.py"],
+            impacted_tests=["tests/test_core.py"],
+            models=[],
+            agents=[],
+            failure_signature=None,
+            verification={"status":"passed","passed":True},
+            dependency_context={"level":"low","max_coupling":1,"impacted_tests":["tests/test_core.py"]},
+        )
+        graph={
+            "edges":{"src/api.py":["src/core.py"],"src/core.py":[]},
+            "reverse":{"src/core.py":["src/api.py"]},
+        }
+        self.assertEqual(
+            affected_verified_tasks(state,["src/api.py"],graph),
+            ["core"],
+        )
+
+    def test_unrelated_change_does_not_invalidate_task(self):
+        state=new("demo","a"*64,"b"*40)
+        state=record(
+            state,
+            task_id="core",
+            task_title="core",
+            commit="c"*40,
+            status="verified",
+            changed_files=["src/core.py"],
+            impacted_tests=[],
+            models=[],
+            agents=[],
+            failure_signature=None,
+            verification={"status":"passed","passed":True},
+            dependency_context={"level":"low","max_coupling":1,"impacted_tests":[]},
+        )
+        self.assertEqual(
+            affected_verified_tasks(state,["docs/readme.md"],{"edges":{},"reverse":{}}),
+            [],
+        )
 
     def test_identity_mismatch_resets(self):
         state=new("demo","a"*64,"b"*40)

@@ -83,6 +83,10 @@ class GodotPreviewTests(unittest.TestCase):
         self.assertIsNotNone(github.branch_head)
         self.assertGreaterEqual(len(github.states),3)
         self.assertEqual(state['architecture_decision']['constraints']['framework'],'godot')
+        self.assertEqual(
+            state['architecture_autonomy_policy'],
+            state['architecture_decision'].get('autonomy_policy', {}),
+        )
         self.assertEqual(state['architecture_evaluation']['status'],'evaluated')
         self.assertEqual(state['architecture_benchmark']['status'],'benchmarked')
         self.assertIn('architecture_learning',state)

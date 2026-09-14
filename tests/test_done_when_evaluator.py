@@ -6,7 +6,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from done_when_evaluator import classify, evaluate, evaluate_static, validate_contract
+from done_when_evaluator import apply_causality, baseline_static, classify, evaluate, evaluate_static, validate_contract
 
 
 class DoneWhenEvaluatorTests(unittest.TestCase):
@@ -150,6 +150,38 @@ class DoneWhenEvaluatorTests(unittest.TestCase):
         result=validate_contract(['json:config.json#mode=prod'])
         self.assertFalse(result["valid"])
         self.assertIn("invalid json expected value",result["errors"][0])
+
+    def test_preexisting_static_criterion_is_not_first_attempt_proof(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            (root/"config.json").write_text('{"mode":"prod"}')
+            criteria=['json:config.json#mode="prod"']
+            before=baseline_static(root,criteria)
+            result=evaluate(root,criteria)
+            causal=apply_causality(result,before,first_attempt=True)
+            self.assertFalse(causal["deterministic"][0]["passed"])
+            self.assertTrue(causal["deterministic"][0]["preexisting"])
+
+    def test_new_static_criterion_counts_as_causal_evidence(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            criteria=["file:created.txt"]
+            before=baseline_static(root,criteria)
+            (root/"created.txt").write_text("done")
+            result=evaluate(root,criteria)
+            causal=apply_causality(result,before,first_attempt=True)
+            self.assertTrue(causal["deterministic"][0]["passed"])
+            self.assertEqual(causal["preexisting_static_criteria"],[])
+
+    def test_retry_may_reuse_preexisting_static_evidence(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            (root/"created.txt").write_text("done")
+            criteria=["file:created.txt"]
+            before=baseline_static(root,criteria)
+            result=evaluate(root,criteria)
+            causal=apply_causality(result,before,first_attempt=False)
+            self.assertTrue(causal["deterministic"][0]["passed"])
 
     def test_mixed_criteria_split_deterministic_and_reviewer(self):
         with tempfile.TemporaryDirectory() as td:

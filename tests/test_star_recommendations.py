@@ -116,11 +116,12 @@ class StarScannerTests(unittest.TestCase):
     def test_model_context_contains_recommendations_as_data(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            state = {"technical_recommendations": {"status": "ok", "matches": [{"repo": "owner/repo"}]}, "architecture_decision": {"status": "planned", "chosen": [{"repo": "owner/repo"}]}, "architecture_benchmark": {"status": "benchmarked", "migration_candidates": [{"best_alternative": "owner/alt"}]}}
+            state = {"technical_recommendations": {"status": "ok", "matches": [{"repo": "owner/repo"}]}, "architecture_decision": {"status": "planned", "chosen": [{"repo": "owner/repo"}]}, "architecture_benchmark": {"status": "benchmarked", "migration_candidates": [{"best_alternative": "owner/alt"}]}, "architecture_drift_alerts": [{"type": "repository", "repo": "owner/repo", "score": 1.0}]}
             payload = json.loads(build_context({"brief": "test"}, state, root))
             self.assertEqual(payload["technical_recommendations"]["matches"][0]["repo"], "owner/repo")
             self.assertEqual(payload["architecture_decision"]["chosen"][0]["repo"], "owner/repo")
             self.assertEqual(payload["architecture_benchmark"]["migration_candidates"][0]["best_alternative"], "owner/alt")
+            self.assertEqual(payload["architecture_drift_alerts"][0]["repo"], "owner/repo")
 
     def test_load_architecture_benchmark_is_bounded(self):
         with tempfile.TemporaryDirectory() as tmp:

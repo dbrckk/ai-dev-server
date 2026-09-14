@@ -258,6 +258,13 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     )
     state["capacity_status"] = initial_capacity_status
     state["capacity_budget"] = capacity_plan
+    capacity_multiplier = float(capacity_plan.get("multiplier", 1.0) or 1.0)
+    effective_rounds = (
+        max_rounds
+        if req.get("max_project_model_calls") is not None
+        else min(24, max(max_rounds, int(round(max_rounds * capacity_multiplier))))
+    )
+    state["effective_max_rounds"] = effective_rounds
     cost_controller = RunCostController(
         total_budget_seconds=initial_remaining,
         max_model_calls=int(capacity_plan["effective_limit"]),
@@ -274,7 +281,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
                 adaptive_recipe = validate_recipe(saved["recipe"], work)
         except (OSError, json.JSONDecodeError, ValueError):
             adaptive_recipe = None
-    for round_index in range(resume_round + 1, resume_round + max_rounds + 1):
+    for round_index in range(resume_round + 1, resume_round + effective_rounds + 1):
         if deadline is not None and clock() >= deadline - 60:
             break
         star_context=recommend('implementation',out)

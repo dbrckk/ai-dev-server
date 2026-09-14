@@ -15,6 +15,24 @@ from queue import matrix
 DEFAULT_MAX_RESTARTS = 2
 
 
+def _capacity_admission(root: Path, project_id: str) -> dict | None:
+    path = root / "capacity-plan.json"
+    if not path.is_file():
+        return None
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return None
+    rows = value.get("projects") if isinstance(value, dict) else None
+    if not isinstance(rows, list):
+        return None
+    for item in rows:
+        if isinstance(item, dict) and item.get("id") == project_id:
+            admission = item.get("admission")
+            return admission if isinstance(admission, dict) else None
+    return None
+
+
 def execute(
     root: Path | str = "studio-output",
     request_dir: Path | str = "control/mobile-requests",
@@ -45,6 +63,12 @@ def execute(
 
         if action != "restart":
             row["status"] = "skipped_" + action
+            results.append(row)
+            continue
+        admission = _capacity_admission(root, project_id)
+        if isinstance(admission, dict) and admission.get("admitted") is False:
+            row["status"] = "deferred_by_admission"
+            row["admission_reason"] = admission.get("reason")
             results.append(row)
             continue
         if restarted >= max(0, int(max_restarts)):

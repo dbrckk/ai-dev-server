@@ -7,6 +7,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
+import artifact_cas
 import artifact_cas_stats as stats
 import immutable_artifact_cache as cache
 
@@ -15,7 +16,10 @@ class ArtifactCasStatsTests(unittest.TestCase):
     def test_hits_and_rebuild_cost_raise_retention_score(self):
         with tempfile.TemporaryDirectory() as td:
             path = Path(td) / "stats.json"
-            env = {"STUDIO_ARTIFACT_CAS_STATS_PATH": str(path)}
+            env = {
+                "STUDIO_ARTIFACT_CAS_STATS_PATH": str(path),
+                "STUDIO_PROJECT_ID": "stats-project",
+            }
             with mock.patch.dict(os.environ, env, clear=False):
                 cold = "a" * 64
                 hot = "b" * 64
@@ -32,12 +36,15 @@ class ArtifactCasStatsTests(unittest.TestCase):
     def test_value_trim_keeps_more_valuable_blob_under_quota(self):
         with tempfile.TemporaryDirectory() as td:
             path = Path(td) / "stats.json"
-            env = {"STUDIO_ARTIFACT_CAS_STATS_PATH": str(path)}
+            env = {
+                "STUDIO_ARTIFACT_CAS_STATS_PATH": str(path),
+                "STUDIO_PROJECT_ID": "stats-project",
+            }
             with mock.patch.dict(os.environ, env, clear=False):
                 low = "1" * 64
                 high = "2" * 64
-                stats.record(low, size=1024, hit=False, rebuild_cost_seconds=1)
-                stats.record(high, size=1024, hit=True, rebuild_cost_seconds=40)
+                stats.record(artifact_cas.stats_digest(low), size=1024, hit=False, rebuild_cost_seconds=1)
+                stats.record(artifact_cas.stats_digest(high), size=1024, hit=True, rebuild_cost_seconds=40)
                 entries = {
                     "a" * 64: {
                         "validation_key": "a" * 64,
@@ -60,7 +67,10 @@ class ArtifactCasStatsTests(unittest.TestCase):
     def test_recency_is_deterministic_logical_clock(self):
         with tempfile.TemporaryDirectory() as td:
             path = Path(td) / "stats.json"
-            env = {"STUDIO_ARTIFACT_CAS_STATS_PATH": str(path)}
+            env = {
+                "STUDIO_ARTIFACT_CAS_STATS_PATH": str(path),
+                "STUDIO_PROJECT_ID": "stats-project",
+            }
             with mock.patch.dict(os.environ, env, clear=False):
                 older = "c" * 64
                 newer = "d" * 64
@@ -75,7 +85,10 @@ class ArtifactCasStatsTests(unittest.TestCase):
     def test_summary_reports_hits_bytes_and_protected_cost(self):
         with tempfile.TemporaryDirectory() as td:
             path = Path(td) / "stats.json"
-            env = {"STUDIO_ARTIFACT_CAS_STATS_PATH": str(path)}
+            env = {
+                "STUDIO_ARTIFACT_CAS_STATS_PATH": str(path),
+                "STUDIO_PROJECT_ID": "stats-project",
+            }
             with mock.patch.dict(os.environ, env, clear=False):
                 digest = "e" * 64
                 stats.record(digest, size=2048, hit=False, rebuild_cost_seconds=15)

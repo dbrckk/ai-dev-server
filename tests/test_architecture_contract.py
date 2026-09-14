@@ -18,6 +18,10 @@ class ArchitectureContractTests(unittest.TestCase):
             report["policy"]["max_feedback_age_seconds"],
             90 * 24 * 60 * 60,
         )
+        self.assertEqual(
+            report["policy"]["context_dimensions"],
+            ["framework", "project_type", "primary_domain"],
+        )
 
 
 if __name__ == "__main__":

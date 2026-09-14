@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 
+from atomic_file import write_text as atomic_write_text
 from core import IMAGE, canonical
 from flutter_workspace import snapshot as flutter_snapshot
 
@@ -110,8 +111,7 @@ def save(entries: dict) -> None:
         "flutter_image": IMAGE,
         "entries": dict(clean),
     }
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(canonical(payload), encoding="utf-8")
+    atomic_write_text(path, canonical(payload), encoding="utf-8")
 
 
 def hit(entries: dict, key: str) -> bool:

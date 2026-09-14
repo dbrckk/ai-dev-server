@@ -10,6 +10,7 @@ from pathlib import Path
 from file_lock import exclusive
 
 DEFAULT_OMNIROUTE_MONTHLY_TOKENS = 1_470_000_000
+DEFAULT_RESERVE_RATIO = 0.03
 
 
 def month_key(now: datetime | None = None) -> str:

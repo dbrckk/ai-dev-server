@@ -110,6 +110,25 @@ python studio/fleet_maintenance.py --root studio-output
 - `fleet_supervisor.py` produit des décisions déterministes `none/restart/quarantine/inspect` sans exécuter de redémarrage destructif ;
 - `fleet_maintenance.py` compacte la télémétrie et supprime uniquement des fichiers temporaires reconnus dans `.autonomy`.
 
+### Exploitation V1.2
+
+La V1.2 ajoute supervision active, historique de métriques et détection de régressions :
+
+```bash
+python studio/fleet_metrics.py --root studio-output
+python studio/fleet_regression.py --history studio-output/fleet-metrics.json
+python studio/fleet_supervisor_apply.py --root studio-output
+python studio/fleet_supervisor_apply.py --root studio-output --apply --max-restarts 2
+python studio/fleet_daemon.py --root studio-output --once
+python studio/fleet_daemon.py --root studio-output --apply-restarts
+```
+
+- les redémarrages sont en dry-run par défaut ;
+- un projet avec corruption de state/lease est mis en quarantaine et jamais redémarré automatiquement ;
+- le nombre de restarts par cycle est borné ;
+- une régression de santé détectée entre snapshots bloque les redémarrages automatiques ;
+- le benchmark Flutter/Godot/Generic est exécuté comme canary toutes les 6 heures.
+
 ### Vérification opérationnelle V1
 
 Le serveur expose maintenant deux contrôles machine-readable :

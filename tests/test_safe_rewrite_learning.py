@@ -81,5 +81,50 @@ class SafeRewriteLearningTests(unittest.TestCase):
         )
 
 
+    def test_origin_score_penalty_and_rewrite_bonus_are_asymmetric(self):
+        summary = {
+            "origin_rankings": [{
+                "kind": "provider",
+                "name": "mixed",
+                "samples": 10,
+                "verification_pass_rate": 0.1,
+            }],
+            "rewrite_rankings": [{
+                "kind": "provider",
+                "name": "mixed",
+                "samples": 10,
+                "verification_pass_rate": 0.9,
+                "review_pass_rate": 0.9,
+                "review_passes": 9,
+            }],
+        }
+        penalty = srl.origin_violation_penalty(
+            summary, kind="provider", name="mixed", role="implementation"
+        )
+        bonus = srl.rewrite_recovery_bonus(
+            summary, kind="provider", name="mixed", role="implementation"
+        )
+        self.assertGreater(penalty, bonus)
+        self.assertLessEqual(bonus, 10.0)
+
+    def test_recovery_bonus_requires_evidence(self):
+        summary = {
+            "rewrite_rankings": [{
+                "kind": "provider",
+                "name": "good",
+                "samples": srl.MIN_SAMPLES - 1,
+                "verification_pass_rate": 1.0,
+                "review_pass_rate": 1.0,
+                "review_passes": srl.MIN_SAMPLES - 1,
+            }]
+        }
+        self.assertEqual(
+            srl.rewrite_recovery_bonus(
+                summary, kind="provider", name="good", role="implementation"
+            ),
+            0.0,
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -21,6 +21,11 @@ class FleetMetricsTests(unittest.TestCase):
                 "complete": 1,
                 "blocked": 0,
             },
+            "architecture_learning": {
+                "projects_observed": 7,
+                "eligible_recommendations": 2,
+                "top_recommendations": [{"repo": "a/core", "success_rate": 0.875}],
+            },
             "projects": [
                 {
                     "active_leases": 1,
@@ -40,6 +45,9 @@ class FleetMetricsTests(unittest.TestCase):
         self.assertEqual(row["active_leases"], 1)
         self.assertEqual(row["checkpoint_entries"], 6)
         self.assertEqual(row["telemetry_events"], 16)
+        self.assertEqual(row["architecture_projects_observed"], 7)
+        self.assertEqual(row["architecture_eligible_recommendations"], 2)
+        self.assertEqual(row["architecture_top_success_rate"], 0.875)
         self.assertEqual(row["ts"], 100.0)
 
     def test_history_is_bounded(self):

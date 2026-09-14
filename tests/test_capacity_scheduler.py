@@ -65,6 +65,30 @@ class CapacitySchedulerTests(unittest.TestCase):
         )
 
 
+
+    def test_verified_efficiency_changes_scarce_capacity_share(self):
+        providers = [ProviderCapacity("omniroute", 1000, unmetered=False)]
+        report = allocate([
+            {
+                "id": "efficient",
+                "requested_tokens": 1000,
+                "priority": 50,
+                "efficiency_multiplier": 1.25,
+            },
+            {
+                "id": "stagnant",
+                "requested_tokens": 1000,
+                "priority": 50,
+                "efficiency_multiplier": 0.75,
+            },
+        ], providers, critical_reserve_ratio=0.0)
+        by_id = {row["id"]: row for row in report["projects"]}
+        self.assertGreater(
+            by_id["efficient"]["token_envelope"],
+            by_id["stagnant"]["token_envelope"],
+        )
+
+
     def test_terminal_projects_are_excluded(self):
         providers = [ProviderCapacity("free", 10_000)]
         report = allocate([

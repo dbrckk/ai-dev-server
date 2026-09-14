@@ -174,6 +174,13 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
                 state=STATE,
                 app_name="demo_app",
                 sandbox_factory=FlakySandbox,
+                strategy_row={
+                    "conservative_success_rate": 0.8,
+                    "risk": 0.2,
+                    "estimated_seconds": 20,
+                    "estimated_model_calls": 1,
+                },
+                remaining_model_calls=2,
             )
 
             self.assertTrue(candidate["passed"])

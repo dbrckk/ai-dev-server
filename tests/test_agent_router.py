@@ -73,6 +73,36 @@ class AgentRouterTests(unittest.TestCase):
         self.assertIn("architecture_violation", risky.trace["components"])
         self.assertLess(risky.trace["components"]["architecture_violation"], 0)
 
+    def test_contextual_memory_changes_agent_score(self):
+        contextual = {
+            "stack:python": {
+                "agent:free-code": {
+                    "samples": 8,
+                    "successes": 8,
+                    "ema_success_rate": 0.95,
+                },
+                "agent:paid-code": {
+                    "samples": 8,
+                    "successes": 1,
+                    "ema_success_rate": 0.10,
+                },
+            }
+        }
+        with patch("shutil.which", return_value="/bin/tool"):
+            ranked = rank_agents(
+                {"code_editing", "tests"},
+                registry=self.registry,
+                prefer_free=False,
+                contextual_routing=contextual,
+                weighted_contexts=[("stack:python", 1.0)],
+            )
+        free_code = next(item for item in ranked if item.agent.name == "free-code")
+        paid_code = next(item for item in ranked if item.agent.name == "paid-code")
+        self.assertGreater(
+            free_code.trace["components"]["contextual_performance"],
+            paid_code.trace["components"]["contextual_performance"],
+        )
+
     def test_opencode_invocation_uses_secret_alias(self):
         env={
             "STUDIO_API_BASE":"https://example.invalid/v1",

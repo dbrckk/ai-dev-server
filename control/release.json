@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "version": "1.1.0",
+  "channel": "stable-candidate",
+  "required_gates": [
+    "CI",
+    "Validate AI Dev Server",
+    "Fault Injection Gate",
+    "Resilience Soak",
+    "Mobile Studio Real Build",
+    "Multi-Engine E2E Benchmark"
+  ],
+  "operational_commands": [
+    "python studio/v1_gate.py",
+    "python studio/fleet_dashboard.py --root studio-output",
+    "python studio/fleet_supervisor.py --root studio-output",
+    "python studio/fleet_maintenance.py --root studio-output"
+  ]
+}

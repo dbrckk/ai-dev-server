@@ -37,21 +37,33 @@ def validate_workflow(path: Path) -> dict:
     }
 
 
+def _workflow_run_id_from_details(run: dict, repository: str) -> int | None:
+    if not isinstance(run,dict):
+        return None
+    details=run.get("details_url")
+    if not isinstance(details,str):
+        return None
+    parsed=urlparse(details)
+    if parsed.scheme!="https" or parsed.netloc!="github.com":
+        return None
+    prefix="/"+repository+"/actions/runs/"
+    if not parsed.path.startswith(prefix):
+        return None
+    suffix=parsed.path[len(prefix):]
+    token=suffix.split("/",1)[0]
+    try:
+        value=int(token)
+    except (TypeError,ValueError):
+        return None
+    return value if value>0 else None
+
 def _trusted_check_run(run: dict, repository: str) -> bool:
     if not isinstance(run,dict):
         return False
     app=run.get("app")
     if not isinstance(app,dict) or app.get("slug")!=TRUSTED_CHECK_APP:
         return False
-    details=run.get("details_url")
-    if not isinstance(details,str):
-        return False
-    parsed=urlparse(details)
-    return (
-        parsed.scheme=="https"
-        and parsed.netloc=="github.com"
-        and parsed.path.startswith("/"+repository+"/actions/runs/")
-    )
+    return _workflow_run_id_from_details(run,repository) is not None
 
 def _timestamp(value) -> float | None:
     if isinstance(value,(int,float)):
@@ -128,12 +140,22 @@ def validate_check_runs(runs: list[dict], repository: str, *, commit_sha: str | 
             "timestamp":_check_timestamp(by_name[name]),
             "status":by_name[name].get("status"),
             "conclusion":by_name[name].get("conclusion"),
+            "workflow_run_id":_workflow_run_id_from_details(by_name[name],repository),
         }
         for name in sorted(REQUIRED_GITHUB_CHECKS)
         if name in by_name
     }
+    workflow_run_ids=sorted({
+        row.get("workflow_run_id")
+        for row in evidence.values()
+        if isinstance(row.get("workflow_run_id"),int)
+    })
+    mixed_workflow_runs=(
+        len(workflow_run_ids)>1
+        or (not missing and len(workflow_run_ids)!=1)
+    )
     return {
-        "valid":not missing and not incomplete and not failed and not stale,
+        "valid":not missing and not incomplete and not failed and not stale and not mixed_workflow_runs,
         "required_checks":sorted(REQUIRED_GITHUB_CHECKS),
         "passed_checks":passed,
         "missing_checks":missing,
@@ -141,4 +163,7 @@ def validate_check_runs(runs: list[dict], repository: str, *, commit_sha: str | 
         "failed_checks":failed,
         "stale_checks":stale,
         "check_evidence":evidence,
+        "workflow_run_ids":workflow_run_ids,
+        "common_workflow_run_id":workflow_run_ids[0] if len(workflow_run_ids)==1 else None,
+        "mixed_workflow_runs":mixed_workflow_runs,
     }

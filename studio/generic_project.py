@@ -15,6 +15,7 @@ from generic_toolchain import bootstrap_commands, detect as detect_toolchain
 from generic_sandbox import run as run_command
 from run import GitHub
 from project_recommendations import recommend
+from free_capacity_recommendations import discover as discover_free_capacity
 from learning_context import load_context
 from agents.router import rank_agents
 from agents.registry import DEFAULT_REGISTRY
@@ -228,6 +229,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     }
 
     architecture_root = _prepare_architecture(req, out, state)
+    state["free_capacity_recommendations"] = discover_free_capacity(out)
 
     bootstrap_evidence = []
     for command in bootstrap_commands(work):
@@ -349,6 +351,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             "available_agent_candidates": agent_candidates[:6],
             "safe_rewrite_learning": safe_rewrite_summary,
             "routing_contexts": round_weighted_contexts,
+            "free_capacity_recommendations": state.get("free_capacity_recommendations", {}),
         }
         planning_started = clock()
         preplan_remaining = None if deadline is None else max(0.0, deadline - clock())

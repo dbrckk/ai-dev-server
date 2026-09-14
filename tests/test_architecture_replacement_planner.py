@@ -776,6 +776,67 @@ class ArchitectureReplacementPlannerTests(unittest.TestCase):
         self.assertEqual(row["replacement_reputation"]["source"],"persistent_registry")
         self.assertFalse(row["replacement_reputation"]["promotion_eligible"])
 
+    def test_persisted_recovering_state_clamps_bias_and_adds_transition_gate(self):
+        obs=self.obsolescence()
+        obs["deprecation_candidates"][0].update({
+            "framework":"flutter","project_type":"game","primary_domain":"mobile",
+            "platform":"android","current_major_version":1,"replacement_major_version":2,
+        })
+        history={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "framework":"flutter","project_type":"game","primary_domain":"mobile","platform":"android",
+            "current_major_version":1,"replacement_major_version":2,
+            "samples":30,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.98,"posterior_success_rate":0.95,"regression_rate":0.01,
+            "rollback_rate":0.0,"wilson_lower_95":0.85,"mean_quality_score":98.0,
+            "latest_observed_at":time.time(),
+        }
+        import architecture_replacement_reputation as reputation
+        context={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "framework":"flutter","project_type":"game","primary_domain":"mobile",
+            "platform":"android","current_major_version":1,"replacement_major_version":2,
+        }
+        registry,_=reputation.apply(None,context,history,now=100.0)
+        registry,_=reputation.apply(registry,context,{**history,"sequential_drift":True},now=200.0)
+        registry,recovering=reputation.apply(registry,context,history,now=300.0)
+        self.assertEqual(recovering["state"],"RECOVERING")
+        row=plan(
+            obs,self.recommendations(),
+            learning={"rankings":[history]},
+            reputation_registry=registry,
+        )["replacement_plans"][0]
+        self.assertEqual(row["replacement_reputation"]["state"],"RECOVERING")
+        self.assertLessEqual(row["empirical_priority_adjustment"],0.0)
+        self.assertIn("recovering_replacement_revalidated",row["required_gates"])
+        self.assertIn("replacement_reputation_transition_completed",row["required_gates"])
+
+    def test_persisted_degraded_state_blocks_positive_bias(self):
+        obs=self.obsolescence()
+        context={
+            "current_repo":"a/current","replacement_repo":"a/better",
+            "framework":None,"project_type":None,"primary_domain":None,
+            "platform":None,"current_major_version":None,"replacement_major_version":None,
+        }
+        import architecture_replacement_reputation as reputation
+        strong={
+            "samples":20,"effective_samples":20,"eligible_for_bias":True,"evidence_confidence":1.0,
+            "success_rate":0.95,"posterior_success_rate":0.93,"regression_rate":0.02,
+            "rollback_rate":0.0,"wilson_lower_95":0.80,"mean_quality_score":95.0,
+        }
+        weak={**strong,"regression_rate":0.40,"wilson_lower_95":0.30}
+        registry,_=reputation.apply(None,context,strong,now=100.0)
+        registry,degraded=reputation.apply(registry,context,weak,now=200.0)
+        self.assertEqual(degraded["state"],"DEGRADED")
+        row=plan(
+            obs,self.recommendations(),
+            learning={"rankings":[strong]},
+            reputation_registry=registry,
+        )["replacement_plans"][0]
+        self.assertEqual(row["replacement_reputation"]["state"],"DEGRADED")
+        self.assertLessEqual(row["empirical_priority_adjustment"],0.0)
+        self.assertIn("degraded_replacement_revalidated",row["required_gates"])
+
     def test_write_persists_plan(self):
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)

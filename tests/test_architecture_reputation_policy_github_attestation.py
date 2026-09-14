@@ -10,8 +10,8 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
 
     def check_runs(self):
         return [
-            {"id":1,"name":"validate","head_sha":"abc","status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:30Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/1"},
-            {"id":2,"name":"python-tests","head_sha":"abc","status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:40Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/1"},
+            {"id":1,"name":"validate","head_sha":"abc","status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:30Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/9"},
+            {"id":2,"name":"python-tests","head_sha":"abc","status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:40Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/9"},
         ]
 
     def pr_identity(self):
@@ -79,6 +79,19 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
                 reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:10Z"}],
                 permissions={"alice":"write"},
                 workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:25Z"}],
+                check_runs=checks,pr_identity=self.pr_identity(),head_commit_timestamp=1767225600.0,reinforced=False)
+
+    def test_required_checks_from_different_workflow_runs_rejected(self):
+        checks=self.check_runs()
+        checks[1]["details_url"]="https://github.com/o/r/actions/runs/10"
+        with self.assertRaises(ApprovalProvenanceError):
+            build(self.plan,repository="o/r",pull_request=7,commit_sha="abc",
+                reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:10Z"}],
+                permissions={"alice":"write"},
+                workflow_runs=[
+                    {"id":9,"head_sha":"abc","conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:25Z"},
+                    {"id":10,"head_sha":"abc","conclusion":"success","name":"CI","created_at":"2026-01-01T00:00:26Z"},
+                ],
                 check_runs=checks,pr_identity=self.pr_identity(),head_commit_timestamp=1767225600.0,reinforced=False)
 
     def test_stale_workflow_rejected(self):

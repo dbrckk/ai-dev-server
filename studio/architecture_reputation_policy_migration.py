@@ -13,7 +13,7 @@ from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
 from architecture_reputation_policy_approval import ApprovalProvenanceError, approval_from_github_attestation, consume as consume_approval, validate_approval, validate_github_attestation, validate_ledger
-from replacement_ci_policy import REQUIRED_WORKFLOW_PATH
+from replacement_ci_policy import CI_TRUST_POLICY_VERSION, REQUIRED_WORKFLOW_PATH, ci_trust_policy_digest
 from architecture_replacement_reputation import (
     DANGEROUS_STATE_GATES,
     MAX_AUDIT_EVENTS,
@@ -429,6 +429,7 @@ def bind_github_review_target(plan: dict, target: dict, *, now: float | None=Non
     required=(
         "repository","pull_request","commit_sha","head_ref","base_ref","author",
         "workflow_path","workflow_blob_sha","workflow_sha256",
+        "ci_trust_policy_version","ci_trust_policy_digest",
     )
     if not isinstance(target,dict) or any(not target.get(key) for key in required):
         raise ReputationPolicyMigrationError("GitHub review target incomplete")
@@ -440,6 +441,10 @@ def bind_github_review_target(plan: dict, target: dict, *, now: float | None=Non
         raise ReputationPolicyMigrationError("GitHub review target workflow digest invalid")
     if not isinstance(target.get("workflow_blob_sha"),str) or not target.get("workflow_blob_sha"):
         raise ReputationPolicyMigrationError("GitHub review target workflow blob SHA missing")
+    if target.get("ci_trust_policy_version")!=CI_TRUST_POLICY_VERSION:
+        raise ReputationPolicyMigrationError("GitHub review target CI trust policy version is stale")
+    if target.get("ci_trust_policy_digest")!=ci_trust_policy_digest():
+        raise ReputationPolicyMigrationError("GitHub review target CI trust policy digest is stale")
     bound={
         **plan,
         "github_review_target":{key:target.get(key) for key in required},

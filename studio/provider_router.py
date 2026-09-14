@@ -194,12 +194,14 @@ def _json_specs(raw: str) -> list[ProviderSpec]:
 def load_providers(*, prefer_free: bool = True) -> tuple[ProviderSpec, ...]:
     specs = []
     primary = _primary()
+    explicit_json = os.environ.get("STUDIO_PROVIDERS_JSON", "")
     if primary:
         specs.append(primary)
-    auto_omniroute = _auto_omniroute()
-    if auto_omniroute:
-        specs.append(auto_omniroute)
-    specs.extend(_json_specs(os.environ.get("STUDIO_PROVIDERS_JSON", "")))
+    if primary is None and not explicit_json.strip():
+        auto_omniroute = _auto_omniroute()
+        if auto_omniroute:
+            specs.append(auto_omniroute)
+    specs.extend(_json_specs(explicit_json))
 
     deduped = {}
     for spec in specs:

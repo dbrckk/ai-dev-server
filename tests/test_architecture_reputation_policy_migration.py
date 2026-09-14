@@ -197,5 +197,44 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         self.assertEqual(explanation["policy_changes"],[])
         self.assertEqual(explanation["state_impact"]["changed_entries"],0)
 
+    def test_authorization_is_bound_to_review_digest(self):
+        registry=self.registry()
+        plan=dry_run(registry,self.learning(),now=200.0)
+        auth=self.authorize(plan)
+        tampered=copy.deepcopy(plan)
+        tampered["explanation"]["summary"]="tampered"
+        with self.assertRaises(ReputationPolicyMigrationError):
+            apply_migration(registry,tampered,auth,now=300.0)
+
+    def test_authorization_expires(self):
+        registry=self.registry()
+        plan=dry_run(registry,self.learning(),now=200.0)
+        auth=self.authorize(plan)
+        with self.assertRaises(ReputationPolicyMigrationError):
+            apply_migration(registry,plan,auth,now=200.0+24*60*60)
+
+    def test_authorization_rejects_future_issue_time(self):
+        registry=self.registry()
+        plan=dry_run(registry,self.learning(),now=200.0)
+        auth=self.authorize(plan)
+        with self.assertRaises(ReputationPolicyMigrationError):
+            apply_migration(registry,plan,auth,now=199.0)
+
+    def test_authorization_rejects_extended_expiry(self):
+        registry=self.registry()
+        plan=dry_run(registry,self.learning(),now=200.0)
+        auth=self.authorize(plan)
+        auth["expires_at"]=auth["issued_at"]+24*60*60+1
+        with self.assertRaises(ReputationPolicyMigrationError):
+            apply_migration(registry,plan,auth,now=300.0)
+
+    def test_review_digest_is_persisted_in_migration_audit(self):
+        registry=self.registry()
+        plan=dry_run(registry,self.learning(),now=200.0)
+        migrated=apply_migration(registry,plan,self.authorize(plan),now=300.0)
+        self.assertEqual(migrated["last_policy_migration"]["review_digest"],plan["review_digest"])
+        self.assertEqual(migrated["last_policy_migration"]["authorization_issued_at"],200.0)
+        self.assertEqual(migrated["last_policy_migration"]["authorization_expires_at"],200.0+24*60*60)
+
 if __name__=="__main__":
     unittest.main()

@@ -9,7 +9,7 @@ from core import Model, Sandbox, StudioError, SECRET, allowed, apply_patch, cano
 from diagnostics import repairable
 from journeys import validate_journeys
 from agents.orchestrator import execute_named as execute_named_agent, ranked_agent_names
-from agents.workspace import snapshot as snapshot_agent_workspace, restore as restore_agent_workspace, validate_delta as validate_agent_delta
+from flutter_workspace import snapshot as snapshot_agent_workspace, restore as restore_agent_workspace, delta as validate_agent_delta
 from repair_strategy import choose as choose_strategy, record_outcome as record_strategy_outcome
 from release_candidate_search import MAX_CANDIDATES, apply_winner, run_candidate, select_winner
 

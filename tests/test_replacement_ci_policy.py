@@ -58,5 +58,16 @@ class ReplacementCIPolicyTests(unittest.TestCase):
         self.assertFalse(result["valid"])
         self.assertIn("validate",result["missing_checks"])
 
+    def test_required_checks_from_multiple_workflow_runs_are_rejected(self):
+        runs=[
+            {"id":1,"name":"validate","head_sha":"abc","status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:10Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/11"},
+            {"id":2,"name":"python-tests","head_sha":"abc","status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:20Z","app":{"slug":"github-actions"},"details_url":"https://github.com/o/r/actions/runs/12"},
+        ]
+        result=validate_check_runs(runs,"o/r",commit_sha="abc",head_commit_timestamp=1767225600.0)
+        self.assertFalse(result["valid"])
+        self.assertTrue(result["mixed_workflow_runs"])
+        self.assertEqual(result["workflow_run_ids"],[11,12])
+        self.assertIsNone(result["common_workflow_run_id"])
+
 if __name__=="__main__":
     unittest.main()

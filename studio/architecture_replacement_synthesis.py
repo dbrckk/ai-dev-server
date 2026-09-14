@@ -160,8 +160,8 @@ def synthesize(order,root,api=None,model=None):
         if choice.get("finish_reason")=="length":
             raise ReplacementCandidateRejected("replacement candidate truncated")
         raw=choice["message"]["content"].strip()
-        if raw.startswith("\`\`\`"):
-            raw=raw.split("\n",1)[1].rsplit("\`\`\`",1)[0]
+        if raw.startswith("```"):
+            raw=raw.split("\n",1)[1].rsplit("```",1)[0]
         candidate=json.loads(raw)
     except (KeyError,IndexError,TypeError,AttributeError,json.JSONDecodeError):
         raise ReplacementCandidateRejected("replacement model output invalid") from None

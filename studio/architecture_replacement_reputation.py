@@ -8,9 +8,11 @@ from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
 
-REGISTRY_VERSION=1
+REGISTRY_VERSION=2
 MAX_AUDIT_EVENTS=500
 RECOVERY_CONFIRMATIONS_REQUIRED=2
+RECOVERY_MIN_DWELL_SECONDS=7*24*60*60
+RECOVERY_MIN_NEW_EFFECTIVE_SAMPLES=2.0
 
 def _identity(context: dict) -> str:
     payload={
@@ -61,36 +63,114 @@ def desired_state(evidence: dict | None) -> dict:
         return {"state":"DEGRADED","reason":"weak_or_regressive_historical_evidence"}
     return {"state":"EXPERIMENTAL","reason":"mixed_or_maturing_evidence"}
 
-def _transition(previous: str | None, desired: str, confirmations: int) -> tuple[str,int,str]:
-    previous=previous or "UNOBSERVED"
+def _effective_samples(evidence: dict | None) -> float:
+    if not isinstance(evidence,dict):
+        return 0.0
+    value=evidence.get("effective_samples",evidence.get("samples",0))
+    try:
+        return max(0.0,float(value or 0.0))
+    except (TypeError,ValueError):
+        return 0.0
 
-    # Downward safety transitions happen immediately.
+def _transition(
+    previous_entry: dict,
+    desired: str,
+    evidence: dict | None,
+    now: float,
+) -> tuple[str,int,str,dict]:
+    previous=previous_entry.get("state") if isinstance(previous_entry.get("state"),str) else "UNOBSERVED"
+    confirmations=int(previous_entry.get("recovery_confirmations",0) or 0)
+    current_samples=_effective_samples(evidence)
+    state_since=float(previous_entry.get("state_since",previous_entry.get("updated_at",now)) or now)
+    recovery_started_at=previous_entry.get("recovery_started_at")
+    recovery_start_samples=previous_entry.get("recovery_start_effective_samples")
+
+    meta={
+        "transition_pending":False,
+        "state_since":state_since if previous!="UNOBSERVED" else now,
+        "recovery_started_at":recovery_started_at,
+        "recovery_start_effective_samples":recovery_start_samples,
+        "new_effective_samples_since_recovery":0.0,
+        "eligible_at":None,
+    }
+
+    # Downward safety transitions are intentionally fast.
     if desired=="QUARANTINED":
-        return "QUARANTINED",0,"immediate_safety_quarantine"
-    if previous=="TRUSTED" and desired=="DEGRADED":
-        return "DEGRADED",0,"trusted_degraded"
-    if previous=="TRUSTED" and desired=="EXPERIMENTAL":
-        return "DEGRADED",0,"trusted_evidence_weakened"
+        meta["state_since"]=now if previous!="QUARANTINED" else state_since
+        meta["recovery_started_at"]=None
+        meta["recovery_start_effective_samples"]=None
+        return "QUARANTINED",0,"immediate_safety_quarantine",meta
+    if previous=="TRUSTED" and desired in {"DEGRADED","EXPERIMENTAL"}:
+        meta["state_since"]=now
+        meta["recovery_started_at"]=None
+        meta["recovery_start_effective_samples"]=None
+        reason="trusted_degraded" if desired=="DEGRADED" else "trusted_evidence_weakened"
+        return "DEGRADED",0,reason,meta
 
-    # Recovery is deliberately slower than degradation.
-    if previous in {"QUARANTINED","DEGRADED"} and desired=="TRUSTED":
-        return "RECOVERING",1,"trusted_candidate_requires_recovery_confirmation"
-    if previous in {"QUARANTINED","DEGRADED"} and desired=="RECOVERING":
-        return "RECOVERING",max(1,confirmations),"recovery_started"
+    # A degraded or quarantined replacement can only climb through RECOVERING.
+    if previous in {"QUARANTINED","DEGRADED"} and desired in {"TRUSTED","RECOVERING"}:
+        started=now
+        meta.update({
+            "state_since":now,
+            "recovery_started_at":started,
+            "recovery_start_effective_samples":current_samples,
+            "new_effective_samples_since_recovery":0.0,
+            "eligible_at":started+RECOVERY_MIN_DWELL_SECONDS,
+            "transition_pending":True,
+        })
+        return "RECOVERING",1,"recovery_started",meta
+
     if previous=="RECOVERING":
-        if desired=="QUARANTINED":
-            return "QUARANTINED",0,"recovery_failed_quarantine"
-        if desired=="DEGRADED":
-            return "DEGRADED",0,"recovery_failed"
-        if desired=="TRUSTED":
-            confirmations+=1
-            if confirmations>=RECOVERY_CONFIRMATIONS_REQUIRED:
-                return "TRUSTED",0,"recovery_confirmed"
-            return "RECOVERING",confirmations,"recovery_confirmation_pending"
-        if desired=="RECOVERING":
-            return "RECOVERING",max(1,confirmations),"recovery_ongoing"
+        started=float(recovery_started_at) if isinstance(recovery_started_at,(int,float)) else state_since
+        start_samples=float(recovery_start_samples) if isinstance(recovery_start_samples,(int,float)) else current_samples
+        new_samples=max(0.0,current_samples-start_samples)
+        meta.update({
+            "state_since":state_since,
+            "recovery_started_at":started,
+            "recovery_start_effective_samples":start_samples,
+            "new_effective_samples_since_recovery":round(new_samples,3),
+            "eligible_at":started+RECOVERY_MIN_DWELL_SECONDS,
+        })
 
-    return desired,0,"desired_state_applied"
+        if desired=="QUARANTINED":
+            meta["state_since"]=now
+            meta["recovery_started_at"]=None
+            meta["recovery_start_effective_samples"]=None
+            return "QUARANTINED",0,"recovery_failed_quarantine",meta
+        if desired=="DEGRADED":
+            meta["state_since"]=now
+            meta["recovery_started_at"]=None
+            meta["recovery_start_effective_samples"]=None
+            return "DEGRADED",0,"recovery_failed",meta
+        if desired in {"TRUSTED","RECOVERING"}:
+            confirmations+=1
+            dwell_ok=(now-started)>=RECOVERY_MIN_DWELL_SECONDS
+            samples_ok=new_samples>=RECOVERY_MIN_NEW_EFFECTIVE_SAMPLES
+            confirmations_ok=confirmations>=RECOVERY_CONFIRMATIONS_REQUIRED
+            if desired=="TRUSTED" and dwell_ok and samples_ok and confirmations_ok:
+                meta.update({
+                    "state_since":now,
+                    "transition_pending":False,
+                    "recovery_started_at":None,
+                    "recovery_start_effective_samples":None,
+                    "eligible_at":None,
+                })
+                return "TRUSTED",0,"recovery_confirmed",meta
+            meta["transition_pending"]=True
+            if not dwell_ok:
+                reason="recovery_minimum_dwell_pending"
+            elif not samples_ok:
+                reason="recovery_new_evidence_pending"
+            elif not confirmations_ok:
+                reason="recovery_confirmation_pending"
+            else:
+                reason="recovery_ongoing"
+            return "RECOVERING",confirmations,reason,meta
+
+    # Bootstrap and non-recovery transitions use the current evidence directly.
+    meta["state_since"]=now if previous!=desired else state_since
+    meta["transition_pending"]=False
+    return desired,0,"desired_state_applied",meta
 
 def apply(registry: dict | None, context: dict, evidence: dict | None, *, now: float | None=None) -> tuple[dict,dict]:
     now=float(now) if isinstance(now,(int,float)) else time.time()
@@ -100,11 +180,9 @@ def apply(registry: dict | None, context: dict, evidence: dict | None, *, now: f
     key=_identity(context)
     previous_entry=entries.get(key) if isinstance(entries.get(key),dict) else {}
     previous_state=previous_entry.get("state") if isinstance(previous_entry.get("state"),str) else "UNOBSERVED"
-    confirmations=int(previous_entry.get("recovery_confirmations",0) or 0)
-
     desired=desired_state(evidence)
-    new_state,new_confirmations,transition_reason=_transition(
-        previous_state,desired["state"],confirmations
+    new_state,new_confirmations,transition_reason,transition_meta=_transition(
+        previous_entry,desired["state"],evidence,now
     )
 
     entry={
@@ -118,8 +196,14 @@ def apply(registry: dict | None, context: dict, evidence: dict | None, *, now: f
         "reason":desired["reason"],
         "transition_reason":transition_reason,
         "recovery_confirmations":new_confirmations,
+        "state_since":transition_meta.get("state_since",now),
+        "recovery_started_at":transition_meta.get("recovery_started_at"),
+        "recovery_start_effective_samples":transition_meta.get("recovery_start_effective_samples"),
+        "new_effective_samples_since_recovery":transition_meta.get("new_effective_samples_since_recovery",0.0),
+        "transition_pending":transition_meta.get("transition_pending") is True,
+        "eligible_at":transition_meta.get("eligible_at"),
         "updated_at":now,
-        "promotion_eligible":new_state=="TRUSTED",
+        "promotion_eligible":new_state=="TRUSTED" and transition_meta.get("transition_pending") is not True,
         "requires_revalidation":new_state in {"DEGRADED","QUARANTINED","RECOVERING"},
     }
     if evidence:
@@ -142,6 +226,9 @@ def apply(registry: dict | None, context: dict, evidence: dict | None, *, now: f
         "new_state":new_state,
         "transition_reason":transition_reason,
         "reason":desired["reason"],
+        "transition_pending":transition_meta.get("transition_pending") is True,
+        "eligible_at":transition_meta.get("eligible_at"),
+        "effective_samples":_effective_samples(evidence),
     }
     entries=dict(entries)
     entries[key]=entry
@@ -153,8 +240,11 @@ def apply(registry: dict | None, context: dict, evidence: dict | None, *, now: f
         "audit":audit,
         "policy":{
             "recovery_confirmations_required":RECOVERY_CONFIRMATIONS_REQUIRED,
+            "recovery_min_dwell_seconds":RECOVERY_MIN_DWELL_SECONDS,
+            "recovery_min_new_effective_samples":RECOVERY_MIN_NEW_EFFECTIVE_SAMPLES,
             "fast_downward_transitions":True,
             "slow_upward_recovery":True,
+            "upward_transition_requires_time_and_new_evidence":True,
         },
     }
     return updated,entry

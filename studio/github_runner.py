@@ -40,6 +40,7 @@ from github_phase_cost_baseline_store import PhaseCostBaselineStoreError, persis
 from github_strategy_efficiency_store import StrategyEfficiencyStoreError, persist_local as persist_strategy_efficiency_local, restore_local as restore_strategy_efficiency_local
 from github_contextual_strategy_efficiency_store import ContextualStrategyEfficiencyStoreError, persist_local as persist_contextual_strategy_efficiency_local, restore_local as restore_contextual_strategy_efficiency_local
 from github_quick_gate_cache_store import QuickGateCacheStoreError, persist_local as persist_quick_gate_cache_local, restore_local as restore_quick_gate_cache_local
+from github_full_gate_cache_store import FullGateCacheStoreError, persist_local as persist_full_gate_cache_local, restore_local as restore_full_gate_cache_local
 from improvement_backlog import activate_next, load as load_improvement_backlog, merge_assessment, new_backlog, save as save_improvement_backlog
 from improvement_executor import run_active_improvement, verified_project_cycle
 from human_input_request import prerequisite_satisfied, requires_human_input, write_request as write_human_input_request
@@ -161,6 +162,7 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             restore_strategy_efficiency_local(remote_github,out/'.autonomy/strategy-efficiency.json')
             restore_contextual_strategy_efficiency_local(remote_github,out/'.autonomy/contextual-strategy-efficiency.json')
             restore_quick_gate_cache_local(remote_github,out/'.autonomy/quick-gate-cache.json')
+            restore_full_gate_cache_local(remote_github,out/'.autonomy/full-gate-cache.json')
             restore_execution_checkpoint_local(remote_github,request['id'],out/'.autonomy/generic-execution-checkpoint.json')
         except RemoteStateError as exc:
             raise StudioError('Remote autonomous state restore failed: '+str(exc)) from None
@@ -184,6 +186,8 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             raise StudioError('Remote contextual strategy efficiency restore failed: '+str(exc)) from None
         except QuickGateCacheStoreError as exc:
             raise StudioError('Remote quick gate cache restore failed: '+str(exc)) from None
+        except FullGateCacheStoreError as exc:
+            raise StudioError('Remote full gate cache restore failed: '+str(exc)) from None
         except ExecutionCheckpointStoreError as exc:
             raise StudioError('Remote execution checkpoint restore failed: '+str(exc)) from None
     goal_path=out/'.autonomy/goal.json'
@@ -454,6 +458,7 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             persist_strategy_efficiency_local(remote_github,out/'.autonomy/strategy-efficiency.json')
             persist_contextual_strategy_efficiency_local(remote_github,out/'.autonomy/contextual-strategy-efficiency.json')
             persist_quick_gate_cache_local(remote_github,out/'.autonomy/quick-gate-cache.json')
+            persist_full_gate_cache_local(remote_github,out/'.autonomy/full-gate-cache.json')
             persist_execution_checkpoint_local(remote_github,request['id'],out/'.autonomy/generic-execution-checkpoint.json')
         except RemoteStateError as exc:
             raise StudioError('Remote autonomous state persistence failed: '+str(exc)) from None
@@ -477,6 +482,8 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             raise StudioError('Remote contextual strategy efficiency persistence failed: '+str(exc)) from None
         except QuickGateCacheStoreError as exc:
             raise StudioError('Remote quick gate cache persistence failed: '+str(exc)) from None
+        except FullGateCacheStoreError as exc:
+            raise StudioError('Remote full gate cache persistence failed: '+str(exc)) from None
         except ExecutionCheckpointStoreError as exc:
             raise StudioError('Remote execution checkpoint persistence failed: '+str(exc)) from None
         except ValueError as exc:

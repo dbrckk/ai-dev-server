@@ -23,6 +23,7 @@ from contextual_routing_memory import (
     contextual_adjustment,
     contextual_bandit_score,
 )
+from contextual_utility import utility_score
 
 
 def _decode(response: dict) -> dict:
@@ -67,6 +68,14 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     health = load_provider_health(health_path) if health_path is not None else {}
     metrics = load_provider_metrics(metrics_path) if metrics_path is not None else {}
     history = load_routing_history(history_path) if history_path is not None else []
+    try:
+        verification_seconds = float(os.environ.get("STUDIO_EXPECTED_VERIFICATION_SECONDS", "0") or 0)
+    except ValueError:
+        verification_seconds = 0.0
+    architecture_hold = any(
+        isinstance(item, list) and len(item) == 2 and item[0] == "architecture-risk:hold"
+        for item in weighted_contexts
+    )
     safe_rewrite_summary = summarize_safe_rewrite_learning(safe_rewrite_path) if safe_rewrite_path is not None else {}
     contextual_routing = load_contextual_routing_memory(contextual_routing_path) if contextual_routing_path is not None else {}
     weights = learned_weights(history, kind="provider", role=role)
@@ -125,6 +134,20 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
             components["contextual_expected_success"] = bandit["expected_success"] * 10.0
             components["contextual_uncertainty"] = -bandit["uncertainty"] * 2.0
             components["contextual_bandit_exploration"] = bandit["exploration_bonus"]
+            metric_row = metrics.get(provider.name + ":" + role, {}) if isinstance(metrics, dict) else {}
+            execution_seconds = (
+                float(metric_row.get("ema_latency_seconds", 0.0))
+                if isinstance(metric_row, dict)
+                else 0.0
+            )
+            utility = utility_score(
+                expected_success=bandit["expected_success"],
+                execution_seconds=execution_seconds,
+                verification_seconds=verification_seconds,
+                architecture_hold=architecture_hold,
+                free_preferred=provider.free_preferred,
+            )
+            components["cost_aware_utility"] = utility["score"]
         from adaptive_scoring import ScoreTrace
         provider_scores[provider.name] = ScoreTrace(
             name=provider.name,

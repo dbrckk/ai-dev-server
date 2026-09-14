@@ -28,13 +28,6 @@ def _learning_map(learning: dict, *, now: float) -> dict[tuple[str, str | None, 
             continue
         if not isinstance(success_rate, (int, float)):
             continue
-        row_framework = row.get("framework")
-        row_framework = row_framework if isinstance(row_framework, str) and row_framework else None
-        normalized_framework = framework if isinstance(framework, str) and framework else None
-        if row_framework is not None and normalized_framework is not None and row_framework != normalized_framework:
-            continue
-        if row_framework is not None and normalized_framework is None:
-            continue
         latest = row.get("latest_observed_at")
         if isinstance(latest, (int, float)) and now - float(latest) > MAX_EVIDENCE_AGE_SECONDS:
             continue
@@ -156,6 +149,11 @@ def stack_adjustment(
         if not isinstance(samples, int) or samples < MIN_SAMPLES:
             continue
         if not isinstance(success_rate, (int, float)):
+            continue
+        row_framework = row.get("framework")
+        row_framework = row_framework if isinstance(row_framework, str) and row_framework else None
+        normalized_framework = framework if isinstance(framework, str) and framework else None
+        if row_framework is not None and row_framework != normalized_framework:
             continue
         latest = row.get("latest_observed_at")
         if isinstance(latest, (int, float)) and now_value - float(latest) > MAX_EVIDENCE_AGE_SECONDS:

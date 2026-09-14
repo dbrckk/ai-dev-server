@@ -29,7 +29,8 @@ def build(work_order: dict, merged: dict, postmerge: dict, rollback: dict | None
 
     healthy=postmerge.get("status")=="post_merge_healthy" and postmerge.get("post_merge_healthy") is True
     regressed=postmerge.get("status")=="post_merge_regression" or postmerge.get("rollback_required") is True
-    rolled_back=isinstance(rollback,dict) and rollback.get("status")=="replacement_rollback_pr_created"
+    rollback_prepared=isinstance(rollback,dict) and rollback.get("status")=="replacement_rollback_pr_created"
+    rolled_back=isinstance(rollback,dict) and rollback.get("status")=="replacement_rollback_merged"
 
     if healthy:
         quality=100.0
@@ -53,6 +54,7 @@ def build(work_order: dict, merged: dict, postmerge: dict, rollback: dict | None
         "merge_sha":merged.get("merge_sha"),
         "successful":healthy,
         "regressed":regressed,
+        "rollback_prepared":rollback_prepared,
         "rolled_back":rolled_back,
         "quality_score":round(quality,3),
         "postmerge_status":postmerge.get("status"),

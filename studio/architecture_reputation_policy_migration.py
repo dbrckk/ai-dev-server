@@ -13,7 +13,11 @@ from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
 from architecture_replacement_reputation import (
+    DANGEROUS_STATE_GATES,
     MAX_AUDIT_EVENTS,
+    RECOVERY_CONFIRMATIONS_REQUIRED,
+    RECOVERY_MIN_DWELL_SECONDS,
+    RECOVERY_MIN_NEW_EFFECTIVE_SAMPLES,
     REGISTRY_VERSION,
     TRANSITION_POLICY,
     TRANSITION_POLICY_VERSION,
@@ -226,6 +230,12 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, now: flo
             raise ReputationPolicyMigrationError("migration target state malformed")
         previous=entry.get("state") if isinstance(entry.get("state"),str) else "UNOBSERVED"
         rule=transition_policy(previous,target)
+        required_gates=list(rule.get("required_gates",[]))
+        target_gate=DANGEROUS_STATE_GATES.get(target)
+        if target_gate and target_gate not in required_gates:
+            required_gates.insert(0,target_gate)
+        if target=="RECOVERING" and "replacement_reputation_transition_completed" not in required_gates:
+            required_gates.append("replacement_reputation_transition_completed")
         updated=dict(entry)
         updated.update({
             "state":target,
@@ -236,7 +246,7 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, now: flo
             "transition_policy_digest":transition_policy_digest(),
             "transition_rule":rule,
             "requested_transition_rule":rule,
-            "required_transition_gates":rule.get("required_gates",[]),
+            "required_transition_gates":required_gates,
             "transition_pending":target in {"DEGRADED","QUARANTINED","RECOVERING"},
             "promotion_eligible":row.get("promotion_eligible_after_migration") is True,
             "requires_revalidation":row.get("requires_revalidation_after_migration") is True,
@@ -274,6 +284,12 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, now: flo
             "version":TRANSITION_POLICY_VERSION,
             "digest":transition_policy_digest(),
             "transition_matrix":TRANSITION_POLICY,
+            "recovery_confirmations_required":RECOVERY_CONFIRMATIONS_REQUIRED,
+            "recovery_min_dwell_seconds":RECOVERY_MIN_DWELL_SECONDS,
+            "recovery_min_new_effective_samples":RECOVERY_MIN_NEW_EFFECTIVE_SAMPLES,
+            "fast_downward_transitions":True,
+            "slow_upward_recovery":True,
+            "upward_transition_requires_time_and_new_evidence":True,
             "validation":validate_transition_policy(),
         },
         "last_policy_migration":{

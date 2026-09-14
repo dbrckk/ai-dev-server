@@ -198,6 +198,7 @@ def complete_stage_tasks(state: dict, stage: str) -> None:
     for task in _queue(state):
         if task.get("stage") == stage and task.get("status") not in {"completed", "superseded"}:
             task["status"] = "completed"
+            release_lease(task)
 
 
 def summarize(state: dict) -> dict:

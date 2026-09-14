@@ -75,11 +75,11 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
     def github_attestation(self,plan,reinforced=False):
         from architecture_reputation_policy_github_attestation import build
         reviews=[
-            {"user":{"login":"reviewer-a"},"state":"APPROVED","commit_id":"a"*40},
+            {"user":{"login":"reviewer-a"},"state":"APPROVED","commit_id":"a"*40,"submitted_at":"2026-01-01T00:00:10Z"},
         ]
         permissions={"reviewer-a":"write"}
         if reinforced:
-            reviews.append({"user":{"login":"risk-owner-b"},"state":"APPROVED","commit_id":"a"*40})
+            reviews.append({"user":{"login":"risk-owner-b"},"state":"APPROVED","commit_id":"a"*40,"submitted_at":"2026-01-01T00:00:20Z"})
             permissions["risk-owner-b"]="maintain"
         return build(
             plan,
@@ -94,6 +94,7 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
                 {"name":"python-tests","status":"completed","conclusion":"success","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/99"},
             ],
             pr_identity={"number":42,"state":"open","draft":False,"head_ref":"policy/migration","head_sha":"a"*40,"base_ref":"main","author":"reviewer-a"},
+            head_commit_timestamp=1767225600.0,
             reinforced=reinforced,
         )
 

@@ -105,9 +105,14 @@ def _project_rows(
     return rows
 
 
-def _provider_rows(*, reservations_by_provider: dict | None = None) -> list[ProviderCapacity]:
-    quota_raw = os.environ.get("STUDIO_PROVIDER_MONTHLY_QUOTA_PATH", "")
-    quota_path = Path(quota_raw) if quota_raw else None
+def _provider_rows(
+    *,
+    reservations_by_provider: dict | None = None,
+    quota_path: Path | None = None,
+) -> list[ProviderCapacity]:
+    if quota_path is None:
+        quota_raw = os.environ.get("STUDIO_PROVIDER_MONTHLY_QUOTA_PATH", "")
+        quota_path = Path(quota_raw) if quota_raw else None
     quota_data = (
         load_monthly_quota(quota_path)
         if quota_path is not None
@@ -168,6 +173,7 @@ def plan(
     )
     providers = _provider_rows(
         reservations_by_provider=ledger.get("reservations_by_provider", {}),
+        quota_path=root / "provider-monthly-quota.json",
     )
     report = allocate(
         projects,

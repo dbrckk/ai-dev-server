@@ -128,5 +128,47 @@ class ArchitectureFeedbackTests(unittest.TestCase):
 
 
 
+    def test_stale_evidence_is_ignored(self):
+        now = 10_000_000.0
+        recs = {"matches": [{"repo": "a/core", "domain": "mobile", "score": 90.0}]}
+        learning = {
+            "rankings": [
+                {
+                    "repo": "a/core",
+                    "domain": "mobile",
+                    "samples": 10,
+                    "success_rate": 1.0,
+                    "latest_observed_at": now - af.MAX_EVIDENCE_AGE_SECONDS - 1,
+                }
+            ]
+        }
+
+        result = af.apply(recs, learning, now=now)
+
+        self.assertFalse(result["feedback_applied"])
+        self.assertEqual(result["matches"][0]["feedback_score"], 90.0)
+
+    def test_fresh_evidence_is_allowed(self):
+        now = 10_000_000.0
+        recs = {"matches": [{"repo": "a/core", "domain": "mobile", "score": 90.0}]}
+        learning = {
+            "rankings": [
+                {
+                    "repo": "a/core",
+                    "domain": "mobile",
+                    "samples": 10,
+                    "success_rate": 1.0,
+                    "latest_observed_at": now - 60,
+                }
+            ]
+        }
+
+        result = af.apply(recs, learning, now=now)
+
+        self.assertTrue(result["feedback_applied"])
+        self.assertEqual(result["matches"][0]["feedback_score"], 93.0)
+
+
+
 if __name__ == "__main__":
     unittest.main()

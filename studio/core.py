@@ -42,7 +42,7 @@ def request_check(data):
     if not isinstance(data, dict):
         raise StudioError('Request must be an object')
     required = {'id', 'target_repo', 'app_name', 'brief', 'enabled'}
-    if set(data) - (required | {'max_rounds', 'max_calls', 'max_cycles', 'play_publish', 'max_project_model_calls', 'max_project_repair_calls', 'max_api_cost_usd'}) or not required <= set(data):
+    if set(data) - (required | {'max_rounds', 'max_calls', 'max_cycles', 'priority', 'play_publish', 'max_project_model_calls', 'max_project_repair_calls', 'max_api_cost_usd'}) or not required <= set(data):
         raise StudioError('Invalid request fields')
     if not isinstance(data['enabled'], bool):
         raise StudioError('enabled must be boolean')
@@ -56,6 +56,10 @@ def request_check(data):
         if type(val) is not int or not 1 <= val <= maximum:
             raise StudioError('Invalid ' + key)
         data[key] = val
+    priority = data.get('priority', 50)
+    if type(priority) is not int or not 1 <= priority <= 100:
+        raise StudioError('Invalid priority')
+    data['priority'] = priority
     project_calls = data.get('max_project_model_calls')
     if project_calls is not None:
         if type(project_calls) is not int or not 1 <= project_calls <= 500:

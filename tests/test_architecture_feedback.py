@@ -326,6 +326,58 @@ class ArchitectureFeedbackTests(unittest.TestCase):
             by_repo["a/clean"]["historical_evidence"]["combined_outcome_rate"],
             by_repo["b/costly"]["historical_evidence"]["combined_outcome_rate"],
         )
+    def test_large_sample_can_outweigh_perfect_small_sample(self):
+        recs = {"matches": [
+            {"repo": "small/perfect", "score": 90.0, "quality_score": 9.0},
+            {"repo": "large/strong", "score": 90.0, "quality_score": 9.0},
+        ]}
+        learning = {"rankings": [
+            {
+                "repo": "small/perfect",
+                "samples": 5,
+                "success_rate": 1.0,
+                "posterior_success_rate": 0.8571,
+                "wilson_lower_95": 0.5655,
+                "evidence_confidence": 0.25,
+                "mean_quality_score": 100.0,
+                "quality_shrunk_mean": 75.0,
+            },
+            {
+                "repo": "large/strong",
+                "samples": 50,
+                "success_rate": 0.96,
+                "posterior_success_rate": 0.9423,
+                "wilson_lower_95": 0.8654,
+                "evidence_confidence": 1.0,
+                "mean_quality_score": 96.0,
+                "quality_shrunk_mean": 91.818,
+            },
+        ]}
+        result = af.apply(recs, learning)
+        by_repo = {x["repo"]: x for x in result["matches"]}
+        self.assertGreater(by_repo["large/strong"]["feedback_score"], by_repo["small/perfect"]["feedback_score"])
+        self.assertLess(
+            by_repo["small/perfect"]["historical_evidence"]["conservative_success_rate"],
+            by_repo["large/strong"]["historical_evidence"]["conservative_success_rate"],
+        )
+        self.assertLess(
+            by_repo["small/perfect"]["historical_evidence"]["evidence_confidence"],
+            by_repo["large/strong"]["historical_evidence"]["evidence_confidence"],
+        )
+
+    def test_uncertainty_never_authorizes_dependencies(self):
+        recs = {"matches": [{"repo": "a/core", "score": 90.0}]}
+        learning = {"rankings": [{
+            "repo": "a/core",
+            "samples": 50,
+            "success_rate": 1.0,
+            "posterior_success_rate": 0.9808,
+            "wilson_lower_95": 0.9286,
+            "evidence_confidence": 1.0,
+            "quality_shrunk_mean": 95.0,
+        }]}
+        result = af.apply(recs, learning)
+        self.assertFalse(result["feedback_policy"]["can_add_dependency"])
 
 if __name__ == "__main__":
     unittest.main()

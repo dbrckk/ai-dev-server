@@ -42,9 +42,13 @@ def _load_path(path: Path) -> dict:
     return dict(entries) if isinstance(entries, dict) else {}
 
 
+def load_path(path: Path) -> dict:
+    return _load_path(Path(path))
+
+
 def load() -> dict:
     path = _path()
-    return {} if path is None else _load_path(path)
+    return {} if path is None else load_path(path)
 
 
 def get(key: str) -> dict | None:

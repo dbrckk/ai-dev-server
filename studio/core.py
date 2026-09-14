@@ -42,7 +42,7 @@ def request_check(data):
     if not isinstance(data, dict):
         raise StudioError('Request must be an object')
     required = {'id', 'target_repo', 'app_name', 'brief', 'enabled'}
-    if set(data) - (required | {'max_rounds', 'max_calls', 'max_cycles', 'play_publish', 'max_project_model_calls', 'max_project_repair_calls'}) or not required <= set(data):
+    if set(data) - (required | {'max_rounds', 'max_calls', 'max_cycles', 'play_publish', 'max_project_model_calls', 'max_project_repair_calls', 'max_api_cost_usd'}) or not required <= set(data):
         raise StudioError('Invalid request fields')
     if not isinstance(data['enabled'], bool):
         raise StudioError('enabled must be boolean')
@@ -66,6 +66,14 @@ def request_check(data):
             raise StudioError('Invalid max_project_repair_calls')
         if project_calls is not None and repair_calls > project_calls:
             raise StudioError('max_project_repair_calls exceeds project model budget')
+    api_budget = data.get('max_api_cost_usd')
+    if api_budget is not None:
+        if isinstance(api_budget, bool) or not isinstance(api_budget, (int, float)):
+            raise StudioError('Invalid max_api_cost_usd')
+        api_budget = float(api_budget)
+        if not 0.0 <= api_budget <= 10000.0:
+            raise StudioError('Invalid max_api_cost_usd')
+        data['max_api_cost_usd'] = api_budget
     if 'play_publish' in data:
         publish = data['play_publish']
         if not isinstance(publish, dict) or set(publish) - {'enabled', 'track', 'commit'}:

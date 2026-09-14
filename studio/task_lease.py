@@ -1,7 +1,9 @@
 """Worker lease primitives for resumable repair tasks."""
 from __future__ import annotations
 
+import json
 import os
+from pathlib import Path
 import socket
 import time
 import uuid
@@ -11,6 +13,21 @@ from task_claim_store import claim as persist_claim, heartbeat as persist_heartb
 DEFAULT_LEASE_SECONDS = 60 * 60
 MIN_LEASE_SECONDS = 30
 MAX_LEASE_SECONDS = 60 * 60
+
+
+def _validate_persisted_lease_state() -> None:
+    raw = os.environ.get("STUDIO_TASK_LEASE_PATH", "").strip()
+    if not raw:
+        return
+    path = Path(raw)
+    if not path.is_file():
+        return
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        raise RuntimeError("task lease state is unreadable") from None
+    if not isinstance(data, dict) or data.get("schema") != 1 or not isinstance(data.get("claims"), dict):
+        raise RuntimeError("task lease state is invalid")
 
 
 def worker_id() -> str:
@@ -57,6 +74,7 @@ def claim(
     lease_seconds: int | float | None = None,
     now: float | None = None,
 ) -> dict:
+    _validate_persisted_lease_state()
     now_value = _now(now)
     owner = (owner or worker_id()).strip()
     if not owner:
@@ -86,6 +104,7 @@ def heartbeat(
     lease_seconds: int | float | None = None,
     now: float | None = None,
 ) -> dict:
+    _validate_persisted_lease_state()
     now_value = _now(now)
     if task.get("lease_owner") != owner or task.get("lease_token") != token:
         raise RuntimeError("task lease ownership mismatch")
@@ -101,6 +120,7 @@ def heartbeat(
 
 
 def release(task: dict, *, owner: str | None = None, token: str | None = None) -> dict:
+    _validate_persisted_lease_state()
     if owner is not None and task.get("lease_owner") not in {None, owner}:
         raise RuntimeError("task lease ownership mismatch")
     if token is not None and task.get("lease_token") not in {None, token}:

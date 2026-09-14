@@ -11,7 +11,7 @@ from repair_search_policy import should_continue_after_quick_failure, should_ref
 from diff_quick_gates import plan as plan_quick_gates
 from quick_gate_cache import cache_key, delta_hash, get as cache_get, put as cache_put, workspace_hash
 from full_gate_cache import hit as full_cache_hit, record_success as full_cache_record_success, validation_key as full_validation_key
-from immutable_artifact_cache import capture as capture_artifacts, restore as restore_artifacts
+from immutable_artifact_cache import capture as capture_artifacts, restore as restore_artifacts, touch as touch_artifact_cache
 
 MAX_CANDIDATES = 2
 MAX_BRANCH_STEPS = 3
@@ -271,27 +271,68 @@ def run_branch(
         journeys = validate_journeys(state.get("product", {}).get("journeys"))
         full_key = full_validation_key(root, app_name=app_name, journeys=journeys)
         artifact_restore = None
+        cached_full_validation = False
+        cache_restore_error = None
         if (
             artifact_cache_enabled
             and full_cache_hit(full_gate_cache, full_key)
             and full_key in artifact_cache
         ):
-            artifact_restore = restore_artifacts(
-                root,
-                artifact_cache[full_key],
-                full_key,
-            )
-            passed = True
-            logs = [{
-                "command": ["cached-full-candidate-validation"],
-                "exit_code": 0,
-                "output": full_key,
-            }]
-            cached_full_validation = True
-        else:
-            sandbox = sandbox_factory(root)
-            passed, logs = sandbox.gates(app_name, journeys)
+            try:
+                artifact_restore = restore_artifacts(
+                    root,
+                    artifact_cache[full_key],
+                    full_key,
+                )
+            except StudioError as exc:
+                cache_restore_error = str(exc)
+                artifact_cache.pop(full_key, None)
+                full_gate_cache.pop(full_key, None)
+            else:
+                touch_artifact_cache(artifact_cache, full_key)
+                passed = True
+                logs = [{
+                    "command": ["cached-full-candidate-validation"],
+                    "exit_code": 0,
+                    "output": full_key,
+                }]
+                cached_full_validation = True
+        if not cached_full_validation:
+            full_key = full_validation_key(root, app_name=app_name, journeys=journeys)
+            artifact_restore = None
+            cache_restore_error = None
             cached_full_validation = False
+            if (
+                artifact_cache_enabled
+                and full_cache_hit(full_gate_cache, full_key)
+                and full_key in artifact_cache
+            ):
+                try:
+                    artifact_restore = restore_artifacts(
+                        root,
+                        artifact_cache[full_key],
+                        full_key,
+                    )
+                except StudioError as exc:
+                    cache_restore_error = str(exc)
+                    artifact_cache.pop(full_key, None)
+                    full_gate_cache.pop(full_key, None)
+                else:
+                    touch_artifact_cache(artifact_cache, full_key)
+                    passed = True
+                    logs = [{
+                        "command": ["cached-full-candidate-validation"],
+                        "exit_code": 0,
+                        "output": full_key,
+                    }]
+                    cached_full_validation = True
+            if not cached_full_validation:
+                sandbox = sandbox_factory(root)
+                passed, logs = sandbox.gates(app_name, journeys)
+                if passed:
+                    full_cache_record_success(full_gate_cache, full_key)
+                    if artifact_cache_enabled:
+                        artifact_cache[full_key] = capture_artifacts(root, full_key)
             if passed:
                 full_cache_record_success(full_gate_cache, full_key)
                 if artifact_cache_enabled:
@@ -347,6 +388,7 @@ def run_branch(
             "cached_full_validation": cached_full_validation,
             "full_validation_key": full_key,
             "artifact_restore": artifact_restore,
+            "artifact_cache_restore_error": cache_restore_error,
             **metadata,
         }
         if not passed:

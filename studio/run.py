@@ -159,6 +159,33 @@ class GitHub(API):
             self.call('POST', self.repo + '/git/refs', {'ref': 'refs/heads/' + branch, 'sha': commit['sha']})
         return commit['sha']
 
+def _load_architecture_benchmark(out: Path) -> dict:
+    path = Path(out) / 'architecture-benchmark.json'
+    if not path.is_file():
+        return {'status': 'unavailable', 'migration_candidates': []}
+    try:
+        value = json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return {'status': 'invalid', 'migration_candidates': []}
+    if not isinstance(value, dict):
+        return {'status': 'invalid', 'migration_candidates': []}
+    candidates = []
+    for row in value.get('migration_candidates', [])[:8]:
+        if not isinstance(row, dict):
+            continue
+        candidates.append({
+            'current_repo': row.get('current_repo'),
+            'best_alternative': row.get('best_alternative'),
+            'current_score': row.get('current_score'),
+            'migration_reason': row.get('migration_reason'),
+        })
+    return {
+        'status': value.get('status', 'benchmarked'),
+        'evaluation_verdict': value.get('evaluation_verdict'),
+        'migration_candidates': candidates,
+        'advisory_only': True,
+    }
+
 def _load_star_recommendations(out: Path) -> dict:
     """Load bounded recommendation evidence as advisory data only."""
     path = Path(out) / 'star-recommendations.json'
@@ -201,6 +228,7 @@ def context(req, state, root):
                       'previous_blockers': state.get('blockers', []),
                       'technical_recommendations': state.get('technical_recommendations', {'status':'unavailable','matches':[]}),
                       'architecture_decision': state.get('architecture_decision', {'status':'unavailable','chosen':[]}),
+                      'architecture_benchmark': state.get('architecture_benchmark', {'status':'unavailable','migration_candidates':[]}),
                       'files': files})
 
 def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sandbox):

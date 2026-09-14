@@ -12,10 +12,16 @@ QUALITY_WEIGHT = 0.4
 UNCERTAINTY_BLEND = 0.5
 MAX_DRIFT_PENALTY = 2.0
 
-def _context_weight(row: dict, framework: str | None, project_type: str | None, primary_domain: str | None) -> float:
+def _context_weight(
+    row: dict,
+    domain: str | None,
+    framework: str | None,
+    project_type: str | None,
+    primary_domain: str | None,
+) -> float:
     """Down-weight legacy/generic evidence; full bonus requires matching context."""
-    requested = (framework, project_type, primary_domain)
-    fields = ("framework", "project_type", "primary_domain")
+    requested = (domain, framework, project_type, primary_domain)
+    fields = ("domain", "framework", "project_type", "primary_domain")
     explicit = 0
     for field, expected in zip(fields, requested):
         value = row.get(field)
@@ -136,7 +142,13 @@ def apply(
             confidence = max(0.0, min(1.0, float(confidence))) if isinstance(confidence, (int, float)) else 1.0
             combined_rate = SUCCESS_WEIGHT * conservative_success + QUALITY_WEIGHT * quality_rate
             centered = (combined_rate - 0.5) * 2.0
-            context_weight = _context_weight(history, normalized_framework, normalized_project_type, normalized_primary_domain)
+            context_weight = _context_weight(
+                history,
+                domain,
+                normalized_framework,
+                normalized_project_type,
+                normalized_primary_domain,
+            )
             bonus = max(-MAX_SCORE_BONUS, min(MAX_SCORE_BONUS, centered * MAX_SCORE_BONUS * context_weight * confidence))
             drift = history.get("drift") if isinstance(history.get("drift"), dict) else {}
             drift_status = drift.get("status")
@@ -296,7 +308,13 @@ def stack_adjustment(
         drift_signal = -drift_score if drift_status == "degraded" else 0.0
         if drift_status == "degraded":
             centered = min(0.0, centered) + drift_signal
-        context_weight = _context_weight(row, normalized_framework, normalized_project_type, normalized_primary_domain)
+        context_weight = _context_weight(
+            row,
+            None,
+            normalized_framework,
+            normalized_project_type,
+            normalized_primary_domain,
+        )
         if context_weight <= 0:
             continue
         weight = min(1.0, samples / 10.0) * min(1.0, overlap / max(1, len(chosen))) * context_weight

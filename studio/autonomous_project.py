@@ -164,6 +164,10 @@ def run_persistent_project(
     project_out.mkdir(parents=True, exist_ok=True)
     autonomy_root = project_out / AUTONOMY_DIR
     autonomy_root.mkdir(parents=True, exist_ok=True)
+    runtime_state_path = autonomy_root / "runtime-state.json"
+    if runtime_state_path.is_file():
+        from durable_state import load_recovering as load_runtime_state
+        load_runtime_state(runtime_state_path)
     runtime_paths = {
         "STUDIO_QUICK_GATE_CACHE_PATH": autonomy_root / "quick-gate-cache.json",
         "STUDIO_FULL_GATE_CACHE_PATH": autonomy_root / "full-gate-cache.json",
@@ -270,7 +274,6 @@ def run_persistent_project(
 
     from durable_state import save as save_durable_state
     from telemetry import emit as emit_telemetry
-    runtime_state_path = autonomy_root / "runtime-state.json"
     emit_telemetry("goal_run_started", goal_id=goal_id, max_cycles=max_cycles)
     result = run_goal(
         goal_path,

@@ -8,17 +8,19 @@ from strategy_efficiency import load, metrics as strategy_metrics, record, selec
 from contextual_strategy_efficiency import load as load_contextual, record as record_contextual, rows_for
 
 DEFAULT_STRATEGY = "model_only"
-REPAIR_STRATEGIES = {"model_only", "agent_only", "model_to_agent"}
+REPAIR_STRATEGIES = {"model_only", "agent_only", "model_to_agent", "agent_to_model"}
 
 RISK_PRIOR = {
     "model_only": 0.15,
     "agent_only": 0.25,
     "model_to_agent": 0.35,
+    "agent_to_model": 0.35,
 }
 CALL_COST_PRIOR = {
     "model_only": 1,
     "agent_only": 0,
     "model_to_agent": 1,
+    "agent_to_model": 1,
 }
 
 
@@ -66,7 +68,7 @@ def _context(stage: str) -> str:
 def choose(task: dict | None, *, stage: str, agent_available: bool) -> dict:
     allowed = {"model_only"}
     if agent_available:
-        allowed |= {"agent_only", "model_to_agent"}
+        allowed |= {"agent_only", "model_to_agent", "agent_to_model"}
 
     data = load_data()
     source = "global"
@@ -91,7 +93,7 @@ def choose(task: dict | None, *, stage: str, agent_available: bool) -> dict:
     if task and task.get("rotate_strategy") is True and agent_available:
         previous = task.get("last_strategy")
         alternatives = [
-            strategy for strategy in ("agent_only", "model_to_agent", "model_only")
+            strategy for strategy in ("agent_only", "model_to_agent", "agent_to_model", "model_only")
             if strategy in allowed and strategy != previous
         ]
         if alternatives:

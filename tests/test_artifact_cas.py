@@ -95,6 +95,70 @@ class ArtifactCasTests(unittest.TestCase):
             self.assertEqual(first_path, second_path)
             self.assertIn("/shared/", first_path.as_posix())
 
+    def test_shareable_requires_approved_class(self):
+        with tempfile.TemporaryDirectory() as td:
+            env = {
+                "STUDIO_ARTIFACT_CAS_PATH": str(Path(td) / "cas"),
+                "STUDIO_ARTIFACT_CAS_STATS_PATH": str(Path(td) / "stats.json"),
+                "STUDIO_PROJECT_ID": "project-a",
+            }
+            with mock.patch.dict(os.environ, env, clear=False):
+                with self.assertRaises(StudioError):
+                    artifact_cas.put(b"public", shareable=True)
+                with self.assertRaises(StudioError):
+                    artifact_cas.put(
+                        b"public",
+                        shareable=True,
+                        artifact_class="private-apk",
+                    )
+
+    def test_shared_classes_are_physically_separated(self):
+        with tempfile.TemporaryDirectory() as td:
+            env = {
+                "STUDIO_ARTIFACT_CAS_PATH": str(Path(td) / "cas"),
+                "STUDIO_ARTIFACT_CAS_STATS_PATH": str(Path(td) / "stats.json"),
+                "STUDIO_PROJECT_ID": "project-a",
+            }
+            with mock.patch.dict(os.environ, env, clear=False):
+                fixture = artifact_cas.put(
+                    b"same",
+                    shareable=True,
+                    artifact_class="public-test-fixture",
+                )
+                toolchain = artifact_cas.put(
+                    b"same",
+                    shareable=True,
+                    artifact_class="toolchain-template",
+                )
+                fixture_path = artifact_cas.blob_path(
+                    fixture["sha256"],
+                    shareable=True,
+                    artifact_class="public-test-fixture",
+                )
+                toolchain_path = artifact_cas.blob_path(
+                    toolchain["sha256"],
+                    shareable=True,
+                    artifact_class="toolchain-template",
+                )
+
+            self.assertNotEqual(fixture_path, toolchain_path)
+            self.assertTrue(fixture_path.is_file())
+            self.assertTrue(toolchain_path.is_file())
+
+    def test_private_metrics_do_not_collide_across_projects(self):
+        digest = "a" * 64
+        with tempfile.TemporaryDirectory() as td:
+            base = {
+                "STUDIO_ARTIFACT_CAS_PATH": str(Path(td) / "cas"),
+                "STUDIO_ARTIFACT_CAS_STATS_PATH": str(Path(td) / "stats.json"),
+            }
+            with mock.patch.dict(os.environ, {**base, "STUDIO_PROJECT_ID": "project-a"}, clear=False):
+                a = artifact_cas.stats_digest(digest)
+            with mock.patch.dict(os.environ, {**base, "STUDIO_PROJECT_ID": "project-b"}, clear=False):
+                b = artifact_cas.stats_digest(digest)
+            self.assertNotEqual(a, b)
+
+
     def test_gc_keeps_only_referenced_digest(self):
         with tempfile.TemporaryDirectory() as td:
             env = {

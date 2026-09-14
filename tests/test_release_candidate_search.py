@@ -234,6 +234,70 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
             self.assertEqual(source.read_text(), "base\n")
 
 
+    def test_diff_aware_quick_gates_skip_pub_get_and_target_matching_test(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source = root / "lib/services/api.dart"
+            source.parent.mkdir(parents=True)
+            source.write_text("const value = 1;\n")
+            test = root / "test/services/api_test.dart"
+            test.parent.mkdir(parents=True)
+            test.write_text("void main() {}\n")
+            calls = []
+
+            class DiffAwareSandbox:
+                def __init__(self, root):
+                    self.root = root
+
+                def quick_dependency_gate(self):
+                    calls.append(("dependency", []))
+                    return True, []
+
+                def quick_analyze_gate(self):
+                    calls.append(("analyze", []))
+                    return True, []
+
+                def quick_test_gate(self, targets=()):
+                    calls.append(("test", list(targets)))
+                    return True, []
+
+                def gates(self, name, journeys):
+                    return True, []
+
+            def first_step(intermediate_failure=None):
+                source.write_text("const value = 2;\n")
+                return {"model_calls": 0}
+
+            def second_step(intermediate_failure=None):
+                source.write_text("const value = 3;\n")
+                return {"model_calls": 0}
+
+            candidate = run_branch(
+                root,
+                strategy="agent_only",
+                strategy_prior_score=20,
+                steps=[first_step, second_step],
+                refine=None,
+                state=STATE,
+                app_name="demo_app",
+                sandbox_factory=DiffAwareSandbox,
+                strategy_row={
+                    "conservative_success_rate": 0.9,
+                    "risk": 0.1,
+                    "estimated_seconds": 10,
+                    "estimated_model_calls": 0,
+                },
+                remaining_model_calls=0,
+                step_model_calls=[0, 0],
+            )
+
+            self.assertTrue(candidate["passed"])
+            self.assertEqual(
+                calls,
+                [("analyze", []), ("test", ["test/services/api_test.dart"])],
+            )
+
+
     def test_progressive_quick_gates_stop_before_tests_when_analyze_fails(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

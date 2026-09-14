@@ -115,6 +115,32 @@ class CapacityEfficiencyTests(unittest.TestCase):
         )
 
 
+
+    def test_failure_streak_resets_after_verified_success(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "efficiency.json"
+            for _ in range(3):
+                row = efficiency.record(
+                    path,
+                    project_id="a",
+                    provider="p",
+                    model="m",
+                    tokens=1000,
+                    verified_success=False,
+                )
+            self.assertEqual(row["failure_streak"], 3)
+            row = efficiency.record(
+                path,
+                project_id="a",
+                provider="p",
+                model="m",
+                tokens=1000,
+                verified_success=True,
+            )
+            self.assertEqual(row["failure_streak"], 0)
+            self.assertEqual(row["success_streak"], 1)
+
+
     def test_sparse_projects_remain_neutral(self):
         summary = {
             "projects": {

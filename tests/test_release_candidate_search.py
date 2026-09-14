@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from release_candidate_search import apply_winner, run_candidate, select_winner
+from release_candidate_search import apply_winner, run_branch, run_candidate, select_winner
 
 
 STATE = {
@@ -137,6 +137,86 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
                 sandbox_factory=PassingSandbox,
             )
             self.assertTrue(second["passed"])
+
+    def test_failed_first_gate_gets_one_local_refinement(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source = root / "lib/app.dart"
+            source.parent.mkdir(parents=True)
+            source.write_text("base\n")
+            gate_calls = {"count": 0}
+
+            class FlakySandbox:
+                def __init__(self, root):
+                    self.root = root
+
+                def gates(self, name, journeys):
+                    gate_calls["count"] += 1
+                    if gate_calls["count"] == 1:
+                        return False, [{"command": ["flutter", "test"], "exit_code": 1, "output": "first failure"}]
+                    return True, [{"command": ["flutter", "test"], "exit_code": 0, "output": ""}]
+
+            def first_step():
+                source.write_text("first\n")
+                return {"model_calls": 1}
+
+            def refine(failure):
+                self.assertIn("first failure", failure)
+                source.write_text("refined\n")
+                return {"model_calls": 1}
+
+            candidate = run_branch(
+                root,
+                strategy="model_only",
+                strategy_prior_score=10,
+                steps=[first_step],
+                refine=refine,
+                state=STATE,
+                app_name="demo_app",
+                sandbox_factory=FlakySandbox,
+            )
+
+            self.assertTrue(candidate["passed"])
+            self.assertEqual(candidate["refinements"], 1)
+            self.assertEqual(candidate["model_calls"], 2)
+            self.assertEqual(len(candidate["steps"]), 2)
+            self.assertEqual(source.read_text(), "base\n")
+
+    def test_multi_step_branch_preserves_step_order(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source = root / "lib/app.dart"
+            source.parent.mkdir(parents=True)
+            source.write_text("base\n")
+            order = []
+
+            def agent_step():
+                order.append("agent")
+                source.write_text("agent\n")
+                return {"model_calls": 0, "agent": {"agent": "fake"}}
+
+            def model_step():
+                order.append("model")
+                self.assertEqual(source.read_text(), "agent\n")
+                source.write_text("agent+model\n")
+                return {"model_calls": 1}
+
+            candidate = run_branch(
+                root,
+                strategy="agent_to_model",
+                strategy_prior_score=10,
+                steps=[agent_step, model_step],
+                refine=None,
+                state=STATE,
+                app_name="demo_app",
+                sandbox_factory=PassingSandbox,
+            )
+
+            self.assertTrue(candidate["passed"])
+            self.assertEqual(order, ["agent", "model"])
+            self.assertEqual(candidate["model_calls"], 1)
+            self.assertEqual(source.read_text(), "base\n")
+
 
     def test_verified_candidate_with_better_score_wins(self):
         candidates = [

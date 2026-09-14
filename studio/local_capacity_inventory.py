@@ -6,15 +6,26 @@ from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
 from local_capacity import discover
+from local_model_benchmark import benchmark_gateway
 
 
 def write(out: Path) -> dict:
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     rows = []
+    benchmark_path = out / ".autonomy" / "local-model-benchmark.json"
     for item in discover():
         if not isinstance(item, dict):
             continue
+        benchmark = {}
+        if item.get("unmetered") is True:
+            benchmark = benchmark_gateway(
+                str(item.get("name") or "local"),
+                str(item.get("base") or ""),
+                [str(model) for model in (item.get("models") or []) if isinstance(model, str)],
+                benchmark_path,
+                key="",
+            )
         rows.append({
             "name": item.get("name"),
             "base": item.get("base"),
@@ -31,6 +42,11 @@ def write(out: Path) -> dict:
                 else "metered"
             ),
             "monthly_token_quota": int(item.get("monthly_token_quota", 0) or 0) or None,
+            "benchmarked_models": sum(
+                1
+                for key in benchmark
+                if key.startswith(str(item.get("name") or "local") + "|")
+            ),
         })
     payload = {
         "status": "ok",

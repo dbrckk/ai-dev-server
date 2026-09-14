@@ -630,6 +630,8 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, approval
             "github_second_reviewer_submitted_at":github_provenance["github_second_reviewer_submitted_at"],
             "github_required_checks":github_provenance["required_checks"],
             "github_passed_checks":github_provenance["passed_checks"],
+            "github_check_evidence":github_provenance["check_evidence"],
+            "github_workflow_timestamp":github_provenance["workflow_timestamp"],
             "reviewer_id":provenance["reviewer_id"],
             "second_reviewer_id":provenance["second_reviewer_id"],
             "approval_ledger_head":next_approval_ledger["head"],

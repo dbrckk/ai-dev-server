@@ -12,6 +12,11 @@ from provider_health import eligible as provider_eligible, load as load_provider
 from provider_metrics import latency_bonus, load as load_provider_metrics, record as record_provider_latency
 from adaptive_scoring import score_provider
 from routing_history import learned_weights, load as load_routing_history, record as record_routing_event
+from safe_rewrite_learning import (
+    summarize as summarize_safe_rewrite_learning,
+    origin_violation_penalty,
+    rewrite_recovery_bonus,
+)
 
 
 def _decode(response: dict) -> dict:
@@ -43,14 +48,18 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
     metrics_path = Path(metrics_raw) if metrics_raw else None
     history_raw = os.environ.get("STUDIO_ROUTING_HISTORY_PATH", "")
     history_path = Path(history_raw) if history_raw else None
+    safe_rewrite_raw = os.environ.get("STUDIO_SAFE_REWRITE_LEARNING_PATH", "")
+    safe_rewrite_path = Path(safe_rewrite_raw) if safe_rewrite_raw else None
     health = load_provider_health(health_path) if health_path is not None else {}
     metrics = load_provider_metrics(metrics_path) if metrics_path is not None else {}
     history = load_routing_history(history_path) if history_path is not None else []
+    safe_rewrite_summary = summarize_safe_rewrite_learning(safe_rewrite_path) if safe_rewrite_path is not None else {}
     weights = learned_weights(history, kind="provider", role=role)
     if health_path is not None:
         providers = tuple(provider for provider in providers if provider_eligible(health_path, provider.name))
-    provider_scores = {
-        provider.name: score_provider(
+    provider_scores = {}
+    for provider in providers:
+        base = score_provider(
             name=provider.name,
             priority=provider.priority,
             free_preferred=provider.free_preferred,
@@ -58,8 +67,28 @@ def ask(system: str, user: str, *, code: bool = False, avoid_models: set[str] | 
             latency=latency_bonus(metrics, provider.name, role),
             weights=weights,
         )
-        for provider in providers
-    }
+        components = dict(base.components)
+        if role == "implementation" and safe_rewrite_path is not None:
+            violation = origin_violation_penalty(
+                safe_rewrite_summary,
+                kind="provider",
+                name=provider.name,
+                role=role,
+            )
+            recovery = rewrite_recovery_bonus(
+                safe_rewrite_summary,
+                kind="provider",
+                name=provider.name,
+                role=role,
+            )
+            components["architecture_violation"] = -violation
+            components["safe_rewrite_recovery"] = recovery
+        from adaptive_scoring import ScoreTrace
+        provider_scores[provider.name] = ScoreTrace(
+            name=provider.name,
+            total=sum(float(v) for v in components.values()),
+            components=components,
+        )
     providers = tuple(sorted(
         providers,
         key=lambda provider: (-provider_scores[provider.name].total, provider.name),

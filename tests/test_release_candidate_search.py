@@ -717,6 +717,83 @@ class ReleaseCandidateSearchTests(unittest.TestCase):
             self.assertEqual(full_calls["count"], 1)
 
 
+    def test_missing_cas_blob_falls_back_to_full_validation(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source = root / "lib/app.dart"
+            source.parent.mkdir(parents=True)
+            source.write_text("const value = 1;\n")
+            (root / "pubspec.yaml").write_text("name: demo_app\n")
+            full_calls = {"count": 0}
+            shared_full_cache = {}
+            shared_artifact_cache = {}
+            cache_env = {
+                "STUDIO_ARTIFACT_CAS_PATH": str(root / ".artifact-cas"),
+                "STUDIO_ARTIFACT_CACHE_PATH": str(root / ".artifact-cache.json"),
+            }
+
+            class FullCacheSandbox:
+                def __init__(self, root):
+                    self.root = root
+
+                def gates(self, name, journeys):
+                    full_calls["count"] += 1
+                    apk = self.root / "build/app/outputs/flutter-apk/app-debug.apk"
+                    apk.parent.mkdir(parents=True, exist_ok=True)
+                    apk.write_bytes(b"A" * 2048)
+                    goldens = self.root / "test/goldens"
+                    goldens.mkdir(parents=True, exist_ok=True)
+                    for index in range(4 * (1 + len(journeys))):
+                        (goldens / f"{index}.png").write_bytes(b"PNG" + bytes([index % 255]))
+                    return True, [{"command": ["flutter", "test"], "exit_code": 0, "output": ""}]
+
+            def mutate(intermediate_failure=None):
+                source.write_text("const value = 2;\n")
+                return {"model_calls": 0}
+
+            with mock.patch.dict(os.environ, cache_env, clear=False):
+                first = run_branch(
+                    root,
+                    strategy="agent_only",
+                    strategy_prior_score=10,
+                    steps=[mutate],
+                    refine=None,
+                    state=STATE,
+                    app_name="demo_app",
+                    sandbox_factory=FullCacheSandbox,
+                    strategy_row={},
+                    remaining_model_calls=0,
+                    step_model_calls=[0],
+                    full_gate_cache=shared_full_cache,
+                    artifact_cache=shared_artifact_cache,
+                )
+                key = first["full_validation_key"]
+                apk_meta = shared_artifact_cache[key]["files"]["build/app/outputs/flutter-apk/app-debug.apk"]
+                blob = root / ".artifact-cas" / apk_meta["sha256"][:2] / apk_meta["sha256"][2:]
+                blob.unlink()
+
+                second = run_branch(
+                    root,
+                    strategy="agent_only",
+                    strategy_prior_score=10,
+                    steps=[mutate],
+                    refine=None,
+                    state=STATE,
+                    app_name="demo_app",
+                    sandbox_factory=FullCacheSandbox,
+                    strategy_row={},
+                    remaining_model_calls=0,
+                    step_model_calls=[0],
+                    full_gate_cache=shared_full_cache,
+                    artifact_cache=shared_artifact_cache,
+                )
+
+            self.assertTrue(second["passed"])
+            self.assertFalse(second["cached_full_validation"])
+            self.assertEqual(full_calls["count"], 2)
+            self.assertIsNotNone(second["artifact_cache_restore_error"])
+
+
     def test_verified_candidate_with_better_score_wins(self):
         candidates = [
             {

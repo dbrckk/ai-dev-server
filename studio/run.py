@@ -26,6 +26,7 @@ from architecture_evaluator import write as write_architecture_evaluation
 from architecture_benchmark import write as write_architecture_benchmark
 from architecture_preflight import write as write_architecture_preflight
 from architecture_change_guard import enforce as enforce_architecture_change_guard, ArchitectureChangeBlocked
+from architecture_safe_rewrite import build_context as build_architecture_safe_rewrite_context
 
 class GitHub(API):
     def __init__(self, repo):
@@ -417,7 +418,8 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
         for _ in range(req['max_rounds']):
             state['rounds'] += 1
             clear_preview_evidence(state)
-            patch = checkpointed_ask(model, 'implementation', context(req, state, root), namespace='preview-implementation')
+            implementation_context = context(req, state, root)
+            patch = checkpointed_ask(model, 'implementation', implementation_context, namespace='preview-implementation')
             try:
                 enforce_architecture_change_guard(
                     patch,
@@ -428,16 +430,43 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                     root=root,
                 )
             except ArchitectureChangeBlocked as exc:
-                state.setdefault('architecture_guard_events', []).append({
+                event = {
                     'round': state['rounds'],
                     'role': 'implementation',
                     'status': 'blocked_architecture_change',
                     'detail': str(exc)[:2000],
-                })
-                state['status'] = 'architecture_review_hold'
-                state['blockers'] = [str(exc)]
-                parent = checkpoint(parent)
-                continue
+                }
+                state.setdefault('architecture_guard_events', []).append(event)
+                rewrite_context = build_architecture_safe_rewrite_context(
+                    implementation_context,
+                    patch,
+                    str(exc),
+                    engine='flutter',
+                )
+                retry_patch = checkpointed_ask(
+                    model,
+                    'implementation',
+                    rewrite_context,
+                    namespace='preview-implementation-safe-rewrite',
+                )
+                try:
+                    enforce_architecture_change_guard(
+                        retry_patch,
+                        engine='flutter',
+                        architecture_changes_allowed=False,
+                        root=root,
+                    )
+                except ArchitectureChangeBlocked as retry_exc:
+                    event['safe_rewrite_status'] = 'blocked'
+                    event['safe_rewrite_detail'] = str(retry_exc)[:2000]
+                    state['status'] = 'architecture_review_hold'
+                    state['blockers'] = [str(retry_exc)]
+                    parent = checkpoint(parent)
+                    continue
+                patch = retry_patch
+                event['safe_rewrite_status'] = 'accepted'
+                state['status'] = 'working'
+                state['blockers'] = []
             apply_patch(root, patch)
             if not any(not p.name.startswith('__studio') for p in (root / 'test').rglob('*_test.dart')):
                 qa_patch = checkpointed_ask(model, 'tests', context(req, state, root), namespace='preview-tests')

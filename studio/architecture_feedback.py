@@ -5,7 +5,7 @@ MIN_SAMPLES = 5
 MAX_SCORE_BONUS = 3.0
 
 
-def _learning_map(learning: dict) -> dict[str, dict]:
+def _learning_map(learning: dict) -> dict[tuple[str, str | None], dict]:
     if not isinstance(learning, dict):
         return {}
     rows = learning.get("rankings")
@@ -24,7 +24,9 @@ def _learning_map(learning: dict) -> dict[str, dict]:
             continue
         if not isinstance(success_rate, (int, float)):
             continue
-        out[repo] = row
+        domain = row.get("domain")
+        domain = domain if isinstance(domain, str) and domain else None
+        out[(repo, domain)] = row
     return out
 
 
@@ -42,7 +44,13 @@ def apply(recommendations: dict, learning: dict | None) -> dict:
             continue
         item = dict(row)
         repo = item.get("repo")
-        history = evidence.get(repo) if isinstance(repo, str) else None
+        domain = item.get("domain")
+        domain = domain if isinstance(domain, str) and domain else None
+        history = None
+        if isinstance(repo, str):
+            history = evidence.get((repo, domain))
+            if history is None:
+                history = evidence.get((repo, None))
         base = item.get("score")
         base_score = float(base) if isinstance(base, (int, float)) else 0.0
 
@@ -53,6 +61,7 @@ def apply(recommendations: dict, learning: dict | None) -> dict:
             centered = (success_rate - 0.5) * 2.0
             bonus = max(-MAX_SCORE_BONUS, min(MAX_SCORE_BONUS, centered * MAX_SCORE_BONUS))
             item["historical_evidence"] = {
+                "domain": history.get("domain"),
                 "samples": history["samples"],
                 "success_rate": success_rate,
                 "mean_model_calls": history.get("mean_model_calls"),

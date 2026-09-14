@@ -39,6 +39,16 @@ def build(state: dict) -> dict:
             for row in chosen
             if isinstance(row, dict) and isinstance(row.get("repo"), str)
         ][:12],
+        "chosen_contexts": [
+            {
+                "repo": row.get("repo"),
+                "domain": row.get("domain"),
+                "tier": row.get("tier"),
+            }
+            for row in chosen
+            if isinstance(row, dict) and isinstance(row.get("repo"), str)
+        ][:12],
+        "decision_constraints": dict(decision.get("constraints") or {}),
         "outcome": {
             "status": status,
             "successful": status in SUCCESS_STATUSES,

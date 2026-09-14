@@ -16,6 +16,7 @@ class Stage:
 
 
 STAGES = {
+    'release_build': Stage('release_build', 'studio/post_preview.py', 'deferred_release', 'release_failed'),
     'real_device': Stage('real_device', 'studio/device_stage.py', 'deferred_device', 'device_failed'),
     'capability_qa': Stage('capability_qa', 'studio/capability_stage.py', 'deferred_capability', 'capability_failed'),
     'performance_qa': Stage('performance_qa', 'studio/performance_stage.py', 'deferred_performance', 'performance_failed'),

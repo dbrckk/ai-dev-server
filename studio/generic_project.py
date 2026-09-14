@@ -69,6 +69,7 @@ from local_model_specialization import (
 from local_model_leaderboard import leaderboards as local_model_leaderboards
 from model_portfolio import choose as choose_model_portfolio
 from model_portfolio_audit import audit as audit_model_portfolio
+from portfolio_candidate_scheduler import choose_schedule as choose_candidate_schedule
 from model_portfolio_learning import (
     load as load_model_portfolio_learning,
     record as record_model_portfolio_outcome,
@@ -584,7 +585,7 @@ Objective and current plan:
                     {"code_editing","repo_analysis"},
                     role="implementation",
                     memory_path=out/".autonomy/agent-performance.json",
-                    limit=2,
+                    limit=3,
                 )
                 meta_route = choose_execution_mode(
                     routing_events,
@@ -613,7 +614,19 @@ Objective and current plan:
                     predicted_reserve_seconds=difficulty.verification_reserve_seconds,
                 )
                 agent_trace.append({"status":"execution_budget","decision":route_budget.as_dict()})
-                ranked_names = preliminary_names[:route_budget.agent_limit]
+                candidate_schedule = choose_candidate_schedule(
+                    capacity_status=state.get("capacity_status", {}),
+                    route_confidence=meta_route.confidence,
+                    verification_seconds=verification_seconds,
+                    remaining_seconds=remaining_seconds,
+                    available_agents=min(len(preliminary_names), route_budget.agent_limit),
+                    strategy=meta_route.strategy,
+                )
+                agent_trace.append({
+                    "status":"candidate_portfolio_schedule",
+                    "decision":candidate_schedule.as_dict(),
+                })
+                ranked_names = preliminary_names[:candidate_schedule.agent_limit]
 
                 def evaluate_model_candidate():
                     implementation_left = phase_remaining(
@@ -728,11 +741,15 @@ Objective and current plan:
 
                 selected_strategy = meta_route.strategy
                 model_first = selected_strategy in {"model_only","model_to_agent"}
-                model_candidate = evaluate_model_candidate() if model_first else None
+                model_candidate = (
+                    evaluate_model_candidate()
+                    if model_first and candidate_schedule.include_model
+                    else None
+                )
                 model_verified = bool(
                     model_candidate and model_candidate["verification"].get("passed") is True
                 )
-                if model_verified:
+                if model_verified and not candidate_schedule.continue_after_verified:
                     agent_trace.append({
                         "status":"meta_route_early_stop",
                         "winner":"model",
@@ -740,7 +757,12 @@ Objective and current plan:
                     })
 
                 allow_agents = selected_strategy not in {"model_only"}
-                if not model_verified and allow_agents:
+                need_agent_candidates = (
+                    allow_agents
+                    and len(candidate_records) < candidate_schedule.candidate_limit
+                    and (not model_verified or candidate_schedule.continue_after_verified)
+                )
+                if need_agent_candidates:
                     for candidate_name in (ranked_names if before_agent is not None else []):
                         restore_agent_workspace(work, before_agent)
                         agent_timeout = bounded_timeout(
@@ -853,7 +875,9 @@ Objective and current plan:
                             "verification":candidate_verification,
                             "repository":_snapshot(work,260_000),
                         })
-                        if meta_route.mode == "agent_focus" and success:
+                        if len(candidate_records) >= candidate_schedule.candidate_limit:
+                            break
+                        if meta_route.mode == "agent_focus" and success and not candidate_schedule.continue_after_verified:
                             agent_trace.append({
                                 "status":"meta_route_early_stop",
                                 "winner":"agent:"+candidate_name,
@@ -865,8 +889,20 @@ Objective and current plan:
                     item.get("agent") and item.get("verification",{}).get("passed") is True
                     for item in candidate_records
                 )
-                allow_model_fallback = selected_strategy not in {"agent_only"}
-                if not model_first and allow_model_fallback and not (meta_route.mode == "agent_focus" and agent_verified):
+                allow_model_fallback = (
+                    selected_strategy not in {"agent_only"}
+                    and candidate_schedule.include_model
+                )
+                need_model_candidate = (
+                    not model_first
+                    and allow_model_fallback
+                    and len(candidate_records) < candidate_schedule.candidate_limit
+                    and (
+                        not (meta_route.mode == "agent_focus" and agent_verified)
+                        or candidate_schedule.continue_after_verified
+                    )
+                )
+                if need_model_candidate:
                     evaluate_model_candidate()
                 if before_agent is not None:
                     restore_agent_workspace(work, before_agent)

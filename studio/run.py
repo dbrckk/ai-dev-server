@@ -25,7 +25,7 @@ from architecture_learning import write as write_architecture_learning, summariz
 from architecture_evaluator import write as write_architecture_evaluation
 from architecture_benchmark import write as write_architecture_benchmark
 from architecture_preflight import write as write_architecture_preflight
-from architecture_change_guard import enforce as enforce_architecture_change_guard
+from architecture_change_guard import enforce as enforce_architecture_change_guard, ArchitectureChangeBlocked
 
 class GitHub(API):
     def __init__(self, repo):
@@ -359,14 +359,26 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
             state['rounds'] += 1
             clear_preview_evidence(state)
             patch = checkpointed_ask(model, 'implementation', context(req, state, root), namespace='preview-implementation')
-            enforce_architecture_change_guard(
-                patch,
-                engine='flutter',
-                architecture_changes_allowed=bool(
-                    state.get('architecture_autonomy_policy', {}).get('architecture_changes_allowed', True)
-                ),
-                root=root,
-            )
+            try:
+                enforce_architecture_change_guard(
+                    patch,
+                    engine='flutter',
+                    architecture_changes_allowed=bool(
+                        state.get('architecture_autonomy_policy', {}).get('architecture_changes_allowed', True)
+                    ),
+                    root=root,
+                )
+            except ArchitectureChangeBlocked as exc:
+                state.setdefault('architecture_guard_events', []).append({
+                    'round': state['rounds'],
+                    'role': 'implementation',
+                    'status': 'blocked_architecture_change',
+                    'detail': str(exc)[:2000],
+                })
+                state['status'] = 'architecture_review_hold'
+                state['blockers'] = [str(exc)]
+                parent = checkpoint(parent)
+                continue
             apply_patch(root, patch)
             if not any(not p.name.startswith('__studio') for p in (root / 'test').rglob('*_test.dart')):
                 qa_patch = checkpointed_ask(model, 'tests', context(req, state, root), namespace='preview-tests')

@@ -268,7 +268,11 @@ def run_persistent_project(
             repo_root=Path("."),
         )
 
-    return run_goal(
+    from durable_state import save as save_durable_state
+    from telemetry import emit as emit_telemetry
+    runtime_state_path = autonomy_root / "runtime-state.json"
+    emit_telemetry("goal_run_started", goal_id=goal_id, max_cycles=max_cycles)
+    result = run_goal(
         goal_path,
         registry_path,
         execute_cycle,
@@ -277,3 +281,15 @@ def run_persistent_project(
         cycle_observer=cycle_observer,
         execute_registered_capability=execute_registered_capability,
     )
+    save_durable_state(runtime_state_path, {
+        "goal_id": goal_id,
+        "objective": objective,
+        "status": result.get("status"),
+        "attempt": result.get("attempt"),
+        "evidence_keys": sorted((result.get("evidence") or {}).keys()),
+        "missing_capabilities": list(result.get("missing_capabilities") or []),
+        "human_action": result.get("human_action"),
+        "blocked_reason": result.get("blocked_reason"),
+    })
+    emit_telemetry("goal_run_finished", goal_id=goal_id, status=result.get("status"))
+    return result

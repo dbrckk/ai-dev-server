@@ -41,3 +41,10 @@ Secrets must never be written into either file. The file asks the user to add th
 Existing supported repositories are detected from their files. Work should occur on the studio/project branch and preserve the default branch until validation is complete. Existing source is treated as the starting point, not discarded.
 
 Current specialized engines are Flutter and Godot. The orchestration layer is intentionally engine-neutral so additional project types can be added as adapters rather than creating separate autonomous systems.
+
+
+## Generic-engine external prerequisite gate
+
+For generic projects, a human pause is fail-closed and requires explicit verification evidence naming the missing environment/secret variable. The engine never serializes the secret value.
+
+When triggered, the current broken round is not published. The output contains `USER_INPUT_REQUIRED.txt` and `user-input-required.json`. Repeated runs remain read-only with respect to model work until all named environment variables are available, then the files are cleared and the persisted objective task resumes automatically.

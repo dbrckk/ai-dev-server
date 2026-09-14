@@ -38,7 +38,8 @@ from architecture_learning import summarize as summarize_architecture_learning, 
 from architecture_evaluator import write as write_architecture_evaluation
 from architecture_benchmark import write as write_architecture_benchmark
 from architecture_preflight import write as write_architecture_preflight
-from architecture_change_guard import enforce as enforce_architecture_change_guard
+from architecture_change_guard import enforce as enforce_architecture_change_guard, ArchitectureChangeBlocked
+from architecture_safe_rewrite import build_context as build_architecture_safe_rewrite_context
 from architecture_outcome import write as write_architecture_outcome
 
 PLAN_SYSTEM = """You are the senior autonomous maintainer of an existing software repository.
@@ -769,13 +770,49 @@ Objective and current plan:
                             verified=[item for item in viable if item["verification"].get("passed") is True]
                             winner_id=(verified[0] if verified else viable[0])["id"]
                     winner=next(item for item in viable if item["id"]==winner_id)
-                    changed.extend(_apply(
-                        work,
-                        {"files":winner["files"]},
-                        architecture_changes_allowed=bool(
-                            state.get("architecture_autonomy_policy", {}).get("architecture_changes_allowed", True)
-                        ),
-                    ))
+                    winner_patch={"files":winner["files"]}
+                    try:
+                        changed.extend(_apply(
+                            work,
+                            winner_patch,
+                            architecture_changes_allowed=bool(
+                                state.get("architecture_autonomy_policy", {}).get("architecture_changes_allowed", True)
+                            ),
+                        ))
+                    except ArchitectureChangeBlocked as exc:
+                        agent_trace.append({
+                            "status":"blocked_architecture_change",
+                            "candidate":winner_id,
+                            "error":str(exc)[:1000],
+                        })
+                        retry_context=build_architecture_safe_rewrite_context(
+                            canonical(implementation_context),
+                            winner_patch,
+                            str(exc),
+                            engine="generic",
+                        )
+                        retry_patch,retry_model=ask(
+                            IMPLEMENT_SYSTEM,
+                            retry_context,
+                            code=True,
+                            timeout_seconds=max(30, min(300, phase_remaining(
+                                phase_quotas,
+                                phase="fallback",
+                                elapsed_seconds=clock()-fallback_started,
+                            ))),
+                        )
+                        if isinstance(retry_model,dict):
+                            cost_controller.record_model(float(retry_model.get("duration_seconds",0.0) or 0.0), phase="fallback")
+                        changed.extend(_apply(
+                            work,
+                            retry_patch,
+                            architecture_changes_allowed=False,
+                        ))
+                        implementation_models.append(retry_model)
+                        agent_trace.append({
+                            "status":"architecture_safe_rewrite_accepted",
+                            "candidate":winner_id,
+                        })
                     if winner.get("agent"):
                         agent_used=winner["agent"]
                         implementation_models.append({"agent":agent_used})
@@ -856,22 +893,53 @@ Objective and current plan:
                         },
                     })
                     break
+                direct_context=canonical(implementation_context)
                 patch, impl_model = ask(
                     IMPLEMENT_SYSTEM,
-                    canonical(implementation_context),
+                    direct_context,
                     code=True,
                     timeout_seconds=direct_model_timeout,
                 )
                 if isinstance(impl_model,dict):
                     cost_controller.record_model(float(impl_model.get("duration_seconds",0.0) or 0.0), phase="implementation")
-                changed.extend(_apply(
-                    work,
-                    patch,
-                    architecture_changes_allowed=bool(
-                        state.get("architecture_autonomy_policy", {}).get("architecture_changes_allowed", True)
-                    ),
-                ))
-                implementation_models.append(impl_model)
+                try:
+                    changed.extend(_apply(
+                        work,
+                        patch,
+                        architecture_changes_allowed=bool(
+                            state.get("architecture_autonomy_policy", {}).get("architecture_changes_allowed", True)
+                        ),
+                    ))
+                    implementation_models.append(impl_model)
+                except ArchitectureChangeBlocked as exc:
+                    agent_trace.append({
+                        "status":"blocked_architecture_change",
+                        "candidate":"direct-model",
+                        "error":str(exc)[:1000],
+                    })
+                    retry_patch,retry_model=ask(
+                        IMPLEMENT_SYSTEM,
+                        build_architecture_safe_rewrite_context(
+                            direct_context,
+                            patch,
+                            str(exc),
+                            engine="generic",
+                        ),
+                        code=True,
+                        timeout_seconds=direct_model_timeout,
+                    )
+                    if isinstance(retry_model,dict):
+                        cost_controller.record_model(float(retry_model.get("duration_seconds",0.0) or 0.0), phase="implementation")
+                    changed.extend(_apply(
+                        work,
+                        retry_patch,
+                        architecture_changes_allowed=False,
+                    ))
+                    implementation_models.extend([impl_model,retry_model])
+                    agent_trace.append({
+                        "status":"architecture_safe_rewrite_accepted",
+                        "candidate":"direct-model",
+                    })
             progress_timeout = bounded_timeout(
                 phase_remaining(
                     phase_quotas,

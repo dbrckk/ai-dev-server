@@ -162,7 +162,7 @@ class ArchitecturePlannerTests(unittest.TestCase):
             {"repo":"b/second","score":90.0,"quality_score":8.9,"tier":"recommended","domain":"mobile","capabilities":["ui"]},
         ]}
         result=plan({"target_repo":"o/r","app_name":"demo"},recs)
-        self.assertEqual(result["version"],3)
+        self.assertEqual(result["version"],4)
         self.assertEqual(result["chosen"][0]["repo"],"a/first")
         self.assertEqual(result["chosen"][0]["selection_margin"],0.4)
         self.assertEqual(result["chosen"][0]["selection_confidence"],"low")

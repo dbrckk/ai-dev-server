@@ -21,7 +21,7 @@ class ProviderSpec:
     def model_for(self, role: str, screenshots: bool = False) -> str:
         if screenshots:
             return self.vision_model
-        if role in {"implementation", "tests"}:
+        if role in {"implementation", "tests", "security_fix"}:
             return self.code_model or self.model
         return self.model
 

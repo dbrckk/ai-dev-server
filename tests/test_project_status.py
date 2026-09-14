@@ -35,6 +35,24 @@ class ProjectStatusTests(unittest.TestCase):
             self.assertEqual(status["status"],"blocked")
             self.assertEqual(status["blockers"],["API key required"])
 
+    def test_pending_external_input_has_distinct_status(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            (root/"user-input-required.json").write_text(json.dumps({
+                "version":1,
+                "status":"user_input_required",
+                "project_id":"demo",
+                "reason":"external secret required",
+                "required_env":["SERVICE_TOKEN"],
+            }))
+            status=inspect(root)
+            self.assertEqual(status["status"],"user_input_required")
+            self.assertEqual(
+                status["user_input_required"]["missing_env"],
+                ["SERVICE_TOKEN"],
+            )
+            self.assertIn("external input required",status["blockers"][0])
+
     def test_verified_dag_and_release_proof_report_complete(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td)

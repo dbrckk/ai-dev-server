@@ -12,6 +12,7 @@ from core import Sandbox, StudioError, apply_patch, canonical
 from release import build_release
 from android_signing import sign_aab, signing_credentials
 from run import GitHub
+from atomic_file import write_text as atomic_write_text
 
 
 def ensure_workspace(req: dict, root: Path, github: GitHub, branch: str) -> tuple[dict, str]:
@@ -48,13 +49,13 @@ def advance(request_path: Path, root: Path, out: Path) -> dict:
     state = json.loads(report_path.read_text())
     if state.get('status') != 'validated_preview':
         apply_completion(state)
-        report_path.write_text(canonical(state))
+        atomic_write_text(report_path, canonical(state))
         return state
 
     stage = next_stage(state)
     if stage != 'release_build':
         apply_completion(state)
-        report_path.write_text(canonical(state))
+        atomic_write_text(report_path, canonical(state))
         return state
 
     github = GitHub(req['target_repo'])

@@ -34,6 +34,8 @@ def render(req: dict, state: dict) -> str:
     architecture = state.get('architecture_decision') if isinstance(state.get('architecture_decision'), dict) else {}
     chosen_arch = architecture.get('chosen') if isinstance(architecture.get('chosen'), list) else []
     chosen_repos = [x.get('repo') for x in chosen_arch if isinstance(x, dict) and isinstance(x.get('repo'), str)]
+    architecture_eval = state.get('architecture_evaluation') if isinstance(state.get('architecture_evaluation'), dict) else {}
+    architecture_verdict = architecture_eval.get('verdict') if isinstance(architecture_eval.get('verdict'), str) else 'not evaluated'
 
     immediate = (
         f'Execute and validate `{next_stage}`.'
@@ -71,6 +73,8 @@ def render(req: dict, state: dict) -> str:
 ### Architecture decision
 
 {_bullets(chosen_repos, 'No architecture recommendation has been selected.')}
+
+Architecture evaluation: `{architecture_verdict}`
 
 ## Current validation / release evidence
 

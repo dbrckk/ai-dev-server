@@ -214,6 +214,9 @@ def attempt(
                 _model_mutation(root, s, st, b, t, model_factory, failure)
             )
 
+        already_spent = sum(
+            max(0, int(item.get("model_calls", 0))) for item in candidates
+        )
         candidate = run_branch(
             root,
             strategy=strategy_name,
@@ -221,7 +224,10 @@ def attempt(
             steps=steps,
             refine=refine,
             strategy_row=row_by_strategy.get(strategy_name, {}),
-            remaining_model_calls=budget_remaining(state, repair=True),
+            remaining_model_calls=max(
+                0,
+                budget_remaining(state, repair=True) - already_spent,
+            ),
             state=state,
             app_name=app_name,
             sandbox_factory=sandbox_factory,

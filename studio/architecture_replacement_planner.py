@@ -175,12 +175,20 @@ def _replacement_history(learning: dict | None, current_repo: str, replacement_r
 def _recency_factor(history: dict, now: float | None = None) -> float:
     latest=history.get("latest_observed_at")
     if not isinstance(latest,(int,float)):
-        return 1.0
+        return 0.5
     now=float(now) if isinstance(now,(int,float)) else time.time()
     age_seconds=max(0.0,now-float(latest))
     age_days=age_seconds/86400.0
     decay=math.pow(0.5,age_days/RECENCY_HALF_LIFE_DAYS)
     return round(max(RECENCY_FLOOR,min(1.0,decay)),4)
+
+def _effective_sample_recency(history: dict, now: float | None = None) -> float:
+    # Legacy observations without timestamps remain usable for sample-mass
+    # confidence, while their actual fusion influence stays conservatively 0.5.
+    if not isinstance(history.get("latest_observed_at"), (int, float)):
+        return 1.0
+    return _recency_factor(history, now=now)
+
 
 def _fusion_weight(history: dict, now: float | None = None) -> float:
     compatibility=history.get("compatibility") if isinstance(history.get("compatibility"),dict) else {}
@@ -216,7 +224,7 @@ def _fuse_histories(histories: list[dict], now: float | None = None) -> dict | N
         float(history.get("samples",0) or 0)
         * float(history.get("compatibility",{}).get("transferability",0.0) or 0.0)
         * (1.0 if history.get("eligible_for_bias") is True else 0.35)
-        * _recency_factor(history,now=now)
+        * _effective_sample_recency(history,now=now)
         for _,history in weighted
     )
     max_transfer=max(
@@ -444,17 +452,25 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
                 empirical_status="mixed_history"
 
         reputation_state=reputation.get("state")
+        reputation_is_persisted=reputation.get("source")=="persistent_registry"
         if reputation_state=="QUARANTINED":
             risk="high"
             empirical_priority_adjustment=min(0.0,empirical_priority_adjustment)
-            empirical_status="persisted_quarantine"
+            if reputation_is_persisted:
+                empirical_status="persisted_quarantine"
         elif reputation_state=="DEGRADED":
             empirical_priority_adjustment=min(0.0,empirical_priority_adjustment)
-            if empirical_status in {"historically_supported","unobserved"}:
+            if (
+                reputation_is_persisted
+                and empirical_status in {"historically_supported","unobserved"}
+            ):
                 empirical_status="persisted_degraded"
         elif reputation_state=="RECOVERING":
             empirical_priority_adjustment=min(0.0,empirical_priority_adjustment)
-            if empirical_status not in {"sequential_drift_detected","regime_shift_detected"}:
+            if (
+                reputation_is_persisted
+                and empirical_status not in {"sequential_drift_detected","regime_shift_detected"}
+            ):
                 empirical_status="persisted_recovering"
 
         gates = [

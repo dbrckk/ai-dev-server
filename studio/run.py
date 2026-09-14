@@ -436,6 +436,11 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                     root=root,
                 )
             except ArchitectureChangeBlocked as exc:
+                origin_identity = str(
+                    getattr(model, 'providers_used', {}).get('implementation')
+                    or getattr(model, 'models_used', {}).get('implementation')
+                    or 'unknown'
+                )
                 event = {
                     'round': state['rounds'],
                     'role': 'implementation',
@@ -472,8 +477,12 @@ def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sa
                 patch = retry_patch
                 event['safe_rewrite_status'] = 'accepted'
                 event_id = f"{req['id']}:{state['rounds']}:flutter"
-                origin_name = str(getattr(model, 'providers_used', {}).get('implementation') or getattr(model, 'models_used', {}).get('implementation') or 'unknown')
-                rewrite_name = str(getattr(model, 'providers_used', {}).get('implementation') or getattr(model, 'models_used', {}).get('implementation') or 'unknown')
+                origin_name = origin_identity
+                rewrite_name = str(
+                    getattr(model, 'providers_used', {}).get('implementation')
+                    or getattr(model, 'models_used', {}).get('implementation')
+                    or 'unknown'
+                )
                 record_safe_rewrite_attempt(
                     safe_rewrite_learning_path,
                     event_id=event_id,

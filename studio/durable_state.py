@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import shutil
 
 from atomic_file import write_text as atomic_write_text
 from core import StudioError, canonical
@@ -64,7 +65,28 @@ def save(path: Path, value: dict) -> None:
         "sha256": _checksum(CURRENT_SCHEMA, value),
     }
     with exclusive(path):
+        if path.is_file():
+            try:
+                load(path)
+            except StudioError:
+                pass
+            else:
+                backup = path.with_name(path.name + ".bak")
+                shutil.copyfile(path, backup)
         atomic_write_text(path, canonical(envelope), encoding="utf-8")
+
+
+def load_recovering(path: Path, *, default: dict | None = None) -> dict:
+    path = Path(path)
+    try:
+        return load(path, default=default)
+    except StudioError:
+        backup = path.with_name(path.name + ".bak")
+        if not backup.is_file():
+            raise
+        value = load(backup)
+        save(path, value)
+        return value
 
 
 def repair_from_backup(path: Path, backup: Path) -> dict:

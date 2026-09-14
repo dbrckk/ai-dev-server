@@ -29,26 +29,48 @@ def _risk(current: dict, replacement: dict, benchmark_delta: float | None) -> st
         return "medium"
     return "low"
 
-def _replacement_history(learning: dict | None, current_repo: str, replacement_repo: str) -> dict | None:
+def _replacement_history(learning: dict | None, current_repo: str, replacement_repo: str, context: dict | None = None) -> dict | None:
     if not isinstance(learning, dict):
         return None
     rows=learning.get("rankings")
     if not isinstance(rows,list):
         return None
-    matches=[
-        row for row in rows
-        if isinstance(row,dict)
-        and row.get("current_repo")==current_repo
-        and row.get("replacement_repo")==replacement_repo
-    ]
-    if not matches:
+    context=context if isinstance(context,dict) else {}
+    fields=("framework","project_type","primary_domain","platform","current_major_version","replacement_major_version")
+    candidates=[]
+    for row in rows:
+        if not isinstance(row,dict):
+            continue
+        if row.get("current_repo")!=current_repo or row.get("replacement_repo")!=replacement_repo:
+            continue
+        mismatch=False
+        specificity=0
+        for field in fields:
+            expected=context.get(field)
+            observed=row.get(field)
+            if isinstance(observed,str) and observed:
+                if isinstance(expected,str) and expected:
+                    if observed!=expected:
+                        mismatch=True
+                        break
+                    specificity+=1
+            elif isinstance(observed,(int,float)) and observed is not None:
+                if isinstance(expected,(int,float)) and expected is not None:
+                    if observed!=expected:
+                        mismatch=True
+                        break
+                    specificity+=1
+        if not mismatch:
+            candidates.append((specificity,row))
+    if not candidates:
         return None
-    matches.sort(key=lambda row:(
-        bool(row.get("eligible_for_bias")),
-        float(row.get("evidence_confidence",0.0) or 0.0),
-        int(row.get("samples",0) or 0),
+    candidates.sort(key=lambda item:(
+        item[0],
+        bool(item[1].get("eligible_for_bias")),
+        float(item[1].get("evidence_confidence",0.0) or 0.0),
+        int(item[1].get("samples",0) or 0),
     ),reverse=True)
-    return matches[0]
+    return candidates[0][1]
 
 def _impact(current: dict, replacement: dict) -> dict:
     current_caps = set(current.get("capabilities", []) if isinstance(current.get("capabilities"), list) else [])
@@ -92,7 +114,15 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
         replacement = recs.get(replacement_repo, {})
         impact = _impact(current, replacement)
         risk = _risk(current, replacement, row.get("benchmark_delta"))
-        history = _replacement_history(learning,current_repo,replacement_repo)
+        context={
+            "framework":row.get("framework"),
+            "project_type":row.get("project_type"),
+            "primary_domain":row.get("primary_domain"),
+            "platform":row.get("platform"),
+            "current_major_version":row.get("current_major_version"),
+            "replacement_major_version":row.get("replacement_major_version"),
+        }
+        history = _replacement_history(learning,current_repo,replacement_repo,context=context)
         empirical_status="unobserved"
         empirical_priority_adjustment=0.0
         if isinstance(history,dict) and history.get("eligible_for_bias") is True:
@@ -134,6 +164,12 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
             "benchmark_delta": row.get("benchmark_delta"),
             "drift_score": row.get("drift_score"),
             "maintenance_signal": row.get("maintenance_signal"),
+            "framework": context.get("framework"),
+            "project_type": context.get("project_type"),
+            "primary_domain": context.get("primary_domain"),
+            "platform": context.get("platform"),
+            "current_major_version": context.get("current_major_version"),
+            "replacement_major_version": context.get("replacement_major_version"),
             "historical_replacement_evidence": history,
             "empirical_status": empirical_status,
             "empirical_priority_adjustment": round(empirical_priority_adjustment,3),
@@ -163,7 +199,7 @@ def plan(obsolescence: dict, recommendations: dict, learning: dict | None = None
     ),reverse=True)
 
     return {
-        "version": 2,
+        "version": 3,
         "status": "planned",
         "advisory_only": True,
         "replacement_plans": plans,

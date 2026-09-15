@@ -64,6 +64,37 @@ class ProviderScopedHealthTests(unittest.TestCase):
         )
         self.assertEqual(evidence["freshness"], 1.0)
 
+    def test_recent_recovery_accelerates_reputation(self):
+        data = {
+            "p|model=m|role=implementation": {
+                "successes": 20,
+                "failures": 20,
+                "recent_outcomes": [1, 1, 1, 1, 1, 1, 1, 1],
+                "last_observed_at": 1000.0,
+            }
+        }
+        evidence = provider_health.scoped_evidence(
+            data, "p", model="m", role="implementation", now=1000.0,
+        )
+        self.assertTrue(evidence["recovery_detected"])
+        self.assertGreater(evidence["recovery_bonus"], 0.0)
+        self.assertGreater(
+            evidence["reliability"], evidence["historical_reliability"]
+        )
+
+    def test_short_recovery_streak_does_not_trigger_acceleration(self):
+        data = {
+            "p": {
+                "successes": 2,
+                "failures": 8,
+                "recent_outcomes": [1, 1, 1],
+                "last_observed_at": 1000.0,
+            }
+        }
+        evidence = provider_health.scoped_evidence(data, "p", now=1000.0)
+        self.assertFalse(evidence["recovery_detected"])
+        self.assertEqual(evidence["recovery_bonus"], 0.0)
+
     def test_scoped_reliability_falls_back_to_provider(self):
         data = {"p": {"successes": 3, "failures": 1}}
         self.assertAlmostEqual(

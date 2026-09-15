@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
-from capacity_ledger import release_project
+from capacity_ledger import transfer_project_reservations
 from execution_checkpoint import load as load_checkpoint, ExecutionCheckpointError
 from preemption_controller import SAFE_CHECKPOINT_PHASES
 
@@ -72,7 +72,27 @@ def execute(
             results.append(row)
             continue
 
-        released = release_project(root / "capacity-ledger.json", victim)
+        contender_row = next(
+            (
+                item for item in capacity_plan.get("projects", [])
+                if isinstance(item, dict) and item.get("id") == contender
+            ),
+            {},
+        )
+        lease_tokens = max(
+            1,
+            min(
+                int(contender_row.get("token_envelope", 0) or 0),
+                int(contender_row.get("requested_tokens", 0) or 0),
+            ),
+        )
+        transferred = transfer_project_reservations(
+            root / "capacity-ledger.json",
+            victim_project_id=victim,
+            contender_project_id=contender,
+            reserve_tokens=lease_tokens,
+            now=current,
+        )
         state = {
             "schema": 1,
             "victim_id": victim,
@@ -83,7 +103,7 @@ def execute(
                 "phase": checkpoint.get("phase"),
                 "sha256": checkpoint.get("sha256"),
             },
-            "released": released,
+            "transfer": transferred,
             "status": "preempted",
         }
         state_path = root / victim / ".autonomy" / STATE_FILE
@@ -108,7 +128,9 @@ def execute(
             )
         row["executed"] = True
         row["status"] = "preempted"
-        row["released_tokens"] = released.get("released_tokens", 0)
+        row["released_tokens"] = transferred.get("released_tokens", 0)
+        row["admission_lease_id"] = transferred.get("lease_reservation_id")
+        row["admission_lease_tokens"] = transferred.get("lease_tokens", 0)
         results.append(row)
 
     return {

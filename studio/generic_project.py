@@ -71,6 +71,7 @@ from model_portfolio import choose as choose_model_portfolio
 from model_portfolio_audit import audit as audit_model_portfolio
 from portfolio_candidate_scheduler import choose_schedule as choose_candidate_schedule
 from adaptive_role_allocator import choose_role_allocation
+from adaptive_phase_policy import review_phase_decision
 from candidate_portfolio_learning import (
     load as load_candidate_portfolio_learning,
     record as record_candidate_portfolio_learning,
@@ -508,6 +509,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         agent_used = None
         round_candidate_portfolio = None
         round_candidate_cost_seconds = 0.0
+        round_require_review = True
         current_plan = plan
         remaining_seconds = None if deadline is None else max(0.0, deadline - clock())
         drift_multiplier = drift_detector.exploration_multiplier()
@@ -710,6 +712,7 @@ Objective and current plan:
                     free_capacity=free_capacity,
                     max_implementation_models=min(3, max(1, available_direct_models)),
                 )
+                round_require_review = role_allocation.require_review
                 agent_trace.append({
                     "status":"adaptive_role_allocation",
                     "decision":role_allocation.as_dict(),
@@ -1512,14 +1515,12 @@ Objective and current plan:
             phase="review",
             elapsed_seconds=0,
         )
-        if review_remaining < 30:
-            review = {
-                "complete": False,
-                "remaining": ["review quota exhausted"],
-                "reason": "trusted review was not launched because its phase quota was exhausted",
-            }
-            review_model = None
-        else:
+        review_policy = review_phase_decision(
+            require_review=round_require_review,
+            verification=verification,
+            review_remaining=review_remaining,
+        )
+        if review_policy["launch_model"]:
             review_timeout = bounded_timeout(
                 review_remaining,
                 minimum=30,
@@ -1548,6 +1549,9 @@ Objective and current plan:
                 review_duration = float(review_model.get("duration_seconds",0.0) or 0.0)
                 cost_controller.record_model(review_duration, phase="review")
                 cost_controller.record_review(review_duration)
+        else:
+            review = review_policy["review"]
+            review_model = None
         review_elapsed = max(0, int(clock() - review_started))
         review_history = load_phase_cost_baselines(phase_baseline_path)
         review_baseline = phase_cost_baseline(review_history, state["toolchain"], "review")

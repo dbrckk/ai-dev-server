@@ -12,8 +12,11 @@ REQUIRED_GITHUB_CHECKS=frozenset({"validate","python-tests"})
 TRUSTED_CHECK_APP="github-actions"
 REQUIRED_WORKFLOW_NAME="CI"
 REQUIRED_WORKFLOW_PATH=".github/workflows/ci.yml"
-CI_TRUST_POLICY_VERSION=2
+CI_TRUST_POLICY_VERSION=3
 REQUIRED_WORKFLOW_PERMISSIONS={"contents":"read"}
+REQUIRED_JOB_RUNNER="ubuntu-latest"
+REQUIRED_JOB_TIMEOUTS={"validate":5,"python-tests":20}
+FORBIDDEN_WORKFLOW_TRIGGERS=frozenset({"pull_request_target","workflow_run"})
 
 # Explicit allowlist: third-party actions and mutable refs are fail-closed.
 TRUSTED_ACTION_REVISIONS={
@@ -30,6 +33,9 @@ def ci_trust_policy_digest() -> str:
         "workflow_path":REQUIRED_WORKFLOW_PATH,
         "trusted_action_revisions":dict(sorted(TRUSTED_ACTION_REVISIONS.items())),
         "required_workflow_permissions":dict(sorted(REQUIRED_WORKFLOW_PERMISSIONS.items())),
+        "required_job_runner":REQUIRED_JOB_RUNNER,
+        "required_job_timeouts":dict(sorted(REQUIRED_JOB_TIMEOUTS.items())),
+        "forbidden_workflow_triggers":sorted(FORBIDDEN_WORKFLOW_TRIGGERS),
     }
     return hashlib.sha256(
         json.dumps(payload,sort_keys=True,separators=(",",":")).encode("utf-8")
@@ -98,6 +104,76 @@ def validate_workflow_permissions_text(text: str) -> dict:
         "required_permissions":dict(REQUIRED_WORKFLOW_PERMISSIONS),
         "workflow_permissions":top_permissions,
         "job_permission_overrides":job_permissions,
+        "violations":violations,
+    }
+
+def validate_workflow_runtime_text(text: str) -> dict:
+    violations=[]
+    forbidden_triggers=sorted(
+        trigger for trigger in FORBIDDEN_WORKFLOW_TRIGGERS
+        if re.search(r"(?m)^\s{0,2}"+re.escape(trigger)+r"\s*:",text)
+    )
+    for trigger in forbidden_triggers:
+        violations.append({"reason":"forbidden_workflow_trigger","trigger":trigger})
+    if re.search(r"(?m)^\s*(container|services)\s*:",text):
+        violations.append({"reason":"container_or_services_forbidden"})
+    if re.search(r"(?m)^\s*environment\s*:",text):
+        violations.append({"reason":"deployment_environment_forbidden"})
+    if re.search(r"(?m)^\s*secrets\s*:",text):
+        violations.append({"reason":"explicit_secrets_mapping_forbidden"})
+    if re.search(r"\$\{\{\s*secrets\.",text):
+        violations.append({"reason":"secret_expression_forbidden"})
+    if re.search(r"(?m)^\s*runs-on:\s*\$\{\{",text):
+        violations.append({"reason":"dynamic_runner_forbidden"})
+
+    jobs={}
+    lines=text.splitlines()
+    in_jobs=False
+    current=None
+    for line in lines:
+        if line=="jobs:":
+            in_jobs=True
+            current=None
+            continue
+        if in_jobs and line and not line.startswith(" "):
+            break
+        if not in_jobs:
+            continue
+        job_match=re.match(r"^  ([A-Za-z0-9_-]+):\s*$",line)
+        if job_match:
+            current=job_match.group(1)
+            jobs[current]={"runs_on":None,"timeout_minutes":None}
+            continue
+        if current is None:
+            continue
+        runner=re.match(r"^    runs-on:\s*([^#\n]+?)\s*(?:#.*)?$",line)
+        if runner:
+            jobs[current]["runs_on"]=runner.group(1).strip().strip("'\"")
+        timeout=re.match(r"^    timeout-minutes:\s*(\d+)\s*(?:#.*)?$",line)
+        if timeout:
+            jobs[current]["timeout_minutes"]=int(timeout.group(1))
+
+    for job in sorted(REQUIRED_GITHUB_CHECKS):
+        row=jobs.get(job)
+        if row is None:
+            continue
+        if row["runs_on"]!=REQUIRED_JOB_RUNNER:
+            violations.append({
+                "reason":"untrusted_job_runner","job":job,
+                "expected":REQUIRED_JOB_RUNNER,"actual":row["runs_on"],
+            })
+        expected_timeout=REQUIRED_JOB_TIMEOUTS[job]
+        if row["timeout_minutes"]!=expected_timeout:
+            violations.append({
+                "reason":"job_timeout_not_exact","job":job,
+                "expected":expected_timeout,"actual":row["timeout_minutes"],
+            })
+    return {
+        "valid":not violations,
+        "required_runner":REQUIRED_JOB_RUNNER,
+        "required_timeouts":dict(REQUIRED_JOB_TIMEOUTS),
+        "jobs":jobs,
+        "forbidden_triggers":forbidden_triggers,
         "violations":violations,
     }
 
@@ -201,12 +277,14 @@ def validate_workflow_text(text: str) -> dict:
     workflow_name=name_match.group(1).strip().strip("'\"") if name_match else None
     action_policy=validate_action_pinning_text(text)
     permission_policy=validate_workflow_permissions_text(text)
+    runtime_policy=validate_workflow_runtime_text(text)
     return {
         "valid":(
             not missing
             and workflow_name==REQUIRED_WORKFLOW_NAME
             and action_policy["valid"]
             and permission_policy["valid"]
+            and runtime_policy["valid"]
         ),
         "required_checks":sorted(REQUIRED_GITHUB_CHECKS),
         "workflow_jobs":sorted(jobs),
@@ -215,6 +293,7 @@ def validate_workflow_text(text: str) -> dict:
         "expected_workflow_name":REQUIRED_WORKFLOW_NAME,
         "action_pinning":action_policy,
         "permissions":permission_policy,
+        "runtime":runtime_policy,
         "ci_trust_policy_version":CI_TRUST_POLICY_VERSION,
         "ci_trust_policy_digest":ci_trust_policy_digest(),
     }

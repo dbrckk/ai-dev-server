@@ -25,7 +25,7 @@ class PreemptionApplyTests(unittest.TestCase):
             estimated_tokens=12000,
             provider_remaining_tokens=100000,
             project_envelope_tokens=50000,
-            now=100.0,
+            now=1000.0,
         )
         plan = {
             "projects": [

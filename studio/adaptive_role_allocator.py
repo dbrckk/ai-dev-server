@@ -26,6 +26,34 @@ class RoleAllocation:
         }
 
 
+def _budget_pressure(
+    *,
+    remaining_seconds: float | None,
+    verification_seconds: float | None,
+) -> float:
+    verification = max(0.0, float(verification_seconds or 0.0))
+    remaining = None if remaining_seconds is None else max(0.0, float(remaining_seconds))
+    if remaining is None:
+        return 0.0
+    reserve = max(120.0, verification * 2.0)
+    return max(0.0, min(1.0, 1.0 - remaining / reserve))
+
+
+def planning_required(
+    *,
+    difficulty: float,
+    remaining_seconds: float | None,
+    verification_seconds: float | None,
+) -> bool:
+    """Return whether this round is worth spending a model call on planning."""
+    normalized_difficulty = max(0.0, min(1.0, float(difficulty or 0.0)))
+    budget_pressure = _budget_pressure(
+        remaining_seconds=remaining_seconds,
+        verification_seconds=verification_seconds,
+    )
+    return normalized_difficulty >= 0.45 and budget_pressure < 0.85
+
+
 def choose_role_allocation(
     *,
     difficulty: float,
@@ -39,13 +67,10 @@ def choose_role_allocation(
     confidence = max(0.0, min(1.0, float(route_confidence or 0.0)))
     uncertainty = 1.0 - confidence
     capacity = max(0.0, min(1.0, float(free_capacity or 0.0)))
-    verification = max(0.0, float(verification_seconds or 0.0))
-    remaining = None if remaining_seconds is None else max(0.0, float(remaining_seconds))
-    if remaining is None:
-        budget_pressure = 0.0
-    else:
-        reserve = max(120.0, verification * 2.0)
-        budget_pressure = max(0.0, min(1.0, 1.0 - remaining / reserve))
+    budget_pressure = _budget_pressure(
+        remaining_seconds=remaining_seconds,
+        verification_seconds=verification_seconds,
+    )
 
     implementation_models = 1
     reason = "single implementation model"
@@ -59,7 +84,11 @@ def choose_role_allocation(
     implementation_models = max(
         1, min(3, max(1, int(max_implementation_models)), implementation_models)
     )
-    require_planning = difficulty >= 0.45 and budget_pressure < 0.85
+    require_planning = planning_required(
+        difficulty=difficulty,
+        remaining_seconds=remaining_seconds,
+        verification_seconds=verification_seconds,
+    )
     require_review = (
         difficulty >= 0.35
         or uncertainty >= 0.40

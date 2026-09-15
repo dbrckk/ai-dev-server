@@ -6,7 +6,10 @@ import json
 import os
 import urllib.request
 import urllib.error
+from pathlib import Path
 from typing import Iterable
+
+from provider_runtime_reliability import summarize as summarize_runtime_reliability, routing_bonus as runtime_reliability_bonus
 
 from local_capacity import discover as discover_local_capacity
 
@@ -325,7 +328,21 @@ def candidates_for(
     providers: Iterable[ProviderSpec] | None = None,
 ) -> tuple[ProviderSpec, ...]:
     specs = tuple(providers) if providers is not None else load_providers(prefer_free=prefer_free)
-    return tuple(spec for spec in specs if spec.model_for(role, screenshots))
+    eligible = tuple(spec for spec in specs if spec.model_for(role, screenshots))
+    reliability_path = os.environ.get("STUDIO_WORKER_LIVENESS_PATH", "").strip()
+    if not reliability_path:
+        return eligible
+    try:
+        with open(reliability_path, "r", encoding="utf-8") as handle:
+            liveness = json.load(handle)
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return eligible
+    reliability = summarize_runtime_reliability(liveness)
+    def reliability_key(spec: ProviderSpec):
+        model = spec.model_for(role, screenshots)
+        bonus = runtime_reliability_bonus(reliability, spec.name, model)
+        return (-bonus,)
+    return tuple(sorted(eligible, key=reliability_key))
 
 
 def budget_eligible(

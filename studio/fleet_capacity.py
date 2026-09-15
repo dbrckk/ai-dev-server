@@ -19,6 +19,7 @@ from global_admission import decide as decide_global_admission
 from preemption_controller import plan as plan_preemption
 from execution_checkpoint import load as load_execution_checkpoint, ExecutionCheckpointError
 from queue import matrix
+from worker_reliability import summarize as summarize_worker_reliability, project_multiplier as reliability_multiplier
 
 
 DEFAULT_MAX_TOKENS_PER_MODEL_CALL = 16_000
@@ -45,6 +46,7 @@ def _project_rows(
     stagnation_summary: dict | None = None,
     recovery_state_path: Path | None = None,
     provider_context: list[dict] | None = None,
+    reliability_summary: dict | None = None,
 ) -> list[dict]:
     dashboard = collect(root)
     health = {row["id"]: row for row in dashboard.get("projects", [])}
@@ -99,6 +101,15 @@ def _project_rows(
         verified_efficiency_multiplier = efficiency_multiplier(
             efficiency_summary or {},
             project_id,
+        )
+        worker_reliability_multiplier = reliability_multiplier(
+            reliability_summary or {},
+            project_id,
+        )
+        reliability_project = (
+            (reliability_summary or {}).get("projects", {}).get(project_id, {})
+            if isinstance((reliability_summary or {}).get("projects", {}), dict)
+            else {}
         )
         efficiency_project = (
             (efficiency_summary or {}).get("projects", {}).get(project_id, {})
@@ -168,6 +179,11 @@ def _project_rows(
             ),
             "capacity_pressure": round(pressure, 4),
             "efficiency_multiplier": verified_efficiency_multiplier,
+            "reliability_multiplier": worker_reliability_multiplier,
+            "worker_reliability_score": round(
+                float(reliability_project.get("reliability_score", 0.5) or 0.5), 6
+            ),
+            "worker_reliability_samples": int(reliability_project.get("samples", 0) or 0),
             "predicted_success_probability": round(predicted_success_probability, 6),
             "stagnation_multiplier": stagnation_multiplier,
             "capacity_paused": capacity_paused,
@@ -283,6 +299,11 @@ def plan(
     ledger = ledger_detailed_snapshot(root / "capacity-ledger.json")
     efficiency = summarize_capacity_efficiency(root / "capacity-efficiency.json")
     stagnation = summarize_stagnation(efficiency)
+    try:
+        liveness = json.loads((root / "worker-liveness.json").read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        liveness = {}
+    reliability = summarize_worker_reliability(liveness)
     providers = _provider_rows(
         reservations_by_provider=ledger.get("reservations_by_provider", {}),
         quota_path=root / "provider-monthly-quota.json",
@@ -308,6 +329,7 @@ def plan(
         stagnation_summary=stagnation,
         recovery_state_path=root / "recovery-state.json",
         provider_context=provider_context,
+        reliability_summary=reliability,
     )
     report = allocate(
         projects,
@@ -380,6 +402,11 @@ def plan(
         "efficiency_boosted_projects": sum(
             1 for row in report["projects"]
             if float(row.get("efficiency_multiplier", 1.0) or 1.0) > 1.0
+        ),
+        "reliability_evidence_projects": len(reliability.get("projects", {})),
+        "reliability_reduced_projects": sum(
+            1 for row in report["projects"]
+            if float(row.get("reliability_multiplier", 1.0) or 1.0) < 1.0
         ),
         "efficiency_reduced_projects": sum(
             1 for row in report["projects"]

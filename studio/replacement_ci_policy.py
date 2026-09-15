@@ -12,7 +12,7 @@ REQUIRED_GITHUB_CHECKS=frozenset({"validate","python-tests"})
 TRUSTED_CHECK_APP="github-actions"
 REQUIRED_WORKFLOW_NAME="CI"
 REQUIRED_WORKFLOW_PATH=".github/workflows/ci.yml"
-CI_TRUST_POLICY_VERSION=8
+CI_TRUST_POLICY_VERSION=9
 REQUIRED_WORKFLOW_PERMISSIONS={"contents":"read"}
 REQUIRED_JOB_RUNNER="ubuntu-latest"
 REQUIRED_JOB_TIMEOUTS={"validate":5,"python-tests":20}
@@ -24,7 +24,7 @@ FORBIDDEN_RUN_TOKENS=frozenset({"curl","wget","sudo","docker","podman","GITHUB_E
 FORBIDDEN_RUN_PREFIXES=("pip install","pip3 install","npm install","npm ci","npx ","yarn ","pnpm ","apt install","apt-get install","git clone","git fetch","git pull","gh ")
 REQUIRED_RUN_SHELL="bash"
 FORBIDDEN_YAML_FEATURES=frozenset({"anchor","alias","tag","merge_key","tab_indentation","duplicate_key"})
-ALLOWED_ROOT_KEYS=frozenset({"name","on","permissions","jobs"})
+ALLOWED_ROOT_KEYS=frozenset({"name","on","permissions","concurrency","jobs"})
 ALLOWED_JOB_KEYS=frozenset({"name","runs-on","timeout-minutes","steps"})
 ALLOWED_STEP_KEYS=frozenset({"name","uses","with","run","shell","env"})
 ACTION_WITH_ALLOWLIST={
@@ -32,6 +32,9 @@ ACTION_WITH_ALLOWLIST={
     "actions/setup-python":frozenset({"python-version"}),
 }
 RUN_ENV_ALLOWLIST={"PYTHONPATH":"studio"}
+REQUIRED_WORKFLOW_TRIGGERS={"push":{"branches":("main",)},"pull_request":{}}
+REQUIRED_CONCURRENCY_GROUP="ci-${{ github.workflow }}-${{ github.ref }}"
+REQUIRED_CONCURRENCY_CANCEL=True
 
 # Explicit allowlist: third-party actions and mutable refs are fail-closed.
 TRUSTED_ACTION_REVISIONS={
@@ -63,6 +66,9 @@ def ci_trust_policy_digest() -> str:
         "allowed_step_keys":sorted(ALLOWED_STEP_KEYS),
         "action_with_allowlist":{k:sorted(v) for k,v in sorted(ACTION_WITH_ALLOWLIST.items())},
         "run_env_allowlist":dict(sorted(RUN_ENV_ALLOWLIST.items())),
+        "required_workflow_triggers":{"push":{"branches":["main"]},"pull_request":{}},
+        "required_concurrency_group":REQUIRED_CONCURRENCY_GROUP,
+        "required_concurrency_cancel":REQUIRED_CONCURRENCY_CANCEL,
     }
     return hashlib.sha256(
         json.dumps(payload,sort_keys=True,separators=(",",":")).encode("utf-8")
@@ -139,6 +145,44 @@ def validate_workflow_schema_text(text: str) -> dict:
             if nested_step_key and nested_step_key.group(1) not in ALLOWED_STEP_KEYS:
                 violations.append({"reason":"unknown_step_key","line":lineno,"job":current_job,"key":nested_step_key.group(1)})
     return {"valid":not violations,"allowed_root_keys":sorted(ALLOWED_ROOT_KEYS),"allowed_job_keys":sorted(ALLOWED_JOB_KEYS),"allowed_step_keys":sorted(ALLOWED_STEP_KEYS),"violations":violations}
+
+def validate_trigger_concurrency_text(text: str) -> dict:
+    violations=[]
+    lines=text.splitlines()
+    triggers=set()
+    push_branches=[]
+    in_on=False
+    in_push=False
+    concurrency={}
+    in_concurrency=False
+    for lineno,line in enumerate(lines,start=1):
+        code=line.split("#",1)[0].rstrip()
+        if code=="on:":
+            in_on=True; in_push=False; in_concurrency=False; continue
+        if code=="concurrency:":
+            in_concurrency=True; in_on=False; in_push=False; continue
+        if code and not code.startswith(" "):
+            in_on=False; in_push=False; in_concurrency=False
+        if in_on:
+            m=re.match(r"^  ([A-Za-z0-9_-]+):\s*(.*)$",code)
+            if m:
+                trigger=m.group(1); triggers.add(trigger); in_push=(trigger=="push"); continue
+            if in_push:
+                b=re.match(r"^    branches:\s*\[\s*['\"]?([^'\"\], ]+)['\"]?\s*\]\s*$",code)
+                if b: push_branches=[b.group(1)]
+        if in_concurrency:
+            m=re.match(r"^  (group|cancel-in-progress):\s*(.+?)\s*$",code)
+            if m: concurrency[m.group(1)]=m.group(2).strip().strip("'\\"")
+    expected_triggers={"push","pull_request"}
+    if triggers!=expected_triggers:
+        violations.append({"reason":"workflow_triggers_not_exact","expected":sorted(expected_triggers),"actual":sorted(triggers)})
+    if push_branches!=["main"]:
+        violations.append({"reason":"push_branches_not_exact","expected":["main"],"actual":push_branches})
+    if concurrency.get("group")!=REQUIRED_CONCURRENCY_GROUP:
+        violations.append({"reason":"concurrency_group_not_exact","expected":REQUIRED_CONCURRENCY_GROUP,"actual":concurrency.get("group")})
+    if concurrency.get("cancel-in-progress")!="true":
+        violations.append({"reason":"concurrency_cancel_not_true","actual":concurrency.get("cancel-in-progress")})
+    return {"valid":not violations,"triggers":sorted(triggers),"push_branches":push_branches,"concurrency":concurrency,"violations":violations}
 
 def validate_step_inputs_env_text(text: str) -> dict:
     violations=[]
@@ -520,6 +564,7 @@ def validate_workflow_text(text: str) -> dict:
     yaml_surface=validate_yaml_surface_text(text)
     schema_policy=validate_workflow_schema_text(text)
     input_env_policy=validate_step_inputs_env_text(text)
+    trigger_concurrency_policy=validate_trigger_concurrency_text(text)
     jobs=workflow_job_ids_text(text)
     missing=sorted(REQUIRED_GITHUB_CHECKS-jobs)
     name_match=re.search(r"(?m)^name:\s*([^#\n]+?)\s*$",text)
@@ -534,6 +579,7 @@ def validate_workflow_text(text: str) -> dict:
             yaml_surface["valid"]
             and schema_policy["valid"]
             and input_env_policy["valid"]
+            and trigger_concurrency_policy["valid"]
             and not missing
             and workflow_name==REQUIRED_WORKFLOW_NAME
             and action_policy["valid"]

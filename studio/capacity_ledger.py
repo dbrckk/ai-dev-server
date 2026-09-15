@@ -320,6 +320,25 @@ def release_project(path: Path, project_id: str, *, now: float | None = None) ->
         }
 
 
+
+def preemption_leases(data: dict) -> dict[str, dict]:
+    result = {}
+    for token, row in (data.get("reservations") or {}).items():
+        if (
+            isinstance(row, dict)
+            and row.get("kind") == "preemption_admission_lease"
+            and isinstance(row.get("project_id"), str)
+        ):
+            result[row["project_id"]] = {
+                "reservation_id": token,
+                "reserved_tokens": max(0, int(row.get("reserved_tokens", 0) or 0)),
+                "expires_at": float(row.get("expires_at", 0.0) or 0.0),
+                "victim_project_id": row.get("victim_project_id"),
+            }
+    return result
+
+
+
 def reservations_by_provider(data: dict) -> dict[str, int]:
     result = {}
     for row in (data.get("reservations") or {}).values():

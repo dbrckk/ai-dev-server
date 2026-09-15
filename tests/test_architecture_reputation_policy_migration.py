@@ -420,5 +420,22 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
                 now=300.0,
             )
 
+    def test_bind_target_rejects_missing_semantic_digest(self):
+        plan=dry_run(self.registry(),self.learning(),now=200.0)
+        wf=self.canonical_workflow_file()
+        target={"repository":"dbrckk/ai-dev-server","pull_request":42,"commit_sha":"a"*40,"head_ref":"policy/migration","base_ref":"main","author":"reviewer-a","workflow_path":".github/workflows/ci.yml","workflow_blob_sha":"blob123","workflow_sha256":wf["sha256"],"ci_trust_policy_version":CI_TRUST_POLICY_VERSION,"ci_trust_policy_digest":ci_trust_policy_digest()}
+        with self.assertRaises(ReputationPolicyMigrationError):bind_github_review_target(plan,target,now=200.0)
+
+    def test_bind_target_rejects_invalid_semantic_digest(self):
+        plan=dry_run(self.registry(),self.learning(),now=200.0)
+        wf=self.canonical_workflow_file()
+        target={"repository":"dbrckk/ai-dev-server","pull_request":42,"commit_sha":"a"*40,"head_ref":"policy/migration","base_ref":"main","author":"reviewer-a","workflow_path":".github/workflows/ci.yml","workflow_blob_sha":"blob123","workflow_sha256":wf["sha256"],"workflow_semantic_digest":"bad","ci_trust_policy_version":CI_TRUST_POLICY_VERSION,"ci_trust_policy_digest":ci_trust_policy_digest()}
+        with self.assertRaises(ReputationPolicyMigrationError):bind_github_review_target(plan,target,now=200.0)
+
+    def test_audit_persists_semantic_digest(self):
+        registry=self.registry();plan=dry_run(registry,self.learning(),now=200.0)
+        migrated=self.apply(registry,plan,self.authorize(plan),now=300.0)
+        self.assertEqual(migrated["last_policy_migration"]["github_workflow_semantic_digest"],self.canonical_workflow_file()["semantic_digest"])
+
 if __name__=="__main__":
     unittest.main()

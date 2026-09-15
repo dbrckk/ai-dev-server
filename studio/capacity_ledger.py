@@ -204,6 +204,59 @@ def settle(
         }
 
 
+
+def heartbeat(
+    path: Path,
+    reservation_id: str,
+    *,
+    progress_marker: str,
+    now: float | None = None,
+    ttl_seconds: int = DEFAULT_TTL_SECONDS,
+) -> dict:
+    """Renew a worker reservation only when its durable progress marker advances."""
+    marker_value = str(progress_marker).strip()
+    if not marker_value:
+        raise ValueError("progress_marker is required")
+    current = time.time() if now is None else float(now)
+    ttl = max(30, int(ttl_seconds))
+    path = Path(path)
+    with exclusive(path):
+        data = _load_unlocked(path)
+        reaped = _reap(data, current)
+        row = data["reservations"].get(str(reservation_id))
+        if not isinstance(row, dict):
+            _save_unlocked(path, data)
+            return {"renewed": False, "reason": "reservation_missing", "reaped": reaped}
+        if row.get("kind") != "worker_capacity_reservation":
+            _save_unlocked(path, data)
+            return {"renewed": False, "reason": "not_worker_reservation", "reaped": reaped}
+        previous = row.get("progress_marker")
+        if previous == marker_value:
+            _save_unlocked(path, data)
+            return {
+                "renewed": False,
+                "reason": "progress_stalled",
+                "reservation_id": str(reservation_id),
+                "expires_at": float(row.get("expires_at", 0.0) or 0.0),
+                "reaped": reaped,
+            }
+        row["progress_marker"] = marker_value
+        row["heartbeat_at"] = current
+        row["expires_at"] = current + ttl
+        row["heartbeat_count"] = max(0, int(row.get("heartbeat_count", 0) or 0)) + 1
+        data["reservations"][str(reservation_id)] = row
+        _save_unlocked(path, data)
+        return {
+            "renewed": True,
+            "reason": "progress_advanced",
+            "reservation_id": str(reservation_id),
+            "heartbeat_count": row["heartbeat_count"],
+            "expires_at": current + ttl,
+            "reaped": reaped,
+        }
+
+
+
 def release(path: Path, reservation_id: str, *, now: float | None = None) -> dict:
     path = Path(path)
     current = time.time() if now is None else float(now)

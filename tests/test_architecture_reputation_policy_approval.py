@@ -1,10 +1,18 @@
+import base64
 import copy
+import hashlib
+import json
 import sys
 from pathlib import Path
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 from architecture_reputation_policy_approval import *
 from replacement_ci_policy import validate_workflow_text
+
+
+def _canonical(value):
+    return json.dumps(value,sort_keys=True,separators=(",",":"),ensure_ascii=False)
+
 
 class ApprovalProvenanceTests(unittest.TestCase):
     def approval(self,reinforced=False):
@@ -94,99 +102,49 @@ class ApprovalProvenanceTests(unittest.TestCase):
 
     def test_github_attestation_rejects_workflow_content_with_mutable_action(self):
         a=self.github_attestation()
-        raw=(
-            b"name: CI\n"
-            b"jobs:\n"
-            b"  validate:\n"
-            b"    steps:\n"
-            b"      - uses: actions/checkout@v4\n"
-            b"  python-tests:\n"
-        )
-        import base64
+        raw=(b"name: CI\n" b"jobs:\n" b"  validate:\n" b"    steps:\n" b"      - uses: actions/checkout@v4\n" b"  python-tests:\n")
         a["workflow_file"]["content_b64"]=base64.b64encode(raw).decode()
         a["workflow_file"]["size"]=len(raw)
         a["workflow_file"]["sha256"]=hashlib.sha256(raw).hexdigest()
         a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
-        with self.assertRaises(ApprovalProvenanceError):
-            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
+        with self.assertRaises(ApprovalProvenanceError): validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
 
     def test_github_attestation_rejects_wrong_workflow_file_digest(self):
-        a=self.github_attestation()
-        a["workflow_file"]["sha256"]="bad"
-        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
-        with self.assertRaises(ApprovalProvenanceError):
-            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
-
+        a=self.github_attestation();a["workflow_file"]["sha256"]="bad";self._redigest_attestation(a)
+        with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
     def test_github_attestation_rejects_untrusted_workflow_path(self):
-        a=self.github_attestation()
-        a["workflow"]["path"]=".github/workflows/other.yml"
-        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
-        with self.assertRaises(ApprovalProvenanceError):
-            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
-
+        a=self.github_attestation();a["workflow"]["path"]=".github/workflows/other.yml";self._redigest_attestation(a)
+        with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
     def test_github_attestation_rejects_untrusted_workflow_name(self):
-        a=self.github_attestation()
-        a["workflow"]["name"]="Other"
-        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
-        with self.assertRaises(ApprovalProvenanceError):
-            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
-
+        a=self.github_attestation();a["workflow"]["name"]="Other";self._redigest_attestation(a)
+        with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
     def test_github_attestation_rejects_stale_workflow(self):
-        a=self.github_attestation()
-        a["workflow"]["timestamp"]=1767225599.0
-        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
-        with self.assertRaises(ApprovalProvenanceError):
-            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
-
+        a=self.github_attestation();a["workflow"]["timestamp"]=1767225599.0;self._redigest_attestation(a)
+        with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
     def test_github_attestation_rejects_stale_required_check(self):
-        a=self.github_attestation()
-        a["required_checks"]["valid"]=False
-        a["required_checks"]["stale_checks"]=["validate"]
-        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
-        with self.assertRaises(ApprovalProvenanceError):
-            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
-
+        a=self.github_attestation();a["required_checks"]["valid"]=False;a["required_checks"]["stale_checks"]=["validate"];self._redigest_attestation(a)
+        with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
     def test_github_attestation_rejects_forged_pass_without_check_evidence(self):
-        a=self.github_attestation()
-        a["required_checks"]["check_evidence"].pop("validate")
-        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
-        with self.assertRaises(ApprovalProvenanceError):
-            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
-
+        a=self.github_attestation();a["required_checks"]["check_evidence"].pop("validate");self._redigest_attestation(a)
+        with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
     def test_github_attestation_rejects_check_evidence_for_wrong_sha(self):
-        a=self.github_attestation()
-        a["required_checks"]["check_evidence"]["validate"]["head_sha"]="old"
-        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
-        with self.assertRaises(ApprovalProvenanceError):
-            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
-
+        a=self.github_attestation();a["required_checks"]["check_evidence"]["validate"]["head_sha"]="old";self._redigest_attestation(a)
+        with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
     def test_github_attestation_rejects_check_evidence_before_head_commit(self):
-        a=self.github_attestation()
-        a["required_checks"]["check_evidence"]["validate"]["timestamp"]=1767225599.0
-        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
-        with self.assertRaises(ApprovalProvenanceError):
-            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
-
+        a=self.github_attestation();a["required_checks"]["check_evidence"]["validate"]["timestamp"]=1767225599.0;self._redigest_attestation(a)
+        with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
     def test_github_attestation_rejects_failed_required_check(self):
-        a=self.github_attestation()
-        a["required_checks"]["valid"]=False
-        a["required_checks"]["failed_checks"]=["validate"]
-        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
-        with self.assertRaises(ApprovalProvenanceError):
-            validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
+        a=self.github_attestation();a["required_checks"]["valid"]=False;a["required_checks"]["failed_checks"]=["validate"];self._redigest_attestation(a)
+        with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
 
     def _redigest_attestation(self,a):
-        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
-        return a
-
+        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest();return a
     def test_github_attestation_rejects_missing_semantic_digest(self):
         a=self.github_attestation();a["workflow_file"].pop("semantic_digest",None);self._redigest_attestation(a)
         with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
-
     def test_github_attestation_rejects_forged_semantic_digest(self):
         a=self.github_attestation();a["workflow_file"]["semantic_digest"]="0"*64;self._redigest_attestation(a)
         with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
-
     def test_github_attestation_rejects_invalid_semantic_digest_length(self):
         a=self.github_attestation();a["workflow_file"]["semantic_digest"]="bad";self._redigest_attestation(a)
         with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)

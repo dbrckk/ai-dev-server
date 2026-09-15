@@ -166,6 +166,60 @@ class CapacitySchedulerTests(unittest.TestCase):
         self.assertEqual(report["finite_capacity_tokens"], 100)
         self.assertEqual(report["projects"][0]["token_envelope"], 100)
 
+    def test_under_observed_peer_gets_bounded_exploration_bonus(self):
+        providers = [
+            ProviderCapacity(
+                "established", 1000, reliability=0.7, latency_ms=500,
+                observations=100,
+            ),
+            ProviderCapacity(
+                "newcomer", 1000, reliability=0.7, latency_ms=500,
+                observations=0,
+            ),
+        ]
+        report = allocate(
+            [{"id": "p", "requested_tokens": 100}],
+            providers,
+            exploration_strength=0.08,
+        )
+        order = report["projects"][0]["provider_order"]
+        self.assertEqual(order[0]["name"], "newcomer")
+        self.assertGreater(order[0]["exploration_bonus"], order[1]["exploration_bonus"])
+
+    def test_exploration_never_bypasses_provider_tier(self):
+        providers = [
+            ProviderCapacity(
+                "free-established", 1000, reliability=0.1, latency_ms=5000,
+                observations=1000,
+            ),
+            ProviderCapacity(
+                "paid-new", 1000, paid=True, free_preferred=False,
+                reliability=1.0, latency_ms=1, observations=0,
+            ),
+        ]
+        report = allocate(
+            [{"id": "p", "requested_tokens": 100}],
+            providers,
+            exploration_strength=0.25,
+        )
+        self.assertEqual(
+            [row["name"] for row in report["projects"][0]["provider_order"]],
+            ["free-established", "paid-new"],
+        )
+
+    def test_zero_exploration_preserves_adaptive_ranking(self):
+        providers = [
+            ProviderCapacity("better", 1000, reliability=0.9, observations=100),
+            ProviderCapacity("newer", 1000, reliability=0.5, observations=0),
+        ]
+        report = allocate(
+            [{"id": "p", "requested_tokens": 100}],
+            providers,
+            exploration_strength=0.0,
+        )
+        self.assertEqual(report["projects"][0]["provider_order"][0]["name"], "better")
+        self.assertEqual(report["projects"][0]["provider_order"][0]["exploration_bonus"], 0.0)
+
     def test_capacity_pressure_increases_scarce_capacity_share(self):
         providers = [ProviderCapacity("omniroute", 1000, unmetered=False)]
         report = allocate([

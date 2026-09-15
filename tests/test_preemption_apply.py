@@ -28,6 +28,10 @@ class PreemptionApplyTests(unittest.TestCase):
             now=100.0,
         )
         plan = {
+            "projects": [
+                {"id": "low", "requested_tokens": 12000, "token_envelope": 12000},
+                {"id": "high", "requested_tokens": 10000, "token_envelope": 8000},
+            ],
             "preemption": {
                 "actions": [{
                     "action": "preempt",
@@ -57,6 +61,7 @@ class PreemptionApplyTests(unittest.TestCase):
             lease = next(iter(ledger["reservations"].values()))
             self.assertEqual(lease["project_id"], "high")
             self.assertEqual(lease["kind"], "preemption_admission_lease")
+            self.assertEqual(lease["reserved_tokens"], 8000)
             state = json.loads(
                 (root / "low" / ".autonomy" / "preemption-state.json").read_text()
             )

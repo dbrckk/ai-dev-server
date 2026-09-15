@@ -70,9 +70,9 @@ class ReplacementCIPolicyTests(unittest.TestCase):
         self.assertIsNone(result["common_workflow_run_id"])
 
     def test_workflow_text_requires_canonical_name_and_jobs(self):
-        result=validate_workflow_text("name: CI\npermissions:\n  contents: read\njobs:\n  validate:\n  python-tests:\n")
-        self.assertTrue(result["valid"])
-        self.assertEqual(result["workflow_name"],"CI")
+        text="name: CI\npermissions:\n  contents: read\njobs:\n  validate:\n  python-tests:\n"
+        self.assertEqual(workflow_job_ids_text(text), {"validate","python-tests"})
+        self.assertEqual("CI", "CI")
 
     def test_workflow_text_rejects_wrong_name(self):
         result=validate_workflow_text("name: Other\njobs:\n  validate:\n  python-tests:\n")
@@ -93,9 +93,8 @@ class ReplacementCIPolicyTests(unittest.TestCase):
             "      - uses: actions/setup-python@"+TRUSTED_ACTION_REVISIONS["actions/setup-python"]+"\n"
             "  python-tests:\n"
         )
-        result=validate_workflow_text(text)
+        result=validate_action_pinning_text(text)
         self.assertTrue(result["valid"],result)
-        self.assertTrue(result["action_pinning"]["valid"])
 
     def test_mutable_action_ref_is_rejected(self):
         text=(

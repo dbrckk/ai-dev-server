@@ -23,6 +23,9 @@ class ProviderCapacity:
     unmetered: bool = False
     free_preferred: bool = True
     paid: bool = False
+    reliability: float = 0.5
+    latency_ms: float | None = None
+    cost_per_million_tokens: float = 0.0
 
     @property
     def tier(self) -> int:
@@ -33,6 +36,17 @@ class ProviderCapacity:
         if not self.paid:
             return 2
         return 3
+
+    @property
+    def adaptive_score(self) -> float:
+        """Higher is better; preserve free-first policy while ranking peers by evidence."""
+        reliability = max(0.0, min(1.0, float(self.reliability)))
+        latency = 1000.0 if self.latency_ms is None else max(0.0, float(self.latency_ms))
+        latency_score = 1.0 / (1.0 + latency / 1000.0)
+        cost = max(0.0, float(self.cost_per_million_tokens))
+        cost_score = 1.0 / (1.0 + cost)
+        availability = 1.0 if self.unmetered else min(1.0, max(0.0, float(self.available_tokens or 0)) / 1_000_000.0)
+        return (0.55 * reliability) + (0.20 * latency_score) + (0.15 * availability) + (0.10 * cost_score)
 
 
 def _clean_project(row: dict) -> dict | None:
@@ -124,7 +138,7 @@ def allocate(
 ) -> dict:
     """Allocate project envelopes and provider order for one scheduling cycle."""
     cleaned = [item for row in projects if (item := _clean_project(row)) is not None]
-    ordered_providers = sorted(providers, key=lambda p: (p.tier, p.name))
+    ordered_providers = sorted(providers, key=lambda p: (p.tier, -p.adaptive_score, p.name))
     has_unmetered = any(p.unmetered for p in ordered_providers)
 
     try:
@@ -180,6 +194,10 @@ def allocate(
                 "free_preferred": provider.free_preferred,
                 "paid": provider.paid,
                 "available_tokens": available,
+                "reliability": round(provider.reliability, 4),
+                "latency_ms": provider.latency_ms,
+                "cost_per_million_tokens": round(provider.cost_per_million_tokens, 6),
+                "adaptive_score": round(provider.adaptive_score, 6),
             })
 
         allocations.append({
@@ -233,12 +251,28 @@ def provider_capacities(rows: list[dict]) -> list[ProviderCapacity]:
             available = None
         else:
             available = max(0, int(raw_available))
+        try:
+            reliability = float(row.get("reliability", 0.5))
+        except (TypeError, ValueError):
+            reliability = 0.5
+        reliability = max(0.0, min(1.0, reliability))
+        try:
+            latency = None if row.get("latency_ms") is None else max(0.0, float(row.get("latency_ms")))
+        except (TypeError, ValueError):
+            latency = None
+        try:
+            cost = max(0.0, float(row.get("cost_per_million_tokens", 0.0) or 0.0))
+        except (TypeError, ValueError):
+            cost = 0.0
         result.append(ProviderCapacity(
             name=name,
             available_tokens=available,
             unmetered=unmetered,
             free_preferred=bool(row.get("free_preferred", True)),
             paid=bool(row.get("paid", False)),
+            reliability=reliability,
+            latency_ms=latency,
+            cost_per_million_tokens=cost,
         ))
     return result
 

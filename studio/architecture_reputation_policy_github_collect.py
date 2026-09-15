@@ -48,6 +48,7 @@ def _collect_workflow_file(api: str, token: str, commit_sha: str) -> dict:
         "sha256":hashlib.sha256(raw).hexdigest(),
         "content_b64":base64.b64encode(raw).decode("ascii"),
         "policy_validation":validation,
+        "semantic_digest":validation.get("semantic_digest"),
     }
 
 def collect_review_target(*, token: str, repository: str, pull_request: int) -> dict:
@@ -82,6 +83,7 @@ def collect_review_target(*, token: str, repository: str, pull_request: int) -> 
         "workflow_path":workflow_file["path"] if isinstance(workflow_file,dict) else None,
         "workflow_blob_sha":workflow_file["blob_sha"] if isinstance(workflow_file,dict) else None,
         "workflow_sha256":workflow_file["sha256"] if isinstance(workflow_file,dict) else None,
+        "workflow_semantic_digest":workflow_file["semantic_digest"] if isinstance(workflow_file,dict) else None,
         "ci_trust_policy_version":CI_TRUST_POLICY_VERSION,
         "ci_trust_policy_digest":ci_trust_policy_digest(),
     }

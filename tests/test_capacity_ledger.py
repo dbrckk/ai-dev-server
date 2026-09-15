@@ -122,5 +122,23 @@ class CapacityLedgerTests(unittest.TestCase):
             self.assertEqual(second["reaped"], 1)
 
 
+    def test_release_project_releases_only_owned_reservations(self):
+        from capacity_ledger import release_project
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "ledger.json"
+            reserve(path, project_id="a", provider="p", estimated_tokens=10,
+                    provider_remaining_tokens=100, now=100)
+            reserve(path, project_id="a", provider="q", estimated_tokens=20,
+                    provider_remaining_tokens=100, now=100)
+            reserve(path, project_id="b", provider="p", estimated_tokens=30,
+                    provider_remaining_tokens=100, now=100)
+            result = release_project(path, "a", now=101)
+            self.assertEqual(result["reservations_released"], 2)
+            self.assertEqual(result["released_tokens"], 30)
+            remaining = load(path)["reservations"]
+            self.assertEqual(len(remaining), 1)
+            self.assertEqual(next(iter(remaining.values()))["project_id"], "b")
+
+
 if __name__ == "__main__":
     unittest.main()

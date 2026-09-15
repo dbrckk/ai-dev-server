@@ -294,6 +294,26 @@ def regime_signal(row: dict) -> dict:
     penalty = min(0.75, gap) if detected else 0.0
     return {"detected": detected, "recent_rate": recent_rate, "historical_rate": historical_rate, "penalty": penalty}
 
+def recovery_signal(row: dict) -> dict:
+    """Detect sustained recent recovery relative to historical provider quality."""
+    recent = row.get("recent_outcomes", [])
+    if not isinstance(recent, list) or len(recent) < 4:
+        return {"detected": False, "recent_rate": None, "historical_rate": None, "bonus": 0.0}
+    recent_rate = sum(1 if bool(item) else 0 for item in recent) / len(recent)
+    successes = max(0, int(row.get("successes", 0)))
+    failures = max(0, int(row.get("failures", 0)))
+    historical_rate = (successes + 1) / (successes + failures + 2)
+    gap = max(0.0, recent_rate - historical_rate)
+    detected = recent_rate >= 0.75 and gap >= 0.20
+    bonus = min(0.35, gap) if detected else 0.0
+    return {
+        "detected": detected,
+        "recent_rate": recent_rate,
+        "historical_rate": historical_rate,
+        "bonus": bonus,
+    }
+
+
 def scoped_evidence(
     data: dict,
     provider: str,
@@ -328,10 +348,20 @@ def scoped_evidence(
             freshness = 0.5 ** (age / float(half_life_seconds))
         confidence *= freshness
         regime = regime_signal(row)
+        recovery = recovery_signal(row)
         confidence *= 1.0 - float(regime["penalty"])
+        # Recovery boosts confidence in fresh positive evidence, but never above 1.
+        confidence = min(1.0, confidence * (1.0 + float(recovery["bonus"])))
+        adjusted_reliability = reliability
+        if recovery["detected"]:
+            adjusted_reliability = min(
+                1.0,
+                reliability + (float(recovery["recent_rate"]) - reliability) * float(recovery["bonus"]),
+            )
         return {
             "key": key,
-            "reliability": reliability,
+            "reliability": adjusted_reliability,
+            "historical_reliability": reliability,
             "observations": observations,
             "confidence": confidence,
             "freshness": freshness,
@@ -339,10 +369,13 @@ def scoped_evidence(
             "regime_change": bool(regime["detected"]),
             "recent_success_rate": regime["recent_rate"],
             "regime_penalty": float(regime["penalty"]),
+            "recovery_detected": bool(recovery["detected"]),
+            "recovery_bonus": float(recovery["bonus"]),
         }
     return {
         "key": None,
         "reliability": 0.5,
+        "historical_reliability": 0.5,
         "observations": 0,
         "confidence": 0.0,
         "freshness": 0.0,
@@ -350,4 +383,6 @@ def scoped_evidence(
         "regime_change": False,
         "recent_success_rate": None,
         "regime_penalty": 0.0,
+        "recovery_detected": False,
+        "recovery_bonus": 0.0,
     }

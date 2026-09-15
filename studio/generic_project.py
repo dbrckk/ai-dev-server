@@ -1525,25 +1525,37 @@ Objective and current plan:
         verified_round_progress = verification.get("passed") is True
         provider_health_env = str(__import__("os").environ.get("STUDIO_PROVIDER_HEALTH_PATH") or "").strip()
         provider_health_path = Path(provider_health_env) if provider_health_env else out / ".autonomy/provider-health.json"
-        verified_provider_feedback = set()
+        provider_samples = {}
         for model_meta in implementation_models:
             if not isinstance(model_meta, dict):
                 continue
             provider_name = model_meta.get("provider")
-            if not isinstance(provider_name, str) or not provider_name or provider_name in verified_provider_feedback:
+            if not isinstance(provider_name, str) or not provider_name:
                 continue
-            verified_provider_feedback.add(provider_name)
             duration = model_meta.get("duration_seconds")
             try:
                 latency_ms = max(0.0, float(duration) * 1000.0) if duration is not None else None
             except (TypeError, ValueError):
                 latency_ms = None
-            record_provider_verified_result(
-                provider_health_path,
-                provider_name,
-                verified_success=verified_round_progress,
-                latency_ms=latency_ms,
-            )
+            provider_samples.setdefault(provider_name, []).append(latency_ms)
+
+        # A round-wide failure is ambiguous when multiple implementation providers
+        # contributed to the same patch. Do not poison every provider's circuit
+        # breaker without provider-specific verification evidence.
+        feedback_attributable = verified_round_progress or len(provider_samples) == 1
+        if feedback_attributable:
+            for provider_name, latency_samples in provider_samples.items():
+                observed = [sample for sample in latency_samples if sample is not None]
+                latency_ms = (
+                    sum(observed) / len(observed)
+                    if observed else None
+                )
+                record_provider_verified_result(
+                    provider_health_path,
+                    provider_name,
+                    verified_success=verified_round_progress,
+                    latency_ms=latency_ms,
+                )
 
         for model_meta in implementation_models:
             if not isinstance(model_meta, dict):

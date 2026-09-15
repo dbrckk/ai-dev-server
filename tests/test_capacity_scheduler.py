@@ -82,6 +82,27 @@ class CapacitySchedulerTests(unittest.TestCase):
         self.assertEqual(rows[0].latency_ms, 0.0)
         self.assertEqual(rows[0].cost_per_million_tokens, 0.0)
 
+    def test_health_history_supplies_smoothed_reliability(self):
+        rows = provider_capacities(
+            [{"name": "provider", "available_tokens": 1000}],
+            health_data={"provider": {"successes": 8, "failures": 2}},
+        )
+        self.assertAlmostEqual(rows[0].reliability, 0.75)
+
+    def test_explicit_reliability_overrides_health_history(self):
+        rows = provider_capacities(
+            [{"name": "provider", "available_tokens": 1000, "reliability": 0.9}],
+            health_data={"provider": {"successes": 0, "failures": 10}},
+        )
+        self.assertEqual(rows[0].reliability, 0.9)
+
+    def test_sparse_health_history_is_bayesian_smoothed(self):
+        rows = provider_capacities(
+            [{"name": "provider", "available_tokens": 1000}],
+            health_data={"provider": {"successes": 1, "failures": 0}},
+        )
+        self.assertAlmostEqual(rows[0].reliability, 2 / 3)
+
     def test_capacity_pressure_increases_scarce_capacity_share(self):
         providers = [ProviderCapacity("omniroute", 1000, unmetered=False)]
         report = allocate([

@@ -9,7 +9,10 @@ import urllib.error
 from pathlib import Path
 from typing import Iterable
 
-from provider_runtime_reliability import summarize as summarize_runtime_reliability, routing_bonus as runtime_reliability_bonus
+from provider_runtime_reliability import summarize as summarize_runtime_reliability
+from provider_health import load as load_provider_health, eligible as provider_eligible
+from provider_metrics import load as load_provider_metrics
+from unified_routing_score import score as unified_provider_score
 
 from local_capacity import discover as discover_local_capacity
 
@@ -338,11 +341,22 @@ def candidates_for(
     except (OSError, UnicodeError, json.JSONDecodeError):
         return eligible
     reliability = summarize_runtime_reliability(liveness)
-    def reliability_key(spec: ProviderSpec):
+    health_path = Path(os.environ.get("STUDIO_PROVIDER_HEALTH_PATH", "provider-health.json"))
+    metrics_path = Path(os.environ.get("STUDIO_PROVIDER_METRICS_PATH", "provider-metrics.json"))
+    health = load_provider_health(health_path)
+    metrics = load_provider_metrics(metrics_path)
+    current = tuple(
+        spec for spec in eligible
+        if provider_eligible(health_path, spec.name)
+    )
+    def routing_key(spec: ProviderSpec):
         model = spec.model_for(role, screenshots)
-        bonus = runtime_reliability_bonus(reliability, spec.name, model)
-        return (-bonus,)
-    return tuple(sorted(eligible, key=reliability_key))
+        result = unified_provider_score(
+            provider=spec, role=role, model=model,
+            health=health, metrics=metrics, runtime=reliability,
+        )
+        return (-float(result["score"]), spec.name)
+    return tuple(sorted(current, key=routing_key))
 
 
 def budget_eligible(

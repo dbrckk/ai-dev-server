@@ -30,6 +30,7 @@ class ProviderCapacity:
     latency_ms: float | None = None
     cost_per_million_tokens: float = 0.0
     circuit_open: bool = False
+    observations: int = 0
 
     @property
     def tier(self) -> int:
@@ -139,12 +140,24 @@ def allocate(
     providers: list[ProviderCapacity],
     *,
     critical_reserve_ratio: float = 0.10,
+    exploration_strength: float = 0.08,
 ) -> dict:
     """Allocate project envelopes and provider order for one scheduling cycle."""
     cleaned = [item for row in projects if (item := _clean_project(row)) is not None]
+    try:
+        explore = max(0.0, min(0.25, float(exploration_strength)))
+    except (TypeError, ValueError):
+        explore = 0.08
+
+    def routing_score(provider: ProviderCapacity) -> float:
+        # Deterministic uncertainty bonus: new/under-observed peers get bounded
+        # opportunities to prove themselves without random routing or tier bypass.
+        uncertainty = 1.0 / (1.0 + max(0, int(provider.observations))) ** 0.5
+        return provider.adaptive_score + explore * uncertainty
+
     ordered_providers = sorted(
         (provider for provider in providers if not provider.circuit_open),
-        key=lambda p: (p.tier, -p.adaptive_score, p.name),
+        key=lambda p: (p.tier, -routing_score(p), p.name),
     )
     has_unmetered = any(p.unmetered for p in ordered_providers)
 
@@ -205,6 +218,11 @@ def allocate(
                 "latency_ms": provider.latency_ms,
                 "cost_per_million_tokens": round(provider.cost_per_million_tokens, 6),
                 "adaptive_score": round(provider.adaptive_score, 6),
+                "observations": provider.observations,
+                "exploration_bonus": round(
+                    explore / (1.0 + max(0, provider.observations)) ** 0.5, 6
+                ),
+                "routing_score": round(routing_score(provider), 6),
             })
 
         allocations.append({
@@ -228,6 +246,7 @@ def allocate(
     return {
         "schema": 1,
         "critical_reserve_ratio": round(reserve_ratio, 4),
+        "exploration_strength": round(explore, 4),
         "finite_capacity_tokens": finite,
         "critical_reserve_tokens": reserve,
         "ordinary_capacity_tokens": ordinary_pool,
@@ -305,6 +324,11 @@ def provider_capacities(
             latency_ms=latency,
             cost_per_million_tokens=cost,
             circuit_open=circuit_open,
+            observations=(
+                max(0, int(empirical.get("successes", 0) or 0))
+                + max(0, int(empirical.get("failures", 0) or 0))
+                if isinstance(empirical, dict) else 0
+            ),
         ))
     return result
 

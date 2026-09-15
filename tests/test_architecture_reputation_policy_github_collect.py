@@ -7,6 +7,9 @@ from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 import architecture_reputation_policy_github_collect as collector
 
+def canonical_ci_bytes():
+    return (Path(__file__).resolve().parents[1]/".github/workflows/ci.yml").read_bytes()
+
 class GitHubAttestationCollectorTests(unittest.TestCase):
     def plan(self,reinforced=False):
         return {
@@ -49,7 +52,7 @@ class GitHubAttestationCollectorTests(unittest.TestCase):
             if "/actions/runs?" in url:
                 return {"workflow_runs":[{"id":99,"head_sha":"a"*40,"conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/7/merge","created_at":"2026-01-01T00:00:25Z"}]}
             if "/contents/.github/workflows/ci.yml?ref=" in url:
-                raw=b"name: CI\npermissions:\n  contents: read\njobs:\n  validate:\n  python-tests:\n"
+                raw=canonical_ci_bytes()
                 return {
                     "path":".github/workflows/ci.yml",
                     "sha":"blob123",
@@ -66,6 +69,8 @@ class GitHubAttestationCollectorTests(unittest.TestCase):
         self.assertEqual(result["workflow_run_id"],99)
         self.assertEqual(result["workflow_file"]["path"],".github/workflows/ci.yml")
         self.assertEqual(result["workflow"]["path"],".github/workflows/ci.yml")
+        self.assertEqual(len(result["workflow_file"]["semantic_digest"]),64)
+        self.assertEqual(result["workflow_semantic_digest"],result["workflow_file"]["semantic_digest"])
 
     def test_collects_reinforced_attestation(self):
         with patch.object(collector,"_request",side_effect=self.fake_request(True)):

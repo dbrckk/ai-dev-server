@@ -87,6 +87,7 @@ def decide(projects: list[dict], *, max_standard_admissions: int = DEFAULT_MAX_S
         ordinary.append({**base, "row": row})
 
     ordinary.sort(key=lambda item: (-item["score"], -int(item["row"].get("priority", 50)), item["id"]))
+    cutoff_score = ordinary[slots - 1]["score"] if len(ordinary) >= slots else None
     for index, item in enumerate(ordinary):
         admitted = index < slots
         decisions.append({
@@ -94,6 +95,12 @@ def decide(projects: list[dict], *, max_standard_admissions: int = DEFAULT_MAX_S
             "admitted": admitted,
             "action": "admit" if admitted else "defer",
             "reason": "ranked_within_admission_slots" if admitted else "fleet_admission_slots_saturated",
+            "rank": index + 1,
+            "preemption_candidate": bool(
+                not admitted
+                and cutoff_score is not None
+                and item["score"] > 0
+            ),
         })
 
     decisions.sort(key=lambda row: (not row["admitted"], -row["score"], row["id"]))

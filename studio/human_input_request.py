@@ -7,6 +7,7 @@ other non-automatable prerequisite is genuinely required.
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 
@@ -32,6 +33,8 @@ _HUMAN_PATTERNS = (
     r"human.action",
     r"secret",
 )
+_SECRET_SUFFIXES = ("KEY", "TOKEN", "SECRET", "PASSWORD", "CREDENTIAL", "CREDENTIALS")
+_ENV_NAME_RE = re.compile(r"\b[A-Z][A-Z0-9_]{2,}\b")
 
 
 def requires_human_input(detail: object) -> bool:
@@ -39,18 +42,60 @@ def requires_human_input(detail: object) -> bool:
     return any(re.search(pattern, text) for pattern in _HUMAN_PATTERNS)
 
 
+def requested_secret_names(detail: object) -> list[str]:
+    """Return exact environment-variable names without inspecting their values."""
+    text = str(detail or "")
+    names: list[str] = []
+    for candidate in _ENV_NAME_RE.findall(text):
+        if candidate in SECRET_HINTS or candidate.endswith(_SECRET_SUFFIXES):
+            if candidate not in names:
+                names.append(candidate)
+    return names
+
+
+def _reason_category(detail: object) -> str:
+    text = str(detail or "").lower()
+    if requested_secret_names(detail):
+        return "external_secret_required"
+    if "legal" in text:
+        return "legal_approval_required"
+    if "payment" in text:
+        return "payment_action_required"
+    if "identity" in text or "kyc" in text:
+        return "identity_action_required"
+    if "play" in text or "app store" in text or "store console" in text:
+        return "store_action_required"
+    if "signing" in text or "credential" in text:
+        return "credential_action_required"
+    return "external_human_action_required"
+
+
 def _requested_items(detail: str) -> list[str]:
-    items = []
-    for name, instruction in SECRET_HINTS.items():
-        if name.lower() in detail.lower():
-            items.append(instruction)
-    if not items:
-        items.append(detail.strip() or "Complete the external prerequisite described by the project status.")
-    return items
+    names = requested_secret_names(detail)
+    if names:
+        return [
+            SECRET_HINTS.get(
+                name,
+                f"Add the required secret {name} to GitHub repository/environment secrets or the configured secure secret manager.",
+            )
+            for name in names
+        ]
+
+    category = _reason_category(detail)
+    instructions = {
+        "legal_approval_required": "Complete the required legal approval in the external service.",
+        "payment_action_required": "Complete the required payment or billing action in the external service.",
+        "identity_action_required": "Complete the required identity/KYC action in the external service.",
+        "store_action_required": "Complete the required store-console action using the account owner credentials.",
+        "credential_action_required": "Complete the required credential or signing setup in the external secure environment.",
+        "external_human_action_required": "Complete the external prerequisite reported by the project status.",
+    }
+    return [instructions[category]]
 
 
 def render(project_id: str, detail: str, *, target_repo: str | None = None) -> str:
     items = _requested_items(detail)
+    names = requested_secret_names(detail)
     target = target_repo or "unknown"
     lines = [
         "AI DEV SERVER — USER INPUT REQUIRED",
@@ -63,6 +108,9 @@ def render(project_id: str, detail: str, *, target_repo: str | None = None) -> s
         "Required action:",
     ]
     lines.extend(f"- {item}" for item in items)
+    if names:
+        lines += ["", "Required secret names:"]
+        lines.extend(f"- {name}" for name in names)
     lines += [
         "",
         "Important:",
@@ -71,8 +119,7 @@ def render(project_id: str, detail: str, *, target_repo: str | None = None) -> s
         "- Keep the secret name requested above exactly unchanged when one is specified.",
         "- After the prerequisite is supplied, the scheduled autonomous worker can resume from its persisted checkpoint.",
         "",
-        "Original blocking detail:",
-        detail.strip() or "unspecified external prerequisite",
+        f"Reason category: {_reason_category(detail)}",
         "",
     ]
     return "\n".join(lines)
@@ -81,13 +128,16 @@ def render(project_id: str, detail: str, *, target_repo: str | None = None) -> s
 def write_request(out: Path, project_id: str, detail: str, *, target_repo: str | None = None) -> Path:
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
+    names = requested_secret_names(detail)
+    reason_category = _reason_category(detail)
     text_path = out / "USER_INPUT_REQUIRED.txt"
     text_path.write_text(render(project_id, detail, target_repo=target_repo), encoding="utf-8")
     machine = {
         "status": "human_action_required",
         "project_id": project_id,
         "target_repo": target_repo,
-        "detail": detail,
+        "reason_category": reason_category,
+        "required_secret_names": names,
         "text_file": text_path.name,
     }
     (out / "user-input-required.json").write_text(
@@ -98,12 +148,7 @@ def write_request(out: Path, project_id: str, detail: str, *, target_repo: str |
 
 
 def prerequisite_satisfied(detail: str) -> bool:
-    import os
-    text=str(detail or "")
-    matched=False
-    for name in SECRET_HINTS:
-        if name.lower() in text.lower():
-            matched=True
-            if not os.environ.get(name):
-                return False
-    return matched
+    names = requested_secret_names(detail)
+    if not names:
+        return False
+    return all(bool(os.environ.get(name)) for name in names)

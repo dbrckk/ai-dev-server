@@ -8,7 +8,12 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
 from ci_provider import enabled, selected
 from ci_runner import run_queue, main
+
+
+def neutral_capacity_plan(projects):
+    return {"projects": [{"id": p["id"], "admission": {"admitted": True, "action": "admit"}} for p in projects]}
 from core import StudioError
+from queue import matrix as matrix_for_test
 
 class ProviderTests(unittest.TestCase):
     def test_exactly_one_owner(self):
@@ -33,6 +38,11 @@ class ProviderTests(unittest.TestCase):
                 main()
 
 class QueueRunnerTests(unittest.TestCase):
+    def setUp(self):
+        self.capacity = patch('ci_runner.persist_capacity_plan', side_effect=lambda out, directory: neutral_capacity_plan(matrix_for_test(directory)))
+        self.capacity.start()
+        self.addCleanup(self.capacity.stop)
+
     def make_requests(self, root, count=2):
         queue = root / 'requests'
         queue.mkdir()
@@ -153,6 +163,11 @@ class QueueRunnerTests(unittest.TestCase):
             self.assertIsNone(report['projects'][0]['next_stage'])
 
 class RecoveryTests(unittest.TestCase):
+    def setUp(self):
+        self.capacity = patch('ci_runner.persist_capacity_plan', side_effect=lambda out, directory: neutral_capacity_plan(matrix_for_test(directory)))
+        self.capacity.start()
+        self.addCleanup(self.capacity.stop)
+
     def make_queue(self, root):
         queue = root / 'requests'
         queue.mkdir()

@@ -32,6 +32,42 @@ class AdaptivePlanningRuntimeTests(unittest.TestCase):
             verification_seconds=120,
         ))
 
+    def test_planning_budget_pressure_is_exposed_for_telemetry(self):
+        allocator = importlib.import_module("adaptive_role_allocator")
+        self.assertTrue(hasattr(allocator, "budget_pressure"))
+        budget_pressure = allocator.budget_pressure
+
+        self.assertEqual(budget_pressure(
+            remaining_seconds=None,
+            verification_seconds=60,
+        ), 0.0)
+        self.assertAlmostEqual(budget_pressure(
+            remaining_seconds=20,
+            verification_seconds=120,
+        ), 0.9166666667, places=6)
+
+    def test_planning_policy_reports_stable_reason(self):
+        policy = importlib.import_module("adaptive_phase_policy")
+        planning_phase_decision = policy.planning_phase_decision
+
+        skipped = planning_phase_decision(
+            require_planning=False,
+            brief="Fix the typo in the README",
+        )
+        self.assertEqual(skipped["reason"], "adaptive policy skipped model planning")
+
+        required = planning_phase_decision(
+            require_planning=True,
+            brief="Refactor the scheduler architecture",
+        )
+        self.assertEqual(required["reason"], "adaptive planning required")
+
+        invalid = planning_phase_decision(
+            require_planning=False,
+            brief="   ",
+        )
+        self.assertEqual(invalid["reason"], "invalid brief requires model planning")
+
     def test_planning_policy_skips_only_when_safe_and_has_deterministic_plan(self):
         policy = importlib.import_module("adaptive_phase_policy")
         self.assertTrue(hasattr(policy, "planning_phase_decision"))
@@ -85,6 +121,18 @@ class AdaptivePlanningRuntimeTests(unittest.TestCase):
         self.assertIn('plan = planning_policy["plan"]', source)
         self.assertLess(source.index("planning_required("), source.index("planning_phase_decision("))
         self.assertLess(source.index("planning_phase_decision("), source.index("PLAN_SYSTEM,"))
+
+    def test_round_state_persists_planning_decision_telemetry(self):
+        source = GENERIC_PROJECT.read_text(encoding="utf-8")
+
+        self.assertIn("planning_decision = {", source)
+        self.assertIn('"model_launched": bool(planning_policy["launch_model"])', source)
+        self.assertIn('"adaptive_skipped": not bool(planning_policy["launch_model"])', source)
+        self.assertIn('"require_planning": round_require_planning', source)
+        self.assertIn('"difficulty": round(normalized_difficulty, 4)', source)
+        self.assertIn('"budget_pressure": round(', source)
+        self.assertIn('"reason": planning_policy["reason"]', source)
+        self.assertIn('"planning_decision": planning_decision', source)
 
 
 if __name__ == "__main__":

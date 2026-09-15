@@ -198,5 +198,31 @@ class ReplacementCIPolicyTests(unittest.TestCase):
         self.assertIn("untrusted_job_runner",reasons)
         self.assertIn("job_timeout_not_exact",reasons)
 
+    def test_expression_policy_rejects_untrusted_contexts(self):
+        result=validate_workflow_expression_policy_text("jobs:\n  validate:\n    env:\n      X: ${{ github.event.pull_request.title }}\n")
+        self.assertFalse(result["valid"])
+        self.assertTrue(any(v["reason"]=="forbidden_expression_context" for v in result["violations"]))
+
+    def test_matrix_strategy_is_rejected(self):
+        result=validate_workflow_expression_policy_text("jobs:\n  validate:\n    strategy:\n      matrix:\n        python: [3.12]\n")
+        self.assertFalse(result["valid"])
+        self.assertTrue(any(v.get("key")=="strategy" for v in result["violations"]))
+
+    def test_job_needs_and_if_are_rejected(self):
+        result=validate_workflow_expression_policy_text("jobs:\n  validate:\n    needs: build\n    if: success()\n")
+        self.assertFalse(result["valid"])
+        keys={v.get("key") for v in result["violations"]}
+        self.assertIn("needs",keys)
+        self.assertIn("if",keys)
+
+    def test_continue_on_error_is_rejected(self):
+        result=validate_workflow_expression_policy_text("jobs:\n  validate:\n    continue-on-error: true\n")
+        self.assertFalse(result["valid"])
+
+    def test_static_safe_workflow_has_no_expression_violations(self):
+        root=Path(__file__).resolve().parents[1]
+        result=validate_workflow_expression_policy_text((root/".github/workflows/ci.yml").read_text())
+        self.assertTrue(result["valid"],result)
+
 if __name__=="__main__":
     unittest.main()

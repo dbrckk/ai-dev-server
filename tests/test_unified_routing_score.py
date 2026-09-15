@@ -38,6 +38,30 @@ class UnifiedRoutingScoreTests(unittest.TestCase):
         self.assertEqual(result["components"]["context"], -18.0)
         self.assertEqual(result["components"]["exploration"], 8.0)
 
+    def test_specialized_health_changes_score_by_role(self):
+        health = {
+            "p": {"successes": 5, "failures": 5},
+            "p|model=m|role=implementation": {"successes": 9, "failures": 1},
+            "p|model=m|role=review": {"successes": 1, "failures": 9},
+        }
+        implementation = score(
+            provider=Provider(), role="implementation", model="m", health=health,
+        )
+        review = score(
+            provider=Provider(), role="review", model="m", health=health,
+        )
+        self.assertGreater(
+            implementation["components"]["specialized_health"], 0,
+        )
+        self.assertLess(review["components"]["specialized_health"], 0)
+        self.assertGreater(implementation["score"], review["score"])
+
+    def test_missing_specialization_is_neutral_with_no_health(self):
+        result = score(
+            provider=Provider(), role="planning", model="m", health={},
+        )
+        self.assertEqual(result["components"]["specialized_health"], 0.0)
+
     def test_component_breakdown_sums_to_score(self):
         result = score(provider=Provider(priority=70, free_preferred=True), role="tests", model="m")
         self.assertAlmostEqual(result["score"], sum(result["components"].values()))

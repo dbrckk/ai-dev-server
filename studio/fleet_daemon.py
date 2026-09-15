@@ -14,6 +14,7 @@ from fleet_metrics import append as append_metrics, snapshot
 from fleet_regression import evaluate as evaluate_regression
 from fleet_supervisor_apply import execute as apply_supervisor
 from preemption_apply import execute as apply_preemption
+from worker_reaper import classify as classify_worker_liveness
 
 MIN_INTERVAL_SECONDS = 30.0
 
@@ -35,6 +36,7 @@ def tick(
     metrics = append_metrics(history, metric_row)
     regression = evaluate_regression(history)
     maintenance = maintain(root)
+    worker_liveness = classify_worker_liveness(root)
     capacity = persist_capacity_plan(root, request_dir)
     preemption = apply_preemption(
         root,
@@ -56,6 +58,7 @@ def tick(
         "metrics": metrics,
         "regression": regression,
         "maintenance": maintenance["summary"],
+        "worker_liveness": worker_liveness["summary"],
         "capacity": {
             **capacity["summary"],
             "rebalance": capacity.get("rebalance", {}),

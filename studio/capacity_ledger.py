@@ -15,7 +15,7 @@ MAX_RESERVATIONS = 4096
 
 
 def _empty() -> dict:
-    return {"schema": SCHEMA, "reservations": {}, "consumed": {}}
+    return {"schema": SCHEMA, "reservations": {}, "consumed": {}, "reap_events": []}
 
 
 def _load_unlocked(path: Path) -> dict:
@@ -30,10 +30,12 @@ def _load_unlocked(path: Path) -> dict:
         return _empty()
     reservations = value.get("reservations")
     consumed = value.get("consumed")
+    reap_events = value.get("reap_events")
     return {
         "schema": SCHEMA,
         "reservations": reservations if isinstance(reservations, dict) else {},
         "consumed": consumed if isinstance(consumed, dict) else {},
+        "reap_events": reap_events if isinstance(reap_events, list) else [],
     }
 
 
@@ -55,8 +57,25 @@ def _reap(data: dict, now: float) -> int:
         key for key, row in reservations.items()
         if not isinstance(row, dict) or float(row.get("expires_at", 0.0) or 0.0) <= now
     ]
+    events = data.setdefault("reap_events", [])
     for key in expired:
-        reservations.pop(key, None)
+        row = reservations.pop(key, None)
+        if isinstance(row, dict):
+            events.append({
+                "reservation_id": key,
+                "project_id": row.get("project_id"),
+                "provider": row.get("provider"),
+                "kind": row.get("kind") or "capacity_reservation",
+                "reserved_tokens": max(0, int(row.get("reserved_tokens", 0) or 0)),
+                "created_at": row.get("created_at"),
+                "claimed_at": row.get("claimed_at"),
+                "heartbeat_at": row.get("heartbeat_at"),
+                "heartbeat_count": max(0, int(row.get("heartbeat_count", 0) or 0)),
+                "progress_marker": row.get("progress_marker"),
+                "expires_at": row.get("expires_at"),
+                "reaped_at": now,
+            })
+    data["reap_events"] = events[-512:]
     return len(expired)
 
 

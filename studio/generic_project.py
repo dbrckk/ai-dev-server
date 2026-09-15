@@ -70,6 +70,7 @@ from local_model_leaderboard import leaderboards as local_model_leaderboards
 from model_portfolio import choose as choose_model_portfolio
 from model_portfolio_audit import audit as audit_model_portfolio
 from portfolio_candidate_scheduler import choose_schedule as choose_candidate_schedule
+from adaptive_role_allocator import choose_role_allocation
 from candidate_portfolio_learning import (
     load as load_candidate_portfolio_learning,
     record as record_candidate_portfolio_learning,
@@ -697,6 +698,22 @@ Objective and current plan:
                 candidate_width_learning = recommend_candidate_portfolio_width(
                     load_candidate_portfolio_learning(candidate_portfolio_learning_path)
                 )
+                capacity_state = state.get("capacity_status", {})
+                free_capacity = 1.0 if capacity_state.get("unmetered_available") else (
+                    0.65 if capacity_state.get("pooled_free_available") else 0.0
+                )
+                role_allocation = choose_role_allocation(
+                    difficulty=min(1.0, max(0.0, float(difficulty.score) / 10.0)),
+                    route_confidence=scheduler_confidence,
+                    remaining_seconds=remaining_seconds,
+                    verification_seconds=verification_seconds,
+                    free_capacity=free_capacity,
+                    max_implementation_models=min(3, max(1, available_direct_models)),
+                )
+                agent_trace.append({
+                    "status":"adaptive_role_allocation",
+                    "decision":role_allocation.as_dict(),
+                })
                 candidate_schedule = choose_candidate_schedule(
                     capacity_status=state.get("capacity_status", {}),
                     route_confidence=scheduler_confidence,
@@ -708,7 +725,7 @@ Objective and current plan:
                         else 0
                     ),
                     available_models=(
-                        min(3, max(1, available_direct_models))
+                        min(role_allocation.implementation_models, max(1, available_direct_models))
                         if before_agent is not None
                         else 1
                     ),

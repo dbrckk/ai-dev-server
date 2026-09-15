@@ -147,5 +147,34 @@ class PortfolioCandidateSchedulerTests(unittest.TestCase):
         self.assertGreaterEqual(schedule.agent_limit, 1)
 
 
+    def test_high_quality_verified_candidate_stops_further_exploration(self):
+        schedule = choose_schedule(
+            capacity_status={"unmetered_available": True},
+            route_confidence=0.4,
+            verification_seconds=30,
+            remaining_seconds=1000,
+            available_agents=2,
+            available_models=2,
+            strategy="dual",
+            verified_candidate_quality=0.95,
+        )
+        self.assertFalse(schedule.continue_after_verified)
+        self.assertLess(schedule.marginal_value, 0.08)
+
+    def test_uncertain_cheap_round_can_keep_exploring(self):
+        schedule = choose_schedule(
+            capacity_status={"unmetered_available": True},
+            route_confidence=0.2,
+            verification_seconds=20,
+            remaining_seconds=1000,
+            available_agents=2,
+            available_models=2,
+            strategy="dual",
+            verified_candidate_quality=0.2,
+        )
+        self.assertTrue(schedule.continue_after_verified)
+        self.assertGreaterEqual(schedule.marginal_value, 0.08)
+
+
 if __name__ == "__main__":
     unittest.main()

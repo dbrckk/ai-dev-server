@@ -94,43 +94,40 @@ def ci_trust_policy_digest() -> str:
 
 def validate_yaml_surface_text(text):
     violations=[]
-    anchors={}
-    aliases=[]
-    seen=set()
+    seen={}
     stack=[]
-    sequence_counters={}
+    item_ids={}
     for lineno,line in enumerate(text.splitlines(),start=1):
         code=line.split("#",1)[0].rstrip()
         if not code.strip():
             continue
         indent=len(code)-len(code.lstrip(" "))
+        stripped=code.lstrip()
         if "\t" in line[:indent]:
             violations.append({"reason":"tab_indentation","line":lineno})
-        for anchor in re.findall(r"(?:^|\\s)&([A-Za-z0-9_.-]+)",code):
-            if anchor in anchors:
-                violations.append({"reason":"duplicate_anchor","line":lineno,"anchor":anchor})
-            anchors[anchor]=lineno
-        aliases.extend((alias,lineno) for alias in re.findall(r"(?:^|\\s)\\*([A-Za-z0-9_.-]+)",code))
+        # YAML anchors, aliases and merge keys are deliberately outside the trusted subset.
+        if re.search(r"(?:^|[\\s:\\[,])&[A-Za-z0-9_.-]+",code):
+            violations.append({"reason":"yaml_anchor_forbidden","line":lineno})
+        if re.search(r"(?:^|[\\s:\\[,])\\*[A-Za-z0-9_.-]+",code):
+            violations.append({"reason":"yaml_alias_forbidden","line":lineno})
+        if re.match(r"^\\s*(?:-\\s*)?<<\\s*:",code):
+            violations.append({"reason":"yaml_merge_key_forbidden","line":lineno})
         while stack and stack[-1][0]>=indent:
             stack.pop()
-        parent=tuple(item[1] for item in stack)
-        stripped=code.lstrip()
+        parent=tuple(x[1] for x in stack)
         is_item=stripped.startswith("- ")
         if is_item:
-            parent_key=(parent,indent)
-            sequence_counters[parent_key]=sequence_counters.get(parent_key,0)+1
-        sequence_id=sequence_counters.get((parent,indent),0)
-        key_match=re.match(r"^\\s*(?:-\\s*)?([A-Za-z0-9_-]+):",code)
-        if key_match:
-            key=key_match.group(1)
-            marker=(parent,indent,sequence_id,key)
+            k=(parent,indent)
+            item_ids[k]=item_ids.get(k,0)+1
+        item_id=item_ids.get((parent,indent),0)
+        m=re.match(r"^\\s*(?:-\\s*)?([A-Za-z0-9_-]+):",code)
+        if m:
+            key=m.group(1)
+            marker=(parent,indent,item_id,key)
             if marker in seen:
                 violations.append({"reason":"duplicate_key","line":lineno,"key":key,"indent":indent})
-            seen.add(marker)
-            stack.append((indent,key + ("#"+str(sequence_id) if sequence_id else "")))
-    for alias,lineno in aliases:
-        if alias not in anchors:
-            violations.append({"reason":"undefined_alias","line":lineno,"alias":alias})
+            seen[marker]=lineno
+            stack.append((indent,key+"#"+str(item_id)))
     return {"valid":not violations,"violations":violations}
 
 def validate_workflow_schema_text(text: str) -> dict:

@@ -179,6 +179,33 @@ class CapacitySchedulerTests(unittest.TestCase):
         self.assertTrue(row["constrained"])
 
 
+
+    def test_finite_capacity_is_work_conserving_when_peer_hits_cap(self):
+        providers = [ProviderCapacity("free", 1000, unmetered=False)]
+        report = allocate([
+            {"id": "small", "requested_tokens": 100, "priority": 100},
+            {"id": "large", "requested_tokens": 1000, "priority": 1},
+        ], providers, critical_reserve_ratio=0.0)
+        by_id = {row["id"]: row for row in report["projects"]}
+        self.assertEqual(by_id["small"]["token_envelope"], 100)
+        self.assertEqual(by_id["large"]["token_envelope"], 900)
+        self.assertEqual(report["summary"]["allocated_tokens"], 1000)
+
+    def test_reserved_capacity_is_not_spent_by_ordinary_projects(self):
+        providers = [ProviderCapacity("free", 1000, unmetered=False)]
+        report = allocate([
+            {"id": "ordinary", "requested_tokens": 1000, "priority": 100},
+        ], providers, critical_reserve_ratio=0.2)
+        self.assertEqual(report["projects"][0]["token_envelope"], 800)
+        self.assertEqual(report["critical_reserve_tokens"], 200)
+
+    def test_critical_project_can_consume_unused_ordinary_pool(self):
+        providers = [ProviderCapacity("free", 1000, unmetered=False)]
+        report = allocate([
+            {"id": "critical", "requested_tokens": 1000, "priority": 50, "phase": "verification"},
+        ], providers, critical_reserve_ratio=0.2)
+        self.assertEqual(report["projects"][0]["token_envelope"], 1000)
+
     def test_terminal_projects_are_excluded(self):
         providers = [ProviderCapacity("free", 10_000)]
         report = allocate([

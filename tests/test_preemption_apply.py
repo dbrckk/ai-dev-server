@@ -14,7 +14,7 @@ from preemption_apply import execute
 class PreemptionApplyTests(unittest.TestCase):
     def _fixture(self, root: Path, phase="verified"):
         victim = root / "low" / ".autonomy"
-        victim.mkdir(parents=True)
+        victim.mkdir(parents=True, exist_ok=True)
         checkpoint = new("low", "generic", "a" * 40)
         checkpoint = advance(checkpoint, round_index=2, phase=phase)
         save(victim / "execution-checkpoint.json", checkpoint)
@@ -78,7 +78,6 @@ class PreemptionApplyTests(unittest.TestCase):
             self.assertEqual(report["results"][0]["status"], "checkpoint_not_safe")
             self.assertTrue(load(root / "capacity-ledger.json")["reservations"])
 
-
     def test_cooldown_blocks_immediate_reverse_or_repeat_preemption(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
@@ -89,7 +88,6 @@ class PreemptionApplyTests(unittest.TestCase):
             second = execute(root, apply=True, now=1100.0, cooldown_seconds=300)
             self.assertEqual(second["preemptions_executed"], 0)
             self.assertEqual(second["results"][0]["status"], "cooldown_active")
-
 
 
 if __name__ == "__main__":

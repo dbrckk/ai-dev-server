@@ -1,7 +1,7 @@
 """Unified bounded provider routing score. Hard eligibility remains external/fail-closed."""
 from __future__ import annotations
 
-from provider_health import reliability_bonus, scoped_reliability
+from provider_health import reliability_bonus, scoped_evidence
 from provider_metrics import latency_bonus
 from provider_runtime_reliability import routing_bonus as runtime_bonus
 from routing_calibration import adjustment as calibration_adjustment
@@ -25,10 +25,15 @@ def score(
     quota_bonus = 5.0 if int(getattr(provider, "monthly_token_quota", 0) or 0) > 0 else 0.0
     health_data = health or {}
     health_signal = max(-20.0, min(20.0, reliability_bonus(health_data, provider.name)))
-    specialized_rate = scoped_reliability(
+    specialized = scoped_evidence(
         health_data, provider.name, model=model, role=role
     )
-    specialized_health_signal = max(-12.0, min(12.0, (specialized_rate - 0.5) * 24.0))
+    specialized_rate = float(specialized["reliability"])
+    specialized_confidence = float(specialized["confidence"])
+    specialized_health_signal = max(
+        -12.0,
+        min(12.0, (specialized_rate - 0.5) * 24.0 * specialized_confidence),
+    )
     latency_signal = max(-12.0, min(12.0, latency_bonus(metrics or {}, provider.name, role)))
     runtime_signal = max(-12.0, min(12.0, runtime_bonus(runtime or {}, provider.name, model)))
     context_signal = max(-18.0, min(12.0, float(contextual_adjustment or 0.0)))
@@ -48,6 +53,8 @@ def score(
             "quota": quota_bonus,
             "health": health_signal,
             "specialized_health": specialized_health_signal,
+            "specialized_confidence": specialized_confidence,
+            "specialized_observations": int(specialized["observations"]),
             "latency": latency_signal,
             "runtime_reliability": runtime_signal,
             "context": context_signal,

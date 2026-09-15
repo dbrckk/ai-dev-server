@@ -69,5 +69,18 @@ class PreemptionApplyTests(unittest.TestCase):
             self.assertTrue(load(root / "capacity-ledger.json")["reservations"])
 
 
+    def test_cooldown_blocks_immediate_reverse_or_repeat_preemption(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            self._fixture(root)
+            first = execute(root, apply=True, now=1000.0, cooldown_seconds=300)
+            self.assertEqual(first["preemptions_executed"], 1)
+            self._fixture(root)
+            second = execute(root, apply=True, now=1100.0, cooldown_seconds=300)
+            self.assertEqual(second["preemptions_executed"], 0)
+            self.assertEqual(second["results"][0]["status"], "cooldown_active")
+
+
+
 if __name__ == "__main__":
     unittest.main()

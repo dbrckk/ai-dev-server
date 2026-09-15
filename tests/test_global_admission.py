@@ -73,5 +73,24 @@ class GlobalAdmissionTests(unittest.TestCase):
         self.assertEqual(row["reason"], "insufficient_useful_round_capacity")
 
 
+    def test_worker_reliability_changes_close_admission_ranking(self):
+        projects = [
+            {
+                "id": "reliable", "priority": 50, "predicted_success_probability": 0.5,
+                "efficiency_multiplier": 1.0, "reliability_multiplier": 1.2,
+                "requested_tokens": 16000, "token_envelope": 16000,
+            },
+            {
+                "id": "unstable", "priority": 50, "predicted_success_probability": 0.5,
+                "efficiency_multiplier": 1.0, "reliability_multiplier": 0.8,
+                "requested_tokens": 16000, "token_envelope": 16000,
+            },
+        ]
+        report = decide(projects, max_standard_admissions=1)
+        admitted = next(row for row in report["decisions"] if row["admitted"])
+        self.assertEqual(admitted["id"], "reliable")
+
+
+
 if __name__ == "__main__":
     unittest.main()

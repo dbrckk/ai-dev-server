@@ -11,6 +11,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+import provider_health
+
 
 CRITICAL_PHASES = {"verification", "tests", "review", "security_fix", "release_fix"}
 ACTIVE_STATES = {"running", "deferred", "failed", "queued", "pending"}
@@ -237,7 +239,7 @@ def allocate(
     }
 
 
-def provider_capacities(rows: list[dict]) -> list[ProviderCapacity]:
+def provider_capacities(rows: list[dict], *, health_data: dict | None = None) -> list[ProviderCapacity]:
     result = []
     for row in rows:
         if not isinstance(row, dict):
@@ -251,9 +253,21 @@ def provider_capacities(rows: list[dict]) -> list[ProviderCapacity]:
             available = None
         else:
             available = max(0, int(raw_available))
-        try:
-            reliability = float(row.get("reliability", 0.5))
-        except (TypeError, ValueError):
+        empirical = (health_data or {}).get(name)
+        if "reliability" in row:
+            try:
+                reliability = float(row.get("reliability", 0.5))
+            except (TypeError, ValueError):
+                reliability = 0.5
+        elif isinstance(empirical, dict):
+            try:
+                successes = max(0, int(empirical.get("successes", 0)))
+                failures = max(0, int(empirical.get("failures", 0)))
+            except (TypeError, ValueError):
+                successes = failures = 0
+            # Beta(1,1) smoothing prevents tiny samples from dominating routing.
+            reliability = (successes + 1) / (successes + failures + 2)
+        else:
             reliability = 0.5
         reliability = max(0.0, min(1.0, reliability))
         try:
@@ -283,6 +297,7 @@ def main(argv=None) -> int:
     parser.add_argument("--providers", required=True, help="JSON file containing a providers array")
     parser.add_argument("--critical-reserve-ratio", type=float, default=0.10)
     parser.add_argument("--output", default="")
+    parser.add_argument("--provider-health", default="", help="Optional provider-health JSON state")
     args = parser.parse_args(argv)
 
     projects_payload = json.loads(Path(args.projects).read_text(encoding="utf-8"))
@@ -290,9 +305,10 @@ def main(argv=None) -> int:
     projects = projects_payload.get("projects", []) if isinstance(projects_payload, dict) else projects_payload
     provider_rows = providers_payload.get("providers", []) if isinstance(providers_payload, dict) else providers_payload
 
+    health_data = provider_health.load(Path(args.provider_health)) if args.provider_health else {}
     report = allocate(
         list(projects),
-        provider_capacities(list(provider_rows)),
+        provider_capacities(list(provider_rows), health_data=health_data),
         critical_reserve_ratio=args.critical_reserve_ratio,
     )
     rendered = json.dumps(report, sort_keys=True, indent=2) + "\n"

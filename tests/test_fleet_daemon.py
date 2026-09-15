@@ -69,6 +69,7 @@ class FleetDaemonTests(unittest.TestCase):
              patch("fleet_daemon.append_metrics", return_value={"snapshots": 1, "latest": {"ts": 1}}), \
              patch("fleet_daemon.evaluate_regression", return_value={"regressed": False, "regressions": []}), \
              patch("fleet_daemon.maintain", return_value={"summary": {"projects": 2}}), \
+             patch("fleet_daemon.classify_worker_liveness", return_value={"summary": {"expired": 0, "crashed": 0, "stalled": 0, "orphaned": 0, "recoverable_tokens": 0}}), \
              patch("fleet_daemon.persist_capacity_plan", side_effect=plans) as capacity, \
              patch("fleet_daemon.apply_preemption", return_value={"apply": True, "preemptions_executed": 1, "results": [{"status": "preempted"}]}) as preempt, \
              patch("fleet_daemon.capacity_ledger_snapshot", return_value={"active_reservations": 0, "reserved_tokens": 0, "consumed_tokens": 0, "reaped": 0}), \

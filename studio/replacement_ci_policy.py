@@ -12,7 +12,7 @@ REQUIRED_GITHUB_CHECKS=frozenset({"validate","python-tests"})
 TRUSTED_CHECK_APP="github-actions"
 REQUIRED_WORKFLOW_NAME="CI"
 REQUIRED_WORKFLOW_PATH=".github/workflows/ci.yml"
-CI_TRUST_POLICY_VERSION=5
+CI_TRUST_POLICY_VERSION=6
 REQUIRED_WORKFLOW_PERMISSIONS={"contents":"read"}
 REQUIRED_JOB_RUNNER="ubuntu-latest"
 REQUIRED_JOB_TIMEOUTS={"validate":5,"python-tests":20}
@@ -23,6 +23,7 @@ FORBIDDEN_EXPRESSION_CONTEXTS=frozenset({"secrets","github.event","github.token"
 FORBIDDEN_RUN_TOKENS=frozenset({"curl","wget","sudo","docker","podman","GITHUB_ENV","GITHUB_PATH","GITHUB_OUTPUT","GITHUB_STATE","GITHUB_STEP_SUMMARY"})
 FORBIDDEN_RUN_PREFIXES=("pip install","pip3 install","npm install","npm ci","npx ","yarn ","pnpm ","apt install","apt-get install","git clone","git fetch","git pull","gh ")
 REQUIRED_RUN_SHELL="bash"
+FORBIDDEN_YAML_FEATURES=frozenset({"anchor","alias","tag","merge_key","tab_indentation","duplicate_key"})
 
 # Explicit allowlist: third-party actions and mutable refs are fail-closed.
 TRUSTED_ACTION_REVISIONS={
@@ -33,6 +34,7 @@ TRUSTED_ACTION_REVISIONS={
 def ci_trust_policy_digest() -> str:
     payload={
         "version":CI_TRUST_POLICY_VERSION,
+        "yaml_surface":yaml_surface,
         "required_checks":sorted(REQUIRED_GITHUB_CHECKS),
         "trusted_check_app":TRUSTED_CHECK_APP,
         "workflow_name":REQUIRED_WORKFLOW_NAME,
@@ -48,10 +50,40 @@ def ci_trust_policy_digest() -> str:
         "forbidden_run_tokens":sorted(FORBIDDEN_RUN_TOKENS),
         "forbidden_run_prefixes":list(FORBIDDEN_RUN_PREFIXES),
         "required_run_shell":REQUIRED_RUN_SHELL,
+        "forbidden_yaml_features":sorted(FORBIDDEN_YAML_FEATURES),
     }
     return hashlib.sha256(
         json.dumps(payload,sort_keys=True,separators=(",",":")).encode("utf-8")
     ).hexdigest()
+
+def validate_yaml_surface_text(text: str) -> dict:
+    violations=[]
+    seen_by_indent={}
+    for lineno,line in enumerate(text.splitlines(),start=1):
+        if "\t" in line[:len(line)-len(line.lstrip())]:
+            violations.append({"reason":"tab_indentation","line":lineno})
+        code=line.split("#",1)[0]
+        if re.search(r"(^|[\s:\[,])&[A-Za-z0-9_-]+",code):
+            violations.append({"reason":"anchor","line":lineno})
+        if re.search(r"(^|[\s:\[,])\*[A-Za-z0-9_-]+",code):
+            violations.append({"reason":"alias","line":lineno})
+        if re.search(r"(^|\s)![A-Za-z0-9_!/-]+",code):
+            violations.append({"reason":"tag","line":lineno})
+        if re.match(r"^\s*<<\s*:",code):
+            violations.append({"reason":"merge_key","line":lineno})
+        match=re.match(r"^(\s*)([A-Za-z0-9_-]+):(?:\s|$)",code)
+        if match:
+            indent=len(match.group(1))
+            key=match.group(2)
+            for depth in list(seen_by_indent):
+                if depth>indent:
+                    seen_by_indent.pop(depth,None)
+            bucket=seen_by_indent.setdefault(indent,set())
+            if key in bucket:
+                violations.append({"reason":"duplicate_key","line":lineno,"key":key,"indent":indent})
+            else:
+                bucket.add(key)
+    return {"valid":not violations,"violations":violations}
 
 def _scalar_yaml_value(value: str):
     value=value.split("#",1)[0].strip().strip("'\"").lower()
@@ -372,6 +404,7 @@ def workflow_job_ids(path: Path) -> set[str]:
     return workflow_job_ids_text(path.read_text(encoding="utf-8"))
 
 def validate_workflow_text(text: str) -> dict:
+    yaml_surface=validate_yaml_surface_text(text)
     jobs=workflow_job_ids_text(text)
     missing=sorted(REQUIRED_GITHUB_CHECKS-jobs)
     name_match=re.search(r"(?m)^name:\s*([^#\n]+?)\s*$",text)
@@ -383,7 +416,8 @@ def validate_workflow_text(text: str) -> dict:
     run_policy=validate_workflow_run_commands_text(text)
     return {
         "valid":(
-            not missing
+            yaml_surface["valid"]
+            and not missing
             and workflow_name==REQUIRED_WORKFLOW_NAME
             and action_policy["valid"]
             and permission_policy["valid"]

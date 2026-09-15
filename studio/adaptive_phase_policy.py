@@ -2,6 +2,39 @@
 from __future__ import annotations
 
 
+def planning_phase_decision(
+    *,
+    require_planning: bool,
+    brief: str,
+) -> dict:
+    """Decide whether a model planning call is worth its round budget.
+
+    A skipped planning call still produces the stable plan schema consumed by
+    downstream implementation. Invalid or missing objective text fails closed
+    to model planning rather than inventing a plan without a usable objective.
+    """
+    if require_planning:
+        return {"launch_model": True, "plan": None}
+
+    if not isinstance(brief, str) or not brief.strip():
+        return {"launch_model": True, "plan": None}
+
+    objective = brief.strip()
+    return {
+        "launch_model": False,
+        "plan": {
+            "objective": objective,
+            "work_items": [
+                "Implement the requested objective using the existing repository architecture."
+            ],
+            "done_when": [
+                "Trusted verification passes and no objective-specific work remains."
+            ],
+            "adaptive_skipped": True,
+        },
+    }
+
+
 def review_phase_decision(
     *,
     require_review: bool,

@@ -7,26 +7,31 @@ import os
 
 try:
     from .capability_registry import new_registry, save as save_registry, load as load_registry, register, has_capability
-    from .goal_engine import new_goal, save as save_goal
+    from .goal_engine import new_goal, save as save_goal, load as load_goal, resume_human_action
     from .goal_loop import run_goal
     from .promoted_capabilities import sync_into_registry
     from .capability_runtime import execute_capability
     from .project_memory import new_memory, load as load_memory, save as save_memory
     from .goal_learning import context_for_goal, learn_from_cycle
-    from .human_input_request import requires_human_input
+    from .human_input_request import (
+        prerequisite_satisfied,
+        requires_human_input,
+        safe_handoff_detail,
+        write_request,
+    )
     from .atomic_file import write_text as atomic_write_text
     from .durable_state import load_recovering as load_runtime_state, save as save_durable_state
     from .telemetry import emit as emit_telemetry
     from .telemetry_maintenance import compact as compact_telemetry
 except ImportError:
     from capability_registry import new_registry, save as save_registry, load as load_registry, register, has_capability
-    from goal_engine import new_goal, save as save_goal
+    from goal_engine import new_goal, save as save_goal, load as load_goal, resume_human_action
     from goal_loop import run_goal
     from promoted_capabilities import sync_into_registry
     from capability_runtime import execute_capability
     from project_memory import new_memory, load as load_memory, save as save_memory
     from goal_learning import context_for_goal, learn_from_cycle
-    from human_input_request import requires_human_input
+    from human_input_request import prerequisite_satisfied, requires_human_input, safe_handoff_detail, write_request
     from atomic_file import write_text as atomic_write_text
     from durable_state import load_recovering as load_runtime_state, save as save_durable_state
     from telemetry import emit as emit_telemetry
@@ -39,6 +44,14 @@ AUTONOMY_DIR = ".autonomy"
 def _state_paths(project_out: Path):
     root = Path(project_out) / AUTONOMY_DIR
     return root / "goal.json", root / "capabilities.json", root / "memory.json"
+
+
+def _clear_human_input_request(project_out: Path) -> None:
+    for name in ("USER_INPUT_REQUIRED.txt", "user-input-required.json"):
+        try:
+            (Path(project_out) / name).unlink()
+        except FileNotFoundError:
+            pass
 
 
 def ensure_project_goal(project_out: Path, goal_id: str, objective: str, *, max_attempts: int = 20):
@@ -119,7 +132,7 @@ def translate_orchestrator_result(result: dict) -> dict:
 
     if status == "human_action_required":
         action = next_stage if isinstance(next_stage, str) and next_stage else "external_human_action"
-        return {"human_action": action}
+        return {"human_action": safe_handoff_detail(action)}
 
     if status == "adaptation_required":
         detail = next_stage if isinstance(next_stage, str) and next_stage else "unknown_capability"
@@ -148,7 +161,7 @@ def translate_orchestrator_result(result: dict) -> dict:
                 details.extend(str(item) for item in blockers)
         detail = ":".join(details)
         if requires_human_input(detail):
-            return {"human_action": detail}
+            return {"human_action": safe_handoff_detail(detail)}
         return {"failure": detail}
     return {"failure": "orchestrator result missing status"}
 
@@ -188,6 +201,17 @@ def run_persistent_project(
     goal_path, registry_path, memory_path = ensure_project_goal(
         project_out, goal_id, objective, max_attempts=max_attempts
     )
+    goal_state = load_goal(goal_path)
+    if goal_state.get("status") == "human_action_required":
+        detail = str(goal_state.get("human_action") or "external_human_action_required")
+        if prerequisite_satisfied(detail):
+            goal_state = resume_human_action(goal_state)
+            save_goal(goal_path, goal_state)
+            _clear_human_input_request(project_out)
+        else:
+            write_request(project_out, goal_id, detail)
+            return goal_state
+
     _sync_promoted_capabilities(registry_path)
     if run_once is None:
         try:
@@ -296,6 +320,14 @@ def run_persistent_project(
             cycle_observer=cycle_observer,
             execute_registered_capability=execute_registered_capability,
         )
+        if result.get("status") == "human_action_required":
+            write_request(
+                project_out,
+                goal_id,
+                str(result.get("human_action") or "external_human_action_required"),
+            )
+        else:
+            _clear_human_input_request(project_out)
         save_durable_state(runtime_state_path, {
             "goal_id": goal_id,
             "objective": objective,

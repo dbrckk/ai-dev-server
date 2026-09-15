@@ -195,3 +195,75 @@ def health_snapshot(path: Path, *, now: float | None = None) -> dict:
             "opened_until": float(row.get("opened_until", 0.0) or 0.0),
         }
     return snapshot
+
+
+def scoped_key(provider: str, *, model: str | None = None, role: str | None = None) -> str:
+    """Build a stable non-secret health key for provider/model/role specialization."""
+    provider = str(provider or "").strip()
+    if not provider:
+        raise ValueError("provider required")
+    parts = [provider]
+    if model and str(model).strip():
+        parts.append("model=" + str(model).strip())
+    if role and str(role).strip():
+        parts.append("role=" + str(role).strip())
+    return "|".join(parts)
+
+
+def record_scoped_verified_result(
+    path: Path,
+    provider: str,
+    *,
+    verified_success: bool,
+    model: str | None = None,
+    role: str | None = None,
+    latency_ms: float | None = None,
+    threshold: int = DEFAULT_THRESHOLD,
+    cooldown_seconds: int = DEFAULT_COOLDOWN_SECONDS,
+    now: float | None = None,
+) -> dict:
+    """Record both global provider health and a specialized provider/model/role view."""
+    record_verified_result(
+        path,
+        provider,
+        verified_success=verified_success,
+        latency_ms=latency_ms,
+        threshold=threshold,
+        cooldown_seconds=cooldown_seconds,
+        now=now,
+    )
+    key = scoped_key(provider, model=model, role=role)
+    if key == provider:
+        return load(path)
+    return record_verified_result(
+        path,
+        key,
+        verified_success=verified_success,
+        latency_ms=latency_ms,
+        threshold=threshold,
+        cooldown_seconds=cooldown_seconds,
+        now=now,
+    )
+
+
+def scoped_reliability(
+    data: dict,
+    provider: str,
+    *,
+    model: str | None = None,
+    role: str | None = None,
+) -> float:
+    """Return smoothed specialized reliability, falling back to provider evidence."""
+    keys = [
+        scoped_key(provider, model=model, role=role),
+        scoped_key(provider, role=role),
+        provider,
+    ]
+    for key in keys:
+        row = data.get(key)
+        if not isinstance(row, dict):
+            continue
+        successes = max(0, int(row.get("successes", 0)))
+        failures = max(0, int(row.get("failures", 0)))
+        return (successes + 1) / (successes + failures + 2)
+    return 0.5

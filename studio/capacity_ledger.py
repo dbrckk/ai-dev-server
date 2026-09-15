@@ -286,6 +286,54 @@ def transfer_project_reservations(
 
 
 
+
+def claim_preemption_lease(
+    path: Path,
+    project_id: str,
+    *,
+    now: float | None = None,
+    ttl_seconds: int = DEFAULT_TTL_SECONDS,
+) -> dict:
+    """Convert one active preemption admission lease into a worker-owned reservation."""
+    project = str(project_id).strip()
+    if not project:
+        raise ValueError("project_id is required")
+    current = time.time() if now is None else float(now)
+    ttl = max(30, int(ttl_seconds))
+    path = Path(path)
+    with exclusive(path):
+        data = _load_unlocked(path)
+        reaped = _reap(data, current)
+        match = next(
+            (
+                (token, row) for token, row in data["reservations"].items()
+                if isinstance(row, dict)
+                and row.get("project_id") == project
+                and row.get("kind") == "preemption_admission_lease"
+            ),
+            None,
+        )
+        if match is None:
+            _save_unlocked(path, data)
+            return {"claimed": False, "reason": "preemption_lease_missing", "reaped": reaped}
+        token, row = match
+        row["kind"] = "worker_capacity_reservation"
+        row["claimed_at"] = current
+        row["expires_at"] = current + ttl
+        data["reservations"][token] = row
+        _save_unlocked(path, data)
+        return {
+            "claimed": True,
+            "reservation_id": token,
+            "project_id": project,
+            "reserved_tokens": max(0, int(row.get("reserved_tokens", 0) or 0)),
+            "expires_at": current + ttl,
+            "victim_project_id": row.get("victim_project_id"),
+            "reaped": reaped,
+        }
+
+
+
 def release_project(path: Path, project_id: str, *, now: float | None = None) -> dict:
     """Atomically release every outstanding reservation owned by a project."""
     project = str(project_id).strip()

@@ -12,11 +12,14 @@ REQUIRED_GITHUB_CHECKS=frozenset({"validate","python-tests"})
 TRUSTED_CHECK_APP="github-actions"
 REQUIRED_WORKFLOW_NAME="CI"
 REQUIRED_WORKFLOW_PATH=".github/workflows/ci.yml"
-CI_TRUST_POLICY_VERSION=3
+CI_TRUST_POLICY_VERSION=4
 REQUIRED_WORKFLOW_PERMISSIONS={"contents":"read"}
 REQUIRED_JOB_RUNNER="ubuntu-latest"
 REQUIRED_JOB_TIMEOUTS={"validate":5,"python-tests":20}
 FORBIDDEN_WORKFLOW_TRIGGERS=frozenset({"pull_request_target","workflow_run"})
+FORBIDDEN_JOB_KEYS=frozenset({"strategy","needs","if","continue-on-error","environment","container","services"})
+FORBIDDEN_STEP_KEYS=frozenset({"if","continue-on-error","timeout-minutes"})
+FORBIDDEN_EXPRESSION_CONTEXTS=frozenset({"secrets","github.event","github.token","github.actor","github.triggering_actor","vars","inputs","matrix","strategy","needs"})
 
 # Explicit allowlist: third-party actions and mutable refs are fail-closed.
 TRUSTED_ACTION_REVISIONS={
@@ -36,6 +39,9 @@ def ci_trust_policy_digest() -> str:
         "required_job_runner":REQUIRED_JOB_RUNNER,
         "required_job_timeouts":dict(sorted(REQUIRED_JOB_TIMEOUTS.items())),
         "forbidden_workflow_triggers":sorted(FORBIDDEN_WORKFLOW_TRIGGERS),
+        "forbidden_job_keys":sorted(FORBIDDEN_JOB_KEYS),
+        "forbidden_step_keys":sorted(FORBIDDEN_STEP_KEYS),
+        "forbidden_expression_contexts":sorted(FORBIDDEN_EXPRESSION_CONTEXTS),
     }
     return hashlib.sha256(
         json.dumps(payload,sort_keys=True,separators=(",",":")).encode("utf-8")
@@ -177,6 +183,68 @@ def validate_workflow_runtime_text(text: str) -> dict:
         "violations":violations,
     }
 
+def validate_workflow_expression_policy_text(text: str) -> dict:
+    violations=[]
+    expressions=re.findall(r"\$\{\{(.*?)\}\}",text,flags=re.DOTALL)
+    for expression in expressions:
+        normalized=re.sub(r"\s+","",expression).lower()
+        for context in sorted(FORBIDDEN_EXPRESSION_CONTEXTS):
+            if context.lower() in normalized:
+                violations.append({
+                    "reason":"forbidden_expression_context",
+                    "context":context,
+                })
+    lines=text.splitlines()
+    in_jobs=False
+    current_job=None
+    in_steps=False
+    step_indent=None
+    for line in lines:
+        if line=="jobs:":
+            in_jobs=True
+            current_job=None
+            in_steps=False
+            continue
+        if in_jobs and line and not line.startswith(" "):
+            break
+        if not in_jobs:
+            continue
+        job_match=re.match(r"^  ([A-Za-z0-9_-]+):\s*$",line)
+        if job_match:
+            current_job=job_match.group(1)
+            in_steps=False
+            step_indent=None
+            continue
+        if current_job is None:
+            continue
+        key_match=re.match(r"^    ([A-Za-z0-9_-]+):",line)
+        if key_match and key_match.group(1) in FORBIDDEN_JOB_KEYS:
+            violations.append({
+                "reason":"forbidden_job_key",
+                "job":current_job,
+                "key":key_match.group(1),
+            })
+        if re.match(r"^    steps:\s*$",line):
+            in_steps=True
+            step_indent=4
+            continue
+        if in_steps:
+            step_key=re.match(r"^      (?:-\s+)?([A-Za-z0-9_-]+):",line)
+            if step_key and step_key.group(1) in FORBIDDEN_STEP_KEYS:
+                violations.append({
+                    "reason":"forbidden_step_key",
+                    "job":current_job,
+                    "key":step_key.group(1),
+                })
+    return {
+        "valid":not violations,
+        "expression_count":len(expressions),
+        "forbidden_expression_contexts":sorted(FORBIDDEN_EXPRESSION_CONTEXTS),
+        "forbidden_job_keys":sorted(FORBIDDEN_JOB_KEYS),
+        "forbidden_step_keys":sorted(FORBIDDEN_STEP_KEYS),
+        "violations":violations,
+    }
+
 def workflow_action_uses_text(text: str) -> list[dict]:
     rows=[]
     pattern=re.compile(r"(?m)^\s*(?:-\s*)?uses:\s*([^#\s]+)\s*(?:#.*)?$")
@@ -278,6 +346,7 @@ def validate_workflow_text(text: str) -> dict:
     action_policy=validate_action_pinning_text(text)
     permission_policy=validate_workflow_permissions_text(text)
     runtime_policy=validate_workflow_runtime_text(text)
+    expression_policy=validate_workflow_expression_policy_text(text)
     return {
         "valid":(
             not missing
@@ -285,6 +354,7 @@ def validate_workflow_text(text: str) -> dict:
             and action_policy["valid"]
             and permission_policy["valid"]
             and runtime_policy["valid"]
+            and expression_policy["valid"]
         ),
         "required_checks":sorted(REQUIRED_GITHUB_CHECKS),
         "workflow_jobs":sorted(jobs),
@@ -294,6 +364,7 @@ def validate_workflow_text(text: str) -> dict:
         "action_pinning":action_policy,
         "permissions":permission_policy,
         "runtime":runtime_policy,
+        "expressions":expression_policy,
         "ci_trust_policy_version":CI_TRUST_POLICY_VERSION,
         "ci_trust_policy_digest":ci_trust_policy_digest(),
     }

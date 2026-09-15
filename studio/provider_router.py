@@ -350,6 +350,14 @@ def candidates_for(
     metrics_path = Path(os.environ.get("STUDIO_PROVIDER_METRICS_PATH", "provider-metrics.json"))
     health = load_provider_health(health_path)
     metrics = load_provider_metrics(metrics_path)
+    calibration_path = os.environ.get("STUDIO_ROUTING_CALIBRATION_PATH", "").strip()
+    if calibration_path:
+        try:
+            calibration = json.loads(Path(calibration_path).read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            calibration = {}
+    else:
+        calibration = {}
     current = tuple(
         spec for spec in eligible
         if provider_eligible(health_path, spec.name)
@@ -364,6 +372,7 @@ def candidates_for(
         result = unified_provider_score(
             provider=spec, role=role, model=model,
             health=health, metrics=metrics, runtime=reliability,
+            calibration=calibration,
         )
         scored.append((spec, result))
     scored.sort(key=lambda item: (-float(item[1]["score"]), item[0].name))

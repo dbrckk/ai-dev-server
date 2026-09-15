@@ -15,11 +15,15 @@ def _score(row: dict) -> float:
         0.75,
         min(1.25, float(row.get("efficiency_multiplier", 1.0) or 1.0)),
     )
+    reliability = max(
+        0.75,
+        min(1.25, float(row.get("reliability_multiplier", 1.0) or 1.0)),
+    )
     requested = max(1, int(row.get("requested_tokens", 1) or 1))
     envelope = max(0, int(row.get("token_envelope", 0) or 0))
     coverage = min(1.0, envelope / requested)
     continuity = 1.10 if row.get("status") in {"running", "deferred", "failed"} else 1.0
-    return round(priority * success * efficiency * (0.25 + 0.75 * coverage) * continuity, 6)
+    return round(priority * success * efficiency * reliability * (0.25 + 0.75 * coverage) * continuity, 6)
 
 
 def decide(projects: list[dict], *, max_standard_admissions: int = DEFAULT_MAX_STANDARD_ADMISSIONS) -> dict:

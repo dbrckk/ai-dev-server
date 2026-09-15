@@ -92,15 +92,10 @@ class UnifiedRoutingScoreTests(unittest.TestCase):
 
     def test_component_breakdown_sums_to_score(self):
         result = score(provider=Provider(priority=70, free_preferred=True), role="tests", model="m")
-        scoring_components = [
-            value for value in result["components"].values()
-            if isinstance(value, (int, float)) and not isinstance(value, bool)
-        ]
-        # Diagnostic metadata (confidence, observations, regime flags) is exposed
-        # beside score terms but must not participate in the additive score.
         additive_keys = {
-            "cost", "reliability", "specialized_health", "latency", "runtime",
-            "capacity", "exploration", "context", "strategy", "resource",
+            "priority", "free", "unmetered", "quota", "health",
+            "specialized_health", "latency", "runtime_reliability",
+            "context", "exploration", "verified_outcome_calibration",
         }
         self.assertAlmostEqual(
             result["score"],

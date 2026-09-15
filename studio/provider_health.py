@@ -17,11 +17,12 @@ MAX_COOLDOWN_SECONDS = 3600
 MAX_ROWS = 64
 LATENCY_ALPHA = 0.25
 REPUTATION_HALF_LIFE_SECONDS = 14 * 24 * 60 * 60
+REGIME_WINDOW = 8
 
 
 def _row(value):
     if not isinstance(value, dict):
-        return {"successes": 0, "failures": 0, "consecutive_failures": 0, "opened_until": 0.0, "latency_ms_ema": None, "last_observed_at": 0.0}
+        return {"successes": 0, "failures": 0, "consecutive_failures": 0, "opened_until": 0.0, "latency_ms_ema": None, "last_observed_at": 0.0, "recent_outcomes": []}
     try:
         successes = max(0, int(value.get("successes", 0)))
         failures = max(0, int(value.get("failures", 0)))
@@ -29,6 +30,8 @@ def _row(value):
         opened_until = max(0.0, float(value.get("opened_until", 0.0)))
         raw_latency = value.get("latency_ms_ema")
         last_observed_at = max(0.0, float(value.get("last_observed_at", 0.0) or 0.0))
+        recent_raw = value.get("recent_outcomes", [])
+        recent_outcomes = [1 if bool(item) else 0 for item in recent_raw[-REGIME_WINDOW:]] if isinstance(recent_raw, list) else []
         latency_ms_ema = None if raw_latency is None else max(0.0, float(raw_latency))
     except (TypeError, ValueError):
         return {"successes": 0, "failures": 0, "consecutive_failures": 0, "opened_until": 0.0, "latency_ms_ema": None}
@@ -39,6 +42,7 @@ def _row(value):
         "opened_until": opened_until,
         "latency_ms_ema": latency_ms_ema,
         "last_observed_at": last_observed_at,
+        "recent_outcomes": recent_outcomes,
     }
 
 
@@ -102,6 +106,7 @@ def record_success(path: Path, provider: str, *, latency_ms: float | None = None
     _record_latency(row, latency_ms)
     row["successes"] += 1
     row["last_observed_at"] = time.time()
+    row["recent_outcomes"] = (list(row.get("recent_outcomes", [])) + [1])[-REGIME_WINDOW:]
     row["consecutive_failures"] = 0
     row["opened_until"] = 0.0
     data[provider] = row
@@ -126,6 +131,7 @@ def record_failure(
     row = _row(data.get(provider))
     _record_latency(row, latency_ms)
     row["failures"] += 1
+    row["recent_outcomes"] = (list(row.get("recent_outcomes", [])) + [0])[-REGIME_WINDOW:]
     row["consecutive_failures"] += 1
     if row["consecutive_failures"] >= threshold:
         current = time.time() if now is None else float(now)
@@ -273,6 +279,21 @@ def scoped_reliability(
     return 0.5
 
 
+
+def regime_signal(row: dict) -> dict:
+    """Detect sharp recent deterioration relative to smoothed historical quality."""
+    recent = row.get("recent_outcomes", [])
+    if not isinstance(recent, list) or len(recent) < 4:
+        return {"detected": False, "recent_rate": None, "historical_rate": None, "penalty": 0.0}
+    recent_rate = sum(1 if bool(item) else 0 for item in recent) / len(recent)
+    successes = max(0, int(row.get("successes", 0)))
+    failures = max(0, int(row.get("failures", 0)))
+    historical_rate = (successes + 1) / (successes + failures + 2)
+    gap = max(0.0, historical_rate - recent_rate)
+    detected = recent_rate <= 0.5 and gap >= 0.25
+    penalty = min(0.75, gap) if detected else 0.0
+    return {"detected": detected, "recent_rate": recent_rate, "historical_rate": historical_rate, "penalty": penalty}
+
 def scoped_evidence(
     data: dict,
     provider: str,
@@ -306,6 +327,8 @@ def scoped_evidence(
             age = max(0.0, current - last_observed)
             freshness = 0.5 ** (age / float(half_life_seconds))
         confidence *= freshness
+        regime = regime_signal(row)
+        confidence *= 1.0 - float(regime["penalty"])
         return {
             "key": key,
             "reliability": reliability,
@@ -313,6 +336,9 @@ def scoped_evidence(
             "confidence": confidence,
             "freshness": freshness,
             "last_observed_at": last_observed,
+            "regime_change": bool(regime["detected"]),
+            "recent_success_rate": regime["recent_rate"],
+            "regime_penalty": float(regime["penalty"]),
         }
     return {
         "key": None,
@@ -321,4 +347,7 @@ def scoped_evidence(
         "confidence": 0.0,
         "freshness": 0.0,
         "last_observed_at": 0.0,
+        "regime_change": False,
+        "recent_success_rate": None,
+        "regime_penalty": 0.0,
     }

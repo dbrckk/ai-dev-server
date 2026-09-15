@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
-from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow_run_commands_text, validate_workflow, validate_workflow_text, validate_yaml_surface_text, validate_workflow_schema_text, validate_step_inputs_env_text
+from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow_run_commands_text, validate_workflow, validate_workflow_text, validate_yaml_surface_text, validate_workflow_schema_text, validate_step_inputs_env_text, validate_trigger_concurrency_text
 
 class ReplacementCIPolicyTests(unittest.TestCase):
     def test_repository_ci_exposes_required_check_ids(self):
@@ -289,7 +289,7 @@ class ReplacementCIPolicyTests(unittest.TestCase):
 
     def test_schema_allowlists_are_reported(self):
         result=validate_workflow_schema_text("name: CI\n")
-        self.assertEqual(result["allowed_root_keys"],["jobs","name","on","permissions"])
+        self.assertEqual(result["allowed_root_keys"],["concurrency","jobs","name","on","permissions"])
         self.assertIn("runs-on",result["allowed_job_keys"])
         self.assertIn("uses",result["allowed_step_keys"])
 
@@ -319,6 +319,27 @@ class ReplacementCIPolicyTests(unittest.TestCase):
         bad="jobs:\n  validate:\n    steps:\n      - name: Test\n        env:\n          TOKEN: value\n        run: python -m unittest\n"
         self.assertTrue(validate_step_inputs_env_text(good)["valid"])
         self.assertFalse(validate_step_inputs_env_text(bad)["valid"])
+
+    def test_trigger_concurrency_accepts_repository_ci(self):
+        root=Path(__file__).resolve().parents[1]
+        result=validate_trigger_concurrency_text((root/".github/workflows/ci.yml").read_text())
+        self.assertTrue(result["valid"],result)
+
+    def test_extra_trigger_is_rejected(self):
+        text="on:\n  push:\n    branches: [\"main\"]\n  pull_request:\n  workflow_dispatch:\nconcurrency:\n  group: ci-${{ github.workflow }}-${{ github.ref }}\n  cancel-in-progress: true\n"
+        self.assertFalse(validate_trigger_concurrency_text(text)["valid"])
+
+    def test_non_main_push_branch_is_rejected(self):
+        text="on:\n  push:\n    branches: [\"dev\"]\n  pull_request:\nconcurrency:\n  group: ci-${{ github.workflow }}-${{ github.ref }}\n  cancel-in-progress: true\n"
+        self.assertFalse(validate_trigger_concurrency_text(text)["valid"])
+
+    def test_concurrency_group_must_be_exact(self):
+        text="on:\n  push:\n    branches: [\"main\"]\n  pull_request:\nconcurrency:\n  group: arbitrary\n  cancel-in-progress: true\n"
+        self.assertFalse(validate_trigger_concurrency_text(text)["valid"])
+
+    def test_concurrency_cancellation_must_be_enabled(self):
+        text="on:\n  push:\n    branches: [\"main\"]\n  pull_request:\nconcurrency:\n  group: ci-${{ github.workflow }}-${{ github.ref }}\n  cancel-in-progress: false\n"
+        self.assertFalse(validate_trigger_concurrency_text(text)["valid"])
 
 if __name__=="__main__":
     unittest.main()

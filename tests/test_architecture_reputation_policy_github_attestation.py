@@ -6,6 +6,12 @@ import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 from architecture_reputation_policy_github_attestation import *
 from architecture_reputation_policy_approval import ApprovalProvenanceError
+from replacement_ci_policy import validate_workflow_text
+
+def canonical_ci_file():
+    raw=(Path(__file__).resolve().parents[1]/".github/workflows/ci.yml").read_bytes()
+    validation=validate_workflow_text(raw.decode("utf-8"))
+    return {"path":".github/workflows/ci.yml","blob_sha":"blob123","size":len(raw),"sha256":hashlib.sha256(raw).hexdigest(),"semantic_digest":validation["semantic_digest"],"content_b64":base64.b64encode(raw).decode(),"policy_validation":validation}
 
 class GitHubAttestationBuilderTests(unittest.TestCase):
     plan={"migration_id":"m","review_digest":"r"}
@@ -20,20 +26,14 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
         return {"number":7,"state":"open","draft":False,"head_ref":"feature/policy","head_sha":"abc","base_ref":"main","author":"author"}
 
     def workflow_file(self):
-        return {
-            "path":".github/workflows/ci.yml",
-            "blob_sha":"blob123",
-            "size":73,
-            "sha256":hashlib.sha256(base64.b64decode("bmFtZTogQ0kKcGVybWlzc2lvbnM6CiAgY29udGVudHM6IHJlYWQKam9iczoKICB2YWxpZGF0ZToKICBweXRob24tdGVzdHM6Cg==")).hexdigest(),
-            "content_b64":"bmFtZTogQ0kKcGVybWlzc2lvbnM6CiAgY29udGVudHM6IHJlYWQKam9iczoKICB2YWxpZGF0ZToKICBweXRob24tdGVzdHM6Cg==",
-            "policy_validation":{"valid":True},
-        }
+        return canonical_ci_file()
     def test_build_standard(self):
         a=build(self.plan,repository="o/r",pull_request=7,commit_sha="abc",
             reviews=[{"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:10Z"}],
             permissions={"alice":"write"},workflow_runs=[{"id":9,"head_sha":"abc","conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/7/merge","created_at":"2026-01-01T00:00:25Z"}],
             check_runs=self.check_runs(),pr_identity=self.pr_identity(),workflow_file=self.workflow_file(),head_commit_timestamp=1767225600.0,reinforced=False)
         self.assertEqual(a["reviewer"]["login"],"alice");self.assertEqual(a["workflow_run_id"],9)
+        self.assertEqual(a["workflow_file"]["semantic_digest"],self.workflow_file()["semantic_digest"])
     def test_latest_review_wins(self):
         rows=latest_approvals([
             {"author":{"login":"alice"},"state":"APPROVED","commit_sha":"abc","submitted_at":"2026-01-01T00:00:10Z"},

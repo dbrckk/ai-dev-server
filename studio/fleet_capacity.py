@@ -16,6 +16,8 @@ from capacity_efficiency import summarize as summarize_capacity_efficiency, proj
 from stagnation_controller import summarize as summarize_stagnation
 from recovery_controller import evaluate as evaluate_recovery
 from global_admission import decide as decide_global_admission
+from preemption_controller import plan as plan_preemption
+from execution_checkpoint import load as load_execution_checkpoint, ExecutionCheckpointError
 from queue import matrix
 
 
@@ -180,6 +182,30 @@ def _project_rows(
     return rows
 
 
+def _preemption_evidence(root: Path, projects: list[dict]) -> dict:
+    evidence = {}
+    for row in projects:
+        if not isinstance(row, dict) or not isinstance(row.get("id"), str):
+            continue
+        project_id = row["id"]
+        checkpoint_path = root / project_id / ".autonomy" / "execution-checkpoint.json"
+        item = {"checkpoint_valid": False, "checkpoint_phase": None}
+        if checkpoint_path.is_file():
+            try:
+                checkpoint = load_execution_checkpoint(checkpoint_path)
+            except (OSError, ExecutionCheckpointError):
+                checkpoint = None
+            if isinstance(checkpoint, dict):
+                item = {
+                    "checkpoint_valid": True,
+                    "checkpoint_phase": checkpoint.get("phase"),
+                    "checkpoint_round": checkpoint.get("round"),
+                    "checkpoint_base_sha": checkpoint.get("base_sha"),
+                }
+        evidence[project_id] = item
+    return evidence
+
+
 def _capacity_band(value: int | None, *, unmetered: bool = False) -> str:
     if unmetered:
         return "unmetered"
@@ -298,6 +324,10 @@ def plan(
         decision = admission_by_id.get(row["id"], {})
         row["admission"] = decision
         row["admitted"] = decision.get("admitted") is True
+    preemption_evidence = _preemption_evidence(root, report["projects"])
+    report["preemption"] = plan_preemption(report, preemption_evidence)
+    report["summary"]["preemption_candidates"] = int(report["preemption"]["summary"]["preempt"])
+    report["summary"]["preemption_blocked"] = int(report["preemption"]["summary"]["blocked"])
     report["provider_capacity"] = [
         {
             "name": item.name,

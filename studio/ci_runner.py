@@ -6,6 +6,7 @@ import signal
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import uuid
 
@@ -16,6 +17,7 @@ from orchestrator import run_project, run_registered_stages as _shared_run_regis
 from queue import matrix
 from fleet_capacity import persist as persist_capacity_plan
 from capacity_ledger import claim_preemption_lease, release as release_capacity_reservation
+from worker_heartbeat import renew_if_progressed
 
 
 def bounded_run(args, timeout):
@@ -56,6 +58,16 @@ def _admission_for_project(capacity_plan: dict, project_id: str) -> dict | None:
             admission = row.get("admission")
             return admission if isinstance(admission, dict) else None
     return None
+
+
+def _heartbeat_loop(stop_event, ledger_path, reservation_id, project_out, *, interval=60.0):
+    while not stop_event.wait(interval):
+        try:
+            result = renew_if_progressed(ledger_path, reservation_id, project_out)
+        except (OSError, ValueError):
+            continue
+        if result.get("reason") == "reservation_missing":
+            return
 
 
 def save_report(out, results):
@@ -129,6 +141,17 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
         save_report(out, results)
         with tempfile.TemporaryDirectory(prefix='studio-ci-') as work:
             project_out = out / project['id']
+            heartbeat_stop = None
+            heartbeat_thread = None
+            if isinstance(admission_claim, dict) and admission_claim.get("claimed") is True:
+                heartbeat_stop = threading.Event()
+                heartbeat_thread = threading.Thread(
+                    target=_heartbeat_loop,
+                    args=(heartbeat_stop, out / "capacity-ledger.json", admission_claim["reservation_id"], project_out),
+                    daemon=True,
+                    name="studio-capacity-heartbeat-" + project["id"],
+                )
+                heartbeat_thread.start()
             try:
                 result = _run_project_for_queue(project, project_out, work, runner, deadline, clock, baseline_sha)
                 results[index]['status'] = result['status']
@@ -142,6 +165,10 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
                 results[index]['status'] = 'worker_error'
                 deadline = 0
             finally:
+                if heartbeat_stop is not None:
+                    heartbeat_stop.set()
+                if heartbeat_thread is not None:
+                    heartbeat_thread.join(timeout=2.0)
                 if isinstance(admission_claim, dict) and admission_claim.get("claimed") is True:
                     released = release_capacity_reservation(
                         out / "capacity-ledger.json",

@@ -190,7 +190,7 @@ def validate_trigger_concurrency_text(text: str) -> dict:
                 if b: push_branches=[b.group(1)]
         if in_concurrency:
             m=re.match(r"^  (group|cancel-in-progress):\s*(.+?)\s*$",code)
-            if m: concurrency[m.group(1)]=m.group(2).strip().strip("'\\"")
+            if m: concurrency[m.group(1)]=m.group(2).strip().strip("'\\\"")
     expected_triggers={"push","pull_request"}
     if triggers!=expected_triggers:
         violations.append({"reason":"workflow_triggers_not_exact","expected":sorted(expected_triggers),"actual":sorted(triggers)})

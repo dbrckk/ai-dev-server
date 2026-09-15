@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -28,6 +29,7 @@ class ProviderCapacity:
     reliability: float = 0.5
     latency_ms: float | None = None
     cost_per_million_tokens: float = 0.0
+    circuit_open: bool = False
 
     @property
     def tier(self) -> int:
@@ -140,7 +142,10 @@ def allocate(
 ) -> dict:
     """Allocate project envelopes and provider order for one scheduling cycle."""
     cleaned = [item for row in projects if (item := _clean_project(row)) is not None]
-    ordered_providers = sorted(providers, key=lambda p: (p.tier, -p.adaptive_score, p.name))
+    ordered_providers = sorted(
+        (provider for provider in providers if not provider.circuit_open),
+        key=lambda p: (p.tier, -p.adaptive_score, p.name),
+    )
     has_unmetered = any(p.unmetered for p in ordered_providers)
 
     try:
@@ -239,7 +244,10 @@ def allocate(
     }
 
 
-def provider_capacities(rows: list[dict], *, health_data: dict | None = None) -> list[ProviderCapacity]:
+def provider_capacities(
+    rows: list[dict], *, health_data: dict | None = None, now: float | None = None
+) -> list[ProviderCapacity]:
+    current_time = time.time() if now is None else float(now)
     result = []
     for row in rows:
         if not isinstance(row, dict):
@@ -281,6 +289,12 @@ def provider_capacities(rows: list[dict], *, health_data: dict | None = None) ->
             cost = max(0.0, float(row.get("cost_per_million_tokens", 0.0) or 0.0))
         except (TypeError, ValueError):
             cost = 0.0
+        circuit_open = False
+        if isinstance(empirical, dict):
+            try:
+                circuit_open = float(empirical.get("opened_until", 0.0) or 0.0) > current_time
+            except (TypeError, ValueError):
+                circuit_open = False
         result.append(ProviderCapacity(
             name=name,
             available_tokens=available,
@@ -290,6 +304,7 @@ def provider_capacities(rows: list[dict], *, health_data: dict | None = None) ->
             reliability=reliability,
             latency_ms=latency,
             cost_per_million_tokens=cost,
+            circuit_open=circuit_open,
         ))
     return result
 

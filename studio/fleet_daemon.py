@@ -13,6 +13,7 @@ from fleet_maintenance import run as maintain
 from fleet_metrics import append as append_metrics, snapshot
 from fleet_regression import evaluate as evaluate_regression
 from fleet_supervisor_apply import execute as apply_supervisor
+from preemption_apply import execute as apply_preemption
 
 MIN_INTERVAL_SECONDS = 30.0
 
@@ -22,6 +23,7 @@ def tick(
     request_dir: Path | str = "control/mobile-requests",
     *,
     apply_restarts: bool = False,
+    apply_preemptions: bool = False,
     max_restarts: int = 2,
     history: Path | str | None = None,
 ) -> dict:
@@ -34,6 +36,12 @@ def tick(
     regression = evaluate_regression(history)
     maintenance = maintain(root)
     capacity = persist_capacity_plan(root, request_dir)
+    preemption = apply_preemption(
+        root,
+        apply=apply_preemptions and not regression.get("regressed", False),
+    )
+    if preemption.get("preemptions_executed", 0):
+        capacity = persist_capacity_plan(root, request_dir)
     capacity_ledger = capacity_ledger_snapshot(root / "capacity-ledger.json")
 
     supervisor = apply_supervisor(
@@ -53,6 +61,7 @@ def tick(
             "rebalance": capacity.get("rebalance", {}),
             "ledger": capacity_ledger,
         },
+        "preemption": preemption,
         "supervisor": {
             "apply": supervisor["apply"],
             "restarts_executed": supervisor["restarts_executed"],
@@ -80,6 +89,7 @@ def run_loop(
                 root,
                 request_dir,
                 apply_restarts=apply_restarts,
+                apply_preemptions=apply_preemptions,
                 max_restarts=max_restarts,
             )
         )
@@ -96,6 +106,7 @@ def main(argv=None) -> int:
     parser.add_argument("--request-dir", default="control/mobile-requests")
     parser.add_argument("--interval-seconds", type=float, default=300.0)
     parser.add_argument("--apply-restarts", action="store_true")
+    parser.add_argument("--apply-preemptions", action="store_true")
     parser.add_argument("--max-restarts", type=int, default=2)
     parser.add_argument("--once", action="store_true")
     args = parser.parse_args(argv)
@@ -105,6 +116,7 @@ def main(argv=None) -> int:
             args.root,
             args.request_dir,
             apply_restarts=args.apply_restarts,
+            apply_preemptions=args.apply_preemptions,
             max_restarts=args.max_restarts,
         )
         print(json.dumps(report, sort_keys=True))
@@ -115,6 +127,7 @@ def main(argv=None) -> int:
         args.request_dir,
         interval_seconds=args.interval_seconds,
         apply_restarts=args.apply_restarts,
+        apply_preemptions=args.apply_preemptions,
         max_restarts=args.max_restarts,
     )
     return 0

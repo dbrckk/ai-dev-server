@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
-from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow_run_commands_text, validate_workflow, validate_workflow_text, validate_yaml_surface_text, validate_workflow_schema_text, validate_step_inputs_env_text, workflow_semantic_manifest_text, validate_trigger_concurrency_text, validate_exact_job_steps_text
+from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow_run_commands_text, validate_workflow, validate_workflow_text, validate_yaml_surface_text, validate_workflow_schema_text, validate_step_inputs_env_text, workflow_semantic_manifest_text, validate_trigger_concurrency_text, validate_exact_job_steps_text, workflow_job_ids_text
 
 class ReplacementCIPolicyTests(unittest.TestCase):
     def test_repository_ci_exposes_required_check_ids(self):

@@ -70,7 +70,7 @@ from local_model_leaderboard import leaderboards as local_model_leaderboards
 from model_portfolio import choose as choose_model_portfolio
 from model_portfolio_audit import audit as audit_model_portfolio
 from portfolio_candidate_scheduler import choose_schedule as choose_candidate_schedule
-from adaptive_role_allocator import choose_role_allocation, planning_required
+from adaptive_role_allocator import budget_pressure, choose_role_allocation, planning_required
 from adaptive_phase_policy import planning_phase_decision, review_phase_decision
 from candidate_portfolio_learning import (
     load as load_candidate_portfolio_learning,
@@ -491,6 +491,20 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             require_planning=round_require_planning,
             brief=req["brief"],
         )
+        planning_decision = {
+            "model_launched": bool(planning_policy["launch_model"]),
+            "adaptive_skipped": not bool(planning_policy["launch_model"]),
+            "require_planning": round_require_planning,
+            "difficulty": round(normalized_difficulty, 4),
+            "budget_pressure": round(
+                budget_pressure(
+                    remaining_seconds=preplan_remaining,
+                    verification_seconds=verification_seconds,
+                ),
+                4,
+            ),
+            "reason": planning_policy["reason"],
+        }
         if planning_policy["launch_model"]:
             planning_timeout = bounded_timeout(
                 preplan_quotas.planning,
@@ -1842,6 +1856,7 @@ Objective and current plan:
         round_state = {
             "round": round_index,
             "plan": plan,
+            "planning_decision": planning_decision,
             "changed_files": changed,
             "verification": verification,
             "review": review,

@@ -14,14 +14,23 @@ def planning_phase_decision(
     to model planning rather than inventing a plan without a usable objective.
     """
     if require_planning:
-        return {"launch_model": True, "plan": None}
+        return {
+            "launch_model": True,
+            "plan": None,
+            "reason": "adaptive planning required",
+        }
 
     if not isinstance(brief, str) or not brief.strip():
-        return {"launch_model": True, "plan": None}
+        return {
+            "launch_model": True,
+            "plan": None,
+            "reason": "invalid brief requires model planning",
+        }
 
     objective = brief.strip()
     return {
         "launch_model": False,
+        "reason": "adaptive policy skipped model planning",
         "plan": {
             "objective": objective,
             "work_items": [

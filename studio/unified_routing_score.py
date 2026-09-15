@@ -1,7 +1,7 @@
 """Unified bounded provider routing score. Hard eligibility remains external/fail-closed."""
 from __future__ import annotations
 
-from provider_health import reliability_bonus
+from provider_health import reliability_bonus, scoped_reliability
 from provider_metrics import latency_bonus
 from provider_runtime_reliability import routing_bonus as runtime_bonus
 from routing_calibration import adjustment as calibration_adjustment
@@ -23,7 +23,12 @@ def score(
     free_bonus = 8.0 if bool(getattr(provider, "free_preferred", False)) else 0.0
     unmetered_bonus = 10.0 if bool(getattr(provider, "unmetered", False)) else 0.0
     quota_bonus = 5.0 if int(getattr(provider, "monthly_token_quota", 0) or 0) > 0 else 0.0
-    health_signal = max(-20.0, min(20.0, reliability_bonus(health or {}, provider.name)))
+    health_data = health or {}
+    health_signal = max(-20.0, min(20.0, reliability_bonus(health_data, provider.name)))
+    specialized_rate = scoped_reliability(
+        health_data, provider.name, model=model, role=role
+    )
+    specialized_health_signal = max(-12.0, min(12.0, (specialized_rate - 0.5) * 24.0))
     latency_signal = max(-12.0, min(12.0, latency_bonus(metrics or {}, provider.name, role)))
     runtime_signal = max(-12.0, min(12.0, runtime_bonus(runtime or {}, provider.name, model)))
     context_signal = max(-18.0, min(12.0, float(contextual_adjustment or 0.0)))
@@ -31,7 +36,7 @@ def score(
     calibration_signal = calibration_adjustment(calibration or {}, provider.name, model)
     total = (
         base + free_bonus + unmetered_bonus + quota_bonus
-        + health_signal + latency_signal + runtime_signal
+        + health_signal + specialized_health_signal + latency_signal + runtime_signal
         + context_signal + exploration_signal + calibration_signal
     )
     return {
@@ -42,6 +47,7 @@ def score(
             "unmetered": unmetered_bonus,
             "quota": quota_bonus,
             "health": health_signal,
+            "specialized_health": specialized_health_signal,
             "latency": latency_signal,
             "runtime_reliability": runtime_signal,
             "context": context_signal,

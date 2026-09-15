@@ -7,6 +7,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 import capacity_ledger as ledger
 
+reserve = ledger.reserve
+load = ledger.load
+reserved_tokens = ledger.reserved_tokens
+
 
 class CapacityLedgerTests(unittest.TestCase):
     def test_provider_capacity_cannot_be_double_reserved(self):
@@ -121,7 +125,6 @@ class CapacityLedgerTests(unittest.TestCase):
             self.assertTrue(second["admitted"])
             self.assertEqual(second["reaped"], 1)
 
-
     def test_release_project_releases_only_owned_reservations(self):
         from capacity_ledger import release_project
         with tempfile.TemporaryDirectory() as td:
@@ -138,7 +141,6 @@ class CapacityLedgerTests(unittest.TestCase):
             remaining = load(path)["reservations"]
             self.assertEqual(len(remaining), 1)
             self.assertEqual(next(iter(remaining.values()))["project_id"], "b")
-
 
     def test_atomic_preemption_transfer_releases_victim_and_leases_contender(self):
         from capacity_ledger import transfer_project_reservations
@@ -160,8 +162,6 @@ class CapacityLedgerTests(unittest.TestCase):
             lease = next(iter(data["reservations"].values()))
             self.assertEqual(lease["kind"], "preemption_admission_lease")
             self.assertEqual(lease["victim_project_id"], "low")
-
-
 
     def test_claim_preemption_lease_converts_lease_to_worker_reservation(self):
         from capacity_ledger import transfer_project_reservations, claim_preemption_lease
@@ -201,8 +201,6 @@ class CapacityLedgerTests(unittest.TestCase):
             self.assertEqual(claim["reason"], "preemption_lease_missing")
             self.assertFalse(load(path)["reservations"])
 
-
-
     def test_worker_heartbeat_renews_only_on_progress(self):
         from capacity_ledger import transfer_project_reservations, claim_preemption_lease, heartbeat
         with tempfile.TemporaryDirectory() as td:
@@ -235,7 +233,6 @@ class CapacityLedgerTests(unittest.TestCase):
             self.assertTrue(advanced["renewed"])
             self.assertEqual(advanced["heartbeat_count"], 2)
             self.assertEqual(advanced["expires_at"], 280)
-
 
 
 if __name__ == "__main__":

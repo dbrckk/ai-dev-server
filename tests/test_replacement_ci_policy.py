@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
-from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow, validate_workflow_text
+from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow_run_commands_text, validate_workflow, validate_workflow_text
 
 class ReplacementCIPolicyTests(unittest.TestCase):
     def test_repository_ci_exposes_required_check_ids(self):
@@ -223,6 +223,31 @@ class ReplacementCIPolicyTests(unittest.TestCase):
         root=Path(__file__).resolve().parents[1]
         result=validate_workflow_expression_policy_text((root/".github/workflows/ci.yml").read_text())
         self.assertTrue(result["valid"],result)
+
+    def test_run_policy_accepts_repository_ci(self):
+        root=Path(__file__).resolve().parents[1]
+        result=validate_workflow_run_commands_text((root/".github/workflows/ci.yml").read_text())
+        self.assertTrue(result["valid"],result)
+
+    def test_run_policy_rejects_network_download(self):
+        result=validate_workflow_run_commands_text("jobs:\n  validate:\n    steps:\n      - run: curl https://example.invalid/file\n")
+        self.assertFalse(result["valid"])
+
+    def test_run_policy_rejects_runtime_dependency_install(self):
+        result=validate_workflow_run_commands_text("jobs:\n  validate:\n    steps:\n      - run: pip install example\n")
+        self.assertFalse(result["valid"])
+
+    def test_run_policy_rejects_github_command_file(self):
+        result=validate_workflow_run_commands_text("jobs:\n  validate:\n    steps:\n      - run: echo X=1 >> $GITHUB_ENV\n")
+        self.assertFalse(result["valid"])
+
+    def test_run_policy_rejects_expression_in_command(self):
+        result=validate_workflow_run_commands_text("jobs:\n  validate:\n    steps:\n      - run: echo ${{ github.ref }}\n")
+        self.assertFalse(result["valid"])
+
+    def test_run_policy_rejects_untrusted_shell(self):
+        result=validate_workflow_run_commands_text("jobs:\n  validate:\n    steps:\n      - shell: pwsh\n        run: echo ok\n")
+        self.assertFalse(result["valid"])
 
 if __name__=="__main__":
     unittest.main()

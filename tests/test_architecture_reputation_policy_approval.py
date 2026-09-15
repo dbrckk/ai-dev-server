@@ -4,6 +4,7 @@ from pathlib import Path
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 from architecture_reputation_policy_approval import *
+from replacement_ci_policy import validate_workflow_text
 
 class ApprovalProvenanceTests(unittest.TestCase):
     def approval(self,reinforced=False):
@@ -27,6 +28,11 @@ class ApprovalProvenanceTests(unittest.TestCase):
         ledger=copy.deepcopy(ledger);ledger["events"][0]["applied_at"]=99
         self.assertFalse(validate_ledger(ledger)["valid"])
 
+    def canonical_workflow_file(self):
+        raw=(Path(__file__).resolve().parents[1]/".github/workflows/ci.yml").read_bytes()
+        validation=validate_workflow_text(raw.decode("utf-8"))
+        return {"path":".github/workflows/ci.yml","blob_sha":"blob123","size":len(raw),"sha256":hashlib.sha256(raw).hexdigest(),"semantic_digest":validation["semantic_digest"],"content_b64":base64.b64encode(raw).decode(),"policy_validation":validation}
+
     def github_attestation(self,reinforced=False):
         a={
             "repository":"dbrckk/ai-dev-server","commit_sha":"abc","reviewed_commit_sha":"abc",
@@ -35,7 +41,7 @@ class ApprovalProvenanceTests(unittest.TestCase):
             "head_commit_timestamp":1767225600.0,
             "pr_identity":{"number":42,"state":"open","draft":False,"head_ref":"policy/migration","head_sha":"abc","base_ref":"main","author":"author"},
             "required_checks":{"valid":True,"required_checks":["validate","python-tests"],"passed_checks":["validate","python-tests"],"missing_checks":[],"incomplete_checks":[],"failed_checks":[],"stale_checks":[],"workflow_run_ids":[99],"common_workflow_run_id":99,"mixed_workflow_runs":False,"check_evidence":{"validate":{"id":1,"head_sha":"abc","timestamp":1767225630.0,"status":"completed","conclusion":"success","workflow_run_id":99},"python-tests":{"id":2,"head_sha":"abc","timestamp":1767225640.0,"status":"completed","conclusion":"success","workflow_run_id":99}}},
-            "workflow_file":{"path":".github/workflows/ci.yml","blob_sha":"blob123","size":73,"sha256":hashlib.sha256(base64.b64decode("bmFtZTogQ0kKcGVybWlzc2lvbnM6CiAgY29udGVudHM6IHJlYWQKam9iczoKICB2YWxpZGF0ZToKICBweXRob24tdGVzdHM6Cg==")).hexdigest(),"content_b64":"bmFtZTogQ0kKcGVybWlzc2lvbnM6CiAgY29udGVudHM6IHJlYWQKam9iczoKICB2YWxpZGF0ZToKICBweXRob24tdGVzdHM6Cg==","policy_validation":{"valid":True}},
+            "workflow_file":self.canonical_workflow_file(),
             "workflow":{"head_sha":"abc","conclusion":"success","name":"CI","path":".github/workflows/ci.yml","timestamp":1767225625.0},
         }
         if reinforced:a["second_reviewer"]={"login":"bob","review_state":"APPROVED","permission":"maintain","submitted_at_epoch":1767225620.0}

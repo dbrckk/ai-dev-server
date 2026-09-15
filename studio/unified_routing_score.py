@@ -58,6 +58,8 @@ def score(
             "regime_change": bool(specialized["regime_change"]),
             "recent_success_rate": specialized["recent_success_rate"],
             "regime_penalty": float(specialized["regime_penalty"]),
+            "recovery_detected": bool(specialized["recovery_detected"]),
+            "recovery_bonus": float(specialized["recovery_bonus"]),
             "specialized_observations": int(specialized["observations"]),
             "latency": latency_signal,
             "runtime_reliability": runtime_signal,

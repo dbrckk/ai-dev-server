@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
-from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow, validate_workflow_text
+from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow, validate_workflow_text
 
 class ReplacementCIPolicyTests(unittest.TestCase):
     def test_repository_ci_exposes_required_check_ids(self):
@@ -70,7 +70,7 @@ class ReplacementCIPolicyTests(unittest.TestCase):
         self.assertIsNone(result["common_workflow_run_id"])
 
     def test_workflow_text_requires_canonical_name_and_jobs(self):
-        result=validate_workflow_text("name: CI\njobs:\n  validate:\n  python-tests:\n")
+        result=validate_workflow_text("name: CI\npermissions:\n  contents: read\njobs:\n  validate:\n  python-tests:\n")
         self.assertTrue(result["valid"])
         self.assertEqual(result["workflow_name"],"CI")
 
@@ -79,7 +79,7 @@ class ReplacementCIPolicyTests(unittest.TestCase):
         self.assertFalse(result["valid"])
 
     def test_workflow_text_rejects_missing_required_job(self):
-        result=validate_workflow_text("name: CI\njobs:\n  python-tests:\n")
+        result=validate_workflow_text("name: CI\npermissions:\n  contents: read\njobs:\n  python-tests:\n")
         self.assertFalse(result["valid"])
         self.assertIn("validate",result["missing_checks"])
 
@@ -140,6 +140,39 @@ class ReplacementCIPolicyTests(unittest.TestCase):
         result=validate_action_pinning_text("jobs:\n  validate:\n    steps:\n      - uses: ./local-action\n")
         self.assertFalse(result["valid"])
         self.assertEqual(result["violations"][0]["reason"],"local_action_not_allowlisted")
+
+    def test_workflow_permissions_are_exact_least_privilege(self):
+        result=validate_workflow_permissions_text("permissions:\n  contents: read\njobs:\n")
+        self.assertTrue(result["valid"],result)
+        self.assertEqual(result["workflow_permissions"],{"contents":"read"})
+
+    def test_workflow_write_permission_is_rejected(self):
+        result=validate_workflow_permissions_text("permissions:\n  contents: write\njobs:\n")
+        self.assertFalse(result["valid"])
+        self.assertEqual(result["violations"][0]["reason"],"workflow_permissions_not_exact")
+
+    def test_extra_sensitive_permission_is_rejected(self):
+        result=validate_workflow_permissions_text(
+            "permissions:\n  contents: read\n  id-token: write\njobs:\n"
+        )
+        self.assertFalse(result["valid"])
+
+    def test_job_permission_override_is_rejected(self):
+        result=validate_workflow_permissions_text(
+            "permissions:\n"
+            "  contents: read\n"
+            "jobs:\n"
+            "  validate:\n"
+            "    permissions:\n"
+            "      contents: write\n"
+        )
+        self.assertFalse(result["valid"])
+        self.assertEqual(result["violations"][-1]["reason"],"job_permissions_override_forbidden")
+
+    def test_missing_explicit_permissions_is_rejected(self):
+        result=validate_workflow_permissions_text("name: CI\njobs:\n  validate:\n")
+        self.assertFalse(result["valid"])
+        self.assertIsNone(result["workflow_permissions"])
 
 if __name__=="__main__":
     unittest.main()

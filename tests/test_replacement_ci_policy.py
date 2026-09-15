@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
-from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow_run_commands_text, validate_workflow, validate_workflow_text, validate_yaml_surface_text
+from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow_run_commands_text, validate_workflow, validate_workflow_text, validate_yaml_surface_text, validate_workflow_schema_text
 
 class ReplacementCIPolicyTests(unittest.TestCase):
     def test_repository_ci_exposes_required_check_ids(self):
@@ -271,6 +271,27 @@ class ReplacementCIPolicyTests(unittest.TestCase):
         root=Path(__file__).resolve().parents[1]
         result=validate_yaml_surface_text((root/".github/workflows/ci.yml").read_text())
         self.assertTrue(result["valid"],result)
+
+    def test_schema_rejects_unknown_root_job_and_step_keys(self):
+        samples=(
+            "name: CI\nunknown: true\n",
+            "jobs:\n  validate:\n    runs-on: ubuntu-latest\n    mystery: true\n",
+            "jobs:\n  validate:\n    steps:\n      - mystery: true\n",
+        )
+        for text in samples:
+            result=validate_workflow_schema_text(text)
+            self.assertFalse(result["valid"],result)
+
+    def test_schema_accepts_repository_ci(self):
+        root=Path(__file__).resolve().parents[1]
+        result=validate_workflow_schema_text((root/".github/workflows/ci.yml").read_text())
+        self.assertTrue(result["valid"],result)
+
+    def test_schema_allowlists_are_reported(self):
+        result=validate_workflow_schema_text("name: CI\n")
+        self.assertEqual(result["allowed_root_keys"],["jobs","name","on","permissions"])
+        self.assertIn("runs-on",result["allowed_job_keys"])
+        self.assertIn("uses",result["allowed_step_keys"])
 
 if __name__=="__main__":
     unittest.main()

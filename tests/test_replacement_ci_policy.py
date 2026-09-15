@@ -174,5 +174,29 @@ class ReplacementCIPolicyTests(unittest.TestCase):
         self.assertFalse(result["valid"])
         self.assertIsNone(result["workflow_permissions"])
 
+    def test_runtime_policy_accepts_repository_ci(self):
+        root=Path(__file__).resolve().parents[1]
+        result=validate_workflow_runtime_text((root/".github/workflows/ci.yml").read_text())
+        self.assertTrue(result["valid"],result)
+
+    def test_pull_request_target_is_rejected(self):
+        result=validate_workflow_runtime_text("on:\n  pull_request_target:\njobs:\n")
+        self.assertFalse(result["valid"])
+
+    def test_container_is_rejected(self):
+        result=validate_workflow_runtime_text("jobs:\n  validate:\n    runs-on: ubuntu-latest\n    timeout-minutes: 5\n    container: python:3.12\n")
+        self.assertFalse(result["valid"])
+
+    def test_secret_expression_is_rejected(self):
+        result=validate_workflow_runtime_text("jobs:\n  validate:\n    runs-on: ubuntu-latest\n    timeout-minutes: 5\n    env:\n      TOKEN: ${{ secrets.TOKEN }}\n")
+        self.assertFalse(result["valid"])
+
+    def test_required_runner_and_timeout_are_exact(self):
+        result=validate_workflow_runtime_text("jobs:\n  validate:\n    runs-on: self-hosted\n    timeout-minutes: 30\n  python-tests:\n    runs-on: ubuntu-latest\n    timeout-minutes: 20\n")
+        self.assertFalse(result["valid"])
+        reasons={v["reason"] for v in result["violations"]}
+        self.assertIn("untrusted_job_runner",reasons)
+        self.assertIn("job_timeout_not_exact",reasons)
+
 if __name__=="__main__":
     unittest.main()

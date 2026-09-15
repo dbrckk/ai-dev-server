@@ -12,7 +12,7 @@ REQUIRED_GITHUB_CHECKS=frozenset({"validate","python-tests"})
 TRUSTED_CHECK_APP="github-actions"
 REQUIRED_WORKFLOW_NAME="CI"
 REQUIRED_WORKFLOW_PATH=".github/workflows/ci.yml"
-CI_TRUST_POLICY_VERSION=9
+CI_TRUST_POLICY_VERSION=10
 REQUIRED_WORKFLOW_PERMISSIONS={"contents":"read"}
 REQUIRED_JOB_RUNNER="ubuntu-latest"
 REQUIRED_JOB_TIMEOUTS={"validate":5,"python-tests":20}
@@ -35,6 +35,23 @@ RUN_ENV_ALLOWLIST={"PYTHONPATH":"studio"}
 REQUIRED_WORKFLOW_TRIGGERS={"push":{"branches":("main",)},"pull_request":{}}
 REQUIRED_CONCURRENCY_GROUP="ci-${{ github.workflow }}-${{ github.ref }}"
 REQUIRED_CONCURRENCY_CANCEL=True
+REQUIRED_JOB_STEP_FINGERPRINTS={
+    "validate":[
+        {"name":"Checkout","uses":"actions/checkout"},
+        {"name":"Set up Python","uses":"actions/setup-python"},
+        {"name":"Validate replacement reputation policy","run":"python studio/reputation_policy_check.py"},
+        {"name":"Validate replacement CI check policy","run":"python studio/replacement_ci_policy_check.py .github/workflows/ci.yml"},
+        {"name":"Run exhaustive reputation state-machine tests","run":"python -m unittest discover -s tests -p \"test_architecture_replacement_reputation_state_machine.py\" -v"},
+        {"name":"Run reputation policy migration safety tests","run":"python -m unittest discover -s tests -p \"test_architecture_reputation_policy_migration*.py\" -v"},
+        {"name":"Run GitHub approval attestation tests","run":"python -m unittest discover -s tests -p \"test_architecture_reputation_policy_approval.py\" -v\npython -m unittest discover -s tests -p \"test_architecture_reputation_policy_github_*.py\" -v"},
+    ],
+    "python-tests":[
+        {"name":"Checkout","uses":"actions/checkout"},
+        {"name":"Set up Python","uses":"actions/setup-python"},
+        {"name":"Compile studio","run":"python -m compileall -q studio tests"},
+        {"name":"Run unit tests","run":"python -m unittest discover -s tests -p \"test_*.py\" -v"},
+    ],
+}
 
 # Explicit allowlist: third-party actions and mutable refs are fail-closed.
 TRUSTED_ACTION_REVISIONS={
@@ -69,6 +86,7 @@ def ci_trust_policy_digest() -> str:
         "required_workflow_triggers":{"push":{"branches":["main"]},"pull_request":{}},
         "required_concurrency_group":REQUIRED_CONCURRENCY_GROUP,
         "required_concurrency_cancel":REQUIRED_CONCURRENCY_CANCEL,
+        "required_job_step_fingerprints":REQUIRED_JOB_STEP_FINGERPRINTS,
     }
     return hashlib.sha256(
         json.dumps(payload,sort_keys=True,separators=(",",":")).encode("utf-8")
@@ -241,6 +259,58 @@ def validate_step_inputs_env_text(text: str) -> dict:
             if code.strip() and len(code)-len(code.lstrip(" "))<=mode_indent:
                 mode=None
     return {"valid":not violations,"action_with_allowlist":{k:sorted(v) for k,v in ACTION_WITH_ALLOWLIST.items()},"run_env_allowlist":dict(RUN_ENV_ALLOWLIST),"violations":violations}
+
+def validate_exact_job_steps_text(text: str) -> dict:
+    violations=[]
+    jobs={}
+    current_job=None
+    current_step=None
+    in_jobs=False
+    lines=text.splitlines()
+    i=0
+    while i<len(lines):
+        line=lines[i]
+        if line=="jobs:":
+            in_jobs=True; i+=1; continue
+        if in_jobs and line and not line.startswith(" "):
+            break
+        if not in_jobs:
+            i+=1; continue
+        jm=re.match(r"^  ([A-Za-z0-9_-]+):\s*$",line)
+        if jm:
+            current_job=jm.group(1); jobs[current_job]=[]; current_step=None; i+=1; continue
+        sm=re.match(r"^      - name:\s*(.+?)\s*$",line)
+        if sm and current_job:
+            current_step={"name":sm.group(1).strip().strip("'\"")}
+            jobs[current_job].append(current_step); i+=1; continue
+        if current_step:
+            um=re.match(r"^        uses:\s*([^#\s]+)",line)
+            if um:
+                value=um.group(1).strip().strip("'\"")
+                current_step["uses"]=value.rsplit("@",1)[0] if "@" in value else value
+            rm=re.match(r"^        run:\s*(.*)$",line)
+            if rm:
+                tail=rm.group(1).strip()
+                if tail in {"|",">","|-",">-"}:
+                    body=[]; i+=1
+                    while i<len(lines):
+                        child=lines[i]
+                        if child.strip() and len(child)-len(child.lstrip(" "))<=8:
+                            i-=1; break
+                        if child.strip():
+                            body.append(child[10:] if child.startswith("          ") else child.strip())
+                        i+=1
+                    current_step["run"]="\n".join(body).strip()
+                else:
+                    current_step["run"]=tail.strip().strip("'\"")
+        i+=1
+    if set(jobs)!=set(REQUIRED_JOB_STEP_FINGERPRINTS):
+        violations.append({"reason":"job_set_not_exact","expected":sorted(REQUIRED_JOB_STEP_FINGERPRINTS),"actual":sorted(jobs)})
+    for job,expected in REQUIRED_JOB_STEP_FINGERPRINTS.items():
+        actual=jobs.get(job)
+        if actual is not None and actual!=expected:
+            violations.append({"reason":"job_steps_not_exact","job":job,"expected":expected,"actual":actual})
+    return {"valid":not violations,"jobs":jobs,"violations":violations}
 
 def _scalar_yaml_value(value: str):
     value=value.split("#",1)[0].strip().strip("'\"").lower()
@@ -565,6 +635,7 @@ def validate_workflow_text(text: str) -> dict:
     schema_policy=validate_workflow_schema_text(text)
     input_env_policy=validate_step_inputs_env_text(text)
     trigger_concurrency_policy=validate_trigger_concurrency_text(text)
+    exact_steps_policy=validate_exact_job_steps_text(text)
     jobs=workflow_job_ids_text(text)
     missing=sorted(REQUIRED_GITHUB_CHECKS-jobs)
     name_match=re.search(r"(?m)^name:\s*([^#\n]+?)\s*$",text)
@@ -580,6 +651,7 @@ def validate_workflow_text(text: str) -> dict:
             and schema_policy["valid"]
             and input_env_policy["valid"]
             and trigger_concurrency_policy["valid"]
+            and exact_steps_policy["valid"]
             and not missing
             and workflow_name==REQUIRED_WORKFLOW_NAME
             and action_policy["valid"]

@@ -135,6 +135,45 @@ def _finite_capacity(providers: list[ProviderCapacity]) -> int:
     )
 
 
+def _weighted_work_conserving(projects: list[dict], capacity: int) -> dict[str, int]:
+    """Distribute finite capacity by weight without stranding capacity at capped peers."""
+    remaining = max(0, int(capacity))
+    allocations = {project["id"]: 0 for project in projects}
+    pending = [
+        project
+        for project in projects
+        if not project.get("capacity_paused") and int(project.get("_max_envelope", 0)) > 0
+    ]
+
+    while remaining > 0 and pending:
+        total_weight = sum(_weight(project) for project in pending) or 1.0
+        available_at_start = remaining
+        progressed = 0
+
+        for project in list(pending):
+            project_id = project["id"]
+            cap = max(0, int(project.get("_max_envelope", 0)))
+            room = max(0, cap - allocations[project_id])
+            if room == 0:
+                pending.remove(project)
+                continue
+
+            share = max(1, int(available_at_start * (_weight(project) / total_weight)))
+            grant = min(room, share, remaining)
+            allocations[project_id] += grant
+            remaining -= grant
+            progressed += grant
+            if allocations[project_id] >= cap:
+                pending.remove(project)
+            if remaining <= 0:
+                break
+
+        if progressed == 0:
+            break
+
+    return allocations
+
+
 def allocate(
     projects: list[dict],
     providers: list[ProviderCapacity],
@@ -171,11 +210,8 @@ def allocate(
     reserve = int(finite * reserve_ratio)
     ordinary_pool = max(0, finite - reserve)
 
-    total_weight = sum(_weight(project) for project in cleaned) or 1.0
-    allocations = []
-
+    prepared = []
     for project in cleaned:
-        weight = _weight(project)
         requested = project["requested_tokens"]
         stagnation_cap = max(
             0,
@@ -184,7 +220,32 @@ def allocate(
                 min(1.0, float(project.get("stagnation_multiplier", 1.0) or 0.0)),
             )),
         )
-        max_envelope = min(requested, stagnation_cap)
+        prepared.append({
+            **project,
+            "_max_envelope": min(requested, stagnation_cap),
+        })
+
+    reserve_allocations: dict[str, int] = {project["id"]: 0 for project in prepared}
+    shared_allocations: dict[str, int] = {project["id"]: 0 for project in prepared}
+
+    if not has_unmetered:
+        critical_projects = [project for project in prepared if project["critical"]]
+        reserve_allocations.update(_weighted_work_conserving(critical_projects, reserve))
+
+        shared_projects = []
+        for project in prepared:
+            already_reserved = reserve_allocations.get(project["id"], 0)
+            shared_projects.append({
+                **project,
+                "_max_envelope": max(0, int(project["_max_envelope"]) - already_reserved),
+            })
+        shared_allocations = _weighted_work_conserving(shared_projects, ordinary_pool)
+
+    allocations = []
+    for project in prepared:
+        weight = _weight(project)
+        requested = project["requested_tokens"]
+        max_envelope = int(project["_max_envelope"])
 
         if project.get("capacity_paused"):
             envelope = 0
@@ -193,9 +254,11 @@ def allocate(
             envelope = max_envelope
             constrained = envelope < requested
         else:
-            pool = finite if project["critical"] else ordinary_pool
-            fair_share = int(pool * (weight / total_weight))
-            envelope = min(max_envelope, max(0, fair_share))
+            envelope = min(
+                max_envelope,
+                reserve_allocations.get(project["id"], 0)
+                + shared_allocations.get(project["id"], 0),
+            )
             constrained = envelope < requested
 
         provider_order = []
@@ -226,7 +289,7 @@ def allocate(
             })
 
         allocations.append({
-            **project,
+            **{key: value for key, value in project.items() if not key.startswith("_")},
             "weight": round(weight, 3),
             "token_envelope": envelope,
             "constrained": constrained,

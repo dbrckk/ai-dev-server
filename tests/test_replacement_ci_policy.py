@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
-from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow_run_commands_text, validate_workflow, validate_workflow_text, validate_yaml_surface_text, validate_workflow_schema_text
+from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow_run_commands_text, validate_workflow, validate_workflow_text, validate_yaml_surface_text, validate_workflow_schema_text, validate_step_inputs_env_text
 
 class ReplacementCIPolicyTests(unittest.TestCase):
     def test_repository_ci_exposes_required_check_ids(self):
@@ -292,6 +292,33 @@ class ReplacementCIPolicyTests(unittest.TestCase):
         self.assertEqual(result["allowed_root_keys"],["jobs","name","on","permissions"])
         self.assertIn("runs-on",result["allowed_job_keys"])
         self.assertIn("uses",result["allowed_step_keys"])
+
+    def test_step_inputs_env_accepts_repository_ci(self):
+        root=Path(__file__).resolve().parents[1]
+        result=validate_step_inputs_env_text((root/".github/workflows/ci.yml").read_text())
+        self.assertTrue(result["valid"],result)
+
+    def test_setup_python_only_accepts_312(self):
+        text="jobs:\n  validate:\n    steps:\n      - name: Setup\n        uses: actions/setup-python@sha\n        with:\n          python-version: \"3.13\"\n"
+        result=validate_step_inputs_env_text(text)
+        self.assertFalse(result["valid"])
+        self.assertEqual(result["violations"][0]["reason"],"unapproved_action_input_value")
+
+    def test_unknown_action_input_is_rejected(self):
+        text="jobs:\n  validate:\n    steps:\n      - name: Setup\n        uses: actions/setup-python@sha\n        with:\n          cache: pip\n"
+        result=validate_step_inputs_env_text(text)
+        self.assertFalse(result["valid"])
+
+    def test_checkout_inputs_are_fail_closed(self):
+        text="jobs:\n  validate:\n    steps:\n      - name: Checkout\n        uses: actions/checkout@sha\n        with:\n          persist-credentials: true\n"
+        result=validate_step_inputs_env_text(text)
+        self.assertFalse(result["valid"])
+
+    def test_run_env_only_allows_static_pythonpath(self):
+        good="jobs:\n  validate:\n    steps:\n      - name: Test\n        env:\n          PYTHONPATH: studio\n        run: python -m unittest\n"
+        bad="jobs:\n  validate:\n    steps:\n      - name: Test\n        env:\n          TOKEN: value\n        run: python -m unittest\n"
+        self.assertTrue(validate_step_inputs_env_text(good)["valid"])
+        self.assertFalse(validate_step_inputs_env_text(bad)["valid"])
 
 if __name__=="__main__":
     unittest.main()

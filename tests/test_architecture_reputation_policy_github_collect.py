@@ -49,7 +49,7 @@ class GitHubAttestationCollectorTests(unittest.TestCase):
             if "/actions/runs?" in url:
                 return {"workflow_runs":[{"id":99,"head_sha":"a"*40,"conclusion":"success","name":"CI","path":".github/workflows/ci.yml@refs/pull/7/merge","created_at":"2026-01-01T00:00:25Z"}]}
             if "/contents/.github/workflows/ci.yml?ref=" in url:
-                raw=b"name: CI\njobs:\n  validate:\n  python-tests:\n"
+                raw=b"name: CI\npermissions:\n  contents: read\njobs:\n  validate:\n  python-tests:\n"
                 return {
                     "path":".github/workflows/ci.yml",
                     "sha":"blob123",
@@ -71,6 +71,21 @@ class GitHubAttestationCollectorTests(unittest.TestCase):
         with patch.object(collector,"_request",side_effect=self.fake_request(True)):
             result=collector.collect(self.plan(True),token="t",repository="o/r",pull_request=7)
         self.assertEqual(result["second_reviewer"]["login"],"bob")
+
+    def test_collect_rejects_write_permissions(self):
+        base=self.fake_request(False)
+        def req(url,token,method="GET",payload=None,allow_404=False):
+            if "/contents/.github/workflows/ci.yml?ref=" in url:
+                raw=b"name: CI\npermissions:\n  contents: write\njobs:\n  validate:\n  python-tests:\n"
+                return {
+                    "path":".github/workflows/ci.yml",
+                    "sha":"blob123","encoding":"base64",
+                    "content":base64.b64encode(raw).decode(),
+                }
+            return base(url,token,method,payload,allow_404)
+        with patch.object(collector,"_request",side_effect=req):
+            with self.assertRaises(collector.GitHubAttestationCollectionError):
+                collector.collect(self.plan(False),token="t",repository="o/r",pull_request=7)
 
     def test_collect_rejects_mutable_action_reference(self):
         base=self.fake_request(False)

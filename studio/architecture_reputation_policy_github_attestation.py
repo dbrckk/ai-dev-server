@@ -49,152 +49,82 @@ def _timestamp(value) -> float | None:
 def _submitted_at(review):
     if not isinstance(review,dict):
         return None
-    return (
-        review.get("submitted_at")
-        or review.get("submittedAt")
-        or review.get("created_at")
-        or review.get("createdAt")
-    )
+    return review.get("submitted_at") or review.get("submittedAt") or review.get("created_at") or review.get("createdAt")
 
 def _review_order_key(review) -> tuple[float,int]:
     ts=_timestamp(_submitted_at(review))
     review_id=review.get("id") if isinstance(review,dict) else None
-    try:
-        rid=int(review_id or 0)
-    except (TypeError,ValueError):
-        rid=0
+    try: rid=int(review_id or 0)
+    except (TypeError,ValueError): rid=0
     return (ts if ts is not None else float("-inf"),rid)
 
 def latest_approvals(reviews: list[dict], commit_sha: str, *, head_commit_timestamp: float | None=None) -> list[dict]:
     latest={}
     for review in reviews if isinstance(reviews,list) else []:
         login=_login(review)
-        if not login:
-            continue
+        if not login: continue
         current=latest.get(login)
-        if current is None or _review_order_key(review)>=_review_order_key(current):
-            latest[login]=review
+        if current is None or _review_order_key(review)>=_review_order_key(current): latest[login]=review
     rows=[]
     for login,review in sorted(latest.items()):
         if _state(review)!="APPROVED": continue
         review_commit=_commit(review)
         if review_commit and review_commit!=commit_sha: continue
-        submitted_raw=_submitted_at(review)
-        submitted_ts=_timestamp(submitted_raw)
-        if head_commit_timestamp is not None:
-            if submitted_ts is None or submitted_ts<head_commit_timestamp:
-                continue
-        rows.append({
-            "login":login,
-            "review_state":"APPROVED",
-            "reviewed_commit_sha":review_commit or commit_sha,
-            "submitted_at":submitted_raw,
-            "submitted_at_epoch":submitted_ts,
-        })
+        submitted_raw=_submitted_at(review); submitted_ts=_timestamp(submitted_raw)
+        if head_commit_timestamp is not None and (submitted_ts is None or submitted_ts<head_commit_timestamp): continue
+        rows.append({"login":login,"review_state":"APPROVED","reviewed_commit_sha":review_commit or commit_sha,"submitted_at":submitted_raw,"submitted_at_epoch":submitted_ts})
     return rows
 
 def _workflow_path(run: dict) -> str | None:
-    if not isinstance(run,dict):
-        return None
+    if not isinstance(run,dict): return None
     raw=run.get("path")
-    if not isinstance(raw,str) or not raw:
-        return None
+    if not isinstance(raw,str) or not raw: return None
     return raw.split("@",1)[0]
 
 def successful_workflow(runs: list[dict], commit_sha: str, *, required_run_id: int | None=None, required_workflow_name: str=REQUIRED_WORKFLOW_NAME, required_workflow_path: str=REQUIRED_WORKFLOW_PATH, head_commit_timestamp: float | None=None) -> dict:
     candidates=[]
     for run in runs if isinstance(runs,list) else []:
-        head=run.get("head_sha")
-        conclusion=str(run.get("conclusion") or "").lower()
-        if head!=commit_sha or conclusion!="success":
-            continue
-        if run.get("name")!=required_workflow_name:
-            continue
-        if _workflow_path(run)!=required_workflow_path:
-            continue
-        if required_run_id is not None and run.get("id")!=required_run_id:
-            continue
+        if run.get("head_sha")!=commit_sha or str(run.get("conclusion") or "").lower()!="success": continue
+        if run.get("name")!=required_workflow_name or _workflow_path(run)!=required_workflow_path: continue
+        if required_run_id is not None and run.get("id")!=required_run_id: continue
         created=_timestamp(run.get("run_started_at") or run.get("created_at") or run.get("updated_at"))
-        if head_commit_timestamp is not None:
-            if created is None or created<float(head_commit_timestamp):
-                continue
+        if head_commit_timestamp is not None and (created is None or created<float(head_commit_timestamp)): continue
         candidates.append({**run,"_validated_timestamp":created})
-    if not candidates:
-        raise ApprovalProvenanceError("no successful workflow for reviewed commit")
+    if not candidates: raise ApprovalProvenanceError("no successful workflow for reviewed commit")
     run=sorted(candidates,key=lambda x:int(x.get("id") or 0),reverse=True)[0]
-    return {
-        "id":run.get("id"),
-        "head_sha":commit_sha,
-        "conclusion":"success",
-        "name":run.get("name"),
-        "path":_workflow_path(run),
-        "timestamp":run.get("_validated_timestamp"),
-    }
+    return {"id":run.get("id"),"head_sha":commit_sha,"conclusion":"success","name":run.get("name"),"path":_workflow_path(run),"timestamp":run.get("_validated_timestamp")}
 
 def build(plan: dict, *, repository: str, pull_request: int, commit_sha: str,
           reviews: list[dict], permissions: dict[str,str], workflow_runs: list[dict],
           check_runs: list[dict], pr_identity: dict, workflow_file: dict,
           head_commit_timestamp: float, reinforced: bool) -> dict:
-    if not isinstance(head_commit_timestamp,(int,float)):
-        raise ApprovalProvenanceError("head commit timestamp missing")
-    if not isinstance(workflow_file,dict):
-        raise ApprovalProvenanceError("workflow file evidence missing")
-    if workflow_file.get("path")!=REQUIRED_WORKFLOW_PATH:
-        raise ApprovalProvenanceError("workflow file path is not trusted")
-    if not isinstance(workflow_file.get("sha256"),str) or len(workflow_file.get("sha256"))!=64:
-        raise ApprovalProvenanceError("workflow file digest missing")
-    if not isinstance(workflow_file.get("blob_sha"),str) or not workflow_file.get("blob_sha"):
-        raise ApprovalProvenanceError("workflow file blob SHA missing")
+    if not isinstance(head_commit_timestamp,(int,float)): raise ApprovalProvenanceError("head commit timestamp missing")
+    if not isinstance(workflow_file,dict): raise ApprovalProvenanceError("workflow file evidence missing")
+    if workflow_file.get("path")!=REQUIRED_WORKFLOW_PATH: raise ApprovalProvenanceError("workflow file path is not trusted")
+    if not isinstance(workflow_file.get("sha256"),str) or len(workflow_file.get("sha256"))!=64: raise ApprovalProvenanceError("workflow file digest missing")
+    if not isinstance(workflow_file.get("blob_sha"),str) or not workflow_file.get("blob_sha"): raise ApprovalProvenanceError("workflow file blob SHA missing")
+    semantic_digest=workflow_file.get("semantic_digest")
+    if not isinstance(semantic_digest,str) or len(semantic_digest)!=64: raise ApprovalProvenanceError("workflow semantic digest missing")
     approvals=latest_approvals(reviews,commit_sha,head_commit_timestamp=float(head_commit_timestamp))
     eligible=[a for a in approvals if permissions.get(a["login"]) in {"admin","maintain","write"}]
-    if not eligible:
-        raise ApprovalProvenanceError("no eligible GitHub approver")
-    first=eligible[0]
-    first["permission"]=permissions[first["login"]]
+    if not eligible: raise ApprovalProvenanceError("no eligible GitHub approver")
+    first=eligible[0]; first["permission"]=permissions[first["login"]]
     second=None
     if reinforced:
-        if len(eligible)<2:
-            raise ApprovalProvenanceError("reinforced GitHub approval requires two eligible approvers")
-        second=eligible[1]
-        second["permission"]=permissions[second["login"]]
-    checks=validate_check_runs(
-        check_runs,
-        repository,
-        commit_sha=commit_sha,
-        head_commit_timestamp=float(head_commit_timestamp),
-    )
-    if checks.get("valid") is not True:
-        raise ApprovalProvenanceError("required GitHub checks are not all successful")
+        if len(eligible)<2: raise ApprovalProvenanceError("reinforced GitHub approval requires two eligible approvers")
+        second=eligible[1]; second["permission"]=permissions[second["login"]]
+    checks=validate_check_runs(check_runs,repository,commit_sha=commit_sha,head_commit_timestamp=float(head_commit_timestamp))
+    if checks.get("valid") is not True: raise ApprovalProvenanceError("required GitHub checks are not all successful")
     required_workflow_run_id=checks.get("common_workflow_run_id")
-    if not isinstance(required_workflow_run_id,int):
-        raise ApprovalProvenanceError("required checks do not share one workflow run")
-    workflow=successful_workflow(
-        workflow_runs,
-        commit_sha,
-        required_run_id=required_workflow_run_id,
-        head_commit_timestamp=float(head_commit_timestamp),
-    )
+    if not isinstance(required_workflow_run_id,int): raise ApprovalProvenanceError("required checks do not share one workflow run")
+    workflow=successful_workflow(workflow_runs,commit_sha,required_run_id=required_workflow_run_id,head_commit_timestamp=float(head_commit_timestamp))
     attestation={
-        "repository":repository,
-        "commit_sha":commit_sha,
-        "reviewed_commit_sha":commit_sha,
-        "pull_request":pull_request,
-        "workflow_run_id":workflow["id"],
-        "required_workflow_run_id":required_workflow_run_id,
-        "migration_id":plan.get("migration_id"),
-        "review_digest":plan.get("review_digest"),
-        "reviewer":first,
-        "head_commit_timestamp":float(head_commit_timestamp),
-        "pr_identity":pr_identity,
-        "required_checks":checks,
-        "workflow_file":workflow_file,
-        "workflow":{
-            "head_sha":workflow["head_sha"],
-            "conclusion":workflow["conclusion"],
-            "name":workflow["name"],
-            "path":workflow["path"],
-            "timestamp":workflow["timestamp"],
-        },
+        "repository":repository,"commit_sha":commit_sha,"reviewed_commit_sha":commit_sha,"pull_request":pull_request,
+        "workflow_run_id":workflow["id"],"required_workflow_run_id":required_workflow_run_id,
+        "workflow_semantic_digest":semantic_digest,
+        "migration_id":plan.get("migration_id"),"review_digest":plan.get("review_digest"),"reviewer":first,
+        "head_commit_timestamp":float(head_commit_timestamp),"pr_identity":pr_identity,"required_checks":checks,"workflow_file":workflow_file,
+        "workflow":{"head_sha":workflow["head_sha"],"conclusion":workflow["conclusion"],"name":workflow["name"],"path":workflow["path"],"timestamp":workflow["timestamp"]},
     }
     if second is not None: attestation["second_reviewer"]=second
     attestation["attestation_digest"]=hashlib.sha256(_canonical(attestation).encode()).hexdigest()

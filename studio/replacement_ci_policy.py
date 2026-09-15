@@ -12,7 +12,7 @@ REQUIRED_GITHUB_CHECKS=frozenset({"validate","python-tests"})
 TRUSTED_CHECK_APP="github-actions"
 REQUIRED_WORKFLOW_NAME="CI"
 REQUIRED_WORKFLOW_PATH=".github/workflows/ci.yml"
-CI_TRUST_POLICY_VERSION=10
+CI_TRUST_POLICY_VERSION=11
 REQUIRED_WORKFLOW_PERMISSIONS={"contents":"read"}
 REQUIRED_JOB_RUNNER="ubuntu-latest"
 REQUIRED_JOB_TIMEOUTS={"validate":5,"python-tests":20}
@@ -630,7 +630,28 @@ def workflow_job_ids_text(text: str) -> set[str]:
 def workflow_job_ids(path: Path) -> set[str]:
     return workflow_job_ids_text(path.read_text(encoding="utf-8"))
 
-def validate_workflow_text(text: str) -> dict:
+def workflow_semantic_manifest_text(text: str) -> dict:
+    validation=validate_workflow_text(text,include_semantic=False)
+    if not validation["valid"]:
+        return {"valid":False,"manifest":None,"digest":None,"violations":["workflow_not_trusted"]}
+    manifest={
+        "workflow_name":validation["workflow_name"],
+        "jobs":validation["exact_job_steps"]["jobs"],
+        "permissions":validation["permissions"]["workflow_permissions"],
+        "runtime":validation["runtime"]["jobs"],
+        "triggers":validation["trigger_concurrency"]["triggers"],
+        "push_branches":validation["trigger_concurrency"]["push_branches"],
+        "concurrency":validation["trigger_concurrency"]["concurrency"],
+        "actions":validation["action_pinning"]["uses"],
+        "step_inputs_env":{
+            "action_with_allowlist":validation["step_inputs_env"]["action_with_allowlist"],
+            "run_env_allowlist":validation["step_inputs_env"]["run_env_allowlist"],
+        },
+    }
+    encoded=json.dumps(manifest,sort_keys=True,separators=(",",":")).encode("utf-8")
+    return {"valid":True,"manifest":manifest,"digest":hashlib.sha256(encoded).hexdigest(),"violations":[]}
+
+def validate_workflow_text(text: str, *, include_semantic: bool=True) -> dict:
     yaml_surface=validate_yaml_surface_text(text)
     schema_policy=validate_workflow_schema_text(text)
     input_env_policy=validate_step_inputs_env_text(text)

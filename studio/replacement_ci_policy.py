@@ -12,7 +12,8 @@ REQUIRED_GITHUB_CHECKS=frozenset({"validate","python-tests"})
 TRUSTED_CHECK_APP="github-actions"
 REQUIRED_WORKFLOW_NAME="CI"
 REQUIRED_WORKFLOW_PATH=".github/workflows/ci.yml"
-CI_TRUST_POLICY_VERSION=1
+CI_TRUST_POLICY_VERSION=2
+REQUIRED_WORKFLOW_PERMISSIONS={"contents":"read"}
 
 # Explicit allowlist: third-party actions and mutable refs are fail-closed.
 TRUSTED_ACTION_REVISIONS={
@@ -28,10 +29,77 @@ def ci_trust_policy_digest() -> str:
         "workflow_name":REQUIRED_WORKFLOW_NAME,
         "workflow_path":REQUIRED_WORKFLOW_PATH,
         "trusted_action_revisions":dict(sorted(TRUSTED_ACTION_REVISIONS.items())),
+        "required_workflow_permissions":dict(sorted(REQUIRED_WORKFLOW_PERMISSIONS.items())),
     }
     return hashlib.sha256(
         json.dumps(payload,sort_keys=True,separators=(",",":")).encode("utf-8")
     ).hexdigest()
+
+def _scalar_yaml_value(value: str):
+    value=value.split("#",1)[0].strip().strip("'\"").lower()
+    if value in {"read","write","none"}:
+        return value
+    if value=="{}":
+        return {}
+    return value
+
+def validate_workflow_permissions_text(text: str) -> dict:
+    lines=text.splitlines()
+    top_permissions=None
+    job_permissions=[]
+    i=0
+    while i<len(lines):
+        line=lines[i]
+        match=re.match(r"^(\s*)permissions:\s*(.*?)\s*$",line)
+        if not match:
+            i+=1
+            continue
+        indent=len(match.group(1))
+        tail=match.group(2)
+        block={}
+        if tail:
+            parsed=_scalar_yaml_value(tail)
+            block=parsed
+            i+=1
+        else:
+            i+=1
+            while i<len(lines):
+                child=lines[i]
+                if not child.strip() or child.lstrip().startswith("#"):
+                    i+=1
+                    continue
+                child_indent=len(child)-len(child.lstrip(" "))
+                if child_indent<=indent:
+                    break
+                item=re.match(r"^\s+([A-Za-z0-9_-]+):\s*([^#\n]+?)\s*(?:#.*)?$",child)
+                if item:
+                    block[item.group(1)]=_scalar_yaml_value(item.group(2))
+                i+=1
+        if indent==0:
+            top_permissions=block
+        else:
+            job_permissions.append({"indent":indent,"permissions":block})
+    violations=[]
+    if top_permissions!=REQUIRED_WORKFLOW_PERMISSIONS:
+        violations.append({
+            "scope":"workflow",
+            "reason":"workflow_permissions_not_exact",
+            "expected":dict(REQUIRED_WORKFLOW_PERMISSIONS),
+            "actual":top_permissions,
+        })
+    for row in job_permissions:
+        violations.append({
+            "scope":"job",
+            "reason":"job_permissions_override_forbidden",
+            "actual":row["permissions"],
+        })
+    return {
+        "valid":not violations,
+        "required_permissions":dict(REQUIRED_WORKFLOW_PERMISSIONS),
+        "workflow_permissions":top_permissions,
+        "job_permission_overrides":job_permissions,
+        "violations":violations,
+    }
 
 def workflow_action_uses_text(text: str) -> list[dict]:
     rows=[]
@@ -132,14 +200,21 @@ def validate_workflow_text(text: str) -> dict:
     name_match=re.search(r"(?m)^name:\s*([^#\n]+?)\s*$",text)
     workflow_name=name_match.group(1).strip().strip("'\"") if name_match else None
     action_policy=validate_action_pinning_text(text)
+    permission_policy=validate_workflow_permissions_text(text)
     return {
-        "valid":not missing and workflow_name==REQUIRED_WORKFLOW_NAME and action_policy["valid"],
+        "valid":(
+            not missing
+            and workflow_name==REQUIRED_WORKFLOW_NAME
+            and action_policy["valid"]
+            and permission_policy["valid"]
+        ),
         "required_checks":sorted(REQUIRED_GITHUB_CHECKS),
         "workflow_jobs":sorted(jobs),
         "missing_checks":missing,
         "workflow_name":workflow_name,
         "expected_workflow_name":REQUIRED_WORKFLOW_NAME,
         "action_pinning":action_policy,
+        "permissions":permission_policy,
         "ci_trust_policy_version":CI_TRUST_POLICY_VERSION,
         "ci_trust_policy_digest":ci_trust_policy_digest(),
     }

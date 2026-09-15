@@ -95,6 +95,7 @@ def ci_trust_policy_digest() -> str:
 def validate_yaml_surface_text(text: str) -> dict:
     violations=[]
     seen_by_indent={}
+    sequence_generation={}
     for lineno,line in enumerate(text.splitlines(),start=1):
         if "\t" in line[:len(line)-len(line.lstrip())]:
             violations.append({"reason":"tab_indentation","line":lineno})
@@ -114,11 +115,17 @@ def validate_yaml_surface_text(text: str) -> dict:
             for depth in list(seen_by_indent):
                 if depth>indent:
                     seen_by_indent.pop(depth,None)
+            is_sequence_item=bool(re.match(r"^\\s*-\\s+",code))
+            if is_sequence_item:
+                sequence_generation[indent]=sequence_generation.get(indent,0)+1
+                seen_by_indent[indent]=set()
+            generation=sequence_generation.get(indent,0)
             bucket=seen_by_indent.setdefault(indent,set())
-            if key in bucket:
+            marker=(generation,key)
+            if marker in bucket:
                 violations.append({"reason":"duplicate_key","line":lineno,"key":key,"indent":indent})
             else:
-                bucket.add(key)
+                bucket.add(marker)
     return {"valid":not violations,"violations":violations}
 
 def validate_workflow_schema_text(text: str) -> dict:

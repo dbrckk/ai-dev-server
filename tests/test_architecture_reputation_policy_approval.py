@@ -175,4 +175,20 @@ class ApprovalProvenanceTests(unittest.TestCase):
         with self.assertRaises(ApprovalProvenanceError):
             validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
 
+    def _redigest_attestation(self,a):
+        a["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in a.items() if k!="attestation_digest"}).encode()).hexdigest()
+        return a
+
+    def test_github_attestation_rejects_missing_semantic_digest(self):
+        a=self.github_attestation();a["workflow_file"].pop("semantic_digest",None);self._redigest_attestation(a)
+        with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
+
+    def test_github_attestation_rejects_forged_semantic_digest(self):
+        a=self.github_attestation();a["workflow_file"]["semantic_digest"]="0"*64;self._redigest_attestation(a)
+        with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
+
+    def test_github_attestation_rejects_invalid_semantic_digest_length(self):
+        a=self.github_attestation();a["workflow_file"]["semantic_digest"]="bad";self._redigest_attestation(a)
+        with self.assertRaises(ApprovalProvenanceError):validate_github_attestation(a,{"migration_id":"m1","review_digest":"r1"},reinforced=False)
+
 if __name__=="__main__":unittest.main()

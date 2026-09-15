@@ -2,6 +2,7 @@ import base64
 import hashlib
 import json
 import sys
+import time
 from pathlib import Path
 import tempfile
 import unittest
@@ -70,8 +71,9 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td);registry_value=self.registry();registry=root/"registry.json";registry.write_text(json.dumps(registry_value))
             workflow_file=self.canonical_workflow_file()
-            plan_value=dry_run(registry_value,None,now=200.0)
-            plan_value=bind_github_review_target(plan_value,self.target_for(workflow_file),now=200.0)
+            now=time.time()
+            plan_value=dry_run(registry_value,None,now=now)
+            plan_value=bind_github_review_target(plan_value,self.target_for(workflow_file),now=now)
             plan=root/"plan.json";plan.write_text(json.dumps(plan_value))
             auth_value=dict(plan_value["authorization_template"]);auth_value["authorized"]=True
             if plan_value.get("risk",{}).get("reinforced_review_required") is True:auth_value["reinforced_reviewed"]=True

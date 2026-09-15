@@ -12,7 +12,7 @@ REQUIRED_GITHUB_CHECKS=frozenset({"validate","python-tests"})
 TRUSTED_CHECK_APP="github-actions"
 REQUIRED_WORKFLOW_NAME="CI"
 REQUIRED_WORKFLOW_PATH=".github/workflows/ci.yml"
-CI_TRUST_POLICY_VERSION=7
+CI_TRUST_POLICY_VERSION=8
 REQUIRED_WORKFLOW_PERMISSIONS={"contents":"read"}
 REQUIRED_JOB_RUNNER="ubuntu-latest"
 REQUIRED_JOB_TIMEOUTS={"validate":5,"python-tests":20}
@@ -27,6 +27,11 @@ FORBIDDEN_YAML_FEATURES=frozenset({"anchor","alias","tag","merge_key","tab_inden
 ALLOWED_ROOT_KEYS=frozenset({"name","on","permissions","jobs"})
 ALLOWED_JOB_KEYS=frozenset({"name","runs-on","timeout-minutes","steps"})
 ALLOWED_STEP_KEYS=frozenset({"name","uses","with","run","shell","env"})
+ACTION_WITH_ALLOWLIST={
+    "actions/checkout":frozenset(),
+    "actions/setup-python":frozenset({"python-version"}),
+}
+RUN_ENV_ALLOWLIST={"PYTHONPATH":"studio"}
 
 # Explicit allowlist: third-party actions and mutable refs are fail-closed.
 TRUSTED_ACTION_REVISIONS={
@@ -37,8 +42,6 @@ TRUSTED_ACTION_REVISIONS={
 def ci_trust_policy_digest() -> str:
     payload={
         "version":CI_TRUST_POLICY_VERSION,
-        "yaml_surface":yaml_surface,
-        "schema":schema_policy,
         "required_checks":sorted(REQUIRED_GITHUB_CHECKS),
         "trusted_check_app":TRUSTED_CHECK_APP,
         "workflow_name":REQUIRED_WORKFLOW_NAME,
@@ -58,6 +61,8 @@ def ci_trust_policy_digest() -> str:
         "allowed_root_keys":sorted(ALLOWED_ROOT_KEYS),
         "allowed_job_keys":sorted(ALLOWED_JOB_KEYS),
         "allowed_step_keys":sorted(ALLOWED_STEP_KEYS),
+        "action_with_allowlist":{k:sorted(v) for k,v in sorted(ACTION_WITH_ALLOWLIST.items())},
+        "run_env_allowlist":dict(sorted(RUN_ENV_ALLOWLIST.items())),
     }
     return hashlib.sha256(
         json.dumps(payload,sort_keys=True,separators=(",",":")).encode("utf-8")
@@ -134,6 +139,64 @@ def validate_workflow_schema_text(text: str) -> dict:
             if nested_step_key and nested_step_key.group(1) not in ALLOWED_STEP_KEYS:
                 violations.append({"reason":"unknown_step_key","line":lineno,"job":current_job,"key":nested_step_key.group(1)})
     return {"valid":not violations,"allowed_root_keys":sorted(ALLOWED_ROOT_KEYS),"allowed_job_keys":sorted(ALLOWED_JOB_KEYS),"allowed_step_keys":sorted(ALLOWED_STEP_KEYS),"violations":violations}
+
+def validate_step_inputs_env_text(text: str) -> dict:
+    violations=[]
+    lines=text.splitlines()
+    current_action=None
+    current_run=False
+    mode=None
+    mode_indent=None
+    for lineno,line in enumerate(lines,start=1):
+        code=line.split("#",1)[0].rstrip()
+        step=re.match(r"^      -\s+(?:name:\s*.*)?$",code)
+        if step:
+            current_action=None
+            current_run=False
+            mode=None
+        uses=re.match(r"^        uses:\s*([^#\s]+)",code)
+        if not uses:
+            uses=re.match(r"^      -\s+uses:\s*([^#\s]+)",code)
+        if uses:
+            value=uses.group(1).strip().strip("'\\\"")
+            current_action=value.rsplit("@",1)[0] if "@" in value else value
+            current_run=False
+            mode=None
+            continue
+        if re.match(r"^        run:\s*",code) or re.match(r"^      -\s+run:\s*",code):
+            current_run=True
+            current_action=None
+            mode=None
+        block=re.match(r"^        (with|env):\s*$",code)
+        if block:
+            mode=block.group(1)
+            mode_indent=8
+            if mode=="with" and current_action is None:
+                violations.append({"reason":"with_without_action","line":lineno})
+            if mode=="env" and not current_run:
+                violations.append({"reason":"env_on_non_run_step","line":lineno})
+            continue
+        if mode:
+            item=re.match(r"^          ([A-Za-z0-9_-]+):\s*([^#\n]+?)\s*$",code)
+            if item:
+                key=item.group(1)
+                value=item.group(2).strip().strip("'\\\"")
+                if mode=="with":
+                    allowed=ACTION_WITH_ALLOWLIST.get(current_action,frozenset())
+                    if key not in allowed:
+                        violations.append({"reason":"unapproved_action_input","line":lineno,"action":current_action,"key":key})
+                    elif current_action=="actions/setup-python" and key=="python-version" and value!="3.12":
+                        violations.append({"reason":"unapproved_action_input_value","line":lineno,"action":current_action,"key":key,"actual":value,"expected":"3.12"})
+                else:
+                    expected=RUN_ENV_ALLOWLIST.get(key)
+                    if expected is None:
+                        violations.append({"reason":"unapproved_run_env","line":lineno,"key":key})
+                    elif value!=expected:
+                        violations.append({"reason":"unapproved_run_env_value","line":lineno,"key":key,"actual":value,"expected":expected})
+                continue
+            if code.strip() and len(code)-len(code.lstrip(" "))<=mode_indent:
+                mode=None
+    return {"valid":not violations,"action_with_allowlist":{k:sorted(v) for k,v in ACTION_WITH_ALLOWLIST.items()},"run_env_allowlist":dict(RUN_ENV_ALLOWLIST),"violations":violations}
 
 def _scalar_yaml_value(value: str):
     value=value.split("#",1)[0].strip().strip("'\"").lower()
@@ -456,6 +519,7 @@ def workflow_job_ids(path: Path) -> set[str]:
 def validate_workflow_text(text: str) -> dict:
     yaml_surface=validate_yaml_surface_text(text)
     schema_policy=validate_workflow_schema_text(text)
+    input_env_policy=validate_step_inputs_env_text(text)
     jobs=workflow_job_ids_text(text)
     missing=sorted(REQUIRED_GITHUB_CHECKS-jobs)
     name_match=re.search(r"(?m)^name:\s*([^#\n]+?)\s*$",text)
@@ -469,6 +533,7 @@ def validate_workflow_text(text: str) -> dict:
         "valid":(
             yaml_surface["valid"]
             and schema_policy["valid"]
+            and input_env_policy["valid"]
             and not missing
             and workflow_name==REQUIRED_WORKFLOW_NAME
             and action_policy["valid"]

@@ -1,4 +1,6 @@
 import copy
+import base64
+import hashlib
 import sys
 from pathlib import Path
 import unittest
@@ -6,7 +8,7 @@ import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
 import architecture_replacement_reputation as reputation
-from replacement_ci_policy import CI_TRUST_POLICY_VERSION, ci_trust_policy_digest
+from replacement_ci_policy import CI_TRUST_POLICY_VERSION, ci_trust_policy_digest, validate_workflow_text
 from architecture_reputation_policy_migration import (
     ReputationPolicyMigrationError,
     apply_migration,
@@ -45,6 +47,11 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
             "regression_rate":0.02 if strong else 0.40,
         }]}
 
+    def canonical_workflow_file(self):
+        raw=(Path(__file__).resolve().parents[1]/".github/workflows/ci.yml").read_bytes()
+        validation=validate_workflow_text(raw.decode("utf-8"))
+        return {"path":".github/workflows/ci.yml","blob_sha":"blob123","size":len(raw),"sha256":hashlib.sha256(raw).hexdigest(),"semantic_digest":validation["semantic_digest"],"content_b64":base64.b64encode(raw).decode(),"policy_validation":validation}
+
     def authorize(self,plan):
         if not isinstance(plan.get("github_review_target"),dict):
             bound=bind_github_review_target(plan,{
@@ -56,7 +63,8 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
                 "author":"reviewer-a",
                 "workflow_path":".github/workflows/ci.yml",
                 "workflow_blob_sha":"blob123",
-                "workflow_sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4",
+                "workflow_sha256":self.canonical_workflow_file()["sha256"],
+                "workflow_semantic_digest":self.canonical_workflow_file()["semantic_digest"],
                 "ci_trust_policy_version":CI_TRUST_POLICY_VERSION,
                 "ci_trust_policy_digest":ci_trust_policy_digest(),
             },now=200.0)
@@ -100,7 +108,7 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
                 {"id":102,"name":"python-tests","head_sha":"a"*40,"status":"completed","conclusion":"success","started_at":"2026-01-01T00:00:40Z","app":{"slug":"github-actions"},"details_url":"https://github.com/dbrckk/ai-dev-server/actions/runs/99"},
             ],
             pr_identity={"number":42,"state":"open","draft":False,"head_ref":"policy/migration","head_sha":"a"*40,"base_ref":"main","author":"reviewer-a"},
-            workflow_file={"path":".github/workflows/ci.yml","blob_sha":"blob123","size":43,"sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4","content_b64":"bmFtZTogQ0kKam9iczoKICB2YWxpZGF0ZToKICBweXRob24tdGVzdHM6Cg==","policy_validation":{"valid":True}},
+            workflow_file=self.canonical_workflow_file(),
             head_commit_timestamp=1767225600.0,
             reinforced=reinforced,
         )
@@ -381,7 +389,8 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         self.assertGreaterEqual(last["github_workflow_timestamp"],last["github_head_commit_timestamp"])
         self.assertEqual(last["github_workflow_path"],".github/workflows/ci.yml")
         self.assertEqual(last["github_workflow_file_blob_sha"],"blob123")
-        self.assertEqual(last["github_workflow_file_sha256"],"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4")
+        self.assertEqual(last["github_workflow_file_sha256"],self.canonical_workflow_file()["sha256"])
+        self.assertEqual(last["github_workflow_semantic_digest"],self.canonical_workflow_file()["semantic_digest"])
 
     def test_github_attestation_can_derive_approval_provenance(self):
         registry=self.registry()

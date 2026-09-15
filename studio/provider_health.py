@@ -16,17 +16,19 @@ DEFAULT_COOLDOWN_SECONDS = 300
 MAX_COOLDOWN_SECONDS = 3600
 MAX_ROWS = 64
 LATENCY_ALPHA = 0.25
+REPUTATION_HALF_LIFE_SECONDS = 14 * 24 * 60 * 60
 
 
 def _row(value):
     if not isinstance(value, dict):
-        return {"successes": 0, "failures": 0, "consecutive_failures": 0, "opened_until": 0.0, "latency_ms_ema": None}
+        return {"successes": 0, "failures": 0, "consecutive_failures": 0, "opened_until": 0.0, "latency_ms_ema": None, "last_observed_at": 0.0}
     try:
         successes = max(0, int(value.get("successes", 0)))
         failures = max(0, int(value.get("failures", 0)))
         consecutive = max(0, int(value.get("consecutive_failures", 0)))
         opened_until = max(0.0, float(value.get("opened_until", 0.0)))
         raw_latency = value.get("latency_ms_ema")
+        last_observed_at = max(0.0, float(value.get("last_observed_at", 0.0) or 0.0))
         latency_ms_ema = None if raw_latency is None else max(0.0, float(raw_latency))
     except (TypeError, ValueError):
         return {"successes": 0, "failures": 0, "consecutive_failures": 0, "opened_until": 0.0, "latency_ms_ema": None}
@@ -36,6 +38,7 @@ def _row(value):
         "consecutive_failures": consecutive,
         "opened_until": opened_until,
         "latency_ms_ema": latency_ms_ema,
+        "last_observed_at": last_observed_at,
     }
 
 
@@ -98,6 +101,7 @@ def record_success(path: Path, provider: str, *, latency_ms: float | None = None
     row = _row(data.get(provider))
     _record_latency(row, latency_ms)
     row["successes"] += 1
+    row["last_observed_at"] = time.time()
     row["consecutive_failures"] = 0
     row["opened_until"] = 0.0
     data[provider] = row
@@ -275,6 +279,8 @@ def scoped_evidence(
     *,
     model: str | None = None,
     role: str | None = None,
+    now: float | None = None,
+    half_life_seconds: float = REPUTATION_HALF_LIFE_SECONDS,
 ) -> dict:
     """Return reliability plus confidence from the best available specialization."""
     keys = [
@@ -292,15 +298,27 @@ def scoped_evidence(
         reliability = (successes + 1) / (observations + 2)
         # Saturating evidence confidence: 10 observations ~= 50%, 50 ~= 83%.
         confidence = observations / (observations + 10.0)
+        current = time.time() if now is None else float(now)
+        last_observed = max(0.0, float(row.get("last_observed_at", 0.0) or 0.0))
+        if last_observed <= 0 or half_life_seconds <= 0:
+            freshness = 1.0
+        else:
+            age = max(0.0, current - last_observed)
+            freshness = 0.5 ** (age / float(half_life_seconds))
+        confidence *= freshness
         return {
             "key": key,
             "reliability": reliability,
             "observations": observations,
             "confidence": confidence,
+            "freshness": freshness,
+            "last_observed_at": last_observed,
         }
     return {
         "key": None,
         "reliability": 0.5,
         "observations": 0,
         "confidence": 0.0,
+        "freshness": 0.0,
+        "last_observed_at": 0.0,
     }

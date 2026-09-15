@@ -17,6 +17,7 @@ class FleetDaemonTests(unittest.TestCase):
              patch("fleet_daemon.maintain", return_value={"summary": {"projects": 1}}), \
              patch("fleet_daemon.persist_capacity_plan", return_value={"summary": {"active_projects": 1, "allocated_tokens": 100}}), \
              patch("fleet_daemon.capacity_ledger_snapshot", return_value={"active_reservations": 0, "reserved_tokens": 0, "consumed_tokens": 0, "reaped": 0}), \
+             patch("fleet_daemon.apply_preemption", return_value={"apply": False, "preemptions_executed": 0, "results": []}), \
              patch("fleet_daemon.apply_supervisor", return_value={"apply": False, "restarts_executed": 0, "results": []}) as supervisor:
             report = fleet_daemon.tick("out", "requests", apply_restarts=True, max_restarts=2)
 
@@ -48,6 +49,7 @@ class FleetDaemonTests(unittest.TestCase):
              patch("fleet_daemon.maintain", return_value={"summary": {"projects": 1}}), \
              patch("fleet_daemon.persist_capacity_plan", return_value={"summary": {"active_projects": 1, "allocated_tokens": 32000}, "rebalance": {"pressured_projects": 1}}) as capacity, \
              patch("fleet_daemon.capacity_ledger_snapshot", return_value={"active_reservations": 2, "reserved_tokens": 2000, "consumed_tokens": 4000, "reaped": 1}), \
+             patch("fleet_daemon.apply_preemption", return_value={"apply": False, "preemptions_executed": 0, "results": []}), \
              patch("fleet_daemon.apply_supervisor", return_value={"apply": False, "restarts_executed": 0, "results": []}):
             report = fleet_daemon.tick("out", "requests")
 
@@ -55,6 +57,28 @@ class FleetDaemonTests(unittest.TestCase):
         self.assertEqual(report["capacity"]["allocated_tokens"], 32000)
         self.assertEqual(report["capacity"]["ledger"]["active_reservations"], 2)
         self.assertEqual(report["capacity"]["rebalance"]["pressured_projects"], 1)
+
+
+    def test_tick_applies_preemption_then_replans_capacity(self):
+        plans = [
+            {"summary": {"active_projects": 2, "allocated_tokens": 32000}},
+            {"summary": {"active_projects": 2, "allocated_tokens": 48000}},
+        ]
+        with patch("fleet_daemon.collect", return_value={"summary": {"total": 2}}), \
+             patch("fleet_daemon.snapshot", return_value={"ts": 1, "healthy": 2}), \
+             patch("fleet_daemon.append_metrics", return_value={"snapshots": 1, "latest": {"ts": 1}}), \
+             patch("fleet_daemon.evaluate_regression", return_value={"regressed": False, "regressions": []}), \
+             patch("fleet_daemon.maintain", return_value={"summary": {"projects": 2}}), \
+             patch("fleet_daemon.persist_capacity_plan", side_effect=plans) as capacity, \
+             patch("fleet_daemon.apply_preemption", return_value={"apply": True, "preemptions_executed": 1, "results": [{"status": "preempted"}]}) as preempt, \
+             patch("fleet_daemon.capacity_ledger_snapshot", return_value={"active_reservations": 0, "reserved_tokens": 0, "consumed_tokens": 0, "reaped": 0}), \
+             patch("fleet_daemon.apply_supervisor", return_value={"apply": False, "restarts_executed": 0, "results": []}):
+            report = fleet_daemon.tick("out", "requests", apply_preemptions=True)
+
+        self.assertEqual(capacity.call_count, 2)
+        self.assertTrue(preempt.call_args.kwargs["apply"])
+        self.assertEqual(report["capacity"]["allocated_tokens"], 48000)
+        self.assertEqual(report["preemption"]["preemptions_executed"], 1)
 
 
     def test_run_loop_enforces_minimum_interval(self):

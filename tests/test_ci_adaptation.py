@@ -61,7 +61,9 @@ class QueueAdaptationTests(unittest.TestCase):
                 (project_out / 'report.json').write_text(json.dumps(payload(args)))
                 return subprocess.CompletedProcess(args, 0)
 
-            with mock.patch.dict(os.environ, {'CIRCLE_SHA1': ''}, clear=False):
+            capacity = {"projects": [{"id": "future", "admission": {"admitted": True, "action": "admit"}}]}
+            with mock.patch.dict(os.environ, {'CIRCLE_SHA1': ''}, clear=False), \
+                    mock.patch("ci_runner.persist_capacity_plan", return_value=capacity):
                 self.assertEqual(run_queue(queue, out, runner), 1)
             self.assertEqual(len(calls), 4)
             queue_report = json.loads((out / 'queue.json').read_text())

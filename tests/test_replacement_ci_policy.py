@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
-from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow_run_commands_text, validate_workflow, validate_workflow_text, validate_yaml_surface_text, validate_workflow_schema_text, validate_step_inputs_env_text, validate_trigger_concurrency_text, validate_exact_job_steps_text
+from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow_run_commands_text, validate_workflow, validate_workflow_text, validate_yaml_surface_text, validate_workflow_schema_text, validate_step_inputs_env_text, workflow_semantic_manifest_text, validate_trigger_concurrency_text, validate_exact_job_steps_text
 
 class ReplacementCIPolicyTests(unittest.TestCase):
     def test_repository_ci_exposes_required_check_ids(self):
@@ -361,6 +361,27 @@ class ReplacementCIPolicyTests(unittest.TestCase):
         root=Path(__file__).resolve().parents[1]
         text=(root/".github/workflows/ci.yml").read_text().replace("python -m compileall -q studio tests","python -m compileall studio tests")
         self.assertFalse(validate_exact_job_steps_text(text)["valid"])
+
+    def test_semantic_digest_is_stable_for_repository_ci(self):
+        root=Path(__file__).resolve().parents[1]
+        text=(root/".github/workflows/ci.yml").read_text()
+        first=workflow_semantic_manifest_text(text)
+        second=workflow_semantic_manifest_text(text)
+        self.assertTrue(first["valid"],first)
+        self.assertEqual(first["digest"],second["digest"])
+        self.assertEqual(len(first["digest"]),64)
+
+    def test_validate_workflow_exposes_semantic_digest(self):
+        root=Path(__file__).resolve().parents[1]
+        result=validate_workflow(root/".github/workflows/ci.yml")
+        self.assertTrue(result["valid"],result)
+        self.assertEqual(len(result["semantic_digest"]),64)
+        self.assertEqual(result["semantic_manifest"]["workflow_name"],"CI")
+
+    def test_semantic_digest_refuses_untrusted_workflow(self):
+        result=workflow_semantic_manifest_text("name: Other\njobs:\n")
+        self.assertFalse(result["valid"])
+        self.assertIsNone(result["digest"])
 
 if __name__=="__main__":
     unittest.main()

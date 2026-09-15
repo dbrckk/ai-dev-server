@@ -217,6 +217,11 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
     workflow_policy_validation=validate_workflow_text(workflow_text)
     if workflow_policy_validation.get("valid") is not True:
         raise ApprovalProvenanceError("github workflow file violates replacement CI policy")
+    semantic_digest=workflow_policy_validation.get("semantic_digest")
+    if not isinstance(semantic_digest,str) or len(semantic_digest)!=64:
+        raise ApprovalProvenanceError("github workflow semantic digest invalid")
+    if workflow_file.get("semantic_digest")!=semantic_digest:
+        raise ApprovalProvenanceError("github workflow semantic digest mismatch")
 
     target=plan.get("github_review_target") if isinstance(plan,dict) else None
     if isinstance(target,dict):
@@ -224,11 +229,13 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
             "path":target.get("workflow_path"),
             "blob_sha":target.get("workflow_blob_sha"),
             "sha256":target.get("workflow_sha256"),
+            "semantic_digest":target.get("workflow_semantic_digest"),
         }
         workflow_actual={
             "path":workflow_file.get("path"),
             "blob_sha":workflow_file.get("blob_sha"),
             "sha256":workflow_file.get("sha256"),
+            "semantic_digest":workflow_file.get("semantic_digest"),
         }
         if workflow_expected!=workflow_actual:
             raise ApprovalProvenanceError("github workflow file does not match migration review target")
@@ -270,6 +277,7 @@ def validate_github_attestation(attestation: dict, plan: dict, *, reinforced: bo
         "workflow_path":workflow.get("path"),
         "workflow_file_blob_sha":workflow_file.get("blob_sha"),
         "workflow_file_sha256":workflow_file.get("sha256"),
+        "workflow_semantic_digest":semantic_digest,
         "workflow_policy_validation":workflow_policy_validation,
         "common_workflow_run_id":common_run_id,
         "attestation_digest":digest,

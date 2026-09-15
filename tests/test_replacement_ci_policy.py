@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
-from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow_run_commands_text, validate_workflow, validate_workflow_text, validate_yaml_surface_text, validate_workflow_schema_text, validate_step_inputs_env_text, validate_trigger_concurrency_text
+from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow_run_commands_text, validate_workflow, validate_workflow_text, validate_yaml_surface_text, validate_workflow_schema_text, validate_step_inputs_env_text, validate_trigger_concurrency_text, validate_exact_job_steps_text
 
 class ReplacementCIPolicyTests(unittest.TestCase):
     def test_repository_ci_exposes_required_check_ids(self):
@@ -340,6 +340,27 @@ class ReplacementCIPolicyTests(unittest.TestCase):
     def test_concurrency_cancellation_must_be_enabled(self):
         text="on:\n  push:\n    branches: [\"main\"]\n  pull_request:\nconcurrency:\n  group: ci-${{ github.workflow }}-${{ github.ref }}\n  cancel-in-progress: false\n"
         self.assertFalse(validate_trigger_concurrency_text(text)["valid"])
+
+    def test_exact_job_steps_accept_repository_ci(self):
+        root=Path(__file__).resolve().parents[1]
+        result=validate_exact_job_steps_text((root/".github/workflows/ci.yml").read_text())
+        self.assertTrue(result["valid"],result)
+
+    def test_exact_job_steps_reject_extra_job(self):
+        root=Path(__file__).resolve().parents[1]
+        text=(root/".github/workflows/ci.yml").read_text()+"\n  surprise:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Surprise\n        run: echo nope\n"
+        self.assertFalse(validate_exact_job_steps_text(text)["valid"])
+
+    def test_exact_job_steps_reject_reordered_steps(self):
+        root=Path(__file__).resolve().parents[1]
+        text=(root/".github/workflows/ci.yml").read_text()
+        text=text.replace("      - name: Checkout\n        uses: actions/checkout@", "      - name: Checkout changed\n        uses: actions/checkout@",1)
+        self.assertFalse(validate_exact_job_steps_text(text)["valid"])
+
+    def test_exact_job_steps_reject_changed_command(self):
+        root=Path(__file__).resolve().parents[1]
+        text=(root/".github/workflows/ci.yml").read_text().replace("python -m compileall -q studio tests","python -m compileall studio tests")
+        self.assertFalse(validate_exact_job_steps_text(text)["valid"])
 
 if __name__=="__main__":
     unittest.main()

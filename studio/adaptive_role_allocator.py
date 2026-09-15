@@ -26,7 +26,7 @@ class RoleAllocation:
         }
 
 
-def _budget_pressure(
+def budget_pressure(
     *,
     remaining_seconds: float | None,
     verification_seconds: float | None,
@@ -47,11 +47,11 @@ def planning_required(
 ) -> bool:
     """Return whether this round is worth spending a model call on planning."""
     normalized_difficulty = max(0.0, min(1.0, float(difficulty or 0.0)))
-    budget_pressure = _budget_pressure(
+    pressure = budget_pressure(
         remaining_seconds=remaining_seconds,
         verification_seconds=verification_seconds,
     )
-    return normalized_difficulty >= 0.45 and budget_pressure < 0.85
+    return normalized_difficulty >= 0.45 and pressure < 0.85
 
 
 def choose_role_allocation(
@@ -67,17 +67,17 @@ def choose_role_allocation(
     confidence = max(0.0, min(1.0, float(route_confidence or 0.0)))
     uncertainty = 1.0 - confidence
     capacity = max(0.0, min(1.0, float(free_capacity or 0.0)))
-    budget_pressure = _budget_pressure(
+    pressure = budget_pressure(
         remaining_seconds=remaining_seconds,
         verification_seconds=verification_seconds,
     )
 
     implementation_models = 1
     reason = "single implementation model"
-    if difficulty >= 0.55 and uncertainty >= 0.30 and capacity >= 0.45 and budget_pressure < 0.70:
+    if difficulty >= 0.55 and uncertainty >= 0.30 and capacity >= 0.45 and pressure < 0.70:
         implementation_models = 2
         reason = "difficult uncertain task benefits from independent implementation"
-    if difficulty >= 0.80 and uncertainty >= 0.55 and capacity >= 0.80 and budget_pressure < 0.35:
+    if difficulty >= 0.80 and uncertainty >= 0.55 and capacity >= 0.80 and pressure < 0.35:
         implementation_models = 3
         reason = "high difficulty and uncertainty justify a wide implementation portfolio"
 
@@ -93,7 +93,7 @@ def choose_role_allocation(
         difficulty >= 0.35
         or uncertainty >= 0.40
         or implementation_models > 1
-    ) and budget_pressure < 0.90
+    ) and pressure < 0.90
 
     return RoleAllocation(
         implementation_models=implementation_models,
@@ -101,6 +101,6 @@ def choose_role_allocation(
         require_planning=require_planning,
         difficulty=difficulty,
         uncertainty=uncertainty,
-        budget_pressure=budget_pressure,
+        budget_pressure=pressure,
         reason=reason,
     )

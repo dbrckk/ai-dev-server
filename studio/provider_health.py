@@ -15,23 +15,27 @@ DEFAULT_THRESHOLD = 3
 DEFAULT_COOLDOWN_SECONDS = 300
 MAX_COOLDOWN_SECONDS = 3600
 MAX_ROWS = 64
+LATENCY_ALPHA = 0.25
 
 
 def _row(value):
     if not isinstance(value, dict):
-        return {"successes": 0, "failures": 0, "consecutive_failures": 0, "opened_until": 0.0}
+        return {"successes": 0, "failures": 0, "consecutive_failures": 0, "opened_until": 0.0, "latency_ms_ema": None}
     try:
         successes = max(0, int(value.get("successes", 0)))
         failures = max(0, int(value.get("failures", 0)))
         consecutive = max(0, int(value.get("consecutive_failures", 0)))
         opened_until = max(0.0, float(value.get("opened_until", 0.0)))
+        raw_latency = value.get("latency_ms_ema")
+        latency_ms_ema = None if raw_latency is None else max(0.0, float(raw_latency))
     except (TypeError, ValueError):
-        return {"successes": 0, "failures": 0, "consecutive_failures": 0, "opened_until": 0.0}
+        return {"successes": 0, "failures": 0, "consecutive_failures": 0, "opened_until": 0.0, "latency_ms_ema": None}
     return {
         "successes": successes,
         "failures": failures,
         "consecutive_failures": consecutive,
         "opened_until": opened_until,
+        "latency_ms_ema": latency_ms_ema,
     }
 
 
@@ -76,9 +80,23 @@ def eligible(path: Path, provider: str, *, now: float | None = None) -> bool:
     return float(row.get("opened_until", 0.0)) <= current
 
 
-def record_success(path: Path, provider: str) -> dict:
+def _record_latency(row: dict, latency_ms: float | None) -> None:
+    if latency_ms is None:
+        return
+    try:
+        sample = max(0.0, float(latency_ms))
+    except (TypeError, ValueError):
+        return
+    previous = row.get("latency_ms_ema")
+    row["latency_ms_ema"] = sample if previous is None else (
+        LATENCY_ALPHA * sample + (1.0 - LATENCY_ALPHA) * float(previous)
+    )
+
+
+def record_success(path: Path, provider: str, *, latency_ms: float | None = None) -> dict:
     data = load(path)
     row = _row(data.get(provider))
+    _record_latency(row, latency_ms)
     row["successes"] += 1
     row["consecutive_failures"] = 0
     row["opened_until"] = 0.0
@@ -94,6 +112,7 @@ def record_failure(
     threshold: int = DEFAULT_THRESHOLD,
     cooldown_seconds: int = DEFAULT_COOLDOWN_SECONDS,
     now: float | None = None,
+    latency_ms: float | None = None,
 ) -> dict:
     if type(threshold) is not int or threshold < 1:
         raise ValueError("provider failure threshold invalid")
@@ -101,6 +120,7 @@ def record_failure(
         raise ValueError("provider cooldown invalid")
     data = load(path)
     row = _row(data.get(provider))
+    _record_latency(row, latency_ms)
     row["failures"] += 1
     row["consecutive_failures"] += 1
     if row["consecutive_failures"] >= threshold:

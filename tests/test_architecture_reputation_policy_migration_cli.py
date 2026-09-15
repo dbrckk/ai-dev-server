@@ -116,6 +116,7 @@ class ReputationPolicyMigrationCLITests(unittest.TestCase):
                 "workflow_path":".github/workflows/ci.yml",
                 "workflow_blob_sha":"blob123",
                 "workflow_sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4",
+                "workflow_semantic_digest":"b"*64,
                 "ci_trust_policy_version":CI_TRUST_POLICY_VERSION,
                 "ci_trust_policy_digest":ci_trust_policy_digest(),
             }

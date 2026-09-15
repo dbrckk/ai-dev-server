@@ -214,7 +214,7 @@ def validate_step_inputs_env_text(text: str) -> dict:
         step=re.match(r"^      -\s+(?:name:\s*.*)?$",code)
         if step:
             current_action=None
-            current_run=False
+            current_run=None
             mode=None
         uses=re.match(r"^        uses:\s*([^#\s]+)",code)
         if not uses:
@@ -235,8 +235,8 @@ def validate_step_inputs_env_text(text: str) -> dict:
             mode_indent=8
             if mode=="with" and current_action is None:
                 violations.append({"reason":"with_without_action","line":lineno})
-            if mode=="env" and not current_run:
-                violations.append({"reason":"env_on_non_run_step","line":lineno})
+            if mode=="env" and current_action is not None:
+                violations.append({"reason":"env_on_action_step","line":lineno})
             continue
         if mode:
             item=re.match(r"^          ([A-Za-z0-9_-]+):\s*([^#\n]+?)\s*$",code)
@@ -514,7 +514,7 @@ def validate_workflow_run_commands_text(text: str) -> dict:
     violations=[]
     run_commands=[]
     for lineno,line in enumerate(text.splitlines(),start=1):
-        match=re.match(r"^\s*run:\s*(.+?)\s*$",line)
+        match=re.match(r"^\s*(?:-\s*)?run:\s*(.+?)\s*$",line)
         if match:
             command=match.group(1).strip().strip("'\\\"")
             run_commands.append({"line":lineno,"command":command})
@@ -527,7 +527,7 @@ def validate_workflow_run_commands_text(text: str) -> dict:
             for prefix in FORBIDDEN_RUN_PREFIXES:
                 if prefix.lower() in lowered:
                     violations.append({"reason":"forbidden_run_prefix","line":lineno,"prefix":prefix})
-        shell=re.match(r"^\s*shell:\s*([^#\\n]+?)\s*(?:#.*)?$",line)
+        shell=re.match(r"^\s*(?:-\s*)?shell:\s*([^#\\n]+?)\s*(?:#.*)?$",line)
         if shell:
             value=shell.group(1).strip().strip("'\\\"")
             if value!=REQUIRED_RUN_SHELL:

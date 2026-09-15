@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import time
 from pathlib import Path
 
 from atomic_file import write_text as atomic_write_text
@@ -10,10 +11,32 @@ from execution_checkpoint import load as load_checkpoint, ExecutionCheckpointErr
 from preemption_controller import SAFE_CHECKPOINT_PHASES
 
 STATE_FILE = "preemption-state.json"
+COOLDOWN_FILE = "preemption-cooldown.json"
+DEFAULT_COOLDOWN_SECONDS = 1800
 
 
-def execute(root: Path | str = "studio-output", *, apply: bool = False) -> dict:
+def _cooldown_active(root: Path, project_id: str, now: float, cooldown_seconds: int) -> bool:
+    path = root / project_id / ".autonomy" / COOLDOWN_FILE
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return False
+    return (
+        isinstance(value, dict)
+        and float(value.get("until", 0.0) or 0.0) > now
+    )
+
+
+def execute(
+    root: Path | str = "studio-output",
+    *,
+    apply: bool = False,
+    now: float | None = None,
+    cooldown_seconds: int = DEFAULT_COOLDOWN_SECONDS,
+) -> dict:
     root = Path(root)
+    current = time.time() if now is None else float(now)
+    cooldown = max(60, int(cooldown_seconds))
     plan_path = root / "capacity-plan.json"
     try:
         capacity_plan = json.loads(plan_path.read_text(encoding="utf-8"))
@@ -29,6 +52,10 @@ def execute(root: Path | str = "studio-output", *, apply: bool = False) -> dict:
         victim = str(action.get("victim_id") or "")
         contender = str(action.get("contender_id") or "")
         row = {"victim_id": victim, "contender_id": contender, "executed": False}
+        if _cooldown_active(root, victim, current, cooldown) or _cooldown_active(root, contender, current, cooldown):
+            row["status"] = "cooldown_active"
+            results.append(row)
+            continue
         checkpoint_path = root / victim / ".autonomy" / "execution-checkpoint.json"
         try:
             checkpoint = load_checkpoint(checkpoint_path)
@@ -65,6 +92,20 @@ def execute(root: Path | str = "studio-output", *, apply: bool = False) -> dict:
             json.dumps(state, sort_keys=True, indent=2) + "\n",
             encoding="utf-8",
         )
+        cooldown_state = {
+            "schema": 1,
+            "victim_id": victim,
+            "contender_id": contender,
+            "created_at": current,
+            "until": current + cooldown,
+        }
+        for project_id in (victim, contender):
+            cooldown_path = root / project_id / ".autonomy" / COOLDOWN_FILE
+            atomic_write_text(
+                cooldown_path,
+                json.dumps(cooldown_state, sort_keys=True, indent=2) + "\n",
+                encoding="utf-8",
+            )
         row["executed"] = True
         row["status"] = "preempted"
         row["released_tokens"] = released.get("released_tokens", 0)

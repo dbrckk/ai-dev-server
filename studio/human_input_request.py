@@ -35,6 +35,7 @@ _HUMAN_PATTERNS = (
 )
 _SECRET_SUFFIXES = ("KEY", "TOKEN", "SECRET", "PASSWORD", "CREDENTIAL", "CREDENTIALS")
 _ENV_NAME_RE = re.compile(r"\b[A-Z][A-Z0-9_]{2,}\b")
+_SAFE_ACTION_RE = re.compile(r"^[a-z][a-z0-9_.:-]{0,127}$")
 
 
 def requires_human_input(detail: object) -> bool:
@@ -71,11 +72,14 @@ def _reason_category(detail: object) -> str:
 
 
 def safe_handoff_detail(detail: object) -> str:
-    """Return a persistence-safe reason that keeps names but never raw values."""
-    names = requested_secret_names(detail)
+    """Keep safe action identifiers, but never persist secret-bearing/free-form detail."""
+    text = str(detail or "").strip()
+    names = requested_secret_names(text)
     if names:
         return "Missing required secret(s): " + ", ".join(names)
-    return _reason_category(detail)
+    if _SAFE_ACTION_RE.fullmatch(text):
+        return text
+    return _reason_category(text)
 
 
 def _requested_items(detail: str) -> list[str]:

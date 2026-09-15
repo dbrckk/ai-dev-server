@@ -121,6 +121,51 @@ class CapacitySchedulerTests(unittest.TestCase):
         )
         self.assertEqual(rows[0].latency_ms, 50.0)
 
+    def test_open_circuit_provider_is_excluded(self):
+        rows = provider_capacities(
+            [
+                {"name": "broken", "available_tokens": 1000},
+                {"name": "healthy", "available_tokens": 1000},
+            ],
+            health_data={
+                "broken": {"opened_until": 200.0},
+                "healthy": {"opened_until": 0.0},
+            },
+            now=100.0,
+        )
+        report = allocate([{"id": "p", "requested_tokens": 100}], rows)
+        order = [row["name"] for row in report["projects"][0]["provider_order"]]
+        self.assertEqual(order, ["healthy"])
+
+    def test_provider_returns_after_circuit_cooldown(self):
+        rows = provider_capacities(
+            [{"name": "recovered", "available_tokens": 1000}],
+            health_data={"recovered": {"opened_until": 200.0}},
+            now=201.0,
+        )
+        report = allocate([{"id": "p", "requested_tokens": 100}], rows)
+        self.assertEqual(
+            [row["name"] for row in report["projects"][0]["provider_order"]],
+            ["recovered"],
+        )
+
+    def test_open_circuit_capacity_is_not_counted(self):
+        rows = provider_capacities(
+            [
+                {"name": "broken", "available_tokens": 900},
+                {"name": "healthy", "available_tokens": 100},
+            ],
+            health_data={"broken": {"opened_until": 200.0}},
+            now=100.0,
+        )
+        report = allocate(
+            [{"id": "p", "requested_tokens": 1000}],
+            rows,
+            critical_reserve_ratio=0.0,
+        )
+        self.assertEqual(report["finite_capacity_tokens"], 100)
+        self.assertEqual(report["projects"][0]["token_envelope"], 100)
+
     def test_capacity_pressure_increases_scarce_capacity_share(self):
         providers = [ProviderCapacity("omniroute", 1000, unmetered=False)]
         report = allocate([

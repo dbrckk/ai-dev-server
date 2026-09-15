@@ -13,6 +13,7 @@ from provider_runtime_reliability import summarize as summarize_runtime_reliabil
 from provider_health import load as load_provider_health, eligible as provider_eligible
 from provider_metrics import load as load_provider_metrics
 from unified_routing_score import score as unified_provider_score
+from routing_audit import append as append_routing_audit
 
 from local_capacity import discover as discover_local_capacity
 
@@ -332,6 +333,10 @@ def candidates_for(
 ) -> tuple[ProviderSpec, ...]:
     specs = tuple(providers) if providers is not None else load_providers(prefer_free=prefer_free)
     eligible = tuple(spec for spec in specs if spec.model_for(role, screenshots))
+    rejected = [
+        {"provider": spec.name, "reason": "required_model_unavailable"}
+        for spec in specs if not spec.model_for(role, screenshots)
+    ]
     reliability_path = os.environ.get("STUDIO_WORKER_LIVENESS_PATH", "").strip()
     if not reliability_path:
         return eligible
@@ -349,14 +354,39 @@ def candidates_for(
         spec for spec in eligible
         if provider_eligible(health_path, spec.name)
     )
-    def routing_key(spec: ProviderSpec):
+    rejected.extend(
+        {"provider": spec.name, "reason": "circuit_breaker_open"}
+        for spec in eligible if spec not in current
+    )
+    scored = []
+    for spec in current:
         model = spec.model_for(role, screenshots)
         result = unified_provider_score(
             provider=spec, role=role, model=model,
             health=health, metrics=metrics, runtime=reliability,
         )
-        return (-float(result["score"]), spec.name)
-    return tuple(sorted(current, key=routing_key))
+        scored.append((spec, result))
+    scored.sort(key=lambda item: (-float(item[1]["score"]), item[0].name))
+    ordered = tuple(item[0] for item in scored)
+    audit_path = os.environ.get("STUDIO_ROUTING_AUDIT_PATH", "").strip()
+    if audit_path:
+        append_routing_audit(Path(audit_path), {
+            "role": role,
+            "screenshots": screenshots,
+            "winner": ordered[0].name if ordered else None,
+            "winner_model": ordered[0].model_for(role, screenshots) if ordered else None,
+            "candidates": [
+                {
+                    "provider": spec.name,
+                    "model": spec.model_for(role, screenshots),
+                    "score": result["score"],
+                    "components": result["components"],
+                }
+                for spec, result in scored
+            ],
+            "rejected": rejected,
+        })
+    return ordered
 
 
 def budget_eligible(

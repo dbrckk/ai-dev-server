@@ -12,7 +12,7 @@ REQUIRED_GITHUB_CHECKS=frozenset({"validate","python-tests"})
 TRUSTED_CHECK_APP="github-actions"
 REQUIRED_WORKFLOW_NAME="CI"
 REQUIRED_WORKFLOW_PATH=".github/workflows/ci.yml"
-CI_TRUST_POLICY_VERSION=4
+CI_TRUST_POLICY_VERSION=5
 REQUIRED_WORKFLOW_PERMISSIONS={"contents":"read"}
 REQUIRED_JOB_RUNNER="ubuntu-latest"
 REQUIRED_JOB_TIMEOUTS={"validate":5,"python-tests":20}
@@ -20,6 +20,9 @@ FORBIDDEN_WORKFLOW_TRIGGERS=frozenset({"pull_request_target","workflow_run"})
 FORBIDDEN_JOB_KEYS=frozenset({"strategy","needs","if","continue-on-error","environment","container","services"})
 FORBIDDEN_STEP_KEYS=frozenset({"if","continue-on-error","timeout-minutes"})
 FORBIDDEN_EXPRESSION_CONTEXTS=frozenset({"secrets","github.event","github.token","github.actor","github.triggering_actor","vars","inputs","matrix","strategy","needs"})
+FORBIDDEN_RUN_TOKENS=frozenset({"curl","wget","sudo","docker","podman","GITHUB_ENV","GITHUB_PATH","GITHUB_OUTPUT","GITHUB_STATE","GITHUB_STEP_SUMMARY"})
+FORBIDDEN_RUN_PREFIXES=("pip install","pip3 install","npm install","npm ci","npx ","yarn ","pnpm ","apt install","apt-get install","git clone","git fetch","git pull","gh ")
+REQUIRED_RUN_SHELL="bash"
 
 # Explicit allowlist: third-party actions and mutable refs are fail-closed.
 TRUSTED_ACTION_REVISIONS={
@@ -42,6 +45,9 @@ def ci_trust_policy_digest() -> str:
         "forbidden_job_keys":sorted(FORBIDDEN_JOB_KEYS),
         "forbidden_step_keys":sorted(FORBIDDEN_STEP_KEYS),
         "forbidden_expression_contexts":sorted(FORBIDDEN_EXPRESSION_CONTEXTS),
+        "forbidden_run_tokens":sorted(FORBIDDEN_RUN_TOKENS),
+        "forbidden_run_prefixes":list(FORBIDDEN_RUN_PREFIXES),
+        "required_run_shell":REQUIRED_RUN_SHELL,
     }
     return hashlib.sha256(
         json.dumps(payload,sort_keys=True,separators=(",",":")).encode("utf-8")
@@ -245,6 +251,33 @@ def validate_workflow_expression_policy_text(text: str) -> dict:
         "violations":violations,
     }
 
+def validate_workflow_run_commands_text(text: str) -> dict:
+    violations=[]
+    run_commands=[]
+    for lineno,line in enumerate(text.splitlines(),start=1):
+        match=re.match(r"^\s*run:\s*(.+?)\s*$",line)
+        if match:
+            command=match.group(1).strip().strip("'\\\"")
+            run_commands.append({"line":lineno,"command":command})
+            lowered=command.lower()
+            if "${{" in command:
+                violations.append({"reason":"expression_in_run_command_forbidden","line":lineno})
+            for token in sorted(FORBIDDEN_RUN_TOKENS):
+                if token.lower() in lowered:
+                    violations.append({"reason":"forbidden_run_token","line":lineno,"token":token})
+            for prefix in FORBIDDEN_RUN_PREFIXES:
+                if prefix.lower() in lowered:
+                    violations.append({"reason":"forbidden_run_prefix","line":lineno,"prefix":prefix})
+        shell=re.match(r"^\s*shell:\s*([^#\\n]+?)\s*(?:#.*)?$",line)
+        if shell:
+            value=shell.group(1).strip().strip("'\\\"")
+            if value!=REQUIRED_RUN_SHELL:
+                violations.append({"reason":"untrusted_shell","line":lineno,"actual":value})
+    for marker in ("GITHUB_ENV","GITHUB_PATH","GITHUB_OUTPUT","GITHUB_STATE","GITHUB_STEP_SUMMARY"):
+        if marker in text:
+            violations.append({"reason":"github_command_file_reference_forbidden","marker":marker})
+    return {"valid":not violations,"required_shell":REQUIRED_RUN_SHELL,"run_commands":run_commands,"violations":violations}
+
 def workflow_action_uses_text(text: str) -> list[dict]:
     rows=[]
     pattern=re.compile(r"(?m)^\s*(?:-\s*)?uses:\s*([^#\s]+)\s*(?:#.*)?$")
@@ -347,6 +380,7 @@ def validate_workflow_text(text: str) -> dict:
     permission_policy=validate_workflow_permissions_text(text)
     runtime_policy=validate_workflow_runtime_text(text)
     expression_policy=validate_workflow_expression_policy_text(text)
+    run_policy=validate_workflow_run_commands_text(text)
     return {
         "valid":(
             not missing
@@ -355,6 +389,7 @@ def validate_workflow_text(text: str) -> dict:
             and permission_policy["valid"]
             and runtime_policy["valid"]
             and expression_policy["valid"]
+            and run_policy["valid"]
         ),
         "required_checks":sorted(REQUIRED_GITHUB_CHECKS),
         "workflow_jobs":sorted(jobs),
@@ -365,6 +400,7 @@ def validate_workflow_text(text: str) -> dict:
         "permissions":permission_policy,
         "runtime":runtime_policy,
         "expressions":expression_policy,
+        "run_commands":run_policy,
         "ci_trust_policy_version":CI_TRUST_POLICY_VERSION,
         "ci_trust_policy_digest":ci_trust_policy_digest(),
     }

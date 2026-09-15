@@ -140,5 +140,28 @@ class CapacityLedgerTests(unittest.TestCase):
             self.assertEqual(next(iter(remaining.values()))["project_id"], "b")
 
 
+    def test_atomic_preemption_transfer_releases_victim_and_leases_contender(self):
+        from capacity_ledger import transfer_project_reservations
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "ledger.json"
+            reserve(path, project_id="low", provider="p", estimated_tokens=100,
+                    provider_remaining_tokens=1000, now=100)
+            result = transfer_project_reservations(
+                path,
+                victim_project_id="low",
+                contender_project_id="high",
+                reserve_tokens=80,
+                now=101,
+            )
+            self.assertTrue(result["transferred"])
+            data = load(path)
+            self.assertEqual(reserved_tokens(data, project_id="low"), 0)
+            self.assertEqual(reserved_tokens(data, project_id="high"), 80)
+            lease = next(iter(data["reservations"].values()))
+            self.assertEqual(lease["kind"], "preemption_admission_lease")
+            self.assertEqual(lease["victim_project_id"], "low")
+
+
+
 if __name__ == "__main__":
     unittest.main()

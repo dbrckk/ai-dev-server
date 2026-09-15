@@ -270,8 +270,11 @@ def provider_capacities(rows: list[dict], *, health_data: dict | None = None) ->
         else:
             reliability = 0.5
         reliability = max(0.0, min(1.0, reliability))
+        raw_latency = row.get("latency_ms")
+        if raw_latency is None and isinstance(empirical, dict):
+            raw_latency = empirical.get("latency_ms_ema")
         try:
-            latency = None if row.get("latency_ms") is None else max(0.0, float(row.get("latency_ms")))
+            latency = None if raw_latency is None else max(0.0, float(raw_latency))
         except (TypeError, ValueError):
             latency = None
         try:

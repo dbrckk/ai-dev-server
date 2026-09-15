@@ -437,5 +437,24 @@ class ReputationPolicyMigrationTests(unittest.TestCase):
         migrated=self.apply(registry,plan,self.authorize(plan),now=300.0)
         self.assertEqual(migrated["last_policy_migration"]["github_workflow_semantic_digest"],self.canonical_workflow_file()["semantic_digest"])
 
+    def test_apply_rejects_semantic_digest_mismatch_between_target_and_attestation(self):
+        registry=self.registry();plan=dry_run(registry,self.learning(),now=200.0)
+        auth=self.authorize(plan)
+        attestation=self.github_attestation(plan)
+        attestation["workflow_file"]["semantic_digest"]="0"*64
+        from architecture_reputation_policy_approval import _canonical
+        attestation["attestation_digest"]=hashlib.sha256(_canonical({k:v for k,v in attestation.items() if k!="attestation_digest"}).encode()).hexdigest()
+        with self.assertRaises(ReputationPolicyMigrationError):
+            self.apply(registry,plan,auth,now=300.0,github_attestation=attestation)
+
+    def test_apply_rejects_review_target_semantic_digest_tamper(self):
+        registry=self.registry();plan=dry_run(registry,self.learning(),now=200.0)
+        auth=self.authorize(plan)
+        attestation=self.github_attestation(plan)
+        tampered=copy.deepcopy(plan)
+        tampered["github_review_target"]["workflow_semantic_digest"]="f"*64
+        with self.assertRaises(ReputationPolicyMigrationError):
+            self.apply(registry,tampered,auth,now=300.0,github_attestation=attestation)
+
 if __name__=="__main__":
     unittest.main()

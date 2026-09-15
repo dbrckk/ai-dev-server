@@ -28,8 +28,10 @@ class CapacitySchedulerTests(unittest.TestCase):
             {"id": "verify", "requested_tokens": 1_000, "priority": 50, "phase": "verification"},
         ], providers, critical_reserve_ratio=0.20)
         by_id = {row["id"]: row for row in report["projects"]}
-        self.assertGreater(by_id["verify"]["token_envelope"], by_id["work"]["token_envelope"])
+        self.assertEqual(by_id["verify"]["token_envelope"], 200)
+        self.assertEqual(by_id["work"]["token_envelope"], 800)
         self.assertEqual(report["critical_reserve_tokens"], 200)
+        self.assertEqual(report["summary"]["allocated_tokens"], 1000)
 
     def test_provider_order_prefers_unmetered_then_free_then_paid(self):
         providers = [

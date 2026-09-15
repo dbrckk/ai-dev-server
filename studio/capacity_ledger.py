@@ -223,6 +223,40 @@ def release(path: Path, reservation_id: str, *, now: float | None = None) -> dic
 
 
 
+def release_project(path: Path, project_id: str, *, now: float | None = None) -> dict:
+    """Atomically release every outstanding reservation owned by a project."""
+    project = str(project_id).strip()
+    if not project:
+        raise ValueError("project_id is required")
+    path = Path(path)
+    current = time.time() if now is None else float(now)
+    with exclusive(path):
+        data = _load_unlocked(path)
+        reaped = _reap(data, current)
+        matches = [
+            key for key, row in data["reservations"].items()
+            if isinstance(row, dict) and row.get("project_id") == project
+        ]
+        released_tokens = 0
+        providers = {}
+        for key in matches:
+            row = data["reservations"].pop(key)
+            amount = max(0, int(row.get("reserved_tokens", 0) or 0))
+            released_tokens += amount
+            provider = str(row.get("provider") or "")
+            if provider:
+                providers[provider] = providers.get(provider, 0) + amount
+        _save_unlocked(path, data)
+        return {
+            "released": bool(matches),
+            "project_id": project,
+            "reservations_released": len(matches),
+            "released_tokens": released_tokens,
+            "providers": providers,
+            "reaped": reaped,
+        }
+
+
 def reservations_by_provider(data: dict) -> dict[str, int]:
     result = {}
     for row in (data.get("reservations") or {}).values():

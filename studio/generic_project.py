@@ -493,6 +493,10 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         )
         if isinstance(plan_model,dict):
             cost_controller.record_model(float(plan_model.get("duration_seconds",0.0) or 0.0), phase="planning")
+            # Planning has no immediate trusted verifier. Retain its identity so
+            # the round's final verification can award success without inventing
+            # a provider-specific failure from an ambiguous downstream result.
+            plan_model["feedback_role"] = "product"
         checkpoint = advance_checkpoint(checkpoint, round_index=round_index, phase="planned")
         save_checkpoint(checkpoint_path, checkpoint)
         changed = []
@@ -1551,6 +1555,32 @@ Objective and current plan:
         complete = review.get("complete") is True and verification.get("passed") is True
 
         verified_round_progress = verification.get("passed") is True
+        if verified_round_progress and isinstance(plan_model, dict):
+            planning_provider = plan_model.get("provider")
+            if isinstance(planning_provider, str) and planning_provider:
+                planning_duration = plan_model.get("duration_seconds")
+                try:
+                    planning_latency_ms = (
+                        max(0.0, float(planning_duration) * 1000.0)
+                        if planning_duration is not None else None
+                    )
+                except (TypeError, ValueError):
+                    planning_latency_ms = None
+                planning_health_env = str(
+                    __import__("os").environ.get("STUDIO_PROVIDER_HEALTH_PATH") or ""
+                ).strip()
+                planning_health_path = (
+                    Path(planning_health_env)
+                    if planning_health_env else out / ".autonomy/provider-health.json"
+                )
+                record_scoped_provider_verified_result(
+                    planning_health_path,
+                    planning_provider,
+                    model=str(plan_model.get("model") or "") or None,
+                    role=str(plan_model.get("feedback_role") or "product"),
+                    verified_success=True,
+                    latency_ms=planning_latency_ms,
+                )
         provider_health_env = str(__import__("os").environ.get("STUDIO_PROVIDER_HEALTH_PATH") or "").strip()
         provider_health_path = Path(provider_health_env) if provider_health_env else out / ".autonomy/provider-health.json"
         provider_samples = {}

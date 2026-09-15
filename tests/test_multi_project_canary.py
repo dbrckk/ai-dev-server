@@ -47,7 +47,12 @@ class MultiProjectCanaryTests(unittest.TestCase):
                 )
                 return {"status": "complete", "next_stage": None}
 
-            with patch("ci_runner._run_project_for_queue", side_effect=fake_project):
+            capacity = {"projects": [
+                {"id": f"canary-{index}", "admission": {"admitted": True, "action": "admit"}}
+                for index in range(3)
+            ]}
+            with patch("ci_runner._run_project_for_queue", side_effect=fake_project), \
+                    patch("ci_runner.persist_capacity_plan", return_value=capacity):
                 code = ci_runner.run_queue(
                     directory=str(requests),
                     out=out,

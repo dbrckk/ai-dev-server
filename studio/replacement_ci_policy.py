@@ -92,40 +92,45 @@ def ci_trust_policy_digest() -> str:
         json.dumps(payload,sort_keys=True,separators=(",",":")).encode("utf-8")
     ).hexdigest()
 
-def validate_yaml_surface_text(text: str) -> dict:
+def validate_yaml_surface_text(text):
     violations=[]
-    seen_by_indent={}
-    sequence_generation={}
+    anchors={}
+    aliases=[]
+    seen=set()
+    stack=[]
+    sequence_counters={}
     for lineno,line in enumerate(text.splitlines(),start=1):
-        if "\t" in line[:len(line)-len(line.lstrip())]:
+        code=line.split("#",1)[0].rstrip()
+        if not code.strip():
+            continue
+        indent=len(code)-len(code.lstrip(" "))
+        if "\t" in line[:indent]:
             violations.append({"reason":"tab_indentation","line":lineno})
-        code=line.split("#",1)[0]
-        if re.search(r"(^|[\s:\[,])&[A-Za-z0-9_-]+",code):
-            violations.append({"reason":"anchor","line":lineno})
-        if re.search(r"(^|[\s:\[,])\*[A-Za-z0-9_-]+",code):
-            violations.append({"reason":"alias","line":lineno})
-        if re.search(r"(^|\s)![A-Za-z0-9_!/-]+",code):
-            violations.append({"reason":"tag","line":lineno})
-        if re.match(r"^\s*<<\s*:",code):
-            violations.append({"reason":"merge_key","line":lineno})
-        match=re.match(r"^(\s*)([A-Za-z0-9_-]+):(?:\s|$)",code)
-        if match:
-            indent=len(match.group(1))
-            key=match.group(2)
-            for depth in list(seen_by_indent):
-                if depth>indent:
-                    seen_by_indent.pop(depth,None)
-            is_sequence_item=bool(re.match(r"^\\s*-\\s+",code))
-            if is_sequence_item:
-                sequence_generation[indent]=sequence_generation.get(indent,0)+1
-                seen_by_indent[indent]=set()
-            generation=sequence_generation.get(indent,0)
-            bucket=seen_by_indent.setdefault(indent,set())
-            marker=(generation,key)
-            if marker in bucket:
+        for anchor in re.findall(r"(?:^|\\s)&([A-Za-z0-9_.-]+)",code):
+            if anchor in anchors:
+                violations.append({"reason":"duplicate_anchor","line":lineno,"anchor":anchor})
+            anchors[anchor]=lineno
+        aliases.extend((alias,lineno) for alias in re.findall(r"(?:^|\\s)\\*([A-Za-z0-9_.-]+)",code))
+        while stack and stack[-1][0]>=indent:
+            stack.pop()
+        parent=tuple(item[1] for item in stack)
+        stripped=code.lstrip()
+        is_item=stripped.startswith("- ")
+        if is_item:
+            parent_key=(parent,indent)
+            sequence_counters[parent_key]=sequence_counters.get(parent_key,0)+1
+        sequence_id=sequence_counters.get((parent,indent),0)
+        key_match=re.match(r"^\\s*(?:-\\s*)?([A-Za-z0-9_-]+):",code)
+        if key_match:
+            key=key_match.group(1)
+            marker=(parent,indent,sequence_id,key)
+            if marker in seen:
                 violations.append({"reason":"duplicate_key","line":lineno,"key":key,"indent":indent})
-            else:
-                bucket.add(marker)
+            seen.add(marker)
+            stack.append((indent,key + ("#"+str(sequence_id) if sequence_id else "")))
+    for alias,lineno in aliases:
+        if alias not in anchors:
+            violations.append({"reason":"undefined_alias","line":lineno,"alias":alias})
     return {"valid":not violations,"violations":violations}
 
 def validate_workflow_schema_text(text: str) -> dict:

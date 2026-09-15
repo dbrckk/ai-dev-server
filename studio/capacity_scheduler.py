@@ -116,6 +116,38 @@ def _finite_capacity(providers: list[ProviderCapacity]) -> int:
     )
 
 
+
+def _weighted_work_conserving(projects: list[dict], capacity: int) -> dict[str, int]:
+    """Allocate finite capacity without stranding tokens when peers hit their caps."""
+    remaining = max(0, int(capacity))
+    allocations = {project["id"]: 0 for project in projects}
+    pending = [
+        project for project in projects
+        if not project.get("capacity_paused") and int(project.get("_max_envelope", 0)) > 0
+    ]
+    while remaining > 0 and pending:
+        total_weight = sum(_weight(project) for project in pending) or 1.0
+        progressed = 0
+        for project in list(pending):
+            project_id = project["id"]
+            cap = int(project["_max_envelope"])
+            room = max(0, cap - allocations[project_id])
+            if room == 0:
+                pending.remove(project)
+                continue
+            share = max(1, int(remaining * (_weight(project) / total_weight)))
+            grant = min(room, share, remaining)
+            allocations[project_id] += grant
+            remaining -= grant
+            progressed += grant
+            if allocations[project_id] >= cap:
+                pending.remove(project)
+            if remaining <= 0:
+                break
+        if progressed == 0:
+            break
+    return allocations
+
 def allocate(
     projects: list[dict],
     providers: list[ProviderCapacity],
@@ -137,11 +169,7 @@ def allocate(
     reserve = int(finite * reserve_ratio)
     ordinary_pool = max(0, finite - reserve)
 
-    total_weight = sum(_weight(project) for project in cleaned) or 1.0
-    allocations = []
-
     for project in cleaned:
-        weight = _weight(project)
         requested = project["requested_tokens"]
         stagnation_cap = max(
             0,
@@ -150,19 +178,45 @@ def allocate(
                 min(1.0, float(project.get("stagnation_multiplier", 1.0) or 0.0)),
             )),
         )
-        max_envelope = min(requested, stagnation_cap)
+        project["_max_envelope"] = min(requested, stagnation_cap)
+
+    ordinary_projects = [project for project in cleaned if not project["critical"]]
+    critical_projects = [project for project in cleaned if project["critical"]]
+    finite_allocations = _weighted_work_conserving(ordinary_projects, ordinary_pool)
+    critical_allocations = _weighted_work_conserving(critical_projects, reserve)
+    # Critical work may also consume ordinary capacity. Allocate that shared pool only
+    # after ordinary projects have received their work-conserving allocation.
+    ordinary_used = sum(finite_allocations.values())
+    critical_shared = _weighted_work_conserving(
+        [
+            {**project, "_max_envelope": max(
+                0,
+                int(project["_max_envelope"]) - critical_allocations.get(project["id"], 0),
+            )}
+            for project in critical_projects
+        ],
+        max(0, ordinary_pool - ordinary_used),
+    )
+
+    allocations = []
+    for project in cleaned:
+        weight = _weight(project)
+        requested = project["requested_tokens"]
+        max_envelope = int(project["_max_envelope"])
 
         if project.get("capacity_paused"):
             envelope = 0
-            constrained = True
         elif has_unmetered:
             envelope = max_envelope
-            constrained = envelope < requested
+        elif project["critical"]:
+            envelope = min(
+                max_envelope,
+                critical_allocations.get(project["id"], 0)
+                + critical_shared.get(project["id"], 0),
+            )
         else:
-            pool = finite if project["critical"] else ordinary_pool
-            fair_share = int(pool * (weight / total_weight))
-            envelope = min(max_envelope, max(0, fair_share))
-            constrained = envelope < requested
+            envelope = finite_allocations.get(project["id"], 0)
+        constrained = envelope < requested
 
         provider_order = []
         for provider in ordered_providers:
@@ -183,7 +237,7 @@ def allocate(
             })
 
         allocations.append({
-            **project,
+            **{key: value for key, value in project.items() if not key.startswith("_")},
             "weight": round(weight, 3),
             "token_envelope": envelope,
             "constrained": constrained,

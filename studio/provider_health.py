@@ -145,3 +145,53 @@ def reliability_bonus(data: dict, provider: str) -> float:
         return 0.0
     rate = successes / runs
     return max(-30.0, min(30.0, (rate - 0.5) * 60.0))
+
+
+def record_verified_result(
+    path: Path,
+    provider: str,
+    *,
+    verified_success: bool,
+    latency_ms: float | None = None,
+    threshold: int = DEFAULT_THRESHOLD,
+    cooldown_seconds: int = DEFAULT_COOLDOWN_SECONDS,
+    now: float | None = None,
+) -> dict:
+    """Feed one verified execution outcome back into routing health.
+
+    Only post-verification outcomes should call this function. This prevents
+    provider self-reported success from contaminating adaptive routing evidence.
+    """
+    if type(verified_success) is not bool:
+        raise ValueError("verified_success must be boolean")
+    if verified_success:
+        return record_success(path, provider, latency_ms=latency_ms)
+    return record_failure(
+        path,
+        provider,
+        threshold=threshold,
+        cooldown_seconds=cooldown_seconds,
+        now=now,
+        latency_ms=latency_ms,
+    )
+
+
+def health_snapshot(path: Path, *, now: float | None = None) -> dict:
+    """Return scheduler-ready, credential-free provider evidence."""
+    current = time.time() if now is None else float(now)
+    snapshot = {}
+    for provider, row in load(path).items():
+        successes = max(0, int(row.get("successes", 0)))
+        failures = max(0, int(row.get("failures", 0)))
+        observations = successes + failures
+        reliability = (successes + 1) / (observations + 2)
+        snapshot[provider] = {
+            "successes": successes,
+            "failures": failures,
+            "observations": observations,
+            "reliability": round(reliability, 6),
+            "latency_ms_ema": row.get("latency_ms_ema"),
+            "circuit_open": float(row.get("opened_until", 0.0) or 0.0) > current,
+            "opened_until": float(row.get("opened_until", 0.0) or 0.0),
+        }
+    return snapshot

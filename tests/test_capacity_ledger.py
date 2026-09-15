@@ -163,5 +163,45 @@ class CapacityLedgerTests(unittest.TestCase):
 
 
 
+    def test_claim_preemption_lease_converts_lease_to_worker_reservation(self):
+        from capacity_ledger import transfer_project_reservations, claim_preemption_lease
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "ledger.json"
+            reserve(path, project_id="low", provider="p", estimated_tokens=100,
+                    provider_remaining_tokens=1000, now=100)
+            transfer = transfer_project_reservations(
+                path,
+                victim_project_id="low",
+                contender_project_id="high",
+                reserve_tokens=80,
+                now=101,
+            )
+            claim = claim_preemption_lease(path, "high", now=102, ttl_seconds=600)
+            self.assertTrue(claim["claimed"])
+            self.assertEqual(claim["reservation_id"], transfer["lease_reservation_id"])
+            row = load(path)["reservations"][claim["reservation_id"]]
+            self.assertEqual(row["kind"], "worker_capacity_reservation")
+            self.assertEqual(row["claimed_at"], 102)
+            self.assertEqual(row["expires_at"], 702)
+
+    def test_expired_preemption_lease_cannot_be_claimed(self):
+        from capacity_ledger import transfer_project_reservations, claim_preemption_lease
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "ledger.json"
+            transfer_project_reservations(
+                path,
+                victim_project_id="low",
+                contender_project_id="high",
+                reserve_tokens=80,
+                ttl_seconds=30,
+                now=100,
+            )
+            claim = claim_preemption_lease(path, "high", now=131)
+            self.assertFalse(claim["claimed"])
+            self.assertEqual(claim["reason"], "preemption_lease_missing")
+            self.assertFalse(load(path)["reservations"])
+
+
+
 if __name__ == "__main__":
     unittest.main()

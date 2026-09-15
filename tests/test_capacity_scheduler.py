@@ -103,6 +103,24 @@ class CapacitySchedulerTests(unittest.TestCase):
         )
         self.assertAlmostEqual(rows[0].reliability, 2 / 3)
 
+    def test_health_history_supplies_observed_latency(self):
+        rows = provider_capacities(
+            [{"name": "provider", "available_tokens": 1000}],
+            health_data={"provider": {
+                "successes": 5, "failures": 1, "latency_ms_ema": 275.5,
+            }},
+        )
+        self.assertEqual(rows[0].latency_ms, 275.5)
+
+    def test_explicit_latency_overrides_health_history(self):
+        rows = provider_capacities(
+            [{"name": "provider", "available_tokens": 1000, "latency_ms": 50}],
+            health_data={"provider": {
+                "successes": 5, "failures": 1, "latency_ms_ema": 900,
+            }},
+        )
+        self.assertEqual(rows[0].latency_ms, 50.0)
+
     def test_capacity_pressure_increases_scarce_capacity_share(self):
         providers = [ProviderCapacity("omniroute", 1000, unmetered=False)]
         report = allocate([

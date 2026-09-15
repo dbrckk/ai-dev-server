@@ -16,6 +16,7 @@ class PortfolioSchedule:
     uncertainty: float
     free_capacity: float
     verification_pressure: float
+    marginal_value: float
     reason: str
 
     def as_dict(self) -> dict:
@@ -28,6 +29,7 @@ class PortfolioSchedule:
             "uncertainty": round(self.uncertainty, 4),
             "free_capacity": round(self.free_capacity, 4),
             "verification_pressure": round(self.verification_pressure, 4),
+            "marginal_value": round(self.marginal_value, 4),
             "reason": self.reason,
         }
 
@@ -63,6 +65,7 @@ def choose_schedule(
     strategy: str,
     available_models: int = 1,
     recommended_width: int | None = None,
+    verified_candidate_quality: float | None = None,
 ) -> PortfolioSchedule:
     confidence = max(0.0, min(1.0, float(route_confidence or 0.0)))
     uncertainty = 1.0 - confidence
@@ -72,6 +75,15 @@ def choose_schedule(
     capacity = _free_capacity(capacity_status)
     verification = max(0.0, float(verification_seconds or 0.0))
     verification_pressure = min(1.0, verification / 300.0)
+    quality = (
+        None if verified_candidate_quality is None
+        else max(0.0, min(1.0, float(verified_candidate_quality)))
+    )
+    # Expected value of another candidate falls as confidence, verification cost,
+    # and the quality of an already verified candidate rise.
+    marginal_value = uncertainty * capacity * (1.0 - 0.65 * verification_pressure)
+    if quality is not None:
+        marginal_value *= max(0.0, 1.0 - quality)
 
     candidate_limit = 1
     reason = "single candidate is sufficient"
@@ -139,7 +151,12 @@ def choose_schedule(
     candidate_limit = max(1, min(MAX_CANDIDATES, candidate_limit, max(1, actual_capacity)))
     model_limit = min(model_limit, candidate_limit)
     agent_limit = min(agent_limit, max(0, candidate_limit - model_limit))
-    continue_after_verified = candidate_limit > 1 and uncertainty >= 0.35 and capacity >= 0.45
+    continue_after_verified = (
+        candidate_limit > 1
+        and uncertainty >= 0.35
+        and capacity >= 0.45
+        and marginal_value >= 0.08
+    )
 
     return PortfolioSchedule(
         candidate_limit=candidate_limit,
@@ -150,5 +167,6 @@ def choose_schedule(
         uncertainty=uncertainty,
         free_capacity=capacity,
         verification_pressure=verification_pressure,
+        marginal_value=marginal_value,
         reason=reason,
     )

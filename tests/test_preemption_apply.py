@@ -46,7 +46,7 @@ class PreemptionApplyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             self._fixture(root)
-            report = execute(root, apply=False)
+            report = execute(root, apply=False, now=1000.0)
             self.assertEqual(report["results"][0]["status"], "dry_run")
             self.assertTrue(load(root / "capacity-ledger.json")["reservations"])
 
@@ -54,7 +54,7 @@ class PreemptionApplyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             self._fixture(root)
-            report = execute(root, apply=True)
+            report = execute(root, apply=True, now=1000.0)
             self.assertEqual(report["preemptions_executed"], 1)
             ledger = load(root / "capacity-ledger.json")
             self.assertTrue(ledger["reservations"])
@@ -74,7 +74,7 @@ class PreemptionApplyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             self._fixture(root, phase="implemented")
-            report = execute(root, apply=True)
+            report = execute(root, apply=True, now=1000.0)
             self.assertEqual(report["results"][0]["status"], "checkpoint_not_safe")
             self.assertTrue(load(root / "capacity-ledger.json")["reservations"])
 

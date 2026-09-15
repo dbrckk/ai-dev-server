@@ -428,7 +428,7 @@ def bind_github_review_target(plan: dict, target: dict, *, now: float | None=Non
         raise ReputationPolicyMigrationError("migration plan invalid")
     required=(
         "repository","pull_request","commit_sha","head_ref","base_ref","author",
-        "workflow_path","workflow_blob_sha","workflow_sha256",
+        "workflow_path","workflow_blob_sha","workflow_sha256","workflow_semantic_digest",
         "ci_trust_policy_version","ci_trust_policy_digest",
     )
     if not isinstance(target,dict) or any(not target.get(key) for key in required):
@@ -441,6 +441,9 @@ def bind_github_review_target(plan: dict, target: dict, *, now: float | None=Non
         raise ReputationPolicyMigrationError("GitHub review target workflow digest invalid")
     if not isinstance(target.get("workflow_blob_sha"),str) or not target.get("workflow_blob_sha"):
         raise ReputationPolicyMigrationError("GitHub review target workflow blob SHA missing")
+    semantic_digest=target.get("workflow_semantic_digest")
+    if not isinstance(semantic_digest,str) or len(semantic_digest)!=64:
+        raise ReputationPolicyMigrationError("GitHub review target workflow semantic digest invalid")
     if target.get("ci_trust_policy_version")!=CI_TRUST_POLICY_VERSION:
         raise ReputationPolicyMigrationError("GitHub review target CI trust policy version is stale")
     if target.get("ci_trust_policy_digest")!=ci_trust_policy_digest():
@@ -651,6 +654,7 @@ def apply_migration(registry: dict, plan: dict, authorization: dict, *, approval
             "github_workflow_path":github_provenance["workflow_path"],
             "github_workflow_file_blob_sha":github_provenance["workflow_file_blob_sha"],
             "github_workflow_file_sha256":github_provenance["workflow_file_sha256"],
+            "github_workflow_semantic_digest":github_provenance["workflow_semantic_digest"],
             "github_workflow_policy_validation":github_provenance["workflow_policy_validation"],
             "github_ci_trust_policy_version":plan["github_review_target"]["ci_trust_policy_version"],
             "github_ci_trust_policy_digest":plan["github_review_target"]["ci_trust_policy_digest"],

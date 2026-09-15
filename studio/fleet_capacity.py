@@ -11,7 +11,7 @@ from durable_state import load_recovering
 from fleet_dashboard import collect
 from provider_monthly_quota import load as load_monthly_quota, quota_status
 from provider_router import load_providers
-from capacity_ledger import detailed_snapshot as ledger_detailed_snapshot
+from capacity_ledger import detailed_snapshot as ledger_detailed_snapshot, load as load_capacity_ledger, preemption_leases
 from capacity_efficiency import summarize as summarize_capacity_efficiency, project_multiplier as efficiency_multiplier
 from stagnation_controller import summarize as summarize_stagnation
 from recovery_controller import evaluate as evaluate_recovery
@@ -315,6 +315,25 @@ def plan(
         critical_reserve_ratio=critical_reserve_ratio,
     )
     admission = decide_global_admission(report["projects"])
+    active_leases = preemption_leases(load_capacity_ledger(root / "capacity-ledger.json"))
+    if active_leases:
+        decisions = admission.get("decisions", [])
+        for decision in decisions:
+            if not isinstance(decision, dict):
+                continue
+            lease = active_leases.get(decision.get("id"))
+            if lease is None:
+                continue
+            decision["admitted"] = True
+            decision["action"] = "admit_preemption_lease"
+            decision["reason"] = "transactional_preemption_lease"
+            decision["preemption_lease"] = lease
+        admission["summary"]["admitted"] = sum(
+            1 for row in decisions if isinstance(row, dict) and row.get("admitted") is True
+        )
+        admission["summary"]["deferred"] = sum(
+            1 for row in decisions if isinstance(row, dict) and row.get("admitted") is False
+        )
     admission_by_id = {
         row["id"]: row
         for row in admission["decisions"]

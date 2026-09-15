@@ -42,6 +42,46 @@ class CapacitySchedulerTests(unittest.TestCase):
         self.assertEqual(order, ["local", "free", "paid"])
 
 
+    def test_provider_peers_rank_by_runtime_evidence(self):
+        providers = [
+            ProviderCapacity("slow-unreliable", 100_000, reliability=0.2, latency_ms=4000),
+            ProviderCapacity("fast-reliable", 100_000, reliability=0.95, latency_ms=100),
+        ]
+        report = allocate([{"id": "p", "requested_tokens": 100}], providers)
+        order = [row["name"] for row in report["projects"][0]["provider_order"]]
+        self.assertEqual(order, ["fast-reliable", "slow-unreliable"])
+        self.assertGreater(
+            report["projects"][0]["provider_order"][0]["adaptive_score"],
+            report["projects"][0]["provider_order"][1]["adaptive_score"],
+        )
+
+    def test_adaptive_score_does_not_override_free_first_policy(self):
+        providers = [
+            ProviderCapacity(
+                "paid-excellent", 1_000_000, paid=True, free_preferred=False,
+                reliability=1.0, latency_ms=1, cost_per_million_tokens=0.01,
+            ),
+            ProviderCapacity(
+                "free-poor", 1_000, paid=False, free_preferred=True,
+                reliability=0.1, latency_ms=5000,
+            ),
+        ]
+        report = allocate([{"id": "p", "requested_tokens": 100}], providers)
+        order = [row["name"] for row in report["projects"][0]["provider_order"]]
+        self.assertEqual(order, ["free-poor", "paid-excellent"])
+
+    def test_parser_normalizes_adaptive_provider_metrics(self):
+        rows = provider_capacities([{
+            "name": "provider",
+            "available_tokens": 500,
+            "reliability": 1.5,
+            "latency_ms": -20,
+            "cost_per_million_tokens": -1,
+        }])
+        self.assertEqual(rows[0].reliability, 1.0)
+        self.assertEqual(rows[0].latency_ms, 0.0)
+        self.assertEqual(rows[0].cost_per_million_tokens, 0.0)
+
     def test_capacity_pressure_increases_scarce_capacity_share(self):
         providers = [ProviderCapacity("omniroute", 1000, unmetered=False)]
         report = allocate([

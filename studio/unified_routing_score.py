@@ -54,6 +54,7 @@ def score(
             "health": health_signal,
             "specialized_health": specialized_health_signal,
             "specialized_confidence": specialized_confidence,
+            "specialized_freshness": float(specialized["freshness"]),
             "specialized_observations": int(specialized["observations"]),
             "latency": latency_signal,
             "runtime_reliability": runtime_signal,

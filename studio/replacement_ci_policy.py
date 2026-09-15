@@ -12,7 +12,7 @@ REQUIRED_GITHUB_CHECKS=frozenset({"validate","python-tests"})
 TRUSTED_CHECK_APP="github-actions"
 REQUIRED_WORKFLOW_NAME="CI"
 REQUIRED_WORKFLOW_PATH=".github/workflows/ci.yml"
-CI_TRUST_POLICY_VERSION=6
+CI_TRUST_POLICY_VERSION=7
 REQUIRED_WORKFLOW_PERMISSIONS={"contents":"read"}
 REQUIRED_JOB_RUNNER="ubuntu-latest"
 REQUIRED_JOB_TIMEOUTS={"validate":5,"python-tests":20}
@@ -24,6 +24,9 @@ FORBIDDEN_RUN_TOKENS=frozenset({"curl","wget","sudo","docker","podman","GITHUB_E
 FORBIDDEN_RUN_PREFIXES=("pip install","pip3 install","npm install","npm ci","npx ","yarn ","pnpm ","apt install","apt-get install","git clone","git fetch","git pull","gh ")
 REQUIRED_RUN_SHELL="bash"
 FORBIDDEN_YAML_FEATURES=frozenset({"anchor","alias","tag","merge_key","tab_indentation","duplicate_key"})
+ALLOWED_ROOT_KEYS=frozenset({"name","on","permissions","jobs"})
+ALLOWED_JOB_KEYS=frozenset({"name","runs-on","timeout-minutes","steps"})
+ALLOWED_STEP_KEYS=frozenset({"name","uses","with","run","shell","env"})
 
 # Explicit allowlist: third-party actions and mutable refs are fail-closed.
 TRUSTED_ACTION_REVISIONS={
@@ -35,6 +38,7 @@ def ci_trust_policy_digest() -> str:
     payload={
         "version":CI_TRUST_POLICY_VERSION,
         "yaml_surface":yaml_surface,
+        "schema":schema_policy,
         "required_checks":sorted(REQUIRED_GITHUB_CHECKS),
         "trusted_check_app":TRUSTED_CHECK_APP,
         "workflow_name":REQUIRED_WORKFLOW_NAME,
@@ -51,6 +55,9 @@ def ci_trust_policy_digest() -> str:
         "forbidden_run_prefixes":list(FORBIDDEN_RUN_PREFIXES),
         "required_run_shell":REQUIRED_RUN_SHELL,
         "forbidden_yaml_features":sorted(FORBIDDEN_YAML_FEATURES),
+        "allowed_root_keys":sorted(ALLOWED_ROOT_KEYS),
+        "allowed_job_keys":sorted(ALLOWED_JOB_KEYS),
+        "allowed_step_keys":sorted(ALLOWED_STEP_KEYS),
     }
     return hashlib.sha256(
         json.dumps(payload,sort_keys=True,separators=(",",":")).encode("utf-8")
@@ -84,6 +91,49 @@ def validate_yaml_surface_text(text: str) -> dict:
             else:
                 bucket.add(key)
     return {"valid":not violations,"violations":violations}
+
+def validate_workflow_schema_text(text: str) -> dict:
+    violations=[]
+    current_job=None
+    in_jobs=False
+    in_steps=False
+    for lineno,line in enumerate(text.splitlines(),start=1):
+        code=line.split("#",1)[0].rstrip()
+        if not code.strip():
+            continue
+        root=re.match(r"^([A-Za-z0-9_-]+):",code)
+        if root:
+            key=root.group(1)
+            in_jobs=(key=="jobs")
+            current_job=None
+            in_steps=False
+            if key not in ALLOWED_ROOT_KEYS:
+                violations.append({"reason":"unknown_root_key","line":lineno,"key":key})
+            continue
+        if not in_jobs:
+            continue
+        job=re.match(r"^  ([A-Za-z0-9_-]+):\s*$",code)
+        if job:
+            current_job=job.group(1)
+            in_steps=False
+            continue
+        if current_job is None:
+            continue
+        job_key=re.match(r"^    ([A-Za-z0-9_-]+):",code)
+        if job_key:
+            key=job_key.group(1)
+            in_steps=(key=="steps")
+            if key not in ALLOWED_JOB_KEYS:
+                violations.append({"reason":"unknown_job_key","line":lineno,"job":current_job,"key":key})
+            continue
+        if in_steps:
+            step_key=re.match(r"^      -\s+([A-Za-z0-9_-]+):",code)
+            if step_key and step_key.group(1) not in ALLOWED_STEP_KEYS:
+                violations.append({"reason":"unknown_step_key","line":lineno,"job":current_job,"key":step_key.group(1)})
+            nested_step_key=re.match(r"^        ([A-Za-z0-9_-]+):",code)
+            if nested_step_key and nested_step_key.group(1) not in ALLOWED_STEP_KEYS:
+                violations.append({"reason":"unknown_step_key","line":lineno,"job":current_job,"key":nested_step_key.group(1)})
+    return {"valid":not violations,"allowed_root_keys":sorted(ALLOWED_ROOT_KEYS),"allowed_job_keys":sorted(ALLOWED_JOB_KEYS),"allowed_step_keys":sorted(ALLOWED_STEP_KEYS),"violations":violations}
 
 def _scalar_yaml_value(value: str):
     value=value.split("#",1)[0].strip().strip("'\"").lower()
@@ -405,6 +455,7 @@ def workflow_job_ids(path: Path) -> set[str]:
 
 def validate_workflow_text(text: str) -> dict:
     yaml_surface=validate_yaml_surface_text(text)
+    schema_policy=validate_workflow_schema_text(text)
     jobs=workflow_job_ids_text(text)
     missing=sorted(REQUIRED_GITHUB_CHECKS-jobs)
     name_match=re.search(r"(?m)^name:\s*([^#\n]+?)\s*$",text)
@@ -417,6 +468,7 @@ def validate_workflow_text(text: str) -> dict:
     return {
         "valid":(
             yaml_surface["valid"]
+            and schema_policy["valid"]
             and not missing
             and workflow_name==REQUIRED_WORKFLOW_NAME
             and action_policy["valid"]

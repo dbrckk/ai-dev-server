@@ -806,6 +806,32 @@ Objective and current plan:
                     )
                     cost_controller.record_verification(float(model_verification.get("elapsed_seconds",0.0) or 0.0))
                     model_success = model_verification.get("passed") is True
+                    if isinstance(model_impl, dict):
+                        candidate_provider = model_impl.get("provider")
+                        if isinstance(candidate_provider, str) and candidate_provider:
+                            candidate_duration = model_impl.get("duration_seconds")
+                            try:
+                                candidate_latency_ms = (
+                                    max(0.0, float(candidate_duration) * 1000.0)
+                                    if candidate_duration is not None else None
+                                )
+                            except (TypeError, ValueError):
+                                candidate_latency_ms = None
+                            provider_health_env = str(
+                                __import__("os").environ.get("STUDIO_PROVIDER_HEALTH_PATH") or ""
+                            ).strip()
+                            candidate_health_path = (
+                                Path(provider_health_env)
+                                if provider_health_env
+                                else out / ".autonomy/provider-health.json"
+                            )
+                            record_provider_verified_result(
+                                candidate_health_path,
+                                candidate_provider,
+                                verified_success=model_success,
+                                latency_ms=candidate_latency_ms,
+                            )
+                            model_impl["provider_feedback_recorded"] = True
                     routing_score = model_impl.get("routing_score") if isinstance(model_impl,dict) else None
                     if isinstance(routing_score,dict):
                         provider_name = str(model_impl.get("provider") or "direct-model")
@@ -1537,7 +1563,8 @@ Objective and current plan:
                 latency_ms = max(0.0, float(duration) * 1000.0) if duration is not None else None
             except (TypeError, ValueError):
                 latency_ms = None
-            provider_samples.setdefault(provider_name, []).append(latency_ms)
+            if model_meta.get("provider_feedback_recorded") is not True:
+                provider_samples.setdefault(provider_name, []).append(latency_ms)
 
         # A round-wide failure is ambiguous when multiple implementation providers
         # contributed to the same patch. Do not poison every provider's circuit

@@ -4,6 +4,7 @@ from __future__ import annotations
 from provider_health import reliability_bonus
 from provider_metrics import latency_bonus
 from provider_runtime_reliability import routing_bonus as runtime_bonus
+from routing_calibration import adjustment as calibration_adjustment
 
 
 def score(
@@ -16,6 +17,7 @@ def score(
     runtime: dict | None = None,
     contextual_adjustment: float = 0.0,
     exploration_bonus: float = 0.0,
+    calibration: dict | None = None,
 ) -> dict:
     base = max(0.0, min(100.0, float(getattr(provider, "priority", 50))))
     free_bonus = 8.0 if bool(getattr(provider, "free_preferred", False)) else 0.0
@@ -26,10 +28,11 @@ def score(
     runtime_signal = max(-12.0, min(12.0, runtime_bonus(runtime or {}, provider.name, model)))
     context_signal = max(-18.0, min(12.0, float(contextual_adjustment or 0.0)))
     exploration_signal = max(0.0, min(8.0, float(exploration_bonus or 0.0)))
+    calibration_signal = calibration_adjustment(calibration or {}, provider.name, model)
     total = (
         base + free_bonus + unmetered_bonus + quota_bonus
         + health_signal + latency_signal + runtime_signal
-        + context_signal + exploration_signal
+        + context_signal + exploration_signal + calibration_signal
     )
     return {
         "score": round(total, 6),
@@ -43,5 +46,6 @@ def score(
             "runtime_reliability": runtime_signal,
             "context": context_signal,
             "exploration": exploration_signal,
+            "verified_outcome_calibration": calibration_signal,
         },
     }

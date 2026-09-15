@@ -70,8 +70,8 @@ from local_model_leaderboard import leaderboards as local_model_leaderboards
 from model_portfolio import choose as choose_model_portfolio
 from model_portfolio_audit import audit as audit_model_portfolio
 from portfolio_candidate_scheduler import choose_schedule as choose_candidate_schedule
-from adaptive_role_allocator import choose_role_allocation
-from adaptive_phase_policy import review_phase_decision
+from adaptive_role_allocator import choose_role_allocation, planning_required
+from adaptive_phase_policy import planning_phase_decision, review_phase_decision
 from candidate_portfolio_learning import (
     load as load_candidate_portfolio_learning,
     record as record_candidate_portfolio_learning,
@@ -481,24 +481,38 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             verification_reserve_seconds=difficulty.verification_reserve_seconds,
             difficulty_band=difficulty.band,
         )
-        planning_timeout = bounded_timeout(
-            preplan_quotas.planning,
-            minimum=30,
-            maximum=300,
+        normalized_difficulty = min(1.0, max(0.0, float(difficulty.score) / 10.0))
+        round_require_planning = planning_required(
+            difficulty=normalized_difficulty,
+            remaining_seconds=preplan_remaining,
+            verification_seconds=verification_seconds,
         )
-        plan, plan_model = ask(
-            PLAN_SYSTEM,
-            canonical(plan_payload),
-            code=False,
-            role="product",
-            timeout_seconds=planning_timeout or 30,
+        planning_policy = planning_phase_decision(
+            require_planning=round_require_planning,
+            brief=req["brief"],
         )
-        if isinstance(plan_model,dict):
-            cost_controller.record_model(float(plan_model.get("duration_seconds",0.0) or 0.0), phase="planning")
-            # Planning has no immediate trusted verifier. Retain its identity so
-            # the round's final verification can award success without inventing
-            # a provider-specific failure from an ambiguous downstream result.
-            plan_model["feedback_role"] = "product"
+        if planning_policy["launch_model"]:
+            planning_timeout = bounded_timeout(
+                preplan_quotas.planning,
+                minimum=30,
+                maximum=300,
+            )
+            plan, plan_model = ask(
+                PLAN_SYSTEM,
+                canonical(plan_payload),
+                code=False,
+                role="product",
+                timeout_seconds=planning_timeout or 30,
+            )
+            if isinstance(plan_model,dict):
+                cost_controller.record_model(float(plan_model.get("duration_seconds",0.0) or 0.0), phase="planning")
+                # Planning has no immediate trusted verifier. Retain its identity so
+                # the round's final verification can award success without inventing
+                # a provider-specific failure from an ambiguous downstream result.
+                plan_model["feedback_role"] = "product"
+        else:
+            plan = planning_policy["plan"]
+            plan_model = None
         checkpoint = advance_checkpoint(checkpoint, round_index=round_index, phase="planned")
         save_checkpoint(checkpoint_path, checkpoint)
         changed = []
@@ -705,7 +719,7 @@ Objective and current plan:
                     0.65 if capacity_state.get("pooled_free_available") else 0.0
                 )
                 role_allocation = choose_role_allocation(
-                    difficulty=min(1.0, max(0.0, float(difficulty.score) / 10.0)),
+                    difficulty=normalized_difficulty,
                     route_confidence=scheduler_confidence,
                     remaining_seconds=remaining_seconds,
                     verification_seconds=verification_seconds,

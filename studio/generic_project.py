@@ -1554,6 +1554,42 @@ Objective and current plan:
             )
         complete = review.get("complete") is True and verification.get("passed") is True
 
+        # Review is independently grounded in trusted verification evidence. Reward
+        # agreement with that evidence, not whether the whole project ultimately
+        # completes, so review reputation measures reviewer judgment quality.
+        if isinstance(review_model, dict) and verification.get("passed") in {True, False}:
+            review_provider = review_model.get("provider")
+            if isinstance(review_provider, str) and review_provider:
+                review_duration = review_model.get("duration_seconds")
+                try:
+                    review_latency_ms = (
+                        max(0.0, float(review_duration) * 1000.0)
+                        if review_duration is not None else None
+                    )
+                except (TypeError, ValueError):
+                    review_latency_ms = None
+                verification_passed = verification.get("passed") is True
+                review_complete = review.get("complete") is True
+                review_agrees_with_evidence = (
+                    review_complete if verification_passed else not review_complete
+                )
+                review_health_env = str(
+                    __import__("os").environ.get("STUDIO_PROVIDER_HEALTH_PATH") or ""
+                ).strip()
+                review_health_path = (
+                    Path(review_health_env)
+                    if review_health_env else out / ".autonomy/provider-health.json"
+                )
+                record_scoped_provider_verified_result(
+                    review_health_path,
+                    review_provider,
+                    model=str(review_model.get("model") or "") or None,
+                    role="review",
+                    verified_success=review_agrees_with_evidence,
+                    latency_ms=review_latency_ms,
+                )
+                review_model["provider_feedback_recorded"] = True
+
         verified_round_progress = verification.get("passed") is True
         if verified_round_progress and isinstance(plan_model, dict):
             planning_provider = plan_model.get("provider")

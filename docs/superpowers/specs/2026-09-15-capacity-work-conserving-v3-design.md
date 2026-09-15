@@ -8,9 +8,9 @@ The change applies only to finite capacity. Unmetered providers continue to remo
 
 ## Required behavior
 
-1. Ordinary projects may consume at most the ordinary pool (`finite_capacity - critical_reserve`). Reserved capacity must never be granted to ordinary work.
-2. If an ordinary project reaches its request/stagnation cap, unused ordinary capacity is redistributed among other eligible ordinary projects instead of being stranded.
-3. Critical work receives the critical reserve first, then may consume ordinary capacity that ordinary projects did not use.
+1. The critical reserve is exclusive to critical work. Ordinary projects can never consume reserved capacity.
+2. Critical work receives the critical reserve first. The remaining non-reserved pool is then shared by all eligible projects using the existing weight function, preserving the scheduler's existing critical-priority bias.
+3. If any project reaches its request/stagnation cap, unused finite capacity is redistributed among other eligible projects instead of being stranded.
 4. Paused projects receive zero capacity and do not participate in redistribution.
 5. No project may exceed its effective envelope cap: `min(requested_tokens, stagnation_cap)`.
 6. Allocation remains deterministic and weighted by the existing `_weight()` function.
@@ -21,7 +21,7 @@ The change applies only to finite capacity. Unmetered providers continue to remo
 
 Add one pure helper, `_weighted_work_conserving(projects, capacity)`, that repeatedly distributes remaining finite capacity across uncapped eligible projects according to the existing weight function until either capacity is exhausted or all projects hit their caps.
 
-`allocate()` computes every project's effective cap once. It then performs three deterministic passes: ordinary pool allocation, critical reserve allocation, and critical use of unused ordinary capacity. Public report construction stays unchanged except for consuming the computed envelopes and stripping private scratch fields.
+`allocate()` computes every project's effective cap once. It then allocates the critical-only reserve, reduces each critical project's remaining cap by its reserved grant, and distributes the non-reserved pool across all remaining eligible work. Public report construction consumes those computed envelopes and strips private scratch fields.
 
 ## Failure and safety properties
 
@@ -29,6 +29,7 @@ Add one pure helper, `_weighted_work_conserving(projects, capacity)`, that repea
 - A zero stagnation multiplier still yields a zero effective cap.
 - A paused project never receives redistributed capacity.
 - Critical reserve remains isolated from ordinary work.
+- Aggregate finite allocation never exceeds finite provider capacity.
 - No model/provider runtime behavior changes; this is a deterministic scheduler-only change.
 
 ## Verification
@@ -37,7 +38,7 @@ Add regression tests for:
 
 - peer cap redistribution with full finite utilization;
 - reserve isolation for ordinary projects;
-- critical consumption of otherwise-unused ordinary capacity;
+- critical access to reserved plus non-reserved capacity;
 - pause/stagnation caps under redistribution;
 - total allocation never exceeding finite capacity.
 

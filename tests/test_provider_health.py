@@ -58,9 +58,14 @@ class ProviderHealthTests(unittest.TestCase):
             raw = path.read_text()
             self.assertNotIn("error", raw.lower())
             self.assertNotIn("token", raw.lower())
+            self.assertNotIn("secret", raw.lower())
+            self.assertNotIn("credential", raw.lower())
             self.assertEqual(
                 set(load(path)["provider"]),
-                {"successes", "failures", "consecutive_failures", "opened_until"},
+                {
+                    "successes", "failures", "consecutive_failures", "opened_until",
+                    "latency_ms_ema", "last_observed_at", "recent_outcomes",
+                },
             )
 
 

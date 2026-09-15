@@ -15,23 +15,34 @@ DEFAULT_THRESHOLD = 3
 DEFAULT_COOLDOWN_SECONDS = 300
 MAX_COOLDOWN_SECONDS = 3600
 MAX_ROWS = 64
+LATENCY_ALPHA = 0.25
+REPUTATION_HALF_LIFE_SECONDS = 14 * 24 * 60 * 60
+REGIME_WINDOW = 8
 
 
 def _row(value):
     if not isinstance(value, dict):
-        return {"successes": 0, "failures": 0, "consecutive_failures": 0, "opened_until": 0.0}
+        return {"successes": 0, "failures": 0, "consecutive_failures": 0, "opened_until": 0.0, "latency_ms_ema": None, "last_observed_at": 0.0, "recent_outcomes": []}
     try:
         successes = max(0, int(value.get("successes", 0)))
         failures = max(0, int(value.get("failures", 0)))
         consecutive = max(0, int(value.get("consecutive_failures", 0)))
         opened_until = max(0.0, float(value.get("opened_until", 0.0)))
+        raw_latency = value.get("latency_ms_ema")
+        last_observed_at = max(0.0, float(value.get("last_observed_at", 0.0) or 0.0))
+        recent_raw = value.get("recent_outcomes", [])
+        recent_outcomes = [1 if bool(item) else 0 for item in recent_raw[-REGIME_WINDOW:]] if isinstance(recent_raw, list) else []
+        latency_ms_ema = None if raw_latency is None else max(0.0, float(raw_latency))
     except (TypeError, ValueError):
-        return {"successes": 0, "failures": 0, "consecutive_failures": 0, "opened_until": 0.0}
+        return {"successes": 0, "failures": 0, "consecutive_failures": 0, "opened_until": 0.0, "latency_ms_ema": None}
     return {
         "successes": successes,
         "failures": failures,
         "consecutive_failures": consecutive,
         "opened_until": opened_until,
+        "latency_ms_ema": latency_ms_ema,
+        "last_observed_at": last_observed_at,
+        "recent_outcomes": recent_outcomes,
     }
 
 
@@ -76,10 +87,26 @@ def eligible(path: Path, provider: str, *, now: float | None = None) -> bool:
     return float(row.get("opened_until", 0.0)) <= current
 
 
-def record_success(path: Path, provider: str) -> dict:
+def _record_latency(row: dict, latency_ms: float | None) -> None:
+    if latency_ms is None:
+        return
+    try:
+        sample = max(0.0, float(latency_ms))
+    except (TypeError, ValueError):
+        return
+    previous = row.get("latency_ms_ema")
+    row["latency_ms_ema"] = sample if previous is None else (
+        LATENCY_ALPHA * sample + (1.0 - LATENCY_ALPHA) * float(previous)
+    )
+
+
+def record_success(path: Path, provider: str, *, latency_ms: float | None = None) -> dict:
     data = load(path)
     row = _row(data.get(provider))
+    _record_latency(row, latency_ms)
     row["successes"] += 1
+    row["last_observed_at"] = time.time()
+    row["recent_outcomes"] = (list(row.get("recent_outcomes", [])) + [1])[-REGIME_WINDOW:]
     row["consecutive_failures"] = 0
     row["opened_until"] = 0.0
     data[provider] = row
@@ -94,6 +121,7 @@ def record_failure(
     threshold: int = DEFAULT_THRESHOLD,
     cooldown_seconds: int = DEFAULT_COOLDOWN_SECONDS,
     now: float | None = None,
+    latency_ms: float | None = None,
 ) -> dict:
     if type(threshold) is not int or threshold < 1:
         raise ValueError("provider failure threshold invalid")
@@ -101,7 +129,9 @@ def record_failure(
         raise ValueError("provider cooldown invalid")
     data = load(path)
     row = _row(data.get(provider))
+    _record_latency(row, latency_ms)
     row["failures"] += 1
+    row["recent_outcomes"] = (list(row.get("recent_outcomes", [])) + [0])[-REGIME_WINDOW:]
     row["consecutive_failures"] += 1
     if row["consecutive_failures"] >= threshold:
         current = time.time() if now is None else float(now)
@@ -125,3 +155,234 @@ def reliability_bonus(data: dict, provider: str) -> float:
         return 0.0
     rate = successes / runs
     return max(-30.0, min(30.0, (rate - 0.5) * 60.0))
+
+
+def record_verified_result(
+    path: Path,
+    provider: str,
+    *,
+    verified_success: bool,
+    latency_ms: float | None = None,
+    threshold: int = DEFAULT_THRESHOLD,
+    cooldown_seconds: int = DEFAULT_COOLDOWN_SECONDS,
+    now: float | None = None,
+) -> dict:
+    """Feed one verified execution outcome back into routing health.
+
+    Only post-verification outcomes should call this function. This prevents
+    provider self-reported success from contaminating adaptive routing evidence.
+    """
+    if type(verified_success) is not bool:
+        raise ValueError("verified_success must be boolean")
+    if verified_success:
+        return record_success(path, provider, latency_ms=latency_ms)
+    return record_failure(
+        path,
+        provider,
+        threshold=threshold,
+        cooldown_seconds=cooldown_seconds,
+        now=now,
+        latency_ms=latency_ms,
+    )
+
+
+def health_snapshot(path: Path, *, now: float | None = None) -> dict:
+    """Return scheduler-ready, credential-free provider evidence."""
+    current = time.time() if now is None else float(now)
+    snapshot = {}
+    for provider, row in load(path).items():
+        successes = max(0, int(row.get("successes", 0)))
+        failures = max(0, int(row.get("failures", 0)))
+        observations = successes + failures
+        reliability = (successes + 1) / (observations + 2)
+        snapshot[provider] = {
+            "successes": successes,
+            "failures": failures,
+            "observations": observations,
+            "reliability": round(reliability, 6),
+            "latency_ms_ema": row.get("latency_ms_ema"),
+            "circuit_open": float(row.get("opened_until", 0.0) or 0.0) > current,
+            "opened_until": float(row.get("opened_until", 0.0) or 0.0),
+        }
+    return snapshot
+
+
+def scoped_key(provider: str, *, model: str | None = None, role: str | None = None) -> str:
+    """Build a stable non-secret health key for provider/model/role specialization."""
+    provider = str(provider or "").strip()
+    if not provider:
+        raise ValueError("provider required")
+    parts = [provider]
+    if model and str(model).strip():
+        parts.append("model=" + str(model).strip())
+    if role and str(role).strip():
+        parts.append("role=" + str(role).strip())
+    return "|".join(parts)
+
+
+def record_scoped_verified_result(
+    path: Path,
+    provider: str,
+    *,
+    verified_success: bool,
+    model: str | None = None,
+    role: str | None = None,
+    latency_ms: float | None = None,
+    threshold: int = DEFAULT_THRESHOLD,
+    cooldown_seconds: int = DEFAULT_COOLDOWN_SECONDS,
+    now: float | None = None,
+) -> dict:
+    """Record both global provider health and a specialized provider/model/role view."""
+    record_verified_result(
+        path,
+        provider,
+        verified_success=verified_success,
+        latency_ms=latency_ms,
+        threshold=threshold,
+        cooldown_seconds=cooldown_seconds,
+        now=now,
+    )
+    key = scoped_key(provider, model=model, role=role)
+    if key == provider:
+        return load(path)
+    return record_verified_result(
+        path,
+        key,
+        verified_success=verified_success,
+        latency_ms=latency_ms,
+        threshold=threshold,
+        cooldown_seconds=cooldown_seconds,
+        now=now,
+    )
+
+
+def scoped_reliability(
+    data: dict,
+    provider: str,
+    *,
+    model: str | None = None,
+    role: str | None = None,
+) -> float:
+    """Return smoothed specialized reliability, falling back to provider evidence."""
+    keys = [
+        scoped_key(provider, model=model, role=role),
+        scoped_key(provider, role=role),
+        provider,
+    ]
+    for key in keys:
+        row = data.get(key)
+        if not isinstance(row, dict):
+            continue
+        successes = max(0, int(row.get("successes", 0)))
+        failures = max(0, int(row.get("failures", 0)))
+        return (successes + 1) / (successes + failures + 2)
+    return 0.5
+
+
+
+def regime_signal(row: dict) -> dict:
+    """Detect sharp recent deterioration relative to smoothed historical quality."""
+    recent = row.get("recent_outcomes", [])
+    if not isinstance(recent, list) or len(recent) < 4:
+        return {"detected": False, "recent_rate": None, "historical_rate": None, "penalty": 0.0}
+    recent_rate = sum(1 if bool(item) else 0 for item in recent) / len(recent)
+    successes = max(0, int(row.get("successes", 0)))
+    failures = max(0, int(row.get("failures", 0)))
+    historical_rate = (successes + 1) / (successes + failures + 2)
+    gap = max(0.0, historical_rate - recent_rate)
+    detected = recent_rate <= 0.5 and gap >= 0.25
+    penalty = min(0.75, gap) if detected else 0.0
+    return {"detected": detected, "recent_rate": recent_rate, "historical_rate": historical_rate, "penalty": penalty}
+
+def recovery_signal(row: dict) -> dict:
+    """Detect sustained recent recovery relative to historical provider quality."""
+    recent = row.get("recent_outcomes", [])
+    if not isinstance(recent, list) or len(recent) < 4:
+        return {"detected": False, "recent_rate": None, "historical_rate": None, "bonus": 0.0}
+    recent_rate = sum(1 if bool(item) else 0 for item in recent) / len(recent)
+    successes = max(0, int(row.get("successes", 0)))
+    failures = max(0, int(row.get("failures", 0)))
+    historical_rate = (successes + 1) / (successes + failures + 2)
+    gap = max(0.0, recent_rate - historical_rate)
+    detected = recent_rate >= 0.75 and gap >= 0.20
+    bonus = min(0.35, gap) if detected else 0.0
+    return {
+        "detected": detected,
+        "recent_rate": recent_rate,
+        "historical_rate": historical_rate,
+        "bonus": bonus,
+    }
+
+
+def scoped_evidence(
+    data: dict,
+    provider: str,
+    *,
+    model: str | None = None,
+    role: str | None = None,
+    now: float | None = None,
+    half_life_seconds: float = REPUTATION_HALF_LIFE_SECONDS,
+) -> dict:
+    """Return reliability plus confidence from the best available specialization."""
+    keys = [
+        scoped_key(provider, model=model, role=role),
+        scoped_key(provider, role=role),
+        provider,
+    ]
+    for key in keys:
+        row = data.get(key)
+        if not isinstance(row, dict):
+            continue
+        successes = max(0, int(row.get("successes", 0)))
+        failures = max(0, int(row.get("failures", 0)))
+        observations = successes + failures
+        reliability = (successes + 1) / (observations + 2)
+        # Saturating evidence confidence: 10 observations ~= 50%, 50 ~= 83%.
+        confidence = observations / (observations + 10.0)
+        current = time.time() if now is None else float(now)
+        last_observed = max(0.0, float(row.get("last_observed_at", 0.0) or 0.0))
+        if last_observed <= 0 or half_life_seconds <= 0:
+            freshness = 1.0
+        else:
+            age = max(0.0, current - last_observed)
+            freshness = 0.5 ** (age / float(half_life_seconds))
+        confidence *= freshness
+        regime = regime_signal(row)
+        recovery = recovery_signal(row)
+        confidence *= 1.0 - float(regime["penalty"])
+        # Recovery boosts confidence in fresh positive evidence, but never above 1.
+        confidence = min(1.0, confidence * (1.0 + float(recovery["bonus"])))
+        adjusted_reliability = reliability
+        if recovery["detected"]:
+            adjusted_reliability = min(
+                1.0,
+                reliability + (float(recovery["recent_rate"]) - reliability) * float(recovery["bonus"]),
+            )
+        return {
+            "key": key,
+            "reliability": adjusted_reliability,
+            "historical_reliability": reliability,
+            "observations": observations,
+            "confidence": confidence,
+            "freshness": freshness,
+            "last_observed_at": last_observed,
+            "regime_change": bool(regime["detected"]),
+            "recent_success_rate": regime["recent_rate"],
+            "regime_penalty": float(regime["penalty"]),
+            "recovery_detected": bool(recovery["detected"]),
+            "recovery_bonus": float(recovery["bonus"]),
+        }
+    return {
+        "key": None,
+        "reliability": 0.5,
+        "historical_reliability": 0.5,
+        "observations": 0,
+        "confidence": 0.0,
+        "freshness": 0.0,
+        "last_observed_at": 0.0,
+        "regime_change": False,
+        "recent_success_rate": None,
+        "regime_penalty": 0.0,
+        "recovery_detected": False,
+        "recovery_bonus": 0.0,
+    }

@@ -42,6 +42,184 @@ class CapacitySchedulerTests(unittest.TestCase):
         self.assertEqual(order, ["local", "free", "paid"])
 
 
+    def test_provider_peers_rank_by_runtime_evidence(self):
+        providers = [
+            ProviderCapacity("slow-unreliable", 100_000, reliability=0.2, latency_ms=4000),
+            ProviderCapacity("fast-reliable", 100_000, reliability=0.95, latency_ms=100),
+        ]
+        report = allocate([{"id": "p", "requested_tokens": 100}], providers)
+        order = [row["name"] for row in report["projects"][0]["provider_order"]]
+        self.assertEqual(order, ["fast-reliable", "slow-unreliable"])
+        self.assertGreater(
+            report["projects"][0]["provider_order"][0]["adaptive_score"],
+            report["projects"][0]["provider_order"][1]["adaptive_score"],
+        )
+
+    def test_adaptive_score_does_not_override_free_first_policy(self):
+        providers = [
+            ProviderCapacity(
+                "paid-excellent", 1_000_000, paid=True, free_preferred=False,
+                reliability=1.0, latency_ms=1, cost_per_million_tokens=0.01,
+            ),
+            ProviderCapacity(
+                "free-poor", 1_000, paid=False, free_preferred=True,
+                reliability=0.1, latency_ms=5000,
+            ),
+        ]
+        report = allocate([{"id": "p", "requested_tokens": 100}], providers)
+        order = [row["name"] for row in report["projects"][0]["provider_order"]]
+        self.assertEqual(order, ["free-poor", "paid-excellent"])
+
+    def test_parser_normalizes_adaptive_provider_metrics(self):
+        rows = provider_capacities([{
+            "name": "provider",
+            "available_tokens": 500,
+            "reliability": 1.5,
+            "latency_ms": -20,
+            "cost_per_million_tokens": -1,
+        }])
+        self.assertEqual(rows[0].reliability, 1.0)
+        self.assertEqual(rows[0].latency_ms, 0.0)
+        self.assertEqual(rows[0].cost_per_million_tokens, 0.0)
+
+    def test_health_history_supplies_smoothed_reliability(self):
+        rows = provider_capacities(
+            [{"name": "provider", "available_tokens": 1000}],
+            health_data={"provider": {"successes": 8, "failures": 2}},
+        )
+        self.assertAlmostEqual(rows[0].reliability, 0.75)
+
+    def test_explicit_reliability_overrides_health_history(self):
+        rows = provider_capacities(
+            [{"name": "provider", "available_tokens": 1000, "reliability": 0.9}],
+            health_data={"provider": {"successes": 0, "failures": 10}},
+        )
+        self.assertEqual(rows[0].reliability, 0.9)
+
+    def test_sparse_health_history_is_bayesian_smoothed(self):
+        rows = provider_capacities(
+            [{"name": "provider", "available_tokens": 1000}],
+            health_data={"provider": {"successes": 1, "failures": 0}},
+        )
+        self.assertAlmostEqual(rows[0].reliability, 2 / 3)
+
+    def test_health_history_supplies_observed_latency(self):
+        rows = provider_capacities(
+            [{"name": "provider", "available_tokens": 1000}],
+            health_data={"provider": {
+                "successes": 5, "failures": 1, "latency_ms_ema": 275.5,
+            }},
+        )
+        self.assertEqual(rows[0].latency_ms, 275.5)
+
+    def test_explicit_latency_overrides_health_history(self):
+        rows = provider_capacities(
+            [{"name": "provider", "available_tokens": 1000, "latency_ms": 50}],
+            health_data={"provider": {
+                "successes": 5, "failures": 1, "latency_ms_ema": 900,
+            }},
+        )
+        self.assertEqual(rows[0].latency_ms, 50.0)
+
+    def test_open_circuit_provider_is_excluded(self):
+        rows = provider_capacities(
+            [
+                {"name": "broken", "available_tokens": 1000},
+                {"name": "healthy", "available_tokens": 1000},
+            ],
+            health_data={
+                "broken": {"opened_until": 200.0},
+                "healthy": {"opened_until": 0.0},
+            },
+            now=100.0,
+        )
+        report = allocate([{"id": "p", "requested_tokens": 100}], rows)
+        order = [row["name"] for row in report["projects"][0]["provider_order"]]
+        self.assertEqual(order, ["healthy"])
+
+    def test_provider_returns_after_circuit_cooldown(self):
+        rows = provider_capacities(
+            [{"name": "recovered", "available_tokens": 1000}],
+            health_data={"recovered": {"opened_until": 200.0}},
+            now=201.0,
+        )
+        report = allocate([{"id": "p", "requested_tokens": 100}], rows)
+        self.assertEqual(
+            [row["name"] for row in report["projects"][0]["provider_order"]],
+            ["recovered"],
+        )
+
+    def test_open_circuit_capacity_is_not_counted(self):
+        rows = provider_capacities(
+            [
+                {"name": "broken", "available_tokens": 900},
+                {"name": "healthy", "available_tokens": 100},
+            ],
+            health_data={"broken": {"opened_until": 200.0}},
+            now=100.0,
+        )
+        report = allocate(
+            [{"id": "p", "requested_tokens": 1000}],
+            rows,
+            critical_reserve_ratio=0.0,
+        )
+        self.assertEqual(report["finite_capacity_tokens"], 100)
+        self.assertEqual(report["projects"][0]["token_envelope"], 100)
+
+    def test_under_observed_peer_gets_bounded_exploration_bonus(self):
+        providers = [
+            ProviderCapacity(
+                "established", 1000, reliability=0.7, latency_ms=500,
+                observations=100,
+            ),
+            ProviderCapacity(
+                "newcomer", 1000, reliability=0.7, latency_ms=500,
+                observations=0,
+            ),
+        ]
+        report = allocate(
+            [{"id": "p", "requested_tokens": 100}],
+            providers,
+            exploration_strength=0.08,
+        )
+        order = report["projects"][0]["provider_order"]
+        self.assertEqual(order[0]["name"], "newcomer")
+        self.assertGreater(order[0]["exploration_bonus"], order[1]["exploration_bonus"])
+
+    def test_exploration_never_bypasses_provider_tier(self):
+        providers = [
+            ProviderCapacity(
+                "free-established", 1000, reliability=0.1, latency_ms=5000,
+                observations=1000,
+            ),
+            ProviderCapacity(
+                "paid-new", 1000, paid=True, free_preferred=False,
+                reliability=1.0, latency_ms=1, observations=0,
+            ),
+        ]
+        report = allocate(
+            [{"id": "p", "requested_tokens": 100}],
+            providers,
+            exploration_strength=0.25,
+        )
+        self.assertEqual(
+            [row["name"] for row in report["projects"][0]["provider_order"]],
+            ["free-established", "paid-new"],
+        )
+
+    def test_zero_exploration_preserves_adaptive_ranking(self):
+        providers = [
+            ProviderCapacity("better", 1000, reliability=0.9, observations=100),
+            ProviderCapacity("newer", 1000, reliability=0.5, observations=0),
+        ]
+        report = allocate(
+            [{"id": "p", "requested_tokens": 100}],
+            providers,
+            exploration_strength=0.0,
+        )
+        self.assertEqual(report["projects"][0]["provider_order"][0]["name"], "better")
+        self.assertEqual(report["projects"][0]["provider_order"][0]["exploration_bonus"], 0.0)
+
     def test_capacity_pressure_increases_scarce_capacity_share(self):
         providers = [ProviderCapacity("omniroute", 1000, unmetered=False)]
         report = allocate([

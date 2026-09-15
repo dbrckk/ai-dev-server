@@ -8,8 +8,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from dataclasses import dataclass
 from pathlib import Path
+
+import provider_health
 
 
 CRITICAL_PHASES = {"verification", "tests", "review", "security_fix", "release_fix"}
@@ -23,6 +26,11 @@ class ProviderCapacity:
     unmetered: bool = False
     free_preferred: bool = True
     paid: bool = False
+    reliability: float = 0.5
+    latency_ms: float | None = None
+    cost_per_million_tokens: float = 0.0
+    circuit_open: bool = False
+    observations: int = 0
 
     @property
     def tier(self) -> int:
@@ -33,6 +41,17 @@ class ProviderCapacity:
         if not self.paid:
             return 2
         return 3
+
+    @property
+    def adaptive_score(self) -> float:
+        """Higher is better; preserve free-first policy while ranking peers by evidence."""
+        reliability = max(0.0, min(1.0, float(self.reliability)))
+        latency = 1000.0 if self.latency_ms is None else max(0.0, float(self.latency_ms))
+        latency_score = 1.0 / (1.0 + latency / 1000.0)
+        cost = max(0.0, float(self.cost_per_million_tokens))
+        cost_score = 1.0 / (1.0 + cost)
+        availability = 1.0 if self.unmetered else min(1.0, max(0.0, float(self.available_tokens or 0)) / 1_000_000.0)
+        return (0.55 * reliability) + (0.20 * latency_score) + (0.15 * availability) + (0.10 * cost_score)
 
 
 def _clean_project(row: dict) -> dict | None:
@@ -121,10 +140,25 @@ def allocate(
     providers: list[ProviderCapacity],
     *,
     critical_reserve_ratio: float = 0.10,
+    exploration_strength: float = 0.08,
 ) -> dict:
     """Allocate project envelopes and provider order for one scheduling cycle."""
     cleaned = [item for row in projects if (item := _clean_project(row)) is not None]
-    ordered_providers = sorted(providers, key=lambda p: (p.tier, p.name))
+    try:
+        explore = max(0.0, min(0.25, float(exploration_strength)))
+    except (TypeError, ValueError):
+        explore = 0.08
+
+    def routing_score(provider: ProviderCapacity) -> float:
+        # Deterministic uncertainty bonus: new/under-observed peers get bounded
+        # opportunities to prove themselves without random routing or tier bypass.
+        uncertainty = 1.0 / (1.0 + max(0, int(provider.observations))) ** 0.5
+        return provider.adaptive_score + explore * uncertainty
+
+    ordered_providers = sorted(
+        (provider for provider in providers if not provider.circuit_open),
+        key=lambda p: (p.tier, -routing_score(p), p.name),
+    )
     has_unmetered = any(p.unmetered for p in ordered_providers)
 
     try:
@@ -180,6 +214,15 @@ def allocate(
                 "free_preferred": provider.free_preferred,
                 "paid": provider.paid,
                 "available_tokens": available,
+                "reliability": round(provider.reliability, 4),
+                "latency_ms": provider.latency_ms,
+                "cost_per_million_tokens": round(provider.cost_per_million_tokens, 6),
+                "adaptive_score": round(provider.adaptive_score, 6),
+                "observations": provider.observations,
+                "exploration_bonus": round(
+                    explore / (1.0 + max(0, provider.observations)) ** 0.5, 6
+                ),
+                "routing_score": round(routing_score(provider), 6),
             })
 
         allocations.append({
@@ -203,6 +246,7 @@ def allocate(
     return {
         "schema": 1,
         "critical_reserve_ratio": round(reserve_ratio, 4),
+        "exploration_strength": round(explore, 4),
         "finite_capacity_tokens": finite,
         "critical_reserve_tokens": reserve,
         "ordinary_capacity_tokens": ordinary_pool,
@@ -219,7 +263,10 @@ def allocate(
     }
 
 
-def provider_capacities(rows: list[dict]) -> list[ProviderCapacity]:
+def provider_capacities(
+    rows: list[dict], *, health_data: dict | None = None, now: float | None = None
+) -> list[ProviderCapacity]:
+    current_time = time.time() if now is None else float(now)
     result = []
     for row in rows:
         if not isinstance(row, dict):
@@ -233,12 +280,55 @@ def provider_capacities(rows: list[dict]) -> list[ProviderCapacity]:
             available = None
         else:
             available = max(0, int(raw_available))
+        empirical = (health_data or {}).get(name)
+        if "reliability" in row:
+            try:
+                reliability = float(row.get("reliability", 0.5))
+            except (TypeError, ValueError):
+                reliability = 0.5
+        elif isinstance(empirical, dict):
+            try:
+                successes = max(0, int(empirical.get("successes", 0)))
+                failures = max(0, int(empirical.get("failures", 0)))
+            except (TypeError, ValueError):
+                successes = failures = 0
+            # Beta(1,1) smoothing prevents tiny samples from dominating routing.
+            reliability = (successes + 1) / (successes + failures + 2)
+        else:
+            reliability = 0.5
+        reliability = max(0.0, min(1.0, reliability))
+        raw_latency = row.get("latency_ms")
+        if raw_latency is None and isinstance(empirical, dict):
+            raw_latency = empirical.get("latency_ms_ema")
+        try:
+            latency = None if raw_latency is None else max(0.0, float(raw_latency))
+        except (TypeError, ValueError):
+            latency = None
+        try:
+            cost = max(0.0, float(row.get("cost_per_million_tokens", 0.0) or 0.0))
+        except (TypeError, ValueError):
+            cost = 0.0
+        circuit_open = False
+        if isinstance(empirical, dict):
+            try:
+                circuit_open = float(empirical.get("opened_until", 0.0) or 0.0) > current_time
+            except (TypeError, ValueError):
+                circuit_open = False
         result.append(ProviderCapacity(
             name=name,
             available_tokens=available,
             unmetered=unmetered,
             free_preferred=bool(row.get("free_preferred", True)),
             paid=bool(row.get("paid", False)),
+            reliability=reliability,
+            latency_ms=latency,
+            cost_per_million_tokens=cost,
+            circuit_open=circuit_open,
+            observations=(
+                max(0, int(empirical.get("successes", 0) or 0))
+                + max(0, int(empirical.get("failures", 0) or 0))
+                if isinstance(empirical, dict) else 0
+            ),
         ))
     return result
 
@@ -249,6 +339,7 @@ def main(argv=None) -> int:
     parser.add_argument("--providers", required=True, help="JSON file containing a providers array")
     parser.add_argument("--critical-reserve-ratio", type=float, default=0.10)
     parser.add_argument("--output", default="")
+    parser.add_argument("--provider-health", default="", help="Optional provider-health JSON state")
     args = parser.parse_args(argv)
 
     projects_payload = json.loads(Path(args.projects).read_text(encoding="utf-8"))
@@ -256,9 +347,10 @@ def main(argv=None) -> int:
     projects = projects_payload.get("projects", []) if isinstance(projects_payload, dict) else projects_payload
     provider_rows = providers_payload.get("providers", []) if isinstance(providers_payload, dict) else providers_payload
 
+    health_data = provider_health.load(Path(args.provider_health)) if args.provider_health else {}
     report = allocate(
         list(projects),
-        provider_capacities(list(provider_rows)),
+        provider_capacities(list(provider_rows), health_data=health_data),
         critical_reserve_ratio=args.critical_reserve_ratio,
     )
     rendered = json.dumps(report, sort_keys=True, indent=2) + "\n"

@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"studio"))
 
-from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow_run_commands_text, validate_workflow, validate_workflow_text
+from replacement_ci_policy import REQUIRED_GITHUB_CHECKS, TRUSTED_ACTION_REVISIONS, validate_action_pinning_text, validate_check_runs, validate_workflow_permissions_text, validate_workflow_run_commands_text, validate_workflow, validate_workflow_text, validate_yaml_surface_text
 
 class ReplacementCIPolicyTests(unittest.TestCase):
     def test_repository_ci_exposes_required_check_ids(self):
@@ -248,6 +248,29 @@ class ReplacementCIPolicyTests(unittest.TestCase):
     def test_run_policy_rejects_untrusted_shell(self):
         result=validate_workflow_run_commands_text("jobs:\n  validate:\n    steps:\n      - shell: pwsh\n        run: echo ok\n")
         self.assertFalse(result["valid"])
+
+    def test_yaml_surface_rejects_anchors_aliases_and_merge_keys(self):
+        for text in ("x: &base value\n","x: *base\n","<<: *base\n"):
+            result=validate_yaml_surface_text(text)
+            self.assertFalse(result["valid"],result)
+
+    def test_yaml_surface_rejects_tags(self):
+        result=validate_yaml_surface_text("value: !custom thing\n")
+        self.assertFalse(result["valid"])
+
+    def test_yaml_surface_rejects_duplicate_mapping_keys(self):
+        result=validate_yaml_surface_text("permissions:\n  contents: read\n  contents: write\n")
+        self.assertFalse(result["valid"])
+        self.assertTrue(any(v["reason"]=="duplicate_key" for v in result["violations"]))
+
+    def test_yaml_surface_rejects_tab_indentation(self):
+        result=validate_yaml_surface_text("jobs:\n\tvalidate:\n")
+        self.assertFalse(result["valid"])
+
+    def test_repository_ci_yaml_surface_is_unambiguous(self):
+        root=Path(__file__).resolve().parents[1]
+        result=validate_yaml_surface_text((root/".github/workflows/ci.yml").read_text())
+        self.assertTrue(result["valid"],result)
 
 if __name__=="__main__":
     unittest.main()

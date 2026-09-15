@@ -28,6 +28,16 @@ class AdaptivePhasePolicyTests(unittest.TestCase):
         self.assertFalse(decision["review"]["complete"])
         self.assertIn("verification", decision["review"]["reason"])
 
+    def test_ambiguous_verification_fails_closed_when_review_is_skipped(self):
+        decision = review_phase_decision(
+            require_review=False,
+            verification={},
+            review_remaining=120,
+        )
+        self.assertFalse(decision["launch_model"])
+        self.assertFalse(decision["review"]["complete"])
+        self.assertEqual(decision["review"]["remaining"], ["trusted verification failed"])
+
     def test_required_review_launches_model_when_budget_allows(self):
         decision = review_phase_decision(
             require_review=True,
@@ -42,6 +52,16 @@ class AdaptivePhasePolicyTests(unittest.TestCase):
             require_review=True,
             verification={"passed": True},
             review_remaining=20,
+        )
+        self.assertFalse(decision["launch_model"])
+        self.assertFalse(decision["review"]["complete"])
+        self.assertIn("quota", decision["review"]["reason"])
+
+    def test_invalid_review_quota_fails_closed_when_review_is_required(self):
+        decision = review_phase_decision(
+            require_review=True,
+            verification={"passed": True},
+            review_remaining="invalid",
         )
         self.assertFalse(decision["launch_model"])
         self.assertFalse(decision["review"]["complete"])

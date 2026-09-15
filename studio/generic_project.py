@@ -255,8 +255,6 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
         checkpoint = new_checkpoint(req["id"], "generic", base_sha)
     if checkpoint.get("project_id") != req["id"] or checkpoint.get("engine") != "generic":
         checkpoint = new_checkpoint(req["id"], "generic", base_sha)
-    # The repository checkpoint commit is authoritative. If remote state moved,
-    # discard stale phase metadata rather than replaying work against a different tree.
     if checkpoint.get("base_sha") != base_sha:
         checkpoint = new_checkpoint(req["id"], "generic", base_sha)
     save_checkpoint(checkpoint_path, checkpoint)
@@ -520,9 +518,6 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             )
             if isinstance(plan_model,dict):
                 cost_controller.record_model(float(plan_model.get("duration_seconds",0.0) or 0.0), phase="planning")
-                # Planning has no immediate trusted verifier. Retain its identity so
-                # the round's final verification can award success without inventing
-                # a provider-specific failure from an ambiguous downstream result.
                 plan_model["feedback_role"] = "product"
         else:
             plan = planning_policy["plan"]
@@ -1548,6 +1543,22 @@ Objective and current plan:
             verification=verification,
             review_remaining=review_remaining,
         )
+        review_decision = {
+            "model_launched": bool(review_policy["launch_model"]),
+            "adaptive_skipped": (
+                not bool(review_policy["launch_model"])
+                and isinstance(review_policy.get("review"), dict)
+                and review_policy["review"].get("adaptive_skipped") is True
+            ),
+            "require_review": round_require_review,
+            "review_remaining": round(review_remaining, 4),
+            "verification_passed": (
+                verification.get("passed")
+                if isinstance(verification, dict)
+                else None
+            ),
+            "reason": review_policy["reason"],
+        }
         if review_policy["launch_model"]:
             review_timeout = bounded_timeout(
                 review_remaining,
@@ -1603,9 +1614,6 @@ Objective and current plan:
             )
         complete = review.get("complete") is True and verification.get("passed") is True
 
-        # Review is independently grounded in trusted verification evidence. Reward
-        # agreement with that evidence, not whether the whole project ultimately
-        # completes, so review reputation measures reviewer judgment quality.
         if isinstance(review_model, dict) and verification.get("passed") in {True, False}:
             review_provider = review_model.get("provider")
             if isinstance(review_provider, str) and review_provider:
@@ -1683,9 +1691,6 @@ Objective and current plan:
             if model_meta.get("provider_feedback_recorded") is not True:
                 provider_samples.setdefault(provider_name, []).append(latency_ms)
 
-        # A round-wide failure is ambiguous when multiple implementation providers
-        # contributed to the same patch. Do not poison every provider's circuit
-        # breaker without provider-specific verification evidence.
         feedback_attributable = verified_round_progress or len(provider_samples) == 1
         if feedback_attributable:
             for provider_name, latency_samples in provider_samples.items():
@@ -1860,6 +1865,7 @@ Objective and current plan:
             "changed_files": changed,
             "verification": verification,
             "review": review,
+            "review_decision": review_decision,
             "progress_trace": progress_trace,
             "agent_trace": agent_trace,
             "phase_quotas_final": phase_quotas.as_dict(),

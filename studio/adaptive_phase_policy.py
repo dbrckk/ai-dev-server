@@ -65,6 +65,7 @@ def review_phase_decision(
         if remaining < 30.0:
             return {
                 "launch_model": False,
+                "reason": "required review quota exhausted",
                 "review": {
                     "complete": False,
                     "remaining": ["review quota exhausted"],
@@ -75,13 +76,23 @@ def review_phase_decision(
                     "adaptive_skipped": False,
                 },
             }
-        return {"launch_model": True, "review": None}
+        return {
+            "launch_model": True,
+            "review": None,
+            "reason": "adaptive review required",
+        }
 
     verification_passed = (
         isinstance(verification, dict) and verification.get("passed") is True
     )
+    reason = (
+        "adaptive policy skipped model review after trusted verification"
+        if verification_passed
+        else "adaptive model review was skipped, but trusted verification did not pass"
+    )
     return {
         "launch_model": False,
+        "reason": reason,
         "review": {
             "complete": verification_passed,
             "remaining": [] if verification_passed else ["trusted verification failed"],

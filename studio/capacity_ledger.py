@@ -65,6 +65,7 @@ def _reap(data: dict, now: float) -> int:
                 "reservation_id": key,
                 "project_id": row.get("project_id"),
                 "provider": row.get("provider"),
+                "model": row.get("model"),
                 "kind": row.get("kind") or "capacity_reservation",
                 "reserved_tokens": max(0, int(row.get("reserved_tokens", 0) or 0)),
                 "created_at": row.get("created_at"),
@@ -365,6 +366,8 @@ def claim_preemption_lease(
     *,
     now: float | None = None,
     ttl_seconds: int = DEFAULT_TTL_SECONDS,
+    provider: str | None = None,
+    model: str | None = None,
 ) -> dict:
     """Convert one active preemption admission lease into a worker-owned reservation."""
     project = str(project_id).strip()
@@ -391,6 +394,10 @@ def claim_preemption_lease(
         token, row = match
         row["kind"] = "worker_capacity_reservation"
         row["claimed_at"] = current
+        if provider is not None:
+            row["provider"] = str(provider).strip() or row.get("provider")
+        if model is not None:
+            row["model"] = str(model).strip() or row.get("model")
         row["expires_at"] = current + ttl
         data["reservations"][token] = row
         _save_unlocked(path, data)

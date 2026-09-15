@@ -52,13 +52,18 @@ class PreemptionApplyTests(unittest.TestCase):
             self._fixture(root)
             report = execute(root, apply=True)
             self.assertEqual(report["preemptions_executed"], 1)
-            self.assertFalse(load(root / "capacity-ledger.json")["reservations"])
+            ledger = load(root / "capacity-ledger.json")
+            self.assertTrue(ledger["reservations"])
+            lease = next(iter(ledger["reservations"].values()))
+            self.assertEqual(lease["project_id"], "high")
+            self.assertEqual(lease["kind"], "preemption_admission_lease")
             state = json.loads(
                 (root / "low" / ".autonomy" / "preemption-state.json").read_text()
             )
             self.assertEqual(state["status"], "preempted")
             self.assertEqual(state["victim_checkpoint"]["phase"], "verified")
-            self.assertEqual(state["released"]["released_tokens"], 12000)
+            self.assertEqual(state["transfer"]["released_tokens"], 12000)
+            self.assertEqual(state["transfer"]["contender_project_id"], "high")
 
     def test_unsafe_checkpoint_blocks_apply(self):
         with tempfile.TemporaryDirectory() as td:

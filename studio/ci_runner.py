@@ -15,6 +15,7 @@ from core import StudioError, canonical
 from orchestrator import run_project, run_registered_stages as _shared_run_registered_stages
 from queue import matrix
 from fleet_capacity import persist as persist_capacity_plan
+from capacity_ledger import claim_preemption_lease, release as release_capacity_reservation
 
 
 def bounded_run(args, timeout):
@@ -112,6 +113,18 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
             results[index]['status'] = 'deferred'
             save_report(out, results)
             continue
+        admission_claim = None
+        if isinstance(admission, dict) and admission.get("action") == "admit_preemption_lease":
+            admission_claim = claim_preemption_lease(
+                out / "capacity-ledger.json",
+                project["id"],
+            )
+            if admission_claim.get("claimed") is not True:
+                results[index]["status"] = "deferred_by_admission"
+                results[index]["admission_reason"] = "preemption_lease_claim_failed"
+                save_report(out, results)
+                continue
+            results[index]["admission_lease_claimed"] = True
         results[index]['status'] = 'running'
         save_report(out, results)
         with tempfile.TemporaryDirectory(prefix='studio-ci-') as work:
@@ -129,6 +142,12 @@ def run_queue(directory='control/mobile-requests', out=Path('studio-output'),
                 results[index]['status'] = 'worker_error'
                 deadline = 0
             finally:
+                if isinstance(admission_claim, dict) and admission_claim.get("claimed") is True:
+                    released = release_capacity_reservation(
+                        out / "capacity-ledger.json",
+                        admission_claim["reservation_id"],
+                    )
+                    results[index]["admission_lease_released"] = released.get("released") is True
                 save_report(out, results)
     save_report(out, results)
     return int(any(p['status'] != 'complete' for p in results))

@@ -223,6 +223,69 @@ def release(path: Path, reservation_id: str, *, now: float | None = None) -> dic
 
 
 
+
+def transfer_project_reservations(
+    path: Path,
+    *,
+    victim_project_id: str,
+    contender_project_id: str,
+    reserve_tokens: int,
+    provider: str = "__admission_slot__",
+    ttl_seconds: int = DEFAULT_TTL_SECONDS,
+    now: float | None = None,
+) -> dict:
+    """Atomically release victim reservations and reserve a bounded contender lease."""
+    victim = str(victim_project_id).strip()
+    contender = str(contender_project_id).strip()
+    if not victim or not contender or victim == contender:
+        raise ValueError("distinct victim and contender project ids are required")
+    amount = max(1, int(reserve_tokens))
+    ttl = max(30, int(ttl_seconds))
+    current = time.time() if now is None else float(now)
+    path = Path(path)
+    with exclusive(path):
+        data = _load_unlocked(path)
+        reaped = _reap(data, current)
+        matches = [
+            key for key, row in data["reservations"].items()
+            if isinstance(row, dict) and row.get("project_id") == victim
+        ]
+        released_tokens = 0
+        released_by_provider = {}
+        for key in matches:
+            row = data["reservations"].pop(key)
+            tokens = max(0, int(row.get("reserved_tokens", 0) or 0))
+            released_tokens += tokens
+            provider_name = str(row.get("provider") or "")
+            if provider_name:
+                released_by_provider[provider_name] = released_by_provider.get(provider_name, 0) + tokens
+
+        token = uuid.uuid4().hex
+        data["reservations"][token] = {
+            "project_id": contender,
+            "provider": str(provider),
+            "reserved_tokens": amount,
+            "created_at": current,
+            "expires_at": current + ttl,
+            "kind": "preemption_admission_lease",
+            "victim_project_id": victim,
+        }
+        _save_unlocked(path, data)
+        return {
+            "transferred": True,
+            "victim_project_id": victim,
+            "contender_project_id": contender,
+            "victim_reservations_released": len(matches),
+            "released_tokens": released_tokens,
+            "released_by_provider": released_by_provider,
+            "lease_reservation_id": token,
+            "lease_tokens": amount,
+            "lease_expires_at": current + ttl,
+            "reaped": reaped,
+        }
+
+
+
 def release_project(path: Path, project_id: str, *, now: float | None = None) -> dict:
     """Atomically release every outstanding reservation owned by a project."""
     project = str(project_id).strip()

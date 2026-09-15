@@ -62,6 +62,34 @@ class UnifiedRoutingScoreTests(unittest.TestCase):
         )
         self.assertEqual(result["components"]["specialized_health"], 0.0)
 
+    def test_sparse_specialization_has_limited_influence(self):
+        sparse = score(
+            provider=Provider(),
+            role="implementation",
+            model="m",
+            health={"p|model=m|role=implementation": {"successes": 1, "failures": 0}},
+        )
+        mature = score(
+            provider=Provider(),
+            role="implementation",
+            model="m",
+            health={"p|model=m|role=implementation": {"successes": 95, "failures": 5}},
+        )
+        self.assertLess(
+            sparse["components"]["specialized_confidence"],
+            mature["components"]["specialized_confidence"],
+        )
+        self.assertLess(
+            sparse["components"]["specialized_health"],
+            mature["components"]["specialized_health"],
+        )
+
+    def test_no_observations_have_zero_specialized_confidence(self):
+        result = score(provider=Provider(), role="review", model="m", health={})
+        self.assertEqual(result["components"]["specialized_confidence"], 0.0)
+        self.assertEqual(result["components"]["specialized_observations"], 0)
+        self.assertEqual(result["components"]["specialized_health"], 0.0)
+
     def test_component_breakdown_sums_to_score(self):
         result = score(provider=Provider(priority=70, free_preferred=True), role="tests", model="m")
         self.assertAlmostEqual(result["score"], sum(result["components"].values()))

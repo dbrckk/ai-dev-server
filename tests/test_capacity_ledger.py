@@ -203,5 +203,40 @@ class CapacityLedgerTests(unittest.TestCase):
 
 
 
+    def test_worker_heartbeat_renews_only_on_progress(self):
+        from capacity_ledger import transfer_project_reservations, claim_preemption_lease, heartbeat
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "ledger.json"
+            transfer_project_reservations(
+                path,
+                victim_project_id="low",
+                contender_project_id="high",
+                reserve_tokens=80,
+                now=100,
+            )
+            claim = claim_preemption_lease(path, "high", now=101, ttl_seconds=100)
+            first = heartbeat(
+                path, claim["reservation_id"], progress_marker="checkpoint-1",
+                now=120, ttl_seconds=100,
+            )
+            self.assertTrue(first["renewed"])
+            self.assertEqual(first["expires_at"], 220)
+            stalled = heartbeat(
+                path, claim["reservation_id"], progress_marker="checkpoint-1",
+                now=150, ttl_seconds=100,
+            )
+            self.assertFalse(stalled["renewed"])
+            self.assertEqual(stalled["reason"], "progress_stalled")
+            self.assertEqual(stalled["expires_at"], 220)
+            advanced = heartbeat(
+                path, claim["reservation_id"], progress_marker="checkpoint-2",
+                now=180, ttl_seconds=100,
+            )
+            self.assertTrue(advanced["renewed"])
+            self.assertEqual(advanced["heartbeat_count"], 2)
+            self.assertEqual(advanced["expires_at"], 280)
+
+
+
 if __name__ == "__main__":
     unittest.main()

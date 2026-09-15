@@ -267,3 +267,40 @@ def scoped_reliability(
         failures = max(0, int(row.get("failures", 0)))
         return (successes + 1) / (successes + failures + 2)
     return 0.5
+
+
+def scoped_evidence(
+    data: dict,
+    provider: str,
+    *,
+    model: str | None = None,
+    role: str | None = None,
+) -> dict:
+    """Return reliability plus confidence from the best available specialization."""
+    keys = [
+        scoped_key(provider, model=model, role=role),
+        scoped_key(provider, role=role),
+        provider,
+    ]
+    for key in keys:
+        row = data.get(key)
+        if not isinstance(row, dict):
+            continue
+        successes = max(0, int(row.get("successes", 0)))
+        failures = max(0, int(row.get("failures", 0)))
+        observations = successes + failures
+        reliability = (successes + 1) / (observations + 2)
+        # Saturating evidence confidence: 10 observations ~= 50%, 50 ~= 83%.
+        confidence = observations / (observations + 10.0)
+        return {
+            "key": key,
+            "reliability": reliability,
+            "observations": observations,
+            "confidence": confidence,
+        }
+    return {
+        "key": None,
+        "reliability": 0.5,
+        "observations": 0,
+        "confidence": 0.0,
+    }

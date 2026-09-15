@@ -76,6 +76,7 @@ def run_loop(
     *,
     interval_seconds: float = 300.0,
     apply_restarts: bool = False,
+    apply_preemptions: bool = False,
     max_restarts: int = 2,
     iterations: int | None = None,
     sleep=time.sleep,

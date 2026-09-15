@@ -1,3 +1,5 @@
+import base64
+import hashlib
 import sys
 from pathlib import Path
 import unittest
@@ -22,7 +24,7 @@ class GitHubAttestationBuilderTests(unittest.TestCase):
             "path":".github/workflows/ci.yml",
             "blob_sha":"blob123",
             "size":73,
-            "sha256":"5949de6344caa241ad89c8f9dfa16d52628f893809c8fc436cac9565c8f9fdb4",
+            "sha256":hashlib.sha256(base64.b64decode("bmFtZTogQ0kKcGVybWlzc2lvbnM6CiAgY29udGVudHM6IHJlYWQKam9iczoKICB2YWxpZGF0ZToKICBweXRob24tdGVzdHM6Cg==")).hexdigest(),
             "content_b64":"bmFtZTogQ0kKcGVybWlzc2lvbnM6CiAgY29udGVudHM6IHJlYWQKam9iczoKICB2YWxpZGF0ZToKICBweXRob24tdGVzdHM6Cg==",
             "policy_validation":{"valid":True},
         }

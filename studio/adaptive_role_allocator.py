@@ -64,7 +64,7 @@ def choose_role_allocation(
         difficulty >= 0.35
         or uncertainty >= 0.40
         or implementation_models > 1
-    ) and budget_pressure < 0.95
+    ) and budget_pressure < 0.90
 
     return RoleAllocation(
         implementation_models=implementation_models,

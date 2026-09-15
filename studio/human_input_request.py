@@ -70,6 +70,14 @@ def _reason_category(detail: object) -> str:
     return "external_human_action_required"
 
 
+def safe_handoff_detail(detail: object) -> str:
+    """Return a persistence-safe reason that keeps names but never raw values."""
+    names = requested_secret_names(detail)
+    if names:
+        return "Missing required secret(s): " + ", ".join(names)
+    return _reason_category(detail)
+
+
 def _requested_items(detail: str) -> list[str]:
     names = requested_secret_names(detail)
     if names:

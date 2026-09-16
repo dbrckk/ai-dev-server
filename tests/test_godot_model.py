@@ -1,12 +1,14 @@
 import json
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
 
 from core import StudioError
 from godot_model import GodotModel
+from provider_router import ProviderSpec
 
 
 class FakeAPI:
@@ -28,7 +30,14 @@ def model(responses, limit=4):
     obj.api = FakeAPI(responses)
     obj.model = 'general'
     obj.code_model = 'code'
+    obj.providers = (
+        ProviderSpec('primary', 'https://example.test/v1', 'primary-key', 'general', code_model='code', priority=100),
+        ProviderSpec('fallback', 'https://fallback.test/v1', 'fallback-key', 'fallback-general', code_model='fallback-code', priority=90),
+    )
     obj.models_used = {}
+    obj.providers_used = {}
+    obj.routing_portfolio = {}
+    obj.avoid_providers = set()
     obj.vision = ''
     obj.limit = limit
     obj.calls = 0
@@ -78,6 +87,18 @@ class GodotModelTests(unittest.TestCase):
         result = subject.ask('tests', 'write regression')
         self.assertEqual(result['files'][0]['path'], 'tests/main_test.gd')
         self.assertEqual(subject.calls, 2)
+
+    def test_structured_godot_call_falls_back_to_secondary_provider(self):
+        subject = model([StudioError('API unavailable or timed out')])
+        fallback_api = FakeAPI([completion(product_value())])
+        fallback_api.base = 'https://fallback.test/v1'
+        with patch('core.API', return_value=fallback_api) as api_factory:
+            result = subject.ask('product', 'plan game')
+        self.assertEqual(result['journeys'][0]['id'], 'play')
+        self.assertEqual(subject.providers_used['product'], 'fallback')
+        self.assertEqual(fallback_api.calls[0][2]['model'], 'fallback-general')
+        self.assertIn('Godot mobile game product lead', fallback_api.calls[0][2]['messages'][0]['content'])
+        api_factory.assert_called_once_with('https://fallback.test/v1', 'fallback-key')
 
     def test_budget_is_shared_and_fail_closed(self):
         subject = model([], limit=0)

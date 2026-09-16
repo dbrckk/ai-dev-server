@@ -100,6 +100,20 @@ class GodotModelTests(unittest.TestCase):
         self.assertIn('Godot mobile game product lead', fallback_api.calls[0][2]['messages'][0]['content'])
         api_factory.assert_called_once_with('https://fallback.test/v1', 'fallback-key')
 
+    def test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary(self):
+        subject = model([completion(product_value())])
+        primary, fallback = subject.providers
+        fallback_api = FakeAPI([completion(product_value())])
+        fallback_api.base = fallback.base
+        with patch('godot_model.candidates_for', return_value=(fallback, primary)), \
+                patch('core.API', return_value=fallback_api) as api_factory:
+            result = subject.ask('product', 'plan game')
+        self.assertEqual(result['journeys'][0]['id'], 'play')
+        self.assertEqual(subject.providers_used['product'], 'fallback')
+        self.assertEqual(subject.api.calls, [])
+        self.assertEqual(fallback_api.calls[0][2]['model'], 'fallback-general')
+        api_factory.assert_called_once_with(fallback.base, fallback.key)
+
     def test_budget_is_shared_and_fail_closed(self):
         subject = model([], limit=0)
         with self.assertRaisesRegex(StudioError, 'budget exhausted'):

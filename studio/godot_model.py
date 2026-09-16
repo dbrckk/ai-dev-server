@@ -162,10 +162,11 @@ class GodotModel(Model):
         selected_model = ''
         elapsed = 0.0
         last_error = None
+        primary_provider = self.providers[0] if self.providers else None
 
-        for provider_index, provider in enumerate(provider_candidates):
+        for provider in provider_candidates:
             selected_model = provider.model_for(role, False)
-            api = self.api if provider_index == 0 else core.API(provider.base, provider.key)
+            api = self.api if primary_provider is not None and provider == primary_provider else core.API(provider.base, provider.key)
             params = {
                 'model': selected_model,
                 'stream': False,

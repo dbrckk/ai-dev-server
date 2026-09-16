@@ -114,6 +114,49 @@ class AutonomousProjectTests(unittest.TestCase):
             self.assertEqual(load_goal(goal_path)["status"], "complete")
             self.assertTrue(memory_path.is_file())
 
+    def test_persistent_godot_failure_counts_once_then_yields_for_fresh_workspace(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            calls = {"n": 0}
+
+            def run_once(*args):
+                calls["n"] += 1
+                if calls["n"] == 1:
+                    return {
+                        "status": "failed",
+                        "report": {
+                            "engine": "godot",
+                            "status": "blocked",
+                            "blockers": ["API unavailable or timed out"],
+                        },
+                        "next_stage": "preview",
+                    }
+                return {
+                    "status": "complete",
+                    "report": {
+                        "engine": "godot",
+                        "status": "finished",
+                        "completion": {"finished": True},
+                        "release_status": "store_ready",
+                    },
+                    "next_stage": None,
+                }
+
+            state = run_persistent_project(
+                "request.json",
+                root / "out",
+                str(root / "work"),
+                runner=lambda *a, **k: None,
+                deadline=100,
+                clock=lambda: 0,
+                run_once=run_once,
+                max_cycles=4,
+            )
+            self.assertEqual(calls["n"], 1)
+            self.assertEqual(state["status"], "active")
+            self.assertEqual(state["attempt"], 1)
+            self.assertIn("failed:preview:API unavailable or timed out", state["failures"])
+
     def test_human_action_persists_terminal_state(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

@@ -2,7 +2,7 @@ name: Autonomous Mobile Studio
 on:
   push:
     branches: [main]
-    paths: ['control/mobile-requests/*.json', 'control/ci.json', 'control/promoted_stages.json']
+    paths: ['control/mobile-requests/*.json', 'control/ci.json', 'control/promoted_stages.json', '.github/workflows/mobile-studio.yml', 'scripts/bootstrap-android-ci.sh']
   workflow_dispatch:
   schedule:
     - cron: '3,23,43 * * * *'

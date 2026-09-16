@@ -1,38 +1,49 @@
 # Prise en charge de Jumpy
 
-## Audit et périmètre
+## Architecture active
 
-Jumpy est un jeu Godot, pas une application Flutter. Le moteur de création Flutter ne peut pas être appliqué à ce dépôt existant. Le profil `control/existing-projects/jumpy.json` fixe la référence auditée au commit `b9a8df120dc5da807f68b610e7bfcd0422f8cff5`, avec Godot 4.7.2 et l'empreinte SHA-256 de son archive officielle.
+Jumpy est un projet Godot existant. Il est pris en charge par le moteur multi-engine v1.3 via la requête `control/mobile-requests/jumpy.json` et le workflow générique `Autonomous Mobile Studio` (`.github/workflows/mobile-studio.yml`).
 
-La scène principale est `scenes/Main.tscn`. `scripts/main.gd` contient le gameplay, le rendu procédural et l'interface. `profile.gd` gère la sauvegarde ; `integrations.gd` isole les intégrations externes. L'export Android est déclaré, mais sa présence ne prouve pas qu'un APK a été construit.
+Le workflow spécialisé `jumpy-autocycle.yml` a été retiré afin qu'un seul ordonnanceur soit propriétaire du projet. Les anciens scripts `scripts/jumpy-studio-cycle-v*.sh` restent uniquement comme historique de migration ; ils ne constituent plus le chemin d'exécution planifié de Jumpy.
 
-Les documents historiques annoncent une évolution autonome active. Ce sont des déclarations historiques, pas une preuve de disponibilité actuelle. L'ancien workflow `jumpy-autocycle.yml` du serveur ignorait le sélecteur CI : il le consulte désormais avant de lancer ses scripts. Son transfert vers le nouveau moteur Godot n'est pas encore réalisé.
+La requête Jumpy est activée avec la priorité maximale du contrat (`100`). La publication Google Play reste explicitement désactivée : le moteur peut mener le dépôt jusqu'à un candidat Android vérifié et doit signaler `human_action_required` lorsque la signature de release, un secret ou une action externe est réellement nécessaire.
 
-## Référence exécutable
+## Projet cible
 
-Le mode CircleCI `jumpy-baseline`, désormais par défaut, fonctionne sans contexte secret. Il :
-1. récupère uniquement la révision Git fixée dans le profil ;
-2. vérifie l'archive officielle Godot par SHA-256 ;
-3. importe le projet dans un environnement temporaire sans identifiants hérités ;
-4. exécute huit assertions : état initial, répétabilité du niveau quotidien, saut de départ, consommation unique du pulse, refus d'un second pulse, enregistrement unique de la mort, affichage du retry et remise à zéro du score au redémarrage ;
-5. conserve les journaux et un rapport explicite dans les artefacts CircleCI.
+Dépôt : `dbrckk/Jumpy`.
 
-Le projet est copié dans un répertoire temporaire ; aucune modification n'est publiée dans Jumpy. Les sauvegardes utilisateur des tests sont isolées. Ce lanceur exécute un instantané revu, sans fournisseur IA : ce n'est pas encore un bac à sable pour du code produit automatiquement.
+Le moteur détecte Godot à partir de `project.godot` et importe le projet existant au lieu de le régénérer. La scène principale est `scenes/Main.tscn`. Le gameplay et le rendu sont principalement dans `scripts/main.gd`; le profil persistant est géré par `scripts/profile.gd` et les intégrations externes sont isolées dans `scripts/integrations.gd`.
 
-Commande : `python3 studio/godot_baseline.py`. Elle nécessite Linux x86_64, Python, Git et l'accès aux téléchargements GitHub. Un import réussi ne suffit pas : les erreurs Godot, l'échec d'une assertion ou l'absence du marqueur de fin font échouer le contrôle.
+L'objectif autonome est de terminer le jeu existant comme candidat de release Android, en conservant son coeur de gameplay : saut à une touche, correction aérienne, atterrissages parfaits/FLOW et progression déjà présente.
 
-## État de validation et suite
+## Contrat de preuve v1.3
 
-66 tests Python du serveur passent localement. Les huit assertions GDScript sont ajoutées mais leur exécution réelle reste à confirmer sur un environnement disposant de Godot et de l'accès réseau nécessaire. Aucun résultat de test de gameplay, capture, APK ou qualité graphique n'est inventé.
+La réussite d'un cycle n'est pas équivalente à l'absence d'erreur d'un script. Le Goal Engine conserve l'objectif jusqu'à preuve machine de l'avancement ou jusqu'à un état terminal explicite.
 
-Les observations statiques à vérifier ensuite incluent la validation des valeurs chargées depuis la sauvegarde, le refus des dépenses négatives dans `spend_coins`, et le comportement d'un tap hors bouton lorsque les réglages sont ouverts. Elles ne sont pas présentées comme des défauts reproduits sur appareil.
+Pour Godot, le chemin qualifié couvre notamment :
 
-La suite nécessaire est de faire passer cette référence, reproduire un défaut ciblé par un test, préparer un correctif sur une branche Jumpy, puis vérifier tests, captures réelles et build Android avant livraison. La mutation autonome de projets Godot existants, les comparaisons visuelles et le build Android Godot restent à développer.
+1. import et validation du projet existant ;
+2. preview Godot vérifiée ;
+3. export Android ;
+4. QA sur appareil/runtime ;
+5. parcours fonctionnels ;
+6. QA visuelle ;
+7. contrôles de release ;
+8. artefact Android de release lorsque les éléments de signature sont disponibles ;
+9. métadonnées/store assets ;
+10. confidentialité et sécurité ;
+11. revue finale liée aux preuves exactes.
 
-## Première correction vérifiée — dépenses invalides
+Un échec technique reste un échec/réessai. Une capacité manquante déclenche l'adaptation prévue par le Goal Engine. Une action externe réellement nécessaire devient `human_action_required`. L'absence de patch ou d'agent ne doit jamais être transformée en faux succès.
 
-Le contrôle initial a réussi sur CircleCI (job 450). L'option `--verify-finance-fix` reproduit ensuite deux échecs précis sur la référence non modifiée : dépense négative et dépense nulle. Elle applique une correction uniquement si le blob de `scripts/profile.gd` correspond à la version auditée, puis exige la réussite des douze assertions. Le patch n'est conservé qu'après cette validation.
+## Publication et secrets
 
-Preuve Godot réelle : https://github.com/dbrckk/ai-dev-server/actions/runs/34317183392 ; le même commit `39a1d39a06c7065552d9525d781d03464a9e419a` a aussi passé le contrôle CircleCI. Les tests avant/après sont dans les artefacts. Le défaut a été reproduit et le candidat a passé les douze assertions.
+`play_publish.enabled` et `play_publish.commit` restent à `false` pour Jumpy. La création ou la fourniture d'une clé de signature, la configuration du Play Console et toute autorisation de publication restent hors du périmètre autonome tant qu'elles ne sont pas explicitement fournies par un canal sûr.
 
-La commande CircleCI par défaut exécute désormais ce contrôle avant/après. Le workflow GitHub `jumpy-baseline.yml` fournit une seconde exécution sans secrets et des diagnostics consultables. La référence reste fixée à l'ancien commit pour conserver une reproduction du défaut ; elle ne représente pas automatiquement les futures versions de Jumpy. La publication du correctif reste une étape distincte, via une PR sur Jumpy.
+Les secrets GitHub/provider ne doivent pas être transmis au workspace produit ni aux validations Godot. Le moteur v1.3 conserve les frontières de confiance et les contrôles déjà qualifiés par la release stable.
+
+## Baseline historique
+
+Le profil `control/existing-projects/jumpy.json`, `studio/godot_baseline.py` et les anciens contrôles Jumpy restent utiles comme preuves historiques et tests de régression ciblés. Ils ne sont plus l'orchestrateur principal.
+
+La première correction historique vérifiée concernait les dépenses invalides dans le profil. Cette preuve reste pertinente comme régression, mais la progression courante de Jumpy doit désormais passer par le Goal Engine multi-engine et ses checkpoints persistants.

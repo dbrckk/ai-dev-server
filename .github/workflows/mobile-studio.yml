@@ -200,6 +200,8 @@ jobs:
           STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
           STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
           STUDIO_VISION_MODEL: ${{ vars.STUDIO_VISION_MODEL }}
+          STUDIO_PROVIDERS_JSON: >-
+            ${{ vars.STUDIO_PROVIDERS_JSON || '[{"name":"nvidia-lightning-fallback","base":"https://integrate.api.nvidia.com/v1","key_env":"STUDIO_API_KEY","model":"nvidia/nemotron-3.5-lightning-30b-a3b","code_model":"nvidia/nemotron-3.5-lightning-30b-a3b","priority":90,"free_preferred":true},{"name":"poolside-laguna-fallback","base":"https://integrate.api.nvidia.com/v1","key_env":"STUDIO_API_KEY","model":"poolside/laguna-xs-2.1","code_model":"poolside/laguna-xs-2.1","priority":80,"free_preferred":true}]' }}
         run: python studio/github_runner.py "$STUDIO_REQUEST"
       - name: Retain reports, release packages and trusted QA evidence
         if: always()

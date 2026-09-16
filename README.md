@@ -149,18 +149,37 @@ python studio/fleet_daemon.py --root studio-output --apply-restarts
 - une régression de santé détectée entre snapshots bloque les redémarrages automatiques ;
 - le benchmark Flutter/Godot/Generic est exécuté comme canary toutes les 6 heures.
 
+### Exploitation V1.3
+
+La V1.3 ajoute un statut de projet strictement read-only et un handoff externe explicite :
+
+```bash
+python -m studio.project_status --project-out studio-output/<project-id>
+```
+
+- `studio.project_status` lit le goal scellé, l'état runtime et le handoff sans lancer modèle, vérificateur ni code projet ;
+- une action externe requise est matérialisée dans `USER_INPUT_REQUIRED.txt` et `user-input-required.json` ;
+- seuls les noms des prérequis attendus peuvent être persistés. **Do not put secret values** dans ces fichiers, dans le brief ou dans le dépôt ;
+- lorsque la variable d'environnement nommée devient disponible, le Goal Engine peut reprendre le projet depuis son état terminal scellé ;
+- la capacité finie est work-conserving tout en conservant la réserve critique et les limites de sécurité ;
+- les gates Android tolèrent uniquement les corruptions transitoires d'archives SDK/NDK avec retries bornés ; les erreurs applicatives restent bloquantes.
+
+Notes de release : **[AI Dev Server v1.3.0](docs/RELEASE_V1.3.0.md)**.
+
 ### Vérification opérationnelle V1
 
-Le serveur expose maintenant deux contrôles machine-readable :
+Le serveur expose maintenant des contrôles machine-readable :
 
 ```bash
 python studio/v1_gate.py
 python studio/v1_gate.py --project-out studio-output/<project-id>
 python studio/runtime_health.py studio-output/<project-id>
+python -m studio.project_status --project-out studio-output/<project-id>
 ```
 
 - `v1_gate.py` retourne `ready`, `operational` ou `blocked` et utilise un code de sortie non nul en cas de blocage ;
 - `runtime_health.py` vérifie state durable, checkpoints, leases et télémétrie d'un projet autonome ;
+- `studio.project_status` expose l'état persistant et le handoff sans déclencher de travail ;
 - la disponibilité d'un hôte seul et la santé d'un projet actif restent volontairement séparées.
 
 ## Remarque

@@ -51,6 +51,15 @@ class GodotModelTests(unittest.TestCase):
         self.assertNotIn('Flutter ValueKey', system)
         self.assertEqual(subject.models_used['product'], 'general')
 
+    def test_product_prompt_requires_literal_json_step_objects(self):
+        subject = model([completion(product_value())])
+        subject.ask('product', 'plan game')
+        system = subject.api.calls[0][2]['messages'][0]['content']
+        self.assertIn('Every step MUST be a JSON object', system)
+        self.assertIn('{"action":"tap","key":"play_button"}', system)
+        self.assertIn('{"action":"expect_text","value":"Score"}', system)
+        self.assertNotIn('tap(key)', system)
+
     def test_implementation_uses_godot_prompt_and_scope(self):
         subject = model([completion({'files':[{'path':'scripts/main.gd','content':'extends Node\n'}]})])
         result = subject.ask('implementation', 'improve game')

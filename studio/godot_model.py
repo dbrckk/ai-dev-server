@@ -38,8 +38,11 @@ PATCH_SCHEMA = (
 )
 PRODUCT_SCHEMA = (
     'Return ONLY a JSON object with your detailed deliverable and a journeys field. journeys must contain 1..6 objects with '
-    'exactly id and steps; each journey needs 2..12 steps, at least one interaction and one assertion. Supported actions are '
-    'tap(key), enter_text(key,value), scroll(key,dy), expect_text(value), expect_absent(value), expect_key(key). '
+    'exactly id and steps; each journey needs 2..12 steps, at least one interaction and one assertion. '
+    'Every step MUST be a JSON object; never use string shorthand such as action(key). Supported step objects are exactly: '
+    '{"action":"tap","key":"play_button"}, {"action":"enter_text","key":"name_input","value":"Player"}, '
+    '{"action":"scroll","key":"settings_list","dy":-300}, {"action":"expect_text","value":"Score"}, '
+    '{"action":"expect_absent","value":"Error"}, {"action":"expect_key","key":"timer_running"}. '
     'For Godot, every key is the exact case-sensitive Node.name of one unique runtime node, encoded as a lower-case slug; '
     'implementation must assign that Node.name explicitly. These journeys are specifications only until trusted runtime execution.'
 )

@@ -95,10 +95,11 @@ class AndroidCIResilienceTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertEqual(counter.read_text(encoding="utf-8"), "3")
 
-    def test_both_mobile_workflows_use_shared_bootstrap(self):
+    def test_all_android_workflows_use_shared_resilient_bootstrap(self):
         for rel in (
             ".github/workflows/studio-smoke.yml",
             ".github/workflows/multi-engine-benchmark.yml",
+            ".github/workflows/mobile-studio.yml",
         ):
             text = (ROOT / rel).read_text(encoding="utf-8")
             self.assertIn("bash scripts/bootstrap-android-ci.sh", text, rel)

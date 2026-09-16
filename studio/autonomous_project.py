@@ -280,6 +280,9 @@ def run_persistent_project(
             if previous_history is None: os.environ.pop("STUDIO_ROUTING_HISTORY_PATH", None)
             else: os.environ["STUDIO_ROUTING_HISTORY_PATH"] = previous_history
         translated = translate_orchestrator_result(result)
+        report = result.get("report") if isinstance(result, dict) else None
+        if isinstance(report, dict) and report.get("engine") == "godot" and translated.get("failure"):
+            translated["yield_run_after_cycle"] = True
         if translated.get("evidence"):
             translated["tests_passed"] = True
             translated["learning_summary"] = "Verified completion evidence for goal " + goal_id

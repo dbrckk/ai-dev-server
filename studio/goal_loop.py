@@ -76,4 +76,6 @@ def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_c
         save_goal(goal_path,state)
         if cycle_observer is not None:
             cycle_observer(dict(state), result if isinstance(result,dict) else {})
+        if isinstance(result,dict) and result.get("yield_run_after_cycle") is True:
+            return state
     return state

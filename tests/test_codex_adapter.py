@@ -11,12 +11,20 @@ from agents.codex import codex_invocation, parse_codex_usage
 
 
 class CodexAdapterTests(unittest.TestCase):
-    def test_invocation_uses_headless_json_ephemeral_exec(self):
+    def test_invocation_uses_headless_json_ephemeral_workspace_write_exec(self):
         argv, extra_env = codex_invocation("finish the repository")
 
         self.assertEqual(
             argv,
-            ["codex", "exec", "--json", "--ephemeral", "finish the repository"],
+            [
+                "codex",
+                "exec",
+                "--json",
+                "--ephemeral",
+                "--sandbox",
+                "workspace-write",
+                "finish the repository",
+            ],
         )
         self.assertEqual(extra_env, {})
 

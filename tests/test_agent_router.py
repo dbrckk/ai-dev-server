@@ -152,7 +152,10 @@ class AgentRouterTests(unittest.TestCase):
     def test_codex_invocation_uses_verified_headless_contract(self):
         argv, extra = invocation_for("codex", "do work")
 
-        self.assertEqual(argv, ["codex", "exec", "--json", "--ephemeral", "do work"])
+        self.assertEqual(
+            argv,
+            ["codex", "exec", "--json", "--ephemeral", "--sandbox", "workspace-write", "do work"],
+        )
         self.assertEqual(extra, {})
 
     def test_codex_execute_named_exposes_token_usage(self):

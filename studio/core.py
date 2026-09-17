@@ -303,7 +303,12 @@ class API:
                     raise StudioError('API unavailable or timed out') from None
                 time.sleep(delay)
             except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.HTTPException):
-                raise StudioError('API unavailable or timed out') from None
+                if method not in ('GET', 'POST') or attempt == 2:
+                    raise StudioError('API unavailable or timed out') from None
+                delay = min(float(2 ** attempt), max(0.0, deadline - time.monotonic()))
+                if delay <= 0:
+                    raise StudioError('API unavailable or timed out') from None
+                time.sleep(delay)
         raise StudioError('Retry limit reached')
 
 class Model:

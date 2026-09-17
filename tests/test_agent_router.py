@@ -148,6 +148,12 @@ class AgentRouterTests(unittest.TestCase):
         self.assertNotIn("super-secret",extra["OPENCODE_CONFIG_CONTENT"])
         self.assertIn("OPENCODE_STUDIO_API_KEY",extra["OPENCODE_CONFIG_CONTENT"])
 
+    def test_codex_invocation_uses_verified_headless_contract(self):
+        argv, extra = invocation_for("codex", "do work")
+
+        self.assertEqual(argv, ["codex", "exec", "--json", "--ephemeral", "do work"])
+        self.assertEqual(extra, {})
+
 
 if __name__ == "__main__":
     unittest.main()

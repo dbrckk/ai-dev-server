@@ -18,9 +18,19 @@ def codex_invocation(prompt: str) -> tuple[list[str], dict[str, str]]:
     """Build the upstream-supported headless Codex invocation.
 
     JSONL output gives the orchestrator structured terminal events while
-    ``--ephemeral`` avoids leaving autonomous session state behind.
+    ``--ephemeral`` avoids leaving autonomous session state behind. The sandbox
+    is fixed to workspace-write so an external user config cannot silently turn
+    an implementation run into a read-only review.
     """
-    return ["codex", "exec", "--json", "--ephemeral", prompt], {}
+    return [
+        "codex",
+        "exec",
+        "--json",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        prompt,
+    ], {}
 
 
 def _token_count(value: Any) -> int:

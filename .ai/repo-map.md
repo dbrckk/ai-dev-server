@@ -54,7 +54,6 @@ The content is organized as follows:
     multi-engine-benchmark.yml
     provider-preview.yml
     remote-control.yml
-    repo-brain.yml
     resilience-soak.yml
     studio-smoke.yml
     validate.yml
@@ -869,7 +868,7 @@ concurrency:
 
 jobs:
   repository-standards:
-    uses: dbrckk/repo-standards/.github/workflows/reusable-unified.yml@main
+    uses: dbrckk/repo-standards/.github/workflows/reusable-unified.yml@v7
 ````
 
 ## File: .github/workflows/ci.yml
@@ -1841,31 +1840,6 @@ jobs:
           echo "Operation: ${{ steps.request.outputs.operation }}" >> "$GITHUB_STEP_SUMMARY"
           echo "Codespace: $NAME" >> "$GITHUB_STEP_SUMMARY"
           [ ! -f safe-output.txt ] || { echo '```text' >> "$GITHUB_STEP_SUMMARY"; tail -n 200 safe-output.txt >> "$GITHUB_STEP_SUMMARY"; echo '```' >> "$GITHUB_STEP_SUMMARY"; }
-````
-
-## File: .github/workflows/repo-brain.yml
-````yaml
-name: Repo Brain
-
-on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - ".ai/**"
-  workflow_dispatch:
-
-permissions:
-  contents: write
-
-concurrency:
-  group: repo-brain-${{ github.repository }}-${{ github.ref }}
-  cancel-in-progress: true
-
-jobs:
-  repo-brain:
-    uses: dbrckk/repo-brain/.github/workflows/reusable-index.yml@v1
-
-# v1 retry
 ````
 
 ## File: .github/workflows/resilience-soak.yml
@@ -31857,10 +31831,11 @@ loaded = wc.load()
 ## File: .repo-standards.yml
 ````yaml
 source: dbrckk/repo-standards
-ref: main
-version: 7-dev
+ref: v7
+version: 7
 adopted: true
 workflow_mode: unified-single-commit
+repo_brain: dbrckk/repo-brain@v2
 ai_context:
   index: .ai/index.md
   project_state: .ai/project-state.md
@@ -31871,15 +31846,15 @@ ai_context:
   ci_status: .ai/ci-status.md
   security_signals: .ai/security-signals.json
   repo_health: .ai/repo-health.md
+  brain_summary: .ai/brain/summary.md
+  brain_lookup: .ai/brain/lookup.json
+  brain_symbols: .ai/brain/symbols.json
+  brain_graph: .ai/brain/code-graph.json
   repo_map: .ai/repo-map.md
   segmented_maps: .ai/maps/
 workflow:
   file: .github/workflows/ai-repo-map.yml
   reusable_unified: .github/workflows/reusable-unified.yml
-
-repo_brain: dbrckk/repo-brain@v2
-
-repo_brain_retry: 2
 ````
 
 ## File: AGENTS.md

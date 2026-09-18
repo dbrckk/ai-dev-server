@@ -16,15 +16,15 @@ concurrency:
 
 jobs:
   ai-context:
-    uses: dbrckk/repo-standards/.github/workflows/reusable-ai-repo-map.yml@v3
+    uses: dbrckk/repo-standards/.github/workflows/reusable-ai-repo-map.yml@main
 
   repo-health:
     needs: ai-context
-    uses: dbrckk/repo-standards/.github/workflows/reusable-repo-health.yml@v3
+    uses: dbrckk/repo-standards/.github/workflows/reusable-repo-health.yml@main
 
   project-state:
     needs: repo-health
-    uses: dbrckk/repo-standards/.github/workflows/reusable-project-state.yml@v3
+    uses: dbrckk/repo-standards/.github/workflows/reusable-project-state.yml@main
 
   context-intelligence:
     needs: project-state

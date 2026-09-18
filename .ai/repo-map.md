@@ -19212,6 +19212,7 @@ state = execute(req, Path('/tmp/provider-preview-app'), out, github=ArtifactProj
 ## File: studio/provider_router.py
 ````python
 """Provider registry and ordered fallback policy for AI Dev Server."""
+# repo-brain-v4-impact-pilot
 ⋮----
 @dataclass(frozen=True)
 class ProviderSpec
@@ -31884,7 +31885,7 @@ workflow:
   file: .github/workflows/ai-repo-map.yml
   reusable_unified: .github/workflows/reusable-unified.yml
 
-repo_brain_v4_test: 1
+repo_brain_v4_test: 3
 ````
 
 ## File: AGENTS.md

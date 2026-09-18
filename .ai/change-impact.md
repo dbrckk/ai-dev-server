@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 33914d2688340488c4a7df747652cd7e1d6b7040
-Head: 68060471eb18293bbbb7edfefd34199fb943dbeb
+Base: 3121be3ec661985f66600bcac20d0f4fa18cc3bf
+Head: a17b1e74bac7b73769a9fc30a057fa3745e1bf8b
 
 ## Changed files
-- D .github/workflows/repo-brain.yml
+- M AGENTS.md
 
 ## Affected areas
-- .github
+- (root)
 
 ## Related test candidates
 - No direct filename-based test match detected.

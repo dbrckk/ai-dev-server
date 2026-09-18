@@ -22,17 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T11:09:08Z
+Generated: 2026-09-18T11:10:55Z
 
 ### Git
 - Branch: `main`
-- Head: `ee615abd0067`
-- Commit date: 2026-09-18T13:08:55+02:00
-- Commit: chore: validate Repo Brain v3 pinned checkout
-- Tracked files: 706
+- Head: `ff944523d642`
+- Commit date: 2026-09-18T13:10:40+02:00
+- Commit: chore: pilot repo standards v8
+- Tracked files: 735
 
 ### Recently changed files
 - `.repo-standards.yml`
+- `.github/workflows/ai-repo-map.yml`
 
 ### Project signals
 - No common build descriptor detected

@@ -1,5 +1,24 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-standards",
-  "commands": []
+  "commands": [
+    {
+      "command": "python -m pytest tests",
+      "purpose": "test",
+      "source": "detected Python tests",
+      "confidence": "medium"
+    },
+    {
+      "command": "bash scripts/agent-test.sh",
+      "purpose": "validation helper",
+      "source": "scripts/agent-test.sh",
+      "confidence": "medium"
+    },
+    {
+      "command": "bash scripts/doctor.sh",
+      "purpose": "validation helper",
+      "source": "scripts/doctor.sh",
+      "confidence": "medium"
+    }
+  ]
 }

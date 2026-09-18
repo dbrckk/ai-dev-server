@@ -31867,6 +31867,8 @@ workflow:
   reusable_context_intelligence: .github/workflows/reusable-context-intelligence.yml
 
 experimental_observability: main
+
+v5_retest: 2
 ````
 
 ## File: AGENTS.md

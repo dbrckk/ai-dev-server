@@ -1,3 +1,4 @@
+import io
 import json
 import tempfile
 import unittest
@@ -54,6 +55,27 @@ class _FakeClient:
         self.calls.append(("heartbeat", worker_id, tuple(active_job_keys)))
 
 
+class _Response:
+    def __init__(self, status, payload=None):
+        self.status = status
+        self._body = (
+            b""
+            if payload is None
+            else json.dumps(payload).encode("utf-8")
+        )
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+    def read(self, limit=-1):
+        return self._body if limit < 0 else self._body[:limit]
+
+
+
+
 class ProductionOSWorkerRuntimeTests(unittest.TestCase):
     def test_client_rejects_insecure_remote_control_plane(self):
         with self.assertRaisesRegex(
@@ -71,6 +93,61 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             "secret",
         )
         self.assertEqual(client.base_url, "http://127.0.0.1:8787")
+
+
+    def test_client_claim_posts_bearer_json_and_handles_no_content(self):
+        seen = []
+
+        def opener(request, timeout):
+            seen.append({
+                "url": request.full_url,
+                "method": request.get_method(),
+                "authorization": request.get_header("Authorization"),
+                "content_type": request.get_header("Content-type"),
+                "body": json.loads(request.data.decode("utf-8")),
+                "timeout": timeout,
+            })
+            return _Response(
+                200,
+                {"job": sample_job()},
+            )
+
+        client = ProductionOSClient(
+            "http://127.0.0.1:8787",
+            "worker-secret",
+            opener=opener,
+        )
+        job = client.claim(
+            "ai-dev-1",
+            ["software-development", "repo-analysis"],
+        )
+
+        self.assertEqual(job["key"], "job-abc123")
+        self.assertEqual(
+            seen[0]["url"],
+            "http://127.0.0.1:8787/v1/jobs/claim",
+        )
+        self.assertEqual(seen[0]["method"], "POST")
+        self.assertEqual(
+            seen[0]["authorization"],
+            "Bearer worker-secret",
+        )
+        self.assertEqual(
+            seen[0]["body"]["worker_id"],
+            "ai-dev-1",
+        )
+
+        client = ProductionOSClient(
+            "http://127.0.0.1:8787",
+            "worker-secret",
+            opener=lambda request, timeout: _Response(204),
+        )
+        self.assertIsNone(
+            client.claim(
+                "ai-dev-1",
+                ["software-development"],
+            )
+        )
 
     def test_run_once_returns_idle_when_no_job_is_available(self):
         client = _FakeClient(None)

@@ -1,6 +1,10 @@
 import unittest
+from pathlib import Path
+import sys
 
-from studio.github_runner import collect_agent_usage
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
+
+from github_runner import collect_agent_usage
 
 
 class GitHubRunnerUsageTests(unittest.TestCase):

@@ -2,14 +2,14 @@
 
 Summary: 0 success / 1 failure / 7 active
 
-- Repo Brain v3 test: in_progress / pending (c3014d50)
-- Mobile Studio Real Build: pending / pending (c3014d50)
-- Validate AI Dev Server: in_progress / pending (c3014d50)
-- Resilience Soak: in_progress / pending (c3014d50)
-- Multi-Engine E2E Benchmark: pending / pending (c3014d50)
-- CI: in_progress / pending (c3014d50)
-- Fault Injection Gate: in_progress / pending (c3014d50)
-- Repo Brain v3 test: completed / failure (1aabbefb)
+- Repo Brain v3 test: in_progress / pending (ee615abd)
+- Validate AI Dev Server: in_progress / pending (ee615abd)
+- Fault Injection Gate: in_progress / pending (ee615abd)
+- Resilience Soak: in_progress / pending (ee615abd)
+- Mobile Studio Real Build: pending / pending (ee615abd)
+- CI: in_progress / pending (ee615abd)
+- Multi-Engine E2E Benchmark: pending / pending (ee615abd)
+- Repo Brain v3 test: completed / failure (c3014d50)
 
 ## Latest failed run structure
 - Job: repo-brain / index

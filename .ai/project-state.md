@@ -22,18 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T11:08:12Z
+Generated: 2026-09-18T11:09:08Z
 
 ### Git
 - Branch: `main`
-- Head: `c3014d50afaf`
-- Commit date: 2026-09-18T13:08:00+02:00
-- Commit: chore: diagnose Repo Brain v3 AST outputs
+- Head: `ee615abd0067`
+- Commit date: 2026-09-18T13:08:55+02:00
+- Commit: chore: validate Repo Brain v3 pinned checkout
 - Tracked files: 706
 
 ### Recently changed files
 - `.repo-standards.yml`
-- `.github/workflows/repo-brain-v3-test.yml`
 
 ### Project signals
 - No common build descriptor detected

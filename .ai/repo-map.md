@@ -31880,7 +31880,7 @@ workflow:
   file: .github/workflows/ai-repo-map.yml
   reusable_unified: .github/workflows/reusable-unified.yml
 
-repo_brain_v3_test: 4
+repo_brain_v3_test: 5
 ````
 
 ## File: AGENTS.md

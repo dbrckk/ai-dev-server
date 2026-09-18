@@ -1,0 +1,19 @@
+name: Repo Brain v4 test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".repo-standards.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repo-brain-v4-test-${{ github.repository }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repo-brain:
+    uses: dbrckk/repo-brain/.github/workflows/reusable-index.yml@main

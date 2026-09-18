@@ -1,0 +1,5068 @@
+{
+  "imports": {
+    "studio/adaptation.py": [
+      "__future__",
+      "capability_memory",
+      "json",
+      "os",
+      "pathlib",
+      "project_memory"
+    ],
+    "studio/adaptation_research.py": [
+      "__future__",
+      "autonomous_research",
+      "capability_registry"
+    ],
+    "studio/adaptive_phase_policy.py": [
+      "__future__"
+    ],
+    "studio/adaptive_role_allocator.py": [
+      "__future__",
+      "dataclasses"
+    ],
+    "studio/adaptive_scoring.py": [
+      "__future__",
+      "dataclasses"
+    ],
+    "studio/agents/__init__.py": [
+      "registry",
+      "router"
+    ],
+    "studio/agents/adapters.py": [
+      "__future__",
+      "dataclasses",
+      "os",
+      "pathlib",
+      "registry",
+      "subprocess",
+      "time"
+    ],
+    "studio/agents/orchestrator.py": [
+      "__future__",
+      "adapters",
+      "contextual_routing_memory",
+      "json",
+      "os",
+      "pathlib",
+      "performance",
+      "registry",
+      "router",
+      "routing_history",
+      "safe_rewrite_learning"
+    ],
+    "studio/agents/performance.py": [
+      "__future__",
+      "json",
+      "pathlib"
+    ],
+    "studio/agents/registry.py": [
+      "__future__",
+      "dataclasses",
+      "shutil",
+      "typing"
+    ],
+    "studio/agents/router.py": [
+      "__future__",
+      "adaptive_scoring",
+      "contextual_routing_memory",
+      "contextual_utility",
+      "dataclasses",
+      "registry",
+      "safe_rewrite_learning",
+      "typing"
+    ],
+    "studio/agents/workspace.py": [
+      "__future__",
+      "generic_policy",
+      "pathlib"
+    ],
+    "studio/android_signing.py": [
+      "__future__",
+      "core",
+      "hashlib",
+      "os",
+      "pathlib",
+      "re",
+      "shutil",
+      "subprocess",
+      "tempfile",
+      "zipfile"
+    ],
+    "studio/architecture_benchmark.py": [
+      "__future__",
+      "atomic_file",
+      "json",
+      "pathlib"
+    ],
+    "studio/architecture_change_guard.py": [
+      "__future__",
+      "pathlib",
+      "re"
+    ],
+    "studio/architecture_contract.py": [
+      "__future__",
+      "architecture_benchmark",
+      "architecture_evaluator",
+      "architecture_feedback",
+      "architecture_planner",
+      "argparse",
+      "json"
+    ],
+    "studio/architecture_evaluator.py": [
+      "__future__",
+      "atomic_file",
+      "json",
+      "pathlib",
+      "re"
+    ],
+    "studio/architecture_feedback.py": [
+      "__future__",
+      "time"
+    ],
+    "studio/architecture_learning.py": [
+      "__future__",
+      "argparse",
+      "atomic_file",
+      "file_lock",
+      "json",
+      "pathlib"
+    ],
+    "studio/architecture_obsolescence.py": [
+      "__future__",
+      "atomic_file",
+      "json",
+      "pathlib"
+    ],
+    "studio/architecture_outcome.py": [
+      "__future__",
+      "atomic_file",
+      "hashlib",
+      "json",
+      "pathlib",
+      "time"
+    ],
+    "studio/architecture_planner.py": [
+      "__future__",
+      "architecture_feedback",
+      "atomic_file",
+      "json",
+      "pathlib"
+    ],
+    "studio/architecture_preflight.py": [
+      "__future__",
+      "atomic_file",
+      "json",
+      "pathlib"
+    ],
+    "studio/architecture_replacement_candidate.py": [
+      "__future__",
+      "pathlib"
+    ],
+    "studio/architecture_replacement_executor.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "shutil",
+      "subprocess",
+      "sys",
+      "tempfile"
+    ],
+    "studio/architecture_replacement_learning.py": [
+      "__future__",
+      "json",
+      "pathlib",
+      "time"
+    ],
+    "studio/architecture_replacement_merge.py": [
+      "__future__",
+      "architecture_replacement_merge_gate",
+      "architecture_replacement_persist",
+      "architecture_replacement_pr_validator",
+      "argparse",
+      "core",
+      "json",
+      "os",
+      "pathlib"
+    ],
+    "studio/architecture_replacement_merge_gate.py": [
+      "__future__",
+      "core",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re"
+    ],
+    "studio/architecture_replacement_outcome.py": [
+      "__future__",
+      "atomic_file",
+      "hashlib",
+      "json",
+      "pathlib",
+      "time"
+    ],
+    "studio/architecture_replacement_persist.py": [
+      "__future__",
+      "argparse",
+      "base64",
+      "core",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "urllib.error",
+      "urllib.parse",
+      "urllib.request"
+    ],
+    "studio/architecture_replacement_pipeline.py": [
+      "__future__",
+      "architecture_replacement_candidate",
+      "architecture_replacement_executor",
+      "architecture_replacement_pr_package",
+      "architecture_replacement_promotion",
+      "architecture_replacement_synthesis",
+      "argparse",
+      "core",
+      "json",
+      "pathlib",
+      "sys"
+    ],
+    "studio/architecture_replacement_planner.py": [
+      "__future__",
+      "architecture_replacement_reputation",
+      "atomic_file",
+      "json",
+      "math",
+      "pathlib",
+      "time"
+    ],
+    "studio/architecture_replacement_postmerge.py": [
+      "__future__",
+      "architecture_replacement_persist",
+      "base64",
+      "hashlib",
+      "re",
+      "replacement_ci_policy",
+      "urllib.parse"
+    ],
+    "studio/architecture_replacement_postmerge_pipeline.py": [
+      "__future__",
+      "architecture_learning",
+      "architecture_replacement_learning",
+      "architecture_replacement_outcome",
+      "architecture_replacement_postmerge",
+      "architecture_replacement_reputation",
+      "architecture_replacement_rollback_gate",
+      "argparse",
+      "core",
+      "json",
+      "os",
+      "pathlib",
+      "sys"
+    ],
+    "studio/architecture_replacement_pr_package.py": [
+      "__future__",
+      "core",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re"
+    ],
+    "studio/architecture_replacement_pr_validator.py": [
+      "__future__",
+      "architecture_replacement_persist",
+      "base64",
+      "hashlib",
+      "pathlib",
+      "replacement_ci_policy",
+      "urllib.parse"
+    ],
+    "studio/architecture_replacement_promotion.py": [
+      "__future__",
+      "core",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re"
+    ],
+    "studio/architecture_replacement_reputation.py": [
+      "__future__",
+      "atomic_file",
+      "hashlib",
+      "json",
+      "pathlib",
+      "time"
+    ],
+    "studio/architecture_replacement_rollback.py": [
+      "__future__",
+      "architecture_replacement_persist",
+      "argparse",
+      "core",
+      "json",
+      "os",
+      "pathlib",
+      "re"
+    ],
+    "studio/architecture_replacement_rollback_gate.py": [
+      "__future__",
+      "core",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re"
+    ],
+    "studio/architecture_replacement_synthesis.py": [
+      "__future__",
+      "architecture_replacement_candidate",
+      "argparse",
+      "core",
+      "json",
+      "os",
+      "pathlib",
+      "provider_router",
+      "re",
+      "subprocess",
+      "sys"
+    ],
+    "studio/architecture_replacement_work_order.py": [
+      "__future__",
+      "atomic_file",
+      "hashlib",
+      "json",
+      "pathlib"
+    ],
+    "studio/architecture_reputation_policy_approval.py": [
+      "__future__",
+      "base64",
+      "hashlib",
+      "json",
+      "replacement_ci_policy"
+    ],
+    "studio/architecture_reputation_policy_github_attestation.py": [
+      "__future__",
+      "architecture_reputation_policy_approval",
+      "datetime",
+      "hashlib",
+      "json",
+      "replacement_ci_policy"
+    ],
+    "studio/architecture_reputation_policy_github_collect.py": [
+      "__future__",
+      "architecture_replacement_persist",
+      "architecture_reputation_policy_approval",
+      "architecture_reputation_policy_github_attestation",
+      "base64",
+      "hashlib",
+      "re",
+      "replacement_ci_policy",
+      "urllib.parse"
+    ],
+    "studio/architecture_reputation_policy_migration.py": [
+      "__future__",
+      "architecture_replacement_reputation",
+      "architecture_reputation_policy_approval",
+      "architecture_reputation_policy_migration_review",
+      "atomic_file",
+      "hashlib",
+      "json",
+      "pathlib",
+      "replacement_ci_policy",
+      "time"
+    ],
+    "studio/architecture_reputation_policy_migration_cli.py": [
+      "__future__",
+      "architecture_reputation_policy_github_collect",
+      "architecture_reputation_policy_migration",
+      "argparse",
+      "core",
+      "json",
+      "os",
+      "pathlib",
+      "sys"
+    ],
+    "studio/architecture_reputation_policy_migration_review.py": [
+      "__future__",
+      "argparse",
+      "atomic_file",
+      "json",
+      "pathlib",
+      "sys"
+    ],
+    "studio/architecture_safe_rewrite.py": [
+      "__future__",
+      "json"
+    ],
+    "studio/artifact_cas.py": [
+      "__future__",
+      "artifact_cas_namespace",
+      "artifact_cas_stats",
+      "artifact_share_policy",
+      "core",
+      "hashlib",
+      "os",
+      "pathlib"
+    ],
+    "studio/artifact_cas_audit.py": [
+      "__future__",
+      "artifact_cas_namespace",
+      "json",
+      "os",
+      "pathlib"
+    ],
+    "studio/artifact_cas_namespace.py": [
+      "__future__",
+      "core",
+      "hashlib",
+      "re"
+    ],
+    "studio/artifact_cas_promotion.py": [
+      "__future__",
+      "artifact_cas",
+      "artifact_cas_audit",
+      "artifact_share_policy",
+      "core",
+      "os"
+    ],
+    "studio/artifact_cas_stats.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib"
+    ],
+    "studio/artifact_handoff.py": [
+      "__future__",
+      "re"
+    ],
+    "studio/artifact_share_policy.py": [
+      "__future__",
+      "core",
+      "re"
+    ],
+    "studio/artwork_candidate_bridge.py": [
+      "__future__",
+      "artwork_validation",
+      "capability_candidate_validator",
+      "hashlib",
+      "json",
+      "pathlib"
+    ],
+    "studio/artwork_capability.py": [
+      "__future__",
+      "capability_registry",
+      "hashlib",
+      "pathlib",
+      "re",
+      "store_package"
+    ],
+    "studio/artwork_stage.py": [
+      "__future__",
+      "argparse",
+      "artwork_capability",
+      "capability_registry",
+      "completion",
+      "core",
+      "json",
+      "pathlib",
+      "run"
+    ],
+    "studio/artwork_validation.py": [
+      "__future__",
+      "capabilities.asset_artwork",
+      "hashlib",
+      "json",
+      "pathlib"
+    ],
+    "studio/atomic_file.py": [
+      "__future__",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/autonomous_project.py": [
+      "__future__",
+      "atomic_file",
+      "capability_registry",
+      "capability_runtime",
+      "durable_state",
+      "goal_engine",
+      "goal_learning",
+      "goal_loop",
+      "human_input_request",
+      "json",
+      "multi_engine_orchestrator",
+      "os",
+      "pathlib",
+      "project_memory",
+      "promoted_capabilities",
+      "telemetry",
+      "telemetry_maintenance"
+    ],
+    "studio/autonomous_research.py": [
+      "__future__",
+      "hashlib",
+      "memory_bridge",
+      "re",
+      "urllib.parse"
+    ],
+    "studio/billing_qa.py": [
+      "__future__",
+      "core",
+      "device_qa",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re"
+    ],
+    "studio/billing_stage.py": [
+      "__future__",
+      "argparse",
+      "billing_qa",
+      "completion",
+      "core",
+      "json",
+      "pathlib",
+      "release_stage_engine",
+      "run"
+    ],
+    "studio/candidate_portfolio_learning.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/capabilities/asset_artwork.py": [
+      "__future__",
+      "hashlib",
+      "html",
+      "json",
+      "re"
+    ],
+    "studio/capability_adaptation_state.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "re"
+    ],
+    "studio/capability_candidate_validator.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "re"
+    ],
+    "studio/capability_memory.py": [
+      "__future__",
+      "project_memory"
+    ],
+    "studio/capability_promotion.py": [
+      "__future__",
+      "copy",
+      "promoted_capabilities",
+      "re"
+    ],
+    "studio/capability_qa.py": [
+      "__future__",
+      "pathlib",
+      "re"
+    ],
+    "studio/capability_registry.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/capability_registry_promotion_persist.py": [
+      "__future__",
+      "base64",
+      "capability_promotion",
+      "capability_synthesis",
+      "core",
+      "generic_capability_isolated_validation",
+      "hashlib",
+      "json",
+      "promoted_capabilities",
+      "re",
+      "urllib.parse"
+    ],
+    "studio/capability_registry_review.py": [
+      "__future__",
+      "re"
+    ],
+    "studio/capability_review.py": [
+      "__future__",
+      "re"
+    ],
+    "studio/capability_runtime.py": [
+      "__future__",
+      "capability_registry",
+      "importlib.util",
+      "json",
+      "pathlib",
+      "re",
+      "threading"
+    ],
+    "studio/capability_stage.py": [
+      "__future__",
+      "argparse",
+      "capability_qa",
+      "completion",
+      "core",
+      "json",
+      "pathlib",
+      "run"
+    ],
+    "studio/capability_synthesis.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "project_memory",
+      "re"
+    ],
+    "studio/capacity_budget.py": [
+      "__future__"
+    ],
+    "studio/capacity_efficiency.py": [
+      "__future__",
+      "atomic_file",
+      "file_lock",
+      "json",
+      "pathlib"
+    ],
+    "studio/capacity_ledger.py": [
+      "__future__",
+      "atomic_file",
+      "file_lock",
+      "json",
+      "pathlib",
+      "time",
+      "uuid"
+    ],
+    "studio/capacity_runtime.py": [
+      "__future__",
+      "json",
+      "pathlib"
+    ],
+    "studio/capacity_scheduler.py": [
+      "__future__",
+      "argparse",
+      "dataclasses",
+      "json",
+      "pathlib",
+      "provider_health",
+      "time"
+    ],
+    "studio/capacity_status.py": [
+      "__future__",
+      "pathlib",
+      "provider_monthly_quota",
+      "provider_router"
+    ],
+    "studio/ci_provider.py": [
+      "core",
+      "json",
+      "pathlib",
+      "sys"
+    ],
+    "studio/ci_runner.py": [
+      "autonomous_project",
+      "capacity_ledger",
+      "ci_provider",
+      "core",
+      "fleet_capacity",
+      "json",
+      "orchestrator",
+      "os",
+      "pathlib",
+      "provider_probe",
+      "queue",
+      "signal",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "threading",
+      "time",
+      "uuid",
+      "worker_heartbeat"
+    ],
+    "studio/completion.py": [
+      "__future__",
+      "task_scheduler"
+    ],
+    "studio/contextual_routing_memory.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/contextual_strategy_efficiency.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "strategy_efficiency",
+      "tempfile"
+    ],
+    "studio/contextual_utility.py": [
+      "__future__"
+    ],
+    "studio/continuous_improvement.py": [
+      "__future__",
+      "collections",
+      "goal_engine",
+      "hashlib",
+      "json"
+    ],
+    "studio/core.py": [
+      "__future__",
+      "adaptive_scoring",
+      "base64",
+      "hashlib",
+      "http.client",
+      "journeys",
+      "json",
+      "learning_context",
+      "local_model_benchmark",
+      "local_model_reputation",
+      "local_model_specialization",
+      "model_portfolio_learning",
+      "os",
+      "pathlib",
+      "provider_cost",
+      "provider_health",
+      "provider_metrics",
+      "provider_monthly_quota",
+      "provider_router",
+      "re",
+      "routing_history",
+      "shutil",
+      "subprocess",
+      "tempfile",
+      "time",
+      "urllib.error",
+      "urllib.parse",
+      "urllib.request",
+      "uuid"
+    ],
+    "studio/cost_drift.py": [
+      "__future__",
+      "dataclasses"
+    ],
+    "studio/device_qa.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "runtime_journeys",
+      "shutil",
+      "subprocess",
+      "time"
+    ],
+    "studio/device_stage.py": [
+      "__future__",
+      "argparse",
+      "completion",
+      "core",
+      "device_qa",
+      "journeys",
+      "json",
+      "pathlib",
+      "run"
+    ],
+    "studio/diagnostics.py": [
+      "__future__"
+    ],
+    "studio/diff_quick_gates.py": [
+      "__future__",
+      "pathlib",
+      "re"
+    ],
+    "studio/durable_state.py": [
+      "__future__",
+      "atomic_file",
+      "core",
+      "file_lock",
+      "hashlib",
+      "json",
+      "pathlib",
+      "shutil"
+    ],
+    "studio/engine_detect.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "engine_entry",
+      "json",
+      "pathlib",
+      "run"
+    ],
+    "studio/engine_entry.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "godot_preview",
+      "json",
+      "pathlib",
+      "project_engine",
+      "run",
+      "sys"
+    ],
+    "studio/engine_patch.py": [
+      "__future__",
+      "project_engine",
+      "re"
+    ],
+    "studio/evolution_automerge.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "evolution_candidate",
+      "evolution_pending",
+      "evolution_persist",
+      "json",
+      "os",
+      "pathlib",
+      "sys",
+      "time",
+      "urllib.parse"
+    ],
+    "studio/evolution_benchmark.py": [
+      "__future__",
+      "re"
+    ],
+    "studio/evolution_candidate.py": [
+      "__future__",
+      "ast",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re"
+    ],
+    "studio/evolution_differential.py": [
+      "__future__",
+      "re"
+    ],
+    "studio/evolution_evidence.py": [
+      "__future__",
+      "re",
+      "urllib.parse"
+    ],
+    "studio/evolution_executor.py": [
+      "__future__",
+      "argparse",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re",
+      "sys"
+    ],
+    "studio/evolution_isolated_runner.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "evolution_benchmark",
+      "evolution_candidate",
+      "evolution_differential",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "shutil",
+      "subprocess",
+      "sys",
+      "tempfile"
+    ],
+    "studio/evolution_pending.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "evolution_persist",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "sys",
+      "urllib.parse"
+    ],
+    "studio/evolution_persist.py": [
+      "__future__",
+      "argparse",
+      "base64",
+      "core",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "sys",
+      "urllib.error",
+      "urllib.parse",
+      "urllib.request"
+    ],
+    "studio/evolution_promotion.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "evolution_benchmark",
+      "evolution_candidate",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "sys",
+      "tempfile"
+    ],
+    "studio/evolution_research.py": [
+      "__future__",
+      "argparse",
+      "dataclasses",
+      "evolution_evidence",
+      "hashlib",
+      "html",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "shutil",
+      "subprocess",
+      "sys",
+      "urllib.error",
+      "urllib.parse",
+      "urllib.request"
+    ],
+    "studio/evolution_rollback.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "evolution_promotion",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "sys",
+      "tempfile"
+    ],
+    "studio/evolution_stage_runner.py": [
+      "__future__",
+      "os",
+      "pathlib",
+      "subprocess",
+      "sys"
+    ],
+    "studio/evolution_synthesis.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "evolution_candidate",
+      "json",
+      "os",
+      "pathlib",
+      "provider_router",
+      "sys"
+    ],
+    "studio/execution_budget.py": [
+      "__future__",
+      "dataclasses"
+    ],
+    "studio/execution_checkpoint.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/existing_project.py": [
+      "__future__",
+      "base64",
+      "pathlib",
+      "project_engine"
+    ],
+    "studio/fault_injection_smoke.py": [
+      "__future__",
+      "capability_adaptation_state",
+      "capability_registry_review",
+      "core",
+      "durable_state",
+      "execution_checkpoint",
+      "json",
+      "os",
+      "pathlib",
+      "provider_health",
+      "run_cost_controller",
+      "task_claim_store",
+      "tempfile",
+      "unittest.mock",
+      "urllib.error",
+      "workflow_checkpoint"
+    ],
+    "studio/file_lock.py": [
+      "__future__",
+      "contextlib",
+      "fcntl",
+      "os",
+      "pathlib",
+      "time"
+    ],
+    "studio/fleet_capacity.py": [
+      "__future__",
+      "atomic_file",
+      "capacity_efficiency",
+      "capacity_ledger",
+      "capacity_scheduler",
+      "durable_state",
+      "execution_checkpoint",
+      "fleet_dashboard",
+      "global_admission",
+      "json",
+      "os",
+      "pathlib",
+      "preemption_controller",
+      "provider_monthly_quota",
+      "provider_router",
+      "queue",
+      "recovery_controller",
+      "stagnation_controller",
+      "worker_reliability"
+    ],
+    "studio/fleet_daemon.py": [
+      "__future__",
+      "argparse",
+      "capacity_ledger",
+      "fleet_capacity",
+      "fleet_dashboard",
+      "fleet_maintenance",
+      "fleet_metrics",
+      "fleet_regression",
+      "fleet_supervisor_apply",
+      "json",
+      "pathlib",
+      "preemption_apply",
+      "time",
+      "worker_reaper"
+    ],
+    "studio/fleet_dashboard.py": [
+      "__future__",
+      "architecture_learning",
+      "argparse",
+      "json",
+      "pathlib",
+      "runtime_health"
+    ],
+    "studio/fleet_maintenance.py": [
+      "__future__",
+      "argparse",
+      "json",
+      "pathlib",
+      "telemetry_maintenance"
+    ],
+    "studio/fleet_metrics.py": [
+      "__future__",
+      "argparse",
+      "atomic_file",
+      "file_lock",
+      "fleet_dashboard",
+      "json",
+      "pathlib",
+      "time"
+    ],
+    "studio/fleet_regression.py": [
+      "__future__",
+      "argparse",
+      "fleet_metrics",
+      "json",
+      "pathlib"
+    ],
+    "studio/fleet_supervisor.py": [
+      "__future__",
+      "argparse",
+      "fleet_dashboard",
+      "json",
+      "pathlib"
+    ],
+    "studio/fleet_supervisor_apply.py": [
+      "__future__",
+      "argparse",
+      "ci_runner",
+      "fleet_supervisor",
+      "json",
+      "os",
+      "pathlib",
+      "queue",
+      "tempfile",
+      "time"
+    ],
+    "studio/flutter_workspace.py": [
+      "__future__",
+      "core",
+      "pathlib",
+      "shutil"
+    ],
+    "studio/free_capacity_recommendations.py": [
+      "__future__",
+      "atomic_file",
+      "json",
+      "pathlib",
+      "star_scanner"
+    ],
+    "studio/full_gate_cache.py": [
+      "__future__",
+      "atomic_file",
+      "core",
+      "file_lock",
+      "flutter_workspace",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib"
+    ],
+    "studio/generic_capability_isolated_validation.py": [
+      "__future__",
+      "ast",
+      "capability_candidate_validator",
+      "capability_synthesis",
+      "core",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re",
+      "shutil",
+      "subprocess",
+      "tempfile"
+    ],
+    "studio/generic_capability_persist.py": [
+      "__future__",
+      "capability_synthesis",
+      "core",
+      "generic_capability_isolated_validation",
+      "hashlib",
+      "json",
+      "pathlib",
+      "promoted_capabilities",
+      "re",
+      "urllib.parse"
+    ],
+    "studio/generic_capability_synthesis.py": [
+      "__future__",
+      "capability_synthesis",
+      "core",
+      "json",
+      "os"
+    ],
+    "studio/generic_model.py": [
+      "__future__",
+      "adaptive_scoring",
+      "capacity_efficiency",
+      "capacity_ledger",
+      "capacity_runtime",
+      "contextual_routing_memory",
+      "contextual_utility",
+      "core",
+      "json",
+      "local_model_benchmark",
+      "local_model_reputation",
+      "local_model_specialization",
+      "model_portfolio_learning",
+      "os",
+      "pathlib",
+      "provider_cost",
+      "provider_health",
+      "provider_metrics",
+      "provider_monthly_quota",
+      "provider_router",
+      "routing_history",
+      "safe_rewrite_learning",
+      "time"
+    ],
+    "studio/generic_policy.py": [
+      "__future__",
+      "pathlib",
+      "re"
+    ],
+    "studio/generic_project.py": [
+      "__future__",
+      "adaptive_phase_policy",
+      "adaptive_role_allocator",
+      "agents.orchestrator",
+      "agents.performance",
+      "agents.registry",
+      "agents.router",
+      "agents.workspace",
+      "architecture_benchmark",
+      "architecture_change_guard",
+      "architecture_evaluator",
+      "architecture_learning",
+      "architecture_outcome",
+      "architecture_planner",
+      "architecture_preflight",
+      "architecture_safe_rewrite",
+      "candidate_portfolio_learning",
+      "capacity_budget",
+      "capacity_efficiency",
+      "capacity_runtime",
+      "capacity_status",
+      "contextual_routing_memory",
+      "contextual_strategy_efficiency",
+      "core",
+      "cost_drift",
+      "execution_budget",
+      "execution_checkpoint",
+      "free_capacity_recommendations",
+      "generic_model",
+      "generic_policy",
+      "generic_repository",
+      "generic_sandbox",
+      "generic_toolchain",
+      "generic_verifier_adaptation",
+      "generic_verify",
+      "json",
+      "learning_context",
+      "local_capacity_inventory",
+      "local_model_leaderboard",
+      "local_model_reputation",
+      "local_model_specialization",
+      "meta_router",
+      "model_portfolio",
+      "model_portfolio_audit",
+      "model_portfolio_learning",
+      "pathlib",
+      "phase_budget",
+      "phase_cost_baseline",
+      "portfolio_candidate_scheduler",
+      "predictive_budget",
+      "project_recommendations",
+      "provider_cost",
+      "provider_health",
+      "provider_router",
+      "routing_history",
+      "run",
+      "run_cost_controller",
+      "safe_rewrite_learning",
+      "stagnation_controller",
+      "strategy_efficiency",
+      "task_context",
+      "time",
+      "verification_cost"
+    ],
+    "studio/generic_repository.py": [
+      "__future__",
+      "base64",
+      "core",
+      "generic_policy",
+      "pathlib"
+    ],
+    "studio/generic_sandbox.py": [
+      "__future__",
+      "os",
+      "pathlib",
+      "shutil",
+      "subprocess",
+      "time"
+    ],
+    "studio/generic_smoke.py": [
+      "__future__",
+      "generic_project",
+      "generic_toolchain",
+      "generic_verify",
+      "json",
+      "pathlib",
+      "tempfile",
+      "unittest.mock"
+    ],
+    "studio/generic_toolchain.py": [
+      "__future__",
+      "json",
+      "pathlib",
+      "shutil"
+    ],
+    "studio/generic_verifier_adaptation.py": [
+      "__future__",
+      "core",
+      "generic_model",
+      "json",
+      "learning_context",
+      "pathlib",
+      "re",
+      "shutil"
+    ],
+    "studio/generic_verify.py": [
+      "__future__",
+      "generic_sandbox",
+      "json",
+      "pathlib",
+      "shutil",
+      "time"
+    ],
+    "studio/github_agent_performance_store.py": [
+      "__future__",
+      "base64",
+      "json",
+      "pathlib"
+    ],
+    "studio/github_artifact_cas_audit_store.py": [
+      "__future__",
+      "base64",
+      "json",
+      "pathlib"
+    ],
+    "studio/github_artifact_cas_stats_store.py": [
+      "__future__",
+      "base64",
+      "json",
+      "pathlib"
+    ],
+    "studio/github_contextual_strategy_efficiency_store.py": [
+      "__future__",
+      "base64",
+      "contextual_strategy_efficiency",
+      "json",
+      "pathlib",
+      "strategy_efficiency"
+    ],
+    "studio/github_execution_checkpoint_store.py": [
+      "__future__",
+      "base64",
+      "execution_checkpoint",
+      "json",
+      "pathlib",
+      "re"
+    ],
+    "studio/github_full_gate_cache_store.py": [
+      "__future__",
+      "base64",
+      "core",
+      "json",
+      "pathlib"
+    ],
+    "studio/github_goal_store.py": [
+      "__future__",
+      "base64",
+      "capability_adaptation_state",
+      "capability_registry",
+      "capability_synthesis",
+      "generic_capability_isolated_validation",
+      "goal_engine",
+      "improvement_backlog",
+      "json",
+      "pathlib",
+      "re"
+    ],
+    "studio/github_memory_store.py": [
+      "__future__",
+      "base64",
+      "json",
+      "pathlib",
+      "project_memory"
+    ],
+    "studio/github_phase_cost_baseline_store.py": [
+      "__future__",
+      "base64",
+      "json",
+      "pathlib",
+      "phase_cost_baseline"
+    ],
+    "studio/github_provider_health_store.py": [
+      "__future__",
+      "base64",
+      "json",
+      "pathlib",
+      "provider_health"
+    ],
+    "studio/github_provider_metrics_store.py": [
+      "__future__",
+      "base64",
+      "json",
+      "pathlib",
+      "provider_metrics"
+    ],
+    "studio/github_quick_gate_cache_store.py": [
+      "__future__",
+      "base64",
+      "json",
+      "pathlib"
+    ],
+    "studio/github_routing_history_store.py": [
+      "__future__",
+      "base64",
+      "json",
+      "pathlib",
+      "routing_history"
+    ],
+    "studio/github_runner.py": [
+      "__future__",
+      "adaptation_research",
+      "argparse",
+      "autonomous_project",
+      "capability_adaptation_state",
+      "capability_registry",
+      "capability_registry_promotion_persist",
+      "capability_registry_review",
+      "capability_review",
+      "capability_synthesis",
+      "ci_provider",
+      "continuous_improvement",
+      "core",
+      "generic_capability_isolated_validation",
+      "generic_capability_persist",
+      "generic_capability_synthesis",
+      "github_agent_performance_store",
+      "github_artifact_cas_audit_store",
+      "github_artifact_cas_stats_store",
+      "github_contextual_strategy_efficiency_store",
+      "github_execution_checkpoint_store",
+      "github_full_gate_cache_store",
+      "github_goal_store",
+      "github_memory_store",
+      "github_phase_cost_baseline_store",
+      "github_provider_health_store",
+      "github_provider_metrics_store",
+      "github_quick_gate_cache_store",
+      "github_routing_history_store",
+      "github_strategy_efficiency_store",
+      "github_verification_cost_store",
+      "goal_engine",
+      "hashlib",
+      "human_input_request",
+      "improvement_backlog",
+      "improvement_executor",
+      "json",
+      "memory_lifecycle",
+      "multi_engine_orchestrator",
+      "os",
+      "pathlib",
+      "portfolio_scan",
+      "project_memory",
+      "repository_research_provider",
+      "run",
+      "signal",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "time",
+      "uuid"
+    ],
+    "studio/github_strategy_efficiency_store.py": [
+      "__future__",
+      "base64",
+      "json",
+      "pathlib",
+      "strategy_efficiency"
+    ],
+    "studio/github_verification_cost_store.py": [
+      "__future__",
+      "base64",
+      "json",
+      "pathlib",
+      "verification_cost"
+    ],
+    "studio/global_admission.py": [
+      "__future__"
+    ],
+    "studio/goal_engine.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/goal_learning.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "memory_bridge",
+      "project_memory"
+    ],
+    "studio/goal_loop.py": [
+      "__future__",
+      "capability_registry",
+      "goal_engine",
+      "pathlib"
+    ],
+    "studio/godot_android_export.py": [
+      "__future__",
+      "core",
+      "godot_runtime",
+      "hashlib",
+      "os",
+      "pathlib",
+      "re",
+      "shutil",
+      "subprocess",
+      "tempfile",
+      "urllib.request",
+      "zipfile"
+    ],
+    "studio/godot_android_stage.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "godot_android_export",
+      "godot_preview",
+      "godot_runtime",
+      "json",
+      "pathlib",
+      "run",
+      "tempfile"
+    ],
+    "studio/godot_baseline.py": [
+      "argparse",
+      "core",
+      "difflib",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "shutil",
+      "subprocess",
+      "tempfile",
+      "urllib.request",
+      "zipfile"
+    ],
+    "studio/godot_device_qa.py": [
+      "__future__",
+      "core",
+      "hashlib",
+      "os",
+      "pathlib",
+      "re",
+      "shutil",
+      "subprocess",
+      "time"
+    ],
+    "studio/godot_device_stage.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "godot_android_export",
+      "godot_device_qa",
+      "godot_preview",
+      "godot_runtime",
+      "hashlib",
+      "json",
+      "pathlib",
+      "run",
+      "tempfile"
+    ],
+    "studio/godot_final_review_qa.py": [
+      "__future__",
+      "core",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re"
+    ],
+    "studio/godot_final_review_stage.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "godot_final_review_qa",
+      "godot_preview",
+      "json",
+      "pathlib",
+      "run"
+    ],
+    "studio/godot_model.py": [
+      "__future__",
+      "core",
+      "engine_patch",
+      "journeys",
+      "json",
+      "learning_context",
+      "os",
+      "pathlib",
+      "provider_cost",
+      "provider_health",
+      "provider_metrics",
+      "provider_monthly_quota",
+      "provider_router",
+      "time"
+    ],
+    "studio/godot_play_stage.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "godot_preview",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "play_publisher",
+      "run"
+    ],
+    "studio/godot_preview.py": [
+      "__future__",
+      "architecture_benchmark",
+      "architecture_change_guard",
+      "architecture_evaluator",
+      "architecture_learning",
+      "architecture_outcome",
+      "architecture_planner",
+      "architecture_preflight",
+      "architecture_safe_rewrite",
+      "atomic_file",
+      "base64",
+      "core",
+      "engine_patch",
+      "existing_project",
+      "godot_model",
+      "godot_session",
+      "hashlib",
+      "journeys",
+      "json",
+      "pathlib",
+      "project_engine",
+      "project_recommendations",
+      "safe_rewrite_learning"
+    ],
+    "studio/godot_privacy_security_qa.py": [
+      "__future__",
+      "core",
+      "godot_store_metadata_qa",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re"
+    ],
+    "studio/godot_privacy_security_stage.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "godot_preview",
+      "godot_privacy_security_qa",
+      "json",
+      "pathlib",
+      "run"
+    ],
+    "studio/godot_release_artifact.py": [
+      "__future__",
+      "android_signing",
+      "core",
+      "godot_android_export",
+      "godot_runtime",
+      "hashlib",
+      "os",
+      "pathlib",
+      "re",
+      "shutil",
+      "subprocess",
+      "tempfile",
+      "urllib.request",
+      "zipfile"
+    ],
+    "studio/godot_release_artifact_stage.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "godot_preview",
+      "godot_release_artifact",
+      "godot_release_qa",
+      "godot_runtime",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "run",
+      "tempfile"
+    ],
+    "studio/godot_release_qa.py": [
+      "__future__",
+      "core",
+      "os",
+      "pathlib",
+      "re"
+    ],
+    "studio/godot_release_stage.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "godot_preview",
+      "godot_release_qa",
+      "json",
+      "pathlib",
+      "run"
+    ],
+    "studio/godot_repository_probe.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "existing_project",
+      "godot_session",
+      "json",
+      "pathlib",
+      "re",
+      "tempfile",
+      "urllib.request"
+    ],
+    "studio/godot_runtime.py": [
+      "__future__",
+      "core",
+      "hashlib",
+      "os",
+      "pathlib",
+      "re",
+      "shutil",
+      "subprocess",
+      "tempfile",
+      "urllib.request",
+      "zipfile"
+    ],
+    "studio/godot_runtime_journey_stage.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "godot_preview",
+      "godot_runtime",
+      "godot_runtime_journeys",
+      "journeys",
+      "json",
+      "pathlib",
+      "run",
+      "tempfile"
+    ],
+    "studio/godot_runtime_journeys.py": [
+      "__future__",
+      "core",
+      "godot_runtime",
+      "journeys",
+      "json",
+      "pathlib",
+      "re",
+      "subprocess",
+      "tempfile"
+    ],
+    "studio/godot_session.py": [
+      "__future__",
+      "core",
+      "godot_runtime",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/godot_store_metadata_qa.py": [
+      "__future__",
+      "core",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re",
+      "store_package"
+    ],
+    "studio/godot_store_metadata_stage.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "godot_preview",
+      "godot_store_metadata_qa",
+      "json",
+      "pathlib",
+      "run"
+    ],
+    "studio/godot_visual_qa.py": [
+      "__future__",
+      "core",
+      "godot_android_export",
+      "godot_device_qa",
+      "godot_runtime",
+      "hashlib",
+      "journeys",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "shutil",
+      "subprocess",
+      "tempfile",
+      "time"
+    ],
+    "studio/godot_visual_stage.py": [
+      "__future__",
+      "argparse",
+      "core",
+      "godot_preview",
+      "godot_visual_qa",
+      "journeys",
+      "json",
+      "pathlib",
+      "run"
+    ],
+    "studio/human_input_request.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "re"
+    ],
+    "studio/idempotent_model.py": [
+      "__future__",
+      "core",
+      "hashlib",
+      "pathlib",
+      "workflow_checkpoint"
+    ],
+    "studio/immutable_artifact_cache.py": [
+      "__future__",
+      "artifact_cas",
+      "artifact_cas_stats",
+      "atomic_file",
+      "core",
+      "file_lock",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib"
+    ],
+    "studio/improvement_backlog.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/improvement_dispatch.py": [
+      "__future__",
+      "capability_registry"
+    ],
+    "studio/improvement_executor.py": [
+      "__future__",
+      "capability_registry",
+      "continuous_improvement",
+      "goal_engine",
+      "goal_loop",
+      "improvement_backlog",
+      "improvement_dispatch",
+      "improvement_verifier",
+      "pathlib"
+    ],
+    "studio/improvement_verifier.py": [
+      "__future__"
+    ],
+    "studio/journeys.py": [
+      "base64",
+      "json",
+      "re"
+    ],
+    "studio/learning_context.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib"
+    ],
+    "studio/lease_guard.py": [
+      "__future__",
+      "contextlib",
+      "task_lease",
+      "threading"
+    ],
+    "studio/lease_keepalive.py": [
+      "__future__",
+      "contextlib",
+      "task_lease",
+      "threading"
+    ],
+    "studio/local_capacity.py": [
+      "__future__",
+      "json",
+      "os",
+      "urllib.error",
+      "urllib.request"
+    ],
+    "studio/local_capacity_inventory.py": [
+      "__future__",
+      "atomic_file",
+      "json",
+      "local_capacity",
+      "local_model_benchmark",
+      "pathlib"
+    ],
+    "studio/local_model_benchmark.py": [
+      "__future__",
+      "core",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile",
+      "time"
+    ],
+    "studio/local_model_leaderboard.py": [
+      "__future__",
+      "collections"
+    ],
+    "studio/local_model_reputation.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/local_model_specialization.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/memory_bridge.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "project_memory"
+    ],
+    "studio/memory_lifecycle.py": [
+      "__future__",
+      "json",
+      "memory_bridge",
+      "pathlib"
+    ],
+    "studio/meta_router.py": [
+      "__future__",
+      "agents.router",
+      "argparse",
+      "dataclasses",
+      "json",
+      "star_scanner",
+      "strategy_efficiency"
+    ],
+    "studio/model_portfolio.py": [
+      "__future__",
+      "dataclasses"
+    ],
+    "studio/model_portfolio_audit.py": [
+      "__future__"
+    ],
+    "studio/model_portfolio_learning.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/multi_engine_orchestrator.py": [
+      "__future__",
+      "core",
+      "generic_project",
+      "json",
+      "orchestrator",
+      "os",
+      "pathlib",
+      "sys"
+    ],
+    "studio/multi_project_smoke.py": [
+      "__future__",
+      "os",
+      "pathlib",
+      "shutil",
+      "subprocess",
+      "sys",
+      "tempfile"
+    ],
+    "studio/native_qa.py": [
+      "__future__",
+      "core",
+      "device_qa",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "shutil",
+      "subprocess",
+      "time"
+    ],
+    "studio/native_stage.py": [
+      "__future__",
+      "argparse",
+      "completion",
+      "core",
+      "json",
+      "native_qa",
+      "pathlib",
+      "release_stage_engine",
+      "run"
+    ],
+    "studio/notification_qa.py": [
+      "__future__",
+      "core",
+      "device_qa",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "shutil",
+      "subprocess",
+      "time",
+      "xml.etree.ElementTree"
+    ],
+    "studio/notification_stage.py": [
+      "__future__",
+      "argparse",
+      "completion",
+      "core",
+      "json",
+      "notification_qa",
+      "pathlib",
+      "release_stage_engine",
+      "run"
+    ],
+    "studio/orchestrator.py": [
+      "__future__",
+      "adaptation",
+      "architecture_benchmark",
+      "architecture_evaluator",
+      "architecture_learning",
+      "architecture_obsolescence",
+      "architecture_replacement_learning",
+      "architecture_replacement_planner",
+      "architecture_replacement_reputation",
+      "architecture_replacement_work_order",
+      "architecture_reputation_policy_migration",
+      "core",
+      "evolution_executor",
+      "json",
+      "os",
+      "pathlib",
+      "project_recommendations",
+      "re",
+      "repo_maintenance",
+      "repo_version_probe",
+      "stage_registry",
+      "sys",
+      "time"
+    ],
+    "studio/performance_qa.py": [
+      "__future__",
+      "core",
+      "device_qa",
+      "json",
+      "os",
+      "pathlib",
+      "shutil",
+      "subprocess",
+      "time"
+    ],
+    "studio/performance_stage.py": [
+      "__future__",
+      "argparse",
+      "completion",
+      "core",
+      "json",
+      "pathlib",
+      "performance_qa",
+      "release_stage_engine",
+      "run"
+    ],
+    "studio/persistent_quick_gate_cache.py": [
+      "__future__",
+      "atomic_file",
+      "core",
+      "file_lock",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib"
+    ],
+    "studio/phase_budget.py": [
+      "__future__",
+      "dataclasses"
+    ],
+    "studio/phase_cost_baseline.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile",
+      "verification_cost"
+    ],
+    "studio/platform_view_qa.py": [
+      "__future__",
+      "core",
+      "device_qa",
+      "hashlib",
+      "pathlib",
+      "re",
+      "shutil",
+      "subprocess",
+      "time"
+    ],
+    "studio/platform_view_stage.py": [
+      "__future__",
+      "argparse",
+      "completion",
+      "core",
+      "json",
+      "pathlib",
+      "platform_view_qa",
+      "release_stage_engine",
+      "run"
+    ],
+    "studio/play_publisher.py": [
+      "__future__",
+      "android_signing",
+      "core",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "urllib.error",
+      "urllib.parse",
+      "urllib.request"
+    ],
+    "studio/play_stage.py": [
+      "__future__",
+      "android_signing",
+      "argparse",
+      "completion",
+      "core",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "play_publisher",
+      "re",
+      "release",
+      "run",
+      "shutil"
+    ],
+    "studio/portfolio_candidate_scheduler.py": [
+      "__future__",
+      "dataclasses"
+    ],
+    "studio/portfolio_scan.py": [
+      "__future__",
+      "base64",
+      "core",
+      "json",
+      "pathlib",
+      "re",
+      "urllib.parse"
+    ],
+    "studio/post_preview.py": [
+      "__future__",
+      "android_signing",
+      "argparse",
+      "atomic_file",
+      "completion",
+      "core",
+      "json",
+      "pathlib",
+      "release",
+      "run",
+      "shutil",
+      "tempfile"
+    ],
+    "studio/predictive_budget.py": [
+      "__future__",
+      "dataclasses"
+    ],
+    "studio/preemption_apply.py": [
+      "__future__",
+      "atomic_file",
+      "capacity_ledger",
+      "execution_checkpoint",
+      "json",
+      "pathlib",
+      "preemption_controller",
+      "time"
+    ],
+    "studio/preemption_controller.py": [
+      "__future__"
+    ],
+    "studio/privacy_audit.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re"
+    ],
+    "studio/privacy_stage.py": [
+      "__future__",
+      "argparse",
+      "completion",
+      "core",
+      "json",
+      "pathlib",
+      "privacy_audit",
+      "run"
+    ],
+    "studio/project_budget.py": [
+      "__future__"
+    ],
+    "studio/project_context.py": [
+      "__future__",
+      "datetime",
+      "pathlib"
+    ],
+    "studio/project_engine.py": [
+      "__future__",
+      "dataclasses",
+      "generic_policy",
+      "pathlib"
+    ],
+    "studio/project_memory.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/project_recommendations.py": [
+      "__future__",
+      "atomic_file",
+      "json",
+      "pathlib",
+      "star_scanner"
+    ],
+    "studio/project_status.py": [
+      "__future__",
+      "argparse",
+      "durable_state",
+      "goal_engine",
+      "json",
+      "pathlib"
+    ],
+    "studio/promoted_capabilities.py": [
+      "__future__",
+      "capability_registry",
+      "json",
+      "pathlib",
+      "re"
+    ],
+    "studio/provider_cost.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/provider_health.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile",
+      "time"
+    ],
+    "studio/provider_metrics.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/provider_monthly_quota.py": [
+      "__future__",
+      "datetime",
+      "file_lock",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/provider_probe.py": [
+      "core",
+      "hashlib",
+      "json",
+      "pathlib",
+      "run",
+      "sys",
+      "zipfile"
+    ],
+    "studio/provider_router.py": [
+      "__future__",
+      "dataclasses",
+      "json",
+      "local_capacity",
+      "os",
+      "pathlib",
+      "provider_health",
+      "provider_metrics",
+      "provider_runtime_reliability",
+      "routing_audit",
+      "typing",
+      "unified_routing_score",
+      "urllib.error",
+      "urllib.request"
+    ],
+    "studio/provider_runtime_reliability.py": [
+      "__future__"
+    ],
+    "studio/queue.py": [
+      "argparse",
+      "ci_provider",
+      "core",
+      "json",
+      "pathlib"
+    ],
+    "studio/quick_gate_cache.py": [
+      "__future__",
+      "hashlib",
+      "json"
+    ],
+    "studio/readiness.py": [
+      "__future__",
+      "argparse",
+      "json",
+      "os",
+      "pathlib",
+      "provider_router",
+      "queue",
+      "shutil",
+      "sys"
+    ],
+    "studio/recovery_controller.py": [
+      "__future__",
+      "atomic_file",
+      "file_lock",
+      "hashlib",
+      "json",
+      "pathlib"
+    ],
+    "studio/release.py": [
+      "__future__",
+      "core",
+      "hashlib",
+      "pathlib"
+    ],
+    "studio/release_candidate_search.py": [
+      "__future__",
+      "core",
+      "diff_quick_gates",
+      "flutter_workspace",
+      "full_gate_cache",
+      "immutable_artifact_cache",
+      "journeys",
+      "pathlib",
+      "quick_gate_cache",
+      "repair_search_policy",
+      "time"
+    ],
+    "studio/release_contract.py": [
+      "__future__",
+      "argparse",
+      "json",
+      "pathlib"
+    ],
+    "studio/release_readiness.py": [
+      "__future__",
+      "argparse",
+      "durable_state",
+      "json",
+      "pathlib",
+      "telemetry"
+    ],
+    "studio/release_repair.py": [
+      "__future__",
+      "agents.orchestrator",
+      "artifact_cas_stats",
+      "core",
+      "diagnostics",
+      "flutter_workspace",
+      "full_gate_cache",
+      "idempotent_model",
+      "immutable_artifact_cache",
+      "journeys",
+      "os",
+      "pathlib",
+      "persistent_quick_gate_cache",
+      "project_budget",
+      "release_candidate_search",
+      "repair_search_policy",
+      "repair_strategy",
+      "time"
+    ],
+    "studio/release_stage_engine.py": [
+      "__future__",
+      "core",
+      "diagnostics",
+      "lease_guard",
+      "lease_keepalive",
+      "project_budget",
+      "release_repair",
+      "repair_planner",
+      "repair_queue",
+      "task_scheduler",
+      "telemetry"
+    ],
+    "studio/repair_planner.py": [
+      "__future__"
+    ],
+    "studio/repair_queue.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "task_lease"
+    ],
+    "studio/repair_search_policy.py": [
+      "__future__"
+    ],
+    "studio/repair_strategy.py": [
+      "__future__",
+      "contextual_strategy_efficiency",
+      "os",
+      "pathlib",
+      "strategy_efficiency"
+    ],
+    "studio/replacement_ci_policy.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re",
+      "replacement_ci_policy_v11"
+    ],
+    "studio/replacement_ci_policy_check.py": [
+      "__future__",
+      "json",
+      "pathlib",
+      "replacement_ci_policy",
+      "sys"
+    ],
+    "studio/replacement_ci_policy_v11.py": [
+      "__future__",
+      "datetime",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re",
+      "urllib.parse"
+    ],
+    "studio/repo_maintenance.py": [
+      "__future__",
+      "concurrent.futures",
+      "datetime",
+      "json",
+      "os",
+      "time",
+      "urllib.error",
+      "urllib.request"
+    ],
+    "studio/repo_version_probe.py": [
+      "__future__",
+      "concurrent.futures",
+      "json",
+      "os",
+      "re",
+      "urllib.error",
+      "urllib.request"
+    ],
+    "studio/repository_research_provider.py": [
+      "__future__",
+      "pathlib",
+      "re",
+      "urllib.parse"
+    ],
+    "studio/reputation_policy_check.py": [
+      "__future__",
+      "architecture_replacement_reputation",
+      "json",
+      "sys"
+    ],
+    "studio/routing_audit.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile",
+      "time"
+    ],
+    "studio/routing_calibration.py": [
+      "__future__",
+      "atomic_file",
+      "json",
+      "pathlib"
+    ],
+    "studio/routing_history.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/run.py": [
+      "__future__",
+      "architecture_benchmark",
+      "architecture_change_guard",
+      "architecture_evaluator",
+      "architecture_learning",
+      "architecture_outcome",
+      "architecture_planner",
+      "architecture_preflight",
+      "architecture_replacement_learning",
+      "architecture_replacement_reputation",
+      "architecture_safe_rewrite",
+      "argparse",
+      "atomic_file",
+      "base64",
+      "capacity_budget",
+      "capacity_status",
+      "ci_provider",
+      "core",
+      "hashlib",
+      "idempotent_model",
+      "journeys",
+      "json",
+      "local_capacity_inventory",
+      "local_model_leaderboard",
+      "local_model_reputation",
+      "local_model_specialization",
+      "model_portfolio_audit",
+      "model_portfolio_learning",
+      "os",
+      "pathlib",
+      "project_budget",
+      "project_context",
+      "repair_planner",
+      "repair_queue",
+      "safe_rewrite_learning",
+      "shutil",
+      "sys",
+      "task_context",
+      "tempfile",
+      "urllib.error"
+    ],
+    "studio/run_cost_controller.py": [
+      "__future__",
+      "dataclasses"
+    ],
+    "studio/runtime_health.py": [
+      "__future__",
+      "argparse",
+      "durable_state",
+      "json",
+      "pathlib",
+      "telemetry",
+      "workflow_checkpoint"
+    ],
+    "studio/runtime_journeys.py": [
+      "__future__",
+      "base64",
+      "core",
+      "hashlib",
+      "journeys",
+      "json",
+      "pathlib",
+      "re",
+      "subprocess"
+    ],
+    "studio/safe_rewrite_learning.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/security_agent.py": [
+      "__future__",
+      "core",
+      "journeys",
+      "json",
+      "pathlib"
+    ],
+    "studio/security_audit.py": [
+      "__future__",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re"
+    ],
+    "studio/security_remediation.py": [
+      "__future__",
+      "pathlib",
+      "re"
+    ],
+    "studio/security_stage.py": [
+      "__future__",
+      "argparse",
+      "completion",
+      "core",
+      "json",
+      "pathlib",
+      "project_budget",
+      "release_stage_engine",
+      "run",
+      "security_agent",
+      "security_audit",
+      "security_remediation"
+    ],
+    "studio/smoke.py": [
+      "core",
+      "json",
+      "os",
+      "pathlib",
+      "shutil",
+      "sys"
+    ],
+    "studio/stage_registry.py": [
+      "__future__",
+      "dataclasses",
+      "json",
+      "pathlib",
+      "re"
+    ],
+    "studio/stagnation_controller.py": [
+      "__future__",
+      "dataclasses"
+    ],
+    "studio/star_scanner.py": [
+      "__future__",
+      "argparse",
+      "json",
+      "pathlib",
+      "re",
+      "urllib.request"
+    ],
+    "studio/store_package.py": [
+      "__future__",
+      "binascii",
+      "hashlib",
+      "json",
+      "math",
+      "pathlib",
+      "re",
+      "struct",
+      "zlib"
+    ],
+    "studio/store_stage.py": [
+      "__future__",
+      "argparse",
+      "completion",
+      "core",
+      "json",
+      "pathlib",
+      "run",
+      "store_package"
+    ],
+    "studio/strategy_efficiency.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/strict_task_claim_store.py": [
+      "__future__",
+      "atomic_file",
+      "core",
+      "file_lock",
+      "json",
+      "os",
+      "pathlib",
+      "time"
+    ],
+    "studio/task_claim_store.py": [
+      "__future__",
+      "atomic_file",
+      "core",
+      "file_lock",
+      "json",
+      "os",
+      "pathlib",
+      "time"
+    ],
+    "studio/task_context.py": [
+      "__future__"
+    ],
+    "studio/task_lease.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "socket",
+      "strict_task_claim_store",
+      "time",
+      "uuid"
+    ],
+    "studio/task_scheduler.py": [
+      "__future__",
+      "project_budget",
+      "repair_queue"
+    ],
+    "studio/telemetry.py": [
+      "__future__",
+      "core",
+      "file_lock",
+      "json",
+      "os",
+      "pathlib",
+      "time"
+    ],
+    "studio/telemetry_maintenance.py": [
+      "__future__",
+      "atomic_file",
+      "file_lock",
+      "pathlib"
+    ],
+    "studio/unified_routing_score.py": [
+      "__future__",
+      "provider_health",
+      "provider_metrics",
+      "provider_runtime_reliability",
+      "routing_calibration"
+    ],
+    "studio/v1_gate.py": [
+      "__future__",
+      "argparse",
+      "json",
+      "pathlib",
+      "readiness",
+      "runtime_health"
+    ],
+    "studio/verification_cost.py": [
+      "__future__",
+      "json",
+      "os",
+      "pathlib",
+      "tempfile"
+    ],
+    "studio/worker_heartbeat.py": [
+      "__future__",
+      "capacity_ledger",
+      "hashlib",
+      "json",
+      "pathlib"
+    ],
+    "studio/worker_reaper.py": [
+      "__future__",
+      "atomic_file",
+      "capacity_ledger",
+      "json",
+      "pathlib"
+    ],
+    "studio/worker_reliability.py": [
+      "__future__"
+    ],
+    "studio/workflow_checkpoint.py": [
+      "__future__",
+      "atomic_file",
+      "core",
+      "file_lock",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib"
+    ],
+    "tests/test_adaptation.py": [
+      "adaptation",
+      "json",
+      "pathlib",
+      "project_memory",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_adaptation_research.py": [
+      "studio.adaptation_research",
+      "studio.capability_registry",
+      "studio.project_memory",
+      "unittest"
+    ],
+    "tests/test_adaptive_phase_policy.py": [
+      "adaptive_phase_policy",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_adaptive_planning_runtime.py": [
+      "ast",
+      "importlib",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_adaptive_review_telemetry.py": [
+      "importlib",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_adaptive_role_allocator.py": [
+      "adaptive_role_allocator",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_adaptive_scoring.py": [
+      "adaptive_scoring",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_agent_performance.py": [
+      "agents.performance",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_agent_performance_store.py": [
+      "github_agent_performance_store",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_agent_router.py": [
+      "agents.orchestrator",
+      "agents.registry",
+      "agents.router",
+      "pathlib",
+      "sys",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_agent_workspace.py": [
+      "agents.workspace",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_android_ci_resilience.py": [
+      "os",
+      "pathlib",
+      "studio",
+      "subprocess",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_android_signing.py": [
+      "android_signing",
+      "core",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock",
+      "zipfile"
+    ],
+    "tests/test_api_transport_retry.py": [
+      "core",
+      "pathlib",
+      "sys",
+      "unittest",
+      "unittest.mock",
+      "urllib.error"
+    ],
+    "tests/test_architecture_benchmark.py": [
+      "architecture_benchmark",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_architecture_change_guard.py": [
+      "architecture_change_guard",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_architecture_contract.py": [
+      "architecture_contract",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_architecture_evaluator.py": [
+      "architecture_evaluator",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_architecture_feedback.py": [
+      "architecture_feedback",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_architecture_learning.py": [
+      "architecture_learning",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_architecture_obsolescence.py": [
+      "architecture_obsolescence",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_architecture_outcome.py": [
+      "architecture_outcome",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_architecture_planner.py": [
+      "architecture_planner",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_architecture_preflight.py": [
+      "architecture_preflight",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_candidate.py": [
+      "architecture_replacement_candidate",
+      "architecture_replacement_synthesis",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_executor.py": [
+      "architecture_replacement_executor",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_learning.py": [
+      "architecture_replacement_learning",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_merge.py": [
+      "architecture_replacement_merge",
+      "base64",
+      "hashlib",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_merge_gate.py": [
+      "architecture_replacement_merge_gate",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_outcome.py": [
+      "architecture_replacement_outcome",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_persist.py": [
+      "architecture_replacement_persist",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_pipeline.py": [
+      "architecture_replacement_pipeline",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_architecture_replacement_planner.py": [
+      "architecture_replacement_planner",
+      "architecture_replacement_reputation",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "time",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_postmerge.py": [
+      "architecture_replacement_postmerge",
+      "base64",
+      "hashlib",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_postmerge_pipeline.py": [
+      "architecture_replacement_postmerge_pipeline",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_architecture_replacement_pr_package.py": [
+      "architecture_replacement_pr_package",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_pr_validator.py": [
+      "architecture_replacement_pr_validator",
+      "base64",
+      "hashlib",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_promotion.py": [
+      "architecture_replacement_promotion",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_reputation.py": [
+      "architecture_replacement_reputation",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_reputation_state_machine.py": [
+      "architecture_replacement_reputation",
+      "itertools",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_rollback.py": [
+      "architecture_replacement_rollback",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_rollback_gate.py": [
+      "architecture_replacement_rollback_gate",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_architecture_replacement_work_order.py": [
+      "architecture_replacement_work_order",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_architecture_reputation_policy_approval.py": [
+      "architecture_reputation_policy_approval",
+      "base64",
+      "copy",
+      "hashlib",
+      "json",
+      "pathlib",
+      "replacement_ci_policy",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_architecture_reputation_policy_github_attestation.py": [
+      "architecture_reputation_policy_approval",
+      "architecture_reputation_policy_github_attestation",
+      "base64",
+      "hashlib",
+      "pathlib",
+      "replacement_ci_policy",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_architecture_reputation_policy_github_collect.py": [
+      "architecture_reputation_policy_github_collect",
+      "base64",
+      "pathlib",
+      "sys",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_architecture_reputation_policy_migration.py": [
+      "architecture_replacement_reputation",
+      "architecture_reputation_policy_approval",
+      "architecture_reputation_policy_github_attestation",
+      "architecture_reputation_policy_migration",
+      "base64",
+      "copy",
+      "hashlib",
+      "pathlib",
+      "replacement_ci_policy",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_architecture_reputation_policy_migration_cli.py": [
+      "architecture_replacement_reputation",
+      "architecture_reputation_policy_github_attestation",
+      "architecture_reputation_policy_migration",
+      "architecture_reputation_policy_migration_cli",
+      "base64",
+      "hashlib",
+      "json",
+      "pathlib",
+      "replacement_ci_policy",
+      "sys",
+      "tempfile",
+      "time",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_architecture_reputation_policy_migration_review.py": [
+      "architecture_reputation_policy_migration_review",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_architecture_safe_rewrite.py": [
+      "architecture_safe_rewrite",
+      "json",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_artifact_cas.py": [
+      "artifact_cas",
+      "core",
+      "os",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_artifact_cas_audit.py": [
+      "artifact_cas_audit",
+      "os",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_artifact_cas_namespace.py": [
+      "artifact_cas_namespace",
+      "core",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_artifact_cas_promotion.py": [
+      "artifact_cas",
+      "artifact_cas_promotion",
+      "core",
+      "os",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_artifact_cas_stats.py": [
+      "artifact_cas",
+      "artifact_cas_stats",
+      "immutable_artifact_cache",
+      "os",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_artifact_handoff.py": [
+      "artifact_handoff",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_artwork_candidate_bridge.py": [
+      "hashlib",
+      "pathlib",
+      "studio.artwork_candidate_bridge",
+      "unittest"
+    ],
+    "tests/test_artwork_capability.py": [
+      "pathlib",
+      "studio.artwork_capability",
+      "studio.capability_registry",
+      "studio.store_package",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_artwork_stage.py": [
+      "json",
+      "pathlib",
+      "studio.artwork_stage",
+      "studio.store_package",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_artwork_validation.py": [
+      "pathlib",
+      "studio.artwork_validation",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_asset_artwork_capability.py": [
+      "hashlib",
+      "studio.capabilities.asset_artwork",
+      "unittest"
+    ],
+    "tests/test_asset_artwork_promotion.py": [
+      "json",
+      "pathlib",
+      "studio.artwork_candidate_bridge",
+      "studio.capability_promotion",
+      "studio.capability_registry",
+      "studio.promoted_capabilities",
+      "unittest"
+    ],
+    "tests/test_atomic_file.py": [
+      "atomic_file",
+      "os",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_autonomous_project.py": [
+      "os",
+      "pathlib",
+      "studio.autonomous_project",
+      "studio.capability_registry",
+      "studio.goal_engine",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_autonomous_research.py": [
+      "hashlib",
+      "studio.autonomous_research",
+      "studio.project_memory",
+      "unittest"
+    ],
+    "tests/test_billing_qa.py": [
+      "billing_qa",
+      "core",
+      "hashlib",
+      "json",
+      "pathlib",
+      "stage_registry",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_candidate_portfolio_learning.py": [
+      "candidate_portfolio_learning",
+      "pathlib",
+      "portfolio_candidate_scheduler",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_capability_adaptation_state.py": [
+      "studio.capability_adaptation_state",
+      "unittest"
+    ],
+    "tests/test_capability_candidate_review_state.py": [
+      "studio.capability_adaptation_state",
+      "unittest"
+    ],
+    "tests/test_capability_candidate_validator.py": [
+      "hashlib",
+      "json",
+      "studio.capability_candidate_validator",
+      "unittest"
+    ],
+    "tests/test_capability_memory.py": [
+      "studio.capability_memory",
+      "studio.project_memory",
+      "unittest"
+    ],
+    "tests/test_capability_promotion.py": [
+      "studio.capability_promotion",
+      "unittest"
+    ],
+    "tests/test_capability_qa.py": [
+      "capability_qa",
+      "completion",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_capability_registry.py": [
+      "json",
+      "pathlib",
+      "studio.capability_registry",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_capability_registry_promotion_persist.py": [
+      "base64",
+      "json",
+      "studio.capability_registry_promotion_persist",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_capability_registry_review.py": [
+      "pathlib",
+      "studio.capability_registry_review",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_capability_review.py": [
+      "studio.capability_review",
+      "unittest"
+    ],
+    "tests/test_capability_runtime.py": [
+      "pathlib",
+      "studio.capability_registry",
+      "studio.capability_runtime",
+      "tempfile",
+      "time",
+      "unittest"
+    ],
+    "tests/test_capability_synthesis.py": [
+      "studio.capability_synthesis",
+      "studio.memory_bridge",
+      "studio.project_memory",
+      "unittest"
+    ],
+    "tests/test_capacity_budget.py": [
+      "capacity_budget",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_capacity_efficiency.py": [
+      "capacity_efficiency",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_capacity_ledger.py": [
+      "capacity_ledger",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_capacity_runtime.py": [
+      "capacity_runtime",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_capacity_scheduler.py": [
+      "capacity_scheduler",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_capacity_scheduler_work_conserving.py": [
+      "capacity_scheduler",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_checkout_credentials_policy.py": [
+      "pathlib",
+      "replacement_ci_policy",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_ci.py": [
+      "ci_provider",
+      "ci_runner",
+      "core",
+      "json",
+      "pathlib",
+      "queue",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_ci_adaptation.py": [
+      "ci_runner",
+      "json",
+      "os",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_ci_runner_admission.py": [
+      "ci_runner",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_completion.py": [
+      "completion",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_concurrent_state.py": [
+      "multiprocessing",
+      "os",
+      "pathlib",
+      "persistent_quick_gate_cache",
+      "sys",
+      "tempfile",
+      "unittest",
+      "workflow_checkpoint"
+    ],
+    "tests/test_contextual_routing_memory.py": [
+      "contextual_routing_memory",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_contextual_strategy_efficiency.py": [
+      "contextual_strategy_efficiency",
+      "pathlib",
+      "strategy_efficiency",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_contextual_utility.py": [
+      "contextual_utility",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_continuous_improvement.py": [
+      "studio.continuous_improvement",
+      "studio.goal_engine",
+      "unittest"
+    ],
+    "tests/test_cost_drift.py": [
+      "cost_drift",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_diagnostics.py": [
+      "diagnostics",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_diff_quick_gates.py": [
+      "diff_quick_gates",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_durable_state.py": [
+      "core",
+      "durable_state",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_engine_entry.py": [
+      "core",
+      "engine_entry",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_engine_patch.py": [
+      "engine_patch",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_evolution_automerge.py": [
+      "evolution_automerge",
+      "evolution_candidate",
+      "evolution_persist",
+      "pathlib",
+      "sys",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_evolution_automerge_orchestration.py": [
+      "orchestrator",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_evolution_benchmark.py": [
+      "evolution_benchmark",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_evolution_candidate.py": [
+      "evolution_candidate",
+      "json",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_evolution_differential.py": [
+      "adaptation",
+      "evolution_benchmark",
+      "evolution_differential",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_evolution_evidence.py": [
+      "evolution_evidence",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_evolution_executor.py": [
+      "evolution_executor",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_evolution_isolated_runner.py": [
+      "evolution_isolated_runner",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_evolution_pending.py": [
+      "evolution_pending",
+      "evolution_persist",
+      "json",
+      "orchestrator",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_evolution_persist.py": [
+      "evolution_persist",
+      "hashlib",
+      "json",
+      "orchestrator",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_evolution_promotion.py": [
+      "evolution_promotion",
+      "json",
+      "pathlib",
+      "stage_registry",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_evolution_research.py": [
+      "evolution_evidence",
+      "evolution_research",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_evolution_rollback.py": [
+      "core",
+      "evolution_rollback",
+      "hashlib",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_evolution_stage_runner.py": [
+      "evolution_stage_runner",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_evolution_synthesis.py": [
+      "evolution_candidate",
+      "evolution_synthesis",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_execution_budget.py": [
+      "execution_budget",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_execution_checkpoint.py": [
+      "execution_checkpoint",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_existing_project.py": [
+      "base64",
+      "existing_project",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_file_lock.py": [
+      "file_lock",
+      "multiprocessing",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "time",
+      "unittest"
+    ],
+    "tests/test_fleet_capacity.py": [
+      "fleet_capacity",
+      "pathlib",
+      "provider_monthly_quota",
+      "provider_router",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_fleet_daemon.py": [
+      "fleet_daemon",
+      "pathlib",
+      "sys",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_fleet_maintenance.py": [
+      "fleet_maintenance",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_fleet_metrics.py": [
+      "fleet_metrics",
+      "fleet_regression",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_fleet_operations.py": [
+      "fleet_dashboard",
+      "fleet_supervisor",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_fleet_supervisor_apply.py": [
+      "fleet_supervisor_apply",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_free_capacity_recommendations.py": [
+      "free_capacity_recommendations",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_full_gate_cache.py": [
+      "full_gate_cache",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_generic_adaptive_review_wiring.py": [
+      "ast",
+      "pathlib",
+      "unittest"
+    ],
+    "tests/test_generic_architecture.py": [
+      "generic_project",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_generic_capability_candidate_persistence.py": [
+      "hashlib",
+      "json",
+      "pathlib",
+      "studio.capability_synthesis",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_generic_capability_isolated_validation.py": [
+      "hashlib",
+      "json",
+      "studio.generic_capability_isolated_validation",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_generic_capability_persist.py": [
+      "studio.generic_capability_persist",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_generic_capability_synthesis_state.py": [
+      "studio.capability_adaptation_state",
+      "unittest"
+    ],
+    "tests/test_generic_capability_validation_report.py": [
+      "hashlib",
+      "json",
+      "studio.generic_capability_isolated_validation",
+      "unittest"
+    ],
+    "tests/test_generic_model_capacity.py": [
+      "core",
+      "generic_model",
+      "os",
+      "pathlib",
+      "provider_router",
+      "sys",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_generic_policy.py": [
+      "generic_policy",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_generic_toolchain.py": [
+      "generic_sandbox",
+      "generic_toolchain",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_generic_verifier_adaptation.py": [
+      "generic_verifier_adaptation",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_github_artifact_cas_audit_store.py": [
+      "github_artifact_cas_audit_store",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_github_artifact_cas_stats_store.py": [
+      "github_artifact_cas_stats_store",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_github_full_gate_cache_store.py": [
+      "core",
+      "github_full_gate_cache_store",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_github_goal_store.py": [
+      "base64",
+      "json",
+      "pathlib",
+      "studio.capability_registry",
+      "studio.github_goal_store",
+      "studio.goal_engine",
+      "studio.improvement_backlog",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_github_memory_store.py": [
+      "base64",
+      "json",
+      "pathlib",
+      "studio.github_memory_store",
+      "studio.project_memory",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_github_quick_gate_cache_store.py": [
+      "github_quick_gate_cache_store",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_github_runner_persistent.py": [
+      "contextlib",
+      "github_runner",
+      "goal_engine",
+      "json",
+      "os",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_global_admission.py": [
+      "global_admission",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_goal_capability_runtime.py": [
+      "pathlib",
+      "studio.capability_registry",
+      "studio.goal_engine",
+      "studio.goal_loop",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_goal_engine.py": [
+      "json",
+      "pathlib",
+      "studio.goal_engine",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_goal_learning.py": [
+      "goal_learning",
+      "pathlib",
+      "project_memory",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_goal_loop.py": [
+      "capability_registry",
+      "goal_engine",
+      "goal_loop",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_godot_android_export.py": [
+      "core",
+      "godot_android_export",
+      "hashlib",
+      "io",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock",
+      "zipfile"
+    ],
+    "tests/test_godot_android_stage.py": [
+      "core",
+      "godot_android_stage",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_godot_baseline.py": [
+      "copy",
+      "core",
+      "godot_baseline",
+      "hashlib",
+      "json",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_godot_device_qa.py": [
+      "core",
+      "godot_device_qa",
+      "hashlib",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_godot_device_stage.py": [
+      "core",
+      "godot_device_stage",
+      "hashlib",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_godot_final_review_qa.py": [
+      "core",
+      "godot_final_review_qa",
+      "hashlib",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_godot_model.py": [
+      "core",
+      "godot_model",
+      "json",
+      "pathlib",
+      "provider_router",
+      "sys",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_godot_play_stage.py": [
+      "godot_play_stage",
+      "hashlib",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock",
+      "zipfile"
+    ],
+    "tests/test_godot_preview.py": [
+      "base64",
+      "core",
+      "godot_preview",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_godot_privacy_security_qa.py": [
+      "core",
+      "godot_privacy_security_qa",
+      "hashlib",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "zipfile"
+    ],
+    "tests/test_godot_release_artifact.py": [
+      "core",
+      "godot_release_artifact",
+      "hashlib",
+      "io",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock",
+      "zipfile"
+    ],
+    "tests/test_godot_release_artifact_stage.py": [
+      "core",
+      "godot_release_artifact_stage",
+      "hashlib",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_godot_release_qa.py": [
+      "godot_release_qa",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_godot_release_stage.py": [
+      "godot_release_stage",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_godot_repository_probe.py": [
+      "base64",
+      "core",
+      "godot_repository_probe",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_godot_runtime.py": [
+      "core",
+      "godot_runtime",
+      "hashlib",
+      "io",
+      "os",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock",
+      "zipfile"
+    ],
+    "tests/test_godot_runtime_journey_stage.py": [
+      "core",
+      "godot_runtime_journey_stage",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_godot_runtime_journeys.py": [
+      "godot_runtime_journeys",
+      "hashlib",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_godot_session.py": [
+      "core",
+      "godot_session",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_godot_store_metadata_qa.py": [
+      "core",
+      "godot_store_metadata_qa",
+      "hashlib",
+      "json",
+      "pathlib",
+      "store_package",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_godot_visual_qa.py": [
+      "core",
+      "godot_visual_qa",
+      "os",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_godot_visual_stage.py": [
+      "core",
+      "godot_visual_stage",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_human_handoff_status_v3.py": [
+      "json",
+      "os",
+      "pathlib",
+      "studio.autonomous_project",
+      "studio.human_input_request",
+      "studio.project_status",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_human_input_request.py": [
+      "human_input_request",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_idempotent_model.py": [
+      "idempotent_model",
+      "os",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_immutable_artifact_cache.py": [
+      "artifact_cas",
+      "core",
+      "immutable_artifact_cache",
+      "os",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_improvement_backlog.py": [
+      "json",
+      "pathlib",
+      "studio.continuous_improvement",
+      "studio.goal_engine",
+      "studio.improvement_backlog",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_improvement_dispatch.py": [
+      "studio.capability_registry",
+      "studio.improvement_dispatch",
+      "unittest"
+    ],
+    "tests/test_improvement_executor.py": [
+      "pathlib",
+      "studio.capability_registry",
+      "studio.continuous_improvement",
+      "studio.goal_engine",
+      "studio.improvement_backlog",
+      "studio.improvement_executor",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_improvement_verifier.py": [
+      "studio.improvement_verifier",
+      "unittest"
+    ],
+    "tests/test_journeys.py": [
+      "base64",
+      "copy",
+      "core",
+      "journeys",
+      "json",
+      "pathlib",
+      "sys",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_jumpy_v13_migration.py": [
+      "core",
+      "json",
+      "pathlib",
+      "unittest"
+    ],
+    "tests/test_learning_context.py": [
+      "json",
+      "learning_context",
+      "os",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_lease_guard.py": [
+      "lease_guard",
+      "pathlib",
+      "sys",
+      "task_lease",
+      "time",
+      "unittest"
+    ],
+    "tests/test_lease_keepalive.py": [
+      "lease_keepalive",
+      "pathlib",
+      "sys",
+      "time",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_local_api_security.py": [
+      "core",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_local_capacity.py": [
+      "json",
+      "local_capacity",
+      "os",
+      "pathlib",
+      "sys",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_local_model_leaderboard.py": [
+      "local_model_leaderboard",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_local_model_reputation.py": [
+      "local_model_benchmark",
+      "local_model_reputation",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_local_model_specialization.py": [
+      "local_model_specialization",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_memory_bridge.py": [
+      "studio.memory_bridge",
+      "studio.project_memory",
+      "unittest"
+    ],
+    "tests/test_memory_lifecycle.py": [
+      "json",
+      "pathlib",
+      "studio.memory_lifecycle",
+      "studio.project_memory",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_meta_router.py": [
+      "meta_router",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_mobile_studio_provider_fallbacks.py": [
+      "pathlib",
+      "unittest"
+    ],
+    "tests/test_mobile_studio_runtime_triggers.py": [
+      "pathlib",
+      "unittest"
+    ],
+    "tests/test_model_portfolio.py": [
+      "model_portfolio",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_model_portfolio_audit.py": [
+      "model_portfolio_audit",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_model_portfolio_learning.py": [
+      "model_portfolio_learning",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_multi_engine_orchestrator.py": [
+      "core",
+      "json",
+      "multi_engine_orchestrator",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_multi_project_canary.py": [
+      "ci_runner",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_native_qa.py": [
+      "native_qa",
+      "pathlib",
+      "stage_registry",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_notification_qa.py": [
+      "notification_qa",
+      "pathlib",
+      "stage_registry",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_orchestrator.py": [
+      "core",
+      "github_runner",
+      "json",
+      "orchestrator",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_orchestrator_automerge.py": [
+      "json",
+      "orchestrator",
+      "os",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_patch_safety_rebuild.py": [
+      "core",
+      "json",
+      "os",
+      "pathlib",
+      "run",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_performance_qa.py": [
+      "pathlib",
+      "performance_qa",
+      "stage_registry",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_persistent_improvement_runner.py": [
+      "pathlib",
+      "studio.capability_registry",
+      "studio.continuous_improvement",
+      "studio.goal_engine",
+      "studio.improvement_backlog",
+      "studio.improvement_executor",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_persistent_quick_gate_cache.py": [
+      "json",
+      "os",
+      "pathlib",
+      "persistent_quick_gate_cache",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_phase_budget.py": [
+      "pathlib",
+      "phase_budget",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_phase_cost_baseline.py": [
+      "pathlib",
+      "phase_cost_baseline",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_platform_view_qa.py": [
+      "pathlib",
+      "platform_view_qa",
+      "stage_registry",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_play_publisher.py": [
+      "core",
+      "io",
+      "json",
+      "pathlib",
+      "play_publisher",
+      "sys",
+      "tempfile",
+      "unittest",
+      "zipfile"
+    ],
+    "tests/test_play_stage.py": [
+      "core",
+      "hashlib",
+      "json",
+      "pathlib",
+      "play_stage",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock",
+      "zipfile"
+    ],
+    "tests/test_portfolio_candidate_scheduler.py": [
+      "pathlib",
+      "portfolio_candidate_scheduler",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_predictive_budget.py": [
+      "pathlib",
+      "predictive_budget",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_preemption_apply.py": [
+      "capacity_ledger",
+      "execution_checkpoint",
+      "json",
+      "pathlib",
+      "preemption_apply",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_preemption_controller.py": [
+      "pathlib",
+      "preemption_controller",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_privacy.py": [
+      "json",
+      "pathlib",
+      "privacy_audit",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_privacy_stage.py": [
+      "json",
+      "pathlib",
+      "privacy_stage",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_project_budget.py": [
+      "pathlib",
+      "project_budget",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_project_context.py": [
+      "core",
+      "pathlib",
+      "project_context",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_project_engine.py": [
+      "pathlib",
+      "project_engine",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_project_engine_generic.py": [
+      "pathlib",
+      "project_engine",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_project_memory.py": [
+      "json",
+      "pathlib",
+      "studio.project_memory",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_promoted_capabilities.py": [
+      "json",
+      "pathlib",
+      "studio.capability_registry",
+      "studio.promoted_capabilities",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_provider_cost.py": [
+      "contextual_utility",
+      "pathlib",
+      "provider_cost",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_provider_health.py": [
+      "pathlib",
+      "provider_health",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_provider_metrics.py": [
+      "pathlib",
+      "provider_metrics",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_provider_monthly_quota.py": [
+      "datetime",
+      "pathlib",
+      "provider_monthly_quota",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_provider_router.py": [
+      "json",
+      "os",
+      "pathlib",
+      "provider_router",
+      "sys",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_provider_runtime_reliability.py": [
+      "pathlib",
+      "provider_runtime_reliability",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_provider_scoped_health.py": [
+      "pathlib",
+      "provider_health",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_provider_verified_feedback.py": [
+      "pathlib",
+      "provider_health",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_queue_terminal_state.py": [
+      "json",
+      "pathlib",
+      "studio.queue",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_quick_gate_cache.py": [
+      "pathlib",
+      "quick_gate_cache",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_readiness.py": [
+      "os",
+      "pathlib",
+      "readiness",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_recovery_controller.py": [
+      "pathlib",
+      "recovery_controller",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_registry_promotion_review_state.py": [
+      "studio.capability_adaptation_state",
+      "unittest"
+    ],
+    "tests/test_release.py": [
+      "pathlib",
+      "release",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_release_candidate_search.py": [
+      "artifact_cas",
+      "os",
+      "pathlib",
+      "release_candidate_search",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_release_contract.py": [
+      "json",
+      "pathlib",
+      "release_contract",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_release_readiness.py": [
+      "durable_state",
+      "json",
+      "os",
+      "pathlib",
+      "release_readiness",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock",
+      "workflow_checkpoint"
+    ],
+    "tests/test_release_repair.py": [
+      "core",
+      "pathlib",
+      "release_repair",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_release_stage_engine.py": [
+      "pathlib",
+      "release_stage_engine",
+      "sys",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_release_v130.py": [
+      "json",
+      "pathlib",
+      "unittest"
+    ],
+    "tests/test_repair_planner.py": [
+      "pathlib",
+      "repair_planner",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_repair_queue.py": [
+      "pathlib",
+      "repair_queue",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_repair_search_policy.py": [
+      "pathlib",
+      "repair_search_policy",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_repair_strategy.py": [
+      "contextual_strategy_efficiency",
+      "os",
+      "pathlib",
+      "repair_strategy",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_replacement_ci_policy.py": [
+      "pathlib",
+      "replacement_ci_policy",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_repo_maintenance.py": [
+      "datetime",
+      "pathlib",
+      "repo_maintenance",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_repo_version_probe.py": [
+      "pathlib",
+      "repo_version_probe",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_repository_research_provider.py": [
+      "pathlib",
+      "studio.repository_research_provider",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_request_budget.py": [
+      "core",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_request_contract.py": [
+      "copy",
+      "core",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_request_priority.py": [
+      "core",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_resilience_soak.py": [
+      "durable_state",
+      "json",
+      "os",
+      "pathlib",
+      "sys",
+      "task_lease",
+      "telemetry",
+      "tempfile",
+      "unittest",
+      "unittest.mock",
+      "workflow_checkpoint"
+    ],
+    "tests/test_routing_audit.py": [
+      "json",
+      "pathlib",
+      "routing_audit",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_routing_calibration.py": [
+      "pathlib",
+      "routing_calibration",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_routing_history.py": [
+      "pathlib",
+      "routing_history",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_run_cost_controller.py": [
+      "pathlib",
+      "run_cost_controller",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_runtime_health.py": [
+      "durable_state",
+      "json",
+      "os",
+      "pathlib",
+      "runtime_health",
+      "sys",
+      "telemetry",
+      "tempfile",
+      "unittest",
+      "unittest.mock",
+      "workflow_checkpoint"
+    ],
+    "tests/test_runtime_journeys.py": [
+      "pathlib",
+      "runtime_journeys",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_runtime_soak.py": [
+      "os",
+      "pathlib",
+      "persistent_quick_gate_cache",
+      "sys",
+      "telemetry",
+      "tempfile",
+      "unittest",
+      "unittest.mock",
+      "workflow_checkpoint"
+    ],
+    "tests/test_safe_rewrite_learning.py": [
+      "pathlib",
+      "safe_rewrite_learning",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_security.py": [
+      "json",
+      "pathlib",
+      "security_audit",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_security_agent.py": [
+      "core",
+      "pathlib",
+      "security_agent",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_security_remediation.py": [
+      "pathlib",
+      "security_remediation",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_security_stage.py": [
+      "json",
+      "pathlib",
+      "security_audit",
+      "security_stage",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_stage_registry.py": [
+      "ci_runner",
+      "core",
+      "json",
+      "pathlib",
+      "stage_registry",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_stagnation_controller.py": [
+      "pathlib",
+      "stagnation_controller",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_star_recommendations.py": [
+      "json",
+      "orchestrator",
+      "pathlib",
+      "project_recommendations",
+      "run",
+      "star_scanner",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_store.py": [
+      "json",
+      "pathlib",
+      "store_package",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_strategy_efficiency.py": [
+      "pathlib",
+      "strategy_efficiency",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_strict_task_claim_store.py": [
+      "core",
+      "multiprocessing",
+      "os",
+      "pathlib",
+      "strict_task_claim_store",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_studio.py": [
+      "copy",
+      "core",
+      "json",
+      "os",
+      "pathlib",
+      "queue",
+      "run",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_task_claim_store.py": [
+      "multiprocessing",
+      "os",
+      "pathlib",
+      "sys",
+      "task_claim_store",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_task_context.py": [
+      "pathlib",
+      "sys",
+      "task_context",
+      "unittest"
+    ],
+    "tests/test_task_lease.py": [
+      "os",
+      "pathlib",
+      "sys",
+      "task_lease",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_task_scheduler.py": [
+      "pathlib",
+      "sys",
+      "task_scheduler",
+      "unittest"
+    ],
+    "tests/test_telemetry.py": [
+      "os",
+      "pathlib",
+      "sys",
+      "telemetry",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_telemetry_maintenance.py": [
+      "pathlib",
+      "sys",
+      "telemetry_maintenance",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests/test_transport.py": [
+      "core",
+      "io",
+      "json",
+      "pathlib",
+      "sys",
+      "unittest",
+      "unittest.mock",
+      "urllib.error"
+    ],
+    "tests/test_unified_routing_score.py": [
+      "dataclasses",
+      "pathlib",
+      "sys",
+      "unified_routing_score",
+      "unittest"
+    ],
+    "tests/test_v1_gate.py": [
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock",
+      "v1_gate"
+    ],
+    "tests/test_verification_cost.py": [
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "verification_cost"
+    ],
+    "tests/test_worker_heartbeat.py": [
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock",
+      "worker_heartbeat"
+    ],
+    "tests/test_worker_reaper.py": [
+      "capacity_ledger",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "worker_reaper"
+    ],
+    "tests/test_worker_reliability.py": [
+      "pathlib",
+      "sys",
+      "unittest",
+      "worker_reliability"
+    ],
+    "tests/test_workflow_checkpoint.py": [
+      "os",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock",
+      "workflow_checkpoint"
+    ]
+  }
+}

@@ -15183,7 +15183,6 @@ state = execute(req, Path('/tmp/provider-preview-app'), out, github=ArtifactProj
 ## File: provider_router.py
 ````python
 """Provider registry and ordered fallback policy for AI Dev Server."""
-# repo-brain-v5-reference-pilot-2
 ⋮----
 @dataclass(frozen=True)
 class ProviderSpec

@@ -1,14 +1,14 @@
 # CI status
 
-Summary: 1 success / 0 failure / 6 active
+Summary: 3 success / 0 failure / 5 active
 
-- Repo Brain v5 test: in_progress / pending (8b36402b)
-- CI: pending / pending (8b36402b)
-- Resilience Soak: in_progress / pending (8b36402b)
-- Fault Injection Gate: completed / success (8b36402b)
-- Mobile Studio Real Build: pending / pending (8b36402b)
-- Multi-Engine E2E Benchmark: in_progress / pending (8b36402b)
-- Validate AI Dev Server: pending / pending (8b36402b)
-- Mobile Studio Real Build: completed / cancelled (ae4c127e)
+- Fault Injection Gate: completed / success (a77d6f24)
+- Mobile Studio Real Build: pending / pending (a77d6f24)
+- Resilience Soak: in_progress / pending (a77d6f24)
+- Multi-Engine E2E Benchmark: pending / pending (a77d6f24)
+- Validate AI Dev Server: in_progress / pending (a77d6f24)
+- CI: in_progress / pending (a77d6f24)
+- CI: completed / success (ceb2b1ac)
+- Resilience Soak: completed / success (ceb2b1ac)
 
 > Generated summary only; inspect GitHub Actions for full logs when needed.

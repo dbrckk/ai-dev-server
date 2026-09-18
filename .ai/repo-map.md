@@ -54,7 +54,6 @@ The content is organized as follows:
     multi-engine-benchmark.yml
     provider-preview.yml
     remote-control.yml
-    repo-brain-v5-test.yml
     resilience-soak.yml
     studio-smoke.yml
     validate.yml
@@ -869,7 +868,7 @@ concurrency:
 
 jobs:
   repository-standards:
-    uses: dbrckk/repo-standards/.github/workflows/reusable-unified.yml@v9
+    uses: dbrckk/repo-standards/.github/workflows/reusable-unified.yml@v10
 ````
 
 ## File: .github/workflows/ci.yml
@@ -1841,29 +1840,6 @@ jobs:
           echo "Operation: ${{ steps.request.outputs.operation }}" >> "$GITHUB_STEP_SUMMARY"
           echo "Codespace: $NAME" >> "$GITHUB_STEP_SUMMARY"
           [ ! -f safe-output.txt ] || { echo '```text' >> "$GITHUB_STEP_SUMMARY"; tail -n 200 safe-output.txt >> "$GITHUB_STEP_SUMMARY"; echo '```' >> "$GITHUB_STEP_SUMMARY"; }
-````
-
-## File: .github/workflows/repo-brain-v5-test.yml
-````yaml
-name: Repo Brain v5 test
-
-on:
-  push:
-    branches: [main]
-    paths:
-      - ".repo-standards.yml"
-  workflow_dispatch:
-
-permissions:
-  contents: write
-
-concurrency:
-  group: repo-brain-v5-test-${{ github.repository }}-${{ github.ref }}
-  cancel-in-progress: true
-
-jobs:
-  repo-brain:
-    uses: dbrckk/repo-brain/.github/workflows/reusable-index.yml@main
 ````
 
 ## File: .github/workflows/resilience-soak.yml
@@ -19212,7 +19188,6 @@ state = execute(req, Path('/tmp/provider-preview-app'), out, github=ArtifactProj
 ## File: studio/provider_router.py
 ````python
 """Provider registry and ordered fallback policy for AI Dev Server."""
-# repo-brain-v5-reference-pilot-2
 ⋮----
 @dataclass(frozen=True)
 class ProviderSpec
@@ -31856,11 +31831,11 @@ loaded = wc.load()
 ## File: .repo-standards.yml
 ````yaml
 source: dbrckk/repo-standards
-ref: v9
-version: 9
+ref: v10
+version: 10
 adopted: true
 workflow_mode: unified-single-commit
-repo_brain: dbrckk/repo-brain@v4
+repo_brain: dbrckk/repo-brain@v5
 repo_brain_fallback: portable-full-rebuild
 ai_context:
   index: .ai/index.md
@@ -31876,6 +31851,8 @@ ai_context:
   brain_incremental_state: .ai/brain/incremental-state.json
   brain_impact: .ai/brain/impact.json
   brain_selected_tests: .ai/brain/selected-tests.json
+  brain_references: .ai/brain/references.json
+  brain_symbol_dependencies: .ai/brain/symbol-dependencies.json
   brain_capabilities: .ai/brain/capabilities.json
   brain_ast_routing: .ai/brain/ast-routing.json
   brain_ast_symbols: .ai/brain/ast-symbols/
@@ -31888,9 +31865,6 @@ ai_context:
 workflow:
   file: .github/workflows/ai-repo-map.yml
   reusable_unified: .github/workflows/reusable-unified.yml
-
-
-repo_brain_v5_test: 4
 ````
 
 ## File: AGENTS.md
@@ -31904,24 +31878,26 @@ Before substantial work:
 2. Read `.ai/project-state.md`.
 3. Read `.ai/brain/impact.json`.
 4. Read `.ai/brain/selected-tests.json`.
-5. Read `.ai/change-impact.md`.
-6. Read `.ai/architecture.json`.
-7. Read `.ai/brain/summary.md`, `.ai/brain/incremental-state.json`, and `.ai/brain/capabilities.json`.
-8. If ast-grep enrichment is available, route named symbols through `.ai/brain/ast-routing.json` and one `.ai/brain/ast-symbols/<initial>.json` shard.
-9. Fall back to `.ai/brain/lookup.json` when AST routing is unavailable or insufficient.
-10. Use `.ai/brain/code-graph.json` and `.ai/brain/imports.json` for cross-module context.
-11. Read `.ai/dependency-map.json` when dependency context matters.
-12. Read `.ai/commands.json`, `.ai/ci-status.md`, and security signals when relevant.
-13. Read `.ai/repo-health.md`.
-14. Use `.ai/index.md` and segmented maps only if symbol-level context is insufficient.
-15. Read `.ai/repo-map.md` only as a final broad-context fallback.
-16. Fetch only task-relevant source files or line ranges.
+5. Read `.ai/brain/references.json`.
+6. Read `.ai/brain/symbol-dependencies.json`.
+7. Read `.ai/change-impact.md`.
+8. Read `.ai/architecture.json`.
+9. Read `.ai/brain/summary.md`, `.ai/brain/incremental-state.json`, and `.ai/brain/capabilities.json`.
+10. If ast-grep enrichment is available, route named symbols through `.ai/brain/ast-routing.json` and one `.ai/brain/ast-symbols/<initial>.json` shard.
+11. Fall back to `.ai/brain/lookup.json` when AST routing is unavailable or insufficient.
+12. Use `.ai/brain/code-graph.json` and `.ai/brain/imports.json` for cross-module context.
+13. Read `.ai/dependency-map.json` when dependency context matters.
+14. Read `.ai/commands.json`, `.ai/ci-status.md`, and security signals when relevant.
+15. Read `.ai/repo-health.md`.
+16. Use `.ai/index.md` and segmented maps only if symbol-level context is insufficient.
+17. Read `.ai/repo-map.md` only as a final broad-context fallback.
+18. Fetch only task-relevant source files or line ranges.
 
 Repository-specific rules:
 - Preserve existing architecture and public interfaces unless the task requires a change.
 - Prefer the smallest coherent change.
 - Prefer targeted tests from `.ai/brain/selected-tests.json`; expand validation when impact is ambiguous or targeted tests fail.
-- Verify impact edges and AST/Repo Brain symbol hits against authoritative source before editing.
+- Verify reference/dependency/impact/AST hits against authoritative source before editing.
 - Treat security signals and static graph edges as heuristics, not proof.
 - Never reproduce suspected secret values.
 - Update manual project-state sections when status, blockers, or next priority materially changes.

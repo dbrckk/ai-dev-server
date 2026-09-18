@@ -11,7 +11,7 @@ if str(STUDIO) not in sys.path:
 from agents.adapters import AgentRun
 from agents.registry import AgentRegistry, AgentSpec
 from agents.router import choose_agent, rank_agents
-from agents.orchestrator import execute_named, invocation_for
+from agents.orchestrator import execute_named, invocation_for, ranked_agent_names
 
 
 class AgentRouterTests(unittest.TestCase):
@@ -174,6 +174,22 @@ class AgentRouterTests(unittest.TestCase):
         self.assertEqual(result["status"], "passed")
         self.assertEqual(result["attempts"][0]["usage"]["total_tokens"], 13)
         self.assertEqual(result["attempts"][0]["usage"]["cached_input_tokens"], 4)
+
+
+    def test_ranked_agent_names_honors_preference_without_removing_fallbacks(self):
+        with patch("shutil.which", return_value="/bin/tool"):
+            names = ranked_agent_names(
+                {"code_editing", "repo_analysis"},
+                role="implementation",
+                memory_path=ROOT / "does-not-exist.json",
+                limit=4,
+                preferred="codex",
+            )
+
+        self.assertGreaterEqual(len(names), 2)
+        self.assertEqual(names[0], "codex")
+        self.assertEqual(len(names), len(set(names)))
+
 
 
 if __name__ == "__main__":

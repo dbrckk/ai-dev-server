@@ -22,19 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T09:18:59Z
+Generated: 2026-09-18T09:20:55Z
 
 ### Git
 - Branch: `main`
-- Head: `09e88575a591`
-- Commit date: 2026-09-18T09:18:51Z
+- Head: `945a4d0d9430`
+- Commit date: 2026-09-18T09:20:44Z
 - Commit: chore(ai): refresh repo health
 - Tracked files: 695
 
 ### Recently changed files
 - `.repo-standards.yml`
 - `.github/workflows/ai-repo-map.yml`
-- `AGENTS.md`
 - `.circleci/config.yml`
 - `.devcontainer/devcontainer.json`
 - `.github/workflows/ci.yml`
@@ -52,6 +51,7 @@ Generated: 2026-09-18T09:18:59Z
 - `.gitignore`
 - `.serena/.gitignore`
 - `.serena/project.yml`
+- `AGENTS.md`
 
 ### Project signals
 - No common build descriptor detected

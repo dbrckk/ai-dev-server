@@ -703,6 +703,7 @@ tests/
   test_worker_reaper.py
   test_worker_reliability.py
   test_workflow_checkpoint.py
+.repo-standards.yml
 AGENTS.md
 PROJECT_CONTEXT.md
 README.md
@@ -31826,28 +31827,37 @@ second = wc.operation_key("two", {"x": 2})
 loaded = wc.load()
 ````
 
+## File: .repo-standards.yml
+````yaml
+source: dbrckk/repo-standards
+ref: main
+adopted: true
+ai_context:
+  repo_map: .ai/repo-map.md
+  repo_health: .ai/repo-health.md
+  project_state: .ai/project-state.md
+workflow:
+  file: .github/workflows/ai-repo-map.yml
+````
+
 ## File: AGENTS.md
 ````markdown
-# Agent workflow
+# Repository agent instructions
 
-## Fast repository context
+This repository adopts the shared standards from `dbrckk/repo-standards`.
 
-When `.ai/repo-map.md` exists, read it first for repository structure and the compact code map. Do not scan the whole repository before consulting this map.
+Before substantial work:
+1. Read the central `AGENTS.md` and relevant files under `standards/` in `dbrckk/repo-standards`.
+2. Read `.ai/project-state.md`.
+3. Read `.ai/repo-health.md`.
+4. Read `.ai/repo-map.md`.
+5. Fetch only the task-relevant source files or symbols.
 
-After the map:
-- Search or fetch only the files directly relevant to the task.
-- Prefer exact symbols, filenames, references, diffs, and small line ranges.
-- Re-read broader files only when targeted context is insufficient.
-- Ignore generated/build/vendor/assets directories unless the task explicitly concerns them.
-- Refresh assumptions against the current branch before editing.
-
-## Serena when available
-
-When Serena MCP tools are available, use them after the repo map for symbol/reference navigation (`get_symbols_overview`, `find_symbol`, `find_referencing_symbols`). Serena is optional; the GitHub-generated repo map is the portable default.
-
-## Completion
-
-Preserve the existing architecture and interfaces unless the task requires a change. Before considering a task complete, run the relevant tests, lint, build, or validation commands when available.
+Repository-specific rules:
+- Preserve the existing architecture and public interfaces unless the task requires a change.
+- Prefer the smallest coherent change.
+- Run the relevant tests, lint, build, or validation commands before declaring completion.
+- Update `.ai/project-state.md` when status, blockers, or next priority materially changes.
 ````
 
 ## File: PROJECT_CONTEXT.md

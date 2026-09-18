@@ -22,19 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T20:15:28Z
+Generated: 2026-09-18T20:53:13Z
 
 ### Git
 - Branch: `main`
-- Head: `d148c1f9a1b1`
-- Commit date: 2026-09-18T22:11:00+02:00
-- Commit: chore(ai): enable Kotlin Java graph resolver
-- Tracked files: 751
+- Head: `c53e7a1197f8`
+- Commit date: 2026-09-18T22:50:38+02:00
+- Commit: chore(ai): enable same-package symbol graph enrichment
+- Tracked files: 780
 
 ### Recently changed files
 - `.repo-standards.yml`
 - `.github/workflows/semantic-refresh.yml`
-- `AGENTS.md`
 
 ### Project signals
 - No common build descriptor detected

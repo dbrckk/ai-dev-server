@@ -3,7 +3,8 @@
     "studio/adaptation.py": {
       "dependencies": [
         "studio/capability_memory.py",
-        "studio/project_memory.py"
+        "studio/project_memory.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
         "studio/orchestrator.py",
@@ -11,7 +12,7 @@
         "tests/test_evolution_differential.py"
       ],
       "in_degree": 3,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/adaptation_research.py": {
       "dependencies": [
@@ -26,22 +27,27 @@
       "out_degree": 2
     },
     "studio/adaptive_phase_policy.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py",
+        "tests/test_studio.py"
+      ],
       "dependents": [
         "studio/generic_project.py",
         "tests/test_adaptive_phase_policy.py"
       ],
       "in_degree": 2,
-      "out_degree": 0
+      "out_degree": 2
     },
     "studio/adaptive_role_allocator.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py"
+      ],
       "dependents": [
         "studio/generic_project.py",
         "tests/test_adaptive_role_allocator.py"
       ],
       "in_degree": 2,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/adaptive_scoring.py": {
       "dependencies": [],
@@ -87,8 +93,11 @@
         "studio/agents/registry.py",
         "studio/agents/router.py",
         "studio/contextual_routing_memory.py",
+        "studio/core.py",
         "studio/routing_history.py",
-        "studio/safe_rewrite_learning.py"
+        "studio/safe_rewrite_learning.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/ci_runner.py",
@@ -104,7 +113,7 @@
         "tests/test_star_recommendations.py"
       ],
       "in_degree": 11,
-      "out_degree": 7
+      "out_degree": 10
     },
     "studio/agents/performance.py": {
       "dependencies": [],
@@ -160,7 +169,8 @@
     },
     "studio/android_signing.py": {
       "dependencies": [
-        "studio/core.py"
+        "studio/core.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/godot_release_artifact.py",
@@ -170,7 +180,7 @@
         "tests/test_android_signing.py"
       ],
       "in_degree": 5,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/architecture_benchmark.py": {
       "dependencies": [
@@ -188,7 +198,10 @@
       "out_degree": 1
     },
     "studio/architecture_change_guard.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/generic_project.py",
         "studio/godot_preview.py",
@@ -196,24 +209,26 @@
         "tests/test_architecture_change_guard.py"
       ],
       "in_degree": 4,
-      "out_degree": 0
+      "out_degree": 2
     },
     "studio/architecture_contract.py": {
       "dependencies": [
         "studio/architecture_benchmark.py",
         "studio/architecture_evaluator.py",
         "studio/architecture_feedback.py",
-        "studio/architecture_planner.py"
+        "studio/architecture_planner.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "tests/test_architecture_contract.py"
       ],
       "in_degree": 1,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/architecture_evaluator.py": {
       "dependencies": [
-        "studio/atomic_file.py"
+        "studio/atomic_file.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/architecture_contract.py",
@@ -224,7 +239,7 @@
         "tests/test_architecture_evaluator.py"
       ],
       "in_degree": 6,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/architecture_feedback.py": {
       "dependencies": [],
@@ -306,25 +321,28 @@
       "out_degree": 1
     },
     "studio/architecture_replacement_candidate.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py"
+      ],
       "dependents": [
         "studio/architecture_replacement_pipeline.py",
         "studio/architecture_replacement_synthesis.py",
         "tests/test_architecture_replacement_candidate.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/architecture_replacement_executor.py": {
       "dependencies": [
-        "studio/core.py"
+        "studio/core.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/architecture_replacement_pipeline.py",
         "tests/test_architecture_replacement_executor.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/architecture_replacement_learning.py": {
       "dependencies": [],
@@ -342,13 +360,14 @@
         "studio/architecture_replacement_merge_gate.py",
         "studio/architecture_replacement_persist.py",
         "studio/architecture_replacement_pr_validator.py",
-        "studio/core.py"
+        "studio/core.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "tests/test_architecture_replacement_merge.py"
       ],
       "in_degree": 1,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/architecture_replacement_merge_gate.py": {
       "dependencies": [
@@ -363,18 +382,20 @@
     },
     "studio/architecture_replacement_outcome.py": {
       "dependencies": [
-        "studio/atomic_file.py"
+        "studio/atomic_file.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/architecture_replacement_postmerge_pipeline.py",
         "tests/test_architecture_replacement_outcome.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/architecture_replacement_persist.py": {
       "dependencies": [
-        "studio/core.py"
+        "studio/core.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/architecture_replacement_merge.py",
@@ -385,7 +406,7 @@
         "tests/test_architecture_replacement_persist.py"
       ],
       "in_degree": 6,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/architecture_replacement_pipeline.py": {
       "dependencies": [
@@ -417,14 +438,15 @@
     "studio/architecture_replacement_postmerge.py": {
       "dependencies": [
         "studio/architecture_replacement_persist.py",
-        "studio/replacement_ci_policy.py"
+        "studio/replacement_ci_policy.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/architecture_replacement_postmerge_pipeline.py",
         "tests/test_architecture_replacement_postmerge.py"
       ],
       "in_degree": 2,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/architecture_replacement_postmerge_pipeline.py": {
       "dependencies": [
@@ -456,14 +478,15 @@
     "studio/architecture_replacement_pr_validator.py": {
       "dependencies": [
         "studio/architecture_replacement_persist.py",
-        "studio/replacement_ci_policy.py"
+        "studio/replacement_ci_policy.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/architecture_replacement_merge.py",
         "tests/test_architecture_replacement_pr_validator.py"
       ],
       "in_degree": 2,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/architecture_replacement_promotion.py": {
       "dependencies": [
@@ -499,13 +522,14 @@
     "studio/architecture_replacement_rollback.py": {
       "dependencies": [
         "studio/architecture_replacement_persist.py",
-        "studio/core.py"
+        "studio/core.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "tests/test_architecture_replacement_rollback.py"
       ],
       "in_degree": 1,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/architecture_replacement_rollback_gate.py": {
       "dependencies": [
@@ -522,14 +546,17 @@
       "dependencies": [
         "studio/architecture_replacement_candidate.py",
         "studio/core.py",
-        "studio/provider_router.py"
+        "studio/provider_router.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/architecture_replacement_pipeline.py",
         "tests/test_architecture_replacement_candidate.py"
       ],
       "in_degree": 2,
-      "out_degree": 3
+      "out_degree": 6
     },
     "studio/architecture_replacement_work_order.py": {
       "dependencies": [
@@ -544,7 +571,8 @@
     },
     "studio/architecture_reputation_policy_approval.py": {
       "dependencies": [
-        "studio/replacement_ci_policy.py"
+        "studio/replacement_ci_policy.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/architecture_reputation_policy_github_attestation.py",
@@ -555,7 +583,7 @@
         "tests/test_architecture_reputation_policy_migration.py"
       ],
       "in_degree": 6,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/architecture_reputation_policy_github_attestation.py": {
       "dependencies": [
@@ -576,14 +604,15 @@
         "studio/architecture_replacement_persist.py",
         "studio/architecture_reputation_policy_approval.py",
         "studio/architecture_reputation_policy_github_attestation.py",
-        "studio/replacement_ci_policy.py"
+        "studio/replacement_ci_policy.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/architecture_reputation_policy_migration_cli.py",
         "tests/test_architecture_reputation_policy_github_collect.py"
       ],
       "in_degree": 2,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/architecture_reputation_policy_migration.py": {
       "dependencies": [
@@ -641,7 +670,8 @@
         "studio/artifact_cas_namespace.py",
         "studio/artifact_cas_stats.py",
         "studio/artifact_share_policy.py",
-        "studio/core.py"
+        "studio/core.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/artifact_cas_promotion.py",
@@ -653,7 +683,7 @@
         "tests/test_release_candidate_search.py"
       ],
       "in_degree": 7,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/artifact_cas_audit.py": {
       "dependencies": [
@@ -724,26 +754,30 @@
     "studio/artwork_candidate_bridge.py": {
       "dependencies": [
         "studio/artwork_validation.py",
-        "studio/capability_candidate_validator.py"
+        "studio/capability_candidate_validator.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "tests/test_artwork_candidate_bridge.py",
         "tests/test_asset_artwork_promotion.py"
       ],
       "in_degree": 2,
-      "out_degree": 2
+      "out_degree": 4
     },
     "studio/artwork_capability.py": {
       "dependencies": [
         "studio/capability_registry.py",
-        "studio/store_package.py"
+        "studio/store_package.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/artwork_stage.py",
         "tests/test_artwork_capability.py"
       ],
       "in_degree": 2,
-      "out_degree": 2
+      "out_degree": 4
     },
     "studio/artwork_stage.py": {
       "dependencies": [
@@ -751,28 +785,33 @@
         "studio/capability_registry.py",
         "studio/completion.py",
         "studio/core.py",
-        "studio/run.py"
+        "studio/run.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "tests/test_artwork_stage.py"
       ],
       "in_degree": 1,
-      "out_degree": 5
+      "out_degree": 6
     },
     "studio/artwork_validation.py": {
       "dependencies": [
         "studio/capabilities/__init__.py",
-        "studio/capabilities/asset_artwork.py"
+        "studio/capabilities/asset_artwork.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/artwork_candidate_bridge.py",
         "tests/test_artwork_validation.py"
       ],
       "in_degree": 2,
-      "out_degree": 2
+      "out_degree": 4
     },
     "studio/atomic_file.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_studio.py"
+      ],
       "dependents": [
         "studio/architecture_benchmark.py",
         "studio/architecture_evaluator.py",
@@ -813,7 +852,7 @@
         "tests/test_atomic_file.py"
       ],
       "in_degree": 37,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/autonomous_project.py": {
       "dependencies": [
@@ -829,7 +868,8 @@
         "studio/project_memory.py",
         "studio/promoted_capabilities.py",
         "studio/telemetry.py",
-        "studio/telemetry_maintenance.py"
+        "studio/telemetry_maintenance.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/ci_runner.py",
@@ -838,30 +878,35 @@
         "tests/test_human_handoff_status_v3.py"
       ],
       "in_degree": 4,
-      "out_degree": 13
+      "out_degree": 14
     },
     "studio/autonomous_research.py": {
       "dependencies": [
-        "studio/memory_bridge.py"
+        "studio/memory_bridge.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/adaptation_research.py",
         "tests/test_autonomous_research.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 3
     },
     "studio/billing_qa.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/device_qa.py"
+        "studio/device_qa.py",
+        "studio/stage_registry.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/billing_stage.py",
         "tests/test_billing_qa.py"
       ],
       "in_degree": 2,
-      "out_degree": 2
+      "out_degree": 5
     },
     "studio/billing_stage.py": {
       "dependencies": [
@@ -917,14 +962,17 @@
       "out_degree": 0
     },
     "studio/capability_candidate_validator.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/artwork_candidate_bridge.py",
         "studio/generic_capability_isolated_validation.py",
         "tests/test_capability_candidate_validator.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 2
     },
     "studio/capability_memory.py": {
       "dependencies": [
@@ -939,7 +987,8 @@
     },
     "studio/capability_promotion.py": {
       "dependencies": [
-        "studio/promoted_capabilities.py"
+        "studio/promoted_capabilities.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/capability_registry_promotion_persist.py",
@@ -947,7 +996,7 @@
         "tests/test_capability_promotion.py"
       ],
       "in_degree": 3,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/capability_qa.py": {
       "dependencies": [],
@@ -959,7 +1008,9 @@
       "out_degree": 0
     },
     "studio/capability_registry.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/adaptation_research.py",
         "studio/artwork_capability.py",
@@ -987,7 +1038,7 @@
         "tests/test_promoted_capabilities.py"
       ],
       "in_degree": 24,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/capability_registry_promotion_persist.py": {
       "dependencies": [
@@ -995,14 +1046,17 @@
         "studio/capability_synthesis.py",
         "studio/core.py",
         "studio/generic_capability_isolated_validation.py",
-        "studio/promoted_capabilities.py"
+        "studio/promoted_capabilities.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/github_runner.py",
         "tests/test_capability_registry_promotion_persist.py"
       ],
       "in_degree": 2,
-      "out_degree": 5
+      "out_degree": 8
     },
     "studio/capability_registry_review.py": {
       "dependencies": [],
@@ -1025,14 +1079,16 @@
     },
     "studio/capability_runtime.py": {
       "dependencies": [
-        "studio/capability_registry.py"
+        "studio/capability_registry.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/autonomous_project.py",
         "tests/test_capability_runtime.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 3
     },
     "studio/capability_stage.py": {
       "dependencies": [
@@ -1047,7 +1103,8 @@
     },
     "studio/capability_synthesis.py": {
       "dependencies": [
-        "studio/project_memory.py"
+        "studio/project_memory.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/capability_registry_promotion_persist.py",
@@ -1060,22 +1117,26 @@
         "tests/test_generic_capability_candidate_persistence.py"
       ],
       "in_degree": 8,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/capacity_budget.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py"
+      ],
       "dependents": [
         "studio/generic_project.py",
         "studio/run.py",
         "tests/test_capacity_budget.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/capacity_efficiency.py": {
       "dependencies": [
         "studio/atomic_file.py",
-        "studio/file_lock.py"
+        "studio/core.py",
+        "studio/file_lock.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/fleet_capacity.py",
@@ -1084,12 +1145,14 @@
         "tests/test_capacity_efficiency.py"
       ],
       "in_degree": 4,
-      "out_degree": 2
+      "out_degree": 4
     },
     "studio/capacity_ledger.py": {
       "dependencies": [
         "studio/atomic_file.py",
-        "studio/file_lock.py"
+        "studio/core.py",
+        "studio/file_lock.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/ci_runner.py",
@@ -1104,7 +1167,7 @@
         "tests/test_worker_reaper.py"
       ],
       "in_degree": 10,
-      "out_degree": 2
+      "out_degree": 4
     },
     "studio/capacity_runtime.py": {
       "dependencies": [],
@@ -1118,7 +1181,9 @@
     },
     "studio/capacity_scheduler.py": {
       "dependencies": [
-        "studio/provider_health.py"
+        "studio/provider_health.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/fleet_capacity.py",
@@ -1126,23 +1191,26 @@
         "tests/test_capacity_scheduler_work_conserving.py"
       ],
       "in_degree": 3,
-      "out_degree": 1
+      "out_degree": 3
     },
     "studio/capacity_status.py": {
       "dependencies": [
+        "studio/core.py",
         "studio/provider_monthly_quota.py",
-        "studio/provider_router.py"
+        "studio/provider_router.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/generic_project.py",
         "studio/run.py"
       ],
       "in_degree": 2,
-      "out_degree": 2
+      "out_degree": 4
     },
     "studio/ci_provider.py": {
       "dependencies": [
-        "studio/core.py"
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/ci_runner.py",
@@ -1152,7 +1220,7 @@
         "tests/test_ci.py"
       ],
       "in_degree": 5,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/ci_runner.py": {
       "dependencies": [
@@ -1165,7 +1233,10 @@
         "studio/orchestrator.py",
         "studio/provider_probe.py",
         "studio/queue.py",
-        "studio/worker_heartbeat.py"
+        "studio/stage_registry.py",
+        "studio/worker_heartbeat.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/fleet_supervisor_apply.py",
@@ -1176,10 +1247,11 @@
         "tests/test_stage_registry.py"
       ],
       "in_degree": 6,
-      "out_degree": 10
+      "out_degree": 13
     },
     "studio/completion.py": {
       "dependencies": [
+        "studio/stage_registry.py",
         "studio/task_scheduler.py"
       ],
       "dependents": [
@@ -1200,7 +1272,7 @@
         "tests/test_completion.py"
       ],
       "in_degree": 15,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/contextual_routing_memory.py": {
       "dependencies": [],
@@ -1241,7 +1313,8 @@
     },
     "studio/continuous_improvement.py": {
       "dependencies": [
-        "studio/goal_engine.py"
+        "studio/goal_engine.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
         "studio/github_runner.py",
@@ -1252,7 +1325,7 @@
         "tests/test_persistent_improvement_runner.py"
       ],
       "in_degree": 6,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/core.py": {
       "dependencies": [
@@ -1268,10 +1341,19 @@
         "studio/provider_metrics.py",
         "studio/provider_monthly_quota.py",
         "studio/provider_router.py",
-        "studio/routing_history.py"
+        "studio/routing_history.py",
+        "studio/stage_registry.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
+        "studio/adaptive_phase_policy.py",
+        "studio/adaptive_role_allocator.py",
+        "studio/agents/orchestrator.py",
         "studio/android_signing.py",
+        "studio/architecture_change_guard.py",
+        "studio/architecture_replacement_candidate.py",
         "studio/architecture_replacement_executor.py",
         "studio/architecture_replacement_merge.py",
         "studio/architecture_replacement_merge_gate.py",
@@ -1293,6 +1375,10 @@
         "studio/billing_stage.py",
         "studio/capability_registry_promotion_persist.py",
         "studio/capability_stage.py",
+        "studio/capacity_budget.py",
+        "studio/capacity_efficiency.py",
+        "studio/capacity_ledger.py",
+        "studio/capacity_status.py",
         "studio/ci_provider.py",
         "studio/ci_runner.py",
         "studio/device_qa.py",
@@ -1300,6 +1386,7 @@
         "studio/durable_state.py",
         "studio/engine_detect.py",
         "studio/engine_entry.py",
+        "studio/engine_patch.py",
         "studio/evolution_automerge.py",
         "studio/evolution_isolated_runner.py",
         "studio/evolution_pending.py",
@@ -1307,8 +1394,10 @@
         "studio/evolution_promotion.py",
         "studio/evolution_rollback.py",
         "studio/evolution_synthesis.py",
+        "studio/existing_project.py",
         "studio/fault_injection_smoke.py",
         "studio/flutter_workspace.py",
+        "studio/free_capacity_recommendations.py",
         "studio/full_gate_cache.py",
         "studio/generic_capability_isolated_validation.py",
         "studio/generic_capability_persist.py",
@@ -1316,6 +1405,9 @@
         "studio/generic_model.py",
         "studio/generic_project.py",
         "studio/generic_repository.py",
+        "studio/generic_sandbox.py",
+        "studio/generic_smoke.py",
+        "studio/generic_toolchain.py",
         "studio/generic_verifier_adaptation.py",
         "studio/github_full_gate_cache_store.py",
         "studio/github_runner.py",
@@ -1346,7 +1438,16 @@
         "studio/godot_visual_stage.py",
         "studio/idempotent_model.py",
         "studio/immutable_artifact_cache.py",
+        "studio/learning_context.py",
+        "studio/local_capacity.py",
+        "studio/local_capacity_inventory.py",
         "studio/local_model_benchmark.py",
+        "studio/local_model_leaderboard.py",
+        "studio/local_model_reputation.py",
+        "studio/local_model_specialization.py",
+        "studio/meta_router.py",
+        "studio/model_portfolio.py",
+        "studio/model_portfolio_audit.py",
         "studio/multi_engine_orchestrator.py",
         "studio/native_qa.py",
         "studio/native_stage.py",
@@ -1360,16 +1461,25 @@
         "studio/platform_view_stage.py",
         "studio/play_publisher.py",
         "studio/play_stage.py",
+        "studio/portfolio_candidate_scheduler.py",
         "studio/portfolio_scan.py",
         "studio/post_preview.py",
         "studio/privacy_stage.py",
+        "studio/project_budget.py",
+        "studio/project_engine.py",
+        "studio/provider_health.py",
         "studio/provider_probe.py",
+        "studio/provider_router.py",
+        "studio/provider_runtime_reliability.py",
         "studio/queue.py",
         "studio/release.py",
         "studio/release_candidate_search.py",
         "studio/release_repair.py",
         "studio/release_stage_engine.py",
+        "studio/repair_search_policy.py",
+        "studio/routing_calibration.py",
         "studio/run.py",
+        "studio/run_cost_controller.py",
         "studio/runtime_journeys.py",
         "studio/security_agent.py",
         "studio/security_stage.py",
@@ -1378,17 +1488,25 @@
         "studio/strict_task_claim_store.py",
         "studio/task_claim_store.py",
         "studio/telemetry.py",
+        "studio/unified_routing_score.py",
         "studio/workflow_checkpoint.py",
+        "tests/test_adaptive_planning_runtime.py",
+        "tests/test_adaptive_review_telemetry.py",
+        "tests/test_agent_router.py",
         "tests/test_android_signing.py",
         "tests/test_api_transport_retry.py",
         "tests/test_artifact_cas.py",
         "tests/test_artifact_cas_namespace.py",
         "tests/test_artifact_cas_promotion.py",
         "tests/test_billing_qa.py",
+        "tests/test_capability_candidate_validator.py",
+        "tests/test_capability_synthesis.py",
+        "tests/test_capacity_efficiency.py",
         "tests/test_ci.py",
         "tests/test_durable_state.py",
         "tests/test_engine_entry.py",
         "tests/test_evolution_rollback.py",
+        "tests/test_evolution_synthesis.py",
         "tests/test_generic_model_capacity.py",
         "tests/test_github_full_gate_cache_store.py",
         "tests/test_godot_android_export.py",
@@ -1409,16 +1527,21 @@
         "tests/test_godot_store_metadata_qa.py",
         "tests/test_godot_visual_qa.py",
         "tests/test_godot_visual_stage.py",
+        "tests/test_idempotent_model.py",
         "tests/test_immutable_artifact_cache.py",
         "tests/test_journeys.py",
         "tests/test_jumpy_v13_migration.py",
         "tests/test_local_api_security.py",
+        "tests/test_local_capacity.py",
+        "tests/test_local_model_leaderboard.py",
+        "tests/test_local_model_reputation.py",
         "tests/test_multi_engine_orchestrator.py",
         "tests/test_orchestrator.py",
         "tests/test_patch_safety_rebuild.py",
         "tests/test_play_publisher.py",
         "tests/test_play_stage.py",
         "tests/test_project_context.py",
+        "tests/test_release.py",
         "tests/test_release_repair.py",
         "tests/test_request_budget.py",
         "tests/test_request_contract.py",
@@ -1429,8 +1552,8 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 157,
-      "out_degree": 13
+      "in_degree": 203,
+      "out_degree": 17
     },
     "studio/cost_drift.py": {
       "dependencies": [],
@@ -1444,7 +1567,8 @@
     "studio/device_qa.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/runtime_journeys.py"
+        "studio/runtime_journeys.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/billing_qa.py",
@@ -1455,7 +1579,7 @@
         "studio/platform_view_qa.py"
       ],
       "in_degree": 6,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/device_stage.py": {
       "dependencies": [
@@ -1470,14 +1594,16 @@
       "out_degree": 5
     },
     "studio/diagnostics.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/stage_registry.py"
+      ],
       "dependents": [
         "studio/release_repair.py",
         "studio/release_stage_engine.py",
         "tests/test_diagnostics.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/diff_quick_gates.py": {
       "dependencies": [],
@@ -1524,18 +1650,22 @@
         "studio/core.py",
         "studio/godot_preview.py",
         "studio/project_engine.py",
-        "studio/run.py"
+        "studio/run.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/engine_detect.py",
         "tests/test_engine_entry.py"
       ],
       "in_degree": 2,
-      "out_degree": 4
+      "out_degree": 6
     },
     "studio/engine_patch.py": {
       "dependencies": [
-        "studio/project_engine.py"
+        "studio/core.py",
+        "studio/project_engine.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/godot_model.py",
@@ -1543,23 +1673,26 @@
         "tests/test_engine_patch.py"
       ],
       "in_degree": 3,
-      "out_degree": 1
+      "out_degree": 3
     },
     "studio/evolution_automerge.py": {
       "dependencies": [
         "studio/core.py",
         "studio/evolution_candidate.py",
         "studio/evolution_pending.py",
-        "studio/evolution_persist.py"
+        "studio/evolution_persist.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "tests/test_evolution_automerge.py"
       ],
       "in_degree": 1,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/evolution_benchmark.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_studio.py"
+      ],
       "dependents": [
         "studio/evolution_isolated_runner.py",
         "studio/evolution_promotion.py",
@@ -1567,10 +1700,12 @@
         "tests/test_evolution_differential.py"
       ],
       "in_degree": 4,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/evolution_candidate.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/stage_registry.py"
+      ],
       "dependents": [
         "studio/evolution_automerge.py",
         "studio/evolution_isolated_runner.py",
@@ -1581,16 +1716,18 @@
         "tests/test_evolution_synthesis.py"
       ],
       "in_degree": 7,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/evolution_differential.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_studio.py"
+      ],
       "dependents": [
         "studio/evolution_isolated_runner.py",
         "tests/test_evolution_differential.py"
       ],
       "in_degree": 2,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/evolution_evidence.py": {
       "dependencies": [],
@@ -1603,26 +1740,29 @@
       "out_degree": 0
     },
     "studio/evolution_executor.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_studio.py"
+      ],
       "dependents": [
         "studio/orchestrator.py",
         "tests/test_evolution_executor.py"
       ],
       "in_degree": 2,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/evolution_isolated_runner.py": {
       "dependencies": [
         "studio/core.py",
         "studio/evolution_benchmark.py",
         "studio/evolution_candidate.py",
-        "studio/evolution_differential.py"
+        "studio/evolution_differential.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "tests/test_evolution_isolated_runner.py"
       ],
       "in_degree": 1,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/evolution_pending.py": {
       "dependencies": [
@@ -1638,7 +1778,9 @@
     },
     "studio/evolution_persist.py": {
       "dependencies": [
-        "studio/core.py"
+        "studio/core.py",
+        "studio/stage_registry.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/evolution_automerge.py",
@@ -1648,61 +1790,72 @@
         "tests/test_evolution_persist.py"
       ],
       "in_degree": 5,
-      "out_degree": 1
+      "out_degree": 3
     },
     "studio/evolution_promotion.py": {
       "dependencies": [
         "studio/core.py",
         "studio/evolution_benchmark.py",
-        "studio/evolution_candidate.py"
+        "studio/evolution_candidate.py",
+        "studio/stage_registry.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/evolution_rollback.py",
         "tests/test_evolution_promotion.py"
       ],
       "in_degree": 2,
-      "out_degree": 3
+      "out_degree": 5
     },
     "studio/evolution_research.py": {
       "dependencies": [
-        "studio/evolution_evidence.py"
+        "studio/evolution_evidence.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "tests/test_evolution_research.py"
       ],
       "in_degree": 1,
-      "out_degree": 1
+      "out_degree": 3
     },
     "studio/evolution_rollback.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/evolution_promotion.py"
+        "studio/evolution_promotion.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
         "tests/test_evolution_rollback.py"
       ],
       "in_degree": 1,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/evolution_stage_runner.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/stage_registry.py"
+      ],
       "dependents": [
         "tests/test_evolution_stage_runner.py"
       ],
       "in_degree": 1,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/evolution_synthesis.py": {
       "dependencies": [
         "studio/core.py",
         "studio/evolution_candidate.py",
-        "studio/provider_router.py"
+        "studio/provider_router.py",
+        "studio/stage_registry.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "tests/test_evolution_synthesis.py"
       ],
       "in_degree": 1,
-      "out_degree": 3
+      "out_degree": 7
     },
     "studio/execution_budget.py": {
       "dependencies": [],
@@ -1729,7 +1882,9 @@
     },
     "studio/existing_project.py": {
       "dependencies": [
-        "studio/project_engine.py"
+        "studio/core.py",
+        "studio/project_engine.py",
+        "tests/test_journeys.py"
       ],
       "dependents": [
         "studio/godot_preview.py",
@@ -1737,7 +1892,7 @@
         "tests/test_existing_project.py"
       ],
       "in_degree": 3,
-      "out_degree": 1
+      "out_degree": 3
     },
     "studio/fault_injection_smoke.py": {
       "dependencies": [
@@ -1749,11 +1904,12 @@
         "studio/provider_health.py",
         "studio/run_cost_controller.py",
         "studio/task_claim_store.py",
-        "studio/workflow_checkpoint.py"
+        "studio/workflow_checkpoint.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 9
+      "out_degree": 10
     },
     "studio/file_lock.py": {
       "dependencies": [],
@@ -1794,7 +1950,8 @@
         "studio/queue.py",
         "studio/recovery_controller.py",
         "studio/stagnation_controller.py",
-        "studio/worker_reliability.py"
+        "studio/worker_reliability.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/ci_runner.py",
@@ -1802,7 +1959,7 @@
         "tests/test_fleet_capacity.py"
       ],
       "in_degree": 3,
-      "out_degree": 15
+      "out_degree": 16
     },
     "studio/fleet_daemon.py": {
       "dependencies": [
@@ -1875,14 +2032,15 @@
     },
     "studio/fleet_supervisor.py": {
       "dependencies": [
-        "studio/fleet_dashboard.py"
+        "studio/fleet_dashboard.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/fleet_supervisor_apply.py",
         "tests/test_fleet_operations.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/fleet_supervisor_apply.py": {
       "dependencies": [
@@ -1912,6 +2070,7 @@
     "studio/free_capacity_recommendations.py": {
       "dependencies": [
         "studio/atomic_file.py",
+        "studio/core.py",
         "studio/star_scanner.py"
       ],
       "dependents": [
@@ -1919,7 +2078,7 @@
         "tests/test_free_capacity_recommendations.py"
       ],
       "in_degree": 2,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/full_gate_cache.py": {
       "dependencies": [
@@ -1940,7 +2099,9 @@
       "dependencies": [
         "studio/capability_candidate_validator.py",
         "studio/capability_synthesis.py",
-        "studio/core.py"
+        "studio/core.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/capability_registry_promotion_persist.py",
@@ -1951,32 +2112,37 @@
         "tests/test_generic_capability_validation_report.py"
       ],
       "in_degree": 6,
-      "out_degree": 3
+      "out_degree": 5
     },
     "studio/generic_capability_persist.py": {
       "dependencies": [
         "studio/capability_synthesis.py",
         "studio/core.py",
         "studio/generic_capability_isolated_validation.py",
-        "studio/promoted_capabilities.py"
+        "studio/promoted_capabilities.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/github_runner.py",
         "tests/test_generic_capability_persist.py"
       ],
       "in_degree": 2,
-      "out_degree": 4
+      "out_degree": 6
     },
     "studio/generic_capability_synthesis.py": {
       "dependencies": [
         "studio/capability_synthesis.py",
-        "studio/core.py"
+        "studio/core.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/github_runner.py"
       ],
       "in_degree": 1,
-      "out_degree": 2
+      "out_degree": 5
     },
     "studio/generic_model.py": {
       "dependencies": [
@@ -1997,7 +2163,10 @@
         "studio/provider_monthly_quota.py",
         "studio/provider_router.py",
         "studio/routing_history.py",
-        "studio/safe_rewrite_learning.py"
+        "studio/safe_rewrite_learning.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/generic_project.py",
@@ -2005,7 +2174,7 @@
         "tests/test_generic_model_capacity.py"
       ],
       "in_degree": 3,
-      "out_degree": 18
+      "out_degree": 21
     },
     "studio/generic_policy.py": {
       "dependencies": [],
@@ -2081,7 +2250,8 @@
         "studio/stagnation_controller.py",
         "studio/strategy_efficiency.py",
         "studio/task_context.py",
-        "studio/verification_cost.py"
+        "studio/verification_cost.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/generic_smoke.py",
@@ -2089,48 +2259,58 @@
         "tests/test_generic_architecture.py"
       ],
       "in_degree": 3,
-      "out_degree": 61
+      "out_degree": 62
     },
     "studio/generic_repository.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/generic_policy.py"
+        "studio/generic_policy.py",
+        "tests/test_journeys.py"
       ],
       "dependents": [
-        "studio/generic_project.py"
+        "studio/generic_project.py",
+        "studio/generic_smoke.py"
       ],
-      "in_degree": 1,
-      "out_degree": 2
+      "in_degree": 2,
+      "out_degree": 3
     },
     "studio/generic_sandbox.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/generic_project.py",
         "studio/generic_verify.py",
         "tests/test_generic_toolchain.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 2
     },
     "studio/generic_smoke.py": {
       "dependencies": [
+        "studio/core.py",
         "studio/generic_project.py",
+        "studio/generic_repository.py",
         "studio/generic_toolchain.py",
-        "studio/generic_verify.py"
+        "studio/generic_verify.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 3
+      "out_degree": 6
     },
     "studio/generic_toolchain.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py"
+      ],
       "dependents": [
         "studio/generic_project.py",
         "studio/generic_smoke.py",
         "tests/test_generic_toolchain.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/generic_verifier_adaptation.py": {
       "dependencies": [
@@ -2147,73 +2327,88 @@
     },
     "studio/generic_verify.py": {
       "dependencies": [
-        "studio/generic_sandbox.py"
+        "studio/generic_sandbox.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/generic_project.py",
         "studio/generic_smoke.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/github_agent_performance_store.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_journeys.py"
+      ],
       "dependents": [
         "studio/github_runner.py",
         "tests/test_agent_performance_store.py"
       ],
       "in_degree": 2,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/github_artifact_cas_audit_store.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_journeys.py",
+        "tests/test_studio.py"
+      ],
       "dependents": [
         "studio/github_runner.py",
         "tests/test_github_artifact_cas_audit_store.py"
       ],
       "in_degree": 2,
-      "out_degree": 0
+      "out_degree": 2
     },
     "studio/github_artifact_cas_stats_store.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_journeys.py",
+        "tests/test_studio.py"
+      ],
       "dependents": [
         "studio/github_runner.py",
         "tests/test_github_artifact_cas_stats_store.py"
       ],
       "in_degree": 2,
-      "out_degree": 0
+      "out_degree": 2
     },
     "studio/github_contextual_strategy_efficiency_store.py": {
       "dependencies": [
         "studio/contextual_strategy_efficiency.py",
-        "studio/strategy_efficiency.py"
+        "studio/strategy_efficiency.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/github_runner.py"
       ],
       "in_degree": 1,
-      "out_degree": 2
+      "out_degree": 4
     },
     "studio/github_execution_checkpoint_store.py": {
       "dependencies": [
-        "studio/execution_checkpoint.py"
+        "studio/execution_checkpoint.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/github_runner.py"
       ],
       "in_degree": 1,
-      "out_degree": 1
+      "out_degree": 3
     },
     "studio/github_full_gate_cache_store.py": {
       "dependencies": [
-        "studio/core.py"
+        "studio/core.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/github_runner.py",
         "tests/test_github_full_gate_cache_store.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 3
     },
     "studio/github_goal_store.py": {
       "dependencies": [
@@ -2222,74 +2417,92 @@
         "studio/capability_synthesis.py",
         "studio/generic_capability_isolated_validation.py",
         "studio/goal_engine.py",
-        "studio/improvement_backlog.py"
+        "studio/improvement_backlog.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/github_runner.py",
         "tests/test_github_goal_store.py"
       ],
       "in_degree": 2,
-      "out_degree": 6
+      "out_degree": 8
     },
     "studio/github_memory_store.py": {
       "dependencies": [
-        "studio/project_memory.py"
+        "studio/project_memory.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/github_runner.py",
         "tests/test_github_memory_store.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 3
     },
     "studio/github_phase_cost_baseline_store.py": {
       "dependencies": [
-        "studio/phase_cost_baseline.py"
+        "studio/phase_cost_baseline.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/github_runner.py"
       ],
       "in_degree": 1,
-      "out_degree": 1
+      "out_degree": 3
     },
     "studio/github_provider_health_store.py": {
       "dependencies": [
-        "studio/provider_health.py"
+        "studio/provider_health.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/github_runner.py"
       ],
       "in_degree": 1,
-      "out_degree": 1
+      "out_degree": 4
     },
     "studio/github_provider_metrics_store.py": {
       "dependencies": [
-        "studio/provider_metrics.py"
+        "studio/provider_metrics.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/github_runner.py"
       ],
       "in_degree": 1,
-      "out_degree": 1
+      "out_degree": 4
     },
     "studio/github_quick_gate_cache_store.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_journeys.py",
+        "tests/test_studio.py"
+      ],
       "dependents": [
         "studio/github_runner.py",
         "tests/test_github_quick_gate_cache_store.py"
       ],
       "in_degree": 2,
-      "out_degree": 0
+      "out_degree": 2
     },
     "studio/github_routing_history_store.py": {
       "dependencies": [
-        "studio/routing_history.py"
+        "studio/routing_history.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/github_runner.py"
       ],
       "in_degree": 1,
-      "out_degree": 1
+      "out_degree": 4
     },
     "studio/github_runner.py": {
       "dependencies": [
@@ -2331,43 +2544,51 @@
         "studio/portfolio_scan.py",
         "studio/project_memory.py",
         "studio/repository_research_provider.py",
-        "studio/run.py"
+        "studio/run.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "tests/test_github_runner_persistent.py",
         "tests/test_orchestrator.py"
       ],
       "in_degree": 2,
-      "out_degree": 39
+      "out_degree": 41
     },
     "studio/github_strategy_efficiency_store.py": {
       "dependencies": [
-        "studio/strategy_efficiency.py"
+        "studio/strategy_efficiency.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/github_runner.py"
       ],
       "in_degree": 1,
-      "out_degree": 1
+      "out_degree": 3
     },
     "studio/github_verification_cost_store.py": {
       "dependencies": [
-        "studio/verification_cost.py"
+        "studio/verification_cost.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/github_runner.py"
       ],
       "in_degree": 1,
-      "out_degree": 1
+      "out_degree": 3
     },
     "studio/global_admission.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_studio.py"
+      ],
       "dependents": [
         "studio/fleet_capacity.py",
         "tests/test_global_admission.py"
       ],
       "in_degree": 2,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/goal_engine.py": {
       "dependencies": [],
@@ -2408,7 +2629,9 @@
     "studio/goal_loop.py": {
       "dependencies": [
         "studio/capability_registry.py",
-        "studio/goal_engine.py"
+        "studio/goal_engine.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/autonomous_project.py",
@@ -2417,12 +2640,13 @@
         "tests/test_goal_loop.py"
       ],
       "in_degree": 4,
-      "out_degree": 2
+      "out_degree": 4
     },
     "studio/godot_android_export.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/godot_runtime.py"
+        "studio/godot_runtime.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/godot_android_stage.py",
@@ -2432,7 +2656,7 @@
         "tests/test_godot_android_export.py"
       ],
       "in_degree": 5,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/godot_android_stage.py": {
       "dependencies": [
@@ -2440,27 +2664,31 @@
         "studio/godot_android_export.py",
         "studio/godot_preview.py",
         "studio/godot_runtime.py",
-        "studio/run.py"
+        "studio/run.py",
+        "studio/stage_registry.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "tests/test_godot_android_stage.py"
       ],
       "in_degree": 1,
-      "out_degree": 5
+      "out_degree": 7
     },
     "studio/godot_baseline.py": {
       "dependencies": [
-        "studio/core.py"
+        "studio/core.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "tests/test_godot_baseline.py"
       ],
       "in_degree": 1,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/godot_device_qa.py": {
       "dependencies": [
-        "studio/core.py"
+        "studio/core.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/godot_device_stage.py",
@@ -2468,7 +2696,7 @@
         "tests/test_godot_device_qa.py"
       ],
       "in_degree": 3,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/godot_device_stage.py": {
       "dependencies": [
@@ -2477,35 +2705,40 @@
         "studio/godot_device_qa.py",
         "studio/godot_preview.py",
         "studio/godot_runtime.py",
-        "studio/run.py"
+        "studio/run.py",
+        "studio/stage_registry.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "tests/test_godot_device_stage.py"
       ],
       "in_degree": 1,
-      "out_degree": 6
+      "out_degree": 8
     },
     "studio/godot_final_review_qa.py": {
       "dependencies": [
-        "studio/core.py"
+        "studio/core.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
         "studio/godot_final_review_stage.py",
         "tests/test_godot_final_review_qa.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/godot_final_review_stage.py": {
       "dependencies": [
         "studio/core.py",
         "studio/godot_final_review_qa.py",
         "studio/godot_preview.py",
-        "studio/run.py"
+        "studio/run.py",
+        "studio/stage_registry.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 4
+      "out_degree": 6
     },
     "studio/godot_model.py": {
       "dependencies": [
@@ -2517,27 +2750,31 @@
         "studio/provider_health.py",
         "studio/provider_metrics.py",
         "studio/provider_monthly_quota.py",
-        "studio/provider_router.py"
+        "studio/provider_router.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/godot_preview.py",
         "tests/test_godot_model.py"
       ],
       "in_degree": 2,
-      "out_degree": 9
+      "out_degree": 12
     },
     "studio/godot_play_stage.py": {
       "dependencies": [
         "studio/core.py",
         "studio/godot_preview.py",
         "studio/play_publisher.py",
-        "studio/run.py"
+        "studio/run.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
         "tests/test_godot_play_stage.py"
       ],
       "in_degree": 1,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/godot_preview.py": {
       "dependencies": [
@@ -2558,7 +2795,8 @@
         "studio/journeys.py",
         "studio/project_engine.py",
         "studio/project_recommendations.py",
-        "studio/safe_rewrite_learning.py"
+        "studio/safe_rewrite_learning.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/engine_entry.py",
@@ -2575,7 +2813,7 @@
         "tests/test_godot_preview.py"
       ],
       "in_degree": 12,
-      "out_degree": 18
+      "out_degree": 19
     },
     "studio/godot_privacy_security_qa.py": {
       "dependencies": [
@@ -2594,25 +2832,28 @@
         "studio/core.py",
         "studio/godot_preview.py",
         "studio/godot_privacy_security_qa.py",
-        "studio/run.py"
+        "studio/run.py",
+        "studio/stage_registry.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 4
+      "out_degree": 6
     },
     "studio/godot_release_artifact.py": {
       "dependencies": [
         "studio/android_signing.py",
         "studio/core.py",
         "studio/godot_android_export.py",
-        "studio/godot_runtime.py"
+        "studio/godot_runtime.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/godot_release_artifact_stage.py",
         "tests/test_godot_release_artifact.py"
       ],
       "in_degree": 2,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/godot_release_artifact_stage.py": {
       "dependencies": [
@@ -2621,17 +2862,19 @@
         "studio/godot_release_artifact.py",
         "studio/godot_release_qa.py",
         "studio/godot_runtime.py",
-        "studio/run.py"
+        "studio/run.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
         "tests/test_godot_release_artifact_stage.py"
       ],
       "in_degree": 1,
-      "out_degree": 6
+      "out_degree": 7
     },
     "studio/godot_release_qa.py": {
       "dependencies": [
-        "studio/core.py"
+        "studio/core.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
         "studio/godot_release_artifact_stage.py",
@@ -2639,20 +2882,21 @@
         "tests/test_godot_release_qa.py"
       ],
       "in_degree": 3,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/godot_release_stage.py": {
       "dependencies": [
         "studio/core.py",
         "studio/godot_preview.py",
         "studio/godot_release_qa.py",
-        "studio/run.py"
+        "studio/run.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
         "tests/test_godot_release_stage.py"
       ],
       "in_degree": 1,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/godot_repository_probe.py": {
       "dependencies": [
@@ -2692,13 +2936,14 @@
         "studio/godot_runtime.py",
         "studio/godot_runtime_journeys.py",
         "studio/journeys.py",
-        "studio/run.py"
+        "studio/run.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
         "tests/test_godot_runtime_journey_stage.py"
       ],
       "in_degree": 1,
-      "out_degree": 6
+      "out_degree": 7
     },
     "studio/godot_runtime_journeys.py": {
       "dependencies": [
@@ -2721,9 +2966,10 @@
       "dependents": [
         "studio/godot_preview.py",
         "studio/godot_repository_probe.py",
+        "tests/test_godot_repository_probe.py",
         "tests/test_godot_session.py"
       ],
-      "in_degree": 3,
+      "in_degree": 4,
       "out_degree": 2
     },
     "studio/godot_store_metadata_qa.py": {
@@ -2744,11 +2990,12 @@
         "studio/core.py",
         "studio/godot_preview.py",
         "studio/godot_store_metadata_qa.py",
-        "studio/run.py"
+        "studio/run.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/godot_visual_qa.py": {
       "dependencies": [
@@ -2756,14 +3003,15 @@
         "studio/godot_android_export.py",
         "studio/godot_device_qa.py",
         "studio/godot_runtime.py",
-        "studio/journeys.py"
+        "studio/journeys.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/godot_visual_stage.py",
         "tests/test_godot_visual_qa.py"
       ],
       "in_degree": 2,
-      "out_degree": 5
+      "out_degree": 6
     },
     "studio/godot_visual_stage.py": {
       "dependencies": [
@@ -2771,16 +3019,19 @@
         "studio/godot_preview.py",
         "studio/godot_visual_qa.py",
         "studio/journeys.py",
-        "studio/run.py"
+        "studio/run.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
         "tests/test_godot_visual_stage.py"
       ],
       "in_degree": 1,
-      "out_degree": 5
+      "out_degree": 6
     },
     "studio/human_input_request.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/autonomous_project.py",
         "studio/github_runner.py",
@@ -2788,7 +3039,7 @@
         "tests/test_human_input_request.py"
       ],
       "in_degree": 4,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/idempotent_model.py": {
       "dependencies": [
@@ -2836,14 +3087,15 @@
     },
     "studio/improvement_dispatch.py": {
       "dependencies": [
-        "studio/capability_registry.py"
+        "studio/capability_registry.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/improvement_executor.py",
         "tests/test_improvement_dispatch.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/improvement_executor.py": {
       "dependencies": [
@@ -2864,13 +3116,15 @@
       "out_degree": 7
     },
     "studio/improvement_verifier.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/stage_registry.py"
+      ],
       "dependents": [
         "studio/improvement_executor.py",
         "tests/test_improvement_verifier.py"
       ],
       "in_degree": 2,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/journeys.py": {
       "dependencies": [],
@@ -2894,7 +3148,9 @@
       "out_degree": 0
     },
     "studio/learning_context.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py"
+      ],
       "dependents": [
         "studio/core.py",
         "studio/generic_project.py",
@@ -2903,7 +3159,7 @@
         "tests/test_learning_context.py"
       ],
       "in_degree": 5,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/lease_guard.py": {
       "dependencies": [
@@ -2928,18 +3184,21 @@
       "out_degree": 1
     },
     "studio/local_capacity.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py"
+      ],
       "dependents": [
         "studio/local_capacity_inventory.py",
         "studio/provider_router.py",
         "tests/test_local_capacity.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/local_capacity_inventory.py": {
       "dependencies": [
         "studio/atomic_file.py",
+        "studio/core.py",
         "studio/local_capacity.py",
         "studio/local_model_benchmark.py"
       ],
@@ -2948,11 +3207,12 @@
         "studio/run.py"
       ],
       "in_degree": 2,
-      "out_degree": 3
+      "out_degree": 4
     },
     "studio/local_model_benchmark.py": {
       "dependencies": [
-        "studio/core.py"
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/core.py",
@@ -2961,20 +3221,26 @@
         "tests/test_local_model_reputation.py"
       ],
       "in_degree": 4,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/local_model_leaderboard.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/generic_project.py",
         "studio/run.py",
         "tests/test_local_model_leaderboard.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 2
     },
     "studio/local_model_reputation.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/core.py",
         "studio/generic_model.py",
@@ -2983,10 +3249,13 @@
         "tests/test_local_model_reputation.py"
       ],
       "in_degree": 5,
-      "out_degree": 0
+      "out_degree": 2
     },
     "studio/local_model_specialization.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/core.py",
         "studio/generic_model.py",
@@ -2995,7 +3264,7 @@
         "tests/test_local_model_specialization.py"
       ],
       "in_degree": 5,
-      "out_degree": 0
+      "out_degree": 2
     },
     "studio/memory_bridge.py": {
       "dependencies": [
@@ -3026,34 +3295,42 @@
       "dependencies": [
         "studio/agents/__init__.py",
         "studio/agents/router.py",
+        "studio/core.py",
         "studio/star_scanner.py",
-        "studio/strategy_efficiency.py"
+        "studio/strategy_efficiency.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/generic_project.py",
         "tests/test_meta_router.py"
       ],
       "in_degree": 2,
-      "out_degree": 4
+      "out_degree": 6
     },
     "studio/model_portfolio.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/generic_project.py",
         "tests/test_model_portfolio.py"
       ],
       "in_degree": 2,
-      "out_degree": 0
+      "out_degree": 2
     },
     "studio/model_portfolio_audit.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/generic_project.py",
         "studio/run.py",
         "tests/test_model_portfolio_audit.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 2
     },
     "studio/model_portfolio_learning.py": {
       "dependencies": [],
@@ -3072,7 +3349,8 @@
         "studio/agents/orchestrator.py",
         "studio/core.py",
         "studio/generic_project.py",
-        "studio/orchestrator.py"
+        "studio/orchestrator.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
         "studio/autonomous_project.py",
@@ -3080,19 +3358,20 @@
         "tests/test_multi_engine_orchestrator.py"
       ],
       "in_degree": 3,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/native_qa.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/device_qa.py"
+        "studio/device_qa.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/native_stage.py",
         "tests/test_native_qa.py"
       ],
       "in_degree": 2,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/native_stage.py": {
       "dependencies": [
@@ -3109,14 +3388,15 @@
     "studio/notification_qa.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/device_qa.py"
+        "studio/device_qa.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/notification_stage.py",
         "tests/test_notification_qa.py"
       ],
       "in_degree": 2,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/notification_stage.py": {
       "dependencies": [
@@ -3147,7 +3427,9 @@
         "studio/project_recommendations.py",
         "studio/repo_maintenance.py",
         "studio/repo_version_probe.py",
-        "studio/stage_registry.py"
+        "studio/stage_registry.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/ci_runner.py",
@@ -3163,7 +3445,7 @@
         "tests/test_star_recommendations.py"
       ],
       "in_degree": 11,
-      "out_degree": 16
+      "out_degree": 18
     },
     "studio/performance_qa.py": {
       "dependencies": [
@@ -3269,33 +3551,37 @@
         "studio/core.py",
         "studio/play_publisher.py",
         "studio/release.py",
-        "studio/run.py"
+        "studio/run.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
         "tests/test_play_stage.py"
       ],
       "in_degree": 1,
-      "out_degree": 6
+      "out_degree": 7
     },
     "studio/portfolio_candidate_scheduler.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py"
+      ],
       "dependents": [
         "studio/generic_project.py",
         "tests/test_candidate_portfolio_learning.py",
         "tests/test_portfolio_candidate_scheduler.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/portfolio_scan.py": {
       "dependencies": [
-        "studio/core.py"
+        "studio/core.py",
+        "tests/test_journeys.py"
       ],
       "dependents": [
         "studio/github_runner.py"
       ],
       "in_degree": 1,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/post_preview.py": {
       "dependencies": [
@@ -3304,11 +3590,12 @@
         "studio/completion.py",
         "studio/core.py",
         "studio/release.py",
-        "studio/run.py"
+        "studio/run.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 6
+      "out_degree": 7
     },
     "studio/predictive_budget.py": {
       "dependencies": [],
@@ -3366,7 +3653,9 @@
       "out_degree": 4
     },
     "studio/project_budget.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py"
+      ],
       "dependents": [
         "studio/release_repair.py",
         "studio/release_stage_engine.py",
@@ -3376,19 +3665,22 @@
         "tests/test_project_budget.py"
       ],
       "in_degree": 6,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/project_context.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/stage_registry.py"
+      ],
       "dependents": [
         "studio/run.py",
         "tests/test_project_context.py"
       ],
       "in_degree": 2,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/project_engine.py": {
       "dependencies": [
+        "studio/core.py",
         "studio/generic_policy.py"
       ],
       "dependents": [
@@ -3400,7 +3692,7 @@
         "tests/test_project_engine_generic.py"
       ],
       "in_degree": 6,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/project_memory.py": {
       "dependencies": [],
@@ -3454,7 +3746,8 @@
     },
     "studio/promoted_capabilities.py": {
       "dependencies": [
-        "studio/capability_registry.py"
+        "studio/capability_registry.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/autonomous_project.py",
@@ -3465,10 +3758,12 @@
         "tests/test_promoted_capabilities.py"
       ],
       "in_degree": 6,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/provider_cost.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/core.py",
         "studio/generic_model.py",
@@ -3477,10 +3772,13 @@
         "tests/test_provider_cost.py"
       ],
       "in_degree": 5,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/provider_health.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/capacity_scheduler.py",
         "studio/core.py",
@@ -3496,10 +3794,12 @@
         "tests/test_provider_verified_feedback.py"
       ],
       "in_degree": 12,
-      "out_degree": 0
+      "out_degree": 2
     },
     "studio/provider_metrics.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/core.py",
         "studio/generic_model.py",
@@ -3510,11 +3810,12 @@
         "tests/test_provider_metrics.py"
       ],
       "in_degree": 7,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/provider_monthly_quota.py": {
       "dependencies": [
-        "studio/file_lock.py"
+        "studio/file_lock.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/capacity_status.py",
@@ -3526,27 +3827,31 @@
         "tests/test_provider_monthly_quota.py"
       ],
       "in_degree": 7,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/provider_probe.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/run.py"
+        "studio/run.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/ci_runner.py"
       ],
       "in_degree": 1,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/provider_router.py": {
       "dependencies": [
+        "studio/core.py",
         "studio/local_capacity.py",
         "studio/provider_health.py",
         "studio/provider_metrics.py",
         "studio/provider_runtime_reliability.py",
         "studio/routing_audit.py",
-        "studio/unified_routing_score.py"
+        "studio/unified_routing_score.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/architecture_replacement_synthesis.py",
@@ -3564,22 +3869,26 @@
         "tests/test_provider_router.py"
       ],
       "in_degree": 13,
-      "out_degree": 6
+      "out_degree": 9
     },
     "studio/provider_runtime_reliability.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/provider_router.py",
         "studio/unified_routing_score.py",
         "tests/test_provider_runtime_reliability.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 2
     },
     "studio/queue.py": {
       "dependencies": [
         "studio/ci_provider.py",
-        "studio/core.py"
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/ci_runner.py",
@@ -3591,7 +3900,7 @@
         "tests/test_studio.py"
       ],
       "in_degree": 7,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/quick_gate_cache.py": {
       "dependencies": [],
@@ -3605,14 +3914,15 @@
     "studio/readiness.py": {
       "dependencies": [
         "studio/provider_router.py",
-        "studio/queue.py"
+        "studio/queue.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/v1_gate.py",
         "tests/test_readiness.py"
       ],
       "in_degree": 2,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/recovery_controller.py": {
       "dependencies": [
@@ -3692,14 +4002,15 @@
         "studio/project_budget.py",
         "studio/release_candidate_search.py",
         "studio/repair_search_policy.py",
-        "studio/repair_strategy.py"
+        "studio/repair_strategy.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
         "studio/release_stage_engine.py",
         "tests/test_release_repair.py"
       ],
       "in_degree": 2,
-      "out_degree": 16
+      "out_degree": 17
     },
     "studio/release_stage_engine.py": {
       "dependencies": [
@@ -3711,6 +4022,7 @@
         "studio/release_repair.py",
         "studio/repair_planner.py",
         "studio/repair_queue.py",
+        "studio/stage_registry.py",
         "studio/task_scheduler.py",
         "studio/telemetry.py"
       ],
@@ -3724,20 +4036,23 @@
         "tests/test_release_stage_engine.py"
       ],
       "in_degree": 7,
-      "out_degree": 10
+      "out_degree": 11
     },
     "studio/repair_planner.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/stage_registry.py"
+      ],
       "dependents": [
         "studio/release_stage_engine.py",
         "studio/run.py",
         "tests/test_repair_planner.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/repair_queue.py": {
       "dependencies": [
+        "studio/stage_registry.py",
         "studio/task_lease.py"
       ],
       "dependents": [
@@ -3747,21 +4062,25 @@
         "tests/test_repair_queue.py"
       ],
       "in_degree": 4,
-      "out_degree": 1
+      "out_degree": 2
     },
     "studio/repair_search_policy.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py",
+        "tests/test_studio.py"
+      ],
       "dependents": [
         "studio/release_candidate_search.py",
         "studio/release_repair.py",
         "tests/test_repair_search_policy.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 2
     },
     "studio/repair_strategy.py": {
       "dependencies": [
         "studio/contextual_strategy_efficiency.py",
+        "studio/stage_registry.py",
         "studio/strategy_efficiency.py"
       ],
       "dependents": [
@@ -3769,7 +4088,7 @@
         "tests/test_repair_strategy.py"
       ],
       "in_degree": 2,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/replacement_ci_policy.py": {
       "dependencies": [
@@ -3845,27 +4164,33 @@
       "out_degree": 1
     },
     "studio/routing_audit.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/provider_router.py",
         "tests/test_routing_audit.py"
       ],
       "in_degree": 2,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/routing_calibration.py": {
       "dependencies": [
-        "studio/atomic_file.py"
+        "studio/atomic_file.py",
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/unified_routing_score.py",
         "tests/test_routing_calibration.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 3
     },
     "studio/routing_history.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_unified_routing_score.py"
+      ],
       "dependents": [
         "studio/agents/orchestrator.py",
         "studio/core.py",
@@ -3875,7 +4200,7 @@
         "tests/test_routing_history.py"
       ],
       "in_degree": 6,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/run.py": {
       "dependencies": [
@@ -3907,7 +4232,9 @@
         "studio/repair_planner.py",
         "studio/repair_queue.py",
         "studio/safe_rewrite_learning.py",
-        "studio/task_context.py"
+        "studio/task_context.py",
+        "tests/test_journeys.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/artwork_stage.py",
@@ -3943,23 +4270,26 @@
         "tests/test_studio.py"
       ],
       "in_degree": 31,
-      "out_degree": 29
+      "out_degree": 31
     },
     "studio/run_cost_controller.py": {
-      "dependencies": [],
+      "dependencies": [
+        "studio/core.py"
+      ],
       "dependents": [
         "studio/fault_injection_smoke.py",
         "studio/generic_project.py",
         "tests/test_run_cost_controller.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/runtime_health.py": {
       "dependencies": [
         "studio/durable_state.py",
         "studio/telemetry.py",
-        "studio/workflow_checkpoint.py"
+        "studio/workflow_checkpoint.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/fleet_dashboard.py",
@@ -3967,7 +4297,7 @@
         "tests/test_runtime_health.py"
       ],
       "in_degree": 3,
-      "out_degree": 3
+      "out_degree": 4
     },
     "studio/runtime_journeys.py": {
       "dependencies": [
@@ -4054,16 +4384,65 @@
     "studio/stage_registry.py": {
       "dependencies": [],
       "dependents": [
+        "studio/adaptation.py",
+        "studio/billing_qa.py",
+        "studio/ci_runner.py",
+        "studio/completion.py",
+        "studio/continuous_improvement.py",
+        "studio/core.py",
+        "studio/diagnostics.py",
+        "studio/evolution_candidate.py",
+        "studio/evolution_persist.py",
+        "studio/evolution_promotion.py",
+        "studio/evolution_rollback.py",
+        "studio/evolution_stage_runner.py",
+        "studio/evolution_synthesis.py",
+        "studio/godot_android_stage.py",
+        "studio/godot_device_stage.py",
+        "studio/godot_final_review_qa.py",
+        "studio/godot_final_review_stage.py",
+        "studio/godot_play_stage.py",
+        "studio/godot_privacy_security_stage.py",
+        "studio/godot_release_artifact_stage.py",
+        "studio/godot_release_qa.py",
+        "studio/godot_release_stage.py",
+        "studio/godot_runtime_journey_stage.py",
+        "studio/godot_store_metadata_stage.py",
+        "studio/godot_visual_stage.py",
+        "studio/improvement_verifier.py",
+        "studio/multi_engine_orchestrator.py",
         "studio/orchestrator.py",
+        "studio/play_stage.py",
+        "studio/post_preview.py",
+        "studio/project_context.py",
+        "studio/release_repair.py",
+        "studio/release_stage_engine.py",
+        "studio/repair_planner.py",
+        "studio/repair_queue.py",
+        "studio/repair_strategy.py",
+        "studio/task_scheduler.py",
         "tests/test_billing_qa.py",
+        "tests/test_evolution_candidate.py",
+        "tests/test_evolution_persist.py",
         "tests/test_evolution_promotion.py",
+        "tests/test_evolution_synthesis.py",
+        "tests/test_godot_final_review_qa.py",
+        "tests/test_improvement_verifier.py",
+        "tests/test_memory_bridge.py",
+        "tests/test_multi_engine_orchestrator.py",
         "tests/test_native_qa.py",
         "tests/test_notification_qa.py",
+        "tests/test_orchestrator.py",
         "tests/test_performance_qa.py",
         "tests/test_platform_view_qa.py",
-        "tests/test_stage_registry.py"
+        "tests/test_release_repair.py",
+        "tests/test_repair_queue.py",
+        "tests/test_repair_strategy.py",
+        "tests/test_stage_registry.py",
+        "tests/test_task_scheduler.py",
+        "tests/test_workflow_checkpoint.py"
       ],
-      "in_degree": 8,
+      "in_degree": 57,
       "out_degree": 0
     },
     "studio/stagnation_controller.py": {
@@ -4154,14 +4533,16 @@
       "out_degree": 3
     },
     "studio/task_context.py": {
-      "dependencies": [],
+      "dependencies": [
+        "tests/test_studio.py"
+      ],
       "dependents": [
         "studio/generic_project.py",
         "studio/run.py",
         "tests/test_task_context.py"
       ],
       "in_degree": 3,
-      "out_degree": 0
+      "out_degree": 1
     },
     "studio/task_lease.py": {
       "dependencies": [
@@ -4181,7 +4562,8 @@
     "studio/task_scheduler.py": {
       "dependencies": [
         "studio/project_budget.py",
-        "studio/repair_queue.py"
+        "studio/repair_queue.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
         "studio/completion.py",
@@ -4189,7 +4571,7 @@
         "tests/test_task_scheduler.py"
       ],
       "in_degree": 3,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/telemetry.py": {
       "dependencies": [
@@ -4224,17 +4606,19 @@
     },
     "studio/unified_routing_score.py": {
       "dependencies": [
+        "studio/core.py",
         "studio/provider_health.py",
         "studio/provider_metrics.py",
         "studio/provider_runtime_reliability.py",
-        "studio/routing_calibration.py"
+        "studio/routing_calibration.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/provider_router.py",
         "tests/test_unified_routing_score.py"
       ],
       "in_degree": 2,
-      "out_degree": 4
+      "out_degree": 6
     },
     "studio/v1_gate.py": {
       "dependencies": [
@@ -4337,6 +4721,22 @@
       "in_degree": 0,
       "out_degree": 1
     },
+    "tests/test_adaptive_planning_runtime.py": {
+      "dependencies": [
+        "studio/core.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_adaptive_review_telemetry.py": {
+      "dependencies": [
+        "studio/core.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
     "tests/test_adaptive_role_allocator.py": {
       "dependencies": [
         "studio/adaptive_role_allocator.py"
@@ -4376,11 +4776,12 @@
         "studio/agents/orchestrator.py",
         "studio/agents/registry.py",
         "studio/agents/router.py",
+        "studio/core.py",
         "studio/orchestrator.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 5
+      "out_degree": 6
     },
     "tests/test_agent_workspace.py": {
       "dependencies": [
@@ -4474,11 +4875,12 @@
     },
     "tests/test_architecture_planner.py": {
       "dependencies": [
-        "studio/architecture_planner.py"
+        "studio/architecture_planner.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_architecture_preflight.py": {
       "dependencies": [
@@ -4882,11 +5284,12 @@
     },
     "tests/test_capability_candidate_validator.py": {
       "dependencies": [
-        "studio/capability_candidate_validator.py"
+        "studio/capability_candidate_validator.py",
+        "studio/core.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_capability_memory.py": {
       "dependencies": [
@@ -4924,11 +5327,12 @@
     },
     "tests/test_capability_registry_promotion_persist.py": {
       "dependencies": [
-        "studio/capability_registry_promotion_persist.py"
+        "studio/capability_registry_promotion_persist.py",
+        "tests/test_journeys.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_capability_registry_review.py": {
       "dependencies": [
@@ -4958,12 +5362,13 @@
     "tests/test_capability_synthesis.py": {
       "dependencies": [
         "studio/capability_synthesis.py",
+        "studio/core.py",
         "studio/memory_bridge.py",
         "studio/project_memory.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 3
+      "out_degree": 4
     },
     "tests/test_capacity_budget.py": {
       "dependencies": [
@@ -4975,11 +5380,12 @@
     },
     "tests/test_capacity_efficiency.py": {
       "dependencies": [
-        "studio/capacity_efficiency.py"
+        "studio/capacity_efficiency.py",
+        "studio/core.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_capacity_ledger.py": {
       "dependencies": [
@@ -4999,11 +5405,12 @@
     },
     "tests/test_capacity_scheduler.py": {
       "dependencies": [
-        "studio/capacity_scheduler.py"
+        "studio/capacity_scheduler.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_capacity_scheduler_work_conserving.py": {
       "dependencies": [
@@ -5126,20 +5533,22 @@
     "tests/test_durable_state.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/durable_state.py"
+        "studio/durable_state.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_engine_entry.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/engine_entry.py"
+        "studio/engine_entry.py",
+        "tests/test_journeys.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_engine_patch.py": {
       "dependencies": [
@@ -5170,29 +5579,32 @@
     },
     "tests/test_evolution_benchmark.py": {
       "dependencies": [
-        "studio/evolution_benchmark.py"
+        "studio/evolution_benchmark.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_evolution_candidate.py": {
       "dependencies": [
-        "studio/evolution_candidate.py"
+        "studio/evolution_candidate.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_evolution_differential.py": {
       "dependencies": [
         "studio/adaptation.py",
         "studio/evolution_benchmark.py",
-        "studio/evolution_differential.py"
+        "studio/evolution_differential.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 3
+      "out_degree": 4
     },
     "tests/test_evolution_evidence.py": {
       "dependencies": [
@@ -5212,11 +5624,12 @@
     },
     "tests/test_evolution_isolated_runner.py": {
       "dependencies": [
-        "studio/evolution_isolated_runner.py"
+        "studio/evolution_isolated_runner.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_evolution_pending.py": {
       "dependencies": [
@@ -5233,11 +5646,12 @@
       "dependencies": [
         "studio/agents/orchestrator.py",
         "studio/evolution_persist.py",
-        "studio/orchestrator.py"
+        "studio/orchestrator.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 3
+      "out_degree": 4
     },
     "tests/test_evolution_promotion.py": {
       "dependencies": [
@@ -5276,12 +5690,14 @@
     },
     "tests/test_evolution_synthesis.py": {
       "dependencies": [
+        "studio/core.py",
         "studio/evolution_candidate.py",
-        "studio/evolution_synthesis.py"
+        "studio/evolution_synthesis.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 4
     },
     "tests/test_execution_budget.py": {
       "dependencies": [
@@ -5301,11 +5717,12 @@
     },
     "tests/test_existing_project.py": {
       "dependencies": [
-        "studio/existing_project.py"
+        "studio/existing_project.py",
+        "tests/test_journeys.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_file_lock.py": {
       "dependencies": [
@@ -5353,19 +5770,21 @@
     "tests/test_fleet_operations.py": {
       "dependencies": [
         "studio/fleet_dashboard.py",
-        "studio/fleet_supervisor.py"
+        "studio/fleet_supervisor.py",
+        "tests/test_studio.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
+    "tests/test_fleet_supervisor_apply.py": {
+      "dependencies": [
+        "studio/fleet_supervisor_apply.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
       "out_degree": 2
-    },
-    "tests/test_fleet_supervisor_apply.py": {
-      "dependencies": [
-        "studio/fleet_supervisor_apply.py"
-      ],
-      "dependents": [],
-      "in_degree": 0,
-      "out_degree": 1
     },
     "tests/test_free_capacity_recommendations.py": {
       "dependencies": [
@@ -5409,11 +5828,12 @@
     },
     "tests/test_generic_capability_persist.py": {
       "dependencies": [
-        "studio/generic_capability_persist.py"
+        "studio/generic_capability_persist.py",
+        "tests/test_journeys.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_generic_capability_synthesis_state.py": {
       "dependencies": [
@@ -5435,11 +5855,12 @@
       "dependencies": [
         "studio/core.py",
         "studio/generic_model.py",
-        "studio/provider_router.py"
+        "studio/provider_router.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 3
+      "out_degree": 4
     },
     "tests/test_generic_policy.py": {
       "dependencies": [
@@ -5496,20 +5917,22 @@
         "studio/capability_registry.py",
         "studio/github_goal_store.py",
         "studio/goal_engine.py",
-        "studio/improvement_backlog.py"
+        "studio/improvement_backlog.py",
+        "tests/test_journeys.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 4
+      "out_degree": 5
     },
     "tests/test_github_memory_store.py": {
       "dependencies": [
         "studio/github_memory_store.py",
-        "studio/project_memory.py"
+        "studio/project_memory.py",
+        "tests/test_journeys.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_github_quick_gate_cache_store.py": {
       "dependencies": [
@@ -5594,11 +6017,12 @@
     "tests/test_godot_baseline.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/godot_baseline.py"
+        "studio/godot_baseline.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_godot_device_qa.py": {
       "dependencies": [
@@ -5621,11 +6045,12 @@
     "tests/test_godot_final_review_qa.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/godot_final_review_qa.py"
+        "studio/godot_final_review_qa.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_godot_model.py": {
       "dependencies": [
@@ -5648,11 +6073,12 @@
     "tests/test_godot_preview.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/godot_preview.py"
+        "studio/godot_preview.py",
+        "tests/test_journeys.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_godot_privacy_security_qa.py": {
       "dependencies": [
@@ -5700,20 +6126,23 @@
     "tests/test_godot_repository_probe.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/godot_repository_probe.py"
+        "studio/godot_repository_probe.py",
+        "studio/godot_session.py",
+        "tests/test_journeys.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 4
     },
     "tests/test_godot_runtime.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/godot_runtime.py"
+        "studio/godot_runtime.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_godot_runtime_journey_stage.py": {
       "dependencies": [
@@ -5789,11 +6218,12 @@
     },
     "tests/test_idempotent_model.py": {
       "dependencies": [
+        "studio/core.py",
         "studio/idempotent_model.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_immutable_artifact_cache.py": {
       "dependencies": [
@@ -5838,19 +6268,57 @@
     },
     "tests/test_improvement_verifier.py": {
       "dependencies": [
-        "studio/improvement_verifier.py"
+        "studio/improvement_verifier.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_journeys.py": {
       "dependencies": [
         "studio/core.py",
         "studio/journeys.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "studio/architecture_replacement_synthesis.py",
+        "studio/capability_registry_promotion_persist.py",
+        "studio/core.py",
+        "studio/engine_entry.py",
+        "studio/evolution_research.py",
+        "studio/evolution_synthesis.py",
+        "studio/existing_project.py",
+        "studio/generic_capability_synthesis.py",
+        "studio/generic_model.py",
+        "studio/generic_repository.py",
+        "studio/github_agent_performance_store.py",
+        "studio/github_artifact_cas_audit_store.py",
+        "studio/github_artifact_cas_stats_store.py",
+        "studio/github_contextual_strategy_efficiency_store.py",
+        "studio/github_execution_checkpoint_store.py",
+        "studio/github_full_gate_cache_store.py",
+        "studio/github_goal_store.py",
+        "studio/github_memory_store.py",
+        "studio/github_phase_cost_baseline_store.py",
+        "studio/github_provider_health_store.py",
+        "studio/github_provider_metrics_store.py",
+        "studio/github_quick_gate_cache_store.py",
+        "studio/github_routing_history_store.py",
+        "studio/github_strategy_efficiency_store.py",
+        "studio/github_verification_cost_store.py",
+        "studio/godot_model.py",
+        "studio/portfolio_scan.py",
+        "studio/run.py",
+        "tests/test_capability_registry_promotion_persist.py",
+        "tests/test_engine_entry.py",
+        "tests/test_existing_project.py",
+        "tests/test_generic_capability_persist.py",
+        "tests/test_github_goal_store.py",
+        "tests/test_github_memory_store.py",
+        "tests/test_godot_preview.py",
+        "tests/test_godot_repository_probe.py"
+      ],
+      "in_degree": 36,
       "out_degree": 2
     },
     "tests/test_jumpy_v13_migration.py": {
@@ -5896,28 +6364,31 @@
     },
     "tests/test_local_capacity.py": {
       "dependencies": [
+        "studio/core.py",
         "studio/local_capacity.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_local_model_leaderboard.py": {
       "dependencies": [
+        "studio/core.py",
         "studio/local_model_leaderboard.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_local_model_reputation.py": {
       "dependencies": [
+        "studio/core.py",
         "studio/local_model_benchmark.py",
         "studio/local_model_reputation.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_local_model_specialization.py": {
       "dependencies": [
@@ -5930,11 +6401,13 @@
     "tests/test_memory_bridge.py": {
       "dependencies": [
         "studio/memory_bridge.py",
-        "studio/project_memory.py"
+        "studio/project_memory.py",
+        "studio/stage_registry.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 4
     },
     "tests/test_memory_lifecycle.py": {
       "dependencies": [
@@ -5980,11 +6453,12 @@
     "tests/test_multi_engine_orchestrator.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/multi_engine_orchestrator.py"
+        "studio/multi_engine_orchestrator.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_multi_project_canary.py": {
       "dependencies": [
@@ -6017,11 +6491,13 @@
         "studio/agents/orchestrator.py",
         "studio/core.py",
         "studio/github_runner.py",
-        "studio/orchestrator.py"
+        "studio/orchestrator.py",
+        "studio/stage_registry.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 4
+      "out_degree": 6
     },
     "tests/test_orchestrator_automerge.py": {
       "dependencies": [
@@ -6240,11 +6716,12 @@
     },
     "tests/test_provider_monthly_quota.py": {
       "dependencies": [
-        "studio/provider_monthly_quota.py"
+        "studio/provider_monthly_quota.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_provider_router.py": {
       "dependencies": [
@@ -6320,20 +6797,22 @@
     },
     "tests/test_release.py": {
       "dependencies": [
+        "studio/core.py",
         "studio/release.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_release_candidate_search.py": {
       "dependencies": [
         "studio/artifact_cas.py",
-        "studio/release_candidate_search.py"
+        "studio/release_candidate_search.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_release_contract.py": {
       "dependencies": [
@@ -6356,11 +6835,12 @@
     "tests/test_release_repair.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/release_repair.py"
+        "studio/release_repair.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_release_stage_engine.py": {
       "dependencies": [
@@ -6380,11 +6860,12 @@
     },
     "tests/test_repair_queue.py": {
       "dependencies": [
-        "studio/repair_queue.py"
+        "studio/repair_queue.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_repair_search_policy.py": {
       "dependencies": [
@@ -6397,11 +6878,12 @@
     "tests/test_repair_strategy.py": {
       "dependencies": [
         "studio/contextual_strategy_efficiency.py",
-        "studio/repair_strategy.py"
+        "studio/repair_strategy.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_replacement_ci_policy.py": {
       "dependencies": [
@@ -6472,11 +6954,12 @@
     },
     "tests/test_routing_audit.py": {
       "dependencies": [
-        "studio/routing_audit.py"
+        "studio/routing_audit.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_routing_calibration.py": {
       "dependencies": [
@@ -6507,11 +6990,12 @@
         "studio/durable_state.py",
         "studio/runtime_health.py",
         "studio/telemetry.py",
-        "studio/workflow_checkpoint.py"
+        "studio/workflow_checkpoint.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 4
+      "out_degree": 5
     },
     "tests/test_runtime_journeys.py": {
       "dependencies": [
@@ -6622,11 +7106,12 @@
     "tests/test_strict_task_claim_store.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/strict_task_claim_store.py"
+        "studio/strict_task_claim_store.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_studio.py": {
       "dependencies": [
@@ -6634,8 +7119,109 @@
         "studio/queue.py",
         "studio/run.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "studio/adaptive_phase_policy.py",
+        "studio/agents/orchestrator.py",
+        "studio/android_signing.py",
+        "studio/architecture_contract.py",
+        "studio/architecture_evaluator.py",
+        "studio/architecture_replacement_executor.py",
+        "studio/architecture_replacement_merge.py",
+        "studio/architecture_replacement_outcome.py",
+        "studio/architecture_replacement_persist.py",
+        "studio/architecture_replacement_postmerge.py",
+        "studio/architecture_replacement_pr_validator.py",
+        "studio/architecture_replacement_rollback.py",
+        "studio/architecture_replacement_synthesis.py",
+        "studio/architecture_reputation_policy_approval.py",
+        "studio/architecture_reputation_policy_github_collect.py",
+        "studio/artifact_cas.py",
+        "studio/artwork_candidate_bridge.py",
+        "studio/artwork_capability.py",
+        "studio/artwork_validation.py",
+        "studio/atomic_file.py",
+        "studio/autonomous_research.py",
+        "studio/billing_qa.py",
+        "studio/capability_candidate_validator.py",
+        "studio/capability_registry_promotion_persist.py",
+        "studio/capability_runtime.py",
+        "studio/capacity_scheduler.py",
+        "studio/ci_runner.py",
+        "studio/core.py",
+        "studio/device_qa.py",
+        "studio/engine_entry.py",
+        "studio/engine_patch.py",
+        "studio/evolution_automerge.py",
+        "studio/evolution_benchmark.py",
+        "studio/evolution_differential.py",
+        "studio/evolution_executor.py",
+        "studio/evolution_isolated_runner.py",
+        "studio/evolution_persist.py",
+        "studio/evolution_promotion.py",
+        "studio/evolution_research.py",
+        "studio/evolution_synthesis.py",
+        "studio/fleet_supervisor.py",
+        "studio/generic_capability_isolated_validation.py",
+        "studio/generic_capability_persist.py",
+        "studio/generic_capability_synthesis.py",
+        "studio/generic_model.py",
+        "studio/generic_verify.py",
+        "studio/github_artifact_cas_audit_store.py",
+        "studio/github_artifact_cas_stats_store.py",
+        "studio/github_contextual_strategy_efficiency_store.py",
+        "studio/github_execution_checkpoint_store.py",
+        "studio/github_full_gate_cache_store.py",
+        "studio/github_goal_store.py",
+        "studio/github_memory_store.py",
+        "studio/github_phase_cost_baseline_store.py",
+        "studio/github_provider_health_store.py",
+        "studio/github_provider_metrics_store.py",
+        "studio/github_quick_gate_cache_store.py",
+        "studio/github_routing_history_store.py",
+        "studio/github_runner.py",
+        "studio/github_strategy_efficiency_store.py",
+        "studio/github_verification_cost_store.py",
+        "studio/global_admission.py",
+        "studio/goal_loop.py",
+        "studio/godot_android_export.py",
+        "studio/godot_android_stage.py",
+        "studio/godot_baseline.py",
+        "studio/godot_device_qa.py",
+        "studio/godot_device_stage.py",
+        "studio/godot_final_review_stage.py",
+        "studio/godot_model.py",
+        "studio/godot_preview.py",
+        "studio/godot_privacy_security_stage.py",
+        "studio/godot_release_artifact.py",
+        "studio/godot_visual_qa.py",
+        "studio/native_qa.py",
+        "studio/notification_qa.py",
+        "studio/orchestrator.py",
+        "studio/provider_router.py",
+        "studio/repair_search_policy.py",
+        "studio/runtime_health.py",
+        "studio/task_context.py",
+        "tests/test_architecture_planner.py",
+        "tests/test_capacity_scheduler.py",
+        "tests/test_durable_state.py",
+        "tests/test_evolution_benchmark.py",
+        "tests/test_evolution_differential.py",
+        "tests/test_evolution_isolated_runner.py",
+        "tests/test_fleet_operations.py",
+        "tests/test_fleet_supervisor_apply.py",
+        "tests/test_generic_model_capacity.py",
+        "tests/test_godot_baseline.py",
+        "tests/test_godot_runtime.py",
+        "tests/test_memory_bridge.py",
+        "tests/test_orchestrator.py",
+        "tests/test_provider_monthly_quota.py",
+        "tests/test_release_candidate_search.py",
+        "tests/test_routing_audit.py",
+        "tests/test_runtime_health.py",
+        "tests/test_strict_task_claim_store.py",
+        "tests/test_task_lease.py"
+      ],
+      "in_degree": 100,
       "out_degree": 3
     },
     "tests/test_task_claim_store.py": {
@@ -6656,19 +7242,21 @@
     },
     "tests/test_task_lease.py": {
       "dependencies": [
-        "studio/task_lease.py"
+        "studio/task_lease.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_task_scheduler.py": {
       "dependencies": [
+        "studio/stage_registry.py",
         "studio/task_scheduler.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_telemetry.py": {
       "dependencies": [
@@ -6698,8 +7286,73 @@
       "dependencies": [
         "studio/unified_routing_score.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "studio/agents/orchestrator.py",
+        "studio/architecture_change_guard.py",
+        "studio/architecture_replacement_synthesis.py",
+        "studio/artwork_candidate_bridge.py",
+        "studio/artwork_capability.py",
+        "studio/artwork_stage.py",
+        "studio/artwork_validation.py",
+        "studio/autonomous_project.py",
+        "studio/autonomous_research.py",
+        "studio/billing_qa.py",
+        "studio/capability_candidate_validator.py",
+        "studio/capability_promotion.py",
+        "studio/capability_registry.py",
+        "studio/capability_registry_promotion_persist.py",
+        "studio/capability_runtime.py",
+        "studio/capability_synthesis.py",
+        "studio/capacity_efficiency.py",
+        "studio/capacity_ledger.py",
+        "studio/capacity_scheduler.py",
+        "studio/capacity_status.py",
+        "studio/ci_provider.py",
+        "studio/ci_runner.py",
+        "studio/core.py",
+        "studio/evolution_synthesis.py",
+        "studio/fault_injection_smoke.py",
+        "studio/fleet_capacity.py",
+        "studio/generic_capability_isolated_validation.py",
+        "studio/generic_capability_persist.py",
+        "studio/generic_capability_synthesis.py",
+        "studio/generic_model.py",
+        "studio/generic_project.py",
+        "studio/generic_sandbox.py",
+        "studio/generic_smoke.py",
+        "studio/github_provider_health_store.py",
+        "studio/github_provider_metrics_store.py",
+        "studio/github_routing_history_store.py",
+        "studio/github_runner.py",
+        "studio/goal_loop.py",
+        "studio/godot_model.py",
+        "studio/human_input_request.py",
+        "studio/improvement_dispatch.py",
+        "studio/local_model_benchmark.py",
+        "studio/local_model_leaderboard.py",
+        "studio/local_model_reputation.py",
+        "studio/local_model_specialization.py",
+        "studio/meta_router.py",
+        "studio/model_portfolio.py",
+        "studio/model_portfolio_audit.py",
+        "studio/orchestrator.py",
+        "studio/promoted_capabilities.py",
+        "studio/provider_cost.py",
+        "studio/provider_health.py",
+        "studio/provider_metrics.py",
+        "studio/provider_monthly_quota.py",
+        "studio/provider_probe.py",
+        "studio/provider_router.py",
+        "studio/provider_runtime_reliability.py",
+        "studio/queue.py",
+        "studio/readiness.py",
+        "studio/routing_audit.py",
+        "studio/routing_calibration.py",
+        "studio/routing_history.py",
+        "studio/run.py",
+        "studio/unified_routing_score.py"
+      ],
+      "in_degree": 64,
       "out_degree": 1
     },
     "tests/test_v1_gate.py": {
@@ -6745,11 +7398,12 @@
     },
     "tests/test_workflow_checkpoint.py": {
       "dependencies": [
+        "studio/stage_registry.py",
         "studio/workflow_checkpoint.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     }
   },
   "generated_by": "dbrckk/repo-brain-v7-graph",

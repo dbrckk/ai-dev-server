@@ -860,6 +860,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: repo-standards-${{ github.repository }}-${{ github.ref }}
@@ -880,6 +881,10 @@ jobs:
   context-intelligence:
     needs: project-state
     uses: dbrckk/repo-standards/.github/workflows/reusable-context-intelligence.yml@v4
+
+  observability:
+    needs: context-intelligence
+    uses: dbrckk/repo-standards/.github/workflows/reusable-observability.yml@main
 ````
 
 ## File: .github/workflows/ci.yml

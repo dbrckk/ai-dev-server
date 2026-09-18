@@ -22,36 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T09:20:55Z
+Generated: 2026-09-18T09:22:47Z
 
 ### Git
 - Branch: `main`
-- Head: `945a4d0d9430`
-- Commit date: 2026-09-18T09:20:44Z
+- Head: `edd5b55cd90a`
+- Commit date: 2026-09-18T09:22:38Z
 - Commit: chore(ai): refresh repo health
 - Tracked files: 695
 
 ### Recently changed files
 - `.repo-standards.yml`
 - `.github/workflows/ai-repo-map.yml`
-- `.circleci/config.yml`
-- `.devcontainer/devcontainer.json`
-- `.github/workflows/ci.yml`
-- `.github/workflows/fault-injection.yml`
-- `.github/workflows/godot-runtime-smoke.yml`
-- `.github/workflows/jumpy-baseline.yml`
-- `.github/workflows/manage-codespace.yml`
-- `.github/workflows/mobile-studio.yml`
-- `.github/workflows/multi-engine-benchmark.yml`
-- `.github/workflows/provider-preview.yml`
-- `.github/workflows/remote-control.yml`
-- `.github/workflows/resilience-soak.yml`
-- `.github/workflows/studio-smoke.yml`
-- `.github/workflows/validate.yml`
-- `.gitignore`
-- `.serena/.gitignore`
-- `.serena/project.yml`
-- `AGENTS.md`
 
 ### Project signals
 - No common build descriptor detected

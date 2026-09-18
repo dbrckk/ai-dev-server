@@ -31856,13 +31856,14 @@ loaded = wc.load()
 ````yaml
 source: dbrckk/repo-standards
 ref: main
-version: 13
+version: 14
 adopted: true
 workflow_mode: unified-single-commit
 repo_brain: dbrckk/repo-brain@main
 repo_brain_fallback: portable-full-rebuild
 hotset_fallback: recent-project-state
 graph_routing: compact-sharded-reverse-deps
+graph_resolver: java-kotlin-tail-v2
 ai_context:
   index: .ai/index.md
   project_state: .ai/project-state.md
@@ -31893,6 +31894,9 @@ ai_context:
   brain_architecture_mermaid: .ai/brain/architecture.mmd
   brain_semantic_plan: .ai/brain/semantic-plan.json
   brain_semantic_index: .ai/brain/semantic-index.json
+  brain_search_manifest: .ai/brain/search-manifest.json
+  brain_search_shards: .ai/brain/search-shards/
+  brain_query_cache: .ai/brain/query-cache.json
   brain_hotset: .ai/brain/hotset.json
   brain_context_manifest: .ai/brain/context-manifest.json
   brain_context_packets: .ai/brain/context/

@@ -4,7 +4,7 @@
 - Files indexed: 599
 - Files reparsed this run: 0
 - Symbols: 4077
-- Internal import edges: 1123
+- Internal import edges: 1221
 - Impacted files: 0
 - Selected tests: 0
 

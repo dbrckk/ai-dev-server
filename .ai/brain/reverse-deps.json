@@ -19,9 +19,10 @@
         "studio/capability_registry.py"
       ],
       "dependents": [
-        "studio/github_runner.py"
+        "studio/github_runner.py",
+        "tests/test_adaptation_research.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 2
     },
     "studio/adaptive_phase_policy.py": {
@@ -91,7 +92,10 @@
       ],
       "dependents": [
         "studio/ci_runner.py",
+        "studio/generic_project.py",
         "studio/multi_engine_orchestrator.py",
+        "studio/release_repair.py",
+        "tests/test_agent_router.py",
         "tests/test_evolution_automerge_orchestration.py",
         "tests/test_evolution_pending.py",
         "tests/test_evolution_persist.py",
@@ -99,15 +103,17 @@
         "tests/test_orchestrator_automerge.py",
         "tests/test_star_recommendations.py"
       ],
-      "in_degree": 8,
+      "in_degree": 11,
       "out_degree": 7
     },
     "studio/agents/performance.py": {
       "dependencies": [],
       "dependents": [
-        "studio/agents/orchestrator.py"
+        "studio/agents/orchestrator.py",
+        "studio/generic_project.py",
+        "tests/test_agent_performance.py"
       ],
-      "in_degree": 1,
+      "in_degree": 3,
       "out_degree": 0
     },
     "studio/agents/registry.py": {
@@ -116,9 +122,11 @@
         "studio/agents/__init__.py",
         "studio/agents/adapters.py",
         "studio/agents/orchestrator.py",
-        "studio/agents/router.py"
+        "studio/agents/router.py",
+        "studio/generic_project.py",
+        "tests/test_agent_router.py"
       ],
-      "in_degree": 4,
+      "in_degree": 6,
       "out_degree": 0
     },
     "studio/agents/router.py": {
@@ -131,17 +139,23 @@
       ],
       "dependents": [
         "studio/agents/__init__.py",
-        "studio/agents/orchestrator.py"
+        "studio/agents/orchestrator.py",
+        "studio/generic_project.py",
+        "studio/meta_router.py",
+        "tests/test_agent_router.py"
       ],
-      "in_degree": 2,
+      "in_degree": 5,
       "out_degree": 5
     },
     "studio/agents/workspace.py": {
       "dependencies": [
         "studio/generic_policy.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "studio/generic_project.py",
+        "tests/test_agent_workspace.py"
+      ],
+      "in_degree": 2,
       "out_degree": 1
     },
     "studio/android_signing.py": {
@@ -712,8 +726,11 @@
         "studio/artwork_validation.py",
         "studio/capability_candidate_validator.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "tests/test_artwork_candidate_bridge.py",
+        "tests/test_asset_artwork_promotion.py"
+      ],
+      "in_degree": 2,
       "out_degree": 2
     },
     "studio/artwork_capability.py": {
@@ -722,9 +739,10 @@
         "studio/store_package.py"
       ],
       "dependents": [
-        "studio/artwork_stage.py"
+        "studio/artwork_stage.py",
+        "tests/test_artwork_capability.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 2
     },
     "studio/artwork_stage.py": {
@@ -735,19 +753,23 @@
         "studio/core.py",
         "studio/run.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "tests/test_artwork_stage.py"
+      ],
+      "in_degree": 1,
       "out_degree": 5
     },
     "studio/artwork_validation.py": {
       "dependencies": [
-        "studio/capabilities/__init__.py"
+        "studio/capabilities/__init__.py",
+        "studio/capabilities/asset_artwork.py"
       ],
       "dependents": [
-        "studio/artwork_candidate_bridge.py"
+        "studio/artwork_candidate_bridge.py",
+        "tests/test_artwork_validation.py"
       ],
-      "in_degree": 1,
-      "out_degree": 1
+      "in_degree": 2,
+      "out_degree": 2
     },
     "studio/atomic_file.py": {
       "dependencies": [],
@@ -811,9 +833,11 @@
       ],
       "dependents": [
         "studio/ci_runner.py",
-        "studio/github_runner.py"
+        "studio/github_runner.py",
+        "tests/test_autonomous_project.py",
+        "tests/test_human_handoff_status_v3.py"
       ],
-      "in_degree": 2,
+      "in_degree": 4,
       "out_degree": 13
     },
     "studio/autonomous_research.py": {
@@ -821,9 +845,10 @@
         "studio/memory_bridge.py"
       ],
       "dependents": [
-        "studio/adaptation_research.py"
+        "studio/adaptation_research.py",
+        "tests/test_autonomous_research.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 1
     },
     "studio/billing_qa.py": {
@@ -862,9 +887,19 @@
     "studio/capabilities/__init__.py": {
       "dependencies": [],
       "dependents": [
-        "studio/artwork_validation.py"
+        "studio/artwork_validation.py",
+        "tests/test_asset_artwork_capability.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
+      "out_degree": 0
+    },
+    "studio/capabilities/asset_artwork.py": {
+      "dependencies": [],
+      "dependents": [
+        "studio/artwork_validation.py",
+        "tests/test_asset_artwork_capability.py"
+      ],
+      "in_degree": 2,
       "out_degree": 0
     },
     "studio/capability_adaptation_state.py": {
@@ -872,18 +907,23 @@
       "dependents": [
         "studio/fault_injection_smoke.py",
         "studio/github_goal_store.py",
-        "studio/github_runner.py"
+        "studio/github_runner.py",
+        "tests/test_capability_adaptation_state.py",
+        "tests/test_capability_candidate_review_state.py",
+        "tests/test_generic_capability_synthesis_state.py",
+        "tests/test_registry_promotion_review_state.py"
       ],
-      "in_degree": 3,
+      "in_degree": 7,
       "out_degree": 0
     },
     "studio/capability_candidate_validator.py": {
       "dependencies": [],
       "dependents": [
         "studio/artwork_candidate_bridge.py",
-        "studio/generic_capability_isolated_validation.py"
+        "studio/generic_capability_isolated_validation.py",
+        "tests/test_capability_candidate_validator.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 0
     },
     "studio/capability_memory.py": {
@@ -891,9 +931,10 @@
         "studio/project_memory.py"
       ],
       "dependents": [
-        "studio/adaptation.py"
+        "studio/adaptation.py",
+        "tests/test_capability_memory.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 1
     },
     "studio/capability_promotion.py": {
@@ -901,9 +942,11 @@
         "studio/promoted_capabilities.py"
       ],
       "dependents": [
-        "studio/capability_registry_promotion_persist.py"
+        "studio/capability_registry_promotion_persist.py",
+        "tests/test_asset_artwork_promotion.py",
+        "tests/test_capability_promotion.py"
       ],
-      "in_degree": 1,
+      "in_degree": 3,
       "out_degree": 1
     },
     "studio/capability_qa.py": {
@@ -929,9 +972,21 @@
         "studio/improvement_dispatch.py",
         "studio/improvement_executor.py",
         "studio/promoted_capabilities.py",
-        "tests/test_goal_loop.py"
+        "tests/test_adaptation_research.py",
+        "tests/test_artwork_capability.py",
+        "tests/test_asset_artwork_promotion.py",
+        "tests/test_autonomous_project.py",
+        "tests/test_capability_registry.py",
+        "tests/test_capability_runtime.py",
+        "tests/test_github_goal_store.py",
+        "tests/test_goal_capability_runtime.py",
+        "tests/test_goal_loop.py",
+        "tests/test_improvement_dispatch.py",
+        "tests/test_improvement_executor.py",
+        "tests/test_persistent_improvement_runner.py",
+        "tests/test_promoted_capabilities.py"
       ],
-      "in_degree": 12,
+      "in_degree": 24,
       "out_degree": 0
     },
     "studio/capability_registry_promotion_persist.py": {
@@ -943,26 +998,29 @@
         "studio/promoted_capabilities.py"
       ],
       "dependents": [
-        "studio/github_runner.py"
+        "studio/github_runner.py",
+        "tests/test_capability_registry_promotion_persist.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 5
     },
     "studio/capability_registry_review.py": {
       "dependencies": [],
       "dependents": [
         "studio/fault_injection_smoke.py",
-        "studio/github_runner.py"
+        "studio/github_runner.py",
+        "tests/test_capability_registry_review.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 0
     },
     "studio/capability_review.py": {
       "dependencies": [],
       "dependents": [
-        "studio/github_runner.py"
+        "studio/github_runner.py",
+        "tests/test_capability_review.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 0
     },
     "studio/capability_runtime.py": {
@@ -970,9 +1028,10 @@
         "studio/capability_registry.py"
       ],
       "dependents": [
-        "studio/autonomous_project.py"
+        "studio/autonomous_project.py",
+        "tests/test_capability_runtime.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 1
     },
     "studio/capability_stage.py": {
@@ -996,9 +1055,11 @@
         "studio/generic_capability_persist.py",
         "studio/generic_capability_synthesis.py",
         "studio/github_goal_store.py",
-        "studio/github_runner.py"
+        "studio/github_runner.py",
+        "tests/test_capability_synthesis.py",
+        "tests/test_generic_capability_candidate_persistence.py"
       ],
-      "in_degree": 6,
+      "in_degree": 8,
       "out_degree": 1
     },
     "studio/capacity_budget.py": {
@@ -1184,9 +1245,13 @@
       ],
       "dependents": [
         "studio/github_runner.py",
-        "studio/improvement_executor.py"
+        "studio/improvement_executor.py",
+        "tests/test_continuous_improvement.py",
+        "tests/test_improvement_backlog.py",
+        "tests/test_improvement_executor.py",
+        "tests/test_persistent_improvement_runner.py"
       ],
-      "in_degree": 2,
+      "in_degree": 6,
       "out_degree": 1
     },
     "studio/core.py": {
@@ -1881,9 +1946,11 @@
         "studio/capability_registry_promotion_persist.py",
         "studio/generic_capability_persist.py",
         "studio/github_goal_store.py",
-        "studio/github_runner.py"
+        "studio/github_runner.py",
+        "tests/test_generic_capability_isolated_validation.py",
+        "tests/test_generic_capability_validation_report.py"
       ],
-      "in_degree": 4,
+      "in_degree": 6,
       "out_degree": 3
     },
     "studio/generic_capability_persist.py": {
@@ -1894,9 +1961,10 @@
         "studio/promoted_capabilities.py"
       ],
       "dependents": [
-        "studio/github_runner.py"
+        "studio/github_runner.py",
+        "tests/test_generic_capability_persist.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 4
     },
     "studio/generic_capability_synthesis.py": {
@@ -1956,6 +2024,11 @@
         "studio/adaptive_phase_policy.py",
         "studio/adaptive_role_allocator.py",
         "studio/agents/__init__.py",
+        "studio/agents/orchestrator.py",
+        "studio/agents/performance.py",
+        "studio/agents/registry.py",
+        "studio/agents/router.py",
+        "studio/agents/workspace.py",
         "studio/architecture_benchmark.py",
         "studio/architecture_change_guard.py",
         "studio/architecture_evaluator.py",
@@ -1992,6 +2065,7 @@
         "studio/model_portfolio.py",
         "studio/model_portfolio_audit.py",
         "studio/model_portfolio_learning.py",
+        "studio/orchestrator.py",
         "studio/phase_budget.py",
         "studio/phase_cost_baseline.py",
         "studio/portfolio_candidate_scheduler.py",
@@ -2015,7 +2089,7 @@
         "tests/test_generic_architecture.py"
       ],
       "in_degree": 3,
-      "out_degree": 55
+      "out_degree": 61
     },
     "studio/generic_repository.py": {
       "dependencies": [
@@ -2151,9 +2225,10 @@
         "studio/improvement_backlog.py"
       ],
       "dependents": [
-        "studio/github_runner.py"
+        "studio/github_runner.py",
+        "tests/test_github_goal_store.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 6
     },
     "studio/github_memory_store.py": {
@@ -2161,9 +2236,10 @@
         "studio/project_memory.py"
       ],
       "dependents": [
-        "studio/github_runner.py"
+        "studio/github_runner.py",
+        "tests/test_github_memory_store.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 1
     },
     "studio/github_phase_cost_baseline_store.py": {
@@ -2303,10 +2379,18 @@
         "studio/goal_loop.py",
         "studio/improvement_executor.py",
         "studio/project_status.py",
+        "tests/test_autonomous_project.py",
+        "tests/test_continuous_improvement.py",
+        "tests/test_github_goal_store.py",
         "tests/test_github_runner_persistent.py",
-        "tests/test_goal_loop.py"
+        "tests/test_goal_capability_runtime.py",
+        "tests/test_goal_engine.py",
+        "tests/test_goal_loop.py",
+        "tests/test_improvement_backlog.py",
+        "tests/test_improvement_executor.py",
+        "tests/test_persistent_improvement_runner.py"
       ],
-      "in_degree": 9,
+      "in_degree": 17,
       "out_degree": 0
     },
     "studio/goal_learning.py": {
@@ -2329,9 +2413,10 @@
       "dependents": [
         "studio/autonomous_project.py",
         "studio/improvement_executor.py",
+        "tests/test_goal_capability_runtime.py",
         "tests/test_goal_loop.py"
       ],
-      "in_degree": 3,
+      "in_degree": 4,
       "out_degree": 2
     },
     "studio/godot_android_export.py": {
@@ -2699,9 +2784,10 @@
       "dependents": [
         "studio/autonomous_project.py",
         "studio/github_runner.py",
+        "tests/test_human_handoff_status_v3.py",
         "tests/test_human_input_request.py"
       ],
-      "in_degree": 3,
+      "in_degree": 4,
       "out_degree": 0
     },
     "studio/idempotent_model.py": {
@@ -2739,9 +2825,13 @@
       "dependents": [
         "studio/github_goal_store.py",
         "studio/github_runner.py",
-        "studio/improvement_executor.py"
+        "studio/improvement_executor.py",
+        "tests/test_github_goal_store.py",
+        "tests/test_improvement_backlog.py",
+        "tests/test_improvement_executor.py",
+        "tests/test_persistent_improvement_runner.py"
       ],
-      "in_degree": 3,
+      "in_degree": 7,
       "out_degree": 0
     },
     "studio/improvement_dispatch.py": {
@@ -2749,9 +2839,10 @@
         "studio/capability_registry.py"
       ],
       "dependents": [
-        "studio/improvement_executor.py"
+        "studio/improvement_executor.py",
+        "tests/test_improvement_dispatch.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 1
     },
     "studio/improvement_executor.py": {
@@ -2765,17 +2856,20 @@
         "studio/improvement_verifier.py"
       ],
       "dependents": [
-        "studio/github_runner.py"
+        "studio/github_runner.py",
+        "tests/test_improvement_executor.py",
+        "tests/test_persistent_improvement_runner.py"
       ],
-      "in_degree": 1,
+      "in_degree": 3,
       "out_degree": 7
     },
     "studio/improvement_verifier.py": {
       "dependencies": [],
       "dependents": [
-        "studio/improvement_executor.py"
+        "studio/improvement_executor.py",
+        "tests/test_improvement_verifier.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 0
     },
     "studio/journeys.py": {
@@ -2910,9 +3004,11 @@
       "dependents": [
         "studio/autonomous_research.py",
         "studio/goal_learning.py",
-        "studio/memory_lifecycle.py"
+        "studio/memory_lifecycle.py",
+        "tests/test_capability_synthesis.py",
+        "tests/test_memory_bridge.py"
       ],
-      "in_degree": 3,
+      "in_degree": 5,
       "out_degree": 1
     },
     "studio/memory_lifecycle.py": {
@@ -2920,14 +3016,16 @@
         "studio/memory_bridge.py"
       ],
       "dependents": [
-        "studio/github_runner.py"
+        "studio/github_runner.py",
+        "tests/test_memory_lifecycle.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 1
     },
     "studio/meta_router.py": {
       "dependencies": [
         "studio/agents/__init__.py",
+        "studio/agents/router.py",
         "studio/star_scanner.py",
         "studio/strategy_efficiency.py"
       ],
@@ -2936,7 +3034,7 @@
         "tests/test_meta_router.py"
       ],
       "in_degree": 2,
-      "out_degree": 3
+      "out_degree": 4
     },
     "studio/model_portfolio.py": {
       "dependencies": [],
@@ -3053,7 +3151,10 @@
       ],
       "dependents": [
         "studio/ci_runner.py",
+        "studio/generic_project.py",
         "studio/multi_engine_orchestrator.py",
+        "studio/release_repair.py",
+        "tests/test_agent_router.py",
         "tests/test_evolution_automerge_orchestration.py",
         "tests/test_evolution_pending.py",
         "tests/test_evolution_persist.py",
@@ -3061,7 +3162,7 @@
         "tests/test_orchestrator_automerge.py",
         "tests/test_star_recommendations.py"
       ],
-      "in_degree": 8,
+      "in_degree": 11,
       "out_degree": 16
     },
     "studio/performance_qa.py": {
@@ -3313,9 +3414,17 @@
         "studio/goal_learning.py",
         "studio/memory_bridge.py",
         "tests/test_adaptation.py",
-        "tests/test_goal_learning.py"
+        "tests/test_adaptation_research.py",
+        "tests/test_autonomous_research.py",
+        "tests/test_capability_memory.py",
+        "tests/test_capability_synthesis.py",
+        "tests/test_github_memory_store.py",
+        "tests/test_goal_learning.py",
+        "tests/test_memory_bridge.py",
+        "tests/test_memory_lifecycle.py",
+        "tests/test_project_memory.py"
       ],
-      "in_degree": 10,
+      "in_degree": 18,
       "out_degree": 0
     },
     "studio/project_recommendations.py": {
@@ -3337,8 +3446,10 @@
         "studio/durable_state.py",
         "studio/goal_engine.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "tests/test_human_handoff_status_v3.py"
+      ],
+      "in_degree": 1,
       "out_degree": 2
     },
     "studio/promoted_capabilities.py": {
@@ -3349,9 +3460,11 @@
         "studio/autonomous_project.py",
         "studio/capability_promotion.py",
         "studio/capability_registry_promotion_persist.py",
-        "studio/generic_capability_persist.py"
+        "studio/generic_capability_persist.py",
+        "tests/test_asset_artwork_promotion.py",
+        "tests/test_promoted_capabilities.py"
       ],
-      "in_degree": 4,
+      "in_degree": 6,
       "out_degree": 1
     },
     "studio/provider_cost.py": {
@@ -3474,9 +3587,10 @@
         "studio/fleet_supervisor_apply.py",
         "studio/readiness.py",
         "tests/test_ci.py",
+        "tests/test_queue_terminal_state.py",
         "tests/test_studio.py"
       ],
-      "in_degree": 6,
+      "in_degree": 7,
       "out_degree": 2
     },
     "studio/quick_gate_cache.py": {
@@ -3564,6 +3678,7 @@
     "studio/release_repair.py": {
       "dependencies": [
         "studio/agents/__init__.py",
+        "studio/agents/orchestrator.py",
         "studio/artifact_cas_stats.py",
         "studio/core.py",
         "studio/diagnostics.py",
@@ -3572,6 +3687,7 @@
         "studio/idempotent_model.py",
         "studio/immutable_artifact_cache.py",
         "studio/journeys.py",
+        "studio/orchestrator.py",
         "studio/persistent_quick_gate_cache.py",
         "studio/project_budget.py",
         "studio/release_candidate_search.py",
@@ -3583,7 +3699,7 @@
         "tests/test_release_repair.py"
       ],
       "in_degree": 2,
-      "out_degree": 14
+      "out_degree": 16
     },
     "studio/release_stage_engine.py": {
       "dependencies": [
@@ -3714,9 +3830,10 @@
     "studio/repository_research_provider.py": {
       "dependencies": [],
       "dependents": [
-        "studio/github_runner.py"
+        "studio/github_runner.py",
+        "tests/test_repository_research_provider.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 0
     },
     "studio/reputation_policy_check.py": {
@@ -3976,10 +4093,12 @@
         "studio/artwork_capability.py",
         "studio/godot_store_metadata_qa.py",
         "studio/store_stage.py",
+        "tests/test_artwork_capability.py",
+        "tests/test_artwork_stage.py",
         "tests/test_godot_store_metadata_qa.py",
         "tests/test_store.py"
       ],
-      "in_degree": 5,
+      "in_degree": 7,
       "out_degree": 0
     },
     "studio/store_stage.py": {
@@ -4200,6 +4319,16 @@
       "in_degree": 0,
       "out_degree": 2
     },
+    "tests/test_adaptation_research.py": {
+      "dependencies": [
+        "studio/adaptation_research.py",
+        "studio/capability_registry.py",
+        "studio/project_memory.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
     "tests/test_adaptive_phase_policy.py": {
       "dependencies": [
         "studio/adaptive_phase_policy.py"
@@ -4226,11 +4355,12 @@
     },
     "tests/test_agent_performance.py": {
       "dependencies": [
-        "studio/agents/__init__.py"
+        "studio/agents/__init__.py",
+        "studio/agents/performance.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_agent_performance_store.py": {
       "dependencies": [
@@ -4242,19 +4372,24 @@
     },
     "tests/test_agent_router.py": {
       "dependencies": [
-        "studio/agents/__init__.py"
+        "studio/agents/__init__.py",
+        "studio/agents/orchestrator.py",
+        "studio/agents/registry.py",
+        "studio/agents/router.py",
+        "studio/orchestrator.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 5
     },
     "tests/test_agent_workspace.py": {
       "dependencies": [
-        "studio/agents/__init__.py"
+        "studio/agents/__init__.py",
+        "studio/agents/workspace.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_android_signing.py": {
       "dependencies": [
@@ -4628,6 +4763,61 @@
       "in_degree": 0,
       "out_degree": 1
     },
+    "tests/test_artwork_candidate_bridge.py": {
+      "dependencies": [
+        "studio/artwork_candidate_bridge.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_artwork_capability.py": {
+      "dependencies": [
+        "studio/artwork_capability.py",
+        "studio/capability_registry.py",
+        "studio/store_package.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
+    "tests/test_artwork_stage.py": {
+      "dependencies": [
+        "studio/artwork_stage.py",
+        "studio/store_package.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
+    "tests/test_artwork_validation.py": {
+      "dependencies": [
+        "studio/artwork_validation.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_asset_artwork_capability.py": {
+      "dependencies": [
+        "studio/capabilities/__init__.py",
+        "studio/capabilities/asset_artwork.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
+    "tests/test_asset_artwork_promotion.py": {
+      "dependencies": [
+        "studio/artwork_candidate_bridge.py",
+        "studio/capability_promotion.py",
+        "studio/capability_registry.py",
+        "studio/promoted_capabilities.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 4
+    },
     "tests/test_atomic_file.py": {
       "dependencies": [
         "studio/atomic_file.py"
@@ -4635,6 +4825,25 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 1
+    },
+    "tests/test_autonomous_project.py": {
+      "dependencies": [
+        "studio/autonomous_project.py",
+        "studio/capability_registry.py",
+        "studio/goal_engine.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
+    "tests/test_autonomous_research.py": {
+      "dependencies": [
+        "studio/autonomous_research.py",
+        "studio/project_memory.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
     },
     "tests/test_billing_qa.py": {
       "dependencies": [
@@ -4655,6 +4864,47 @@
       "in_degree": 0,
       "out_degree": 2
     },
+    "tests/test_capability_adaptation_state.py": {
+      "dependencies": [
+        "studio/capability_adaptation_state.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_capability_candidate_review_state.py": {
+      "dependencies": [
+        "studio/capability_adaptation_state.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_capability_candidate_validator.py": {
+      "dependencies": [
+        "studio/capability_candidate_validator.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_capability_memory.py": {
+      "dependencies": [
+        "studio/capability_memory.py",
+        "studio/project_memory.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
+    "tests/test_capability_promotion.py": {
+      "dependencies": [
+        "studio/capability_promotion.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
     "tests/test_capability_qa.py": {
       "dependencies": [
         "studio/capability_qa.py",
@@ -4663,6 +4913,57 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 2
+    },
+    "tests/test_capability_registry.py": {
+      "dependencies": [
+        "studio/capability_registry.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_capability_registry_promotion_persist.py": {
+      "dependencies": [
+        "studio/capability_registry_promotion_persist.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_capability_registry_review.py": {
+      "dependencies": [
+        "studio/capability_registry_review.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_capability_review.py": {
+      "dependencies": [
+        "studio/capability_review.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_capability_runtime.py": {
+      "dependencies": [
+        "studio/capability_registry.py",
+        "studio/capability_runtime.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
+    "tests/test_capability_synthesis.py": {
+      "dependencies": [
+        "studio/capability_synthesis.py",
+        "studio/memory_bridge.py",
+        "studio/project_memory.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
     },
     "tests/test_capacity_budget.py": {
       "dependencies": [
@@ -4788,6 +5089,15 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 1
+    },
+    "tests/test_continuous_improvement.py": {
+      "dependencies": [
+        "studio/continuous_improvement.py",
+        "studio/goal_engine.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
     },
     "tests/test_cost_drift.py": {
       "dependencies": [
@@ -5081,6 +5391,46 @@
       "in_degree": 0,
       "out_degree": 1
     },
+    "tests/test_generic_capability_candidate_persistence.py": {
+      "dependencies": [
+        "studio/capability_synthesis.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_generic_capability_isolated_validation.py": {
+      "dependencies": [
+        "studio/generic_capability_isolated_validation.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_generic_capability_persist.py": {
+      "dependencies": [
+        "studio/generic_capability_persist.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_generic_capability_synthesis_state.py": {
+      "dependencies": [
+        "studio/capability_adaptation_state.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_generic_capability_validation_report.py": {
+      "dependencies": [
+        "studio/generic_capability_isolated_validation.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
     "tests/test_generic_model_capacity.py": {
       "dependencies": [
         "studio/core.py",
@@ -5141,6 +5491,26 @@
       "in_degree": 0,
       "out_degree": 2
     },
+    "tests/test_github_goal_store.py": {
+      "dependencies": [
+        "studio/capability_registry.py",
+        "studio/github_goal_store.py",
+        "studio/goal_engine.py",
+        "studio/improvement_backlog.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 4
+    },
+    "tests/test_github_memory_store.py": {
+      "dependencies": [
+        "studio/github_memory_store.py",
+        "studio/project_memory.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
     "tests/test_github_quick_gate_cache_store.py": {
       "dependencies": [
         "studio/github_quick_gate_cache_store.py"
@@ -5161,6 +5531,24 @@
     "tests/test_global_admission.py": {
       "dependencies": [
         "studio/global_admission.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_goal_capability_runtime.py": {
+      "dependencies": [
+        "studio/capability_registry.py",
+        "studio/goal_engine.py",
+        "studio/goal_loop.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
+    "tests/test_goal_engine.py": {
+      "dependencies": [
+        "studio/goal_engine.py"
       ],
       "dependents": [],
       "in_degree": 0,
@@ -5381,6 +5769,16 @@
       "in_degree": 0,
       "out_degree": 2
     },
+    "tests/test_human_handoff_status_v3.py": {
+      "dependencies": [
+        "studio/autonomous_project.py",
+        "studio/human_input_request.py",
+        "studio/project_status.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
     "tests/test_human_input_request.py": {
       "dependencies": [
         "studio/human_input_request.py"
@@ -5406,6 +5804,45 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 3
+    },
+    "tests/test_improvement_backlog.py": {
+      "dependencies": [
+        "studio/continuous_improvement.py",
+        "studio/goal_engine.py",
+        "studio/improvement_backlog.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
+    "tests/test_improvement_dispatch.py": {
+      "dependencies": [
+        "studio/capability_registry.py",
+        "studio/improvement_dispatch.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
+    "tests/test_improvement_executor.py": {
+      "dependencies": [
+        "studio/capability_registry.py",
+        "studio/continuous_improvement.py",
+        "studio/goal_engine.py",
+        "studio/improvement_backlog.py",
+        "studio/improvement_executor.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 5
+    },
+    "tests/test_improvement_verifier.py": {
+      "dependencies": [
+        "studio/improvement_verifier.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
     },
     "tests/test_journeys.py": {
       "dependencies": [
@@ -5489,6 +5926,24 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 1
+    },
+    "tests/test_memory_bridge.py": {
+      "dependencies": [
+        "studio/memory_bridge.py",
+        "studio/project_memory.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
+    "tests/test_memory_lifecycle.py": {
+      "dependencies": [
+        "studio/memory_lifecycle.py",
+        "studio/project_memory.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
     },
     "tests/test_meta_router.py": {
       "dependencies": [
@@ -5594,6 +6049,18 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 2
+    },
+    "tests/test_persistent_improvement_runner.py": {
+      "dependencies": [
+        "studio/capability_registry.py",
+        "studio/continuous_improvement.py",
+        "studio/goal_engine.py",
+        "studio/improvement_backlog.py",
+        "studio/improvement_executor.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 5
     },
     "tests/test_persistent_quick_gate_cache.py": {
       "dependencies": [
@@ -5729,6 +6196,23 @@
       "in_degree": 0,
       "out_degree": 1
     },
+    "tests/test_project_memory.py": {
+      "dependencies": [
+        "studio/project_memory.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_promoted_capabilities.py": {
+      "dependencies": [
+        "studio/capability_registry.py",
+        "studio/promoted_capabilities.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
     "tests/test_provider_cost.py": {
       "dependencies": [
         "studio/contextual_utility.py",
@@ -5794,6 +6278,14 @@
       "in_degree": 0,
       "out_degree": 1
     },
+    "tests/test_queue_terminal_state.py": {
+      "dependencies": [
+        "studio/queue.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
     "tests/test_quick_gate_cache.py": {
       "dependencies": [
         "studio/quick_gate_cache.py"
@@ -5813,6 +6305,14 @@
     "tests/test_recovery_controller.py": {
       "dependencies": [
         "studio/recovery_controller.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_registry_promotion_review_state.py": {
+      "dependencies": [
+        "studio/capability_adaptation_state.py"
       ],
       "dependents": [],
       "in_degree": 0,
@@ -5922,6 +6422,14 @@
     "tests/test_repo_version_probe.py": {
       "dependencies": [
         "studio/repo_version_probe.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_repository_research_provider.py": {
+      "dependencies": [
+        "studio/repository_research_provider.py"
       ],
       "dependents": [],
       "in_degree": 0,

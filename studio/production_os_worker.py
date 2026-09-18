@@ -1,8 +1,10 @@
 """Production-OS worker bridge helpers for AI Dev Server."""
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
+import os
 import re
 import urllib.error
 import urllib.request
@@ -70,7 +72,13 @@ class ProductionOSClient:
         self.timeout = timeout_value
         self._opener = opener
 
-    def _post(self, path: str, payload: dict) -> dict | None:
+    def _post(
+        self,
+        path: str,
+        payload: dict,
+        *,
+        token: str | None = None,
+    ) -> dict | None:
         request = urllib.request.Request(
             self.base_url + path,
             method="POST",
@@ -80,7 +88,9 @@ class ProductionOSClient:
                 separators=(",", ":"),
             ).encode("utf-8"),
             headers={
-                "Authorization": "Bearer " + self._token,
+                "Authorization": "Bearer " + (
+                    str(token).strip() if token is not None else self._token
+                ),
                 "Content-Type": "application/json",
                 "Accept": "application/json",
             },
@@ -149,6 +159,27 @@ class ProductionOSClient:
 
     def fail(self, payload: dict) -> dict | None:
         return self._post("/v1/jobs/fail", payload)
+
+    def register(
+        self,
+        worker_id: str,
+        capabilities: list[str],
+        operator_token: str,
+    ) -> dict | None:
+        secret = str(operator_token or "").strip()
+        if not secret:
+            raise ProductionOSWorkerError(
+                "Production-OS operator token is required"
+            )
+        return self._post(
+            "/v1/workers/register",
+            {
+                "worker_id": str(worker_id),
+                "capabilities": [str(item) for item in capabilities],
+                "max_concurrency": 1,
+            },
+            token=secret,
+        )
 
     def heartbeat(
         self,
@@ -386,3 +417,69 @@ def run_once(
         "project_id": request["id"],
         "usage": dict(envelope.get("usage") or {}),
     }
+
+
+def main(
+    argv=None,
+    *,
+    environ=None,
+    client_factory=ProductionOSClient,
+    run_once_fn=run_once,
+) -> int:
+    parser = argparse.ArgumentParser(
+        description="Execute one Production-OS job through AI Dev Server"
+    )
+    parser.add_argument("--worker-id", default="ai-dev-server-1")
+    parser.add_argument(
+        "--output-root",
+        default="studio-output/production-os",
+    )
+    parser.add_argument(
+        "--once",
+        action="store_true",
+        help="Claim and execute at most one job",
+    )
+    args = parser.parse_args(argv)
+
+    env = os.environ if environ is None else environ
+    base_url = str(env.get("PRODUCTION_OS_URL") or "").strip()
+    worker_token = str(
+        env.get("PRODUCTION_OS_WORKER_TOKEN") or ""
+    ).strip()
+    operator_token = str(
+        env.get("PRODUCTION_OS_OPERATOR_TOKEN") or ""
+    ).strip()
+
+    missing = []
+    if not base_url:
+        missing.append("PRODUCTION_OS_URL")
+    if not worker_token:
+        missing.append("PRODUCTION_OS_WORKER_TOKEN")
+    if not operator_token:
+        missing.append("PRODUCTION_OS_OPERATOR_TOKEN")
+    if missing:
+        raise RuntimeError(
+            "Missing Production-OS configuration: " + ", ".join(missing)
+        )
+    if not args.once:
+        raise RuntimeError(
+            "Use --once; continuous supervision is configured separately"
+        )
+
+    client = client_factory(base_url, worker_token)
+    capabilities = ["software-development", "repo-analysis"]
+    client.register(
+        args.worker_id,
+        capabilities,
+        operator_token,
+    )
+    run_once_fn(
+        client,
+        worker_id=args.worker_id,
+        output_root=Path(args.output_root),
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

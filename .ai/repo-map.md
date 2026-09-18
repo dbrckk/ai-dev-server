@@ -31863,6 +31863,8 @@ ai_context:
 workflow:
   file: .github/workflows/ai-repo-map.yml
   reusable_unified: .github/workflows/reusable-unified.yml
+
+validated_release: v9
 ````
 
 ## File: AGENTS.md

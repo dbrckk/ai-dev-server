@@ -22,19 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T11:50:24Z
+Generated: 2026-09-18T14:34:02Z
 
 ### Git
 - Branch: `main`
-- Head: `f8cb4737498a`
-- Commit date: 2026-09-18T11:50:19Z
-- Commit: chore(ai): refresh repo brain
+- Head: `b6c7d79dc06b`
+- Commit date: 2026-09-18T16:33:52+02:00
+- Commit: chore: validate repo standards v9
 - Tracked files: 734
 
 ### Recently changed files
+- `.repo-standards.yml`
 - `.github/workflows/repo-brain-v4-test.yml`
 - `AGENTS.md`
-- `.repo-standards.yml`
 - `.github/workflows/ai-repo-map.yml`
 
 ### Project signals

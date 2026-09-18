@@ -876,6 +876,10 @@ jobs:
   project-state:
     needs: repo-health
     uses: dbrckk/repo-standards/.github/workflows/reusable-project-state.yml@v3
+
+  context-intelligence:
+    needs: project-state
+    uses: dbrckk/repo-standards/.github/workflows/reusable-context-intelligence.yml@main
 ````
 
 ## File: .github/workflows/ci.yml

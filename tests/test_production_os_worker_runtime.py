@@ -1,0 +1,162 @@
+import json
+import tempfile
+import unittest
+from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
+
+from production_os_worker import (
+    ProductionOSClient,
+    ProductionOSWorkerError,
+    run_once,
+)
+
+
+def sample_job():
+    return {
+        "key": "job-abc123",
+        "repository": "dbrckk/example",
+        "task": "Ship the final verified version",
+        "payload": {
+            "workflow_id": "f" * 32,
+            "workflow_task_id": "goal",
+            "handoff": {
+                "repository": "dbrckk/example",
+                "task": "Ship the final verified version",
+                "final_goal": "Ship the final verified version",
+                "agent_preference": "codex",
+                "token_budget": 250000,
+            },
+        },
+    }
+
+
+class _FakeClient:
+    def __init__(self, job):
+        self.job = job
+        self.calls = []
+
+    def claim(self, worker_id, capabilities):
+        self.calls.append(("claim", worker_id, tuple(capabilities)))
+        return self.job
+
+    def ack(self, key, worker_id):
+        self.calls.append(("ack", key, worker_id))
+
+    def complete(self, payload):
+        self.calls.append(("complete", payload))
+
+    def fail(self, payload):
+        self.calls.append(("fail", payload))
+
+    def heartbeat(self, worker_id, *, active_job_keys=()):
+        self.calls.append(("heartbeat", worker_id, tuple(active_job_keys)))
+
+
+class ProductionOSWorkerRuntimeTests(unittest.TestCase):
+    def test_client_rejects_insecure_remote_control_plane(self):
+        with self.assertRaisesRegex(
+            ProductionOSWorkerError,
+            "HTTPS",
+        ):
+            ProductionOSClient(
+                "http://example.com:8787",
+                "secret",
+            )
+
+    def test_client_allows_loopback_http(self):
+        client = ProductionOSClient(
+            "http://127.0.0.1:8787",
+            "secret",
+        )
+        self.assertEqual(client.base_url, "http://127.0.0.1:8787")
+
+    def test_run_once_returns_idle_when_no_job_is_available(self):
+        client = _FakeClient(None)
+
+        result = run_once(
+            client,
+            worker_id="ai-dev-1",
+            output_root=Path("unused"),
+            run_project=lambda *args, **kwargs: self.fail("runner must not execute"),
+        )
+
+        self.assertEqual(result["status"], "idle")
+        self.assertEqual(client.calls[0][0], "claim")
+
+    def test_run_once_acks_executes_and_completes_with_usage(self):
+        client = _FakeClient(sample_job())
+
+        def runner(request_path, out, **kwargs):
+            request = json.loads(Path(request_path).read_text(encoding="utf-8"))
+            self.assertEqual(request["agent_preference"], "codex")
+            self.assertEqual(
+                request["production_os"]["workflow_task_id"],
+                "goal",
+            )
+            return {
+                "status": "complete",
+                "finished": True,
+                "next_stage": None,
+                "usage": {
+                    "input_tokens": 100,
+                    "cached_input_tokens": 20,
+                    "output_tokens": 30,
+                    "reasoning_tokens": 7,
+                    "total_tokens": 130,
+                    "runs": 1,
+                    "agents": {"codex": 1},
+                },
+            }
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client,
+                worker_id="ai-dev-1",
+                output_root=Path(td),
+                run_project=runner,
+                clock=lambda: 10.0,
+            )
+
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(
+            [call[0] for call in client.calls],
+            ["claim", "ack", "heartbeat", "complete", "heartbeat"],
+        )
+        completed = client.calls[3][1]
+        self.assertEqual(completed["key"], "job-abc123")
+        self.assertEqual(completed["result"]["usage"]["total_tokens"], 130)
+
+    def test_run_once_reports_failed_pipeline_to_control_plane(self):
+        client = _FakeClient(sample_job())
+
+        def runner(request_path, out, **kwargs):
+            return {
+                "status": "blocked",
+                "finished": False,
+                "next_stage": "human_action",
+                "usage": {"total_tokens": 55},
+            }
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client,
+                worker_id="ai-dev-1",
+                output_root=Path(td),
+                run_project=runner,
+                clock=lambda: 20.0,
+            )
+
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(
+            [call[0] for call in client.calls],
+            ["claim", "ack", "heartbeat", "fail", "heartbeat"],
+        )
+        failed = client.calls[3][1]
+        self.assertEqual(failed["result"]["usage"]["total_tokens"], 55)
+        self.assertIn("blocked", failed["reason"])
+
+
+if __name__ == "__main__":
+    unittest.main()

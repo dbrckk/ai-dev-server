@@ -93,6 +93,80 @@ def _prepare_capability_promotion_handoff(out: Path, adaptation_state: dict, bas
     return handoff
 
 
+def _usage_count(value):
+    if isinstance(value, bool):
+        return 0
+    try:
+        return max(0, int(value))
+    except (TypeError, ValueError):
+        return 0
+
+
+def collect_agent_usage(report: dict) -> dict:
+    """Aggregate normalized coding-agent token usage from persisted round traces."""
+    totals = {
+        "input_tokens": 0,
+        "cached_input_tokens": 0,
+        "output_tokens": 0,
+        "reasoning_tokens": 0,
+        "total_tokens": 0,
+        "runs": 0,
+        "agents": {},
+    }
+    if not isinstance(report, dict):
+        return totals
+    rounds = report.get("rounds")
+    if not isinstance(rounds, list):
+        return totals
+
+    for round_state in rounds:
+        if not isinstance(round_state, dict):
+            continue
+        trace = round_state.get("agent_trace")
+        if not isinstance(trace, list):
+            continue
+        for event in trace:
+            if not isinstance(event, dict):
+                continue
+            attempts = event.get("attempts")
+            if not isinstance(attempts, list):
+                continue
+            for attempt in attempts:
+                if not isinstance(attempt, dict):
+                    continue
+                usage = attempt.get("usage")
+                if not isinstance(usage, dict):
+                    continue
+                agent = str(attempt.get("agent") or "unknown")
+                input_tokens = _usage_count(usage.get("input_tokens"))
+                cached_input_tokens = _usage_count(
+                    usage.get("cached_input_tokens")
+                )
+                output_tokens = _usage_count(usage.get("output_tokens"))
+                reasoning_tokens = _usage_count(
+                    usage.get(
+                        "reasoning_tokens",
+                        usage.get("reasoning_output_tokens"),
+                    )
+                )
+                raw_total = usage.get("total_tokens")
+                total_tokens = (
+                    _usage_count(raw_total)
+                    if raw_total is not None
+                    else input_tokens + output_tokens
+                )
+                totals["input_tokens"] += input_tokens
+                totals["cached_input_tokens"] += cached_input_tokens
+                totals["output_tokens"] += output_tokens
+                totals["reasoning_tokens"] += reasoning_tokens
+                totals["total_tokens"] += total_tokens
+                totals["runs"] += 1
+                totals["agents"][agent] = (
+                    int(totals["agents"].get(agent, 0)) + 1
+                )
+    return totals
+
+
 def bounded_run(args, timeout):
     run_id=uuid.uuid4().hex; env=dict(os.environ,STUDIO_RUN_ID=run_id); process=subprocess.Popen(args,env=env,start_new_session=True)
     try: return subprocess.CompletedProcess(args,process.wait(timeout=timeout))
@@ -512,6 +586,12 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
         'next_stage':last_result.get('next_stage'),
         'finished':status=='complete',
     }
+    project_report=(
+        last_result.get('report')
+        if isinstance(last_result.get('report'),dict)
+        else {}
+    )
+    summary['usage']=collect_agent_usage(project_report)
     if improvement is not None:
         summary['improvement_status']=improvement['status']
         summary['improvement_next']=improvement['active_candidate']

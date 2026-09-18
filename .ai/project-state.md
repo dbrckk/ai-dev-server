@@ -1,0 +1,20 @@
+# Project state
+
+Status: active
+
+## Working
+- Central AI repo-map generation is configured through dbrckk/repo-standards.
+- Repository agent instructions are present.
+
+## Broken / blockers
+- None documented here yet.
+
+## Current priority
+- Keep the repository standards integration healthy and use compact AI context before broad scans.
+
+## Validation
+- Standards workflow: pending verification after this migration.
+- Tests/build: use the repository's existing validation commands.
+
+## Last verified
+- 2026-09-18

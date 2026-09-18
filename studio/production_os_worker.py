@@ -2,8 +2,170 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import re
+import urllib.error
+import urllib.request
+from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
+
+
+class ProductionOSWorkerError(RuntimeError):
+    pass
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise ProductionOSWorkerError(
+            "credential-bearing Production-OS redirects are refused"
+        )
+
+
+def _default_opener(request, timeout):
+    return urllib.request.build_opener(_NoRedirect).open(
+        request,
+        timeout=timeout,
+    )
+
+
+class ProductionOSClient:
+    def __init__(
+        self,
+        base_url: str,
+        token: str,
+        *,
+        timeout: float = 30.0,
+        opener=_default_opener,
+    ):
+        parsed = urlsplit(str(base_url or "").strip())
+        loopback = {"127.0.0.1", "localhost", "::1", "0.0.0.0"}
+        local_http = (
+            parsed.scheme == "http"
+            and (parsed.hostname or "").lower() in loopback
+        )
+        if (
+            not (parsed.scheme == "https" or local_http)
+            or not parsed.netloc
+            or parsed.username
+            or parsed.password
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise ProductionOSWorkerError(
+                "Production-OS URL must use HTTPS, except loopback-local HTTP"
+            )
+        secret = str(token or "").strip()
+        if not secret:
+            raise ProductionOSWorkerError("Production-OS worker token is required")
+        try:
+            timeout_value = float(timeout)
+        except (TypeError, ValueError) as exc:
+            raise ProductionOSWorkerError("timeout must be positive") from exc
+        if timeout_value <= 0:
+            raise ProductionOSWorkerError("timeout must be positive")
+
+        self.base_url = str(base_url).strip().rstrip("/")
+        self._token = secret
+        self.timeout = timeout_value
+        self._opener = opener
+
+    def _post(self, path: str, payload: dict) -> dict | None:
+        request = urllib.request.Request(
+            self.base_url + path,
+            method="POST",
+            data=json.dumps(
+                payload,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ).encode("utf-8"),
+            headers={
+                "Authorization": "Bearer " + self._token,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+        )
+        try:
+            with self._opener(request, self.timeout) as response:
+                status = int(getattr(response, "status", 200))
+                if status == 204:
+                    return None
+                raw = response.read(1_000_001)
+        except urllib.error.HTTPError as exc:
+            raise ProductionOSWorkerError(
+                f"Production-OS HTTP {exc.code}"
+            ) from None
+        except (
+            urllib.error.URLError,
+            TimeoutError,
+            ConnectionError,
+            OSError,
+        ) as exc:
+            raise ProductionOSWorkerError(
+                f"Production-OS unavailable: {type(exc).__name__}"
+            ) from None
+
+        if len(raw) > 1_000_000:
+            raise ProductionOSWorkerError("Production-OS response too large")
+        if not raw:
+            return {}
+        try:
+            value = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise ProductionOSWorkerError(
+                "Production-OS returned invalid JSON"
+            ) from exc
+        if not isinstance(value, dict):
+            raise ProductionOSWorkerError(
+                "Production-OS response must be a JSON object"
+            )
+        return value
+
+    def claim(self, worker_id: str, capabilities: list[str]) -> dict | None:
+        payload = self._post(
+            "/v1/jobs/claim",
+            {
+                "worker_id": str(worker_id),
+                "capabilities": [str(item) for item in capabilities],
+            },
+        )
+        if payload is None:
+            return None
+        job = payload.get("job")
+        if not isinstance(job, dict):
+            raise ProductionOSWorkerError(
+                "Production-OS claim response missing job"
+            )
+        return job
+
+    def ack(self, key: str, worker_id: str) -> dict | None:
+        return self._post(
+            "/v1/jobs/ack",
+            {"key": str(key), "worker_id": str(worker_id)},
+        )
+
+    def complete(self, payload: dict) -> dict | None:
+        return self._post("/v1/jobs/complete", payload)
+
+    def fail(self, payload: dict) -> dict | None:
+        return self._post("/v1/jobs/fail", payload)
+
+    def heartbeat(
+        self,
+        worker_id: str,
+        *,
+        active_job_keys=(),
+    ) -> dict | None:
+        return self._post(
+            "/v1/workers/heartbeat",
+            {
+                "worker_id": str(worker_id),
+                "active_tasks": len(tuple(active_job_keys)),
+                "active_job_keys": [
+                    str(key) for key in active_job_keys
+                ],
+            },
+        )
 
 
 def _project_id(job_key: str) -> str:
@@ -121,4 +283,106 @@ def failure_payload(
         "capabilities": ["software-development", "repo-analysis"],
         "reason": reason[:1000],
         "result": _result_payload(result),
+    }
+
+
+def run_once(
+    client: ProductionOSClient,
+    *,
+    worker_id: str,
+    output_root: Path,
+    run_project=None,
+    clock=None,
+    baseline_sha: str | None = None,
+) -> dict:
+    """Claim and execute at most one Production-OS job."""
+    if run_project is None:
+        from github_runner import run as run_project
+    if clock is None:
+        import time
+        clock = time.monotonic
+
+    capabilities = ["software-development", "repo-analysis"]
+    job = client.claim(worker_id, capabilities)
+    if job is None:
+        return {"status": "idle", "worker_id": worker_id}
+
+    key = str(job.get("key") or "")
+    if not key:
+        raise ProductionOSWorkerError("claimed job has no key")
+    client.ack(key, worker_id)
+    client.heartbeat(worker_id, active_job_keys=(key,))
+
+    request = build_studio_request(job)
+    root = Path(output_root)
+    project_out = root / request["id"]
+    project_out.mkdir(parents=True, exist_ok=True)
+    request_path = project_out / "production-os-request.json"
+    request_path.write_text(
+        json.dumps(
+            request,
+            ensure_ascii=False,
+            sort_keys=True,
+            indent=2,
+        ) + "\n",
+        encoding="utf-8",
+    )
+
+    started = float(clock())
+    summary = run_project(
+        request_path,
+        project_out,
+        baseline_sha=baseline_sha,
+    )
+    duration = max(0.0, float(clock()) - started)
+
+    result_path = project_out / "production-os-result.json"
+    if result_path.is_file():
+        try:
+            envelope = json.loads(result_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+            raise ProductionOSWorkerError(
+                "Production-OS result envelope is unreadable"
+            ) from exc
+    else:
+        from github_runner import write_production_os_result
+        envelope = write_production_os_result(
+            project_out,
+            request,
+            summary,
+        )
+
+    if not isinstance(envelope, dict):
+        raise ProductionOSWorkerError(
+            "AI Dev Server did not produce a correlated result"
+        )
+
+    if envelope.get("succeeded") is True:
+        client.complete(
+            completion_payload(
+                key,
+                worker_id,
+                envelope,
+                duration_seconds=duration,
+            )
+        )
+        status = "completed"
+    else:
+        client.fail(
+            failure_payload(
+                key,
+                worker_id,
+                envelope,
+                duration_seconds=duration,
+            )
+        )
+        status = "failed"
+
+    client.heartbeat(worker_id, active_job_keys=())
+    return {
+        "status": status,
+        "worker_id": worker_id,
+        "key": key,
+        "project_id": request["id"],
+        "usage": dict(envelope.get("usage") or {}),
     }

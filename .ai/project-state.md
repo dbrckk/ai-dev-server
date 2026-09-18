@@ -22,20 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T11:18:50Z
+Generated: 2026-09-18T11:41:29Z
 
 ### Git
 - Branch: `main`
-- Head: `d20272253b30`
-- Commit date: 2026-09-18T13:16:59+02:00
-- Commit: chore(ai): prefer AST symbol routing
-- Tracked files: 731
+- Head: `832803f1fd06`
+- Commit date: 2026-09-18T13:41:11+02:00
+- Commit: chore: trigger Repo Brain v4 full-index validation
+- Tracked files: 732
 
 ### Recently changed files
+- `.repo-standards.yml`
+- `.github/workflows/repo-brain-v4-test.yml`
 - `AGENTS.md`
 - `.github/workflows/repo-brain-v3-test.yml`
-- `.repo-standards.yml`
-- `.github/workflows/ai-repo-map.yml`
 
 ### Project signals
 - No common build descriptor detected

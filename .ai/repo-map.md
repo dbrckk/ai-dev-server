@@ -54,6 +54,7 @@ The content is organized as follows:
     multi-engine-benchmark.yml
     provider-preview.yml
     remote-control.yml
+    repo-brain-v4-test.yml
     resilience-soak.yml
     studio-smoke.yml
     validate.yml
@@ -1840,6 +1841,29 @@ jobs:
           echo "Operation: ${{ steps.request.outputs.operation }}" >> "$GITHUB_STEP_SUMMARY"
           echo "Codespace: $NAME" >> "$GITHUB_STEP_SUMMARY"
           [ ! -f safe-output.txt ] || { echo '```text' >> "$GITHUB_STEP_SUMMARY"; tail -n 200 safe-output.txt >> "$GITHUB_STEP_SUMMARY"; echo '```' >> "$GITHUB_STEP_SUMMARY"; }
+````
+
+## File: .github/workflows/repo-brain-v4-test.yml
+````yaml
+name: Repo Brain v4 test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".repo-standards.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repo-brain-v4-test-${{ github.repository }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repo-brain:
+    uses: dbrckk/repo-brain/.github/workflows/reusable-index.yml@main
 ````
 
 ## File: .github/workflows/resilience-soak.yml
@@ -31859,6 +31883,8 @@ ai_context:
 workflow:
   file: .github/workflows/ai-repo-map.yml
   reusable_unified: .github/workflows/reusable-unified.yml
+
+repo_brain_v4_test: 1
 ````
 
 ## File: AGENTS.md

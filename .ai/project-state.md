@@ -22,19 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T10:02:06Z
+Generated: 2026-09-18T10:04:56Z
 
 ### Git
 - Branch: `main`
-- Head: `4feac6102783`
-- Commit date: 2026-09-18T12:01:56+02:00
-- Commit: ci: retry Repo Brain v1 after workflow fix
-- Tracked files: 696
+- Head: `2eeb4e660346`
+- Commit date: 2026-09-18T12:04:47+02:00
+- Commit: chore: retest Repo Brain integration
+- Tracked files: 701
 
 ### Recently changed files
-- `.github/workflows/repo-brain.yml`
 - `.repo-standards.yml`
 - `.github/workflows/ai-repo-map.yml`
+- `.github/workflows/repo-brain.yml`
 
 ### Project signals
 - No common build descriptor detected

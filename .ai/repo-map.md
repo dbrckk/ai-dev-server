@@ -869,7 +869,7 @@ concurrency:
 
 jobs:
   repository-standards:
-    uses: dbrckk/repo-standards/.github/workflows/reusable-unified.yml@v6
+    uses: dbrckk/repo-standards/.github/workflows/reusable-unified.yml@main
 ````
 
 ## File: .github/workflows/ci.yml
@@ -31857,8 +31857,8 @@ loaded = wc.load()
 ## File: .repo-standards.yml
 ````yaml
 source: dbrckk/repo-standards
-ref: v6
-version: 6
+ref: main
+version: 7-dev
 adopted: true
 workflow_mode: unified-single-commit
 ai_context:
@@ -31876,6 +31876,10 @@ ai_context:
 workflow:
   file: .github/workflows/ai-repo-map.yml
   reusable_unified: .github/workflows/reusable-unified.yml
+
+repo_brain: dbrckk/repo-brain@v2
+
+repo_brain_retry: 2
 ````
 
 ## File: AGENTS.md

@@ -22,20 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T14:34:02Z
+Generated: 2026-09-18T14:35:31Z
 
 ### Git
 - Branch: `main`
-- Head: `b6c7d79dc06b`
-- Commit date: 2026-09-18T16:33:52+02:00
-- Commit: chore: validate repo standards v9
+- Head: `5b033de33d42`
+- Commit date: 2026-09-18T16:35:21+02:00
+- Commit: chore: remove v9 validation marker
 - Tracked files: 734
 
 ### Recently changed files
 - `.repo-standards.yml`
 - `.github/workflows/repo-brain-v4-test.yml`
 - `AGENTS.md`
-- `.github/workflows/ai-repo-map.yml`
 
 ### Project signals
 - No common build descriptor detected

@@ -108,7 +108,7 @@ class GitHubRunnerUsageTests(unittest.TestCase):
                 "cached_input_tokens": 0,
                 "output_tokens": 3,
                 "reasoning_tokens": 0,
-                "total_tokens": 12,
+                "total_tokens": 14,
                 "runs": 2,
                 "agents": {"codex": 1, "opencode": 1},
             },

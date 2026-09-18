@@ -1,16 +1,16 @@
 # Change impact
 
-Base: 6b36a18a17db372150d4e5ebaa560546c1cb965b
-Head: 53b9c572d6854471f08744c95e1e418b9ac77756
+Base: 347fe81814ae90eadfa22624a2e23f23cf4d69cf
+Head: 722bbd0573ceeef3ba2b8332512d01fe367997c5
 
 ## Changed files
-- M .repo-standards.yml
+- M studio/provider_router.py
 
 ## Affected areas
-- (root)
+- studio
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_provider_router.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

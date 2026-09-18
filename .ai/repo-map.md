@@ -869,7 +869,7 @@ concurrency:
 
 jobs:
   repository-standards:
-    uses: dbrckk/repo-standards/.github/workflows/reusable-unified.yml@v8
+    uses: dbrckk/repo-standards/.github/workflows/reusable-unified.yml@main
 ````
 
 ## File: .github/workflows/ci.yml
@@ -31855,11 +31855,11 @@ loaded = wc.load()
 ## File: .repo-standards.yml
 ````yaml
 source: dbrckk/repo-standards
-ref: v8
-version: 8
+ref: main
+version: 9-dev
 adopted: true
 workflow_mode: unified-single-commit
-repo_brain: dbrckk/repo-brain@v3
+repo_brain: dbrckk/repo-brain@v4
 ai_context:
   index: .ai/index.md
   project_state: .ai/project-state.md

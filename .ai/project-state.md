@@ -22,18 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T11:44:40Z
+Generated: 2026-09-18T11:47:21Z
 
 ### Git
 - Branch: `main`
-- Head: `722bbd0573ce`
-- Commit date: 2026-09-18T13:44:29+02:00
-- Commit: test: remove Repo Brain impact pilot marker
+- Head: `4a30ddaf9e24`
+- Commit date: 2026-09-18T13:47:07+02:00
+- Commit: chore: pilot repo standards v9
 - Tracked files: 735
 
 ### Recently changed files
-- `studio/provider_router.py`
 - `.repo-standards.yml`
+- `.github/workflows/ai-repo-map.yml`
+- `studio/provider_router.py`
 
 ### Project signals
 - No common build descriptor detected

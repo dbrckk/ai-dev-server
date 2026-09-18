@@ -186,16 +186,20 @@ class ProductionOSClient:
         worker_id: str,
         *,
         active_job_keys=(),
+        capacity: dict | None = None,
     ) -> dict | None:
+        payload = {
+            "worker_id": str(worker_id),
+            "active_tasks": len(tuple(active_job_keys)),
+            "active_job_keys": [
+                str(key) for key in active_job_keys
+            ],
+        }
+        if capacity is not None:
+            payload["capacity"] = dict(capacity)
         return self._post(
             "/v1/workers/heartbeat",
-            {
-                "worker_id": str(worker_id),
-                "active_tasks": len(tuple(active_job_keys)),
-                "active_job_keys": [
-                    str(key) for key in active_job_keys
-                ],
-            },
+            payload,
         )
 
 
@@ -228,7 +232,6 @@ def production_capacity_snapshot(
             "remaining_tokens": None,
             "catalog_updated_at": None,
             "catalog_source": None,
-            "error_type": type(exc).__name__,
         }
 
     authenticated = bool(snapshot.authenticated_usage)
@@ -382,6 +385,7 @@ def run_once(
     run_project=None,
     clock=None,
     baseline_sha: str | None = None,
+    capacity: dict | None = None,
 ) -> dict:
     """Claim and execute at most one Production-OS job."""
     if run_project is None:
@@ -399,7 +403,14 @@ def run_once(
     if not key:
         raise ProductionOSWorkerError("claimed job has no key")
     client.ack(key, worker_id)
-    client.heartbeat(worker_id, active_job_keys=(key,))
+    if capacity is None:
+        client.heartbeat(worker_id, active_job_keys=(key,))
+    else:
+        client.heartbeat(
+            worker_id,
+            active_job_keys=(key,),
+            capacity=capacity,
+        )
 
     request = build_studio_request(job)
     root = Path(output_root)
@@ -466,7 +477,14 @@ def run_once(
         )
         status = "failed"
 
-    client.heartbeat(worker_id, active_job_keys=())
+    if capacity is None:
+        client.heartbeat(worker_id, active_job_keys=())
+    else:
+        client.heartbeat(
+            worker_id,
+            active_job_keys=(),
+            capacity=capacity,
+        )
     return {
         "status": status,
         "worker_id": worker_id,
@@ -482,6 +500,7 @@ def main(
     environ=None,
     client_factory=ProductionOSClient,
     run_once_fn=run_once,
+    capacity_provider=production_capacity_snapshot,
 ) -> int:
     parser = argparse.ArgumentParser(
         description="Execute one Production-OS job through AI Dev Server"
@@ -535,11 +554,13 @@ def main(
         capabilities,
         operator_token,
     )
+    capacity = capacity_provider(env)
     for _ in range(cycles):
         result = run_once_fn(
             client,
             worker_id=args.worker_id,
             output_root=Path(args.output_root),
+            capacity=capacity,
         )
         if not isinstance(result, dict):
             raise RuntimeError("Production-OS worker returned invalid result")

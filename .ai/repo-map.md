@@ -867,24 +867,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ai-context:
-    uses: dbrckk/repo-standards/.github/workflows/reusable-ai-repo-map.yml@v5
-
-  repo-health:
-    needs: ai-context
-    uses: dbrckk/repo-standards/.github/workflows/reusable-repo-health.yml@v5
-
-  project-state:
-    needs: repo-health
-    uses: dbrckk/repo-standards/.github/workflows/reusable-project-state.yml@v5
-
-  context-intelligence:
-    needs: project-state
-    uses: dbrckk/repo-standards/.github/workflows/reusable-context-intelligence.yml@v5
-
-  observability:
-    needs: context-intelligence
-    uses: dbrckk/repo-standards/.github/workflows/reusable-observability.yml@v5
+  repository-standards:
+    uses: dbrckk/repo-standards/.github/workflows/reusable-unified.yml@main
 ````
 
 ## File: .github/workflows/ci.yml
@@ -31847,8 +31831,8 @@ loaded = wc.load()
 ## File: .repo-standards.yml
 ````yaml
 source: dbrckk/repo-standards
-ref: v5
-version: 5
+ref: main
+version: 6-dev
 adopted: true
 ai_context:
   index: .ai/index.md
@@ -31869,6 +31853,8 @@ workflow:
   reusable_project_state: .github/workflows/reusable-project-state.yml
   reusable_context_intelligence: .github/workflows/reusable-context-intelligence.yml
   reusable_observability: .github/workflows/reusable-observability.yml
+
+workflow_mode: unified-single-commit
 ````
 
 ## File: AGENTS.md

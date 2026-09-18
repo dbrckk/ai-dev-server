@@ -147,7 +147,7 @@ def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,ti
     return {"status":"unavailable","selected":None,"attempts":attempts}
 
 
-def ranked_agent_names(required:set[str],*,role:str,memory_path:Path,limit:int=2)->list[str]:
+def ranked_agent_names(required:set[str],*,role:str,memory_path:Path,limit:int=2,preferred:str|None=None)->list[str]:
     perf=load(memory_path)
     history_raw=os.environ.get("STUDIO_ROUTING_HISTORY_PATH","")
     history=load_routing_history(Path(history_raw)) if history_raw else []
@@ -161,13 +161,35 @@ def ranked_agent_names(required:set[str],*,role:str,memory_path:Path,limit:int=2
         reliability=reliability,
         weights=weights,
     )
+
+    def usable(decision)->bool:
+        return (
+            decision.agent.available()
+            and eligible(perf,decision.agent.name,role)
+            and invocation_for(decision.agent.name,"probe") is not None
+        )
+
+    preferred_name=str(preferred or "").strip()
+    if preferred_name=="auto":
+        preferred_name=""
+
     names=[]
+    if preferred_name:
+        preferred_decision=next(
+            (
+                decision
+                for decision in ranked
+                if decision.agent.name==preferred_name and usable(decision)
+            ),
+            None,
+        )
+        if preferred_decision is not None:
+            names.append(preferred_name)
+
     for decision in ranked:
         if len(names)>=limit:
             break
-        if not decision.agent.available() or not eligible(perf,decision.agent.name,role):
-            continue
-        if invocation_for(decision.agent.name,"probe") is None:
+        if decision.agent.name in names or not usable(decision):
             continue
         names.append(decision.agent.name)
     return names

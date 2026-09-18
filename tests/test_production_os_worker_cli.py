@@ -129,5 +129,37 @@ class ProductionOSWorkerCLITests(unittest.TestCase):
             )
 
 
+    def test_main_forwards_capacity_snapshot_to_worker_cycle(self):
+        runs = []
+        expected = {
+            "source": "omniroute",
+            "status": "ok",
+            "authenticated_usage": True,
+            "steady_recurring_tokens": 1_500_000_000,
+            "used_this_month": 125_000_000,
+            "remaining_tokens": 1_375_000_000,
+            "catalog_updated_at": "2026-09-18",
+            "catalog_source": "free-tier-catalog",
+        }
+
+        rc = main(
+            ["--worker-id", "ai-dev-1", "--once"],
+            environ={
+                "PRODUCTION_OS_URL": "http://127.0.0.1:8787",
+                "PRODUCTION_OS_WORKER_TOKEN": "worker-secret",
+                "PRODUCTION_OS_OPERATOR_TOKEN": "operator-secret",
+                "OMNIROUTE_URL": "http://127.0.0.1:20128",
+            },
+            client_factory=lambda base_url, token: _Client(base_url, token),
+            run_once_fn=lambda client, **kwargs: (
+                runs.append(kwargs) or {"status": "idle"}
+            ),
+            capacity_provider=lambda env: expected,
+        )
+
+        self.assertEqual(rc, 0)
+        self.assertEqual(runs[0]["capacity"], expected)
+
+
 if __name__ == "__main__":
     unittest.main()

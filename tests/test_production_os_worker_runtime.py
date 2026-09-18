@@ -235,5 +235,61 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertIn("blocked", failed["reason"])
 
 
+    def test_capacity_snapshot_prefers_authenticated_omniroute(self):
+        from production_os_worker import production_capacity_snapshot
+
+        class Snapshot:
+            authenticated_usage = True
+            steady_recurring_tokens = 1_500_000_000
+            used_this_month = 125_000_000
+            remaining_tokens = 1_375_000_000
+            catalog_updated_at = "2026-09-18"
+            catalog_source = "free-tier-catalog"
+
+        seen = {}
+
+        def fetch(url, *, api_key=None, timeout=5.0):
+            seen["url"] = url
+            seen["api_key"] = api_key
+            seen["timeout"] = timeout
+            return Snapshot()
+
+        result = production_capacity_snapshot(
+            {
+                "OMNIROUTE_URL": "http://127.0.0.1:20128",
+                "OMNIROUTE_API_KEY": "secret",
+            },
+            fetch_summary=fetch,
+        )
+
+        self.assertEqual(result["source"], "omniroute")
+        self.assertTrue(result["authenticated_usage"])
+        self.assertEqual(result["steady_recurring_tokens"], 1_500_000_000)
+        self.assertEqual(result["remaining_tokens"], 1_375_000_000)
+        self.assertEqual(seen["api_key"], "secret")
+        self.assertNotIn("secret", json.dumps(result))
+
+    def test_capacity_snapshot_fails_closed_without_authenticated_usage(self):
+        from production_os_worker import production_capacity_snapshot
+
+        class Snapshot:
+            authenticated_usage = False
+            steady_recurring_tokens = 1_500_000_000
+            used_this_month = None
+            remaining_tokens = None
+            catalog_updated_at = "2026-09-18"
+            catalog_source = "free-tier-catalog"
+
+        result = production_capacity_snapshot(
+            {"OMNIROUTE_URL": "http://127.0.0.1:20128"},
+            fetch_summary=lambda *args, **kwargs: Snapshot(),
+        )
+
+        self.assertEqual(result["source"], "omniroute")
+        self.assertEqual(result["status"], "unavailable")
+        self.assertFalse(result["authenticated_usage"])
+        self.assertIsNone(result["remaining_tokens"])
+
+
 if __name__ == "__main__":
     unittest.main()

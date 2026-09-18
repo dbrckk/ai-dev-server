@@ -22,20 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T14:49:48Z
+Generated: 2026-09-18T19:32:31Z
 
 ### Git
 - Branch: `main`
-- Head: `a77d6f242c9e`
-- Commit date: 2026-09-18T16:49:22+02:00
-- Commit: chore(ai): adopt v10 reference routing
+- Head: `564196667741`
+- Commit date: 2026-09-18T21:31:42+02:00
+- Commit: chore(ai): adopt graph-first agent routing
 - Tracked files: 736
 
 ### Recently changed files
 - `AGENTS.md`
-- `.repo-standards.yml`
 - `.github/workflows/ai-repo-map.yml`
-- `.github/workflows/repo-brain-v5-test.yml`
+- `.repo-standards.yml`
 
 ### Project signals
 - No common build descriptor detected

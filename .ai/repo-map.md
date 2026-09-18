@@ -54,7 +54,6 @@ The content is organized as follows:
     multi-engine-benchmark.yml
     provider-preview.yml
     remote-control.yml
-    repo-brain-v3-test.yml
     resilience-soak.yml
     studio-smoke.yml
     validate.yml
@@ -869,7 +868,7 @@ concurrency:
 
 jobs:
   repository-standards:
-    uses: dbrckk/repo-standards/.github/workflows/reusable-unified.yml@main
+    uses: dbrckk/repo-standards/.github/workflows/reusable-unified.yml@v8
 ````
 
 ## File: .github/workflows/ci.yml
@@ -1841,29 +1840,6 @@ jobs:
           echo "Operation: ${{ steps.request.outputs.operation }}" >> "$GITHUB_STEP_SUMMARY"
           echo "Codespace: $NAME" >> "$GITHUB_STEP_SUMMARY"
           [ ! -f safe-output.txt ] || { echo '```text' >> "$GITHUB_STEP_SUMMARY"; tail -n 200 safe-output.txt >> "$GITHUB_STEP_SUMMARY"; echo '```' >> "$GITHUB_STEP_SUMMARY"; }
-````
-
-## File: .github/workflows/repo-brain-v3-test.yml
-````yaml
-name: Repo Brain v3 test
-
-on:
-  workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - ".repo-standards.yml"
-
-permissions:
-  contents: write
-
-concurrency:
-  group: repo-brain-v3-test-${{ github.repository }}-${{ github.ref }}
-  cancel-in-progress: true
-
-jobs:
-  repo-brain:
-    uses: dbrckk/repo-brain/.github/workflows/reusable-index.yml@v3
 ````
 
 ## File: .github/workflows/resilience-soak.yml
@@ -31855,8 +31831,8 @@ loaded = wc.load()
 ## File: .repo-standards.yml
 ````yaml
 source: dbrckk/repo-standards
-ref: main
-version: 8-dev
+ref: v8
+version: 8
 adopted: true
 workflow_mode: unified-single-commit
 repo_brain: dbrckk/repo-brain@v3
@@ -31871,6 +31847,10 @@ ai_context:
   security_signals: .ai/security-signals.json
   repo_health: .ai/repo-health.md
   brain_summary: .ai/brain/summary.md
+  brain_capabilities: .ai/brain/capabilities.json
+  brain_ast_routing: .ai/brain/ast-routing.json
+  brain_ast_symbols: .ai/brain/ast-symbols/
+  brain_file_outlines: .ai/brain/file-outlines/
   brain_lookup: .ai/brain/lookup.json
   brain_symbols: .ai/brain/symbols.json
   brain_graph: .ai/brain/code-graph.json
@@ -31879,8 +31859,6 @@ ai_context:
 workflow:
   file: .github/workflows/ai-repo-map.yml
   reusable_unified: .github/workflows/reusable-unified.yml
-
-repo_brain_v3_test: 5
 ````
 
 ## File: AGENTS.md

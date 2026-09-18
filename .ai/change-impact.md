@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 11dc87abefb1633a75c9d769d7cc80fa99c08960
-Head: 08c303fed70213c2510632bedb131fc0b30afcb1
+Base: ea65ea94613df9717ddf8792019264f094798434
+Head: 2a84f8e02530bafd46e332b107e02f7f6c785f22
 
 ## Changed files
-- M .repo-standards.yml
+- A .github/workflows/repo-brain.yml
 
 ## Affected areas
-- (root)
+- .github
 
 ## Related test candidates
 - No direct filename-based test match detected.

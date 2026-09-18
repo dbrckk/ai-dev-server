@@ -31865,6 +31865,8 @@ workflow:
   reusable_health: .github/workflows/reusable-repo-health.yml
   reusable_project_state: .github/workflows/reusable-project-state.yml
   reusable_context_intelligence: .github/workflows/reusable-context-intelligence.yml
+
+experimental_observability: main
 ````
 
 ## File: AGENTS.md

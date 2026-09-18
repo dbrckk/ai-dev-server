@@ -167,6 +167,39 @@ def collect_agent_usage(report: dict) -> dict:
     return totals
 
 
+def write_production_os_result(out: Path, request: dict, summary: dict):
+    correlation = request.get("production_os")
+    if not isinstance(correlation, dict):
+        return None
+    usage = summary.get("usage")
+    if not isinstance(usage, dict):
+        usage = {}
+    envelope = {
+        "schema_version": "ai-dev-server/production-os-result/v1",
+        "workflow_id": correlation["workflow_id"],
+        "workflow_task_id": correlation["workflow_task_id"],
+        "project_id": request["id"],
+        "target_repo": request["target_repo"],
+        "status": str(summary.get("status") or "unknown"),
+        "succeeded": bool(
+            summary.get("finished") is True
+            and summary.get("status") == "complete"
+        ),
+        "usage": dict(usage),
+        "evidence": {
+            "pipeline_status": summary.get("status"),
+            "next_stage": summary.get("next_stage"),
+            "finished": bool(summary.get("finished") is True),
+        },
+    }
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "production-os-result.json").write_text(
+        canonical(envelope),
+        encoding="utf-8",
+    )
+    return envelope
+
+
 def bounded_run(args, timeout):
     run_id=uuid.uuid4().hex; env=dict(os.environ,STUDIO_RUN_ID=run_id); process=subprocess.Popen(args,env=env,start_new_session=True)
     try: return subprocess.CompletedProcess(args,process.wait(timeout=timeout))
@@ -624,7 +657,10 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
         summary['next_stage']=state.get('blocked_reason')
     for key in ('pending_status','research_status','synthesis_status','benchmark_status','promotion_status','persistence_status','automerge_status'):
         if last_result.get(key) is not None: summary[key]=last_result[key]
-    out.mkdir(parents=True,exist_ok=True); (out/'github-pipeline.json').write_text(canonical(summary)); return summary
+    out.mkdir(parents=True,exist_ok=True)
+    write_production_os_result(out,request,summary)
+    (out/'github-pipeline.json').write_text(canonical(summary))
+    return summary
 
 
 def main(argv=None)->int:

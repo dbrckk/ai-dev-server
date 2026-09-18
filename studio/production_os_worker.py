@@ -439,6 +439,12 @@ def main(
         action="store_true",
         help="Claim and execute at most one job",
     )
+    parser.add_argument(
+        "--cycles",
+        type=int,
+        default=1,
+        help="Maximum number of sequential jobs to process",
+    )
     args = parser.parse_args(argv)
 
     env = os.environ if environ is None else environ
@@ -461,10 +467,9 @@ def main(
         raise RuntimeError(
             "Missing Production-OS configuration: " + ", ".join(missing)
         )
-    if not args.once:
-        raise RuntimeError(
-            "Use --once; continuous supervision is configured separately"
-        )
+    cycles = 1 if args.once else int(args.cycles)
+    if cycles < 1 or cycles > 1000:
+        raise RuntimeError("--cycles must be between 1 and 1000")
 
     client = client_factory(base_url, worker_token)
     capabilities = ["software-development", "repo-analysis"]
@@ -473,11 +478,16 @@ def main(
         capabilities,
         operator_token,
     )
-    run_once_fn(
-        client,
-        worker_id=args.worker_id,
-        output_root=Path(args.output_root),
-    )
+    for _ in range(cycles):
+        result = run_once_fn(
+            client,
+            worker_id=args.worker_id,
+            output_root=Path(args.output_root),
+        )
+        if not isinstance(result, dict):
+            raise RuntimeError("Production-OS worker returned invalid result")
+        if result.get("status") == "idle":
+            break
     return 0
 
 

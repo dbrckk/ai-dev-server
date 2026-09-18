@@ -36,3 +36,11 @@
 - Use code-graph.json to inspect likely internal import relationships.
 - Use imports.json when a changed file crosses module boundaries.
 - Treat graph edges as static hints; verify source before editing.
+
+## ast-grep enrichment
+- ast-grep outline: available
+- outline files: 595
+- top-level items: 6153
+- direct members: 2008
+- use ast-lookup.json for exact start/end ranges before opening a full file
+

@@ -1,10 +1,10 @@
 # Change impact
 
-Base: ea65ea94613df9717ddf8792019264f094798434
-Head: 2a84f8e02530bafd46e332b107e02f7f6c785f22
+Base: 2e21ea175ff6b27ae48da2d971dc18b1668c9656
+Head: 4feac610278321ab7a8881b563ffe5a1538bb643
 
 ## Changed files
-- A .github/workflows/repo-brain.yml
+- M .github/workflows/repo-brain.yml
 
 ## Affected areas
 - .github

@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T10:00:43Z
+Generated: 2026-09-18T10:02:06Z
 
 ### Git
 - Branch: `main`
-- Head: `2a84f8e02530`
-- Commit date: 2026-09-18T12:00:33+02:00
-- Commit: ci: pilot Repo Brain v1
+- Head: `4feac6102783`
+- Commit date: 2026-09-18T12:01:56+02:00
+- Commit: ci: retry Repo Brain v1 after workflow fix
 - Tracked files: 696
 
 ### Recently changed files

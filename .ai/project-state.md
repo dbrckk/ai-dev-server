@@ -22,19 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T14:41:46Z
+Generated: 2026-09-18T14:43:38Z
 
 ### Git
 - Branch: `main`
-- Head: `55a0e4eefd31`
-- Commit date: 2026-09-18T16:41:33+02:00
-- Commit: chore: trigger Repo Brain v5 reference validation
+- Head: `8b36402b05ec`
+- Commit date: 2026-09-18T16:43:25+02:00
+- Commit: chore: trigger final Repo Brain v5 dependency validation
 - Tracked files: 737
 
 ### Recently changed files
 - `.repo-standards.yml`
 - `studio/provider_router.py`
-- `.github/workflows/repo-brain-v5-test.yml`
 
 ### Project signals
 - No common build descriptor detected

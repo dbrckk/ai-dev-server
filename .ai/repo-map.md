@@ -19212,7 +19212,7 @@ state = execute(req, Path('/tmp/provider-preview-app'), out, github=ArtifactProj
 ## File: studio/provider_router.py
 ````python
 """Provider registry and ordered fallback policy for AI Dev Server."""
-# repo-brain-v5-reference-pilot
+# repo-brain-v5-reference-pilot-2
 ⋮----
 @dataclass(frozen=True)
 class ProviderSpec
@@ -31890,7 +31890,7 @@ workflow:
   reusable_unified: .github/workflows/reusable-unified.yml
 
 
-repo_brain_v5_test: 2
+repo_brain_v5_test: 4
 ````
 
 ## File: AGENTS.md

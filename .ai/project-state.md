@@ -22,19 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T11:07:01Z
+Generated: 2026-09-18T11:08:12Z
 
 ### Git
 - Branch: `main`
-- Head: `1aabbefb5217`
-- Commit date: 2026-09-18T13:06:51+02:00
-- Commit: chore: validate sharded Repo Brain v3
+- Head: `c3014d50afaf`
+- Commit date: 2026-09-18T13:08:00+02:00
+- Commit: chore: diagnose Repo Brain v3 AST outputs
 - Tracked files: 706
 
 ### Recently changed files
 - `.repo-standards.yml`
 - `.github/workflows/repo-brain-v3-test.yml`
-- `AGENTS.md`
 
 ### Project signals
 - No common build descriptor detected

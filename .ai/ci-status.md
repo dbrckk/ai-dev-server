@@ -1,14 +1,18 @@
 # CI status
 
-Summary: 1 success / 0 failure / 7 active
+Summary: 0 success / 1 failure / 7 active
 
-- Repo Brain v3 test: in_progress / pending (1aabbefb)
-- Fault Injection Gate: in_progress / pending (1aabbefb)
-- Mobile Studio Real Build: pending / pending (1aabbefb)
-- CI: in_progress / pending (1aabbefb)
-- Multi-Engine E2E Benchmark: pending / pending (1aabbefb)
-- Validate AI Dev Server: in_progress / pending (1aabbefb)
-- Resilience Soak: in_progress / pending (1aabbefb)
-- Repo Brain v3 test: completed / success (ba823b99)
+- Repo Brain v3 test: in_progress / pending (c3014d50)
+- Mobile Studio Real Build: pending / pending (c3014d50)
+- Validate AI Dev Server: in_progress / pending (c3014d50)
+- Resilience Soak: in_progress / pending (c3014d50)
+- Multi-Engine E2E Benchmark: pending / pending (c3014d50)
+- CI: in_progress / pending (c3014d50)
+- Fault Injection Gate: in_progress / pending (c3014d50)
+- Repo Brain v3 test: completed / failure (1aabbefb)
+
+## Latest failed run structure
+- Job: repo-brain / index
+  - Failed step: Compact ast-grep outline
 
 > Generated summary only; inspect GitHub Actions for full logs when needed.

@@ -8,11 +8,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
 
 import provider_health
+from omniroute_capacity import OmniRouteCapacityError, fetch_summary as fetch_omniroute_summary
 
 
 CRITICAL_PHASES = {"verification", "tests", "review", "security_fix", "release_fix"}
@@ -403,19 +405,82 @@ def main(argv=None) -> int:
     parser.add_argument("--critical-reserve-ratio", type=float, default=0.10)
     parser.add_argument("--output", default="")
     parser.add_argument("--provider-health", default="", help="Optional provider-health JSON state")
+    parser.add_argument(
+        "--omniroute-url",
+        default=os.environ.get("OMNIROUTE_URL", ""),
+        help="Optional OmniRoute base URL for live free-tier capacity",
+    )
+    parser.add_argument(
+        "--omniroute-timeout",
+        type=float,
+        default=5.0,
+        help="Timeout in seconds for the OmniRoute capacity read",
+    )
     args = parser.parse_args(argv)
 
     projects_payload = json.loads(Path(args.projects).read_text(encoding="utf-8"))
     providers_payload = json.loads(Path(args.providers).read_text(encoding="utf-8"))
     projects = projects_payload.get("projects", []) if isinstance(projects_payload, dict) else projects_payload
-    provider_rows = providers_payload.get("providers", []) if isinstance(providers_payload, dict) else providers_payload
+    provider_rows = list(
+        providers_payload.get("providers", [])
+        if isinstance(providers_payload, dict)
+        else providers_payload
+    )
+    capacity_sources = {}
+
+    if args.omniroute_url:
+        try:
+            snapshot = fetch_omniroute_summary(
+                args.omniroute_url,
+                api_key=os.environ.get("OMNIROUTE_API_KEY"),
+                timeout=args.omniroute_timeout,
+            )
+            live_row = snapshot.provider_row("omniroute")
+            capacity_sources["omniroute"] = {
+                "status": "ok",
+                "authenticated_usage": snapshot.authenticated_usage,
+                "steady_recurring_tokens": snapshot.steady_recurring_tokens,
+                "used_this_month": snapshot.used_this_month,
+                "remaining_tokens": snapshot.remaining_tokens,
+                "catalog_updated_at": snapshot.catalog_updated_at,
+                "catalog_source": snapshot.catalog_source,
+            }
+        except OmniRouteCapacityError as exc:
+            # A configured live source replaces any stale static OmniRoute row.
+            # On network/schema/auth ambiguity, fail closed for that provider
+            # while allowing unrelated local/free providers to continue.
+            live_row = {
+                "name": "omniroute",
+                "available_tokens": 0,
+                "unmetered": False,
+                "free_preferred": True,
+                "paid": False,
+            }
+            capacity_sources["omniroute"] = {
+                "status": "unavailable",
+                "authenticated_usage": False,
+                "steady_recurring_tokens": None,
+                "used_this_month": None,
+                "remaining_tokens": None,
+                "error": str(exc),
+            }
+
+        provider_rows = [
+            row
+            for row in provider_rows
+            if not isinstance(row, dict)
+            or str(row.get("name") or "").strip() != "omniroute"
+        ]
+        provider_rows.append(live_row)
 
     health_data = provider_health.load(Path(args.provider_health)) if args.provider_health else {}
     report = allocate(
         list(projects),
-        provider_capacities(list(provider_rows), health_data=health_data),
+        provider_capacities(provider_rows, health_data=health_data),
         critical_reserve_ratio=args.critical_reserve_ratio,
     )
+    if capacity_sources:
+        report["capacity_sources"] = capacity_sources
     rendered = json.dumps(report, sort_keys=True, indent=2) + "\n"
     if args.output:
         Path(args.output).write_text(rendered, encoding="utf-8")

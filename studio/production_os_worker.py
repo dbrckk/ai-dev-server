@@ -199,6 +199,63 @@ class ProductionOSClient:
         )
 
 
+def production_capacity_snapshot(
+    environ=None,
+    *,
+    fetch_summary=None,
+) -> dict | None:
+    """Return a safe global token-capacity snapshot for Production-OS."""
+    env = os.environ if environ is None else environ
+    base_url = str(env.get("OMNIROUTE_URL") or "").strip()
+    if not base_url:
+        return None
+    if fetch_summary is None:
+        from omniroute_capacity import fetch_summary as fetch_summary
+
+    try:
+        snapshot = fetch_summary(
+            base_url,
+            api_key=str(env.get("OMNIROUTE_API_KEY") or "").strip() or None,
+            timeout=5.0,
+        )
+    except Exception as exc:
+        return {
+            "source": "omniroute",
+            "status": "unavailable",
+            "authenticated_usage": False,
+            "steady_recurring_tokens": None,
+            "used_this_month": None,
+            "remaining_tokens": None,
+            "catalog_updated_at": None,
+            "catalog_source": None,
+            "error_type": type(exc).__name__,
+        }
+
+    authenticated = bool(snapshot.authenticated_usage)
+    return {
+        "source": "omniroute",
+        "status": "ok" if authenticated else "unavailable",
+        "authenticated_usage": authenticated,
+        "steady_recurring_tokens": (
+            int(snapshot.steady_recurring_tokens)
+            if authenticated
+            else int(snapshot.steady_recurring_tokens)
+        ),
+        "used_this_month": (
+            int(snapshot.used_this_month)
+            if snapshot.used_this_month is not None
+            else None
+        ),
+        "remaining_tokens": (
+            int(snapshot.remaining_tokens)
+            if snapshot.remaining_tokens is not None
+            else None
+        ),
+        "catalog_updated_at": snapshot.catalog_updated_at,
+        "catalog_source": snapshot.catalog_source,
+    }
+
+
 def _project_id(job_key: str) -> str:
     digest = hashlib.sha256(str(job_key).encode("utf-8")).hexdigest()[:24]
     return "pos-" + digest

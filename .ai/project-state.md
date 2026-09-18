@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T09:30:37Z
+Generated: 2026-09-18T09:33:04Z
 
 ### Git
 - Branch: `main`
-- Head: `739ef152a4a7`
-- Commit date: 2026-09-18T11:30:23+02:00
-- Commit: chore: pilot unified standards v6
+- Head: `08c303fed702`
+- Commit date: 2026-09-18T11:32:54+02:00
+- Commit: chore: adopt repo standards v6
 - Tracked files: 695
 
 ### Recently changed files

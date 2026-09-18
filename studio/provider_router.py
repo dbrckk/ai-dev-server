@@ -1,5 +1,4 @@
 """Provider registry and ordered fallback policy for AI Dev Server."""
-# repo-brain-v4-impact-pilot
 from __future__ import annotations
 
 from dataclasses import dataclass, field

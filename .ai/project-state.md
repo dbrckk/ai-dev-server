@@ -22,14 +22,14 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T11:03:15Z
+Generated: 2026-09-18T11:05:05Z
 
 ### Git
 - Branch: `main`
-- Head: `ee1ee5924e92`
-- Commit date: 2026-09-18T13:03:01+02:00
-- Commit: chore: trigger Repo Brain v3 validation
-- Tracked files: 702
+- Head: `ba823b994386`
+- Commit date: 2026-09-18T13:04:53+02:00
+- Commit: chore: validate compact Repo Brain v3 indexes
+- Tracked files: 704
 
 ### Recently changed files
 - `.repo-standards.yml`

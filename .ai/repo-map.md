@@ -31868,7 +31868,7 @@ workflow:
 
 experimental_observability: main
 
-v5_retest: 2
+v5_retest: 3
 ````
 
 ## File: AGENTS.md

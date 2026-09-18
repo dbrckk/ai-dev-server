@@ -3,9 +3,12 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+import sys
 
-from studio.core import StudioError, request_check
-from studio.github_runner import write_production_os_result
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
+
+from core import StudioError, request_check
+from github_runner import write_production_os_result
 
 
 BASE = {

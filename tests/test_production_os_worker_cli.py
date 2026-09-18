@@ -72,6 +72,43 @@ class ProductionOSWorkerCLITests(unittest.TestCase):
             Path("studio-output/production-os"),
         )
 
+    def test_main_runs_bounded_cycles_until_queue_is_idle(self):
+        clients = []
+        calls = []
+        outcomes = iter([
+            {"status": "completed"},
+            {"status": "completed"},
+            {"status": "idle"},
+        ])
+
+        def factory(base_url, token):
+            client = _Client(base_url, token)
+            clients.append(client)
+            return client
+
+        def run_once_fn(client, **kwargs):
+            calls.append(kwargs)
+            return next(outcomes)
+
+        rc = main(
+            [
+                "--worker-id", "ai-dev-1",
+                "--cycles", "10",
+                "--output-root", "studio-output/production-os",
+            ],
+            environ={
+                "PRODUCTION_OS_URL": "http://127.0.0.1:8787",
+                "PRODUCTION_OS_WORKER_TOKEN": "worker-secret",
+                "PRODUCTION_OS_OPERATOR_TOKEN": "operator-secret",
+            },
+            client_factory=factory,
+            run_once_fn=run_once_fn,
+        )
+
+        self.assertEqual(rc, 0)
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(len(clients[0].calls), 1)
+
     def test_main_requires_all_control_plane_credentials(self):
         with self.assertRaisesRegex(
             RuntimeError,

@@ -22,19 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-18T08:27:43Z
+Generated: 2026-09-18T08:42:27Z
 
 ### Git
 - Branch: `main`
-- Head: `49ad694b6b57`
-- Commit date: 2026-09-18T08:27:07Z
+- Head: `192bde707c03`
+- Commit date: 2026-09-18T08:42:19Z
 - Commit: chore(ai): refresh repo health
 - Tracked files: 683
 
 ### Recently changed files
 - `.repo-standards.yml`
 - `.github/workflows/ai-repo-map.yml`
-- `AGENTS.md`
 
 ### Project signals
 - No common build descriptor detected

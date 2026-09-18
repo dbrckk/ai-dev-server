@@ -31854,6 +31854,8 @@ workflow:
   reusable_ai_map: .github/workflows/reusable-ai-repo-map.yml
   reusable_health: .github/workflows/reusable-repo-health.yml
   reusable_project_state: .github/workflows/reusable-project-state.yml
+
+experimental_context_intelligence: main
 ````
 
 ## File: AGENTS.md

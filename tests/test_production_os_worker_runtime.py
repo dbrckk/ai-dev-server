@@ -291,5 +291,46 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertIsNone(result["remaining_tokens"])
 
 
+    def test_client_heartbeat_posts_capacity_snapshot(self):
+        seen = []
+
+        def opener(request, timeout):
+            seen.append(json.loads(request.data.decode("utf-8")))
+            return _Response(
+                200,
+                {
+                    "worker": {
+                        "worker_id": "ai-dev-1",
+                        "capacity": seen[-1].get("capacity"),
+                    },
+                    "stale_job_keys": [],
+                },
+            )
+
+        client = ProductionOSClient(
+            "http://127.0.0.1:8787",
+            "worker-secret",
+            opener=opener,
+        )
+        capacity = {
+            "source": "omniroute",
+            "status": "ok",
+            "authenticated_usage": True,
+            "steady_recurring_tokens": 1_500_000_000,
+            "used_this_month": 125_000_000,
+            "remaining_tokens": 1_375_000_000,
+            "catalog_updated_at": "2026-09-18",
+            "catalog_source": "free-tier-catalog",
+        }
+
+        client.heartbeat(
+            "ai-dev-1",
+            active_job_keys=(),
+            capacity=capacity,
+        )
+
+        self.assertEqual(seen[0]["capacity"], capacity)
+
+
 if __name__ == "__main__":
     unittest.main()

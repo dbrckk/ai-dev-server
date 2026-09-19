@@ -42,7 +42,7 @@ def request_check(data):
     if not isinstance(data, dict):
         raise StudioError('Request must be an object')
     required = {'id', 'target_repo', 'app_name', 'brief', 'enabled'}
-    if set(data) - (required | {'max_rounds', 'max_calls', 'max_cycles', 'priority', 'play_publish', 'max_project_model_calls', 'max_project_repair_calls', 'max_api_cost_usd'}) or not required <= set(data):
+    if set(data) - (required | {'max_rounds', 'max_calls', 'max_cycles', 'priority', 'play_publish', 'max_project_model_calls', 'max_project_repair_calls', 'max_api_cost_usd', 'production_os', 'agent_preference'}) or not required <= set(data):
         raise StudioError('Invalid request fields')
     if not isinstance(data['enabled'], bool):
         raise StudioError('enabled must be boolean')
@@ -78,6 +78,34 @@ def request_check(data):
         if not 0.0 <= api_budget <= 10000.0:
             raise StudioError('Invalid max_api_cost_usd')
         data['max_api_cost_usd'] = api_budget
+    if 'agent_preference' in data:
+        preference = data['agent_preference']
+        if (
+            not isinstance(preference, str)
+            or not re.fullmatch(r'(?:auto|[a-z][a-z0-9-]{0,63})', preference)
+        ):
+            raise StudioError('Invalid agent_preference')
+        data['agent_preference'] = preference
+    if 'production_os' in data:
+        production_os = data['production_os']
+        if (
+            not isinstance(production_os, dict)
+            or set(production_os) != {'workflow_id', 'workflow_task_id'}
+        ):
+            raise StudioError('Invalid production_os')
+        workflow_id = production_os.get('workflow_id')
+        workflow_task_id = production_os.get('workflow_task_id')
+        if (
+            not isinstance(workflow_id, str)
+            or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}', workflow_id)
+            or not isinstance(workflow_task_id, str)
+            or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.:#-]{0,127}', workflow_task_id)
+        ):
+            raise StudioError('Invalid production_os')
+        data['production_os'] = {
+            'workflow_id': workflow_id,
+            'workflow_task_id': workflow_task_id,
+        }
     if 'play_publish' in data:
         publish = data['play_publish']
         if not isinstance(publish, dict) or set(publish) - {'enabled', 'track', 'commit'}:

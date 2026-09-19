@@ -167,6 +167,8 @@ class AgentRouterTests(unittest.TestCase):
             stderr_tail="",
         )
         with patch("shutil.which", return_value="/bin/codex"), patch(
+            "agents.orchestrator.omniroute_available_base", return_value=None
+        ), patch(
             "agents.orchestrator.AgentAdapter.run", return_value=run
         ):
             result = execute_named("codex", "do work", cwd=ROOT)
@@ -174,6 +176,71 @@ class AgentRouterTests(unittest.TestCase):
         self.assertEqual(result["status"], "passed")
         self.assertEqual(result["attempts"][0]["usage"]["total_tokens"], 13)
         self.assertEqual(result["attempts"][0]["usage"]["cached_input_tokens"], 4)
+
+
+    def test_codex_execute_named_prefers_isolated_omniroute_profile_when_healthy(self):
+        run = AgentRun(
+            agent="codex",
+            returncode=0,
+            duration_seconds=1.0,
+            stdout_tail='{"type":"turn.completed","usage":{"input_tokens":8,"output_tokens":2}}',
+            stderr_tail="",
+        )
+        seen = {}
+
+        def fake_run(_adapter, argv, *, cwd, timeout, extra_env):
+            seen["argv"] = list(argv)
+            seen["extra_env"] = dict(extra_env)
+            return run
+
+        with patch("shutil.which", return_value="/bin/codex"), patch(
+            "agents.orchestrator.omniroute_available_base",
+            return_value="http://127.0.0.1:20128/v1",
+        ), patch(
+            "agents.orchestrator.AgentAdapter.run",
+            autospec=True,
+            side_effect=fake_run,
+        ):
+            result = execute_named("codex", "do work", cwd=ROOT)
+
+        self.assertEqual(result["status"], "passed")
+        self.assertEqual(result["attempts"][0]["capacity_source"], "omniroute-free")
+        self.assertIn("--ignore-user-config", seen["argv"])
+        self.assertEqual(
+            result["attempts"][0]["usage"]["total_tokens"],
+            10,
+        )
+        self.assertTrue(seen["extra_env"]["CODEX_HOME"])
+
+    def test_codex_execute_named_uses_chatgpt_profile_when_omniroute_is_unavailable(self):
+        run = AgentRun(
+            agent="codex",
+            returncode=0,
+            duration_seconds=1.0,
+            stdout_tail='{"type":"turn.completed","usage":{"input_tokens":4,"output_tokens":1}}',
+            stderr_tail="",
+        )
+        seen = {}
+
+        def fake_run(_adapter, argv, *, cwd, timeout, extra_env):
+            seen["argv"] = list(argv)
+            seen["extra_env"] = dict(extra_env)
+            return run
+
+        with patch("shutil.which", return_value="/bin/codex"), patch(
+            "agents.orchestrator.omniroute_available_base",
+            return_value=None,
+        ), patch(
+            "agents.orchestrator.AgentAdapter.run",
+            autospec=True,
+            side_effect=fake_run,
+        ):
+            result = execute_named("codex", "do work", cwd=ROOT)
+
+        self.assertEqual(result["status"], "passed")
+        self.assertEqual(result["attempts"][0]["capacity_source"], "codex-chatgpt")
+        self.assertNotIn("--ignore-user-config", seen["argv"])
+        self.assertNotIn("CODEX_HOME", seen["extra_env"])
 
 
 if __name__ == "__main__":

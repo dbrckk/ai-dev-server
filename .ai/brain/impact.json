@@ -1,571 +1,102 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "0fdc770db3b1fcb24aecf31d8ef631180ed6082c",
-  "head": "799ad2a75b7f09567a78eafd2abed54d0ac8d1d3",
+  "base": "799ad2a75b7f09567a78eafd2abed54d0ac8d1d3",
+  "head": "1b1abf1d75094e4627c69c5393421d3d24ec4695",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "docs/PRODUCTION_OS_WORKER.md",
+      "path": "tests/test_production_os_local_e2e.py",
       "status": "A"
-    },
-    {
-      "path": "scripts/start-all.sh",
-      "status": "M"
-    },
-    {
-      "path": "scripts/start-production-os-worker.sh",
-      "status": "A"
-    },
-    {
-      "path": "scripts/status.sh",
-      "status": "M"
-    },
-    {
-      "path": "studio/production_os_worker.py",
-      "status": "M"
-    },
-    {
-      "path": "tests/test_production_os_worker_cli.py",
-      "status": "M"
-    },
-    {
-      "path": "tests/test_production_os_worker_runtime.py",
-      "status": "M"
     }
   ],
   "changed_source_files": [
-    "studio/production_os_worker.py",
-    "tests/test_production_os_worker_cli.py",
-    "tests/test_production_os_worker_runtime.py"
+    "tests/test_production_os_local_e2e.py"
   ],
   "impacted_files": [
-    "studio/production_os_worker.py",
-    "tests/test_production_os_worker.py",
-    "tests/test_production_os_worker_cli.py",
-    "tests/test_production_os_worker_runtime.py"
+    "tests/test_production_os_local_e2e.py"
   ],
   "impacted_symbols": [
     {
-      "name": "ProductionOSWorkerError",
+      "name": "_ControlPlane",
       "kind": "class",
-      "file": "studio/production_os_worker.py",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 14
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 15
+    },
+    {
+      "name": "Handler",
+      "kind": "class",
+      "file": "tests/test_production_os_local_e2e.py",
       "line": 20
     },
     {
-      "name": "_NoRedirect",
-      "kind": "class",
-      "file": "studio/production_os_worker.py",
+      "name": "log_message",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 21
+    },
+    {
+      "name": "do_POST",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
       "line": 24
     },
     {
-      "name": "redirect_request",
+      "name": "_send",
       "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 25
-    },
-    {
-      "name": "_default_opener",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 31
-    },
-    {
-      "name": "ProductionOSClient",
-      "kind": "class",
-      "file": "studio/production_os_worker.py",
-      "line": 38
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 39
-    },
-    {
-      "name": "_post",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
+      "file": "tests/test_production_os_local_e2e.py",
       "line": 79
     },
     {
-      "name": "claim",
+      "name": "url",
       "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 138
-    },
-    {
-      "name": "ack",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 155
-    },
-    {
-      "name": "complete",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 161
-    },
-    {
-      "name": "fail",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 164
-    },
-    {
-      "name": "register",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 167
-    },
-    {
-      "name": "heartbeat",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 188
-    },
-    {
-      "name": "production_capacity_snapshot",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 210
-    },
-    {
-      "name": "_project_id",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 266
-    },
-    {
-      "name": "_app_name",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 271
-    },
-    {
-      "name": "_brief",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 281
-    },
-    {
-      "name": "build_studio_request",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 294
-    },
-    {
-      "name": "_write_project_capacity_plan",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 336
-    },
-    {
-      "name": "_result_payload",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 409
-    },
-    {
-      "name": "completion_payload",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 419
-    },
-    {
-      "name": "failure_payload",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 435
-    },
-    {
-      "name": "run_once",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 457
-    },
-    {
-      "name": "keep_job_alive",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 522
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 657
-    },
-    {
-      "name": "ProductionOSWorkerTests",
-      "kind": "class",
-      "file": "tests/test_production_os_worker.py",
-      "line": 17
-    },
-    {
-      "name": "job",
-      "kind": "function",
-      "file": "tests/test_production_os_worker.py",
-      "line": 18
-    },
-    {
-      "name": "test_build_studio_request_preserves_goal_and_workflow_correlation",
-      "kind": "function",
-      "file": "tests/test_production_os_worker.py",
-      "line": 36
-    },
-    {
-      "name": "test_short_task_is_expanded_to_valid_studio_brief",
-      "kind": "function",
-      "file": "tests/test_production_os_worker.py",
-      "line": 56
-    },
-    {
-      "name": "test_completion_payload_forwards_usage_and_evidence",
-      "kind": "function",
-      "file": "tests/test_production_os_worker.py",
-      "line": 68
-    },
-    {
-      "name": "test_failure_payload_is_bounded_and_preserves_usage",
-      "kind": "function",
-      "file": "tests/test_production_os_worker.py",
-      "line": 107
-    },
-    {
-      "name": "_Client",
-      "kind": "class",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 10
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 11
-    },
-    {
-      "name": "register",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 16
-    },
-    {
-      "name": "ProductionOSWorkerCLITests",
-      "kind": "class",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 22
-    },
-    {
-      "name": "test_main_registers_worker_and_runs_once",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 23
-    },
-    {
-      "name": "factory",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 27
-    },
-    {
-      "name": "run_once_fn",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 32
-    },
-    {
-      "name": "test_main_runs_bounded_cycles_until_queue_is_idle",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 75
-    },
-    {
-      "name": "factory",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 84
-    },
-    {
-      "name": "run_once_fn",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 89
-    },
-    {
-      "name": "test_main_requires_all_control_plane_credentials",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 112
-    },
-    {
-      "name": "test_main_forwards_capacity_snapshot_to_worker_cycle",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 132
-    },
-    {
-      "name": "test_continuous_mode_polls_idle_queue_and_refreshes_capacity",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 164
-    },
-    {
-      "name": "capacity_provider",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 168
-    },
-    {
-      "name": "run_once_fn",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 173
-    },
-    {
-      "name": "sleeper",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_cli.py",
-      "line": 177
-    },
-    {
-      "name": "sample_job",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 18
-    },
-    {
-      "name": "_FakeClient",
-      "kind": "class",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 37
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 38
-    },
-    {
-      "name": "claim",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 42
-    },
-    {
-      "name": "ack",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 46
-    },
-    {
-      "name": "complete",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 49
-    },
-    {
-      "name": "fail",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 52
-    },
-    {
-      "name": "heartbeat",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 55
-    },
-    {
-      "name": "_Response",
-      "kind": "class",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 61
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 62
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 98
     },
     {
       "name": "__enter__",
       "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 70
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 102
     },
     {
       "name": "__exit__",
       "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 73
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 106
     },
     {
-      "name": "read",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 76
-    },
-    {
-      "name": "ProductionOSWorkerRuntimeTests",
+      "name": "ProductionOSLocalE2ETests",
       "kind": "class",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 82
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 112
     },
     {
-      "name": "test_client_rejects_insecure_remote_control_plane",
+      "name": "test_worker_completes_real_http_control_plane_cycle",
       "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 83
-    },
-    {
-      "name": "test_client_allows_loopback_http",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 93
-    },
-    {
-      "name": "test_client_claim_posts_bearer_json_and_handles_no_content",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 101
-    },
-    {
-      "name": "opener",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 104
-    },
-    {
-      "name": "test_run_once_returns_idle_when_no_job_is_available",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 155
-    },
-    {
-      "name": "test_run_once_acks_executes_and_completes_with_usage",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 168
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 113
     },
     {
       "name": "runner",
       "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 171
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 117
     },
     {
-      "name": "test_run_once_reports_failed_pipeline_to_control_plane",
+      "name": "execute_once",
       "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 211
-    },
-    {
-      "name": "runner",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 214
-    },
-    {
-      "name": "test_run_once_refreshes_heartbeat_during_long_runner_execution",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 242
-    },
-    {
-      "name": "heartbeat",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 248
-    },
-    {
-      "name": "runner",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 261
-    },
-    {
-      "name": "test_run_once_reports_runner_exception_and_clears_active_job",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 289
-    },
-    {
-      "name": "runner",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 292
-    },
-    {
-      "name": "test_capacity_snapshot_prefers_authenticated_omniroute",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 315
-    },
-    {
-      "name": "Snapshot",
-      "kind": "class",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 318
-    },
-    {
-      "name": "fetch",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 328
-    },
-    {
-      "name": "test_capacity_snapshot_fails_closed_without_authenticated_usage",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 349
-    },
-    {
-      "name": "Snapshot",
-      "kind": "class",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 352
-    },
-    {
-      "name": "test_client_heartbeat_posts_capacity_snapshot",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 371
-    },
-    {
-      "name": "opener",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 374
-    },
-    {
-      "name": "test_run_once_writes_project_token_envelope_before_execution",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 412
-    },
-    {
-      "name": "runner",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 421
-    },
-    {
-      "name": "test_project_token_envelope_is_capped_by_live_global_remaining_capacity",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 455
-    },
-    {
-      "name": "runner",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 464
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 154
     }
   ],
   "selected_tests": [
-    "tests/test_production_os_worker.py",
-    "tests/test_production_os_worker_cli.py",
-    "tests/test_production_os_worker_runtime.py"
+    "tests/test_production_os_local_e2e.py"
   ]
 }

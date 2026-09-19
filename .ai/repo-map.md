@@ -641,6 +641,7 @@ tests/
   test_preemption_controller.py
   test_privacy_stage.py
   test_privacy.py
+  test_production_os_local_e2e.py
   test_production_os_result_contract.py
   test_production_os_worker_cli.py
   test_production_os_worker_runtime.py
@@ -30167,6 +30168,63 @@ state = {'release_evidence': {'store_metadata': {'listing': {'title': 'Demo'}}}}
 evidence = build_privacy_package(root, out, state)
 ⋮----
 payload = json.loads((out / 'privacy/data-safety.json').read_text())
+````
+
+## File: tests/test_production_os_local_e2e.py
+````python
+class _ControlPlane
+⋮----
+def __init__(self)
+⋮----
+outer = self
+⋮----
+class Handler(BaseHTTPRequestHandler)
+⋮----
+def log_message(self, format, *args)
+⋮----
+def do_POST(self)
+⋮----
+length = int(self.headers.get("Content-Length", "0"))
+payload = json.loads(self.rfile.read(length) or b"{}")
+⋮----
+body = {"worker": {"worker_id": payload["worker_id"]}}
+⋮----
+def _send(self, status, body)
+⋮----
+encoded = json.dumps(body).encode("utf-8")
+⋮----
+@property
+    def url(self)
+⋮----
+def __enter__(self)
+⋮----
+def __exit__(self, exc_type, exc, tb)
+⋮----
+class ProductionOSLocalE2ETests(unittest.TestCase)
+⋮----
+def test_worker_completes_real_http_control_plane_cycle(self)
+⋮----
+output_root = Path(td)
+⋮----
+def runner(request_path, project_out, **kwargs)
+⋮----
+request = json.loads(
+envelope = {
+⋮----
+def execute_once(client, **kwargs)
+⋮----
+rc = main(
+⋮----
+request_files = list(
+result_files = list(
+⋮----
+result = json.loads(
+⋮----
+paths = [call["path"] for call in control_plane.calls]
+⋮----
+register = control_plane.calls[0]
+⋮----
+complete = next(
 ````
 
 ## File: tests/test_production_os_result_contract.py

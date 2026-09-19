@@ -22,21 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T09:36:35Z
+Generated: 2026-09-19T10:55:57Z
 
 ### Git
 - Branch: `main`
-- Head: `799ad2a75b7f`
-- Commit date: 2026-09-19T11:36:24+02:00
-- Commit: feat: harden Production-OS Codex worker for continuous operation
-- Tracked files: 802
+- Head: `1b1abf1d7509`
+- Commit date: 2026-09-19T12:55:46+02:00
+- Commit: test: add Production-OS worker local end-to-end acceptance
+- Tracked files: 805
 
 ### Recently changed files
+- `tests/test_production_os_local_e2e.py`
 - `scripts/status.sh`
 - `scripts/start-all.sh`
 - `docs/PRODUCTION_OS_WORKER.md`
-- `scripts/start-production-os-worker.sh`
-- `tests/test_production_os_worker_cli.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -3705,11 +3705,12 @@
         "studio/omniroute_capacity.py"
       ],
       "dependents": [
+        "tests/test_production_os_local_e2e.py",
         "tests/test_production_os_worker.py",
         "tests/test_production_os_worker_cli.py",
         "tests/test_production_os_worker_runtime.py"
       ],
-      "in_degree": 3,
+      "in_degree": 4,
       "out_degree": 4
     },
     "studio/project_budget.py": {
@@ -6727,6 +6728,14 @@
     "tests/test_privacy_stage.py": {
       "dependencies": [
         "studio/privacy_stage.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_production_os_local_e2e.py": {
+      "dependencies": [
+        "studio/production_os_worker.py"
       ],
       "dependents": [],
       "in_degree": 0,

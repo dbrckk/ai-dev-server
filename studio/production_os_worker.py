@@ -298,7 +298,7 @@ def _brief(task: str, final_goal: str) -> str:
     return expanded[:24000]
 
 
-def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
+def _asset_forge_guidance(handoff: dict[str, Any]) -> str:\n    candidates = handoff.get("reuse_candidates", [])\n    if not isinstance(candidates, list):\n        return ""\n    visual_caps = {\n        "visual-asset-pipeline",\n        "sprite-atlas-pipeline",\n        "gltf-asset-pipeline",\n        "vector-asset-pipeline",\n        "godot-asset-handoff",\n    }\n    if not any(\n        isinstance(item, dict)\n        and str(item.get("source") or "") == "dbrckk/asset-forge"\n        and str(item.get("capability") or "") in visual_caps\n        for item in candidates\n    ):\n        return ""\n    return (\n        " Use dbrckk/asset-forge for visual asset production. "\n        "Represent asset work with the asset-forge/production-request/v1 contract, "\n        "compile it with python asset_forge.py production-job <request.json>, "\n        "then validate and integrate the produced assets before completion."\n    )\n\n\ndef build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
     """Convert one claimed Production-OS job to the trusted Studio request."""
     if not isinstance(job, dict):
         raise ValueError("Production-OS job must be an object")
@@ -327,7 +327,7 @@ def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
         "id": _project_id(job_key),
         "target_repo": repository,
         "app_name": _app_name(repository),
-        "brief": _brief(task, final_goal),
+        "brief": (_brief(task, final_goal) + _asset_forge_guidance(handoff))[:24000],
         "enabled": True,
         "production_os": {
             "workflow_id": workflow_id,

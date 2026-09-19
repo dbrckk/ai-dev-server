@@ -72,6 +72,17 @@ def _codex_version() -> tuple[bool, str]:
     return True, output[0][:160] if output else executable
 
 
+def _pollinations_status(environ: dict[str, str]) -> tuple[bool, str]:
+    executable = shutil.which("polli")
+    if not executable:
+        return False, "polli CLI not installed"
+    api_key = bool(str(environ.get("POLLINATIONS_API_KEY") or "").strip())
+    stored = (Path.home() / ".pollinations" / "credentials.json").is_file()
+    if not (api_key or stored):
+        return False, "polli installed but not authenticated"
+    return True, "polli installed and authenticated"
+
+
 def run_preflight(env: dict[str, str] | None = None) -> tuple[int, list[str]]:
     environ = os.environ if env is None else env
     lines: list[str] = []
@@ -130,6 +141,12 @@ def run_preflight(env: dict[str, str] | None = None) -> tuple[int, list[str]]:
     else:
         failures += 1
         lines.append("FAIL Codex CLI: " + codex_detail)
+
+    visual_ready, visual_detail = _pollinations_status(environ)
+    if visual_ready:
+        lines.append("OK visual assets: " + visual_detail)
+    else:
+        lines.append("INFO visual assets: disabled (" + visual_detail + ")")
 
     if failures:
         lines.append(f"NOT READY: {failures} preflight check(s) failed")

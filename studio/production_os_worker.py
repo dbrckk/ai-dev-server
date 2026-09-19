@@ -378,7 +378,22 @@ def _asset_forge_guidance(handoff: dict[str, Any]) -> str:
         and str(item.get("capability") or "") in visual_caps
         for item in candidates
     )
-    if not asset_forge_candidate and not _is_visual_handoff(handoff):
+    contracts = handoff.get("tool_contracts")
+    contract = (
+        contracts.get("asset_forge")
+        if isinstance(contracts, dict)
+        else None
+    )
+    contract_declared = (
+        isinstance(contract, dict)
+        and contract.get("request_schema") == "asset-forge/production-request/v1"
+        and contract.get("command") == "asset-forge fulfill"
+    )
+    if (
+        not asset_forge_candidate
+        and not contract_declared
+        and not _is_visual_handoff(handoff)
+    ):
         return ""
     return (
         " Use dbrckk/asset-forge for visual asset production. "

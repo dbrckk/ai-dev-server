@@ -22,21 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T21:21:58Z
+Generated: 2026-09-19T21:24:42Z
 
 ### Git
 - Branch: `main`
-- Head: `72488cfe056b`
-- Commit date: 2026-09-19T23:21:37+02:00
-- Commit: ci: verify live Asset Forge production contract
+- Head: `2e4fedf3c6b3`
+- Commit date: 2026-09-19T23:24:33+02:00
+- Commit: test: exercise visual Android Production OS bridge end to end
 - Tracked files: 811
 
 ### Recently changed files
+- `tests/test_production_os_local_e2e.py`
 - `.github/workflows/validate.yml`
 - `tests/test_production_os_worker_cli.py`
 - `tests/test_production_os_worker_runtime.py`
 - `studio/production_os_worker.py`
-- `tests/test_production_os_worker_preflight.py`
 
 ### Project signals
 - No common build descriptor detected

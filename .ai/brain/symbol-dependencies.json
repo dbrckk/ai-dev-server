@@ -5,76 +5,55 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "AgentRun": {
+    "_valid_service_url": {
       "source": {
-        "file": "studio/agents/adapters.py",
+        "file": "scripts/preflight-production-os-worker.py",
         "start": 19,
-        "end": 24
+        "end": 31
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "AgentAdapter": {
+    "_positive_float": {
       "source": {
-        "file": "studio/agents/adapters.py",
-        "start": 27,
-        "end": 103
+        "file": "scripts/preflight-production-os-worker.py",
+        "start": 34,
+        "end": 38
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_check_output_root": {
+      "source": {
+        "file": "scripts/preflight-production-os-worker.py",
+        "start": 41,
+        "end": 50
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_codex_version": {
+      "source": {
+        "file": "scripts/preflight-production-os-worker.py",
+        "start": 53,
+        "end": 72
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "run_preflight": {
+      "source": {
+        "file": "scripts/preflight-production-os-worker.py",
+        "start": 75,
+        "end": 138
       },
       "symbol_dependencies": [
         {
-          "symbol": "AgentRun",
+          "symbol": "_check_output_root",
           "definitions": [
             {
-              "file": "studio/agents/adapters.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "AgentSpec",
-          "definitions": [
-            {
-              "file": "studio/agents/registry.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/agents/adapters.py",
-              "line": 28,
+              "file": "scripts/preflight-production-os-worker.py",
+              "line": 41,
               "kind": "function",
               "language": "python"
             }
@@ -82,41 +61,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "available",
+          "symbol": "_codex_version",
           "definitions": [
             {
-              "file": "studio/agents/registry.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/agents/registry.py",
-              "line": 82,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/agents/registry.py",
-              "line": 79,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "probe",
-          "definitions": [
-            {
-              "file": "studio/agents/adapters.py",
-              "line": 31,
+              "file": "scripts/preflight-production-os-worker.py",
+              "line": 53,
               "kind": "function",
               "language": "python"
             }
@@ -124,131 +73,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "run",
+          "symbol": "_positive_float",
           "definitions": [
             {
-              "file": "studio/agents/adapters.py",
+              "file": "scripts/preflight-production-os-worker.py",
               "line": 34,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        }
-      ],
-      "dependency_count": 8
-    },
-    "__init__": {
-      "source": {
-        "file": "studio/agents/adapters.py",
-        "start": 28,
-        "end": 29
-      },
-      "symbol_dependencies": [
+        },
         {
-          "symbol": "AgentSpec",
+          "symbol": "_valid_service_url",
           "definitions": [
             {
-              "file": "studio/agents/registry.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "probe": {
-      "source": {
-        "file": "studio/agents/adapters.py",
-        "start": 31,
-        "end": 32
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "available",
-          "definitions": [
-            {
-              "file": "studio/agents/registry.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/agents/registry.py",
-              "line": 82,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "run": {
-      "source": {
-        "file": "studio/agents/adapters.py",
-        "start": 34,
-        "end": 103
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "AgentRun",
-          "definitions": [
-            {
-              "file": "studio/agents/adapters.py",
+              "file": "scripts/preflight-production-os-worker.py",
               "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/agents/registry.py",
-              "line": 79,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "probe",
-          "definitions": [
-            {
-              "file": "studio/agents/adapters.py",
-              "line": 31,
               "kind": "function",
               "language": "python"
             }
@@ -258,79 +99,19 @@
       ],
       "dependency_count": 4
     },
-    "CodexAdapterOutputRetentionTests": {
+    "main": {
       "source": {
-        "file": "tests/test_codex_output_retention.py",
-        "start": 18,
-        "end": 56
+        "file": "scripts/preflight-production-os-worker.py",
+        "start": 141,
+        "end": 261
       },
       "symbol_dependencies": [
         {
-          "symbol": "AgentAdapter",
+          "symbol": "run_preflight",
           "definitions": [
             {
-              "file": "studio/agents/adapters.py",
-              "line": 27,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "AgentSpec",
-          "definitions": [
-            {
-              "file": "studio/agents/registry.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "parse_codex_usage",
-          "definitions": [
-            {
-              "file": "studio/agents/codex.py",
-              "line": 113,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "probe",
-          "definitions": [
-            {
-              "file": "studio/agents/adapters.py",
-              "line": 31,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/agents/adapters.py",
-              "line": 34,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_codex_terminal_usage_event_survives_large_trailing_output",
-          "definitions": [
-            {
-              "file": "tests/test_codex_output_retention.py",
-              "line": 19,
+              "file": "scripts/preflight-production-os-worker.py",
+              "line": 75,
               "kind": "function",
               "language": "python"
             }
@@ -338,77 +119,242 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 6
+      "dependency_count": 1
     },
-    "test_codex_terminal_usage_event_survives_large_trailing_output": {
+    "ProductionOSWorkerPreflightTests": {
       "source": {
-        "file": "tests/test_codex_output_retention.py",
-        "start": 19,
-        "end": 56
+        "file": "tests/test_production_os_worker_preflight.py",
+        "start": 23,
+        "end": 117
       },
       "symbol_dependencies": [
         {
-          "symbol": "AgentAdapter",
+          "symbol": "base_env",
           "definitions": [
             {
-              "file": "studio/agents/adapters.py",
-              "line": 27,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "AgentSpec",
-          "definitions": [
-            {
-              "file": "studio/agents/registry.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "parse_codex_usage",
-          "definitions": [
-            {
-              "file": "studio/agents/codex.py",
-              "line": 113,
+              "file": "tests/test_production_os_worker_preflight.py",
+              "line": 24,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "probe",
+          "symbol": "test_loopback_http_is_allowed",
           "definitions": [
             {
-              "file": "studio/agents/adapters.py",
-              "line": 31,
+              "file": "tests/test_production_os_worker_preflight.py",
+              "line": 77,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "run",
+          "symbol": "test_missing_required_secret_fails_without_echoing_secret_values",
           "definitions": [
             {
-              "file": "studio/agents/adapters.py",
-              "line": 34,
+              "file": "tests/test_production_os_worker_preflight.py",
+              "line": 47,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_non_positive_poll_interval_fails",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_preflight.py",
+              "line": 104,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_partial_omniroute_configuration_fails",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_preflight.py",
+              "line": 89,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_ready_configuration_passes",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_preflight.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_remote_http_control_plane_is_rejected",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_preflight.py",
+              "line": 62,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 5
+      "dependency_count": 7
+    },
+    "base_env": {
+      "source": {
+        "file": "tests/test_production_os_worker_preflight.py",
+        "start": 24,
+        "end": 31
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_ready_configuration_passes": {
+      "source": {
+        "file": "tests/test_production_os_worker_preflight.py",
+        "start": 33,
+        "end": 45
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "base_env",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_preflight.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_missing_required_secret_fails_without_echoing_secret_values": {
+      "source": {
+        "file": "tests/test_production_os_worker_preflight.py",
+        "start": 47,
+        "end": 60
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "base_env",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_preflight.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_remote_http_control_plane_is_rejected": {
+      "source": {
+        "file": "tests/test_production_os_worker_preflight.py",
+        "start": 62,
+        "end": 75
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "base_env",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_preflight.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_loopback_http_is_allowed": {
+      "source": {
+        "file": "tests/test_production_os_worker_preflight.py",
+        "start": 77,
+        "end": 87
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "base_env",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_preflight.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_partial_omniroute_configuration_fails": {
+      "source": {
+        "file": "tests/test_production_os_worker_preflight.py",
+        "start": 89,
+        "end": 102
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "base_env",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_preflight.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_non_positive_poll_interval_fails": {
+      "source": {
+        "file": "tests/test_production_os_worker_preflight.py",
+        "start": 104,
+        "end": 117
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "base_env",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_preflight.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
     }
   }
 }

@@ -56,6 +56,7 @@ jumpy-studio-cycle-v6.sh
 jumpy-studio-cycle-v7.sh
 jumpy-studio-cycle-v8.sh
 jumpy-studio-cycle.sh
+preflight-production-os-worker.py
 provider-status.sh
 restart-all.sh
 setup-serena-codex.sh
@@ -1944,6 +1945,55 @@ git commit -m 'Autocycle: adaptive studio evolution'
 git push origin HEAD:main
 ```
 
+## File: preflight-production-os-worker.py
+```python
+#!/usr/bin/env python3
+⋮----
+REQUIRED = (
+⋮----
+def _valid_service_url(raw: str) -> bool
+⋮----
+value = str(raw or "").strip()
+parsed = urlsplit(value)
+host = (parsed.hostname or "").lower()
+loopback = host in {"127.0.0.1", "localhost", "::1", "0.0.0.0"}
+⋮----
+def _positive_float(value: str) -> bool
+⋮----
+def _check_output_root(path_value: str) -> tuple[bool, str]
+⋮----
+path = Path(path_value).expanduser()
+⋮----
+probe = path / ".production-os-preflight"
+⋮----
+def _codex_version() -> tuple[bool, str]
+⋮----
+executable = shutil.which("codex")
+⋮----
+result = subprocess.run(
+⋮----
+output = (result.stdout or result.stderr).strip().splitlines()
+⋮----
+def run_preflight(env: dict[str, str] | None = None) -> tuple[int, list[str]]
+⋮----
+environ = os.environ if env is None else env
+lines: list[str] = []
+failures = 0
+⋮----
+missing = [name for name in REQUIRED if not str(environ.get(name) or "").strip()]
+⋮----
+production_url = str(environ.get("PRODUCTION_OS_URL") or "").strip()
+⋮----
+omniroute_url = str(environ.get("OMNIROUTE_URL") or "").strip()
+omniroute_key = str(environ.get("OMNIROUTE_API_KEY") or "").strip()
+⋮----
+poll_interval = str(environ.get("PRODUCTION_OS_POLL_INTERVAL") or "10").strip()
+⋮----
+output_root = str(
+⋮----
+def main() -> int
+```
+
 ## File: provider-status.sh
 ```bash
 #!/usr/bin/env bash
@@ -2238,6 +2288,8 @@ exec fcc-server
 set -euo pipefail
 
 export PATH="$HOME/.local/bin:$PATH"
+
+python "$(dirname "$0")/preflight-production-os-worker.py"
 
 required=(
   PRODUCTION_OS_URL

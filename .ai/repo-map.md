@@ -92,6 +92,7 @@ scripts/
   jumpy-studio-cycle-v7.sh
   jumpy-studio-cycle-v8.sh
   jumpy-studio-cycle.sh
+  preflight-production-os-worker.py
   provider-status.sh
   restart-all.sh
   setup-serena-codex.sh
@@ -645,6 +646,7 @@ tests/
   test_production_os_local_e2e.py
   test_production_os_result_contract.py
   test_production_os_worker_cli.py
+  test_production_os_worker_preflight.py
   test_production_os_worker_runtime.py
   test_production_os_worker.py
   test_project_budget.py
@@ -4071,6 +4073,55 @@ git commit -m 'Autocycle: adaptive studio evolution'
 git push origin HEAD:main
 ````
 
+## File: scripts/preflight-production-os-worker.py
+````python
+#!/usr/bin/env python3
+⋮----
+REQUIRED = (
+⋮----
+def _valid_service_url(raw: str) -> bool
+⋮----
+value = str(raw or "").strip()
+parsed = urlsplit(value)
+host = (parsed.hostname or "").lower()
+loopback = host in {"127.0.0.1", "localhost", "::1", "0.0.0.0"}
+⋮----
+def _positive_float(value: str) -> bool
+⋮----
+def _check_output_root(path_value: str) -> tuple[bool, str]
+⋮----
+path = Path(path_value).expanduser()
+⋮----
+probe = path / ".production-os-preflight"
+⋮----
+def _codex_version() -> tuple[bool, str]
+⋮----
+executable = shutil.which("codex")
+⋮----
+result = subprocess.run(
+⋮----
+output = (result.stdout or result.stderr).strip().splitlines()
+⋮----
+def run_preflight(env: dict[str, str] | None = None) -> tuple[int, list[str]]
+⋮----
+environ = os.environ if env is None else env
+lines: list[str] = []
+failures = 0
+⋮----
+missing = [name for name in REQUIRED if not str(environ.get(name) or "").strip()]
+⋮----
+production_url = str(environ.get("PRODUCTION_OS_URL") or "").strip()
+⋮----
+omniroute_url = str(environ.get("OMNIROUTE_URL") or "").strip()
+omniroute_key = str(environ.get("OMNIROUTE_API_KEY") or "").strip()
+⋮----
+poll_interval = str(environ.get("PRODUCTION_OS_POLL_INTERVAL") or "10").strip()
+⋮----
+output_root = str(
+⋮----
+def main() -> int
+````
+
 ## File: scripts/provider-status.sh
 ````bash
 #!/usr/bin/env bash
@@ -4365,6 +4416,8 @@ exec fcc-server
 set -euo pipefail
 
 export PATH="$HOME/.local/bin:$PATH"
+
+python "$(dirname "$0")/preflight-production-os-worker.py"
 
 required=(
   PRODUCTION_OS_URL
@@ -30332,6 +30385,35 @@ def capacity_provider(env)
 value = {"remaining_tokens": len(capacities) + 1}
 ⋮----
 def sleeper(seconds)
+````
+
+## File: tests/test_production_os_worker_preflight.py
+````python
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS = ROOT / "scripts"
+⋮----
+SPEC = importlib.util.spec_from_file_location(
+MODULE = importlib.util.module_from_spec(SPEC)
+⋮----
+class ProductionOSWorkerPreflightTests(unittest.TestCase)
+⋮----
+def base_env(self, output_root)
+⋮----
+def test_ready_configuration_passes(self)
+⋮----
+def test_missing_required_secret_fails_without_echoing_secret_values(self)
+⋮----
+env = self.base_env(Path(td) / "out")
+⋮----
+rendered = "\n".join(lines)
+⋮----
+def test_remote_http_control_plane_is_rejected(self)
+⋮----
+def test_loopback_http_is_allowed(self)
+⋮----
+def test_partial_omniroute_configuration_fails(self)
+⋮----
+def test_non_positive_poll_interval_fails(self)
 ````
 
 ## File: tests/test_production_os_worker_runtime.py

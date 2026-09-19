@@ -1,14 +1,17 @@
 # Change impact
 
-Base: 79c9b79c2a5b37fa6332bf57eb1142a62c4b4fe5
-Head: 13bd1fbe32eaf4fe77c9df78a8c1f6bb533a32e6
+Base: a912ca81c0c952503decf6d06de4ac760da2fa99
+Head: f14923313b3be1eb520f9571e145703f9e10f3e9
 
 ## Changed files
-- M studio/agents/adapters.py
-- A tests/test_codex_output_retention.py
+- M docs/PRODUCTION_OS_WORKER.md
+- A scripts/preflight-production-os-worker.py
+- M scripts/start-production-os-worker.sh
+- A tests/test_production_os_worker_preflight.py
 
 ## Affected areas
-- studio
+- docs
+- scripts
 - tests
 
 ## Related test candidates

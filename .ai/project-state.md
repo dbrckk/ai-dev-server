@@ -22,20 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T11:40:33Z
+Generated: 2026-09-19T14:17:20Z
 
 ### Git
 - Branch: `main`
-- Head: `13bd1fbe32ea`
-- Commit date: 2026-09-19T13:40:22+02:00
-- Commit: fix: retain Codex terminal usage event in bounded output
-- Tracked files: 806
+- Head: `f14923313b3b`
+- Commit date: 2026-09-19T16:17:08+02:00
+- Commit: feat: add Production-OS worker readiness preflight
+- Tracked files: 808
 
 ### Recently changed files
+- `docs/PRODUCTION_OS_WORKER.md`
+- `scripts/start-production-os-worker.sh`
+- `tests/test_production_os_worker_preflight.py`
+- `scripts/preflight-production-os-worker.py`
 - `studio/agents/adapters.py`
-- `tests/test_codex_output_retention.py`
-- `tests/test_production_os_local_e2e.py`
-- `scripts/status.sh`
 
 ### Project signals
 - No common build descriptor detected

@@ -266,6 +266,7 @@ test_privacy.py
 test_production_os_local_e2e.py
 test_production_os_result_contract.py
 test_production_os_worker_cli.py
+test_production_os_worker_preflight.py
 test_production_os_worker_runtime.py
 test_production_os_worker.py
 test_project_budget.py
@@ -7793,6 +7794,35 @@ def capacity_provider(env)
 value = {"remaining_tokens": len(capacities) + 1}
 ⋮----
 def sleeper(seconds)
+```
+
+## File: test_production_os_worker_preflight.py
+```python
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS = ROOT / "scripts"
+⋮----
+SPEC = importlib.util.spec_from_file_location(
+MODULE = importlib.util.module_from_spec(SPEC)
+⋮----
+class ProductionOSWorkerPreflightTests(unittest.TestCase)
+⋮----
+def base_env(self, output_root)
+⋮----
+def test_ready_configuration_passes(self)
+⋮----
+def test_missing_required_secret_fails_without_echoing_secret_values(self)
+⋮----
+env = self.base_env(Path(td) / "out")
+⋮----
+rendered = "\n".join(lines)
+⋮----
+def test_remote_http_control_plane_is_rejected(self)
+⋮----
+def test_loopback_http_is_allowed(self)
+⋮----
+def test_partial_omniroute_configuration_fails(self)
+⋮----
+def test_non_positive_poll_interval_fails(self)
 ```
 
 ## File: test_production_os_worker_runtime.py

@@ -1,7 +1,7 @@
 # Change impact
 
-Base: 934e13ecfce97066354d062084b04f6be59f2214
-Head: 626080542b049ee73e7db31dba2888b117462b94
+Base: dc8ddfaaa3a4207846ecbbb75151c16e4e0b9c0d
+Head: 0b22e0c893f292751e1598aa0e82383dfe125270
 
 ## Changed files
 - M .repo-standards.yml

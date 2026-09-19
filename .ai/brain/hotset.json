@@ -1,75 +1,74 @@
 {
   "files": [
     {
-      "path": "tests/test_production_os_worker_preflight.py",
+      "path": "tests/test_production_os_worker_runtime.py",
       "reasons": [
         "changed",
         "changed-source",
         "impact",
+        "reverse-dependency-neighbor",
         "selected-test",
         "symbol-indexed"
       ],
-      "score": 410
+      "score": 585
     },
     {
-      "path": "scripts/preflight-production-os-worker.py",
+      "path": "studio/production_os_worker.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "symbol-indexed"
+      ],
+      "score": 545
+    },
+    {
+      "path": "tests/test_production_os_worker_cli.py",
       "reasons": [
         "changed",
         "changed-source",
         "impact",
-        "symbol-indexed"
-      ],
-      "score": 330
-    },
-    {
-      "path": "docs/PRODUCTION_OS_WORKER.md",
-      "reasons": [
-        "changed"
-      ],
-      "score": 100
-    },
-    {
-      "path": "scripts/start-production-os-worker.sh",
-      "reasons": [
-        "changed"
-      ],
-      "score": 100
-    },
-    {
-      "path": "tests/test_production_os_worker.py",
-      "reasons": [
+        "reverse-dependency-neighbor",
         "selected-test",
         "symbol-indexed"
       ],
-      "score": 100
-    },
-    {
-      "path": "scripts/status.sh",
-      "reasons": [
-        "recent-project-state"
-      ],
-      "score": 60
-    },
-    {
-      "path": "studio/agents/adapters.py",
-      "reasons": [
-        "recent-project-state"
-      ],
-      "score": 60
-    },
-    {
-      "path": "tests/test_codex_output_retention.py",
-      "reasons": [
-        "recent-project-state"
-      ],
-      "score": 60
+      "score": 475
     },
     {
       "path": "tests/test_production_os_local_e2e.py",
       "reasons": [
-        "recent-project-state"
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
       ],
-      "score": 60
+      "score": 235
+    },
+    {
+      "path": "tests/test_production_os_worker.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 210
+    },
+    {
+      "path": "tests/test_production_os_worker_preflight.py",
+      "reasons": [
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 110
+    },
+    {
+      "path": "studio/atomic_file.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 25
     },
     {
       "path": "studio/core.py",
@@ -79,14 +78,21 @@
       "score": 25
     },
     {
-      "path": "studio/production_os_worker.py",
+      "path": "studio/file_lock.py",
       "reasons": [
         "dependency-neighbor"
       ],
       "score": 25
     },
     {
-      "path": "tests/test_studio.py",
+      "path": "studio/github_runner.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 25
+    },
+    {
+      "path": "studio/omniroute_capacity.py",
       "reasons": [
         "dependency-neighbor"
       ],

@@ -22,21 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T14:17:20Z
+Generated: 2026-09-19T20:38:03Z
 
 ### Git
 - Branch: `main`
-- Head: `f14923313b3b`
-- Commit date: 2026-09-19T16:17:08+02:00
-- Commit: feat: add Production-OS worker readiness preflight
-- Tracked files: 808
+- Head: `0911845a9f86`
+- Commit date: 2026-09-19T22:37:50+02:00
+- Commit: test: verify visual asset capability is claimed
+- Tracked files: 810
 
 ### Recently changed files
+- `tests/test_production_os_worker_runtime.py`
+- `tests/test_production_os_worker_cli.py`
+- `studio/production_os_worker.py`
 - `docs/PRODUCTION_OS_WORKER.md`
 - `scripts/start-production-os-worker.sh`
-- `tests/test_production_os_worker_preflight.py`
-- `scripts/preflight-production-os-worker.py`
-- `studio/agents/adapters.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -14807,6 +14807,8 @@ evidence = state.get('release_evidence', {}).get('privacy_policy')
 ````python
 """Production-OS worker bridge helpers for AI Dev Server."""
 ⋮----
+WORKER_CAPABILITIES = [
+⋮----
 class ProductionOSWorkerError(RuntimeError)
 ⋮----
 class _NoRedirect(urllib.request.HTTPRedirectHandler)
@@ -14938,7 +14940,7 @@ reason = status if not next_stage else f"{status}: {next_stage}"
 ⋮----
 clock = time.monotonic
 ⋮----
-capabilities = ["software-development", "repo-analysis"]
+capabilities = WORKER_CAPABILITIES
 job = client.claim(worker_id, capabilities)
 ⋮----
 key = str(job.get("key") or "")

@@ -1,17 +1,12 @@
 # Change impact
 
-Base: a912ca81c0c952503decf6d06de4ac760da2fa99
-Head: f14923313b3be1eb520f9571e145703f9e10f3e9
+Base: dcb006e9501fe66c6223ef6928cc5dcbf9e37b28
+Head: 0911845a9f86d43fef66c9f59c5285d51aa191fa
 
 ## Changed files
-- M docs/PRODUCTION_OS_WORKER.md
-- A scripts/preflight-production-os-worker.py
-- M scripts/start-production-os-worker.sh
-- A tests/test_production_os_worker_preflight.py
+- M tests/test_production_os_worker_runtime.py
 
 ## Affected areas
-- docs
-- scripts
 - tests
 
 ## Related test candidates

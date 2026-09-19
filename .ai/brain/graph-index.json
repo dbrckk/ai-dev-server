@@ -144,6 +144,7 @@
         "studio/portfolio_scan.py",
         "studio/post_preview.py",
         "studio/privacy_stage.py",
+        "studio/production_os_worker.py",
         "studio/project_budget.py",
         "studio/project_engine.py",
         "studio/provider_health.py",
@@ -212,7 +213,6 @@
         "tests/test_journeys.py",
         "tests/test_jumpy_v13_migration.py",
         "tests/test_local_api_security.py",
-        "tests/test_local_capacity.py",
         "tests/test_multi_engine_orchestrator.py",
         "tests/test_orchestrator.py",
         "tests/test_patch_safety_rebuild.py",
@@ -1773,6 +1773,24 @@
     },
     {
       "dependencies": [
+        "studio/atomic_file.py",
+        "studio/core.py",
+        "studio/file_lock.py",
+        "studio/github_runner.py",
+        "studio/omniroute_capacity.py"
+      ],
+      "dependents": [
+        "tests/test_production_os_local_e2e.py",
+        "tests/test_production_os_worker.py",
+        "tests/test_production_os_worker_cli.py",
+        "tests/test_production_os_worker_runtime.py"
+      ],
+      "in_degree": 4,
+      "out_degree": 5,
+      "path": "studio/production_os_worker.py"
+    },
+    {
+      "dependencies": [
         "studio/core.py",
         "studio/godot_android_export.py",
         "studio/godot_device_qa.py",
@@ -1975,23 +1993,6 @@
       "in_degree": 5,
       "out_degree": 3,
       "path": "studio/evolution_persist.py"
-    },
-    {
-      "dependencies": [
-        "studio/core.py",
-        "studio/godot_runtime.py",
-        "tests/test_studio.py"
-      ],
-      "dependents": [
-        "studio/godot_android_stage.py",
-        "studio/godot_device_stage.py",
-        "studio/godot_release_artifact.py",
-        "studio/godot_visual_qa.py",
-        "tests/test_godot_android_export.py"
-      ],
-      "in_degree": 5,
-      "out_degree": 3,
-      "path": "studio/godot_android_export.py"
     }
   ],
   "edge_count": 1783,

@@ -1502,6 +1502,7 @@
         "studio/portfolio_scan.py",
         "studio/post_preview.py",
         "studio/privacy_stage.py",
+        "studio/production_os_worker.py",
         "studio/project_budget.py",
         "studio/project_engine.py",
         "studio/provider_health.py",
@@ -1570,7 +1571,6 @@
         "tests/test_journeys.py",
         "tests/test_jumpy_v13_migration.py",
         "tests/test_local_api_security.py",
-        "tests/test_local_capacity.py",
         "tests/test_multi_engine_orchestrator.py",
         "tests/test_orchestrator.py",
         "tests/test_patch_safety_rebuild.py",
@@ -3711,6 +3711,7 @@
     "studio/production_os_worker.py": {
       "dependencies": [
         "studio/atomic_file.py",
+        "studio/core.py",
         "studio/file_lock.py",
         "studio/github_runner.py",
         "studio/omniroute_capacity.py"
@@ -3722,7 +3723,7 @@
         "tests/test_production_os_worker_runtime.py"
       ],
       "in_degree": 4,
-      "out_degree": 4
+      "out_degree": 5
     },
     "studio/project_budget.py": {
       "dependencies": [
@@ -6474,12 +6475,11 @@
     },
     "tests/test_local_capacity.py": {
       "dependencies": [
-        "studio/core.py",
         "studio/local_capacity.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 1
     },
     "tests/test_local_model_leaderboard.py": {
       "dependencies": [

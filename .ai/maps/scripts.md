@@ -229,7 +229,9 @@ fi
 npx --yes @deepseek-ai/dsh --help >/dev/null 2>&1 || true
 npx --yes cdesktop --help >/dev/null 2>&1 || true
 
-# Pollinations/OpenCode integration helper package, if available.
+# Pollinations media generation for autonomous visual assets. Pin the CLI used by Asset Forge jobs.
+npm install -g @pollinations/cli@0.1.15
+# Keep the OpenCode integration helper as an optional convenience layer.
 npm install -g opencode-pollinations-plugin >/dev/null 2>&1 || true
 
 # Keep local secrets/config out of git by default.
@@ -1973,6 +1975,13 @@ executable = shutil.which("codex")
 result = subprocess.run(
 ⋮----
 output = (result.stdout or result.stderr).strip().splitlines()
+⋮----
+def _pollinations_status(environ: dict[str, str]) -> tuple[bool, str]
+⋮----
+executable = shutil.which("polli")
+⋮----
+api_key = bool(str(environ.get("POLLINATIONS_API_KEY") or "").strip())
+stored = (Path.home() / ".pollinations" / "credentials.json").is_file()
 ⋮----
 def run_preflight(env: dict[str, str] | None = None) -> tuple[int, list[str]]
 ⋮----

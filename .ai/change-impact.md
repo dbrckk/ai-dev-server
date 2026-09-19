@@ -1,16 +1,16 @@
 # Change impact
 
-Base: 282f2296e1915c3b24e5b7afffe76602e3f4724b
-Head: db466e643f5bae24b5aa7f0c111b3692351bd12b
+Base: 179158d6dd131668df87425f71f138004f0f1bd2
+Head: fa365369c478c930574bf3947907429239fddbc7
 
 ## Changed files
-- M studio/production_os_worker.py
+- M tests/test_production_os_worker.py
 
 ## Affected areas
-- studio
+- tests
 
 ## Related test candidates
-- tests/test_production_os_worker.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

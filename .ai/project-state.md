@@ -22,20 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T20:57:44Z
+Generated: 2026-09-19T21:06:07Z
 
 ### Git
 - Branch: `main`
-- Head: `db466e643f5b`
-- Commit date: 2026-09-19T22:57:32+02:00
-- Commit: fix: restore valid asset-forge worker guidance
+- Head: `fa365369c478`
+- Commit date: 2026-09-19T23:05:51+02:00
+- Commit: test: cover direct visual task asset-forge routing
 - Tracked files: 810
 
 ### Recently changed files
-- `studio/production_os_worker.py`
 - `tests/test_production_os_worker.py`
-- `tests/test_production_os_worker_runtime.py`
-- `tests/test_production_os_worker_cli.py`
+- `studio/production_os_worker.py`
+- `tests/test_production_os_worker_preflight.py`
+- `scripts/preflight-production-os-worker.py`
 
 ### Project signals
 - No common build descriptor detected

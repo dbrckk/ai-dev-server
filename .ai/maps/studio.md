@@ -14807,7 +14807,15 @@ evidence = state.get('release_evidence', {}).get('privacy_policy')
 ````python
 """Production-OS worker bridge helpers for AI Dev Server."""
 ⋮----
-WORKER_CAPABILITIES = [
+BASE_WORKER_CAPABILITIES = [
+⋮----
+def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]
+⋮----
+env = os.environ if environ is None else environ
+home_dir = Path.home() if home is None else Path(home)
+polli_installed = shutil.which("polli") is not None
+polli_authenticated = bool(
+capabilities = list(BASE_WORKER_CAPABILITIES)
 ⋮----
 class ProductionOSWorkerError(RuntimeError)
 ⋮----
@@ -14852,7 +14860,7 @@ secret = str(operator_token or "").strip()
 payload = {
 ⋮----
 """Return a safe global token-capacity snapshot for Production-OS."""
-env = os.environ if environ is None else environ
+⋮----
 base_url = str(env.get("OMNIROUTE_URL") or "").strip()
 ⋮----
 snapshot = fetch_summary(
@@ -14880,11 +14888,18 @@ value = task or final_goal
 ⋮----
 expanded = (
 ⋮----
+def _is_visual_handoff(handoff: dict[str, Any]) -> bool
+⋮----
+text = " ".join(
+patterns = (
+⋮----
 def _asset_forge_guidance(handoff: dict[str, Any]) -> str
 ⋮----
 candidates = handoff.get("reuse_candidates", [])
 ⋮----
+candidates = []
 visual_caps = {
+asset_forge_candidate = any(
 ⋮----
 def build_studio_request(job: dict[str, Any]) -> dict[str, Any]
 ⋮----
@@ -14946,7 +14961,7 @@ reason = status if not next_stage else f"{status}: {next_stage}"
 ⋮----
 clock = time.monotonic
 ⋮----
-capabilities = WORKER_CAPABILITIES
+capabilities = list(capabilities or worker_capabilities())
 job = client.claim(worker_id, capabilities)
 ⋮----
 key = str(job.get("key") or "")
@@ -15002,6 +15017,7 @@ poll_interval = float(args.poll_interval)
 sleeper = time.sleep
 ⋮----
 client = client_factory(base_url, worker_token)
+capabilities = capabilities_provider(env)
 ⋮----
 completed_cycles = 0
 ⋮----

@@ -7810,6 +7810,10 @@ def base_env(self, output_root)
 ⋮----
 def test_ready_configuration_passes(self)
 ⋮----
+def test_visual_assets_are_non_blocking_when_pollinations_is_unavailable(self)
+⋮----
+def test_visual_assets_are_reported_ready_when_pollinations_is_ready(self)
+⋮----
 def test_missing_required_secret_fails_without_echoing_secret_values(self)
 ⋮----
 env = self.base_env(Path(td) / "out")
@@ -7854,6 +7858,10 @@ def __exit__(self, exc_type, exc, tb)
 def read(self, limit=-1)
 ⋮----
 class ProductionOSWorkerRuntimeTests(unittest.TestCase)
+⋮----
+def test_worker_capabilities_require_ready_visual_backend(self)
+⋮----
+caps = worker_capabilities(
 ⋮----
 def test_client_rejects_insecure_remote_control_plane(self)
 ⋮----
@@ -7952,6 +7960,8 @@ def test_visual_reuse_adds_asset_forge_guidance(self)
 job = self.job()
 ⋮----
 request = build_studio_request(job)
+⋮----
+def test_explicit_visual_task_adds_asset_forge_guidance_without_reuse_metadata(self)
 ⋮----
 def test_short_task_is_expanded_to_valid_studio_brief(self)
 ⋮----

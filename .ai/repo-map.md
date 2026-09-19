@@ -2357,7 +2357,9 @@ fi
 npx --yes @deepseek-ai/dsh --help >/dev/null 2>&1 || true
 npx --yes cdesktop --help >/dev/null 2>&1 || true
 
-# Pollinations/OpenCode integration helper package, if available.
+# Pollinations media generation for autonomous visual assets. Pin the CLI used by Asset Forge jobs.
+npm install -g @pollinations/cli@0.1.15
+# Keep the OpenCode integration helper as an optional convenience layer.
 npm install -g opencode-pollinations-plugin >/dev/null 2>&1 || true
 
 # Keep local secrets/config out of git by default.
@@ -4101,6 +4103,13 @@ executable = shutil.which("codex")
 result = subprocess.run(
 ⋮----
 output = (result.stdout or result.stderr).strip().splitlines()
+⋮----
+def _pollinations_status(environ: dict[str, str]) -> tuple[bool, str]
+⋮----
+executable = shutil.which("polli")
+⋮----
+api_key = bool(str(environ.get("POLLINATIONS_API_KEY") or "").strip())
+stored = (Path.home() / ".pollinations" / "credentials.json").is_file()
 ⋮----
 def run_preflight(env: dict[str, str] | None = None) -> tuple[int, list[str]]
 ⋮----
@@ -18966,7 +18975,15 @@ evidence = state.get('release_evidence', {}).get('privacy_policy')
 ````python
 """Production-OS worker bridge helpers for AI Dev Server."""
 ⋮----
-WORKER_CAPABILITIES = [
+BASE_WORKER_CAPABILITIES = [
+⋮----
+def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]
+⋮----
+env = os.environ if environ is None else environ
+home_dir = Path.home() if home is None else Path(home)
+polli_installed = shutil.which("polli") is not None
+polli_authenticated = bool(
+capabilities = list(BASE_WORKER_CAPABILITIES)
 ⋮----
 class ProductionOSWorkerError(RuntimeError)
 ⋮----
@@ -19011,7 +19028,7 @@ secret = str(operator_token or "").strip()
 payload = {
 ⋮----
 """Return a safe global token-capacity snapshot for Production-OS."""
-env = os.environ if environ is None else environ
+⋮----
 base_url = str(env.get("OMNIROUTE_URL") or "").strip()
 ⋮----
 snapshot = fetch_summary(
@@ -19039,11 +19056,18 @@ value = task or final_goal
 ⋮----
 expanded = (
 ⋮----
+def _is_visual_handoff(handoff: dict[str, Any]) -> bool
+⋮----
+text = " ".join(
+patterns = (
+⋮----
 def _asset_forge_guidance(handoff: dict[str, Any]) -> str
 ⋮----
 candidates = handoff.get("reuse_candidates", [])
 ⋮----
+candidates = []
 visual_caps = {
+asset_forge_candidate = any(
 ⋮----
 def build_studio_request(job: dict[str, Any]) -> dict[str, Any]
 ⋮----
@@ -19105,7 +19129,7 @@ reason = status if not next_stage else f"{status}: {next_stage}"
 ⋮----
 clock = time.monotonic
 ⋮----
-capabilities = WORKER_CAPABILITIES
+capabilities = list(capabilities or worker_capabilities())
 job = client.claim(worker_id, capabilities)
 ⋮----
 key = str(job.get("key") or "")
@@ -19161,6 +19185,7 @@ poll_interval = float(args.poll_interval)
 sleeper = time.sleep
 ⋮----
 client = client_factory(base_url, worker_token)
+capabilities = capabilities_provider(env)
 ⋮----
 completed_cycles = 0
 ⋮----
@@ -30409,6 +30434,10 @@ def base_env(self, output_root)
 ⋮----
 def test_ready_configuration_passes(self)
 ⋮----
+def test_visual_assets_are_non_blocking_when_pollinations_is_unavailable(self)
+⋮----
+def test_visual_assets_are_reported_ready_when_pollinations_is_ready(self)
+⋮----
 def test_missing_required_secret_fails_without_echoing_secret_values(self)
 ⋮----
 env = self.base_env(Path(td) / "out")
@@ -30453,6 +30482,10 @@ def __exit__(self, exc_type, exc, tb)
 def read(self, limit=-1)
 ⋮----
 class ProductionOSWorkerRuntimeTests(unittest.TestCase)
+⋮----
+def test_worker_capabilities_require_ready_visual_backend(self)
+⋮----
+caps = worker_capabilities(
 ⋮----
 def test_client_rejects_insecure_remote_control_plane(self)
 ⋮----
@@ -30551,6 +30584,8 @@ def test_visual_reuse_adds_asset_forge_guidance(self)
 job = self.job()
 ⋮----
 request = build_studio_request(job)
+⋮----
+def test_explicit_visual_task_adds_asset_forge_guidance_without_reuse_metadata(self)
 ⋮----
 def test_short_task_is_expanded_to_valid_studio_brief(self)
 ⋮----

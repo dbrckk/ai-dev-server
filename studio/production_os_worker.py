@@ -320,7 +320,8 @@ def _asset_forge_guidance(handoff: dict[str, Any]) -> str:
         " Use dbrckk/asset-forge for visual asset production. "
         "Represent asset work with the asset-forge/production-request/v1 contract, "
         "compile it with python asset_forge.py production-job <request.json>, "
-        "then validate and integrate the produced assets before completion."
+        "execute generated raster jobs with python asset_forge.py generate <job.json> <output-dir>, "
+        "then validate, optimize and integrate the produced assets before completion."
     )
 
 

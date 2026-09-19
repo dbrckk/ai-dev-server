@@ -209,7 +209,7 @@ class ProductionOSLocalE2ETests(unittest.TestCase):
                 },
             )
             self.assertIn("dbrckk/asset-forge", request["brief"])
-            self.assertIn("asset-forge produce", request["brief"])
+            self.assertIn("asset-forge fulfill", request["brief"])
             self.assertEqual(result["workflow_id"], "e" * 32)
             self.assertEqual(result["workflow_task_id"], "acceptance")
 

@@ -7,6 +7,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import threading
 import urllib.error
 import urllib.request
@@ -27,21 +28,50 @@ BASE_WORKER_CAPABILITIES = [
 ]
 
 
+def _asset_forge_operational_status(environ=None) -> dict | None:
+    executable = shutil.which("asset-forge")
+    if not executable:
+        return None
+    env = dict(os.environ)
+    if environ is not None:
+        env.update({str(key): str(value) for key, value in environ.items()})
+    try:
+        completed = subprocess.run(
+            [executable, "operational-status"],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=15,
+            check=False,
+            env=env,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    if completed.returncode != 0:
+        return None
+    try:
+        payload = json.loads(completed.stdout)
+    except (TypeError, json.JSONDecodeError):
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
 def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]:
-    env = os.environ if environ is None else environ
-    home_dir = Path.home() if home is None else Path(home)
-    asset_forge_installed = shutil.which("asset-forge") is not None
-    polli_installed = shutil.which("polli") is not None
-    pollinations_api_key = str(
-        env.get("POLLINATIONS_API_KEY") or ""
-    ).strip()
-    polli_authenticated = bool(
-        pollinations_api_key
-    ) or (home_dir / ".pollinations" / "credentials.json").is_file()
+    del home  # Kept for backwards-compatible callers/tests.
     capabilities = list(BASE_WORKER_CAPABILITIES)
-    if asset_forge_installed and polli_installed and polli_authenticated:
+    status = _asset_forge_operational_status(environ)
+    if not isinstance(status, dict):
+        return capabilities
+    visual = status.get("capabilities")
+    if not isinstance(visual, dict):
+        return capabilities
+    if any(
+        visual.get(name) is True
+        for name in ("rasterPng", "rasterWebp", "vectorSvg", "threeDGlb")
+    ):
         capabilities.append("visual-asset-production")
-    if asset_forge_installed and polli_installed and pollinations_api_key:
+    if visual.get("threeDGlb") is True:
         capabilities.append("visual-asset-3d-production")
     return capabilities
 

@@ -506,11 +506,54 @@ def run_once(
     )
 
     started = float(clock())
-    summary = run_project(
-        request_path,
-        project_out,
-        baseline_sha=baseline_sha,
-    )
+    try:
+        summary = run_project(
+            request_path,
+            project_out,
+            baseline_sha=baseline_sha,
+        )
+    except Exception as exc:
+        duration = max(0.0, float(clock()) - started)
+        envelope = {
+            "schema_version": "ai-dev-server/production-os-result/v1",
+            "workflow_id": request["production_os"]["workflow_id"],
+            "workflow_task_id": request["production_os"]["workflow_task_id"],
+            "project_id": request["id"],
+            "target_repo": request["target_repo"],
+            "status": "runner_error",
+            "succeeded": False,
+            "usage": {},
+            "evidence": {
+                "pipeline_status": "runner_error",
+                "next_stage": "retry",
+                "finished": False,
+                "error_type": type(exc).__name__,
+            },
+        }
+        client.fail(
+            failure_payload(
+                key,
+                worker_id,
+                envelope,
+                duration_seconds=duration,
+            )
+        )
+        if capacity is None:
+            client.heartbeat(worker_id, active_job_keys=())
+        else:
+            client.heartbeat(
+                worker_id,
+                active_job_keys=(),
+                capacity=capacity,
+            )
+        return {
+            "status": "failed",
+            "worker_id": worker_id,
+            "key": key,
+            "project_id": request["id"],
+            "usage": {},
+        }
+
     duration = max(0.0, float(clock()) - started)
 
     result_path = project_out / "production-os-result.json"

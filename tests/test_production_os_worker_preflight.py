@@ -44,6 +44,36 @@ class ProductionOSWorkerPreflightTests(unittest.TestCase):
             lines,
         )
 
+    def test_visual_assets_are_non_blocking_when_pollinations_is_unavailable(self):
+        with tempfile.TemporaryDirectory() as td, patch.object(
+            MODULE,
+            "_codex_version",
+            return_value=(True, "codex-cli 1.2.3"),
+        ), patch.object(
+            MODULE,
+            "_pollinations_status",
+            return_value=(False, "polli CLI not installed"),
+        ):
+            code, lines = MODULE.run_preflight(self.base_env(Path(td) / "out"))
+
+        self.assertEqual(code, 0)
+        self.assertTrue(any("INFO visual assets: disabled" in line for line in lines))
+
+    def test_visual_assets_are_reported_ready_when_pollinations_is_ready(self):
+        with tempfile.TemporaryDirectory() as td, patch.object(
+            MODULE,
+            "_codex_version",
+            return_value=(True, "codex-cli 1.2.3"),
+        ), patch.object(
+            MODULE,
+            "_pollinations_status",
+            return_value=(True, "polli installed and authenticated"),
+        ):
+            code, lines = MODULE.run_preflight(self.base_env(Path(td) / "out"))
+
+        self.assertEqual(code, 0)
+        self.assertTrue(any("OK visual assets:" in line for line in lines))
+
     def test_missing_required_secret_fails_without_echoing_secret_values(self):
         with tempfile.TemporaryDirectory() as td, patch.object(
             MODULE,

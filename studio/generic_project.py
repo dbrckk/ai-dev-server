@@ -674,6 +674,7 @@ Objective and current plan:
                     role="implementation",
                     memory_path=out/".autonomy/agent-performance.json",
                     limit=3,
+                    preferred=req.get("agent_preference"),
                 )
                 try:
                     direct_model_candidates = direct_candidates_for(

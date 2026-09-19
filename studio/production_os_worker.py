@@ -28,12 +28,17 @@ def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]:
     env = os.environ if environ is None else environ
     home_dir = Path.home() if home is None else Path(home)
     polli_installed = shutil.which("polli") is not None
+    pollinations_api_key = str(
+        env.get("POLLINATIONS_API_KEY") or ""
+    ).strip()
     polli_authenticated = bool(
-        str(env.get("POLLINATIONS_API_KEY") or "").strip()
+        pollinations_api_key
     ) or (home_dir / ".pollinations" / "credentials.json").is_file()
     capabilities = list(BASE_WORKER_CAPABILITIES)
     if polli_installed and polli_authenticated:
         capabilities.append("visual-asset-production")
+    if polli_installed and pollinations_api_key:
+        capabilities.append("visual-asset-3d-production")
     return capabilities
 
 

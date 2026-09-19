@@ -75,6 +75,7 @@ def codex_omniroute_invocation(
         "model_providers.omniroute={ "
         "name='OmniRoute', "
         f"base_url='{base}', "
+        "env_key='OMNIROUTE_API_KEY', "
         "wire_api='responses', "
         "request_max_retries=0, "
         "stream_max_retries=0 "
@@ -88,6 +89,8 @@ def codex_omniroute_invocation(
         'model_provider="omniroute"',
         "-c",
         provider,
+        "-c",
+        "shell_environment_policy.ignore_default_excludes=false",
         "exec",
         "--ignore-user-config",
         "--json",

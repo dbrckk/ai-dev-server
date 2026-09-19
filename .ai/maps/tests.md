@@ -7881,6 +7881,12 @@ def test_worker_capabilities_require_ready_visual_backend(self)
 ⋮----
 caps = worker_capabilities(
 ⋮----
+class Result
+⋮----
+returncode = 0
+stdout = json.dumps(
+stderr = ""
+⋮----
 def test_client_rejects_insecure_remote_control_plane(self)
 ⋮----
 def test_client_allows_loopback_http(self)
@@ -7982,6 +7988,8 @@ request = build_studio_request(job)
 def test_explicit_visual_task_adds_asset_forge_guidance_without_reuse_metadata(self)
 ⋮----
 def test_french_visual_task_adds_asset_forge_guidance(self)
+⋮----
+def test_structured_asset_forge_contract_enables_guidance_without_keywords(self)
 ⋮----
 def test_short_task_is_expanded_to_valid_studio_brief(self)
 ⋮----

@@ -14809,15 +14809,23 @@ evidence = state.get('release_evidence', {}).get('privacy_policy')
 ⋮----
 BASE_WORKER_CAPABILITIES = [
 ⋮----
+def _asset_forge_operational_status(environ=None) -> dict | None
+⋮----
+executable = shutil.which("asset-forge")
+⋮----
+env = dict(os.environ)
+⋮----
+completed = subprocess.run(
+⋮----
+payload = json.loads(completed.stdout)
+⋮----
 def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]
 ⋮----
-env = os.environ if environ is None else environ
-home_dir = Path.home() if home is None else Path(home)
-asset_forge_installed = shutil.which("asset-forge") is not None
-polli_installed = shutil.which("polli") is not None
-pollinations_api_key = str(
-polli_authenticated = bool(
+del home  # Kept for backwards-compatible callers/tests.
 capabilities = list(BASE_WORKER_CAPABILITIES)
+status = _asset_forge_operational_status(environ)
+⋮----
+visual = status.get("capabilities")
 ⋮----
 class ProductionOSWorkerError(RuntimeError)
 ⋮----
@@ -14862,7 +14870,7 @@ secret = str(operator_token or "").strip()
 payload = {
 ⋮----
 """Return a safe global token-capacity snapshot for Production-OS."""
-⋮----
+env = os.environ if environ is None else environ
 base_url = str(env.get("OMNIROUTE_URL") or "").strip()
 ⋮----
 snapshot = fetch_summary(
@@ -14902,6 +14910,9 @@ candidates = handoff.get("reuse_candidates", [])
 candidates = []
 visual_caps = {
 asset_forge_candidate = any(
+contracts = handoff.get("tool_contracts")
+contract = (
+contract_declared = (
 ⋮----
 def build_studio_request(job: dict[str, Any]) -> dict[str, Any]
 ⋮----

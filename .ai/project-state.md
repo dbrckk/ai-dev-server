@@ -22,20 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T21:31:45Z
+Generated: 2026-09-19T21:34:43Z
 
 ### Git
 - Branch: `main`
-- Head: `66a8a69c7369`
-- Commit date: 2026-09-19T23:27:30+02:00
-- Commit: docs: document Asset Forge worker readiness
+- Head: `84ff280524f3`
+- Commit date: 2026-09-19T23:34:24+02:00
+- Commit: test: derive visual capabilities from Asset Forge status
 - Tracked files: 812
 
 ### Recently changed files
+- `tests/test_production_os_worker_runtime.py`
+- `studio/production_os_worker.py`
+- `tests/test_production_os_worker.py`
 - `docs/PRODUCTION_OS_WORKER.md`
-- `tests/test_asset_forge_installer.py`
-- `scripts/install-asset-forge.sh`
-- `tests/test_production_os_local_e2e.py`
 
 ### Project signals
 - No common build descriptor detected

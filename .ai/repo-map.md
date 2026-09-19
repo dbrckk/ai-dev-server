@@ -19056,15 +19056,23 @@ evidence = state.get('release_evidence', {}).get('privacy_policy')
 ⋮----
 BASE_WORKER_CAPABILITIES = [
 ⋮----
+def _asset_forge_operational_status(environ=None) -> dict | None
+⋮----
+executable = shutil.which("asset-forge")
+⋮----
+env = dict(os.environ)
+⋮----
+completed = subprocess.run(
+⋮----
+payload = json.loads(completed.stdout)
+⋮----
 def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]
 ⋮----
-env = os.environ if environ is None else environ
-home_dir = Path.home() if home is None else Path(home)
-asset_forge_installed = shutil.which("asset-forge") is not None
-polli_installed = shutil.which("polli") is not None
-pollinations_api_key = str(
-polli_authenticated = bool(
+del home  # Kept for backwards-compatible callers/tests.
 capabilities = list(BASE_WORKER_CAPABILITIES)
+status = _asset_forge_operational_status(environ)
+⋮----
+visual = status.get("capabilities")
 ⋮----
 class ProductionOSWorkerError(RuntimeError)
 ⋮----
@@ -19109,7 +19117,7 @@ secret = str(operator_token or "").strip()
 payload = {
 ⋮----
 """Return a safe global token-capacity snapshot for Production-OS."""
-⋮----
+env = os.environ if environ is None else environ
 base_url = str(env.get("OMNIROUTE_URL") or "").strip()
 ⋮----
 snapshot = fetch_summary(
@@ -19149,6 +19157,9 @@ candidates = handoff.get("reuse_candidates", [])
 candidates = []
 visual_caps = {
 asset_forge_candidate = any(
+contracts = handoff.get("tool_contracts")
+contract = (
+contract_declared = (
 ⋮----
 def build_studio_request(job: dict[str, Any]) -> dict[str, Any]
 ⋮----
@@ -30585,6 +30596,12 @@ def test_worker_capabilities_require_ready_visual_backend(self)
 ⋮----
 caps = worker_capabilities(
 ⋮----
+class Result
+⋮----
+returncode = 0
+stdout = json.dumps(
+stderr = ""
+⋮----
 def test_client_rejects_insecure_remote_control_plane(self)
 ⋮----
 def test_client_allows_loopback_http(self)
@@ -30686,6 +30703,8 @@ request = build_studio_request(job)
 def test_explicit_visual_task_adds_asset_forge_guidance_without_reuse_metadata(self)
 ⋮----
 def test_french_visual_task_adds_asset_forge_guidance(self)
+⋮----
+def test_structured_asset_forge_contract_enables_guidance_without_keywords(self)
 ⋮----
 def test_short_task_is_expanded_to_valid_studio_brief(self)
 ⋮----

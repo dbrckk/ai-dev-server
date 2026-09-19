@@ -237,6 +237,33 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertIn("blocked", failed["reason"])
 
 
+
+    def test_run_once_reports_runner_exception_and_clears_active_job(self):
+        client = _FakeClient(sample_job())
+
+        def runner(request_path, out, **kwargs):
+            raise RuntimeError("codex crashed")
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client,
+                worker_id="ai-dev-1",
+                output_root=Path(td),
+                run_project=runner,
+                clock=lambda: 30.0,
+            )
+
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(
+            [call[0] for call in client.calls],
+            ["claim", "ack", "heartbeat", "fail", "heartbeat"],
+        )
+        failed = client.calls[3][1]
+        self.assertEqual(failed["key"], "job-abc123")
+        self.assertIn("runner_error", failed["reason"])
+        self.assertIn("RuntimeError", failed["result"]["evidence"]["error_type"])
+        self.assertEqual(client.calls[4][2], ())
+
     def test_capacity_snapshot_prefers_authenticated_omniroute(self):
         from production_os_worker import production_capacity_snapshot
 

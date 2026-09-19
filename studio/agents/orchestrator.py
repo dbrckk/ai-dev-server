@@ -12,6 +12,8 @@ from routing_history import learned_weights, load as load_routing_history
 from safe_rewrite_learning import summarize as summarize_safe_rewrite_learning
 from contextual_routing_memory import load as load_contextual_routing_memory
 from omniroute_capacity import OmniRouteCapacityError, fetch_summary as fetch_omniroute_summary
+from capacity_ledger import reserve as reserve_capacity, settle as settle_capacity
+from capacity_runtime import project_envelope as load_project_envelope
 
 def _safe_rewrite_summary()->dict:
     raw=os.environ.get("STUDIO_SAFE_REWRITE_LEARNING_PATH","")
@@ -155,6 +157,61 @@ def _run_evidence(run,capacity_source:str|None=None)->dict:
     return evidence
 
 
+def _reserve_agent_budget(name:str,prompt:str):
+    ledger_raw=str(os.environ.get("STUDIO_CAPACITY_LEDGER_PATH") or "").strip()
+    plan_raw=str(os.environ.get("STUDIO_CAPACITY_PLAN_PATH") or "").strip()
+    project_id=str(os.environ.get("STUDIO_PROJECT_ID") or "").strip()
+    if not ledger_raw or not plan_raw or not project_id:
+        return None
+    envelope=load_project_envelope(Path(plan_raw),project_id)
+    if envelope is None:
+        return None
+    estimated=max(1,(len(prompt)+3)//4+2048)
+    estimated=min(estimated,max(1,int(envelope)))
+    result=reserve_capacity(
+        Path(ledger_raw),
+        project_id=project_id,
+        provider="agent:"+str(name),
+        estimated_tokens=estimated,
+        provider_remaining_tokens=None,
+        project_envelope_tokens=int(envelope),
+    )
+    return {
+        "ledger_path":Path(ledger_raw),
+        "reservation":result,
+        "estimated_tokens":estimated,
+        "project_envelope_tokens":int(envelope),
+    }
+
+
+def _settle_agent_budget(capacity:dict|None,evidence:dict|None=None)->None:
+    if not isinstance(capacity,dict):
+        return
+    reservation=capacity.get("reservation")
+    if not isinstance(reservation,dict) or reservation.get("admitted") is not True:
+        return
+    actual=int(capacity.get("estimated_tokens",1) or 1)
+    mode="reserved_estimate"
+    if isinstance(evidence,dict):
+        usage=evidence.get("usage")
+        if isinstance(usage,dict):
+            reported=usage.get("total_tokens")
+            if isinstance(reported,int) and not isinstance(reported,bool) and reported>=0:
+                actual=reported
+                mode="reported"
+    settle_capacity(
+        Path(capacity["ledger_path"]),
+        str(reservation["reservation_id"]),
+        actual_tokens=actual,
+    )
+    if isinstance(evidence,dict):
+        evidence["capacity_accounting"]={
+            "mode":mode,
+            "tokens":actual,
+            "project_envelope_tokens":capacity.get("project_envelope_tokens"),
+        }
+
+
 def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,timeout:int=1800)->dict:
     perf=load(memory_path)
     history_raw=os.environ.get("STUDIO_ROUTING_HISTORY_PATH","")
@@ -185,16 +242,30 @@ def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,ti
         if runtime is None:
             attempts.append({"agent":decision.agent.name,"status":"unsupported_adapter"})
             continue
+        budget=_reserve_agent_budget(decision.agent.name,prompt)
+        if (
+            isinstance(budget,dict)
+            and isinstance(budget.get("reservation"),dict)
+            and budget["reservation"].get("admitted") is not True
+        ):
+            attempts.append({
+                "agent":decision.agent.name,
+                "status":"capacity_exhausted",
+                "reason":budget["reservation"].get("reason"),
+            })
+            continue
         try:
             invocation,capacity_source=runtime
             argv,extra_env=invocation
             run=AgentAdapter(decision.agent).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)
             ok=run.returncode==0
             evidence=_run_evidence(run,capacity_source)
+            _settle_agent_budget(budget,evidence)
             evidence["status"]="passed" if ok else "failed"
             attempts.append(evidence)
             if ok: return {"status":"passed","selected":run.agent,"attempts":attempts}
         except RuntimeError as exc:
+            _settle_agent_budget(budget)
             attempts.append({"agent":decision.agent.name,"status":"error","error":str(exc)[:1000]})
     return {"status":"unavailable","selected":None,"attempts":attempts}
 
@@ -253,14 +324,31 @@ def execute_named(name:str,prompt:str,*,cwd:Path,timeout:int=1800)->dict:
     runtime=_runtime_invocation(name,prompt)
     if runtime is None:
         return {"status":"unavailable","selected":None,"attempts":[{"agent":name,"status":"unsupported_adapter"}]}
+    budget=_reserve_agent_budget(name,prompt)
+    if (
+        isinstance(budget,dict)
+        and isinstance(budget.get("reservation"),dict)
+        and budget["reservation"].get("admitted") is not True
+    ):
+        return {
+            "status":"unavailable",
+            "selected":None,
+            "attempts":[{
+                "agent":name,
+                "status":"capacity_exhausted",
+                "reason":budget["reservation"].get("reason"),
+            }],
+        }
     try:
         invocation,capacity_source=runtime
         argv,extra_env=invocation
         run=AgentAdapter(spec).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)
     except RuntimeError as exc:
+        _settle_agent_budget(budget)
         return {"status":"unavailable","selected":None,"attempts":[{"agent":name,"status":"error","error":str(exc)[:1000]}]}
     ok=run.returncode==0
     evidence=_run_evidence(run,capacity_source)
+    _settle_agent_budget(budget,evidence)
     evidence["status"]="passed" if ok else "failed"
     return {"status":"passed" if ok else "failed","selected":run.agent if ok else None,"attempts":[evidence]}
 

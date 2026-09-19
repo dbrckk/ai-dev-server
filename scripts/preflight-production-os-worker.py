@@ -73,6 +73,8 @@ def _codex_version() -> tuple[bool, str]:
 
 
 def _pollinations_status(environ: dict[str, str]) -> tuple[bool, str]:
+    if not shutil.which("asset-forge"):
+        return False, "Asset Forge CLI not installed"
     executable = shutil.which("polli")
     if not executable:
         return False, "polli CLI not installed"

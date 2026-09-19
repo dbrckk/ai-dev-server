@@ -332,5 +332,90 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertEqual(seen[0]["capacity"], capacity)
 
 
+    def test_run_once_writes_project_token_envelope_before_execution(self):
+        client = _FakeClient(sample_job())
+        capacity = {
+            "source": "omniroute",
+            "status": "ok",
+            "authenticated_usage": True,
+            "remaining_tokens": 1_375_000_000,
+        }
+
+        def runner(request_path, out, **kwargs):
+            request = json.loads(Path(request_path).read_text(encoding="utf-8"))
+            plan = json.loads(
+                (Path(out).parent / "capacity-plan.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            row = next(
+                item for item in plan["projects"]
+                if item["id"] == request["id"]
+            )
+            self.assertEqual(row["requested_tokens"], 250000)
+            self.assertEqual(row["token_envelope"], 250000)
+            self.assertEqual(row["capacity_source"], "production-os")
+            return {
+                "status": "complete",
+                "finished": True,
+                "next_stage": None,
+                "usage": {"total_tokens": 100},
+            }
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client,
+                worker_id="ai-dev-1",
+                output_root=Path(td),
+                run_project=runner,
+                clock=lambda: 10.0,
+                capacity=capacity,
+            )
+
+        self.assertEqual(result["status"], "completed")
+
+    def test_project_token_envelope_is_capped_by_live_global_remaining_capacity(self):
+        client = _FakeClient(sample_job())
+        capacity = {
+            "source": "omniroute",
+            "status": "ok",
+            "authenticated_usage": True,
+            "remaining_tokens": 100000,
+        }
+
+        def runner(request_path, out, **kwargs):
+            request = json.loads(Path(request_path).read_text(encoding="utf-8"))
+            plan = json.loads(
+                (Path(out).parent / "capacity-plan.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            row = next(
+                item for item in plan["projects"]
+                if item["id"] == request["id"]
+            )
+            self.assertEqual(row["requested_tokens"], 250000)
+            self.assertEqual(row["token_envelope"], 100000)
+            self.assertTrue(row["constrained"])
+            return {
+                "status": "complete",
+                "finished": True,
+                "next_stage": None,
+                "usage": {"total_tokens": 100},
+            }
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client,
+                worker_id="ai-dev-1",
+                output_root=Path(td),
+                run_project=runner,
+                clock=lambda: 10.0,
+                capacity=capacity,
+            )
+
+        self.assertEqual(result["status"], "completed")
+
+
 if __name__ == "__main__":
     unittest.main()

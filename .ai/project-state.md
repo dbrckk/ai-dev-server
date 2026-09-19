@@ -22,21 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T21:24:42Z
+Generated: 2026-09-19T21:31:45Z
 
 ### Git
 - Branch: `main`
-- Head: `2e4fedf3c6b3`
-- Commit date: 2026-09-19T23:24:33+02:00
-- Commit: test: exercise visual Android Production OS bridge end to end
-- Tracked files: 811
+- Head: `66a8a69c7369`
+- Commit date: 2026-09-19T23:27:30+02:00
+- Commit: docs: document Asset Forge worker readiness
+- Tracked files: 812
 
 ### Recently changed files
+- `docs/PRODUCTION_OS_WORKER.md`
+- `tests/test_asset_forge_installer.py`
+- `scripts/install-asset-forge.sh`
 - `tests/test_production_os_local_e2e.py`
-- `.github/workflows/validate.yml`
-- `tests/test_production_os_worker_cli.py`
-- `tests/test_production_os_worker_runtime.py`
-- `studio/production_os_worker.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -512,10 +512,10 @@ echo "FCC prêt. Lance ./scripts/start-fcc.sh puis ouvre le port 8082 dans Codes
 #!/usr/bin/env bash
 set -euo pipefail
 
-install_root="\${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
+install_root="${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
 bin_dir="$HOME/.local/bin"
-repo_url="\${ASSET_FORGE_REPOSITORY:-https://github.com/dbrckk/asset-forge.git}"
-ref="\${ASSET_FORGE_REF:-main}"
+repo_url="${ASSET_FORGE_REPOSITORY:-https://github.com/dbrckk/asset-forge.git}"
+ref="${ASSET_FORGE_REF:-main}"
 
 mkdir -p "$(dirname "$install_root")" "$bin_dir"
 
@@ -541,7 +541,7 @@ git -C "$install_root" clean -fdx
 cat >"$bin_dir/asset-forge" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
-root="\${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
+root="${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
 exec python "$root/asset_forge.py" "$@"
 EOF
 chmod 0755 "$bin_dir/asset-forge"

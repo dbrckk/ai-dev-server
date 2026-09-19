@@ -100,6 +100,7 @@ test_artwork_stage.py
 test_artwork_validation.py
 test_asset_artwork_capability.py
 test_asset_artwork_promotion.py
+test_asset_forge_installer.py
 test_atomic_file.py
 test_autonomous_project.py
 test_autonomous_research.py
@@ -2666,6 +2667,15 @@ def test_promoted_artwork_syncs_only_through_registry_gate(self)
 ⋮----
 registry=sync_into_registry(new_registry(),registry_path,repo_root=root)
 item=registry["capabilities"]["asset_artwork"]
+```
+
+## File: test_asset_forge_installer.py
+```python
+ROOT = Path(__file__).resolve().parents[1]
+⋮----
+def test_asset_forge_installer_expands_environment_configuration()
+⋮----
+script = (ROOT / "scripts" / "install-asset-forge.sh").read_text(
 ```
 
 ## File: test_atomic_file.py

@@ -1,13 +1,13 @@
 # Change impact
 
-Base: de598612b7247076c6972682352943180b113f8a
-Head: 2e4fedf3c6b36ca5edafdde43979408987ef4c54
+Base: e128063388f690c3ddfa0802b989bbbd47c16ab0
+Head: 66a8a69c73699b7e269eac771cb724db731bf0ff
 
 ## Changed files
-- M tests/test_production_os_local_e2e.py
+- M docs/PRODUCTION_OS_WORKER.md
 
 ## Affected areas
-- tests
+- docs
 
 ## Related test candidates
 - No direct filename-based test match detected.

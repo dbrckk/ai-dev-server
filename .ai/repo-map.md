@@ -481,6 +481,7 @@ tests/
   test_artwork_validation.py
   test_asset_artwork_capability.py
   test_asset_artwork_promotion.py
+  test_asset_forge_installer.py
   test_atomic_file.py
   test_autonomous_project.py
   test_autonomous_research.py
@@ -2657,10 +2658,10 @@ echo "FCC prêt. Lance ./scripts/start-fcc.sh puis ouvre le port 8082 dans Codes
 #!/usr/bin/env bash
 set -euo pipefail
 
-install_root="\${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
+install_root="${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
 bin_dir="$HOME/.local/bin"
-repo_url="\${ASSET_FORGE_REPOSITORY:-https://github.com/dbrckk/asset-forge.git}"
-ref="\${ASSET_FORGE_REF:-main}"
+repo_url="${ASSET_FORGE_REPOSITORY:-https://github.com/dbrckk/asset-forge.git}"
+ref="${ASSET_FORGE_REF:-main}"
 
 mkdir -p "$(dirname "$install_root")" "$bin_dir"
 
@@ -2686,7 +2687,7 @@ git -C "$install_root" clean -fdx
 cat >"$bin_dir/asset-forge" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
-root="\${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
+root="${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
 exec python "$root/asset_forge.py" "$@"
 EOF
 chmod 0755 "$bin_dir/asset-forge"
@@ -25370,6 +25371,15 @@ def test_promoted_artwork_syncs_only_through_registry_gate(self)
 ⋮----
 registry=sync_into_registry(new_registry(),registry_path,repo_root=root)
 item=registry["capabilities"]["asset_artwork"]
+````
+
+## File: tests/test_asset_forge_installer.py
+````python
+ROOT = Path(__file__).resolve().parents[1]
+⋮----
+def test_asset_forge_installer_expands_environment_configuration()
+⋮----
+script = (ROOT / "scripts" / "install-asset-forge.sh").read_text(
 ````
 
 ## File: tests/test_atomic_file.py

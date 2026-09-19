@@ -3,6 +3,7 @@ import json
 import tempfile
 import threading
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 import sys
 
@@ -12,6 +13,7 @@ from production_os_worker import (
     ProductionOSClient,
     ProductionOSWorkerError,
     run_once,
+    worker_capabilities,
 )
 
 
@@ -80,6 +82,21 @@ class _Response:
 
 
 class ProductionOSWorkerRuntimeTests(unittest.TestCase):
+    def test_worker_capabilities_require_ready_visual_backend(self):
+        with patch("production_os_worker.shutil.which", return_value=None):
+            caps = worker_capabilities(
+                {"POLLINATIONS_API_KEY": "secret"},
+                home=Path("/definitely/not/real"),
+            )
+        self.assertEqual(caps, ["repo-analysis", "software-development"])
+
+        with patch("production_os_worker.shutil.which", return_value="/usr/bin/polli"):
+            caps = worker_capabilities(
+                {"POLLINATIONS_API_KEY": "secret"},
+                home=Path("/definitely/not/real"),
+            )
+        self.assertIn("visual-asset-production", caps)
+
     def test_client_rejects_insecure_remote_control_plane(self):
         with self.assertRaisesRegex(
             ProductionOSWorkerError,

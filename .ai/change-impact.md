@@ -1,12 +1,14 @@
 # Change impact
 
-Base: 8eeb506d39d96e33cb38bb3fccf2a99acfde9db4
-Head: 1b1abf1d75094e4627c69c5393421d3d24ec4695
+Base: 79c9b79c2a5b37fa6332bf57eb1142a62c4b4fe5
+Head: 13bd1fbe32eaf4fe77c9df78a8c1f6bb533a32e6
 
 ## Changed files
-- A tests/test_production_os_local_e2e.py
+- M studio/agents/adapters.py
+- A tests/test_codex_output_retention.py
 
 ## Affected areas
+- studio
 - tests
 
 ## Related test candidates

@@ -22,20 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T10:55:57Z
+Generated: 2026-09-19T11:40:33Z
 
 ### Git
 - Branch: `main`
-- Head: `1b1abf1d7509`
-- Commit date: 2026-09-19T12:55:46+02:00
-- Commit: test: add Production-OS worker local end-to-end acceptance
-- Tracked files: 805
+- Head: `13bd1fbe32ea`
+- Commit date: 2026-09-19T13:40:22+02:00
+- Commit: fix: retain Codex terminal usage event in bounded output
+- Tracked files: 806
 
 ### Recently changed files
+- `studio/agents/adapters.py`
+- `tests/test_codex_output_retention.py`
 - `tests/test_production_os_local_e2e.py`
 - `scripts/status.sh`
-- `scripts/start-all.sh`
-- `docs/PRODUCTION_OS_WORKER.md`
 
 ### Project signals
 - No common build descriptor detected

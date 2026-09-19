@@ -72,9 +72,10 @@
         "tests/test_agent_performance.py",
         "tests/test_agent_router.py",
         "tests/test_agent_workspace.py",
-        "tests/test_codex_adapter.py"
+        "tests/test_codex_adapter.py",
+        "tests/test_codex_output_retention.py"
       ],
-      "in_degree": 7,
+      "in_degree": 8,
       "out_degree": 2
     },
     "studio/agents/adapters.py": {
@@ -83,9 +84,10 @@
       ],
       "dependents": [
         "studio/agents/orchestrator.py",
-        "tests/test_agent_router.py"
+        "tests/test_agent_router.py",
+        "tests/test_codex_output_retention.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 1
     },
     "studio/agents/codex.py": {
@@ -95,9 +97,10 @@
       ],
       "dependents": [
         "studio/agents/orchestrator.py",
-        "tests/test_codex_adapter.py"
+        "tests/test_codex_adapter.py",
+        "tests/test_codex_output_retention.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 2
     },
     "studio/agents/orchestrator.py": {
@@ -151,9 +154,10 @@
         "studio/agents/orchestrator.py",
         "studio/agents/router.py",
         "studio/generic_project.py",
-        "tests/test_agent_router.py"
+        "tests/test_agent_router.py",
+        "tests/test_codex_output_retention.py"
       ],
-      "in_degree": 6,
+      "in_degree": 7,
       "out_degree": 0
     },
     "studio/agents/router.py": {
@@ -5534,6 +5538,17 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 3
+    },
+    "tests/test_codex_output_retention.py": {
+      "dependencies": [
+        "studio/agents/__init__.py",
+        "studio/agents/adapters.py",
+        "studio/agents/codex.py",
+        "studio/agents/registry.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 4
     },
     "tests/test_completion.py": {
       "dependencies": [

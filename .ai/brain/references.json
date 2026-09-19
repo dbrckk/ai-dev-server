@@ -5,42 +5,161 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "_ControlPlane": {
+    "AgentRun": {
       "definition": {
-        "file": "tests/test_production_os_local_e2e.py",
-        "line": 14,
+        "file": "studio/agents/adapters.py",
+        "line": 19,
         "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 14,
-          "preview": "class _ControlPlane:",
+          "file": "studio/agents/adapters.py",
+          "line": 19,
+          "preview": "class AgentRun:",
           "definition_candidate": true
         },
         {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 114,
-          "preview": "with _ControlPlane() as control_plane, tempfile.TemporaryDirectory() as td:",
+          "file": "studio/agents/adapters.py",
+          "line": 41,
+          "preview": ") -> AgentRun:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/adapters.py",
+          "line": 97,
+          "preview": "return AgentRun(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 14,
+          "preview": "from agents.adapters import AgentRun",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 166,
+          "preview": "run = AgentRun(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 186,
+          "preview": "run = AgentRun(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 220,
+          "preview": "run = AgentRun(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 294,
+          "preview": "run_result = AgentRun(",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 2
+      "occurrence_count": 8
     },
-    "__init__": {
+    "AgentAdapter": {
       "definition": {
-        "file": "tests/test_production_os_local_e2e.py",
-        "line": 15,
-        "kind": "function",
+        "file": "studio/agents/adapters.py",
+        "line": 27,
+        "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/agents/adapters.py",
           "line": 27,
-          "preview": "def __init__(self, spec: AgentSpec):",
+          "preview": "class AgentAdapter:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 6,
+          "preview": "from .adapters import AgentAdapter",
           "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 260,
+          "preview": "run=AgentAdapter(decision.agent).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 345,
+          "preview": "run=AgentAdapter(spec).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 176,
+          "preview": "\"agents.orchestrator.AgentAdapter.run\", return_value=run",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 204,
+          "preview": "\"agents.orchestrator.AgentAdapter.run\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 238,
+          "preview": "\"agents.orchestrator.AgentAdapter.run\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 282,
+          "preview": "\"agents.orchestrator.AgentAdapter.run\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 319,
+          "preview": "\"agents.orchestrator.AgentAdapter.run\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_codex_output_retention.py",
+          "line": 13,
+          "preview": "from agents.adapters import AgentAdapter",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_codex_output_retention.py",
+          "line": 41,
+          "preview": "\"agents.adapters.AgentAdapter.probe\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_codex_output_retention.py",
+          "line": 47,
+          "preview": "run = AgentAdapter(spec).run(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 12
+    },
+    "__init__": {
+      "definition": {
+        "file": "studio/agents/adapters.py",
+        "line": 28,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/agents/adapters.py",
+          "line": 28,
+          "preview": "def __init__(self, spec: AgentSpec):",
+          "definition_candidate": true
         },
         {
           "file": "studio/agents/registry.py",
@@ -304,7 +423,7 @@
           "file": "tests/test_production_os_local_e2e.py",
           "line": 15,
           "preview": "def __init__(self):",
-          "definition_candidate": true
+          "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_worker_cli.py",
@@ -483,302 +602,54 @@
       ],
       "occurrence_count": 74
     },
-    "Handler": {
+    "probe": {
       "definition": {
-        "file": "tests/test_production_os_local_e2e.py",
-        "line": 20,
-        "kind": "class",
+        "file": "studio/agents/adapters.py",
+        "line": 31,
+        "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 20,
-          "preview": "class Handler(BaseHTTPRequestHandler):",
+          "file": "studio/agents/adapters.py",
+          "line": 31,
+          "preview": "def probe(self) -> bool:",
           "definition_candidate": true
         },
         {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 90,
-          "preview": "self.server = ThreadingHTTPServer((\"127.0.0.1\", 0), Handler)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "log_message": {
-      "definition": {
-        "file": "tests/test_production_os_local_e2e.py",
-        "line": 21,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 21,
-          "preview": "def log_message(self, format, *args):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "do_POST": {
-      "definition": {
-        "file": "tests/test_production_os_local_e2e.py",
-        "line": 24,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 24,
-          "preview": "def do_POST(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "_send": {
-      "definition": {
-        "file": "tests/test_production_os_local_e2e.py",
-        "line": 79,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 37,
-          "preview": "self._send(200, body)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_local_e2e.py",
+          "file": "studio/agents/adapters.py",
           "line": 42,
-          "preview": "self._send(204, None)",
+          "preview": "if not self.probe():",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 45,
-          "preview": "self._send(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 74,
-          "preview": "self._send(200, {\"ok\": True})",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 77,
-          "preview": "self._send(404, {\"error\": \"not found\"})",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 79,
-          "preview": "def _send(self, status, body):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "url": {
-      "definition": {
-        "file": "tests/test_production_os_local_e2e.py",
-        "line": 98,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/architecture_replacement_persist.py",
-          "line": 22,
-          "preview": "def _request(url, token, method=\"GET\", payload=None, allow_404=False):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_persist.py",
-          "line": 25,
-          "preview": "url,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_research.py",
-          "line": 89,
-          "preview": "url = _clean_url(result.get(\"url\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_research.py",
-          "line": 96,
-          "preview": "selected.setdefault(url, {\"title\": title.strip(), \"kind\": kind, \"query\": query})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_research.py",
-          "line": 109,
-          "preview": "for url in sorted(selected)[:MAX_RESULTS_PER_QUERY]:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_research.py",
-          "line": 110,
-          "preview": "meta = selected[url]",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_research.py",
-          "line": 111,
-          "preview": "raw = _content_bytes(fetch_provider(url))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_research.py",
-          "line": 121,
-          "preview": "\"source\": url,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capabilities/asset_artwork.py",
-          "line": 52,
-          "preview": "'<rect width=\"512\" height=\"512\" rx=\"112\" fill=\"url(#g)\"/>'",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capabilities/asset_artwork.py",
-          "line": 66,
-          "preview": "'<rect width=\"1024\" height=\"500\" fill=\"url(#g)\"/>'",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_scheduler.py",
-          "line": 409,
-          "preview": "\"--omniroute-url\",",
+          "file": "studio/agents/orchestrator.py",
+          "line": 292,
+          "preview": "and invocation_for(decision.agent.name,\"probe\") is not None",
           "definition_candidate": false
         },
         {
           "file": "studio/core.py",
-          "line": 408,
-          "preview": "content.append({'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(p.read_bytes()).decode()}})",
+          "line": 889,
+          "preview": "probe = Path(__file__).with_name('visual_test.dart').read_text().replace('APP_NAME', name).replace('JOURNEYS_BASE64', encoded_journeys(journeys))",
           "definition_candidate": false
         },
         {
-          "file": "studio/evolution_persist.py",
-          "line": 22,
-          "preview": "def _request(url, token, method='GET', payload=None, allow_404=False):",
+          "file": "studio/core.py",
+          "line": 893,
+          "preview": "(self.root / 'test/__studio_visual_test.dart').write_text(probe)",
           "definition_candidate": false
         },
         {
-          "file": "studio/evolution_persist.py",
-          "line": 24,
-          "preview": "req = urllib.request.Request(url, data=data, method=method, headers={",
+          "file": "studio/generic_sandbox.py",
+          "line": 34,
+          "preview": "probe=subprocess.run([\"unshare\",\"--net\",\"true\"],env=env,stdin=subprocess.DEVNULL,",
           "definition_candidate": false
         },
         {
-          "file": "studio/evolution_persist.py",
-          "line": 55,
-          "preview": "url = api + '/git/matching-refs/heads/' + urllib.parse.quote(prefix, safe='/')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_persist.py",
-          "line": 56,
-          "preview": "refs = _request(url, token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_research.py",
-          "line": 86,
-          "preview": "def _validate_network_url(url: str) -> str:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_research.py",
-          "line": 88,
-          "preview": "parsed = urlsplit(url)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_research.py",
-          "line": 101,
-          "preview": "def fetch_url(url: str, *, extra_headers: dict[str, str] | None = None,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_research.py",
-          "line": 103,
-          "preview": "_validate_network_url(url)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_research.py",
-          "line": 107,
-          "preview": "request = Request(url, headers=headers, method='GET')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_research.py",
-          "line": 119,
-          "preview": "return FetchResult(url, final_url, int(getattr(response, 'status', 200)), normalized_headers, body)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_research.py",
-          "line": 138,
-          "preview": "for needles, expected_kind, url in KNOWN_DOCS:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_research.py",
-          "line": 140,
-          "preview": "return url",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_research.py",
-          "line": 157,
-          "preview": "url = _doc_source(task)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_research.py",
-          "line": 158,
-          "preview": "result = fetcher(url)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_research.py",
-          "line": 280,
-          "preview": "url = 'https://api.github.com/search/repositories?q=' + quote_plus(task['query']) + '&sort=updated&order=desc&per_page=5'",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_research.py",
-          "line": 281,
-          "preview": "result = fetcher(url, extra_headers=_github_headers())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_baseline.py",
-          "line": 93,
-          "preview": "url = f'https://github.com/godotengine/godot/releases/download/{version}-stable/{name}.zip'",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_baseline.py",
-          "line": 94,
-          "preview": "with urllib.request.urlopen(url, timeout=180) as response:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_repository_probe.py",
-          "line": 20,
-          "preview": "def _get_json(url: str) -> dict:",
+          "file": "studio/generic_sandbox.py",
+          "line": 36,
+          "preview": "if probe.returncode==0:",
           "definition_candidate": false
         },
         {
@@ -788,696 +659,262 @@
           "definition_candidate": false
         },
         {
-          "file": "studio/play_publisher.py",
-          "line": 44,
-          "preview": "def _request(self, method: str, url: str, body: bytes | None = None, *, content_type=\"application/json\") -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/play_publisher.py",
-          "line": 51,
-          "preview": "req = urllib.request.Request(url, method=method, data=body, headers=headers)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/play_publisher.py",
-          "line": 84,
-          "preview": "url = f\"{UPLOAD_BASE}/applications/{package}/edits/{edit}/bundles?uploadType=media\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/play_publisher.py",
-          "line": 86,
-          "preview": "\"POST\", url, bundle.read_bytes(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/repository_research_provider.py",
-          "line": 75,
-          "preview": "\"url\":prefix+quote(rel,safe=\"/\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/repository_research_provider.py",
-          "line": 82,
-          "preview": "def fetch_provider(url):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/repository_research_provider.py",
-          "line": 83,
-          "preview": "if not isinstance(url,str) or not url.startswith(prefix):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/repository_research_provider.py",
-          "line": 85,
-          "preview": "parsed=urlsplit(url)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/repository_research_provider.py",
-          "line": 88,
-          "preview": "encoded_path=url[len(prefix):]",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/security_audit.py",
-          "line": 131,
-          "preview": "url = re.match(r'^      url:\\s*[\"\\']?([^\"\\']+)[\"\\']?\\s*$', raw)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/security_audit.py",
-          "line": 134,
-          "preview": "elif url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/security_audit.py",
-          "line": 135,
-          "preview": "current['registry'] = url.group(1).rstrip('/')",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_adaptation_research.py",
-          "line": 11,
-          "preview": "{\"url\":\"https://docs.example.com/capability\",\"title\":\"Official docs\",\"kind\":\"docs\"},",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_adaptation_research.py",
-          "line": 12,
-          "preview": "{\"url\":\"https://security.example.org/capability\",\"title\":\"Security notes\",\"kind\":\"security\"},",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_adaptation_research.py",
-          "line": 15,
-          "preview": "def fetch(self, url):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_adaptation_research.py",
-          "line": 16,
-          "preview": "return \"validated source body for \" + url",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_adaptation_research.py",
-          "line": 39,
-          "preview": "lambda query:[{\"url\":\"https://example.org/one\",\"title\":\"One\",\"kind\":\"web\"}],",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_merge.py",
-          "line": 54,
-          "preview": "def request(url,token,method=\"GET\",payload=None,*args,**kwargs):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_merge.py",
-          "line": 55,
-          "preview": "if \"/pulls/7/files\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_merge.py",
-          "line": 57,
-          "preview": "if \"/contents/lib/a.txt\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_merge.py",
-          "line": 59,
-          "preview": "if \"/check-runs\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_merge.py",
-          "line": 70,
-          "preview": "if url.endswith(\"/pulls/7\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_merge.py",
-          "line": 79,
-          "preview": "if url.endswith(\"/pulls/7/merge\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_merge.py",
-          "line": 82,
-          "preview": "raise AssertionError(url)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_postmerge.py",
-          "line": 28,
-          "preview": "def request(url,token,*args,**kwargs):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_postmerge.py",
-          "line": 29,
-          "preview": "if url.endswith(\"/branches/main\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_postmerge.py",
-          "line": 31,
-          "preview": "if \"/contents/lib/a.txt\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_postmerge.py",
-          "line": 33,
-          "preview": "if \"/check-runs\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_postmerge.py",
-          "line": 44,
-          "preview": "raise AssertionError(url)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_pr_validator.py",
-          "line": 34,
-          "preview": "def request(url,token,*args,**kwargs):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_pr_validator.py",
-          "line": 35,
-          "preview": "if \"/pulls/7/files\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_pr_validator.py",
-          "line": 37,
-          "preview": "if \"/contents/lib/a.txt\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_pr_validator.py",
-          "line": 39,
-          "preview": "if \"/check-runs\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_pr_validator.py",
-          "line": 51,
-          "preview": "if \"/pulls/7\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_pr_validator.py",
-          "line": 60,
-          "preview": "raise AssertionError(url)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_rollback.py",
-          "line": 14,
-          "preview": "def request(url,token,method=\"GET\",payload=None,*args,**kwargs):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_rollback.py",
-          "line": 15,
-          "preview": "if url.endswith(\"/branches/main\"): return {\"commit\":{\"sha\":\"3\"*40}}",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_rollback.py",
-          "line": 16,
-          "preview": "if url.endswith(\"/git/commits/\"+\"3\"*40): return {\"parents\":[{\"sha\":\"0\"*40},{\"sha\":\"1\"*40}],\"tree\":{\"sha\":\"9\"*40}}",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_rollback.py",
-          "line": 17,
-          "preview": "if url.endswith(\"/git/commits/\"+\"0\"*40): return {\"tree\":{\"sha\":\"8\"*40}}",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_rollback.py",
-          "line": 18,
-          "preview": "if url.endswith(\"/git/commits\") and method==\"POST\": return {\"sha\":\"4\"*40}",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_rollback.py",
-          "line": 19,
-          "preview": "if url.endswith(\"/git/refs\") and method==\"POST\": return {\"ref\":payload[\"ref\"]}",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_rollback.py",
-          "line": 20,
-          "preview": "if url.endswith(\"/pulls\") and method==\"POST\":",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_rollback.py",
-          "line": 22,
-          "preview": "raise AssertionError(url)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_rollback.py",
-          "line": 33,
-          "preview": "def request(url,token,*args,**kwargs):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_rollback.py",
-          "line": 34,
-          "preview": "if url.endswith(\"/branches/main\"): return {\"commit\":{\"sha\":\"5\"*40}}",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_rollback.py",
-          "line": 35,
-          "preview": "raise AssertionError(url)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 31,
-          "preview": "def _request(url,token,method=\"GET\",payload=None,allow_404=False):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 32,
-          "preview": "if \"/pulls/7/reviews\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 34,
-          "preview": "if url.endswith(\"/pulls/7\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 41,
-          "preview": "if \"/commits/\" in url and \"/check-runs\" not in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 43,
-          "preview": "if \"/collaborators/alice/permission\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 45,
-          "preview": "if \"/collaborators/bob/permission\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 47,
-          "preview": "if \"/check-runs?per_page=100\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 52,
-          "preview": "if \"/actions/runs?\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 54,
-          "preview": "if \"/contents/.github/workflows/ci.yml?ref=\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 62,
-          "preview": "raise AssertionError(url)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 82,
-          "preview": "def req(url,token,method=\"GET\",payload=None,allow_404=False):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 83,
-          "preview": "if \"/contents/.github/workflows/ci.yml?ref=\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 90,
-          "preview": "return base(url,token,method,payload,allow_404)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 97,
-          "preview": "def req(url,token,method=\"GET\",payload=None,allow_404=False):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 98,
-          "preview": "if \"/contents/.github/workflows/ci.yml?ref=\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 113,
-          "preview": "return base(url,token,method,payload,allow_404)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 120,
-          "preview": "def req(url,token,method=\"GET\",payload=None,allow_404=False):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 121,
-          "preview": "if \"/contents/.github/workflows/ci.yml?ref=\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 129,
-          "preview": "return base(url,token,method,payload,allow_404)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 136,
-          "preview": "def req(url,token,method=\"GET\",payload=None,allow_404=False):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 137,
-          "preview": "if \"/check-runs?per_page=100\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 142,
-          "preview": "return base(url,token,method,payload,allow_404)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 149,
-          "preview": "def req(url,token,method=\"GET\",payload=None,allow_404=False):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 150,
-          "preview": "if \"/actions/runs?\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 152,
-          "preview": "return base(url,token,method,payload,allow_404)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 159,
-          "preview": "def req(url,token,method=\"GET\",payload=None,allow_404=False):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 160,
-          "preview": "if \"/pulls/7/reviews\" in url:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 162,
-          "preview": "return base(url,token,method,payload,allow_404)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 169,
-          "preview": "def req(url,token,method=\"GET\",payload=None,allow_404=False):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 170,
-          "preview": "if url.endswith(\"/pulls/7\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 171,
-          "preview": "value=base(url,token,method,payload,allow_404)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 174,
-          "preview": "return base(url,token,method,payload,allow_404)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_research.py",
-          "line": 11,
-          "preview": "{\"url\":\"https://docs.example.com/a#section\",\"title\":\"Official A\",\"kind\":\"docs\"},",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_research.py",
-          "line": 12,
-          "preview": "{\"url\":\"https://example.org/b\",\"title\":\"Source B\",\"kind\":\"web\"},",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_research.py",
-          "line": 15,
-          "preview": "def fetch(self, url):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_research.py",
-          "line": 16,
-          "preview": "return (\"content for \" + url).encode()",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_research.py",
-          "line": 41,
-          "preview": "lambda query:[{\"url\":\"https://example.org/one\",\"title\":\"One\",\"kind\":\"web\"}],",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_research.py",
-          "line": 51,
-          "preview": "lambda query:[{\"url\":\"http://example.org/a\",\"title\":\"A\",\"kind\":\"web\"},",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_research.py",
-          "line": 52,
-          "preview": "{\"url\":\"https://example.org/b\",\"title\":\"B\",\"kind\":\"web\"}],",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_research.py",
-          "line": 61,
-          "preview": "{\"url\":\"https://example.org/a#x\",\"title\":\"A\",\"kind\":\"web\"},",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_research.py",
-          "line": 62,
-          "preview": "{\"url\":\"https://example.org/a#y\",\"title\":\"A duplicate\",\"kind\":\"web\"},",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_research.py",
-          "line": 63,
-          "preview": "{\"url\":\"https://example.org/b\",\"title\":\"B\",\"kind\":\"web\"},",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 120
-    },
-    "__enter__": {
-      "definition": {
-        "file": "tests/test_production_os_local_e2e.py",
-        "line": 102,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_godot_android_export.py",
+          "file": "studio/godot_repository_probe.py",
           "line": 25,
-          "preview": "def __enter__(self): return self",
+          "preview": "raise StudioError('Public GitHub probe response exceeded limit')",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_godot_release_artifact.py",
-          "line": 21,
-          "preview": "def __enter__(self): return self",
+          "file": "studio/godot_repository_probe.py",
+          "line": 29,
+          "preview": "raise StudioError('Public GitHub probe returned invalid JSON') from None",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_godot_runtime.py",
-          "line": 19,
-          "preview": "def __enter__(self): return self",
+          "file": "studio/godot_repository_probe.py",
+          "line": 31,
+          "preview": "raise StudioError('Public GitHub probe response must be an object')",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_local_capacity.py",
-          "line": 18,
-          "preview": "response.__enter__.return_value = response",
+          "file": "studio/godot_repository_probe.py",
+          "line": 35,
+          "preview": "def probe(repo: str, commit: str, fetch_json=_get_json) -> dict:",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_omniroute_capacity.py",
-          "line": 15,
-          "preview": "def __enter__(self):",
+          "file": "studio/godot_repository_probe.py",
+          "line": 37,
+          "preview": "raise StudioError('Godot probe repository is invalid')",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_play_publisher.py",
-          "line": 16,
-          "preview": "def __enter__(self): return self",
+          "file": "studio/godot_repository_probe.py",
+          "line": 39,
+          "preview": "raise StudioError('Godot probe requires a full pinned commit SHA')",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 102,
-          "preview": "def __enter__(self):",
-          "definition_candidate": true
+          "file": "studio/godot_repository_probe.py",
+          "line": 46,
+          "preview": "with tempfile.TemporaryDirectory(prefix='studio-godot-probe-') as td:",
+          "definition_candidate": false
         },
         {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 70,
-          "preview": "def __enter__(self):",
+          "file": "studio/godot_repository_probe.py",
+          "line": 51,
+          "preview": "raise StudioError('Godot probe blob SHA is invalid')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 55,
+          "preview": "sandbox.create('probe')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 56,
+          "preview": "passed, logs = sandbox.gates('probe', [])",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 74,
+          "preview": "result = probe(args.repository, args.commit)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 23,
+          "preview": "from repo_maintenance import probe as probe_repo_maintenance",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 24,
+          "preview": "from repo_version_probe import probe as probe_repo_versions",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_probe.py",
+          "line": 34,
+          "preview": "config = json.loads(Path('control/provider-probe.json').read_text())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repo_maintenance.py",
+          "line": 1,
+          "preview": "\"\"\"Bounded GitHub repository maintenance probe for architecture evidence.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repo_maintenance.py",
+          "line": 61,
+          "preview": "\"User-Agent\": \"ai-dev-server-maintenance-probe\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repo_maintenance.py",
+          "line": 75,
+          "preview": "def probe(repositories: list[str], *, token: str | None = None) -> dict[str, dict]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repo_version_probe.py",
+          "line": 1,
+          "preview": "\"\"\"Bounded GitHub semantic-version probe for replacement context.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repo_version_probe.py",
+          "line": 42,
+          "preview": "\"User-Agent\":\"ai-dev-server-version-probe\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repo_version_probe.py",
+          "line": 58,
+          "preview": "def probe(repositories,token=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_codex_output_retention.py",
+          "line": 41,
+          "preview": "\"agents.adapters.AgentAdapter.probe\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_repository_probe.py",
+          "line": 30,
+          "preview": "godot_repository_probe.probe('dbrckk/Jumpy', 'main', fetch_json=lambda url: {})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_repository_probe.py",
+          "line": 45,
+          "preview": "result = godot_repository_probe.probe('dbrckk/Jumpy', 'f'*40, fetch_json=fetch)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 8
+      "occurrence_count": 31
     },
-    "__exit__": {
+    "run": {
       "definition": {
-        "file": "tests/test_production_os_local_e2e.py",
-        "line": 106,
+        "file": "studio/agents/adapters.py",
+        "line": 34,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_godot_android_export.py",
-          "line": 26,
-          "preview": "def __exit__(self,*args): return False",
+          "file": "studio/adaptive_phase_policy.py",
+          "line": 53,
+          "preview": "\"\"\"Decide whether a model review must run after trusted verification.",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_godot_release_artifact.py",
-          "line": 22,
-          "preview": "def __exit__(self,*args): return False",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_runtime.py",
-          "line": 20,
-          "preview": "def __exit__(self, *args): self.close()",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_local_capacity.py",
-          "line": 19,
-          "preview": "response.__exit__.return_value = False",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_omniroute_capacity.py",
-          "line": 18,
-          "preview": "def __exit__(self, exc_type, exc, tb):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_play_publisher.py",
-          "line": 17,
-          "preview": "def __exit__(self, *args): return False",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 106,
-          "preview": "def __exit__(self, exc_type, exc, tb):",
+          "file": "studio/agents/adapters.py",
+          "line": 34,
+          "preview": "def run(",
           "definition_candidate": true
         },
         {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 73,
-          "preview": "def __exit__(self, exc_type, exc, tb):",
+          "file": "studio/agents/adapters.py",
+          "line": 62,
+          "preview": "result = subprocess.run(",
           "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 8
-    },
-    "ProductionOSLocalE2ETests": {
-      "definition": {
-        "file": "tests/test_production_os_local_e2e.py",
-        "line": 112,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
+        },
         {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 112,
-          "preview": "class ProductionOSLocalE2ETests(unittest.TestCase):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_worker_completes_real_http_control_plane_cycle": {
-      "definition": {
-        "file": "tests/test_production_os_local_e2e.py",
-        "line": 113,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "studio/agents/codex.py",
+          "line": 24,
+          "preview": "an implementation run into a read-only review.",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 113,
-          "preview": "def test_worker_completes_real_http_control_plane_cycle(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "runner": {
-      "definition": {
-        "file": "tests/test_production_os_local_e2e.py",
-        "line": 117,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "studio/agents/orchestrator.py",
+          "line": 61,
+          "preview": "argv=[\"opencode\",\"run\",\"--auto\",\"--format\",\"json\"]",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 148,
+          "preview": "def _run_evidence(run,capacity_source:str|None=None)->dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 149,
+          "preview": "evidence={\"agent\":run.agent,\"returncode\":run.returncode,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 150,
+          "preview": "\"duration_seconds\":run.duration_seconds,\"stdout_tail\":run.stdout_tail,\"stderr_tail\":run.stderr_tail}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 153,
+          "preview": "if run.agent==\"codex\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 154,
+          "preview": "usage=parse_codex_usage(run.stdout_tail)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 260,
+          "preview": "run=AgentAdapter(decision.agent).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 261,
+          "preview": "ok=run.returncode==0",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 262,
+          "preview": "evidence=_run_evidence(run,capacity_source)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 266,
+          "preview": "if ok: return {\"status\":\"passed\",\"selected\":run.agent,\"attempts\":attempts}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 345,
+          "preview": "run=AgentAdapter(spec).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 349,
+          "preview": "ok=run.returncode==0",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 350,
+          "preview": "evidence=_run_evidence(run,capacity_source)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 353,
+          "preview": "return {\"status\":\"passed\" if ok else \"failed\",\"selected\":run.agent if ok else None,\"attempts\":[evidence]}",
+          "definition_candidate": false
+        },
         {
           "file": "studio/android_signing.py",
           "line": 112,
@@ -1485,744 +922,647 @@
           "definition_candidate": false
         },
         {
-          "file": "studio/android_signing.py",
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 4,
+          "preview": "Candidate code is materialized only in a detached worktree. Validation commands run",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 50,
+          "preview": "result=subprocess.run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 154,
+          "preview": "\"docker\",\"run\",\"--rm\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 191,
+          "preview": "run=_docker_command(root,command)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 194,
+          "preview": "\"returncode\":run.returncode,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 195,
+          "preview": "\"passed\":run.returncode==0,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 196,
+          "preview": "\"stdout_sha256\":hashlib.sha256((run.stdout or \"\").encode()).hexdigest(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 197,
+          "preview": "\"stderr_sha256\":hashlib.sha256((run.stderr or \"\").encode()).hexdigest(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 211,
+          "preview": "with tempfile.TemporaryDirectory(prefix=\"replacement-run-\") as tmp:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_pipeline.py",
+          "line": 20,
+          "preview": "def run(work_order_path: Path, repo_root: Path, out: Path) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_pipeline.py",
+          "line": 55,
+          "preview": "result=run(Path(args.work_order),Path(args.repo_root),out)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_planner.py",
+          "line": 567,
+          "preview": "\"run unit, integration, visual and release regression gates\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_postmerge_pipeline.py",
+          "line": 32,
+          "preview": "def run(work_order_path: Path, merged_path: Path, package_path: Path, out: Path, token: str, repository: str) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_postmerge_pipeline.py",
+          "line": 105,
+          "preview": "result=run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_pr_validator.py",
+          "line": 101,
+          "preview": "raise ReplacementPRValidationError(\"GitHub check-run evidence malformed\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_synthesis.py",
+          "line": 32,
+          "preview": "result=subprocess.run([\"git\",\"rev-parse\",\"HEAD\"],cwd=root,text=True,capture_output=True,check=False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_approval.py",
           "line": 144,
-          "preview": "result = runner(sign, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=180)",
+          "preview": "raise ApprovalProvenanceError(\"required GitHub checks lack a common workflow run\")",
           "definition_candidate": false
         },
         {
-          "file": "studio/android_signing.py",
-          "line": 150,
-          "preview": "verify = runner(",
+          "file": "studio/architecture_reputation_policy_approval.py",
+          "line": 146,
+          "preview": "raise ApprovalProvenanceError(\"required checks do not bind attested workflow run\")",
           "definition_candidate": false
         },
         {
-          "file": "studio/android_signing.py",
-          "line": 159,
-          "preview": "cert = runner(",
+          "file": "studio/architecture_reputation_policy_approval.py",
+          "line": 163,
+          "preview": "raise ApprovalProvenanceError(\"required GitHub check workflow run mismatch\")",
           "definition_candidate": false
         },
         {
-          "file": "studio/autonomous_project.py",
-          "line": 173,
-          "preview": "runner,",
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 78,
+          "preview": "def _workflow_path(run: dict) -> str | None:",
           "definition_candidate": false
         },
         {
-          "file": "studio/autonomous_project.py",
-          "line": 271,
-          "preview": "request_path, project_out, work, runner, deadline, clock, baseline_sha",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
           "line": 79,
-          "preview": "def _run_registered_stages(project, project_out, work, report, deadline, runner, clock):",
+          "preview": "if not isinstance(run,dict): return None",
           "definition_candidate": false
         },
         {
-          "file": "studio/ci_runner.py",
-          "line": 82,
-          "preview": "project['file'], project_out, work, report, deadline, runner, clock,",
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 80,
+          "preview": "raw=run.get(\"path\")",
           "definition_candidate": false
         },
         {
-          "file": "studio/ci_runner.py",
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 86,
+          "preview": "for run in runs if isinstance(runs,list) else []:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 87,
+          "preview": "if run.get(\"head_sha\")!=commit_sha or str(run.get(\"conclusion\") or \"\").lower()!=\"success\": continue",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
           "line": 88,
-          "preview": "def _run_project_for_queue(project, project_out, work, runner, deadline, clock, baseline_sha):",
+          "preview": "if run.get(\"name\")!=required_workflow_name or _workflow_path(run)!=required_workflow_path: continue",
           "definition_candidate": false
         },
         {
-          "file": "studio/ci_runner.py",
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 89,
+          "preview": "if required_run_id is not None and run.get(\"id\")!=required_run_id: continue",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
           "line": 90,
-          "preview": "return run_project(project['file'], project_out, work, runner, deadline, clock, baseline_sha)",
+          "preview": "created=_timestamp(run.get(\"run_started_at\") or run.get(\"created_at\") or run.get(\"updated_at\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 92,
+          "preview": "candidates.append({**run,\"_validated_timestamp\":created})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 94,
+          "preview": "run=sorted(candidates,key=lambda x:int(x.get(\"id\") or 0),reverse=True)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 95,
+          "preview": "return {\"id\":run.get(\"id\"),\"head_sha\":commit_sha,\"conclusion\":\"success\",\"name\":run.get(\"name\"),\"path\":_workflow_path(run),\"timestamp\":run.get(\"_validated_timestamp\")}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 119,
+          "preview": "if not isinstance(required_workflow_run_id,int): raise ApprovalProvenanceError(\"required checks do not share one workflow run\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration.py",
+          "line": 1,
+          "preview": "\"\"\"Dry-run and explicitly authorized migration of persisted replacement reputation policy.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration.py",
+          "line": 3,
+          "preview": "Policy migrations never silently promote a replacement. A dry-run computes the exact",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 1,
+          "preview": "\"\"\"CLI for dry-run and explicitly authorized reputation policy migrations.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artifact_handoff.py",
+          "line": 1,
+          "preview": "\"\"\"Trusted selection of prior autonomous-run artifacts for release handoff.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_stage.py",
+          "line": 12,
+          "preview": "from run import GitHub",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_validation.py",
+          "line": 9,
+          "preview": "from .capabilities.asset_artwork import run",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_validation.py",
+          "line": 11,
+          "preview": "from capabilities.asset_artwork import run",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_validation.py",
+          "line": 45,
+          "preview": "first=run(context)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_validation.py",
+          "line": 46,
+          "preview": "second=run(context)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/billing_stage.py",
+          "line": 11,
+          "preview": "from run import GitHub",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capabilities/asset_artwork.py",
+          "line": 74,
+          "preview": "def run(context):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 60,
+          "preview": "run = getattr(module, \"run\", None)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 61,
+          "preview": "if not callable(run):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 62,
+          "preview": "raise CapabilityRuntimeError(\"provider must expose callable run(context)\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 63,
+          "preview": "return run",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 78,
+          "preview": "run = _load_provider(provider, Path(repo_root))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 84,
+          "preview": "result_box[\"value\"] = (\"ok\", run(context))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_stage.py",
+          "line": 11,
+          "preview": "from run import GitHub",
           "definition_candidate": false
         },
         {
           "file": "studio/ci_runner.py",
-          "line": 93,
-          "preview": "project['file'], project_out, work, runner, deadline, clock, baseline_sha,",
+          "line": 41,
+          "preview": "containers = subprocess.run(['docker', 'ps', '-aq', '--filter',",
           "definition_candidate": false
         },
         {
           "file": "studio/ci_runner.py",
-          "line": 109,
-          "preview": "runner=bounded_run, clock=time.monotonic):",
+          "line": 42,
+          "preview": "'label=mobile-studio-run=' + run_id], capture_output=True, text=True,",
           "definition_candidate": false
         },
         {
           "file": "studio/ci_runner.py",
-          "line": 156,
-          "preview": "result = _run_project_for_queue(project, project_out, work, runner, deadline, clock, baseline_sha)",
+          "line": 45,
+          "preview": "subprocess.run(['docker', 'rm', '-f', *containers],",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 819,
+          "preview": "def run(self, args, network=False, timeout=600):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 824,
+          "preview": "cmd = ['docker', 'run', '--name', name, '--rm', '--init', '--cap-drop=ALL', '--security-opt=no-new-privileges',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 832,
+          "preview": "raise StudioError('Invalid sandbox run identifier')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 833,
+          "preview": "cmd[2:2] = ['--label', 'mobile-studio-run=' + run_id]",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 838,
+          "preview": "r = subprocess.run(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 840,
+          "preview": "subprocess.run(['docker', 'rm', '-f', name], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 844,
+          "preview": "rc, log = self.run(['flutter', 'create', '--no-pub', '--platforms=android,ios', '--project-name', name, '.'], network=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 854,
+          "preview": "rc, out = self.run(args, network=True, timeout=600)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 861,
+          "preview": "rc, out = self.run(args, network=False, timeout=600)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 869,
+          "preview": "rc, out = self.run(args, network=False, timeout=600)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 902,
+          "preview": "rc, out = self.run(args, network=network, timeout=900)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 21,
+          "preview": "return subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 67,
+          "preview": "created = subprocess.run(['avdmanager', 'create', 'avd', '-n', AVD_NAME, '-k', SYSTEM_IMAGE,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 125,
+          "preview": "shot = subprocess.run([adb, '-s', serial, 'exec-out', 'screencap', '-p'], stdout=handle,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_stage.py",
+          "line": 12,
+          "preview": "from run import GitHub",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/engine_detect.py",
+          "line": 10,
+          "preview": "from run import GitHub",
           "definition_candidate": false
         },
         {
           "file": "studio/engine_entry.py",
-          "line": 1,
-          "preview": "\"\"\"Trusted preview dispatcher preserving the mature Flutter runner unchanged.\"\"\"",
+          "line": 11,
+          "preview": "from run import GitHub, execute as execute_flutter",
           "definition_candidate": false
         },
         {
-          "file": "studio/evolution_pending.py",
-          "line": 1,
-          "preview": "\"\"\"Recover a durable content-bound GitHub evolution across runner restarts.\"\"\"",
+          "file": "studio/evolution_automerge.py",
+          "line": 27,
+          "preview": "def _trusted_check(run, repository):",
           "definition_candidate": false
         },
         {
-          "file": "studio/fleet_supervisor_apply.py",
-          "line": 42,
-          "preview": "runner=bounded_run,",
+          "file": "studio/evolution_automerge.py",
+          "line": 28,
+          "preview": "if not isinstance(run,dict): return False",
           "definition_candidate": false
         },
         {
-          "file": "studio/fleet_supervisor_apply.py",
+          "file": "studio/evolution_automerge.py",
+          "line": 29,
+          "preview": "app=run.get('app')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 31,
+          "preview": "details=run.get('details_url')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 66,
+          "preview": "if not isinstance(runs,list): raise AutoMergeError('GitHub check-run evidence malformed')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 67,
+          "preview": "trusted=[run for run in runs if _trusted_check(run,repository)]; by_name={run.get('name'):run for run in trusted if isinstance(run.get('name'),str)}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 71,
+          "preview": "run=by_name[name]",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 72,
+          "preview": "if run.get('status')!='completed': return {'status':'awaiting_required_checks','missing_checks':[],'pull_request':number}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 73,
+          "preview": "if run.get('conclusion')!='success': raise AutoMergeError('Required promotion check failed: '+name)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_isolated_runner.py",
+          "line": 3,
+          "preview": "Candidate Python/tests run only in the pinned Flutter container with networking",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_isolated_runner.py",
+          "line": 31,
+          "preview": "result=subprocess.run(args,cwd=cwd,env=env,text=True,capture_output=True,timeout=timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_isolated_runner.py",
+          "line": 56,
+          "preview": "command=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','128','--memory','1024m','--cpus','2','--tmpf",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_isolated_runner.py",
           "line": 95,
-          "preview": "runner,",
+          "preview": "with tempfile.TemporaryDirectory(prefix='evolution-run-') as tmp:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_research.py",
+          "line": 316,
+          "preview": "result = subprocess.run([path, *args], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_stage_runner.py",
+          "line": 26,
+          "preview": "def run(script: str, args: list[str], timeout: float | None = None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_stage_runner.py",
+          "line": 30,
+          "preview": "return subprocess.run([sys.executable, script, *args], env=scrubbed_env(), timeout=timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_stage_runner.py",
+          "line": 37,
+          "preview": "result = run(argv[0], argv[1:])",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_daemon.py",
+          "line": 12,
+          "preview": "from fleet_maintenance import run as maintain",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_maintenance.py",
+          "line": 42,
+          "preview": "def run(root: Path | str = \"studio-output\") -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_maintenance.py",
+          "line": 64,
+          "preview": "report = run(args.root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_isolated_validation.py",
+          "line": 78,
+          "preview": "\"docker\",\"run\",\"--rm\",\"--network\",\"none\",\"--read-only\",\"--cap-drop\",\"ALL\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_isolated_validation.py",
+          "line": 85,
+          "preview": "result=subprocess.run(cmd,text=True,capture_output=True,timeout=timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_synthesis.py",
+          "line": 22,
+          "preview": "implementation must expose run(context) and fail closed on malformed input.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 12,
+          "preview": "from generic_verify import run as verify",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 15,
+          "preview": "from generic_sandbox import run as run_command",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 16,
+          "preview": "from run import GitHub",
           "definition_candidate": false
         },
         {
           "file": "studio/generic_sandbox.py",
-          "line": 1,
-          "preview": "\"\"\"Bounded generic command runner with explicit network and secret isolation.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 237,
-          "preview": "def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=time.monotonic,budget_seconds=85*60,baseline_sha:str|None=None)->dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 531,
-          "preview": "str(request_path),out,work,runner,deadline,clock,baseline_sha,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 553,
-          "preview": "str(request_path),out,improve_work,runner,deadline,clock,baseline_sha",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 566,
-          "preview": "# checkpointed before the runner exits.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_android_export.py",
-          "line": 96,
-          "preview": "def export_debug_apk(project_root: Path, binary: Path, templates: Path, runner=subprocess.run, timeout=900, artifact_path: Path | None=None) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_android_export.py",
-          "line": 117,
-          "preview": "try: result = runner(command, env=_host_env(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_play_stage.py",
-          "line": 98,
-          "preview": "\"Set STUDIO_PLAY_COMMIT_APPROVED=1 in the trusted runner to authorize the Play edit commit.\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_preview.py",
-          "line": 3,
-          "preview": "The runner checkpoints only to studio/<request-id>. It never updates the target default",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_artifact.py",
-          "line": 90,
-          "preview": "runner=subprocess.run,timeout=1200)->dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_artifact.py",
-          "line": 105,
-          "preview": "try: result=runner(command,env=_host_env(),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=timeout)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_runtime.py",
-          "line": 142,
-          "preview": "def validate(project_root: Path, binary: Path, runner=subprocess.run, timeout=600) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_runtime.py",
-          "line": 151,
-          "preview": "result = runner(command, env=_host_env(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_runtime_journeys.py",
-          "line": 163,
-          "preview": "def run_journeys(project_root: Path, binary: Path, journeys: list[dict], runner=subprocess.run, timeout=600) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_runtime_journeys.py",
-          "line": 176,
-          "preview": "result=runner(command,env=_host_env(),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=timeout)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_qa.py",
-          "line": 3,
-          "preview": "A temporary project copy is instrumented with a trusted scene runner. The debug APK",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_qa.py",
-          "line": 155,
-          "preview": "exporter=export_debug_apk, runner=_run, sleeper=time.sleep) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_qa.py",
-          "line": 166,
-          "preview": "devices=runner([adb,'devices'],timeout=30)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_qa.py",
-          "line": 171,
-          "preview": "runner([adb,'-s',serial,'shell','settings','put','global','airplane_mode_on','1'],timeout=30)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_qa.py",
-          "line": 172,
-          "preview": "runner([adb,'-s',serial,'shell','am','broadcast','-a','android.intent.action.AIRPLANE_MODE','--ez','state','true'],timeout=30)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_qa.py",
-          "line": 173,
-          "preview": "install_result=runner([adb,'-s',serial,'install','-r','-t',str(apk)],timeout=180)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_qa.py",
-          "line": 175,
-          "preview": "runner([adb,'-s',serial,'logcat','-c'],timeout=30)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_qa.py",
-          "line": 176,
-          "preview": "launch=runner([adb,'-s',serial,'shell','monkey','-p',package,'-c','android.intent.category.LAUNCHER','1'],timeout=60)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_qa.py",
-          "line": 179,
-          "preview": "logs=runner([adb,'-s',serial,'logcat','-d','-v','brief'],timeout=60)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/improvement_executor.py",
-          "line": 38,
-          "preview": "raise ImprovementExecutionError(\"project cycle runner invalid\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 20,
-          "preview": "def _detect(request_path,project_out,runner,deadline,clock):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
           "line": 23,
-          "preview": "result=runner([sys.executable,'studio/engine_detect.py',request_path,'--out',str(project_out)],timeout=remaining)",
+          "preview": "def run(command:list[str],root:Path,*,timeout:int=900,network:bool=False)->dict:",
           "definition_candidate": false
         },
         {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 35,
-          "preview": "def _run_stage(script,request_path,project_out,work,runner,deadline,clock):",
+          "file": "studio/generic_sandbox.py",
+          "line": 34,
+          "preview": "probe=subprocess.run([\"unshare\",\"--net\",\"true\"],env=env,stdin=subprocess.DEVNULL,",
           "definition_candidate": false
         },
         {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 38,
-          "preview": "return runner([sys.executable,script,request_path,'--work',work,'--out',str(project_out)],timeout=remaining)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 41,
-          "preview": "def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 43,
-          "preview": "engine=_detect(request_path,project_out,runner,deadline,clock)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
+          "file": "studio/generic_sandbox.py",
           "line": 46,
-          "preview": "return run_flutter_project(request_path,project_out,work,runner,deadline,clock,baseline_sha)",
+          "preview": "p=subprocess.run(argv,cwd=root,env=env,stdin=subprocess.DEVNULL,",
           "definition_candidate": false
         },
         {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 73,
-          "preview": "result=_run_stage(script,request_path,project_out,stage_work,runner,deadline,clock)",
+          "file": "studio/generic_smoke.py",
+          "line": 16,
+          "preview": "from generic_verify import run as verify",
           "definition_candidate": false
         },
         {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 90,
-          "preview": "result=_run_stage('studio/godot_release_stage.py',request_path,project_out,release_work,runner,deadline,clock)",
+          "file": "studio/generic_verify.py",
+          "line": 9,
+          "preview": "from generic_sandbox import run as run_command",
           "definition_candidate": false
         },
         {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 105,
-          "preview": "result=_run_stage('studio/godot_release_artifact_stage.py',request_path,project_out,artifact_work,runner,deadline,clock)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 123,
-          "preview": "result=_run_stage('studio/godot_store_metadata_stage.py',request_path,project_out,metadata_work,runner,deadline,clock)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 134,
-          "preview": "result=_run_stage('studio/godot_privacy_security_stage.py',request_path,project_out,privacy_work,runner,deadline,clock)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 145,
-          "preview": "result=_run_stage('studio/godot_final_review_stage.py',request_path,project_out,final_work,runner,deadline,clock)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 162,
-          "preview": "result=_run_stage('studio/godot_play_stage.py',request_path,project_out,play_work,runner,deadline,clock)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 135,
-          "preview": "def _run_adaptation_pending(project_out,deadline,runner,clock):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 141,
-          "preview": "result=runner([sys.executable,'studio/evolution_pending.py',str(order),'--out',str(project_out)],timeout=remaining)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 152,
-          "preview": "def _run_adaptation_research(project_out,deadline,runner,clock):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 157,
-          "preview": "result=runner([sys.executable,'studio/evolution_research.py',str(order),'--out',str(project_out)],timeout=remaining)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 166,
-          "preview": "def _run_adaptation_synthesis(project_out,deadline,runner,clock):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 171,
-          "preview": "result=runner([sys.executable,'studio/evolution_synthesis.py',str(order),str(research),'--out',str(project_out)],timeout=remaining)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 180,
-          "preview": "def _run_adaptation_benchmark(project_out,deadline,runner,clock):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 185,
-          "preview": "result=runner([sys.executable,'studio/evolution_isolated_runner.py',str(order),str(candidate),'--repo-root','.','--out',str(project_out)],timeout=remaining)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 196,
-          "preview": "def _run_adaptation_promotion(project_out,deadline,runner,clock):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 201,
-          "preview": "result=runner([sys.executable,'studio/evolution_promotion.py',str(paths[0]),str(paths[1]),str(paths[2]),str(paths[3]),'--repo-root','.','--out',str(project_out)],timeout=remaining)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 209,
-          "preview": "def _run_adaptation_persistence(project_out,deadline,runner,clock):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 215,
-          "preview": "result=runner([sys.executable,'studio/evolution_persist.py',str(applied),'--repo-root','.','--out',str(project_out)],timeout=remaining)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 223,
-          "preview": "def _run_adaptation_automerge(project_out,deadline,runner,clock):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 234,
-          "preview": "result=runner(args,timeout=remaining)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 250,
-          "preview": "def run_registered_stages(request_path,project_out,work,report,deadline,runner,clock=time.monotonic,baseline_sha=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 262,
-          "preview": "pending_status=_run_adaptation_pending(project_out,deadline,runner,clock)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 264,
-          "preview": "automerge_status=_run_adaptation_automerge(project_out,deadline,runner,clock)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 268,
-          "preview": "research_status=_run_adaptation_research(project_out,deadline,runner,clock); synthesis_status='not_ready'; benchmark_status='not_ready'; promotion_status='not_ready'; persistence_s",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 269,
-          "preview": "if research_status=='complete': synthesis_status=_run_adaptation_synthesis(project_out,deadline,runner,clock)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 270,
-          "preview": "if synthesis_status=='validated': benchmark_status=_run_adaptation_benchmark(project_out,deadline,runner,clock)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 271,
-          "preview": "if benchmark_status=='approved': promotion_status=_run_adaptation_promotion(project_out,deadline,runner,clock)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 272,
-          "preview": "if promotion_status=='promoted': persistence_status=_run_adaptation_persistence(project_out,deadline,runner,clock)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 273,
-          "preview": "if persistence_status=='persisted': automerge_status=_run_adaptation_automerge(project_out,deadline,runner,clock)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 286,
-          "preview": "result=runner(_stage_command(name,stage,request_path,work,project_out),timeout=remaining)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 297,
-          "preview": "def run_project(request_path,project_out,work,runner,deadline,clock=time.monotonic,baseline_sha=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 302,
-          "preview": "preview=runner([sys.executable,'studio/run.py',request_path,'--work',work,'--out',str(project_out)],timeout=remaining)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 312,
-          "preview": "release=runner([sys.executable,'studio/post_preview.py',request_path,'--work',work,'--out',str(project_out)],timeout=remaining)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 317,
-          "preview": "return run_registered_stages(request_path,project_out,work,report,deadline,runner,clock,baseline_sha)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/play_stage.py",
-          "line": 150,
-          "preview": "'Set STUDIO_PLAY_COMMIT_APPROVED=1 in the trusted runner to authorize the Play edit commit.',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/release_stage_engine.py",
-          "line": 238,
-          "preview": "\"detail\": \"Provide or verify external evidence that cannot be safely fabricated by the autonomous runner.\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/runtime_journeys.py",
-          "line": 81,
-          "preview": "runner=subprocess.run, timeout: int = 1200) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/runtime_journeys.py",
-          "line": 98,
-          "preview": "result = runner(args, cwd=root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_android_signing.py",
-          "line": 75,
-          "preview": "def runner(cmd, **kwargs):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_android_signing.py",
-          "line": 93,
-          "preview": "runner=runner,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_project.py",
-          "line": 105,
-          "preview": "runner=lambda *a, **k: None,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_project.py",
-          "line": 149,
-          "preview": "runner=lambda *a, **k: None,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_project.py",
-          "line": 175,
-          "preview": "runner=lambda *a, **k: None,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_project.py",
-          "line": 222,
-          "preview": "runner=lambda *a, **k: None,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_capacity_scheduler_work_conserving.py",
-          "line": 57,
-          "preview": "{\"id\": \"runner\", \"requested_tokens\": 1000, \"priority\": 10},",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_capacity_scheduler_work_conserving.py",
-          "line": 62,
-          "preview": "self.assertEqual(by_id[\"runner\"][\"token_envelope\"], 900)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci.py",
-          "line": 78,
-          "preview": "def runner(args, timeout):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci.py",
-          "line": 87,
-          "preview": "self.assertEqual(run_queue(queue, out, runner), 1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci.py",
-          "line": 99,
-          "preview": "def runner(args, timeout):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci.py",
-          "line": 105,
-          "preview": "self.assertEqual(run_queue(queue, out, runner), 0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci.py",
-          "line": 121,
-          "preview": "def runner(args, timeout):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci.py",
-          "line": 128,
-          "preview": "self.assertEqual(run_queue(queue, out, runner), 1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci.py",
-          "line": 159,
-          "preview": "self.assertEqual(run_queue(queue, out, runner=lambda *a, **k: None), 0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci.py",
-          "line": 186,
-          "preview": "def runner(args, timeout):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci.py",
-          "line": 191,
-          "preview": "self.assertEqual(run_queue(queue, out, runner), 1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci.py",
-          "line": 201,
-          "preview": "def runner(*args, **kwargs):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci.py",
-          "line": 203,
-          "preview": "self.assertEqual(run_queue(queue, out, runner), 1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci_adaptation.py",
-          "line": 57,
-          "preview": "def runner(args, timeout):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci_adaptation.py",
-          "line": 67,
-          "preview": "self.assertEqual(run_queue(queue, out, runner), 1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_pending.py",
-          "line": 65,
-          "preview": "def runner(args,timeout):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_pending.py",
-          "line": 67,
-          "preview": "with patch.dict('os.environ',{'STUDIO_CI_PROVIDER':'github'},clear=True): status=_run_adaptation_pending(out,100,runner,lambda:0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_persist.py",
-          "line": 81,
-          "preview": "def runner(args,timeout):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_persist.py",
-          "line": 83,
-          "preview": "with patch.dict('os.environ',{'STUDIO_CI_PROVIDER':'github'},clear=True): status=_run_adaptation_persistence(out,100,runner,lambda:0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_fleet_supervisor_apply.py",
-          "line": 46,
-          "preview": "def fake_run(project, project_out, work, runner, deadline, clock, baseline_sha):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_github_runner_persistent.py",
-          "line": 35,
-          "preview": "result=run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha=\"a\"*40)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_github_runner_persistent.py",
-          "line": 49,
-          "preview": "result=run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha=\"b\"*40)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_github_runner_persistent.py",
-          "line": 63,
-          "preview": "result=run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha=\"c\"*40)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_github_runner_persistent.py",
-          "line": 103,
-          "preview": "run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha=\"d\"*40)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_github_runner_persistent.py",
-          "line": 144,
-          "preview": "request,out,runner=lambda *a,**k:None,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_android_export.py",
-          "line": 48,
-          "preview": "def runner(cmd,**kwargs):",
+          "file": "studio/generic_verify.py",
+          "line": 24,
+          "preview": "commands.append([\"npm\", \"run\", \"build\"])",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 120
     },
-    "execute_once": {
+    "CodexAdapterOutputRetentionTests": {
       "definition": {
-        "file": "tests/test_production_os_local_e2e.py",
-        "line": 154,
+        "file": "tests/test_codex_output_retention.py",
+        "line": 18,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_codex_output_retention.py",
+          "line": 18,
+          "preview": "class CodexAdapterOutputRetentionTests(unittest.TestCase):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_codex_terminal_usage_event_survives_large_trailing_output": {
+      "definition": {
+        "file": "tests/test_codex_output_retention.py",
+        "line": 19,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 154,
-          "preview": "def execute_once(client, **kwargs):",
+          "file": "tests/test_codex_output_retention.py",
+          "line": 19,
+          "preview": "def test_codex_terminal_usage_event_survives_large_trailing_output(self):",
           "definition_candidate": true
-        },
-        {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 175,
-          "preview": "run_once_fn=execute_once,",
-          "definition_candidate": false
         }
       ],
-      "occurrence_count": 2
+      "occurrence_count": 1
     }
   }
 }

@@ -508,6 +508,7 @@ tests/
   test_ci_runner_admission.py
   test_ci.py
   test_codex_adapter.py
+  test_codex_output_retention.py
   test_completion.py
   test_concurrent_state.py
   test_contextual_routing_memory.py
@@ -4504,6 +4505,17 @@ result = subprocess.run(
 duration = time.monotonic() - started
 stdout=result.stdout[-24000:]
 stderr=result.stderr[-24000:]
+⋮----
+terminal_event = None
+⋮----
+line = raw_line.strip()
+⋮----
+event = json.loads(line)
+⋮----
+terminal_event = line
+⋮----
+budget = max(0, 24000 - len(terminal_event) - 1)
+stdout = terminal_event + "\n" + stdout[-budget:]
 ⋮----
 stdout=stdout.replace(value,"[REDACTED]")
 stderr=stderr.replace(value,"[REDACTED]")
@@ -26136,6 +26148,25 @@ def test_omniroute_invocation_uses_isolated_home_and_custom_responses_provider(s
 provider_override = next(
 ⋮----
 def test_omniroute_invocation_rejects_insecure_remote_http(self)
+````
+
+## File: tests/test_codex_output_retention.py
+````python
+ROOT = Path(__file__).resolve().parents[1]
+STUDIO = ROOT / "studio"
+⋮----
+class CodexAdapterOutputRetentionTests(unittest.TestCase)
+⋮----
+def test_codex_terminal_usage_event_survives_large_trailing_output(self)
+⋮----
+completed = (
+stdout = completed + "\n" + ("x" * 40000)
+result = subprocess.CompletedProcess(
+spec = AgentSpec(
+⋮----
+run = AgentAdapter(spec).run(
+⋮----
+usage = parse_codex_usage(run.stdout_tail)
 ````
 
 ## File: tests/test_completion.py

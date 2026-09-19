@@ -400,6 +400,17 @@ duration = time.monotonic() - started
 stdout=result.stdout[-24000:]
 stderr=result.stderr[-24000:]
 ⋮----
+terminal_event = None
+⋮----
+line = raw_line.strip()
+⋮----
+event = json.loads(line)
+⋮----
+terminal_event = line
+⋮----
+budget = max(0, 24000 - len(terminal_event) - 1)
+stdout = terminal_event + "\n" + stdout[-budget:]
+⋮----
 stdout=stdout.replace(value,"[REDACTED]")
 stderr=stderr.replace(value,"[REDACTED]")
 ````

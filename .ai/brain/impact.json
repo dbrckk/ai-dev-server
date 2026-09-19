@@ -1,102 +1,285 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "799ad2a75b7f09567a78eafd2abed54d0ac8d1d3",
-  "head": "1b1abf1d75094e4627c69c5393421d3d24ec4695",
+  "base": "1b1abf1d75094e4627c69c5393421d3d24ec4695",
+  "head": "13bd1fbe32eaf4fe77c9df78a8c1f6bb533a32e6",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "tests/test_production_os_local_e2e.py",
+      "path": "studio/agents/adapters.py",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_codex_output_retention.py",
       "status": "A"
     }
   ],
   "changed_source_files": [
-    "tests/test_production_os_local_e2e.py"
+    "studio/agents/adapters.py",
+    "tests/test_codex_output_retention.py"
   ],
   "impacted_files": [
-    "tests/test_production_os_local_e2e.py"
+    "studio/agents/adapters.py",
+    "studio/agents/orchestrator.py",
+    "tests/test_agent_router.py",
+    "tests/test_codex_output_retention.py"
   ],
   "impacted_symbols": [
     {
-      "name": "_ControlPlane",
+      "name": "AgentRun",
       "kind": "class",
-      "file": "tests/test_production_os_local_e2e.py",
-      "line": 14
+      "file": "studio/agents/adapters.py",
+      "line": 19
+    },
+    {
+      "name": "AgentAdapter",
+      "kind": "class",
+      "file": "studio/agents/adapters.py",
+      "line": 27
     },
     {
       "name": "__init__",
       "kind": "function",
-      "file": "tests/test_production_os_local_e2e.py",
-      "line": 15
+      "file": "studio/agents/adapters.py",
+      "line": 28
     },
     {
-      "name": "Handler",
-      "kind": "class",
-      "file": "tests/test_production_os_local_e2e.py",
-      "line": 20
-    },
-    {
-      "name": "log_message",
+      "name": "probe",
       "kind": "function",
-      "file": "tests/test_production_os_local_e2e.py",
+      "file": "studio/agents/adapters.py",
+      "line": 31
+    },
+    {
+      "name": "run",
+      "kind": "function",
+      "file": "studio/agents/adapters.py",
+      "line": 34
+    },
+    {
+      "name": "_safe_rewrite_summary",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 18
+    },
+    {
+      "name": "_contextual_routing_state",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 23
+    },
+    {
+      "name": "_verification_seconds",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 41
+    },
+    {
+      "name": "_agent_execution_seconds",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 48
+    },
+    {
+      "name": "_opencode_runtime",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 56
+    },
+    {
+      "name": "omniroute_available_base",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 89
+    },
+    {
+      "name": "_runtime_invocation",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 114
+    },
+    {
+      "name": "invocation_for",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 137
+    },
+    {
+      "name": "_run_evidence",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 148
+    },
+    {
+      "name": "_reserve_agent_budget",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 160
+    },
+    {
+      "name": "_settle_agent_budget",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 187
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 215
+    },
+    {
+      "name": "ranked_agent_names",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 273
+    },
+    {
+      "name": "usable",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 288
+    },
+    {
+      "name": "execute_named",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 320
+    },
+    {
+      "name": "routing_trace_for",
+      "kind": "function",
+      "file": "studio/agents/orchestrator.py",
+      "line": 356
+    },
+    {
+      "name": "AgentRouterTests",
+      "kind": "class",
+      "file": "tests/test_agent_router.py",
       "line": 21
     },
     {
-      "name": "do_POST",
+      "name": "setUp",
       "kind": "function",
-      "file": "tests/test_production_os_local_e2e.py",
-      "line": 24
+      "file": "tests/test_agent_router.py",
+      "line": 22
     },
     {
-      "name": "_send",
+      "name": "test_free_preference_changes_ranking",
       "kind": "function",
-      "file": "tests/test_production_os_local_e2e.py",
-      "line": 79
+      "file": "tests/test_agent_router.py",
+      "line": 29
     },
     {
-      "name": "url",
+      "name": "test_paid_can_win_when_free_preference_disabled",
       "kind": "function",
-      "file": "tests/test_production_os_local_e2e.py",
-      "line": 98
+      "file": "tests/test_agent_router.py",
+      "line": 34
     },
     {
-      "name": "__enter__",
+      "name": "test_unavailable_agent_is_not_selected",
       "kind": "function",
-      "file": "tests/test_production_os_local_e2e.py",
-      "line": 102
+      "file": "tests/test_agent_router.py",
+      "line": 39
     },
     {
-      "name": "__exit__",
+      "name": "which",
       "kind": "function",
-      "file": "tests/test_production_os_local_e2e.py",
-      "line": 106
+      "file": "tests/test_agent_router.py",
+      "line": 40
     },
     {
-      "name": "ProductionOSLocalE2ETests",
+      "name": "test_learned_agent_weights_affect_ranking_and_trace",
+      "kind": "function",
+      "file": "tests/test_agent_router.py",
+      "line": 46
+    },
+    {
+      "name": "test_architecture_discipline_penalizes_repeatedly_risky_agent",
+      "kind": "function",
+      "file": "tests/test_agent_router.py",
+      "line": 59
+    },
+    {
+      "name": "test_contextual_memory_changes_agent_score",
+      "kind": "function",
+      "file": "tests/test_agent_router.py",
+      "line": 81
+    },
+    {
+      "name": "test_cost_aware_utility_prefers_faster_agent_when_context_quality_is_equal",
+      "kind": "function",
+      "file": "tests/test_agent_router.py",
+      "line": 111
+    },
+    {
+      "name": "test_opencode_invocation_uses_secret_alias",
+      "kind": "function",
+      "file": "tests/test_agent_router.py",
+      "line": 143
+    },
+    {
+      "name": "test_codex_invocation_uses_verified_headless_contract",
+      "kind": "function",
+      "file": "tests/test_agent_router.py",
+      "line": 156
+    },
+    {
+      "name": "test_codex_execute_named_exposes_token_usage",
+      "kind": "function",
+      "file": "tests/test_agent_router.py",
+      "line": 165
+    },
+    {
+      "name": "test_codex_execute_named_prefers_isolated_omniroute_profile_when_healthy",
+      "kind": "function",
+      "file": "tests/test_agent_router.py",
+      "line": 185
+    },
+    {
+      "name": "fake_run",
+      "kind": "function",
+      "file": "tests/test_agent_router.py",
+      "line": 195
+    },
+    {
+      "name": "test_codex_execute_named_uses_chatgpt_profile_when_omniroute_is_unavailable",
+      "kind": "function",
+      "file": "tests/test_agent_router.py",
+      "line": 219
+    },
+    {
+      "name": "fake_run",
+      "kind": "function",
+      "file": "tests/test_agent_router.py",
+      "line": 229
+    },
+    {
+      "name": "test_codex_execute_named_stops_when_project_token_envelope_is_exhausted",
+      "kind": "function",
+      "file": "tests/test_agent_router.py",
+      "line": 250
+    },
+    {
+      "name": "test_codex_execute_named_settles_reported_usage_in_project_ledger",
+      "kind": "function",
+      "file": "tests/test_agent_router.py",
+      "line": 293
+    },
+    {
+      "name": "CodexAdapterOutputRetentionTests",
       "kind": "class",
-      "file": "tests/test_production_os_local_e2e.py",
-      "line": 112
+      "file": "tests/test_codex_output_retention.py",
+      "line": 18
     },
     {
-      "name": "test_worker_completes_real_http_control_plane_cycle",
+      "name": "test_codex_terminal_usage_event_survives_large_trailing_output",
       "kind": "function",
-      "file": "tests/test_production_os_local_e2e.py",
-      "line": 113
-    },
-    {
-      "name": "runner",
-      "kind": "function",
-      "file": "tests/test_production_os_local_e2e.py",
-      "line": 117
-    },
-    {
-      "name": "execute_once",
-      "kind": "function",
-      "file": "tests/test_production_os_local_e2e.py",
-      "line": 154
+      "file": "tests/test_codex_output_retention.py",
+      "line": 19
     }
   ],
   "selected_tests": [
-    "tests/test_production_os_local_e2e.py"
+    "tests/test_agent_router.py",
+    "tests/test_codex_output_retention.py"
   ]
 }

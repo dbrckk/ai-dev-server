@@ -1474,6 +1474,25 @@
     },
     {
       "dependencies": [
+        "studio/agents/registry.py",
+        "studio/agents/router.py"
+      ],
+      "dependents": [
+        "studio/generic_project.py",
+        "studio/meta_router.py",
+        "studio/release_repair.py",
+        "tests/test_agent_performance.py",
+        "tests/test_agent_router.py",
+        "tests/test_agent_workspace.py",
+        "tests/test_codex_adapter.py",
+        "tests/test_codex_output_retention.py"
+      ],
+      "in_degree": 8,
+      "out_degree": 2,
+      "path": "studio/agents/__init__.py"
+    },
+    {
+      "dependencies": [
         "studio/project_memory.py",
         "tests/test_unified_routing_score.py"
       ],
@@ -1660,24 +1679,6 @@
       "in_degree": 0,
       "out_degree": 10,
       "path": "studio/fault_injection_smoke.py"
-    },
-    {
-      "dependencies": [
-        "studio/agents/registry.py",
-        "studio/agents/router.py"
-      ],
-      "dependents": [
-        "studio/generic_project.py",
-        "studio/meta_router.py",
-        "studio/release_repair.py",
-        "tests/test_agent_performance.py",
-        "tests/test_agent_router.py",
-        "tests/test_agent_workspace.py",
-        "tests/test_codex_adapter.py"
-      ],
-      "in_degree": 7,
-      "out_degree": 2,
-      "path": "studio/agents/__init__.py"
     },
     {
       "dependencies": [
@@ -1992,8 +1993,8 @@
       "path": "studio/godot_android_export.py"
     }
   ],
-  "edge_count": 1777,
+  "edge_count": 1783,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 602,
+  "node_count": 603,
   "schema_version": 1
 }

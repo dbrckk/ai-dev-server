@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import re
+import threading
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -462,6 +463,7 @@ def run_once(
     clock=None,
     baseline_sha: str | None = None,
     capacity: dict | None = None,
+    heartbeat_interval_seconds: float = 30.0,
 ) -> dict:
     """Claim and execute at most one Production-OS job."""
     if run_project is None:
@@ -505,6 +507,39 @@ def run_once(
         encoding="utf-8",
     )
 
+    try:
+        heartbeat_interval = float(heartbeat_interval_seconds)
+    except (TypeError, ValueError) as exc:
+        raise ProductionOSWorkerError(
+            "heartbeat interval must be positive"
+        ) from exc
+    if heartbeat_interval <= 0:
+        raise ProductionOSWorkerError("heartbeat interval must be positive")
+
+    stop_heartbeat = threading.Event()
+    heartbeat_errors: list[str] = []
+
+    def keep_job_alive():
+        while not stop_heartbeat.wait(heartbeat_interval):
+            try:
+                if capacity is None:
+                    client.heartbeat(worker_id, active_job_keys=(key,))
+                else:
+                    client.heartbeat(
+                        worker_id,
+                        active_job_keys=(key,),
+                        capacity=capacity,
+                    )
+            except Exception as exc:
+                heartbeat_errors.append(type(exc).__name__)
+
+    heartbeat_thread = threading.Thread(
+        target=keep_job_alive,
+        name=f"production-os-heartbeat-{request['id']}",
+        daemon=True,
+    )
+    heartbeat_thread.start()
+
     started = float(clock())
     try:
         summary = run_project(
@@ -513,6 +548,8 @@ def run_once(
             baseline_sha=baseline_sha,
         )
     except Exception as exc:
+        stop_heartbeat.set()
+        heartbeat_thread.join(timeout=min(heartbeat_interval, 1.0))
         duration = max(0.0, float(clock()) - started)
         envelope = {
             "schema_version": "ai-dev-server/production-os-result/v1",
@@ -554,6 +591,8 @@ def run_once(
             "usage": {},
         }
 
+    stop_heartbeat.set()
+    heartbeat_thread.join(timeout=min(heartbeat_interval, 1.0))
     duration = max(0.0, float(clock()) - started)
 
     result_path = project_out / "production-os-result.json"

@@ -15,7 +15,7 @@ if [[ "${STUDIO_ENABLE_HERMES:-0}" == "1" ]]; then
 fi
 
 # Python tooling and sprite post-processing.
-python -m pip install --user --upgrade uv pillow rembg
+python -m pip install --user --upgrade uv pillow "rembg[cpu,cli]"
 export PATH="$HOME/.local/bin:$PATH"
 
 # Install/update Free Claude Code directly as a uv tool so Codespace creation

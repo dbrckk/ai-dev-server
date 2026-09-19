@@ -22,20 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T21:06:07Z
+Generated: 2026-09-19T21:09:05Z
 
 ### Git
 - Branch: `main`
-- Head: `fa365369c478`
-- Commit date: 2026-09-19T23:05:51+02:00
-- Commit: test: cover direct visual task asset-forge routing
+- Head: `794fa79075ae`
+- Commit date: 2026-09-19T23:08:50+02:00
+- Commit: test: cover 3d worker capability readiness
 - Tracked files: 810
 
 ### Recently changed files
-- `tests/test_production_os_worker.py`
+- `tests/test_production_os_worker_runtime.py`
 - `studio/production_os_worker.py`
+- `tests/test_production_os_worker.py`
 - `tests/test_production_os_worker_preflight.py`
-- `scripts/preflight-production-os-worker.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -18982,6 +18982,7 @@ def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]
 env = os.environ if environ is None else environ
 home_dir = Path.home() if home is None else Path(home)
 polli_installed = shutil.which("polli") is not None
+pollinations_api_key = str(
 polli_authenticated = bool(
 capabilities = list(BASE_WORKER_CAPABILITIES)
 ⋮----

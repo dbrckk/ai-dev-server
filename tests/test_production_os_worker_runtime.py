@@ -160,6 +160,11 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             worker_id="ai-dev-1",
             output_root=Path("unused"),
             run_project=lambda *args, **kwargs: self.fail("runner must not execute"),
+            capabilities=[
+                "repo-analysis",
+                "software-development",
+                "visual-asset-production",
+            ],
         )
 
         self.assertEqual(result["status"], "idle")

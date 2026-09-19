@@ -30,10 +30,14 @@ fi
 npx --yes @deepseek-ai/dsh --help >/dev/null 2>&1 || true
 npx --yes cdesktop --help >/dev/null 2>&1 || true
 
-# Pollinations media generation for autonomous visual assets. Pin the CLI used by Asset Forge jobs.
-npm install -g @pollinations/cli@0.1.15
+# Pollinations media generation for autonomous visual assets. Keep it optional:
+# the Production-OS worker advertises visual capabilities only when the backend is ready.
+npm install -g @pollinations/cli@0.1.15 >/dev/null 2>&1 || echo "Pollinations CLI unavailable; visual workers will stay disabled." >&2
 # Keep the OpenCode integration helper as an optional convenience layer.
 npm install -g opencode-pollinations-plugin >/dev/null 2>&1 || true
+
+# Install Asset Forge as a managed CLI. Failure is non-fatal for software-only workers.
+bash scripts/install-asset-forge.sh || echo "Asset Forge unavailable; visual workers will stay disabled." >&2
 
 # Keep local secrets/config out of git by default.
 touch "$HOME/.cache/ai-dev-server/bootstrap-complete"

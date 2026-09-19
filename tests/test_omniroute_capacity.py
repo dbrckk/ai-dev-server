@@ -81,5 +81,29 @@ class OmniRouteCapacityTests(unittest.TestCase):
         self.assertEqual(snapshot.remaining_tokens, 60)
 
 
+    def test_fetch_summary_accepts_openai_v1_base_url(self):
+        seen = {}
+
+        def opener(request, timeout):
+            seen["url"] = request.full_url
+            return _FakeResponse({
+                "steadyRecurringTokens": 100,
+                "usedThisMonth": 40,
+                "remaining": 60,
+            })
+
+        snapshot = fetch_summary(
+            "http://127.0.0.1:20128/v1",
+            api_key="secret-token",
+            opener=opener,
+        )
+
+        self.assertEqual(
+            seen["url"],
+            "http://127.0.0.1:20128/api/free-tier/summary",
+        )
+        self.assertEqual(snapshot.remaining_tokens, 60)
+
+
 if __name__ == "__main__":
     unittest.main()

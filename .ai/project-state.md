@@ -22,20 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T21:09:05Z
+Generated: 2026-09-19T21:18:54Z
 
 ### Git
 - Branch: `main`
-- Head: `794fa79075ae`
-- Commit date: 2026-09-19T23:08:50+02:00
-- Commit: test: cover 3d worker capability readiness
-- Tracked files: 810
+- Head: `bd2629e94158`
+- Commit date: 2026-09-19T23:18:41+02:00
+- Commit: build: install rembg CLI backend for transparent sprites
+- Tracked files: 811
 
 ### Recently changed files
-- `tests/test_production_os_worker_runtime.py`
-- `studio/production_os_worker.py`
+- `scripts/bootstrap.sh`
 - `tests/test_production_os_worker.py`
-- `tests/test_production_os_worker_preflight.py`
+- `studio/production_os_worker.py`
+- `scripts/start-all.sh`
+- `scripts/preflight-production-os-worker.py`
 
 ### Project signals
 - No common build descriptor detected

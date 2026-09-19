@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 976de369607fba3e99d22fef2aee11ec7d8b3bad
-Head: 794fa79075aec62fde779b8ac975402f068bbbe8
+Base: 37fbfde2b0a0ce370ffc542c06241d98166f1192
+Head: bd2629e941585f63249340d5df93851c7a5dbdf4
 
 ## Changed files
-- M tests/test_production_os_worker_runtime.py
+- M scripts/bootstrap.sh
 
 ## Affected areas
-- tests
+- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.

@@ -7963,6 +7963,8 @@ request = build_studio_request(job)
 ⋮----
 def test_explicit_visual_task_adds_asset_forge_guidance_without_reuse_metadata(self)
 ⋮----
+def test_french_visual_task_adds_asset_forge_guidance(self)
+⋮----
 def test_short_task_is_expanded_to_valid_studio_brief(self)
 ⋮----
 def test_completion_payload_forwards_usage_and_evidence(self)

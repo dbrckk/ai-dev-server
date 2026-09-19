@@ -82,6 +82,7 @@ scripts/
   enable-sprites.sh
   fcc-agent-benchmark.sh
   finish-fcc.sh
+  install-asset-forge.sh
   jumpy-studio-cycle-v2.sh
   jumpy-studio-cycle-v3-runner.sh
   jumpy-studio-cycle-v3-safe.sh
@@ -2342,7 +2343,7 @@ if [[ "${STUDIO_ENABLE_HERMES:-0}" == "1" ]]; then
 fi
 
 # Python tooling and sprite post-processing.
-python -m pip install --user --upgrade uv pillow rembg
+python -m pip install --user --upgrade uv pillow "rembg[cpu,cli]"
 export PATH="$HOME/.local/bin:$PATH"
 
 # Install/update Free Claude Code directly as a uv tool so Codespace creation
@@ -2357,10 +2358,14 @@ fi
 npx --yes @deepseek-ai/dsh --help >/dev/null 2>&1 || true
 npx --yes cdesktop --help >/dev/null 2>&1 || true
 
-# Pollinations media generation for autonomous visual assets. Pin the CLI used by Asset Forge jobs.
-npm install -g @pollinations/cli@0.1.15
+# Pollinations media generation for autonomous visual assets. Keep it optional:
+# the Production-OS worker advertises visual capabilities only when the backend is ready.
+npm install -g @pollinations/cli@0.1.15 >/dev/null 2>&1 || echo "Pollinations CLI unavailable; visual workers will stay disabled." >&2
 # Keep the OpenCode integration helper as an optional convenience layer.
 npm install -g opencode-pollinations-plugin >/dev/null 2>&1 || true
+
+# Install Asset Forge as a managed CLI. Failure is non-fatal for software-only workers.
+bash scripts/install-asset-forge.sh || echo "Asset Forge unavailable; visual workers will stay disabled." >&2
 
 # Keep local secrets/config out of git by default.
 touch "$HOME/.cache/ai-dev-server/bootstrap-complete"
@@ -2628,6 +2633,49 @@ if command -v fcc-init >/dev/null 2>&1; then
 fi
 
 echo "FCC prêt. Lance ./scripts/start-fcc.sh puis ouvre le port 8082 dans Codespaces."
+````
+
+## File: scripts/install-asset-forge.sh
+````bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+install_root="\${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
+bin_dir="$HOME/.local/bin"
+repo_url="\${ASSET_FORGE_REPOSITORY:-https://github.com/dbrckk/asset-forge.git}"
+ref="\${ASSET_FORGE_REF:-main}"
+
+mkdir -p "$(dirname "$install_root")" "$bin_dir"
+
+if [[ -L "$install_root" ]]; then
+  echo "Refusing symlinked ASSET_FORGE_HOME: $install_root" >&2
+  exit 2
+fi
+
+if [[ -e "$install_root" && ! -d "$install_root/.git" ]]; then
+  echo "ASSET_FORGE_HOME exists but is not a git checkout: $install_root" >&2
+  exit 2
+fi
+
+if [[ ! -d "$install_root/.git" ]]; then
+  git clone --filter=blob:none --no-checkout "$repo_url" "$install_root"
+fi
+
+git -C "$install_root" remote set-url origin "$repo_url"
+git -C "$install_root" fetch --depth 1 origin "$ref"
+git -C "$install_root" checkout --detach --force FETCH_HEAD
+git -C "$install_root" clean -fdx
+
+cat >"$bin_dir/asset-forge" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+root="\${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
+exec python "$root/asset_forge.py" "$@"
+EOF
+chmod 0755 "$bin_dir/asset-forge"
+
+"$bin_dir/asset-forge" --help >/dev/null
+printf 'Asset Forge installed at %s (%s)\n' "$install_root" "$(git -C "$install_root" rev-parse --short HEAD)"
 ````
 
 ## File: scripts/jumpy-studio-cycle-v2.sh
@@ -4352,6 +4400,12 @@ export HOST=0.0.0.0
 export PORT=3000
 start_bg cdesktop npx --yes cdesktop || true
 
+
+# Refresh the managed Asset Forge checkout before a new Production-OS worker starts.
+# A running worker is left untouched to avoid changing its tooling mid-job.
+if ! is_running production-os-worker; then
+  bash "$(dirname "$0")/install-asset-forge.sh"     || echo "Asset Forge refresh failed; visual worker capabilities will stay disabled."
+fi
 
 # Production-OS persistent worker. Start only when the control-plane secrets are
 # explicitly configured in the Codespace environment.
@@ -18981,6 +19035,7 @@ def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]
 ⋮----
 env = os.environ if environ is None else environ
 home_dir = Path.home() if home is None else Path(home)
+asset_forge_installed = shutil.which("asset-forge") is not None
 polli_installed = shutil.which("polli") is not None
 pollinations_api_key = str(
 polli_authenticated = bool(
@@ -30587,6 +30642,8 @@ job = self.job()
 request = build_studio_request(job)
 ⋮----
 def test_explicit_visual_task_adds_asset_forge_guidance_without_reuse_metadata(self)
+⋮----
+def test_french_visual_task_adds_asset_forge_guidance(self)
 ⋮----
 def test_short_task_is_expanded_to_valid_studio_brief(self)
 ⋮----

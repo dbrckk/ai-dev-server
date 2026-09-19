@@ -82,6 +82,19 @@ class ProductionOSWorkerTests(unittest.TestCase):
         self.assertIn("asset-forge produce", request["brief"])
         request_check(request)
 
+    def test_french_visual_task_adds_asset_forge_guidance(self):
+        job = self.job()
+        job["task"] = "Améliore les graphismes et les icônes du jeu"
+        job["payload"]["handoff"]["task"] = "Améliore les graphismes et les icônes du jeu"
+        job["payload"]["handoff"]["final_goal"] = "Améliore les graphismes et les icônes du jeu"
+        job["payload"]["handoff"].pop("reuse_candidates", None)
+
+        request = build_studio_request(job)
+
+        self.assertIn("dbrckk/asset-forge", request["brief"])
+        self.assertIn("asset-forge produce", request["brief"])
+        request_check(request)
+
     def test_short_task_is_expanded_to_valid_studio_brief(self):
         job = self.job()
         job["task"] = "Fix CI"

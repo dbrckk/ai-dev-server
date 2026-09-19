@@ -95,6 +95,25 @@ class ProductionOSWorkerTests(unittest.TestCase):
         self.assertIn("asset-forge fulfill", request["brief"])
         request_check(request)
 
+    def test_structured_asset_forge_contract_enables_guidance_without_keywords(self):
+        job = self.job()
+        job["payload"]["handoff"]["task"] = "Complete media task"
+        job["payload"]["handoff"]["final_goal"] = "Complete media task"
+        job["payload"]["handoff"]["tool_contracts"] = {
+            "asset_forge": {
+                "request_schema": "asset-forge/production-request/v1",
+                "report_schema": "asset-forge/production-report/v1",
+                "command": "asset-forge fulfill",
+                "required_capability": "visual-asset-production",
+            }
+        }
+
+        request = build_studio_request(job)
+
+        self.assertIn("dbrckk/asset-forge", request["brief"])
+        self.assertIn("asset-forge fulfill", request["brief"])
+        request_check(request)
+
     def test_short_task_is_expanded_to_valid_studio_brief(self):
         job = self.job()
         job["task"] = "Fix CI"

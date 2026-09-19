@@ -51,6 +51,9 @@ class ProductionOSWorkerCLITests(unittest.TestCase):
             client_factory=factory,
             run_once_fn=run_once_fn,
             capabilities_provider=lambda env: [
+                "android",
+                "node",
+                "python",
                 "repo-analysis",
                 "software-development",
                 "visual-asset-production",
@@ -65,7 +68,7 @@ class ProductionOSWorkerCLITests(unittest.TestCase):
                 (
                     "register",
                     "ai-dev-1",
-                    ("repo-analysis", "software-development", "visual-asset-production"),
+                    ("android", "node", "python", "repo-analysis", "software-development", "visual-asset-production"),
                     "operator-secret",
                 )
             ],

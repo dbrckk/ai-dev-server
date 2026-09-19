@@ -161,5 +161,46 @@ class ProductionOSWorkerCLITests(unittest.TestCase):
         self.assertEqual(runs[0]["capacity"], expected)
 
 
+    def test_continuous_mode_polls_idle_queue_and_refreshes_capacity(self):
+        runs = []
+        capacities = []
+
+        def capacity_provider(env):
+            value = {"remaining_tokens": len(capacities) + 1}
+            capacities.append(value)
+            return value
+
+        def run_once_fn(client, **kwargs):
+            runs.append(kwargs)
+            return {"status": "idle"}
+
+        def sleeper(seconds):
+            self.assertEqual(seconds, 2.5)
+            raise KeyboardInterrupt()
+
+        rc = main(
+            [
+                "--worker-id", "ai-dev-1",
+                "--continuous",
+                "--poll-interval", "2.5",
+            ],
+            environ={
+                "PRODUCTION_OS_URL": "http://127.0.0.1:8787",
+                "PRODUCTION_OS_WORKER_TOKEN": "worker-secret",
+                "PRODUCTION_OS_OPERATOR_TOKEN": "operator-secret",
+            },
+            client_factory=lambda base_url, token: _Client(base_url, token),
+            run_once_fn=run_once_fn,
+            capacity_provider=capacity_provider,
+            sleeper=sleeper,
+        )
+
+        self.assertEqual(rc, 0)
+        self.assertEqual(len(runs), 1)
+        self.assertEqual(runs[0]["capacity"], {"remaining_tokens": 1})
+        self.assertEqual(len(capacities), 1)
+
+
+
 if __name__ == "__main__":
     unittest.main()

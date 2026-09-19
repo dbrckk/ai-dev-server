@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import re
+import threading
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -462,6 +463,7 @@ def run_once(
     clock=None,
     baseline_sha: str | None = None,
     capacity: dict | None = None,
+    heartbeat_interval_seconds: float = 30.0,
 ) -> dict:
     """Claim and execute at most one Production-OS job."""
     if run_project is None:
@@ -505,12 +507,92 @@ def run_once(
         encoding="utf-8",
     )
 
-    started = float(clock())
-    summary = run_project(
-        request_path,
-        project_out,
-        baseline_sha=baseline_sha,
+    try:
+        heartbeat_interval = float(heartbeat_interval_seconds)
+    except (TypeError, ValueError) as exc:
+        raise ProductionOSWorkerError(
+            "heartbeat interval must be positive"
+        ) from exc
+    if heartbeat_interval <= 0:
+        raise ProductionOSWorkerError("heartbeat interval must be positive")
+
+    stop_heartbeat = threading.Event()
+    heartbeat_errors: list[str] = []
+
+    def keep_job_alive():
+        while not stop_heartbeat.wait(heartbeat_interval):
+            try:
+                if capacity is None:
+                    client.heartbeat(worker_id, active_job_keys=(key,))
+                else:
+                    client.heartbeat(
+                        worker_id,
+                        active_job_keys=(key,),
+                        capacity=capacity,
+                    )
+            except Exception as exc:
+                heartbeat_errors.append(type(exc).__name__)
+
+    heartbeat_thread = threading.Thread(
+        target=keep_job_alive,
+        name=f"production-os-heartbeat-{request['id']}",
+        daemon=True,
     )
+    heartbeat_thread.start()
+
+    started = float(clock())
+    try:
+        summary = run_project(
+            request_path,
+            project_out,
+            baseline_sha=baseline_sha,
+        )
+    except Exception as exc:
+        stop_heartbeat.set()
+        heartbeat_thread.join(timeout=min(heartbeat_interval, 1.0))
+        duration = max(0.0, float(clock()) - started)
+        envelope = {
+            "schema_version": "ai-dev-server/production-os-result/v1",
+            "workflow_id": request["production_os"]["workflow_id"],
+            "workflow_task_id": request["production_os"]["workflow_task_id"],
+            "project_id": request["id"],
+            "target_repo": request["target_repo"],
+            "status": "runner_error",
+            "succeeded": False,
+            "usage": {},
+            "evidence": {
+                "pipeline_status": "runner_error",
+                "next_stage": "retry",
+                "finished": False,
+                "error_type": type(exc).__name__,
+            },
+        }
+        client.fail(
+            failure_payload(
+                key,
+                worker_id,
+                envelope,
+                duration_seconds=duration,
+            )
+        )
+        if capacity is None:
+            client.heartbeat(worker_id, active_job_keys=())
+        else:
+            client.heartbeat(
+                worker_id,
+                active_job_keys=(),
+                capacity=capacity,
+            )
+        return {
+            "status": "failed",
+            "worker_id": worker_id,
+            "key": key,
+            "project_id": request["id"],
+            "usage": {},
+        }
+
+    stop_heartbeat.set()
+    heartbeat_thread.join(timeout=min(heartbeat_interval, 1.0))
     duration = max(0.0, float(clock()) - started)
 
     result_path = project_out / "production-os-result.json"
@@ -579,6 +661,7 @@ def main(
     client_factory=ProductionOSClient,
     run_once_fn=run_once,
     capacity_provider=production_capacity_snapshot,
+    sleeper=None,
 ) -> int:
     parser = argparse.ArgumentParser(
         description="Execute one Production-OS job through AI Dev Server"
@@ -598,6 +681,17 @@ def main(
         type=int,
         default=1,
         help="Maximum number of sequential jobs to process",
+    )
+    parser.add_argument(
+        "--continuous",
+        action="store_true",
+        help="Keep polling Production-OS after the queue becomes idle",
+    )
+    parser.add_argument(
+        "--poll-interval",
+        type=float,
+        default=10.0,
+        help="Seconds to wait between idle polls in continuous mode",
     )
     args = parser.parse_args(argv)
 
@@ -624,6 +718,17 @@ def main(
     cycles = 1 if args.once else int(args.cycles)
     if cycles < 1 or cycles > 1000:
         raise RuntimeError("--cycles must be between 1 and 1000")
+    if args.once and args.continuous:
+        raise RuntimeError("--once and --continuous are mutually exclusive")
+    try:
+        poll_interval = float(args.poll_interval)
+    except (TypeError, ValueError) as exc:
+        raise RuntimeError("--poll-interval must be positive") from exc
+    if poll_interval <= 0:
+        raise RuntimeError("--poll-interval must be positive")
+    if sleeper is None:
+        import time
+        sleeper = time.sleep
 
     client = client_factory(base_url, worker_token)
     capabilities = ["software-development", "repo-analysis"]
@@ -632,18 +737,25 @@ def main(
         capabilities,
         operator_token,
     )
-    capacity = capacity_provider(env)
-    for _ in range(cycles):
-        result = run_once_fn(
-            client,
-            worker_id=args.worker_id,
-            output_root=Path(args.output_root),
-            capacity=capacity,
-        )
-        if not isinstance(result, dict):
-            raise RuntimeError("Production-OS worker returned invalid result")
-        if result.get("status") == "idle":
-            break
+    completed_cycles = 0
+    try:
+        while args.continuous or completed_cycles < cycles:
+            capacity = capacity_provider(env)
+            result = run_once_fn(
+                client,
+                worker_id=args.worker_id,
+                output_root=Path(args.output_root),
+                capacity=capacity,
+            )
+            if not isinstance(result, dict):
+                raise RuntimeError("Production-OS worker returned invalid result")
+            completed_cycles += 1
+            if result.get("status") == "idle":
+                if not args.continuous:
+                    break
+                sleeper(poll_interval)
+    except KeyboardInterrupt:
+        return 0
     return 0
 
 

@@ -1,6 +1,7 @@
 import io
 import json
 import tempfile
+import threading
 import unittest
 from pathlib import Path
 import sys
@@ -236,6 +237,80 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertEqual(failed["result"]["usage"]["total_tokens"], 55)
         self.assertIn("blocked", failed["reason"])
 
+
+
+    def test_run_once_refreshes_heartbeat_during_long_runner_execution(self):
+        client = _FakeClient(sample_job())
+        refreshed = threading.Event()
+        original_heartbeat = client.heartbeat
+        active_heartbeats = {"count": 0}
+
+        def heartbeat(worker_id, *, active_job_keys=(), capacity=None):
+            original_heartbeat(
+                worker_id,
+                active_job_keys=active_job_keys,
+                capacity=capacity,
+            )
+            if active_job_keys:
+                active_heartbeats["count"] += 1
+                if active_heartbeats["count"] >= 2:
+                    refreshed.set()
+
+        client.heartbeat = heartbeat
+
+        def runner(request_path, out, **kwargs):
+            self.assertTrue(
+                refreshed.wait(0.5),
+                "periodic heartbeat was not sent while runner was active",
+            )
+            return {
+                "status": "complete",
+                "finished": True,
+                "next_stage": None,
+                "usage": {"total_tokens": 1},
+            }
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client,
+                worker_id="ai-dev-1",
+                output_root=Path(td),
+                run_project=runner,
+                clock=lambda: 10.0,
+                heartbeat_interval_seconds=0.01,
+            )
+
+        self.assertEqual(result["status"], "completed")
+        self.assertGreaterEqual(active_heartbeats["count"], 2)
+        self.assertEqual(client.calls[-1][0], "heartbeat")
+        self.assertEqual(client.calls[-1][2], ())
+
+
+    def test_run_once_reports_runner_exception_and_clears_active_job(self):
+        client = _FakeClient(sample_job())
+
+        def runner(request_path, out, **kwargs):
+            raise RuntimeError("codex crashed")
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client,
+                worker_id="ai-dev-1",
+                output_root=Path(td),
+                run_project=runner,
+                clock=lambda: 30.0,
+            )
+
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(
+            [call[0] for call in client.calls],
+            ["claim", "ack", "heartbeat", "fail", "heartbeat"],
+        )
+        failed = client.calls[3][1]
+        self.assertEqual(failed["key"], "job-abc123")
+        self.assertIn("runner_error", failed["reason"])
+        self.assertIn("RuntimeError", failed["result"]["evidence"]["error_type"])
+        self.assertEqual(client.calls[4][2], ())
 
     def test_capacity_snapshot_prefers_authenticated_omniroute(self):
         from production_os_worker import production_capacity_snapshot

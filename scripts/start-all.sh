@@ -58,6 +58,17 @@ export HOST=0.0.0.0
 export PORT=3000
 start_bg cdesktop npx --yes cdesktop || true
 
+
+# Production-OS persistent worker. Start only when the control-plane secrets are
+# explicitly configured in the Codespace environment.
+if [ -n "${PRODUCTION_OS_URL:-}" ] \
+  && [ -n "${PRODUCTION_OS_WORKER_TOKEN:-}" ] \
+  && [ -n "${PRODUCTION_OS_OPERATOR_TOKEN:-}" ]; then
+  start_bg production-os-worker bash "$(dirname "$0")/start-production-os-worker.sh" || true
+else
+  echo "Production-OS worker not configured"
+fi
+
 # Give npm/npx based services enough time to initialize.
 for i in {1..15}; do
   READY=0
@@ -81,7 +92,7 @@ bash "$(dirname "$0")/status.sh" || true
 
 echo
 echo "=== startup log tails ==="
-for name in fcc dsh cdesktop; do
+for name in fcc dsh cdesktop production-os-worker; do
   echo "--- $name ---"
   tail -n 40 "$LOGDIR/$name.log" 2>/dev/null || true
 done

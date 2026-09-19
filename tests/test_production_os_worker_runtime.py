@@ -88,15 +88,44 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
                 {"POLLINATIONS_API_KEY": "secret"},
                 home=Path("/definitely/not/real"),
             )
-        self.assertEqual(caps, ["android", "node", "python", "repo-analysis", "software-development"])
+        self.assertEqual(
+            caps,
+            ["android", "node", "python", "repo-analysis", "software-development"],
+        )
 
-        with patch("production_os_worker.shutil.which", return_value="/usr/bin/polli"):
+        class Result:
+            returncode = 0
+            stdout = json.dumps(
+                {
+                    "capabilities": {
+                        "rasterPng": True,
+                        "rasterWebp": True,
+                        "vectorSvg": True,
+                        "threeDGlb": True,
+                        "godotImport": False,
+                    }
+                }
+            )
+            stderr = ""
+
+        with patch(
+            "production_os_worker.shutil.which",
+            return_value="/usr/bin/asset-forge",
+        ), patch(
+            "production_os_worker.subprocess.run",
+            return_value=Result(),
+        ) as run:
             caps = worker_capabilities(
                 {"POLLINATIONS_API_KEY": "secret"},
                 home=Path("/definitely/not/real"),
             )
+
         self.assertIn("visual-asset-production", caps)
         self.assertIn("visual-asset-3d-production", caps)
+        self.assertEqual(
+            run.call_args.args[0],
+            ["/usr/bin/asset-forge", "operational-status"],
+        )
 
     def test_client_rejects_insecure_remote_control_plane(self):
         with self.assertRaisesRegex(

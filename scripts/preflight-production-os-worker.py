@@ -73,16 +73,48 @@ def _codex_version() -> tuple[bool, str]:
 
 
 def _pollinations_status(environ: dict[str, str]) -> tuple[bool, str]:
-    if not shutil.which("asset-forge"):
-        return False, "Asset Forge CLI not installed"
-    executable = shutil.which("polli")
+    executable = shutil.which("asset-forge")
     if not executable:
-        return False, "polli CLI not installed"
-    api_key = bool(str(environ.get("POLLINATIONS_API_KEY") or "").strip())
-    stored = (Path.home() / ".pollinations" / "credentials.json").is_file()
-    if not (api_key or stored):
-        return False, "polli installed but not authenticated"
-    return True, "polli installed and authenticated"
+        return False, "Asset Forge CLI not installed"
+    try:
+        result = subprocess.run(
+            [executable, "operational-status"],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=15,
+            check=False,
+            env=dict(environ),
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return False, f"Asset Forge readiness probe failed ({type(exc).__name__})"
+    if result.returncode != 0:
+        return False, "Asset Forge readiness probe returned non-zero"
+    try:
+        payload = __import__("json").loads(result.stdout)
+    except (TypeError, ValueError):
+        return False, "Asset Forge readiness probe returned invalid JSON"
+    if not isinstance(payload, dict):
+        return False, "Asset Forge readiness probe returned invalid payload"
+    ready = payload.get("ready")
+    capabilities = payload.get("capabilities")
+    if not isinstance(ready, dict) or not isinstance(capabilities, dict):
+        return False, "Asset Forge readiness payload is incomplete"
+    if ready.get("anyGeneratedAsset") is not True:
+        blockers = payload.get("blockers")
+        first = (
+            str(blockers[0])
+            if isinstance(blockers, list) and blockers
+            else "no generated-asset backend is ready"
+        )
+        return False, first[:200]
+    names = [
+        name
+        for name in ("rasterPng", "rasterWebp", "vectorSvg", "threeDGlb", "godotImport")
+        if capabilities.get(name) is True
+    ]
+    return True, "Asset Forge ready: " + ", ".join(names)
 
 
 def run_preflight(env: dict[str, str] | None = None) -> tuple[int, list[str]]:

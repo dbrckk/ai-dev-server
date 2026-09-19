@@ -19,6 +19,9 @@ from file_lock import exclusive
 
 
 BASE_WORKER_CAPABILITIES = [
+    "android",
+    "node",
+    "python",
     "repo-analysis",
     "software-development",
 ]

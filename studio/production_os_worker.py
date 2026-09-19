@@ -343,6 +343,17 @@ def _is_visual_handoff(handoff: dict[str, Any]) -> bool:
         r"\bmesh(?:es)?\b",
         r"\bvisual(?:s| design| quality| polish)?\b",
         r"\bui\s+(?:art|design|graphics|assets|icons)\b",
+        r"\bgraphisme(?:s)?\b",
+        r"\bgraphique(?:s)?\b",
+        r"\bic[oô]ne(?:s)?\b",
+        r"\bvecteur(?:s)?\b",
+        r"\bvectoriel(?:le|les|s)?\b",
+        r"\bmod[eè]le(?:s)?\s+3d\b",
+        r"\bpersonnage(?:s)?\s+3d\b",
+        r"\benvironnement(?:s)?\s+3d\b",
+        r"\bobjet(?:s)?\s+3d\b",
+        r"\bmaillage(?:s)?\b",
+        r"\bvisuel(?:s|le|les)?\b",
     )
     return any(re.search(pattern, text) for pattern in patterns)
 

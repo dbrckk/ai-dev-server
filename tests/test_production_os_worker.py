@@ -53,6 +53,22 @@ class ProductionOSWorkerTests(unittest.TestCase):
         self.assertTrue(request["id"].startswith("pos-"))
         self.assertLessEqual(len(request["id"]), 48)
 
+    def test_visual_reuse_adds_asset_forge_guidance(self):
+        job = self.job()
+        job["payload"]["handoff"]["reuse_candidates"] = [
+            {
+                "source": "dbrckk/asset-forge",
+                "target": "dbrckk/example",
+                "capability": "visual-asset-pipeline",
+            }
+        ]
+
+        request = build_studio_request(job)
+
+        self.assertIn("dbrckk/asset-forge", request["brief"])
+        self.assertIn("asset-forge/production-request/v1", request["brief"])
+        request_check(request)
+
     def test_short_task_is_expanded_to_valid_studio_brief(self):
         job = self.job()
         job["task"] = "Fix CI"

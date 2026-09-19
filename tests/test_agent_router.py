@@ -1,5 +1,8 @@
 from pathlib import Path
+import json
+import os
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -12,6 +15,7 @@ from agents.adapters import AgentRun
 from agents.registry import AgentRegistry, AgentSpec
 from agents.router import choose_agent, rank_agents
 from agents.orchestrator import execute_named, invocation_for
+import capacity_ledger
 
 
 class AgentRouterTests(unittest.TestCase):
@@ -241,6 +245,90 @@ class AgentRouterTests(unittest.TestCase):
         self.assertEqual(result["attempts"][0]["capacity_source"], "codex-chatgpt")
         self.assertNotIn("--ignore-user-config", seen["argv"])
         self.assertNotIn("CODEX_HOME", seen["extra_env"])
+
+
+    def test_codex_execute_named_stops_when_project_token_envelope_is_exhausted(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            plan = root / "capacity-plan.json"
+            ledger = root / "capacity-ledger.json"
+            plan.write_text(json.dumps({
+                "projects": [{"id": "project-a", "token_envelope": 1000}]
+            }))
+            reservation = capacity_ledger.reserve(
+                ledger,
+                project_id="project-a",
+                provider="agent:codex",
+                estimated_tokens=1000,
+                provider_remaining_tokens=None,
+                project_envelope_tokens=1000,
+            )
+            capacity_ledger.settle(
+                ledger,
+                reservation["reservation_id"],
+                actual_tokens=1000,
+            )
+            env = {
+                "STUDIO_PROJECT_ID": "project-a",
+                "STUDIO_CAPACITY_PLAN_PATH": str(plan),
+                "STUDIO_CAPACITY_LEDGER_PATH": str(ledger),
+            }
+            with patch.dict(os.environ, env, clear=False), patch(
+                "shutil.which", return_value="/bin/codex"
+            ), patch(
+                "agents.orchestrator.omniroute_available_base",
+                return_value=None,
+            ), patch(
+                "agents.orchestrator.AgentAdapter.run"
+            ) as run:
+                result = execute_named("codex", "do work", cwd=ROOT)
+
+            self.assertEqual(result["status"], "unavailable")
+            self.assertEqual(
+                result["attempts"][0]["status"],
+                "capacity_exhausted",
+            )
+            run.assert_not_called()
+
+    def test_codex_execute_named_settles_reported_usage_in_project_ledger(self):
+        run_result = AgentRun(
+            agent="codex",
+            returncode=0,
+            duration_seconds=1.0,
+            stdout_tail='{"type":"turn.completed","usage":{"input_tokens":10,"output_tokens":3}}',
+            stderr_tail="",
+        )
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            plan = root / "capacity-plan.json"
+            ledger = root / "capacity-ledger.json"
+            plan.write_text(json.dumps({
+                "projects": [{"id": "project-a", "token_envelope": 10000}]
+            }))
+            env = {
+                "STUDIO_PROJECT_ID": "project-a",
+                "STUDIO_CAPACITY_PLAN_PATH": str(plan),
+                "STUDIO_CAPACITY_LEDGER_PATH": str(ledger),
+            }
+            with patch.dict(os.environ, env, clear=False), patch(
+                "shutil.which", return_value="/bin/codex"
+            ), patch(
+                "agents.orchestrator.omniroute_available_base",
+                return_value=None,
+            ), patch(
+                "agents.orchestrator.AgentAdapter.run",
+                return_value=run_result,
+            ):
+                result = execute_named("codex", "do work", cwd=ROOT)
+
+            self.assertEqual(result["status"], "passed")
+            self.assertEqual(
+                capacity_ledger.consumed_tokens(
+                    capacity_ledger.load(ledger),
+                    project_id="project-a",
+                ),
+                13,
+            )
 
 
 if __name__ == "__main__":

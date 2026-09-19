@@ -178,6 +178,31 @@ class ProductionOSLocalE2ETests(unittest.TestCase):
 
             self.assertEqual(rc, 0)
 
+            request_files = list(
+                output_root.glob("*/production-os-request.json")
+            )
+            result_files = list(
+                output_root.glob("*/production-os-result.json")
+            )
+            self.assertEqual(len(request_files), 1)
+            self.assertEqual(len(result_files), 1)
+
+            request = json.loads(
+                request_files[0].read_text(encoding="utf-8")
+            )
+            result = json.loads(
+                result_files[0].read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                request["production_os"],
+                {
+                    "workflow_id": "e" * 32,
+                    "workflow_task_id": "acceptance",
+                },
+            )
+            self.assertEqual(result["workflow_id"], "e" * 32)
+            self.assertEqual(result["workflow_task_id"], "acceptance")
+
         paths = [call["path"] for call in control_plane.calls]
         self.assertEqual(
             paths,
@@ -215,23 +240,6 @@ class ProductionOSLocalE2ETests(unittest.TestCase):
             complete["payload"]["result"]["evidence"]["pipeline_status"],
             "complete",
         )
-
-        request_files = list(output_root.glob("*/production-os-request.json"))
-        result_files = list(output_root.glob("*/production-os-result.json"))
-        self.assertEqual(len(request_files), 1)
-        self.assertEqual(len(result_files), 1)
-
-        request = json.loads(request_files[0].read_text(encoding="utf-8"))
-        result = json.loads(result_files[0].read_text(encoding="utf-8"))
-        self.assertEqual(
-            request["production_os"],
-            {
-                "workflow_id": "e" * 32,
-                "workflow_task_id": "acceptance",
-            },
-        )
-        self.assertEqual(result["workflow_id"], "e" * 32)
-        self.assertEqual(result["workflow_task_id"], "acceptance")
 
 
 if __name__ == "__main__":

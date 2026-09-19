@@ -74,6 +74,32 @@ class ProductionOSWorkerPreflightTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertTrue(any("OK visual assets:" in line for line in lines))
 
+    def test_visual_probe_uses_asset_forge_operational_status(self):
+        class Result:
+            returncode = 0
+            stdout = (
+                '{"ready":{"anyGeneratedAsset":true},'
+                '"capabilities":{"rasterPng":true,"rasterWebp":false,'
+                '"vectorSvg":true,"threeDGlb":false,"godotImport":false},'
+                '"blockers":[]}'
+            )
+            stderr = ""
+
+        with patch.object(MODULE.shutil, "which", return_value="/usr/bin/asset-forge"), \
+             patch.object(MODULE.subprocess, "run", return_value=Result()) as run:
+            ready, detail = MODULE._pollinations_status(
+                {"PATH": "/usr/bin", "POLLINATIONS_API_KEY": "secret"}
+            )
+
+        self.assertTrue(ready)
+        self.assertIn("rasterPng", detail)
+        self.assertIn("vectorSvg", detail)
+        self.assertNotIn("secret", detail)
+        self.assertEqual(
+            run.call_args.args[0],
+            ["/usr/bin/asset-forge", "operational-status"],
+        )
+
     def test_missing_required_secret_fails_without_echoing_secret_values(self):
         with tempfile.TemporaryDirectory() as td, patch.object(
             MODULE,

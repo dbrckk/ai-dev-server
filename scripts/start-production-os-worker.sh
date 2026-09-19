@@ -3,6 +3,8 @@ set -euo pipefail
 
 export PATH="$HOME/.local/bin:$PATH"
 
+python "$(dirname "$0")/preflight-production-os-worker.py"
+
 required=(
   PRODUCTION_OS_URL
   PRODUCTION_OS_WORKER_TOKEN

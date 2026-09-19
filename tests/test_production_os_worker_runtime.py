@@ -96,6 +96,7 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
                 home=Path("/definitely/not/real"),
             )
         self.assertIn("visual-asset-production", caps)
+        self.assertIn("visual-asset-3d-production", caps)
 
     def test_client_rejects_insecure_remote_control_plane(self):
         with self.assertRaisesRegex(

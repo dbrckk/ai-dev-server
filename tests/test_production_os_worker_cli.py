@@ -50,6 +50,11 @@ class ProductionOSWorkerCLITests(unittest.TestCase):
             environ=env,
             client_factory=factory,
             run_once_fn=run_once_fn,
+            capabilities_provider=lambda env: [
+                "repo-analysis",
+                "software-development",
+                "visual-asset-production",
+            ],
         )
 
         self.assertEqual(rc, 0)

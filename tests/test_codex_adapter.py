@@ -7,7 +7,7 @@ STUDIO = ROOT / "studio"
 if str(STUDIO) not in sys.path:
     sys.path.insert(0, str(STUDIO))
 
-from agents.codex import codex_invocation, parse_codex_usage
+from agents.codex import codex_invocation, codex_omniroute_invocation, parse_codex_usage
 
 
 class CodexAdapterTests(unittest.TestCase):
@@ -81,3 +81,32 @@ class CodexAdapterTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+    def test_omniroute_invocation_uses_isolated_home_and_custom_responses_provider(self):
+        argv, extra_env = codex_omniroute_invocation(
+            "finish the repository",
+            base_url="http://127.0.0.1:20128/v1",
+            codex_home="/tmp/codex-omniroute-test",
+        )
+
+        self.assertEqual(extra_env["CODEX_HOME"], "/tmp/codex-omniroute-test")
+        self.assertIn("--ignore-user-config", argv)
+        self.assertIn('model="auto"', argv)
+        self.assertIn('model_provider="omniroute"', argv)
+        provider_override = next(
+            value for index, value in enumerate(argv)
+            if index > 0 and argv[index - 1] == "-c"
+            and value.startswith("model_providers.omniroute=")
+        )
+        self.assertIn("http://127.0.0.1:20128/v1", provider_override)
+        self.assertIn("wire_api='responses'", provider_override)
+        self.assertNotIn("OPENAI_API_KEY", extra_env)
+
+    def test_omniroute_invocation_rejects_insecure_remote_http(self):
+        with self.assertRaisesRegex(ValueError, "HTTPS"):
+            codex_omniroute_invocation(
+                "finish the repository",
+                base_url="http://example.com/v1",
+                codex_home="/tmp/codex-omniroute-test",
+            )

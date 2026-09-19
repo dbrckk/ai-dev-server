@@ -6,6 +6,7 @@ Agent-specific invocation templates can be added without changing the router.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -74,6 +75,21 @@ class AgentAdapter:
         duration = time.monotonic() - started
         stdout=result.stdout[-24000:]
         stderr=result.stderr[-24000:]
+        if self.spec.name == "codex":
+            terminal_event = None
+            for raw_line in result.stdout.splitlines():
+                line = raw_line.strip()
+                if not line:
+                    continue
+                try:
+                    event = json.loads(line)
+                except (json.JSONDecodeError, TypeError):
+                    continue
+                if isinstance(event, dict) and event.get("type") == "turn.completed":
+                    terminal_event = line
+            if terminal_event and terminal_event not in stdout:
+                budget = max(0, 24000 - len(terminal_event) - 1)
+                stdout = terminal_event + "\n" + stdout[-budget:]
         for key,value in (extra_env or {}).items():
             if value and any(mark in key.upper() for mark in ("KEY","TOKEN","SECRET","PASSWORD")):
                 stdout=stdout.replace(value,"[REDACTED]")

@@ -42,7 +42,27 @@
     },
     {
       "source": "studio/agents/orchestrator.py",
+      "target": "studio/capacity_ledger.py",
+      "type": "imports"
+    },
+    {
+      "source": "studio/agents/orchestrator.py",
+      "target": "studio/capacity_runtime.py",
+      "type": "imports"
+    },
+    {
+      "source": "studio/agents/orchestrator.py",
+      "target": "studio/agents/codex.py",
+      "type": "imports"
+    },
+    {
+      "source": "studio/agents/orchestrator.py",
       "target": "studio/contextual_routing_memory.py",
+      "type": "imports"
+    },
+    {
+      "source": "studio/agents/orchestrator.py",
+      "target": "studio/omniroute_capacity.py",
       "type": "imports"
     },
     {
@@ -733,6 +753,11 @@
     {
       "source": "studio/capacity_ledger.py",
       "target": "studio/file_lock.py",
+      "type": "imports"
+    },
+    {
+      "source": "studio/capacity_scheduler.py",
+      "target": "studio/omniroute_capacity.py",
       "type": "imports"
     },
     {
@@ -3146,6 +3171,26 @@
       "type": "imports"
     },
     {
+      "source": "studio/production_os_worker.py",
+      "target": "studio/atomic_file.py",
+      "type": "imports"
+    },
+    {
+      "source": "studio/production_os_worker.py",
+      "target": "studio/file_lock.py",
+      "type": "imports"
+    },
+    {
+      "source": "studio/production_os_worker.py",
+      "target": "studio/github_runner.py",
+      "type": "imports"
+    },
+    {
+      "source": "studio/production_os_worker.py",
+      "target": "studio/omniroute_capacity.py",
+      "type": "imports"
+    },
+    {
       "source": "studio/project_engine.py",
       "target": "studio/generic_policy.py",
       "type": "imports"
@@ -3902,6 +3947,11 @@
     },
     {
       "source": "tests/test_agent_router.py",
+      "target": "studio/agents/adapters.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_agent_router.py",
       "target": "studio/agents/orchestrator.py",
       "type": "imports"
     },
@@ -3918,6 +3968,11 @@
     {
       "source": "tests/test_agent_router.py",
       "target": "studio/agents/router.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_agent_router.py",
+      "target": "studio/capacity_ledger.py",
       "type": "imports"
     },
     {
@@ -4481,6 +4536,16 @@
       "type": "imports"
     },
     {
+      "source": "tests/test_capacity_scheduler_omniroute.py",
+      "target": "studio/capacity_scheduler.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_capacity_scheduler_omniroute.py",
+      "target": "studio/omniroute_capacity.py",
+      "type": "imports"
+    },
+    {
       "source": "tests/test_capacity_scheduler_work_conserving.py",
       "target": "studio/capacity_scheduler.py",
       "type": "imports"
@@ -4518,6 +4583,16 @@
     {
       "source": "tests/test_ci_runner_admission.py",
       "target": "studio/ci_runner.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_codex_adapter.py",
+      "target": "studio/agents/__init__.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_codex_adapter.py",
+      "target": "studio/agents/codex.py",
       "type": "imports"
     },
     {
@@ -4958,6 +5033,11 @@
     {
       "source": "tests/test_github_runner_persistent.py",
       "target": "studio/goal_engine.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_github_runner_usage.py",
+      "target": "studio/github_runner.py",
       "type": "imports"
     },
     {
@@ -5456,6 +5536,11 @@
       "type": "imports"
     },
     {
+      "source": "tests/test_omniroute_capacity.py",
+      "target": "studio/omniroute_capacity.py",
+      "type": "imports"
+    },
+    {
       "source": "tests/test_orchestrator.py",
       "target": "studio/core.py",
       "type": "imports"
@@ -5613,6 +5698,36 @@
     {
       "source": "tests/test_privacy_stage.py",
       "target": "studio/privacy_stage.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_production_os_result_contract.py",
+      "target": "studio/core.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_production_os_result_contract.py",
+      "target": "studio/github_runner.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_production_os_worker.py",
+      "target": "studio/core.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_production_os_worker.py",
+      "target": "studio/production_os_worker.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_production_os_worker_cli.py",
+      "target": "studio/production_os_worker.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_production_os_worker_runtime.py",
+      "target": "studio/production_os_worker.py",
       "type": "imports"
     },
     {
@@ -6161,6 +6276,11 @@
       "type": "symbol-reference"
     },
     {
+      "source": "tests/test_agent_router.py",
+      "target": "studio/agents/adapters.py",
+      "type": "symbol-reference"
+    },
+    {
       "source": "studio/github_runner.py",
       "target": "studio/github_agent_performance_store.py",
       "type": "symbol-reference"
@@ -6557,6 +6677,11 @@
     },
     {
       "source": "studio/godot_model.py",
+      "target": "tests/test_studio.py",
+      "type": "symbol-reference"
+    },
+    {
+      "source": "studio/omniroute_capacity.py",
       "target": "tests/test_studio.py",
       "type": "symbol-reference"
     },
@@ -7081,6 +7206,11 @@
       "type": "symbol-reference"
     },
     {
+      "source": "studio/agents/codex.py",
+      "target": "studio/core.py",
+      "type": "symbol-reference"
+    },
+    {
       "source": "studio/agents/orchestrator.py",
       "target": "studio/core.py",
       "type": "symbol-reference"
@@ -7321,6 +7451,11 @@
       "type": "symbol-reference"
     },
     {
+      "source": "tests/test_codex_adapter.py",
+      "target": "studio/core.py",
+      "type": "symbol-reference"
+    },
+    {
       "source": "tests/test_evolution_synthesis.py",
       "target": "studio/core.py",
       "type": "symbol-reference"
@@ -7341,13 +7476,23 @@
       "type": "symbol-reference"
     },
     {
-      "source": "tests/test_local_model_leaderboard.py",
-      "target": "studio/core.py",
+      "source": "studio/agents/orchestrator.py",
+      "target": "studio/omniroute_capacity.py",
       "type": "symbol-reference"
     },
     {
-      "source": "tests/test_local_model_reputation.py",
-      "target": "studio/core.py",
+      "source": "studio/capacity_scheduler.py",
+      "target": "studio/omniroute_capacity.py",
+      "type": "symbol-reference"
+    },
+    {
+      "source": "tests/test_omniroute_capacity.py",
+      "target": "studio/omniroute_capacity.py",
+      "type": "symbol-reference"
+    },
+    {
+      "source": "tests/test_capacity_scheduler_omniroute.py",
+      "target": "studio/omniroute_capacity.py",
       "type": "symbol-reference"
     },
     {
@@ -7386,6 +7531,11 @@
       "type": "symbol-reference"
     },
     {
+      "source": "tests/test_production_os_worker_runtime.py",
+      "target": "studio/production_os_worker.py",
+      "type": "symbol-reference"
+    },
+    {
       "source": "tests/test_promoted_capabilities.py",
       "target": "studio/promoted_capabilities.py",
       "type": "symbol-reference"
@@ -7398,6 +7548,11 @@
     {
       "source": "tests/test_evolution_promotion.py",
       "target": "studio/evolution_promotion.py",
+      "type": "symbol-reference"
+    },
+    {
+      "source": "studio/agents/codex.py",
+      "target": "tests/test_unified_routing_score.py",
       "type": "symbol-reference"
     },
     {
@@ -7641,6 +7796,11 @@
       "type": "symbol-reference"
     },
     {
+      "source": "studio/omniroute_capacity.py",
+      "target": "tests/test_unified_routing_score.py",
+      "type": "symbol-reference"
+    },
+    {
       "source": "studio/orchestrator.py",
       "target": "tests/test_unified_routing_score.py",
       "type": "symbol-reference"
@@ -7707,16 +7867,6 @@
     },
     {
       "source": "studio/routing_history.py",
-      "target": "tests/test_unified_routing_score.py",
-      "type": "symbol-reference"
-    },
-    {
-      "source": "studio/run.py",
-      "target": "tests/test_unified_routing_score.py",
-      "type": "symbol-reference"
-    },
-    {
-      "source": "studio/unified_routing_score.py",
       "target": "tests/test_unified_routing_score.py",
       "type": "symbol-reference"
     },

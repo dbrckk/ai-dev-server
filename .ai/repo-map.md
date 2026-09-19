@@ -104,6 +104,7 @@ studio/
   agents/
     __init__.py
     adapters.py
+    codex.py
     orchestrator.py
     performance.py
     registry.py
@@ -326,6 +327,7 @@ studio/
   native_stage.py
   notification_qa.py
   notification_stage.py
+  omniroute_capacity.py
   orchestrator.py
   performance_qa.py
   performance_stage.py
@@ -344,6 +346,7 @@ studio/
   preemption_controller.py
   privacy_audit.py
   privacy_stage.py
+  production_os_worker.py
   project_budget.py
   project_context.py
   project_engine.py
@@ -496,12 +499,14 @@ tests/
   test_capacity_efficiency.py
   test_capacity_ledger.py
   test_capacity_runtime.py
+  test_capacity_scheduler_omniroute.py
   test_capacity_scheduler_work_conserving.py
   test_capacity_scheduler.py
   test_checkout_credentials_policy.py
   test_ci_adaptation.py
   test_ci_runner_admission.py
   test_ci.py
+  test_codex_adapter.py
   test_completion.py
   test_concurrent_state.py
   test_contextual_routing_memory.py
@@ -559,6 +564,7 @@ tests/
   test_github_memory_store.py
   test_github_quick_gate_cache_store.py
   test_github_runner_persistent.py
+  test_github_runner_usage.py
   test_global_admission.py
   test_goal_capability_runtime.py
   test_goal_engine.py
@@ -616,6 +622,7 @@ tests/
   test_multi_project_canary.py
   test_native_qa.py
   test_notification_qa.py
+  test_omniroute_capacity.py
   test_orchestrator_automerge.py
   test_orchestrator.py
   test_patch_safety_rebuild.py
@@ -633,6 +640,10 @@ tests/
   test_preemption_controller.py
   test_privacy_stage.py
   test_privacy.py
+  test_production_os_result_contract.py
+  test_production_os_worker_cli.py
+  test_production_os_worker_runtime.py
+  test_production_os_worker.py
   test_project_budget.py
   test_project_context.py
   test_project_engine_generic.py
@@ -4430,6 +4441,61 @@ stdout=stdout.replace(value,"[REDACTED]")
 stderr=stderr.replace(value,"[REDACTED]")
 ````
 
+## File: studio/agents/codex.py
+````python
+"""Verified non-interactive Codex CLI contract and telemetry parsing."""
+⋮----
+_USAGE_FIELDS = (
+⋮----
+def codex_invocation(prompt: str) -> tuple[list[str], dict[str, str]]
+⋮----
+"""Build the upstream-supported headless Codex invocation.
+
+    JSONL output gives the orchestrator structured terminal events while
+    ``--ephemeral`` avoids leaving autonomous session state behind. The sandbox
+    is fixed to workspace-write so an external user config cannot silently turn
+    an implementation run into a read-only review.
+    """
+⋮----
+"""Build an isolated Codex invocation routed through OmniRoute.
+
+    The custom provider is supplied as CLI config and the caller must provide a
+    dedicated CODEX_HOME. This prevents ChatGPT account authentication/config
+    from silently taking precedence over the custom Responses endpoint.
+    """
+parsed = urlsplit(str(base_url or "").strip())
+loopback_hosts = {"127.0.0.1", "localhost", "::1", "0.0.0.0"}
+local_http = (
+⋮----
+home = str(codex_home or "").strip()
+⋮----
+base = str(base_url).strip().rstrip("/")
+⋮----
+provider = (
+⋮----
+def _token_count(value: Any) -> int
+⋮----
+def parse_codex_usage(stdout: str) -> dict[str, int] | None
+⋮----
+"""Return normalized usage from the last completed turn in JSONL output.
+
+    Unknown and malformed lines are ignored so additive upstream event types do
+    not break callers. Cached input is reported separately but is not added a
+    second time to ``total_tokens`` because it is part of input usage.
+    """
+completed: dict[str, int] | None = None
+⋮----
+line = raw_line.strip()
+⋮----
+event = json.loads(line)
+⋮----
+usage = event.get("usage")
+⋮----
+normalized = {field: _token_count(usage.get(field, 0)) for field in _USAGE_FIELDS}
+⋮----
+completed = normalized
+````
+
 ## File: studio/agents/orchestrator.py
 ````python
 """Autonomous capability routing with ordered fallbacks and evidence."""
@@ -4466,9 +4532,62 @@ argv=["opencode","run","--auto","--format","json"]
 ⋮----
 config={
 ⋮----
+def omniroute_available_base()->str|None
+⋮----
+"""Return the authenticated OmniRoute Responses base when free capacity exists."""
+raw=str(os.environ.get("OMNIROUTE_URL") or "").strip()
+⋮----
+service_root=raw.rstrip("/")
+⋮----
+service_root=service_root[:-3].rstrip("/")
+⋮----
+snapshot=fetch_omniroute_summary(
+⋮----
+def _runtime_invocation(name:str,prompt:str)
+⋮----
+"""Resolve runtime-specific capacity without changing static adapter support."""
+⋮----
+invocation=invocation_for(name,prompt)
+⋮----
+base=omniroute_available_base()
+⋮----
+codex_home=str(
+⋮----
 def invocation_for(name:str,prompt:str)->tuple[list[str],dict[str,str]]|None
 ⋮----
 # Only invocation contracts verified against upstream CLIs are enabled.
+⋮----
+def _run_evidence(run,capacity_source:str|None=None)->dict
+⋮----
+evidence={"agent":run.agent,"returncode":run.returncode,
+⋮----
+usage=parse_codex_usage(run.stdout_tail)
+⋮----
+def _reserve_agent_budget(name:str,prompt:str)
+⋮----
+ledger_raw=str(os.environ.get("STUDIO_CAPACITY_LEDGER_PATH") or "").strip()
+plan_raw=str(os.environ.get("STUDIO_CAPACITY_PLAN_PATH") or "").strip()
+project_id=str(os.environ.get("STUDIO_PROJECT_ID") or "").strip()
+⋮----
+envelope=load_project_envelope(Path(plan_raw),project_id)
+⋮----
+estimated=max(1,(len(prompt)+3)//4+2048)
+estimated=min(estimated,max(1,int(envelope)))
+result=reserve_capacity(
+⋮----
+def _settle_agent_budget(capacity:dict|None,evidence:dict|None=None)->None
+⋮----
+reservation=capacity.get("reservation")
+⋮----
+actual=int(capacity.get("estimated_tokens",1) or 1)
+mode="reserved_estimate"
+⋮----
+usage=evidence.get("usage")
+⋮----
+reported=usage.get("total_tokens")
+⋮----
+actual=reported
+mode="reported"
 ⋮----
 def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,timeout:int=1800)->dict
 ⋮----
@@ -4481,21 +4600,33 @@ reliability={spec.name:bonus(perf,spec.name,role) for spec in DEFAULT_REGISTRY.a
 ranked=rank_agents(
 attempts=[]
 ⋮----
-invocation=invocation_for(decision.agent.name,prompt)
+runtime=_runtime_invocation(decision.agent.name,prompt)
+⋮----
+budget=_reserve_agent_budget(decision.agent.name,prompt)
 ⋮----
 run=AgentAdapter(decision.agent).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)
 ok=run.returncode==0
-evidence={"agent":run.agent,"status":"passed" if ok else "failed","returncode":run.returncode,
+evidence=_run_evidence(run,capacity_source)
 ⋮----
-def ranked_agent_names(required:set[str],*,role:str,memory_path:Path,limit:int=2)->list[str]
+def ranked_agent_names(required:set[str],*,role:str,memory_path:Path,limit:int=2,preferred:str|None=None)->list[str]
+⋮----
+def usable(decision)->bool
+⋮----
+preferred_name=str(preferred or "").strip()
+⋮----
+preferred_name=""
 ⋮----
 names=[]
+⋮----
+preferred_decision=next(
 ⋮----
 def execute_named(name:str,prompt:str,*,cwd:Path,timeout:int=1800)->dict
 ⋮----
 spec=DEFAULT_REGISTRY.get(name)
 ⋮----
-invocation=invocation_for(name,prompt)
+runtime=_runtime_invocation(name,prompt)
+⋮----
+budget=_reserve_agent_budget(name,prompt)
 ⋮----
 run=AgentAdapter(spec).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)
 ⋮----
@@ -9390,10 +9521,22 @@ args = parser.parse_args(argv)
 projects_payload = json.loads(Path(args.projects).read_text(encoding="utf-8"))
 providers_payload = json.loads(Path(args.providers).read_text(encoding="utf-8"))
 projects = projects_payload.get("projects", []) if isinstance(projects_payload, dict) else projects_payload
-provider_rows = providers_payload.get("providers", []) if isinstance(providers_payload, dict) else providers_payload
+provider_rows = list(
+capacity_sources = {}
+⋮----
+snapshot = fetch_omniroute_summary(
+live_row = snapshot.provider_row("omniroute")
+⋮----
+# A configured live source replaces any stale static OmniRoute row.
+# On network/schema/auth ambiguity, fail closed for that provider
+# while allowing unrelated local/free providers to continue.
+live_row = {
+⋮----
+provider_rows = [
 ⋮----
 health_data = provider_health.load(Path(args.provider_health)) if args.provider_health else {}
 report = allocate(
+⋮----
 rendered = json.dumps(report, sort_keys=True, indent=2) + "\n"
 ````
 
@@ -9805,6 +9948,13 @@ repair_calls = data.get('max_project_repair_calls')
 api_budget = data.get('max_api_cost_usd')
 ⋮----
 api_budget = float(api_budget)
+⋮----
+preference = data['agent_preference']
+⋮----
+production_os = data['production_os']
+⋮----
+workflow_id = production_os.get('workflow_id')
+workflow_task_id = production_os.get('workflow_task_id')
 ⋮----
 publish = data['play_publish']
 ⋮----
@@ -14159,6 +14309,38 @@ handoff={
 ⋮----
 path=out/'.autonomy/capability-promotion-handoff.json'
 ⋮----
+def _usage_count(value)
+⋮----
+def collect_agent_usage(report: dict) -> dict
+⋮----
+"""Aggregate normalized coding-agent token usage from persisted round traces."""
+totals = {
+⋮----
+rounds = report.get("rounds")
+⋮----
+trace = round_state.get("agent_trace")
+⋮----
+attempts = event.get("attempts")
+⋮----
+usage = attempt.get("usage")
+⋮----
+agent = str(attempt.get("agent") or "unknown")
+input_tokens = _usage_count(usage.get("input_tokens"))
+cached_input_tokens = _usage_count(
+output_tokens = _usage_count(usage.get("output_tokens"))
+reasoning_tokens = _usage_count(
+raw_total = usage.get("total_tokens")
+total_tokens = (
+⋮----
+def write_production_os_result(out: Path, request: dict, summary: dict)
+⋮----
+correlation = request.get("production_os")
+⋮----
+usage = summary.get("usage")
+⋮----
+usage = {}
+envelope = {
+⋮----
 def bounded_run(args, timeout)
 ⋮----
 run_id=uuid.uuid4().hex; env=dict(os.environ,STUDIO_RUN_ID=run_id); process=subprocess.Popen(args,env=env,start_new_session=True)
@@ -14284,6 +14466,8 @@ improvement_run=run_active_improvement(
 # checkpointed before the runner exits.
 ⋮----
 memory=ingest_run(memory,request['id'],out)
+⋮----
+project_report=(
 ⋮----
 missing=improvement_run['missing_capability']
 ⋮----
@@ -17448,6 +17632,82 @@ state = advance(Path(args.request), Path(args.work), Path(args.out))
 evidence = state.get('release_evidence', {}).get('notification_qa')
 ````
 
+## File: studio/omniroute_capacity.py
+````python
+"""Read-only adapter for OmniRoute live free-tier capacity summary.
+
+The scheduler treats OmniRoute as a single pooled free-capacity provider. Public
+catalog totals are useful telemetry, but schedulable capacity is trusted only
+when OmniRoute returns authenticated usage fields (usedThisMonth and remaining).
+Anonymous summaries therefore fail closed to zero available tokens.
+"""
+⋮----
+SUMMARY_PATH = "/api/free-tier/summary"
+⋮----
+class OmniRouteCapacityError(ValueError)
+⋮----
+"""Raised when OmniRoute capacity cannot be fetched or validated."""
+⋮----
+def _nonnegative_int(value, *, field: str, nullable: bool = False) -> int | None
+⋮----
+def _optional_text(value, *, field: str) -> str | None
+⋮----
+@dataclass(frozen=True)
+class OmniRouteCapacitySnapshot
+⋮----
+steady_recurring_tokens: int
+used_this_month: int | None
+remaining_tokens: int | None
+catalog_updated_at: str | None = None
+catalog_source: str | None = None
+⋮----
+@property
+    def authenticated_usage(self) -> bool
+⋮----
+def provider_row(self, name: str = "omniroute") -> dict
+⋮----
+"""Return a row accepted by capacity_scheduler.provider_capacities.
+
+        Extra telemetry fields are deliberately retained for callers that persist
+        the row before normalization. capacity_scheduler ignores unknown fields,
+        so this stays backward compatible.
+        """
+provider_name = str(name or "").strip()
+⋮----
+def parse_summary(payload: dict) -> OmniRouteCapacitySnapshot
+⋮----
+"""Validate an OmniRoute /api/free-tier/summary response."""
+⋮----
+steady = _nonnegative_int(
+used = _nonnegative_int(
+remaining = _nonnegative_int(
+⋮----
+def _summary_url(base_url: str) -> str
+⋮----
+value = str(base_url or "").strip()
+⋮----
+value = value.rstrip("/")
+⋮----
+value = value[:-3].rstrip("/")
+⋮----
+"""Fetch and validate live OmniRoute free-tier capacity.
+
+    api_key is sent only as a Bearer header and is never included in errors.
+    The injectable opener keeps networking out of unit tests.
+    """
+⋮----
+timeout_value = float(timeout)
+⋮----
+headers = {"Accept": "application/json"}
+token = str(api_key or "").strip()
+⋮----
+request = Request(_summary_url(base_url), headers=headers, method="GET")
+⋮----
+raw = response.read()
+⋮----
+payload = json.loads(raw.decode("utf-8"))
+````
+
 ## File: studio/orchestrator.py
 ````python
 """Provider-neutral autonomous completion pipeline."""
@@ -18567,6 +18827,187 @@ parser = argparse.ArgumentParser()
 args = parser.parse_args()
 state = advance(Path(args.request), Path(args.work), Path(args.out))
 evidence = state.get('release_evidence', {}).get('privacy_policy')
+````
+
+## File: studio/production_os_worker.py
+````python
+"""Production-OS worker bridge helpers for AI Dev Server."""
+⋮----
+class ProductionOSWorkerError(RuntimeError)
+⋮----
+class _NoRedirect(urllib.request.HTTPRedirectHandler)
+⋮----
+def redirect_request(self, req, fp, code, msg, headers, newurl)
+⋮----
+def _default_opener(request, timeout)
+⋮----
+class ProductionOSClient
+⋮----
+parsed = urlsplit(str(base_url or "").strip())
+loopback = {"127.0.0.1", "localhost", "::1", "0.0.0.0"}
+local_http = (
+⋮----
+secret = str(token or "").strip()
+⋮----
+timeout_value = float(timeout)
+⋮----
+request = urllib.request.Request(
+⋮----
+status = int(getattr(response, "status", 200))
+⋮----
+raw = response.read(1_000_001)
+⋮----
+value = json.loads(raw.decode("utf-8"))
+⋮----
+def claim(self, worker_id: str, capabilities: list[str]) -> dict | None
+⋮----
+payload = self._post(
+⋮----
+job = payload.get("job")
+⋮----
+def ack(self, key: str, worker_id: str) -> dict | None
+⋮----
+def complete(self, payload: dict) -> dict | None
+⋮----
+def fail(self, payload: dict) -> dict | None
+⋮----
+secret = str(operator_token or "").strip()
+⋮----
+payload = {
+⋮----
+"""Return a safe global token-capacity snapshot for Production-OS."""
+env = os.environ if environ is None else environ
+base_url = str(env.get("OMNIROUTE_URL") or "").strip()
+⋮----
+snapshot = fetch_summary(
+⋮----
+authenticated = bool(snapshot.authenticated_usage)
+⋮----
+def _project_id(job_key: str) -> str
+⋮----
+digest = hashlib.sha256(str(job_key).encode("utf-8")).hexdigest()[:24]
+⋮----
+def _app_name(repository: str) -> str
+⋮----
+name = str(repository).rsplit("/", 1)[-1].lower()
+name = re.sub(r"[^a-z0-9_]+", "_", name).strip("_")
+⋮----
+name = "app_" + name
+⋮----
+name = (name + "_app")[:40]
+⋮----
+def _brief(task: str, final_goal: str) -> str
+⋮----
+task = str(task or "").strip()
+final_goal = str(final_goal or "").strip()
+value = task or final_goal
+⋮----
+expanded = (
+⋮----
+def build_studio_request(job: dict[str, Any]) -> dict[str, Any]
+⋮----
+"""Convert one claimed Production-OS job to the trusted Studio request."""
+⋮----
+payload = job.get("payload")
+⋮----
+handoff = payload.get("handoff")
+⋮----
+repository = str(
+task = str(handoff.get("task") or job.get("task") or "").strip()
+final_goal = str(handoff.get("final_goal") or task).strip()
+workflow_id = str(payload.get("workflow_id") or "").strip()
+workflow_task_id = str(payload.get("workflow_task_id") or "").strip()
+job_key = str(job.get("key") or "").strip()
+⋮----
+request = {
+preference = str(handoff.get("agent_preference") or "auto").strip()
+⋮----
+raw_budget = handoff.get("token_budget")
+⋮----
+requested = int(raw_budget)
+⋮----
+envelope = requested
+capacity_source = "production-os"
+constrained = False
+⋮----
+remaining = max(0, int(capacity["remaining_tokens"]))
+envelope = min(envelope, remaining)
+constrained = envelope < requested
+capacity_source = str(capacity.get("source") or "omniroute")
+⋮----
+row = {
+⋮----
+path = Path(output_root) / "capacity-plan.json"
+⋮----
+payload = {"schema": 1, "projects": []}
+⋮----
+current = json.loads(path.read_text(encoding="utf-8"))
+⋮----
+current = None
+⋮----
+payload = dict(current)
+projects = payload.get("projects")
+⋮----
+projects = []
+projects = [
+⋮----
+def _result_payload(result: dict[str, Any]) -> dict[str, Any]
+⋮----
+usage = result.get("usage")
+evidence = result.get("evidence")
+⋮----
+status = str(result.get("status") or "failed")
+next_stage = result.get("evidence", {}).get("next_stage") if isinstance(
+reason = status if not next_stage else f"{status}: {next_stage}"
+⋮----
+"""Claim and execute at most one Production-OS job."""
+⋮----
+clock = time.monotonic
+⋮----
+capabilities = ["software-development", "repo-analysis"]
+job = client.claim(worker_id, capabilities)
+⋮----
+key = str(job.get("key") or "")
+⋮----
+request = build_studio_request(job)
+root = Path(output_root)
+handoff = dict((job.get("payload") or {}).get("handoff") or {})
+⋮----
+project_out = root / request["id"]
+⋮----
+request_path = project_out / "production-os-request.json"
+⋮----
+started = float(clock())
+summary = run_project(
+duration = max(0.0, float(clock()) - started)
+⋮----
+result_path = project_out / "production-os-result.json"
+⋮----
+envelope = json.loads(result_path.read_text(encoding="utf-8"))
+⋮----
+envelope = write_production_os_result(
+⋮----
+status = "completed"
+⋮----
+status = "failed"
+⋮----
+parser = argparse.ArgumentParser(
+⋮----
+args = parser.parse_args(argv)
+⋮----
+base_url = str(env.get("PRODUCTION_OS_URL") or "").strip()
+worker_token = str(
+operator_token = str(
+⋮----
+missing = []
+⋮----
+cycles = 1 if args.once else int(args.cycles)
+⋮----
+client = client_factory(base_url, worker_token)
+⋮----
+capacity = capacity_provider(env)
+⋮----
+result = run_once_fn(
 ````
 
 ## File: studio/project_budget.py
@@ -22593,6 +23034,36 @@ def test_cost_aware_utility_prefers_faster_agent_when_context_quality_is_equal(s
 def test_opencode_invocation_uses_secret_alias(self)
 ⋮----
 env={
+⋮----
+def test_codex_invocation_uses_verified_headless_contract(self)
+⋮----
+def test_codex_execute_named_exposes_token_usage(self)
+⋮----
+run = AgentRun(
+⋮----
+result = execute_named("codex", "do work", cwd=ROOT)
+⋮----
+def test_codex_execute_named_prefers_isolated_omniroute_profile_when_healthy(self)
+⋮----
+seen = {}
+⋮----
+def fake_run(_adapter, argv, *, cwd, timeout, extra_env)
+⋮----
+def test_codex_execute_named_uses_chatgpt_profile_when_omniroute_is_unavailable(self)
+⋮----
+def test_codex_execute_named_stops_when_project_token_envelope_is_exhausted(self)
+⋮----
+root = Path(td)
+plan = root / "capacity-plan.json"
+ledger = root / "capacity-ledger.json"
+⋮----
+reservation = capacity_ledger.reserve(
+⋮----
+env = {
+⋮----
+def test_codex_execute_named_settles_reported_usage_in_project_ledger(self)
+⋮----
+run_result = AgentRun(
 ````
 
 ## File: tests/test_agent_workspace.py
@@ -25282,6 +25753,24 @@ def test_reads_full_project_state_for_recovery(self)
 row = project_state(path, "a")
 ````
 
+## File: tests/test_capacity_scheduler_omniroute.py
+````python
+class CapacitySchedulerOmniRouteTests(unittest.TestCase)
+⋮----
+def test_cli_replaces_static_omniroute_capacity_with_live_remaining(self)
+⋮----
+snapshot = OmniRouteCapacitySnapshot(
+⋮----
+root = Path(tmp)
+projects = root / "projects.json"
+providers = root / "providers.json"
+output = root / "capacity.json"
+⋮----
+rc = main([
+⋮----
+report = json.loads(output.read_text(encoding="utf-8"))
+````
+
 ## File: tests/test_capacity_scheduler_work_conserving.py
 ````python
 class WorkConservingCapacityTests(unittest.TestCase)
@@ -25534,6 +26023,34 @@ def test_timeout_kills_group_and_only_removes_labeled_containers(self)
 process = Mock(pid=12345)
 ⋮----
 run_id = popen.call_args.kwargs['env']['STUDIO_RUN_ID']
+````
+
+## File: tests/test_codex_adapter.py
+````python
+ROOT = Path(__file__).resolve().parents[1]
+STUDIO = ROOT / "studio"
+⋮----
+class CodexAdapterTests(unittest.TestCase)
+⋮----
+def test_invocation_uses_headless_json_ephemeral_workspace_write_exec(self)
+⋮----
+def test_parse_usage_from_completed_turn(self)
+⋮----
+stdout = "\n".join(
+⋮----
+def test_parse_usage_is_backward_compatible_with_older_streams(self)
+⋮----
+stdout = '{"type":"turn.completed","usage":{"input_tokens":10,"cached_input_tokens":4,"output_tokens":3}}'
+⋮----
+def test_parse_usage_ignores_malformed_and_unrelated_lines(self)
+⋮----
+def test_parse_usage_returns_none_without_completed_turn(self)
+⋮----
+def test_omniroute_invocation_uses_isolated_home_and_custom_responses_provider(self)
+⋮----
+provider_override = next(
+⋮----
+def test_omniroute_invocation_rejects_insecure_remote_http(self)
 ````
 
 ## File: tests/test_completion.py
@@ -27198,6 +27715,19 @@ validation={
 handoff=_prepare_capability_promotion_handoff(out,state,"c"*40)
 ⋮----
 def test_promotion_handoff_rejects_cross_candidate_validation(self)
+````
+
+## File: tests/test_github_runner_usage.py
+````python
+class GitHubRunnerUsageTests(unittest.TestCase)
+⋮----
+def test_collect_agent_usage_sums_codex_attempts_across_rounds(self)
+⋮----
+report = {
+⋮----
+def test_collect_agent_usage_ignores_duplicate_non_attempt_usage_and_bad_values(self)
+⋮----
+def test_collect_agent_usage_empty_report_is_zeroed(self)
 ````
 
 ## File: tests/test_global_admission.py
@@ -29006,6 +29536,39 @@ def test_notification_stage_is_registered(self)
 stage = get_stage('notification_qa')
 ````
 
+## File: tests/test_omniroute_capacity.py
+````python
+class _FakeResponse
+⋮----
+def __init__(self, payload)
+⋮----
+def __enter__(self)
+⋮----
+def __exit__(self, exc_type, exc, tb)
+⋮----
+def read(self)
+⋮----
+class OmniRouteCapacityTests(unittest.TestCase)
+⋮----
+def test_authenticated_summary_exposes_live_remaining_capacity(self)
+⋮----
+snapshot = parse_summary({
+⋮----
+def test_unauthenticated_summary_fails_closed_for_scheduler_capacity(self)
+⋮----
+def test_invalid_summary_is_rejected(self)
+⋮----
+def test_fetch_summary_uses_bearer_token_and_canonical_endpoint(self)
+⋮----
+seen = {}
+⋮----
+def opener(request, timeout)
+⋮----
+snapshot = fetch_summary(
+⋮----
+def test_fetch_summary_accepts_openai_v1_base_url(self)
+````
+
 ## File: tests/test_orchestrator_automerge.py
 ````python
 class OrchestratorAutoMergeTests(unittest.TestCase)
@@ -29520,6 +30083,201 @@ state = {'release_evidence': {'store_metadata': {'listing': {'title': 'Demo'}}}}
 evidence = build_privacy_package(root, out, state)
 ⋮----
 payload = json.loads((out / 'privacy/data-safety.json').read_text())
+````
+
+## File: tests/test_production_os_result_contract.py
+````python
+BASE = {
+⋮----
+class ProductionOSResultContractTests(unittest.TestCase)
+⋮----
+def test_request_accepts_optional_production_os_correlation(self)
+⋮----
+value = copy.deepcopy(BASE)
+⋮----
+checked = request_check(value)
+⋮----
+def test_request_rejects_invalid_production_os_correlation(self)
+⋮----
+def test_result_envelope_correlates_usage_and_completion(self)
+⋮----
+request = copy.deepcopy(BASE)
+⋮----
+summary = {
+⋮----
+out = Path(td)
+envelope = write_production_os_result(out, request, summary)
+persisted = json.loads(
+⋮----
+def test_no_result_envelope_without_correlation(self)
+⋮----
+envelope = write_production_os_result(
+````
+
+## File: tests/test_production_os_worker_cli.py
+````python
+class _Client
+⋮----
+def __init__(self, base_url, token)
+⋮----
+def register(self, worker_id, capabilities, operator_token)
+⋮----
+class ProductionOSWorkerCLITests(unittest.TestCase)
+⋮----
+def test_main_registers_worker_and_runs_once(self)
+⋮----
+clients = []
+runs = []
+⋮----
+def factory(base_url, token)
+⋮----
+client = _Client(base_url, token)
+⋮----
+def run_once_fn(client, **kwargs)
+⋮----
+env = {
+⋮----
+rc = main(
+⋮----
+def test_main_runs_bounded_cycles_until_queue_is_idle(self)
+⋮----
+calls = []
+outcomes = iter([
+⋮----
+def test_main_requires_all_control_plane_credentials(self)
+⋮----
+def test_main_forwards_capacity_snapshot_to_worker_cycle(self)
+⋮----
+expected = {
+````
+
+## File: tests/test_production_os_worker_runtime.py
+````python
+def sample_job()
+⋮----
+class _FakeClient
+⋮----
+def __init__(self, job)
+⋮----
+def claim(self, worker_id, capabilities)
+⋮----
+def ack(self, key, worker_id)
+⋮----
+def complete(self, payload)
+⋮----
+def fail(self, payload)
+⋮----
+def heartbeat(self, worker_id, *, active_job_keys=(), capacity=None)
+⋮----
+class _Response
+⋮----
+def __init__(self, status, payload=None)
+⋮----
+def __enter__(self)
+⋮----
+def __exit__(self, exc_type, exc, tb)
+⋮----
+def read(self, limit=-1)
+⋮----
+class ProductionOSWorkerRuntimeTests(unittest.TestCase)
+⋮----
+def test_client_rejects_insecure_remote_control_plane(self)
+⋮----
+def test_client_allows_loopback_http(self)
+⋮----
+client = ProductionOSClient(
+⋮----
+def test_client_claim_posts_bearer_json_and_handles_no_content(self)
+⋮----
+seen = []
+⋮----
+def opener(request, timeout)
+⋮----
+job = client.claim(
+⋮----
+def test_run_once_returns_idle_when_no_job_is_available(self)
+⋮----
+client = _FakeClient(None)
+⋮----
+result = run_once(
+⋮----
+def test_run_once_acks_executes_and_completes_with_usage(self)
+⋮----
+client = _FakeClient(sample_job())
+⋮----
+def runner(request_path, out, **kwargs)
+⋮----
+request = json.loads(Path(request_path).read_text(encoding="utf-8"))
+⋮----
+completed = client.calls[3][1]
+⋮----
+def test_run_once_reports_failed_pipeline_to_control_plane(self)
+⋮----
+failed = client.calls[3][1]
+⋮----
+def test_capacity_snapshot_prefers_authenticated_omniroute(self)
+⋮----
+class Snapshot
+⋮----
+authenticated_usage = True
+steady_recurring_tokens = 1_500_000_000
+used_this_month = 125_000_000
+remaining_tokens = 1_375_000_000
+catalog_updated_at = "2026-09-18"
+catalog_source = "free-tier-catalog"
+⋮----
+seen = {}
+⋮----
+def fetch(url, *, api_key=None, timeout=5.0)
+⋮----
+result = production_capacity_snapshot(
+⋮----
+def test_capacity_snapshot_fails_closed_without_authenticated_usage(self)
+⋮----
+authenticated_usage = False
+⋮----
+used_this_month = None
+remaining_tokens = None
+⋮----
+def test_client_heartbeat_posts_capacity_snapshot(self)
+⋮----
+capacity = {
+⋮----
+def test_run_once_writes_project_token_envelope_before_execution(self)
+⋮----
+plan = json.loads(
+row = next(
+⋮----
+def test_project_token_envelope_is_capped_by_live_global_remaining_capacity(self)
+````
+
+## File: tests/test_production_os_worker.py
+````python
+class ProductionOSWorkerTests(unittest.TestCase)
+⋮----
+def job(self)
+⋮----
+def test_build_studio_request_preserves_goal_and_workflow_correlation(self)
+⋮----
+request = build_studio_request(self.job())
+⋮----
+checked = request_check(request)
+⋮----
+def test_short_task_is_expanded_to_valid_studio_brief(self)
+⋮----
+job = self.job()
+⋮----
+request = build_studio_request(job)
+⋮----
+def test_completion_payload_forwards_usage_and_evidence(self)
+⋮----
+result = {
+⋮----
+payload = completion_payload(
+⋮----
+def test_failure_payload_is_bounded_and_preserves_usage(self)
+⋮----
+payload = failure_payload(
 ````
 
 ## File: tests/test_project_budget.py

@@ -4,5 +4,5795 @@
   "scope": "symbols defined in changed source files",
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
-  "symbols": {}
+  "symbols": {
+    "codex_invocation": {
+      "source": {
+        "file": "studio/agents/codex.py",
+        "start": 18,
+        "end": 34
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "codex_omniroute_invocation": {
+      "source": {
+        "file": "studio/agents/codex.py",
+        "start": 38,
+        "end": 101
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_token_count": {
+      "source": {
+        "file": "studio/agents/codex.py",
+        "start": 104,
+        "end": 110
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "parse_codex_usage": {
+      "source": {
+        "file": "studio/agents/codex.py",
+        "start": 113,
+        "end": 137
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_token_count",
+          "definitions": [
+            {
+              "file": "studio/agents/codex.py",
+              "line": 104,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_safe_rewrite_summary": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 18,
+        "end": 20
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_contextual_routing_state": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 23,
+        "end": 38
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_verification_seconds": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 41,
+        "end": 45
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_agent_execution_seconds": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 48,
+        "end": 54
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "all",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_opencode_runtime": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 56,
+        "end": 87
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "omniroute_available_base": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 89,
+        "end": 111
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "OmniRouteCapacityError",
+          "definitions": [
+            {
+              "file": "studio/omniroute_capacity.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "authenticated_usage",
+          "definitions": [
+            {
+              "file": "studio/omniroute_capacity.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "snapshot",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 522,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "_runtime_invocation": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 114,
+        "end": 134
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "codex_invocation",
+          "definitions": [
+            {
+              "file": "studio/agents/codex.py",
+              "line": 18,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "codex_omniroute_invocation",
+          "definitions": [
+            {
+              "file": "studio/agents/codex.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "invocation_for",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 137,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "omniroute_available_base",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 89,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "invocation_for": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 137,
+        "end": 145
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_opencode_runtime",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "codex_invocation",
+          "definitions": [
+            {
+              "file": "studio/agents/codex.py",
+              "line": 18,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_run_evidence": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 148,
+        "end": 157
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "parse_codex_usage",
+          "definitions": [
+            {
+              "file": "studio/agents/codex.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_reserve_agent_budget": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 160,
+        "end": 184
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_settle_agent_budget": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 187,
+        "end": 212
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "execute": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 215,
+        "end": 270
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AgentAdapter",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 26,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_agent_execution_seconds",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_contextual_routing_state",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reserve_agent_budget",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 160,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_run_evidence",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 148,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_runtime_invocation",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 114,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_safe_rewrite_summary",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 18,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_settle_agent_budget",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 187,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_verification_seconds",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "all",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "available",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/agents/registry.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "bonus",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "eligible",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "learned_weights",
+          "definitions": [
+            {
+              "file": "studio/routing_history.py",
+              "line": 94,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 6,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 42,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/contextual_routing_memory.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rank_agents",
+          "definitions": [
+            {
+              "file": "studio/agents/router.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 18
+    },
+    "ranked_agent_names": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 273,
+        "end": 318
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "all",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "available",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/agents/registry.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "bonus",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "eligible",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "invocation_for",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 137,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "learned_weights",
+          "definitions": [
+            {
+              "file": "studio/routing_history.py",
+              "line": 94,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 6,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 42,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/contextual_routing_memory.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "probe",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rank_agents",
+          "definitions": [
+            {
+              "file": "studio/agents/router.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "usable",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 288,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "usable": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 288,
+        "end": 408
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AgentAdapter",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 26,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_reserve_agent_budget",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 160,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_run_evidence",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 148,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_runtime_invocation",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 114,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_settle_agent_budget",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 187,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "all",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "available",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/agents/registry.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "bonus",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "eligible",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "execute_named",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 320,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "invocation_for",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 137,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "learned_weights",
+          "definitions": [
+            {
+              "file": "studio/routing_history.py",
+              "line": 94,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 6,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 42,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/contextual_routing_memory.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "probe",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rank_agents",
+          "definitions": [
+            {
+              "file": "studio/agents/router.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "routing_trace_for",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 356,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 18
+    },
+    "execute_named": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 320,
+        "end": 353
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AgentAdapter",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 26,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_reserve_agent_budget",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 160,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_run_evidence",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 148,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_runtime_invocation",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 114,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_settle_agent_budget",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 187,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "available",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/agents/registry.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "routing_trace_for": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 356,
+        "end": 371
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "all",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "bonus",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "learned_weights",
+          "definitions": [
+            {
+              "file": "studio/routing_history.py",
+              "line": 94,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 6,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 42,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/contextual_routing_memory.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rank_agents",
+          "definitions": [
+            {
+              "file": "studio/agents/router.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "ProviderCapacity": {
+      "source": {
+        "file": "studio/capacity_scheduler.py",
+        "start": 25,
+        "end": 56
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "adaptive_score",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "tier",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "tier": {
+      "source": {
+        "file": "studio/capacity_scheduler.py",
+        "start": 38,
+        "end": 45
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "adaptive_score": {
+      "source": {
+        "file": "studio/capacity_scheduler.py",
+        "start": 48,
+        "end": 56
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_clean_project": {
+      "source": {
+        "file": "studio/capacity_scheduler.py",
+        "start": 59,
+        "end": 105
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_weight": {
+      "source": {
+        "file": "studio/capacity_scheduler.py",
+        "start": 108,
+        "end": 129
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_finite_capacity": {
+      "source": {
+        "file": "studio/capacity_scheduler.py",
+        "start": 132,
+        "end": 137
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ProviderCapacity",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 25,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_weighted_work_conserving": {
+      "source": {
+        "file": "studio/capacity_scheduler.py",
+        "start": 140,
+        "end": 176
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_weight",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 108,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "allocate": {
+      "source": {
+        "file": "studio/capacity_scheduler.py",
+        "start": 179,
+        "end": 328
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ProviderCapacity",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 25,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_clean_project",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 59,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_finite_capacity",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 132,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_weight",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 108,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_weighted_work_conserving",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 140,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "adaptive_score",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "routing_score",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 193,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "tier",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "routing_score": {
+      "source": {
+        "file": "studio/capacity_scheduler.py",
+        "start": 193,
+        "end": 313
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ProviderCapacity",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 25,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_finite_capacity",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 132,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_weight",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 108,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_weighted_work_conserving",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 140,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "adaptive_score",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "tier",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "provider_capacities": {
+      "source": {
+        "file": "studio/capacity_scheduler.py",
+        "start": 331,
+        "end": 398
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ProviderCapacity",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 25,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "main": {
+      "source": {
+        "file": "studio/capacity_scheduler.py",
+        "start": 401,
+        "end": 521
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "OmniRouteCapacityError",
+          "definitions": [
+            {
+              "file": "studio/omniroute_capacity.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "allocate",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 179,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "authenticated_usage",
+          "definitions": [
+            {
+              "file": "studio/omniroute_capacity.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "provider_capacities",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 331,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "provider_row",
+          "definitions": [
+            {
+              "file": "studio/omniroute_capacity.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "tier",
+          "definitions": [
+            {
+              "file": "studio/capacity_scheduler.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "StudioError": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 35,
+        "end": 36
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "canonical": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 38,
+        "end": 39
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "request_check": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 41,
+        "end": 123
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "allowed": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 125,
+        "end": 135
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "patch_check": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 139,
+        "end": 157
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "allowed",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 125,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "require_clean_patch_workspace": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 159,
+        "end": 162
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "apply_patch": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 164,
+        "end": 233
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ensure_directory",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 179,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "patch_check",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 139,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "require_clean_patch_workspace",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 159,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "ensure_directory": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 179,
+        "end": 299
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 255,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 243,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "NoRedirect",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 251,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ProtocolError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 248,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 244,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 256,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 816,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_response",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 274,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "redirect_request",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 252,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "verdict",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 235,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "verdict": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 235,
+        "end": 241
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "APIError": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 243,
+        "end": 246
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 255,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 244,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 256,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 816,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "__init__": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 244,
+        "end": 246
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 255,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "ProtocolError": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 248,
+        "end": 249
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "NoRedirect": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 251,
+        "end": 253
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "redirect_request",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 252,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "redirect_request": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 252,
+        "end": 253
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "API": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 255,
+        "end": 340
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 243,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "NoRedirect",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 251,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ProtocolError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 248,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 244,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 256,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 816,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_response",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 274,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 310,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "_response": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 274,
+        "end": 308
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 255,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 243,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "NoRedirect",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 251,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ProtocolError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 248,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "call": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 310,
+        "end": 340
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 255,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 243,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_response",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 274,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "Model": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 342,
+        "end": 813
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 255,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 243,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ProtocolError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 248,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Provider",
+          "definitions": [
+            {
+              "file": "tests/test_unified_routing_score.py",
+              "line": 12,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "QA",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 236,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "ScoreTrace",
+          "definitions": [
+            {
+              "file": "studio/adaptive_scoring.py",
+              "line": 8,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 244,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 256,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 816,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 398,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "as_dict",
+          "definitions": [
+            {
+              "file": "studio/adaptive_scoring.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 369,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "augment",
+          "definitions": [
+            {
+              "file": "studio/learning_context.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "budget_eligible",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 401,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 310,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "candidates_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 327,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "diversity_bias",
+          "definitions": [
+            {
+              "file": "studio/model_portfolio_learning.py",
+              "line": 96,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "estimate_call_cost",
+          "definitions": [
+            {
+              "file": "studio/provider_cost.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "latency_bonus",
+          "definitions": [
+            {
+              "file": "studio/provider_metrics.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "learned_weights",
+          "definitions": [
+            {
+              "file": "studio/routing_history.py",
+              "line": 94,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_providers",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 290,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "model_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "patch_check",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 139,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "quarantine_status",
+          "definitions": [
+            {
+              "file": "studio/local_model_reputation.py",
+              "line": 189,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "quota_status",
+          "definitions": [
+            {
+              "file": "studio/provider_monthly_quota.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record",
+          "definitions": [
+            {
+              "file": "studio/local_model_reputation.py",
+              "line": 83,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/model_portfolio_learning.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/provider_cost.py",
+              "line": 70,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/provider_metrics.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/provider_monthly_quota.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "reliability_bonus",
+          "definitions": [
+            {
+              "file": "studio/provider_health.py",
+              "line": 146,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "routing_bonus",
+          "definitions": [
+            {
+              "file": "studio/local_model_benchmark.py",
+              "line": 153,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "score",
+          "definitions": [
+            {
+              "file": "studio/local_model_reputation.py",
+              "line": 162,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "score_provider",
+          "definitions": [
+            {
+              "file": "studio/adaptive_scoring.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "specialization_score",
+          "definitions": [
+            {
+              "file": "studio/local_model_specialization.py",
+              "line": 102,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "unique_object",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 735,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "validate_journeys",
+          "definitions": [
+            {
+              "file": "studio/journeys.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verdict",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 235,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 33
+    },
+    "ask": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 369,
+        "end": 396
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ProtocolError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 248,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "QA",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 236,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 398,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "augment",
+          "definitions": [
+            {
+              "file": "studio/learning_context.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 310,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "patch_check",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 139,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "validate_journeys",
+          "definitions": [
+            {
+              "file": "studio/journeys.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verdict",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 235,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "_ask": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 398,
+        "end": 813
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 255,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 243,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Model",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 342,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ProtocolError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 248,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Provider",
+          "definitions": [
+            {
+              "file": "tests/test_unified_routing_score.py",
+              "line": 12,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "ScoreTrace",
+          "definitions": [
+            {
+              "file": "studio/adaptive_scoring.py",
+              "line": 8,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "as_dict",
+          "definitions": [
+            {
+              "file": "studio/adaptive_scoring.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "budget_eligible",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 401,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 310,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "candidates_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 327,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "diversity_bias",
+          "definitions": [
+            {
+              "file": "studio/model_portfolio_learning.py",
+              "line": 96,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "estimate_call_cost",
+          "definitions": [
+            {
+              "file": "studio/provider_cost.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "latency_bonus",
+          "definitions": [
+            {
+              "file": "studio/provider_metrics.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "learned_weights",
+          "definitions": [
+            {
+              "file": "studio/routing_history.py",
+              "line": 94,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "model_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "quarantine_status",
+          "definitions": [
+            {
+              "file": "studio/local_model_reputation.py",
+              "line": 189,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "quota_status",
+          "definitions": [
+            {
+              "file": "studio/provider_monthly_quota.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record",
+          "definitions": [
+            {
+              "file": "studio/local_model_reputation.py",
+              "line": 83,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/model_portfolio_learning.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/provider_cost.py",
+              "line": 70,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/provider_metrics.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/provider_monthly_quota.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "reliability_bonus",
+          "definitions": [
+            {
+              "file": "studio/provider_health.py",
+              "line": 146,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "routing_bonus",
+          "definitions": [
+            {
+              "file": "studio/local_model_benchmark.py",
+              "line": 153,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "score",
+          "definitions": [
+            {
+              "file": "studio/local_model_reputation.py",
+              "line": 162,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "score_provider",
+          "definitions": [
+            {
+              "file": "studio/adaptive_scoring.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "specialization_score",
+          "definitions": [
+            {
+              "file": "studio/local_model_specialization.py",
+              "line": 102,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "unique_object",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 735,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 25
+    },
+    "unique_object": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 735,
+        "end": 855
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Model",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 342,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ProtocolError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 248,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Provider",
+          "definitions": [
+            {
+              "file": "tests/test_unified_routing_score.py",
+              "line": 12,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Sandbox",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 815,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 244,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 256,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 816,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "as_dict",
+          "definitions": [
+            {
+              "file": "studio/adaptive_scoring.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 843,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "quick_dependency_gate",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 851,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 819,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "score",
+          "definitions": [
+            {
+              "file": "studio/local_model_reputation.py",
+              "line": 162,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "Sandbox": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 815,
+        "end": 913
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 244,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 256,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 816,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "create",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 843,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "encoded_journeys",
+          "definitions": [
+            {
+              "file": "studio/journeys.py",
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "gates",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 887,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "quick_analyze_gate",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 858,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "quick_dependency_gate",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 851,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "quick_gates",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 873,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "quick_test_gate",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 865,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 819,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "run": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 819,
+        "end": 842
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Sandbox",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 815,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "create": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 843,
+        "end": 850
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 819,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "quick_dependency_gate": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 851,
+        "end": 856
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 819,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "quick_analyze_gate": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 858,
+        "end": 863
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 819,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "quick_test_gate": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 865,
+        "end": 871
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 819,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "quick_gates": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 873,
+        "end": 885
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "gates",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 887,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "quick_analyze_gate",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 858,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "quick_dependency_gate",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 851,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "quick_test_gate",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 865,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "gates": {
+      "source": {
+        "file": "studio/core.py",
+        "start": 887,
+        "end": 913
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "encoded_journeys",
+          "definitions": [
+            {
+              "file": "studio/journeys.py",
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 819,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_snapshot": {
+      "source": {
+        "file": "studio/generic_project.py",
+        "start": 120,
+        "end": 139
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_apply": {
+      "source": {
+        "file": "studio/generic_project.py",
+        "start": 142,
+        "end": 162
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_patch",
+          "definitions": [
+            {
+              "file": "studio/generic_policy.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_prepare_architecture": {
+      "source": {
+        "file": "studio/generic_project.py",
+        "start": 165,
+        "end": 195
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "recommend",
+          "definitions": [
+            {
+              "file": "studio/project_recommendations.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_record_architecture": {
+      "source": {
+        "file": "studio/generic_project.py",
+        "start": 198,
+        "end": 214
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "run_project": {
+      "source": {
+        "file": "studio/generic_project.py",
+        "start": 217,
+        "end": 1941
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ArchitectureChangeBlocked",
+          "definitions": [
+            {
+              "file": "studio/architecture_change_guard.py",
+              "line": 58,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "CostDriftDetector",
+          "definitions": [
+            {
+              "file": "studio/cost_drift.py",
+              "line": 8,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ExecutionCheckpointError",
+          "definitions": [
+            {
+              "file": "studio/execution_checkpoint.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "GenericRepository",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "RunCostController",
+          "definitions": [
+            {
+              "file": "studio/run_cost_controller.py",
+              "line": 8,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_apply",
+          "definitions": [
+            {
+              "file": "studio/generic_project.py",
+              "line": 142,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_prepare_architecture",
+          "definitions": [
+            {
+              "file": "studio/generic_project.py",
+              "line": 165,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_record_architecture",
+          "definitions": [
+            {
+              "file": "studio/generic_project.py",
+              "line": 198,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_snapshot",
+          "definitions": [
+            {
+              "file": "studio/generic_project.py",
+              "line": 120,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "all",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "as_dict",
+          "definitions": [
+            {
+              "file": "studio/adaptive_role_allocator.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/execution_budget.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/meta_router.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/model_portfolio.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/phase_budget.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 369,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/generic_model.py",
+              "line": 83,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "audit",
+          "definitions": [
+            {
+              "file": "studio/model_portfolio_audit.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "available",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/agents/registry.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "baseline",
+          "definitions": [
+            {
+              "file": "studio/phase_cost_baseline.py",
+              "line": 87,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "benchmark",
+          "definitions": [
+            {
+              "file": "studio/architecture_benchmark.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "bootstrap_commands",
+          "definitions": [
+            {
+              "file": "studio/generic_toolchain.py",
+              "line": 31,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "bounded_timeout",
+          "definitions": [
+            {
+              "file": "studio/phase_budget.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "budget_pressure",
+          "definitions": [
+            {
+              "file": "studio/adaptive_role_allocator.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "can_start_generation",
+          "definitions": [
+            {
+              "file": "studio/predictive_budget.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "checkpoint",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 565,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "choose_budget",
+          "definitions": [
+            {
+              "file": "studio/execution_budget.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "choose_execution_mode",
+          "definitions": [
+            {
+              "file": "studio/meta_router.py",
+              "line": 43,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "choose_role_allocation",
+          "definitions": [
+            {
+              "file": "studio/adaptive_role_allocator.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "context",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 341,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "decision",
+          "definitions": [
+            {
+              "file": "studio/cost_drift.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/run_cost_controller.py",
+              "line": 45,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "evaluate_model_candidate",
+          "definitions": [
+            {
+              "file": "studio/generic_project.py",
+              "line": 772,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "expanded_call_limit",
+          "definitions": [
+            {
+              "file": "studio/capacity_budget.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "exploration_multiplier",
+          "definitions": [
+            {
+              "file": "studio/cost_drift.py",
+              "line": 74,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_context",
+          "definitions": [
+            {
+              "file": "studio/learning_context.py",
+              "line": 9,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "model_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "multiplier",
+          "definitions": [
+            {
+              "file": "studio/capacity_budget.py",
+              "line": 10,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "new",
+          "definitions": [
+            {
+              "file": "studio/execution_checkpoint.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "phase_remaining",
+          "definitions": [
+            {
+              "file": "studio/phase_budget.py",
+              "line": 98,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "studio/architecture_planner.py",
+              "line": 109,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "planning_phase_decision",
+          "definitions": [
+            {
+              "file": "studio/adaptive_phase_policy.py",
+              "line": 5,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 40
+    },
+    "evaluate_model_candidate": {
+      "source": {
+        "file": "studio/generic_project.py",
+        "start": 772,
+        "end": 892
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_apply",
+          "definitions": [
+            {
+              "file": "studio/generic_project.py",
+              "line": 142,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 369,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/generic_model.py",
+              "line": 83,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "bounded_timeout",
+          "definitions": [
+            {
+              "file": "studio/phase_budget.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "phase_remaining",
+          "definitions": [
+            {
+              "file": "studio/phase_budget.py",
+              "line": 98,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_model",
+          "definitions": [
+            {
+              "file": "studio/run_cost_controller.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record_verification",
+          "definitions": [
+            {
+              "file": "studio/run_cost_controller.py",
+              "line": 36,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_patch",
+          "definitions": [
+            {
+              "file": "studio/generic_policy.py",
+              "line": 37,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "_prepare_capability_promotion_handoff": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 56,
+        "end": 93
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_candidate_envelope",
+          "definitions": [
+            {
+              "file": "studio/capability_synthesis.py",
+              "line": 108,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_isolated_validation_result",
+          "definitions": [
+            {
+              "file": "studio/generic_capability_isolated_validation.py",
+              "line": 172,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "_usage_count": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 96,
+        "end": 102
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "collect_agent_usage": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 105,
+        "end": 167
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_usage_count",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 96,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "write_production_os_result": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 170,
+        "end": 200
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "bounded_run": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 203,
+        "end": 216
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 237,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_update_improvements": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 219,
+        "end": 234
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "activate_next",
+          "definitions": [
+            {
+              "file": "studio/improvement_backlog.py",
+              "line": 84,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "merge_assessment",
+          "definitions": [
+            {
+              "file": "studio/improvement_backlog.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "new_backlog",
+          "definitions": [
+            {
+              "file": "studio/improvement_backlog.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "run_once": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 525,
+        "end": 645
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AgentPerformanceStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_agent_performance_store.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ArtifactCasAuditStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_artifact_cas_audit_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ArtifactCasStatsStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_artifact_cas_stats_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ContextualStrategyEfficiencyStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_contextual_strategy_efficiency_store.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ExecutionCheckpointStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_execution_checkpoint_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FullGateCacheStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_full_gate_cache_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "GitHubMemoryError",
+          "definitions": [
+            {
+              "file": "studio/github_memory_store.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PhaseCostBaselineStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_phase_cost_baseline_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProviderHealthStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_provider_health_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProviderMetricsStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_provider_metrics_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "QuickGateCacheStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_quick_gate_cache_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "RemoteStateError",
+          "definitions": [
+            {
+              "file": "studio/github_goal_store.py",
+              "line": 29,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "RoutingHistoryStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_routing_history_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StrategyEfficiencyStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_strategy_efficiency_store.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "VerificationCostStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_verification_cost_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_update_improvements",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 219,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "checkpoint",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 565,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "collect_agent_usage",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "improvement_project_cycle",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 550,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ingest_run",
+          "definitions": [
+            {
+              "file": "studio/memory_lifecycle.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "persist_local",
+          "definitions": [
+            {
+              "file": "studio/github_agent_performance_store.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_artifact_cas_audit_store.py",
+              "line": 168,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_artifact_cas_stats_store.py",
+              "line": 175,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_contextual_strategy_efficiency_store.py",
+              "line": 141,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_execution_checkpoint_store.py",
+              "line": 131,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 237,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_active_improvement",
+          "definitions": [
+            {
+              "file": "studio/improvement_executor.py",
+              "line": 60,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_persistent_project",
+          "definitions": [
+            {
+              "file": "studio/autonomous_project.py",
+              "line": 169,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verified_project_cycle",
+          "definitions": [
+            {
+              "file": "studio/improvement_executor.py",
+              "line": 36,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 28
+    },
+    "improvement_project_cycle": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 550,
+        "end": 670
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AgentPerformanceStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_agent_performance_store.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ArtifactCasAuditStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_artifact_cas_audit_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ArtifactCasStatsStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_artifact_cas_stats_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ContextualStrategyEfficiencyStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_contextual_strategy_efficiency_store.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ExecutionCheckpointStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_execution_checkpoint_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FullGateCacheStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_full_gate_cache_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "GitHubMemoryError",
+          "definitions": [
+            {
+              "file": "studio/github_memory_store.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PhaseCostBaselineStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_phase_cost_baseline_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProviderHealthStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_provider_health_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProviderMetricsStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_provider_metrics_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "QuickGateCacheStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_quick_gate_cache_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "RemoteStateError",
+          "definitions": [
+            {
+              "file": "studio/github_goal_store.py",
+              "line": 29,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "RoutingHistoryStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_routing_history_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StrategyEfficiencyStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_strategy_efficiency_store.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "VerificationCostStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_verification_cost_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "checkpoint",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 565,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "collect_agent_usage",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "enabled",
+          "definitions": [
+            {
+              "file": "studio/ci_provider.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ingest_run",
+          "definitions": [
+            {
+              "file": "studio/memory_lifecycle.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "persist_local",
+          "definitions": [
+            {
+              "file": "studio/github_agent_performance_store.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_artifact_cas_audit_store.py",
+              "line": 168,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_artifact_cas_stats_store.py",
+              "line": 175,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_contextual_strategy_efficiency_store.py",
+              "line": 141,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_execution_checkpoint_store.py",
+              "line": 131,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 237,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_active_improvement",
+          "definitions": [
+            {
+              "file": "studio/improvement_executor.py",
+              "line": 60,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verified_project_cycle",
+          "definitions": [
+            {
+              "file": "studio/improvement_executor.py",
+              "line": 36,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "write_production_os_result",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 170,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 28
+    },
+    "OmniRouteCapacityError": {
+      "source": {
+        "file": "studio/omniroute_capacity.py",
+        "start": 20,
+        "end": 21
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_nonnegative_int": {
+      "source": {
+        "file": "studio/omniroute_capacity.py",
+        "start": 24,
+        "end": 31
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "OmniRouteCapacityError",
+          "definitions": [
+            {
+              "file": "studio/omniroute_capacity.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_optional_text": {
+      "source": {
+        "file": "studio/omniroute_capacity.py",
+        "start": 34,
+        "end": 39
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "OmniRouteCapacityError",
+          "definitions": [
+            {
+              "file": "studio/omniroute_capacity.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "OmniRouteCapacitySnapshot": {
+      "source": {
+        "file": "studio/omniroute_capacity.py",
+        "start": 43,
+        "end": 77
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "OmniRouteCapacityError",
+          "definitions": [
+            {
+              "file": "studio/omniroute_capacity.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "authenticated_usage",
+          "definitions": [
+            {
+              "file": "studio/omniroute_capacity.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "provider_row",
+          "definitions": [
+            {
+              "file": "studio/omniroute_capacity.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "authenticated_usage": {
+      "source": {
+        "file": "studio/omniroute_capacity.py",
+        "start": 51,
+        "end": 52
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "provider_row": {
+      "source": {
+        "file": "studio/omniroute_capacity.py",
+        "start": 54,
+        "end": 77
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "OmniRouteCapacityError",
+          "definitions": [
+            {
+              "file": "studio/omniroute_capacity.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "authenticated_usage",
+          "definitions": [
+            {
+              "file": "studio/omniroute_capacity.py",
+              "line": 51,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    }
+  }
 }

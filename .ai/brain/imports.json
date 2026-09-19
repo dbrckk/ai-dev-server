@@ -37,11 +37,21 @@
       "subprocess",
       "time"
     ],
+    "studio/agents/codex.py": [
+      "__future__",
+      "json",
+      "typing",
+      "urllib.parse"
+    ],
     "studio/agents/orchestrator.py": [
       "__future__",
       "adapters",
+      "capacity_ledger",
+      "capacity_runtime",
+      "codex",
       "contextual_routing_memory",
       "json",
+      "omniroute_capacity",
       "os",
       "pathlib",
       "performance",
@@ -653,6 +663,8 @@
       "argparse",
       "dataclasses",
       "json",
+      "omniroute_capacity",
+      "os",
       "pathlib",
       "provider_health",
       "time"
@@ -2017,6 +2029,14 @@
       "release_stage_engine",
       "run"
     ],
+    "studio/omniroute_capacity.py": [
+      "__future__",
+      "dataclasses",
+      "json",
+      "typing",
+      "urllib.error",
+      "urllib.request"
+    ],
     "studio/orchestrator.py": [
       "__future__",
       "adaptation",
@@ -2196,6 +2216,24 @@
       "pathlib",
       "privacy_audit",
       "run"
+    ],
+    "studio/production_os_worker.py": [
+      "__future__",
+      "argparse",
+      "atomic_file",
+      "file_lock",
+      "github_runner",
+      "hashlib",
+      "json",
+      "omniroute_capacity",
+      "os",
+      "pathlib",
+      "re",
+      "time",
+      "typing",
+      "urllib.error",
+      "urllib.parse",
+      "urllib.request"
     ],
     "studio/project_budget.py": [
       "__future__"
@@ -2816,11 +2854,16 @@
       "unittest"
     ],
     "tests/test_agent_router.py": [
+      "agents.adapters",
       "agents.orchestrator",
       "agents.registry",
       "agents.router",
+      "capacity_ledger",
+      "json",
+      "os",
       "pathlib",
       "sys",
+      "tempfile",
       "unittest",
       "unittest.mock"
     ],
@@ -3384,6 +3427,17 @@
       "sys",
       "unittest"
     ],
+    "tests/test_capacity_scheduler_omniroute.py": [
+      "capacity_scheduler",
+      "json",
+      "omniroute_capacity",
+      "os",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest",
+      "unittest.mock"
+    ],
     "tests/test_capacity_scheduler_work_conserving.py": [
       "capacity_scheduler",
       "pathlib",
@@ -3426,6 +3480,12 @@
       "tempfile",
       "unittest",
       "unittest.mock"
+    ],
+    "tests/test_codex_adapter.py": [
+      "agents.codex",
+      "pathlib",
+      "sys",
+      "unittest"
     ],
     "tests/test_completion.py": [
       "completion",
@@ -3867,6 +3927,12 @@
       "tempfile",
       "unittest",
       "unittest.mock"
+    ],
+    "tests/test_github_runner_usage.py": [
+      "github_runner",
+      "pathlib",
+      "sys",
+      "unittest"
     ],
     "tests/test_global_admission.py": [
       "global_admission",
@@ -4359,6 +4425,13 @@
       "tempfile",
       "unittest"
     ],
+    "tests/test_omniroute_capacity.py": [
+      "json",
+      "omniroute_capacity",
+      "pathlib",
+      "sys",
+      "unittest"
+    ],
     "tests/test_orchestrator.py": [
       "core",
       "github_runner",
@@ -4510,6 +4583,40 @@
       "tempfile",
       "unittest",
       "unittest.mock"
+    ],
+    "tests/test_production_os_result_contract.py": [
+      "copy",
+      "core",
+      "github_runner",
+      "json",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_production_os_worker.py": [
+      "core",
+      "json",
+      "pathlib",
+      "production_os_worker",
+      "sys",
+      "tempfile",
+      "unittest"
+    ],
+    "tests/test_production_os_worker_cli.py": [
+      "pathlib",
+      "production_os_worker",
+      "sys",
+      "unittest"
+    ],
+    "tests/test_production_os_worker_runtime.py": [
+      "io",
+      "json",
+      "pathlib",
+      "production_os_worker",
+      "sys",
+      "tempfile",
+      "unittest"
     ],
     "tests/test_project_budget.py": [
       "pathlib",

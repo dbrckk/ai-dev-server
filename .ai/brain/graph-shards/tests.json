@@ -7,6 +7,11 @@
       "type": "symbol-reference"
     },
     {
+      "source": "studio/agents/codex.py",
+      "target": "tests/test_unified_routing_score.py",
+      "type": "symbol-reference"
+    },
+    {
       "source": "studio/agents/orchestrator.py",
       "target": "tests/test_studio.py",
       "type": "symbol-reference"
@@ -752,6 +757,16 @@
       "type": "symbol-reference"
     },
     {
+      "source": "studio/omniroute_capacity.py",
+      "target": "tests/test_studio.py",
+      "type": "symbol-reference"
+    },
+    {
+      "source": "studio/omniroute_capacity.py",
+      "target": "tests/test_unified_routing_score.py",
+      "type": "symbol-reference"
+    },
+    {
       "source": "studio/orchestrator.py",
       "target": "tests/test_studio.py",
       "type": "symbol-reference"
@@ -847,11 +862,6 @@
       "type": "symbol-reference"
     },
     {
-      "source": "studio/run.py",
-      "target": "tests/test_unified_routing_score.py",
-      "type": "symbol-reference"
-    },
-    {
       "source": "studio/runtime_health.py",
       "target": "tests/test_studio.py",
       "type": "symbol-reference"
@@ -859,11 +869,6 @@
     {
       "source": "studio/task_context.py",
       "target": "tests/test_studio.py",
-      "type": "symbol-reference"
-    },
-    {
-      "source": "studio/unified_routing_score.py",
-      "target": "tests/test_unified_routing_score.py",
       "type": "symbol-reference"
     },
     {
@@ -943,6 +948,16 @@
     },
     {
       "source": "tests/test_agent_router.py",
+      "target": "studio/agents/adapters.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_agent_router.py",
+      "target": "studio/agents/adapters.py",
+      "type": "symbol-reference"
+    },
+    {
+      "source": "tests/test_agent_router.py",
       "target": "studio/agents/orchestrator.py",
       "type": "imports"
     },
@@ -959,6 +974,11 @@
     {
       "source": "tests/test_agent_router.py",
       "target": "studio/agents/router.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_agent_router.py",
+      "target": "studio/capacity_ledger.py",
       "type": "imports"
     },
     {
@@ -1727,6 +1747,21 @@
       "type": "symbol-reference"
     },
     {
+      "source": "tests/test_capacity_scheduler_omniroute.py",
+      "target": "studio/capacity_scheduler.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_capacity_scheduler_omniroute.py",
+      "target": "studio/omniroute_capacity.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_capacity_scheduler_omniroute.py",
+      "target": "studio/omniroute_capacity.py",
+      "type": "symbol-reference"
+    },
+    {
       "source": "tests/test_capacity_scheduler_work_conserving.py",
       "target": "studio/capacity_scheduler.py",
       "type": "imports"
@@ -1770,6 +1805,21 @@
       "source": "tests/test_ci_runner_admission.py",
       "target": "studio/ci_runner.py",
       "type": "imports"
+    },
+    {
+      "source": "tests/test_codex_adapter.py",
+      "target": "studio/agents/__init__.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_codex_adapter.py",
+      "target": "studio/agents/codex.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_codex_adapter.py",
+      "target": "studio/core.py",
+      "type": "symbol-reference"
     },
     {
       "source": "tests/test_completion.py",
@@ -2432,6 +2482,11 @@
       "type": "imports"
     },
     {
+      "source": "tests/test_github_runner_usage.py",
+      "target": "studio/github_runner.py",
+      "type": "imports"
+    },
+    {
       "source": "tests/test_global_admission.py",
       "target": "studio/global_admission.py",
       "type": "imports"
@@ -2923,18 +2978,8 @@
     },
     {
       "source": "tests/test_local_model_leaderboard.py",
-      "target": "studio/core.py",
-      "type": "symbol-reference"
-    },
-    {
-      "source": "tests/test_local_model_leaderboard.py",
       "target": "studio/local_model_leaderboard.py",
       "type": "imports"
-    },
-    {
-      "source": "tests/test_local_model_reputation.py",
-      "target": "studio/core.py",
-      "type": "symbol-reference"
     },
     {
       "source": "tests/test_local_model_reputation.py",
@@ -3049,6 +3094,16 @@
     {
       "source": "tests/test_notification_qa.py",
       "target": "studio/stage_registry.py",
+      "type": "symbol-reference"
+    },
+    {
+      "source": "tests/test_omniroute_capacity.py",
+      "target": "studio/omniroute_capacity.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_omniroute_capacity.py",
+      "target": "studio/omniroute_capacity.py",
       "type": "symbol-reference"
     },
     {
@@ -3225,6 +3280,41 @@
       "source": "tests/test_privacy_stage.py",
       "target": "studio/privacy_stage.py",
       "type": "imports"
+    },
+    {
+      "source": "tests/test_production_os_result_contract.py",
+      "target": "studio/core.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_production_os_result_contract.py",
+      "target": "studio/github_runner.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_production_os_worker.py",
+      "target": "studio/core.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_production_os_worker.py",
+      "target": "studio/production_os_worker.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_production_os_worker_cli.py",
+      "target": "studio/production_os_worker.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_production_os_worker_runtime.py",
+      "target": "studio/production_os_worker.py",
+      "type": "imports"
+    },
+    {
+      "source": "tests/test_production_os_worker_runtime.py",
+      "target": "studio/production_os_worker.py",
+      "type": "symbol-reference"
     },
     {
       "source": "tests/test_project_budget.py",

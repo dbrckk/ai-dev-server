@@ -121,12 +121,14 @@ test_capacity_budget.py
 test_capacity_efficiency.py
 test_capacity_ledger.py
 test_capacity_runtime.py
+test_capacity_scheduler_omniroute.py
 test_capacity_scheduler_work_conserving.py
 test_capacity_scheduler.py
 test_checkout_credentials_policy.py
 test_ci_adaptation.py
 test_ci_runner_admission.py
 test_ci.py
+test_codex_adapter.py
 test_completion.py
 test_concurrent_state.py
 test_contextual_routing_memory.py
@@ -184,6 +186,7 @@ test_github_goal_store.py
 test_github_memory_store.py
 test_github_quick_gate_cache_store.py
 test_github_runner_persistent.py
+test_github_runner_usage.py
 test_global_admission.py
 test_goal_capability_runtime.py
 test_goal_engine.py
@@ -241,6 +244,7 @@ test_multi_engine_orchestrator.py
 test_multi_project_canary.py
 test_native_qa.py
 test_notification_qa.py
+test_omniroute_capacity.py
 test_orchestrator_automerge.py
 test_orchestrator.py
 test_patch_safety_rebuild.py
@@ -258,6 +262,10 @@ test_preemption_apply.py
 test_preemption_controller.py
 test_privacy_stage.py
 test_privacy.py
+test_production_os_result_contract.py
+test_production_os_worker_cli.py
+test_production_os_worker_runtime.py
+test_production_os_worker.py
 test_project_budget.py
 test_project_context.py
 test_project_engine_generic.py
@@ -582,6 +590,36 @@ def test_cost_aware_utility_prefers_faster_agent_when_context_quality_is_equal(s
 def test_opencode_invocation_uses_secret_alias(self)
 ⋮----
 env={
+⋮----
+def test_codex_invocation_uses_verified_headless_contract(self)
+⋮----
+def test_codex_execute_named_exposes_token_usage(self)
+⋮----
+run = AgentRun(
+⋮----
+result = execute_named("codex", "do work", cwd=ROOT)
+⋮----
+def test_codex_execute_named_prefers_isolated_omniroute_profile_when_healthy(self)
+⋮----
+seen = {}
+⋮----
+def fake_run(_adapter, argv, *, cwd, timeout, extra_env)
+⋮----
+def test_codex_execute_named_uses_chatgpt_profile_when_omniroute_is_unavailable(self)
+⋮----
+def test_codex_execute_named_stops_when_project_token_envelope_is_exhausted(self)
+⋮----
+root = Path(td)
+plan = root / "capacity-plan.json"
+ledger = root / "capacity-ledger.json"
+⋮----
+reservation = capacity_ledger.reserve(
+⋮----
+env = {
+⋮----
+def test_codex_execute_named_settles_reported_usage_in_project_ledger(self)
+⋮----
+run_result = AgentRun(
 ```
 
 ## File: test_agent_workspace.py
@@ -3271,6 +3309,24 @@ def test_reads_full_project_state_for_recovery(self)
 row = project_state(path, "a")
 ```
 
+## File: test_capacity_scheduler_omniroute.py
+```python
+class CapacitySchedulerOmniRouteTests(unittest.TestCase)
+⋮----
+def test_cli_replaces_static_omniroute_capacity_with_live_remaining(self)
+⋮----
+snapshot = OmniRouteCapacitySnapshot(
+⋮----
+root = Path(tmp)
+projects = root / "projects.json"
+providers = root / "providers.json"
+output = root / "capacity.json"
+⋮----
+rc = main([
+⋮----
+report = json.loads(output.read_text(encoding="utf-8"))
+```
+
 ## File: test_capacity_scheduler_work_conserving.py
 ```python
 class WorkConservingCapacityTests(unittest.TestCase)
@@ -3523,6 +3579,34 @@ def test_timeout_kills_group_and_only_removes_labeled_containers(self)
 process = Mock(pid=12345)
 ⋮----
 run_id = popen.call_args.kwargs['env']['STUDIO_RUN_ID']
+```
+
+## File: test_codex_adapter.py
+```python
+ROOT = Path(__file__).resolve().parents[1]
+STUDIO = ROOT / "studio"
+⋮----
+class CodexAdapterTests(unittest.TestCase)
+⋮----
+def test_invocation_uses_headless_json_ephemeral_workspace_write_exec(self)
+⋮----
+def test_parse_usage_from_completed_turn(self)
+⋮----
+stdout = "\n".join(
+⋮----
+def test_parse_usage_is_backward_compatible_with_older_streams(self)
+⋮----
+stdout = '{"type":"turn.completed","usage":{"input_tokens":10,"cached_input_tokens":4,"output_tokens":3}}'
+⋮----
+def test_parse_usage_ignores_malformed_and_unrelated_lines(self)
+⋮----
+def test_parse_usage_returns_none_without_completed_turn(self)
+⋮----
+def test_omniroute_invocation_uses_isolated_home_and_custom_responses_provider(self)
+⋮----
+provider_override = next(
+⋮----
+def test_omniroute_invocation_rejects_insecure_remote_http(self)
 ```
 
 ## File: test_completion.py
@@ -5187,6 +5271,19 @@ validation={
 handoff=_prepare_capability_promotion_handoff(out,state,"c"*40)
 ⋮----
 def test_promotion_handoff_rejects_cross_candidate_validation(self)
+```
+
+## File: test_github_runner_usage.py
+```python
+class GitHubRunnerUsageTests(unittest.TestCase)
+⋮----
+def test_collect_agent_usage_sums_codex_attempts_across_rounds(self)
+⋮----
+report = {
+⋮----
+def test_collect_agent_usage_ignores_duplicate_non_attempt_usage_and_bad_values(self)
+⋮----
+def test_collect_agent_usage_empty_report_is_zeroed(self)
 ```
 
 ## File: test_global_admission.py
@@ -6995,6 +7092,39 @@ def test_notification_stage_is_registered(self)
 stage = get_stage('notification_qa')
 ```
 
+## File: test_omniroute_capacity.py
+```python
+class _FakeResponse
+⋮----
+def __init__(self, payload)
+⋮----
+def __enter__(self)
+⋮----
+def __exit__(self, exc_type, exc, tb)
+⋮----
+def read(self)
+⋮----
+class OmniRouteCapacityTests(unittest.TestCase)
+⋮----
+def test_authenticated_summary_exposes_live_remaining_capacity(self)
+⋮----
+snapshot = parse_summary({
+⋮----
+def test_unauthenticated_summary_fails_closed_for_scheduler_capacity(self)
+⋮----
+def test_invalid_summary_is_rejected(self)
+⋮----
+def test_fetch_summary_uses_bearer_token_and_canonical_endpoint(self)
+⋮----
+seen = {}
+⋮----
+def opener(request, timeout)
+⋮----
+snapshot = fetch_summary(
+⋮----
+def test_fetch_summary_accepts_openai_v1_base_url(self)
+```
+
 ## File: test_orchestrator_automerge.py
 ```python
 class OrchestratorAutoMergeTests(unittest.TestCase)
@@ -7509,6 +7639,201 @@ state = {'release_evidence': {'store_metadata': {'listing': {'title': 'Demo'}}}}
 evidence = build_privacy_package(root, out, state)
 ⋮----
 payload = json.loads((out / 'privacy/data-safety.json').read_text())
+```
+
+## File: test_production_os_result_contract.py
+```python
+BASE = {
+⋮----
+class ProductionOSResultContractTests(unittest.TestCase)
+⋮----
+def test_request_accepts_optional_production_os_correlation(self)
+⋮----
+value = copy.deepcopy(BASE)
+⋮----
+checked = request_check(value)
+⋮----
+def test_request_rejects_invalid_production_os_correlation(self)
+⋮----
+def test_result_envelope_correlates_usage_and_completion(self)
+⋮----
+request = copy.deepcopy(BASE)
+⋮----
+summary = {
+⋮----
+out = Path(td)
+envelope = write_production_os_result(out, request, summary)
+persisted = json.loads(
+⋮----
+def test_no_result_envelope_without_correlation(self)
+⋮----
+envelope = write_production_os_result(
+```
+
+## File: test_production_os_worker_cli.py
+```python
+class _Client
+⋮----
+def __init__(self, base_url, token)
+⋮----
+def register(self, worker_id, capabilities, operator_token)
+⋮----
+class ProductionOSWorkerCLITests(unittest.TestCase)
+⋮----
+def test_main_registers_worker_and_runs_once(self)
+⋮----
+clients = []
+runs = []
+⋮----
+def factory(base_url, token)
+⋮----
+client = _Client(base_url, token)
+⋮----
+def run_once_fn(client, **kwargs)
+⋮----
+env = {
+⋮----
+rc = main(
+⋮----
+def test_main_runs_bounded_cycles_until_queue_is_idle(self)
+⋮----
+calls = []
+outcomes = iter([
+⋮----
+def test_main_requires_all_control_plane_credentials(self)
+⋮----
+def test_main_forwards_capacity_snapshot_to_worker_cycle(self)
+⋮----
+expected = {
+```
+
+## File: test_production_os_worker_runtime.py
+```python
+def sample_job()
+⋮----
+class _FakeClient
+⋮----
+def __init__(self, job)
+⋮----
+def claim(self, worker_id, capabilities)
+⋮----
+def ack(self, key, worker_id)
+⋮----
+def complete(self, payload)
+⋮----
+def fail(self, payload)
+⋮----
+def heartbeat(self, worker_id, *, active_job_keys=(), capacity=None)
+⋮----
+class _Response
+⋮----
+def __init__(self, status, payload=None)
+⋮----
+def __enter__(self)
+⋮----
+def __exit__(self, exc_type, exc, tb)
+⋮----
+def read(self, limit=-1)
+⋮----
+class ProductionOSWorkerRuntimeTests(unittest.TestCase)
+⋮----
+def test_client_rejects_insecure_remote_control_plane(self)
+⋮----
+def test_client_allows_loopback_http(self)
+⋮----
+client = ProductionOSClient(
+⋮----
+def test_client_claim_posts_bearer_json_and_handles_no_content(self)
+⋮----
+seen = []
+⋮----
+def opener(request, timeout)
+⋮----
+job = client.claim(
+⋮----
+def test_run_once_returns_idle_when_no_job_is_available(self)
+⋮----
+client = _FakeClient(None)
+⋮----
+result = run_once(
+⋮----
+def test_run_once_acks_executes_and_completes_with_usage(self)
+⋮----
+client = _FakeClient(sample_job())
+⋮----
+def runner(request_path, out, **kwargs)
+⋮----
+request = json.loads(Path(request_path).read_text(encoding="utf-8"))
+⋮----
+completed = client.calls[3][1]
+⋮----
+def test_run_once_reports_failed_pipeline_to_control_plane(self)
+⋮----
+failed = client.calls[3][1]
+⋮----
+def test_capacity_snapshot_prefers_authenticated_omniroute(self)
+⋮----
+class Snapshot
+⋮----
+authenticated_usage = True
+steady_recurring_tokens = 1_500_000_000
+used_this_month = 125_000_000
+remaining_tokens = 1_375_000_000
+catalog_updated_at = "2026-09-18"
+catalog_source = "free-tier-catalog"
+⋮----
+seen = {}
+⋮----
+def fetch(url, *, api_key=None, timeout=5.0)
+⋮----
+result = production_capacity_snapshot(
+⋮----
+def test_capacity_snapshot_fails_closed_without_authenticated_usage(self)
+⋮----
+authenticated_usage = False
+⋮----
+used_this_month = None
+remaining_tokens = None
+⋮----
+def test_client_heartbeat_posts_capacity_snapshot(self)
+⋮----
+capacity = {
+⋮----
+def test_run_once_writes_project_token_envelope_before_execution(self)
+⋮----
+plan = json.loads(
+row = next(
+⋮----
+def test_project_token_envelope_is_capped_by_live_global_remaining_capacity(self)
+```
+
+## File: test_production_os_worker.py
+```python
+class ProductionOSWorkerTests(unittest.TestCase)
+⋮----
+def job(self)
+⋮----
+def test_build_studio_request_preserves_goal_and_workflow_correlation(self)
+⋮----
+request = build_studio_request(self.job())
+⋮----
+checked = request_check(request)
+⋮----
+def test_short_task_is_expanded_to_valid_studio_brief(self)
+⋮----
+job = self.job()
+⋮----
+request = build_studio_request(job)
+⋮----
+def test_completion_payload_forwards_usage_and_evidence(self)
+⋮----
+result = {
+⋮----
+payload = completion_payload(
+⋮----
+def test_failure_payload_is_bounded_and_preserves_usage(self)
+⋮----
+payload = failure_payload(
 ```
 
 ## File: test_project_budget.py

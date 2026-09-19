@@ -870,7 +870,6 @@
         "studio/persistent_quick_gate_cache.py",
         "studio/post_preview.py",
         "studio/preemption_apply.py",
-        "studio/production_os_worker.py",
         "studio/project_recommendations.py",
         "studio/recovery_controller.py",
         "studio/routing_calibration.py",
@@ -882,7 +881,7 @@
         "studio/workflow_checkpoint.py",
         "tests/test_atomic_file.py"
       ],
-      "in_degree": 38,
+      "in_degree": 37,
       "out_degree": 1
     },
     "studio/autonomous_project.py": {
@@ -1960,7 +1959,6 @@
         "studio/full_gate_cache.py",
         "studio/immutable_artifact_cache.py",
         "studio/persistent_quick_gate_cache.py",
-        "studio/production_os_worker.py",
         "studio/provider_monthly_quota.py",
         "studio/recovery_controller.py",
         "studio/strict_task_claim_store.py",
@@ -1970,7 +1968,7 @@
         "studio/workflow_checkpoint.py",
         "tests/test_file_lock.py"
       ],
-      "in_degree": 17,
+      "in_degree": 16,
       "out_degree": 0
     },
     "studio/fleet_capacity.py": {
@@ -2588,13 +2586,12 @@
         "tests/test_unified_routing_score.py"
       ],
       "dependents": [
-        "studio/production_os_worker.py",
         "tests/test_github_runner_persistent.py",
         "tests/test_github_runner_usage.py",
         "tests/test_orchestrator.py",
         "tests/test_production_os_result_contract.py"
       ],
-      "in_degree": 5,
+      "in_degree": 4,
       "out_degree": 41
     },
     "studio/github_strategy_efficiency_store.py": {
@@ -3459,11 +3456,10 @@
       "dependents": [
         "studio/agents/orchestrator.py",
         "studio/capacity_scheduler.py",
-        "studio/production_os_worker.py",
         "tests/test_capacity_scheduler_omniroute.py",
         "tests/test_omniroute_capacity.py"
       ],
-      "in_degree": 5,
+      "in_degree": 4,
       "out_degree": 2
     },
     "studio/orchestrator.py": {
@@ -3709,12 +3705,7 @@
       "out_degree": 4
     },
     "studio/production_os_worker.py": {
-      "dependencies": [
-        "studio/atomic_file.py",
-        "studio/file_lock.py",
-        "studio/github_runner.py",
-        "studio/omniroute_capacity.py"
-      ],
+      "dependencies": [],
       "dependents": [
         "tests/test_production_os_local_e2e.py",
         "tests/test_production_os_worker.py",
@@ -3722,7 +3713,7 @@
         "tests/test_production_os_worker_runtime.py"
       ],
       "in_degree": 4,
-      "out_degree": 4
+      "out_degree": 0
     },
     "studio/project_budget.py": {
       "dependencies": [

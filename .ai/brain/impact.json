@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "f14923313b3be1eb520f9571e145703f9e10f3e9",
-  "head": "0911845a9f86d43fef66c9f59c5285d51aa191fa",
+  "base": "0911845a9f86d43fef66c9f59c5285d51aa191fa",
+  "head": "cd414de82ff0661583fd4d5fb6b6ab2cbffe9f70",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -10,18 +10,13 @@
       "status": "M"
     },
     {
-      "path": "tests/test_production_os_worker_cli.py",
-      "status": "M"
-    },
-    {
-      "path": "tests/test_production_os_worker_runtime.py",
+      "path": "tests/test_production_os_worker.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
     "studio/production_os_worker.py",
-    "tests/test_production_os_worker_cli.py",
-    "tests/test_production_os_worker_runtime.py"
+    "tests/test_production_os_worker.py"
   ],
   "impacted_files": [
     "studio/production_os_worker.py",
@@ -31,156 +26,6 @@
     "tests/test_production_os_worker_runtime.py"
   ],
   "impacted_symbols": [
-    {
-      "name": "ProductionOSWorkerError",
-      "kind": "class",
-      "file": "studio/production_os_worker.py",
-      "line": 27
-    },
-    {
-      "name": "_NoRedirect",
-      "kind": "class",
-      "file": "studio/production_os_worker.py",
-      "line": 31
-    },
-    {
-      "name": "redirect_request",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 32
-    },
-    {
-      "name": "_default_opener",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 38
-    },
-    {
-      "name": "ProductionOSClient",
-      "kind": "class",
-      "file": "studio/production_os_worker.py",
-      "line": 45
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 46
-    },
-    {
-      "name": "_post",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 86
-    },
-    {
-      "name": "claim",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 145
-    },
-    {
-      "name": "ack",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 162
-    },
-    {
-      "name": "complete",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 168
-    },
-    {
-      "name": "fail",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 171
-    },
-    {
-      "name": "register",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 174
-    },
-    {
-      "name": "heartbeat",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 195
-    },
-    {
-      "name": "production_capacity_snapshot",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 217
-    },
-    {
-      "name": "_project_id",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 273
-    },
-    {
-      "name": "_app_name",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 278
-    },
-    {
-      "name": "_brief",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 288
-    },
-    {
-      "name": "build_studio_request",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 301
-    },
-    {
-      "name": "_write_project_capacity_plan",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 343
-    },
-    {
-      "name": "_result_payload",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 416
-    },
-    {
-      "name": "completion_payload",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 426
-    },
-    {
-      "name": "failure_payload",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 442
-    },
-    {
-      "name": "run_once",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 464
-    },
-    {
-      "name": "keep_job_alive",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 529
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/production_os_worker.py",
-      "line": 664
-    },
     {
       "name": "_ControlPlane",
       "kind": "class",
@@ -278,22 +123,28 @@
       "line": 36
     },
     {
-      "name": "test_short_task_is_expanded_to_valid_studio_brief",
+      "name": "test_visual_reuse_adds_asset_forge_guidance",
       "kind": "function",
       "file": "tests/test_production_os_worker.py",
       "line": 56
     },
     {
+      "name": "test_short_task_is_expanded_to_valid_studio_brief",
+      "kind": "function",
+      "file": "tests/test_production_os_worker.py",
+      "line": 72
+    },
+    {
       "name": "test_completion_payload_forwards_usage_and_evidence",
       "kind": "function",
       "file": "tests/test_production_os_worker.py",
-      "line": 68
+      "line": 84
     },
     {
       "name": "test_failure_payload_is_bounded_and_preserves_usage",
       "kind": "function",
       "file": "tests/test_production_os_worker.py",
-      "line": 107
+      "line": 123
     },
     {
       "name": "_Client",

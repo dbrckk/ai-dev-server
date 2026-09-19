@@ -7947,11 +7947,13 @@ request = build_studio_request(self.job())
 ⋮----
 checked = request_check(request)
 ⋮----
-def test_short_task_is_expanded_to_valid_studio_brief(self)
+def test_visual_reuse_adds_asset_forge_guidance(self)
 ⋮----
 job = self.job()
 ⋮----
 request = build_studio_request(job)
+⋮----
+def test_short_task_is_expanded_to_valid_studio_brief(self)
 ⋮----
 def test_completion_payload_forwards_usage_and_evidence(self)
 ⋮----

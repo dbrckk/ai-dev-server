@@ -22,21 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T20:38:03Z
+Generated: 2026-09-19T20:40:19Z
 
 ### Git
 - Branch: `main`
-- Head: `0911845a9f86`
-- Commit date: 2026-09-19T22:37:50+02:00
-- Commit: test: verify visual asset capability is claimed
+- Head: `cd414de82ff0`
+- Commit date: 2026-09-19T22:40:04+02:00
+- Commit: test: cover asset-forge visual handoff guidance
 - Tracked files: 810
 
 ### Recently changed files
+- `tests/test_production_os_worker.py`
+- `studio/production_os_worker.py`
 - `tests/test_production_os_worker_runtime.py`
 - `tests/test_production_os_worker_cli.py`
-- `studio/production_os_worker.py`
-- `docs/PRODUCTION_OS_WORKER.md`
-- `scripts/start-production-os-worker.sh`
 
 ### Project signals
 - No common build descriptor detected

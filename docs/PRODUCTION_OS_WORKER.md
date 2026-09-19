@@ -39,6 +39,14 @@ python scripts/preflight-production-os-worker.py
 
 It validates required configuration, secure service URLs, OmniRoute pairing, polling interval, output-directory writability, and a real `codex --version` probe. Secret values are never printed. The launcher runs the same preflight automatically.
 
+Visual production readiness is delegated to the installed Asset Forge CLI:
+
+```bash
+asset-forge operational-status
+```
+
+The worker advertises `visual-asset-production` only when Asset Forge and an authenticated generation backend are actually ready. Generated 3D additionally advertises `visual-asset-3d-production` only when the server-side API-key path is available. Visual Production-OS handoffs are translated into the `asset-forge/production-request/v1` contract and executed end to end with `asset-forge fulfill <request.json>`.
+
 Start the persistent worker with:
 
 ```bash

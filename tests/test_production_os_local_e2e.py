@@ -48,14 +48,14 @@ class _ControlPlane:
                             "job": {
                                 "key": "job-e2e-001",
                                 "repository": "dbrckk/e2e-fixture",
-                                "task": "Verify Production-OS bridge end to end",
+                                "task": "Create enemy sprites and integrate them into the Android game",
                                 "payload": {
                                     "workflow_id": "e" * 32,
                                     "workflow_task_id": "acceptance",
                                     "handoff": {
                                         "repository": "dbrckk/e2e-fixture",
-                                        "task": "Verify Production-OS bridge end to end",
-                                        "final_goal": "Verify Production-OS bridge end to end",
+                                        "task": "Create enemy sprites and integrate them into the Android game",
+                                        "final_goal": "Create enemy sprites and integrate them into the Android game",
                                         "agent_preference": "codex",
                                         "token_budget": 5000,
                                     },
@@ -174,6 +174,14 @@ class ProductionOSLocalE2ETests(unittest.TestCase):
                 },
                 run_once_fn=execute_once,
                 capacity_provider=lambda env: None,
+                capabilities_provider=lambda env: [
+                    "android",
+                    "node",
+                    "python",
+                    "repo-analysis",
+                    "software-development",
+                    "visual-asset-production",
+                ],
             )
 
             self.assertEqual(rc, 0)
@@ -200,6 +208,8 @@ class ProductionOSLocalE2ETests(unittest.TestCase):
                     "workflow_task_id": "acceptance",
                 },
             )
+            self.assertIn("dbrckk/asset-forge", request["brief"])
+            self.assertIn("asset-forge produce", request["brief"])
             self.assertEqual(result["workflow_id"], "e" * 32)
             self.assertEqual(result["workflow_task_id"], "acceptance")
 
@@ -220,6 +230,11 @@ class ProductionOSLocalE2ETests(unittest.TestCase):
         self.assertEqual(
             register["authorization"],
             "Bearer operator-e2e-secret",
+        )
+        self.assertIn("android", register["payload"]["capabilities"])
+        self.assertIn(
+            "visual-asset-production",
+            register["payload"]["capabilities"],
         )
         for call in control_plane.calls[1:]:
             self.assertEqual(

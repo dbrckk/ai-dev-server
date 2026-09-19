@@ -4,13 +4,14 @@ from pathlib import Path
 import json
 import os
 from .adapters import AgentAdapter
-from .codex import codex_invocation, parse_codex_usage
+from .codex import codex_invocation, codex_omniroute_invocation, parse_codex_usage
 from .performance import bonus,eligible,load
 from .registry import DEFAULT_REGISTRY
 from .router import rank_agents
 from routing_history import learned_weights, load as load_routing_history
 from safe_rewrite_learning import summarize as summarize_safe_rewrite_learning
 from contextual_routing_memory import load as load_contextual_routing_memory
+from omniroute_capacity import OmniRouteCapacityError, fetch_summary as fetch_omniroute_summary
 
 def _safe_rewrite_summary()->dict:
     raw=os.environ.get("STUDIO_SAFE_REWRITE_LEARNING_PATH","")
@@ -83,6 +84,54 @@ def _opencode_runtime(prompt:str)->tuple[list[str],dict[str,str]]:
     argv.append(prompt)
     return argv,env
 
+def omniroute_available_base()->str|None:
+    """Return the authenticated OmniRoute Responses base when free capacity exists."""
+    raw=str(os.environ.get("OMNIROUTE_URL") or "").strip()
+    if not raw:
+        return None
+    service_root=raw.rstrip("/")
+    if service_root.endswith("/v1"):
+        service_root=service_root[:-3].rstrip("/")
+    try:
+        snapshot=fetch_omniroute_summary(
+            service_root,
+            api_key=str(os.environ.get("OMNIROUTE_API_KEY") or "").strip() or None,
+            timeout=2.0,
+        )
+    except OmniRouteCapacityError:
+        return None
+    if (
+        not snapshot.authenticated_usage
+        or snapshot.remaining_tokens is None
+        or int(snapshot.remaining_tokens) <= 0
+    ):
+        return None
+    return service_root + "/v1"
+
+
+def _runtime_invocation(name:str,prompt:str):
+    """Resolve runtime-specific capacity without changing static adapter support."""
+    if name!="codex":
+        invocation=invocation_for(name,prompt)
+        return None if invocation is None else (invocation,None)
+
+    base=omniroute_available_base()
+    if base is not None:
+        codex_home=str(
+            os.environ.get("STUDIO_CODEX_OMNIROUTE_HOME")
+            or (Path.home()/".codex-omniroute")
+        )
+        return (
+            codex_omniroute_invocation(
+                prompt,
+                base_url=base,
+                codex_home=codex_home,
+            ),
+            "omniroute-free",
+        )
+    return (codex_invocation(prompt),"codex-chatgpt")
+
+
 def invocation_for(name:str,prompt:str)->tuple[list[str],dict[str,str]]|None:
     # Only invocation contracts verified against upstream CLIs are enabled.
     if name=="opencode":
@@ -94,9 +143,11 @@ def invocation_for(name:str,prompt:str)->tuple[list[str],dict[str,str]]|None:
     return None
 
 
-def _run_evidence(run)->dict:
+def _run_evidence(run,capacity_source:str|None=None)->dict:
     evidence={"agent":run.agent,"returncode":run.returncode,
         "duration_seconds":run.duration_seconds,"stdout_tail":run.stdout_tail,"stderr_tail":run.stderr_tail}
+    if capacity_source is not None:
+        evidence["capacity_source"]=capacity_source
     if run.agent=="codex":
         usage=parse_codex_usage(run.stdout_tail)
         if usage is not None:
@@ -130,15 +181,16 @@ def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,ti
         if not eligible(perf,decision.agent.name,role):
             attempts.append({"agent":decision.agent.name,"status":"cooldown"})
             continue
-        invocation=invocation_for(decision.agent.name,prompt)
-        if invocation is None:
+        runtime=_runtime_invocation(decision.agent.name,prompt)
+        if runtime is None:
             attempts.append({"agent":decision.agent.name,"status":"unsupported_adapter"})
             continue
         try:
+            invocation,capacity_source=runtime
             argv,extra_env=invocation
             run=AgentAdapter(decision.agent).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)
             ok=run.returncode==0
-            evidence=_run_evidence(run)
+            evidence=_run_evidence(run,capacity_source)
             evidence["status"]="passed" if ok else "failed"
             attempts.append(evidence)
             if ok: return {"status":"passed","selected":run.agent,"attempts":attempts}
@@ -198,16 +250,17 @@ def execute_named(name:str,prompt:str,*,cwd:Path,timeout:int=1800)->dict:
     spec=DEFAULT_REGISTRY.get(name)
     if spec is None or not spec.available():
         return {"status":"unavailable","selected":None,"attempts":[{"agent":name,"status":"unavailable"}]}
-    invocation=invocation_for(name,prompt)
-    if invocation is None:
+    runtime=_runtime_invocation(name,prompt)
+    if runtime is None:
         return {"status":"unavailable","selected":None,"attempts":[{"agent":name,"status":"unsupported_adapter"}]}
     try:
+        invocation,capacity_source=runtime
         argv,extra_env=invocation
         run=AgentAdapter(spec).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)
     except RuntimeError as exc:
         return {"status":"unavailable","selected":None,"attempts":[{"agent":name,"status":"error","error":str(exc)[:1000]}]}
     ok=run.returncode==0
-    evidence=_run_evidence(run)
+    evidence=_run_evidence(run,capacity_source)
     evidence["status"]="passed" if ok else "failed"
     return {"status":"passed" if ok else "failed","selected":run.agent if ok else None,"attempts":[evidence]}
 

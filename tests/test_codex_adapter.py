@@ -79,10 +79,6 @@ class CodexAdapterTests(unittest.TestCase):
         self.assertIsNone(parse_codex_usage('{"type":"turn.started"}'))
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
     def test_omniroute_invocation_uses_isolated_home_and_custom_responses_provider(self):
         argv, extra_env = codex_omniroute_invocation(
             "finish the repository",
@@ -110,3 +106,7 @@ if __name__ == "__main__":
                 base_url="http://example.com/v1",
                 codex_home="/tmp/codex-omniroute-test",
             )
+
+
+if __name__ == "__main__":
+    unittest.main()

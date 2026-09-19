@@ -51,8 +51,10 @@ class _FakeClient:
     def fail(self, payload):
         self.calls.append(("fail", payload))
 
-    def heartbeat(self, worker_id, *, active_job_keys=()):
-        self.calls.append(("heartbeat", worker_id, tuple(active_job_keys)))
+    def heartbeat(self, worker_id, *, active_job_keys=(), capacity=None):
+        self.calls.append(
+            ("heartbeat", worker_id, tuple(active_job_keys), capacity)
+        )
 
 
 class _Response:
@@ -354,7 +356,8 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             )
             self.assertEqual(row["requested_tokens"], 250000)
             self.assertEqual(row["token_envelope"], 250000)
-            self.assertEqual(row["capacity_source"], "production-os")
+            self.assertEqual(row["budget_source"], "production-os")
+            self.assertEqual(row["capacity_source"], "omniroute")
             return {
                 "status": "complete",
                 "finished": True,

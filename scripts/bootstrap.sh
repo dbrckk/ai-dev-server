@@ -30,7 +30,9 @@ fi
 npx --yes @deepseek-ai/dsh --help >/dev/null 2>&1 || true
 npx --yes cdesktop --help >/dev/null 2>&1 || true
 
-# Pollinations/OpenCode integration helper package, if available.
+# Pollinations media generation for autonomous visual assets. Pin the CLI used by Asset Forge jobs.
+npm install -g @pollinations/cli@0.1.15
+# Keep the OpenCode integration helper as an optional convenience layer.
 npm install -g opencode-pollinations-plugin >/dev/null 2>&1 || true
 
 # Keep local secrets/config out of git by default.

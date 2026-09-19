@@ -22,18 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T20:40:19Z
+Generated: 2026-09-19T20:57:44Z
 
 ### Git
 - Branch: `main`
-- Head: `cd414de82ff0`
-- Commit date: 2026-09-19T22:40:04+02:00
-- Commit: test: cover asset-forge visual handoff guidance
+- Head: `db466e643f5b`
+- Commit date: 2026-09-19T22:57:32+02:00
+- Commit: fix: restore valid asset-forge worker guidance
 - Tracked files: 810
 
 ### Recently changed files
-- `tests/test_production_os_worker.py`
 - `studio/production_os_worker.py`
+- `tests/test_production_os_worker.py`
 - `tests/test_production_os_worker_runtime.py`
 - `tests/test_production_os_worker_cli.py`
 

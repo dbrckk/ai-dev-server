@@ -27,6 +27,7 @@ BASE_WORKER_CAPABILITIES = [
 def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]:
     env = os.environ if environ is None else environ
     home_dir = Path.home() if home is None else Path(home)
+    asset_forge_installed = shutil.which("asset-forge") is not None
     polli_installed = shutil.which("polli") is not None
     pollinations_api_key = str(
         env.get("POLLINATIONS_API_KEY") or ""
@@ -35,9 +36,9 @@ def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]:
         pollinations_api_key
     ) or (home_dir / ".pollinations" / "credentials.json").is_file()
     capabilities = list(BASE_WORKER_CAPABILITIES)
-    if polli_installed and polli_authenticated:
+    if asset_forge_installed and polli_installed and polli_authenticated:
         capabilities.append("visual-asset-production")
-    if polli_installed and pollinations_api_key:
+    if asset_forge_installed and polli_installed and pollinations_api_key:
         capabilities.append("visual-asset-3d-production")
     return capabilities
 
@@ -368,8 +369,8 @@ def _asset_forge_guidance(handoff: dict[str, Any]) -> str:
     return (
         " Use dbrckk/asset-forge for visual asset production. "
         "Represent asset work with the asset-forge/production-request/v1 contract, "
-        "compile it with python asset_forge.py production-job <request.json>, "
-        "execute generated raster jobs end-to-end with python asset_forge.py produce <job.json>, "
+        "compile it with asset-forge production-job <request.json>, "
+        "execute generated raster jobs end-to-end with asset-forge produce <job.json>, "
         "require a successful production-report.json, then integrate and verify the produced assets before completion."
     )
 

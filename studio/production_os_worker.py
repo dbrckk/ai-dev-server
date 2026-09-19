@@ -311,10 +311,40 @@ def _brief(task: str, final_goal: str) -> str:
     return expanded[:24000]
 
 
+def _is_visual_handoff(handoff: dict[str, Any]) -> bool:
+    text = " ".join(
+        str(value)
+        for value in (
+            handoff.get("task"),
+            handoff.get("final_goal"),
+            handoff.get("rationale"),
+        )
+        if isinstance(value, str)
+    ).lower()
+    patterns = (
+        r"\basset(?:s)?\b",
+        r"\bsprite(?:s|sheet| sheets)?\b",
+        r"\bpixel[ -]?art\b",
+        r"\bgraphic(?:s|al)?\b",
+        r"\bartwork\b",
+        r"\btexture(?:s)?\b",
+        r"\bicon(?:s)?\b",
+        r"\bvector(?:s)?\b",
+        r"\bsvg\b",
+        r"\bglb\b",
+        r"\bgltf\b",
+        r"\b3d\s+(?:asset|model|character|environment|prop)",
+        r"\bmesh(?:es)?\b",
+        r"\bvisual(?:s| design| quality| polish)?\b",
+        r"\bui\s+(?:art|design|graphics|assets|icons)\b",
+    )
+    return any(re.search(pattern, text) for pattern in patterns)
+
+
 def _asset_forge_guidance(handoff: dict[str, Any]) -> str:
     candidates = handoff.get("reuse_candidates", [])
     if not isinstance(candidates, list):
-        return ""
+        candidates = []
     visual_caps = {
         "visual-asset-pipeline",
         "sprite-atlas-pipeline",
@@ -322,12 +352,13 @@ def _asset_forge_guidance(handoff: dict[str, Any]) -> str:
         "vector-asset-pipeline",
         "godot-asset-handoff",
     }
-    if not any(
+    asset_forge_candidate = any(
         isinstance(item, dict)
         and str(item.get("source") or "") == "dbrckk/asset-forge"
         and str(item.get("capability") or "") in visual_caps
         for item in candidates
-    ):
+    )
+    if not asset_forge_candidate and not _is_visual_handoff(handoff):
         return ""
     return (
         " Use dbrckk/asset-forge for visual asset production. "

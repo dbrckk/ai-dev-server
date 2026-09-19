@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 37fbfde2b0a0ce370ffc542c06241d98166f1192
-Head: bd2629e941585f63249340d5df93851c7a5dbdf4
+Base: a95938733cf7fce8c39921e84dba937744a28647
+Head: 72488cfe056b64439643fb3eda49910471b48c8c
 
 ## Changed files
-- M scripts/bootstrap.sh
+- M .github/workflows/validate.yml
 
 ## Affected areas
-- scripts
+- .github
 
 ## Related test candidates
 - No direct filename-based test match detected.

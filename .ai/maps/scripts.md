@@ -2026,10 +2026,17 @@ output = (result.stdout or result.stderr).strip().splitlines()
 ⋮----
 def _pollinations_status(environ: dict[str, str]) -> tuple[bool, str]
 ⋮----
-executable = shutil.which("polli")
+executable = shutil.which("asset-forge")
 ⋮----
-api_key = bool(str(environ.get("POLLINATIONS_API_KEY") or "").strip())
-stored = (Path.home() / ".pollinations" / "credentials.json").is_file()
+payload = __import__("json").loads(result.stdout)
+⋮----
+ready = payload.get("ready")
+capabilities = payload.get("capabilities")
+⋮----
+blockers = payload.get("blockers")
+first = (
+⋮----
+names = [
 ⋮----
 def run_preflight(env: dict[str, str] | None = None) -> tuple[int, list[str]]
 ⋮----

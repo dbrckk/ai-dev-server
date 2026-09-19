@@ -7814,6 +7814,14 @@ def test_visual_assets_are_non_blocking_when_pollinations_is_unavailable(self)
 ⋮----
 def test_visual_assets_are_reported_ready_when_pollinations_is_ready(self)
 ⋮----
+def test_visual_probe_uses_asset_forge_operational_status(self)
+⋮----
+class Result
+⋮----
+returncode = 0
+stdout = (
+stderr = ""
+⋮----
 def test_missing_required_secret_fails_without_echoing_secret_values(self)
 ⋮----
 env = self.base_env(Path(td) / "out")

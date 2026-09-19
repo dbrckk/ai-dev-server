@@ -2030,6 +2030,23 @@ jobs:
               print('\n'.join(bad))
               sys.exit(1)
           PY
+      - name: Checkout Asset Forge integration dependency
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, immutable SHA
+        with:
+          repository: dbrckk/asset-forge
+          path: .integration/asset-forge
+          persist-credentials: false
+      - name: Verify Asset Forge production contract
+        run: |
+          python .integration/asset-forge/asset_forge.py             production-job             .integration/asset-forge/examples/production-request.json             --output /tmp/asset-forge-production-job.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          job = json.loads(Path("/tmp/asset-forge-production-job.json").read_text())
+          assert job["schema"] == "asset-forge/production-job/v1"
+          assert job["requiresGenerator"] is True
+          assert job["execution"]["strategy"] == "generate-then-process"
+          PY
       - name: Compile trusted Python
         run: python -m compileall -q studio tests
       - name: Test mobile studio orchestration and security boundaries
@@ -4154,10 +4171,17 @@ output = (result.stdout or result.stderr).strip().splitlines()
 ⋮----
 def _pollinations_status(environ: dict[str, str]) -> tuple[bool, str]
 ⋮----
-executable = shutil.which("polli")
+executable = shutil.which("asset-forge")
 ⋮----
-api_key = bool(str(environ.get("POLLINATIONS_API_KEY") or "").strip())
-stored = (Path.home() / ".pollinations" / "credentials.json").is_file()
+payload = __import__("json").loads(result.stdout)
+⋮----
+ready = payload.get("ready")
+capabilities = payload.get("capabilities")
+⋮----
+blockers = payload.get("blockers")
+first = (
+⋮----
+names = [
 ⋮----
 def run_preflight(env: dict[str, str] | None = None) -> tuple[int, list[str]]
 ⋮----
@@ -30493,6 +30517,14 @@ def test_ready_configuration_passes(self)
 def test_visual_assets_are_non_blocking_when_pollinations_is_unavailable(self)
 ⋮----
 def test_visual_assets_are_reported_ready_when_pollinations_is_ready(self)
+⋮----
+def test_visual_probe_uses_asset_forge_operational_status(self)
+⋮----
+class Result
+⋮----
+returncode = 0
+stdout = (
+stderr = ""
 ⋮----
 def test_missing_required_secret_fails_without_echoing_secret_values(self)
 ⋮----

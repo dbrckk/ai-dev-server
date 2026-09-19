@@ -22,21 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T21:18:54Z
+Generated: 2026-09-19T21:21:58Z
 
 ### Git
 - Branch: `main`
-- Head: `bd2629e94158`
-- Commit date: 2026-09-19T23:18:41+02:00
-- Commit: build: install rembg CLI backend for transparent sprites
+- Head: `72488cfe056b`
+- Commit date: 2026-09-19T23:21:37+02:00
+- Commit: ci: verify live Asset Forge production contract
 - Tracked files: 811
 
 ### Recently changed files
-- `scripts/bootstrap.sh`
-- `tests/test_production_os_worker.py`
+- `.github/workflows/validate.yml`
+- `tests/test_production_os_worker_cli.py`
+- `tests/test_production_os_worker_runtime.py`
 - `studio/production_os_worker.py`
-- `scripts/start-all.sh`
-- `scripts/preflight-production-os-worker.py`
+- `tests/test_production_os_worker_preflight.py`
 
 ### Project signals
 - No common build descriptor detected

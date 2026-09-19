@@ -661,6 +661,7 @@ def main(
     client_factory=ProductionOSClient,
     run_once_fn=run_once,
     capacity_provider=production_capacity_snapshot,
+    sleeper=None,
 ) -> int:
     parser = argparse.ArgumentParser(
         description="Execute one Production-OS job through AI Dev Server"
@@ -680,6 +681,17 @@ def main(
         type=int,
         default=1,
         help="Maximum number of sequential jobs to process",
+    )
+    parser.add_argument(
+        "--continuous",
+        action="store_true",
+        help="Keep polling Production-OS after the queue becomes idle",
+    )
+    parser.add_argument(
+        "--poll-interval",
+        type=float,
+        default=10.0,
+        help="Seconds to wait between idle polls in continuous mode",
     )
     args = parser.parse_args(argv)
 
@@ -706,6 +718,17 @@ def main(
     cycles = 1 if args.once else int(args.cycles)
     if cycles < 1 or cycles > 1000:
         raise RuntimeError("--cycles must be between 1 and 1000")
+    if args.once and args.continuous:
+        raise RuntimeError("--once and --continuous are mutually exclusive")
+    try:
+        poll_interval = float(args.poll_interval)
+    except (TypeError, ValueError) as exc:
+        raise RuntimeError("--poll-interval must be positive") from exc
+    if poll_interval <= 0:
+        raise RuntimeError("--poll-interval must be positive")
+    if sleeper is None:
+        import time
+        sleeper = time.sleep
 
     client = client_factory(base_url, worker_token)
     capabilities = ["software-development", "repo-analysis"]
@@ -714,18 +737,25 @@ def main(
         capabilities,
         operator_token,
     )
-    capacity = capacity_provider(env)
-    for _ in range(cycles):
-        result = run_once_fn(
-            client,
-            worker_id=args.worker_id,
-            output_root=Path(args.output_root),
-            capacity=capacity,
-        )
-        if not isinstance(result, dict):
-            raise RuntimeError("Production-OS worker returned invalid result")
-        if result.get("status") == "idle":
-            break
+    completed_cycles = 0
+    try:
+        while args.continuous or completed_cycles < cycles:
+            capacity = capacity_provider(env)
+            result = run_once_fn(
+                client,
+                worker_id=args.worker_id,
+                output_root=Path(args.output_root),
+                capacity=capacity,
+            )
+            if not isinstance(result, dict):
+                raise RuntimeError("Production-OS worker returned invalid result")
+            completed_cycles += 1
+            if result.get("status") == "idle":
+                if not args.continuous:
+                    break
+                sleeper(poll_interval)
+    except KeyboardInterrupt:
+        return 0
     return 0
 
 

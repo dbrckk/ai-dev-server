@@ -42,7 +42,7 @@ def request_check(data):
     if not isinstance(data, dict):
         raise StudioError('Request must be an object')
     required = {'id', 'target_repo', 'app_name', 'brief', 'enabled'}
-    if set(data) - (required | {'max_rounds', 'max_calls', 'max_cycles', 'priority', 'play_publish', 'max_project_model_calls', 'max_project_repair_calls', 'max_api_cost_usd', 'production_os', 'agent_preference'}) or not required <= set(data):
+    if set(data) - (required | {'max_rounds', 'max_calls', 'max_cycles', 'priority', 'play_publish', 'max_project_model_calls', 'max_project_repair_calls', 'max_api_cost_usd', 'production_os', 'agent_preference', 'tool_contracts'}) or not required <= set(data):
         raise StudioError('Invalid request fields')
     if not isinstance(data['enabled'], bool):
         raise StudioError('enabled must be boolean')
@@ -106,6 +106,32 @@ def request_check(data):
             'workflow_id': workflow_id,
             'workflow_task_id': workflow_task_id,
         }
+    if 'tool_contracts' in data:
+        contracts = data['tool_contracts']
+        if not isinstance(contracts, dict) or set(contracts) - {'asset_forge'}:
+            raise StudioError('Invalid tool_contracts')
+        normalized = {}
+        asset_forge = contracts.get('asset_forge')
+        if asset_forge is not None:
+            if (
+                not isinstance(asset_forge, dict)
+                or set(asset_forge) != {
+                    'request_schema',
+                    'report_schema',
+                    'command',
+                    'required_capability',
+                }
+                or asset_forge.get('request_schema') != 'asset-forge/production-request/v1'
+                or asset_forge.get('report_schema') != 'asset-forge/production-report/v1'
+                or asset_forge.get('command') != 'asset-forge fulfill'
+                or asset_forge.get('required_capability') not in {
+                    'visual-asset-production',
+                    'visual-asset-3d-production',
+                }
+            ):
+                raise StudioError('Invalid Asset Forge tool contract')
+            normalized['asset_forge'] = dict(asset_forge)
+        data['tool_contracts'] = normalized
     if 'play_publish' in data:
         publish = data['play_publish']
         if not isinstance(publish, dict) or set(publish) - {'enabled', 'track', 'commit'}:

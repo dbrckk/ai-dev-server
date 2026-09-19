@@ -53,6 +53,23 @@ jobs:
               print('\n'.join(bad))
               sys.exit(1)
           PY
+      - name: Checkout Asset Forge integration dependency
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, immutable SHA
+        with:
+          repository: dbrckk/asset-forge
+          path: .integration/asset-forge
+          persist-credentials: false
+      - name: Verify Asset Forge production contract
+        run: |
+          python .integration/asset-forge/asset_forge.py             production-job             .integration/asset-forge/examples/production-request.json             --output /tmp/asset-forge-production-job.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          job = json.loads(Path("/tmp/asset-forge-production-job.json").read_text())
+          assert job["schema"] == "asset-forge/production-job/v1"
+          assert job["requiresGenerator"] is True
+          assert job["execution"]["strategy"] == "generate-then-process"
+          PY
       - name: Compile trusted Python
         run: python -m compileall -q studio tests
       - name: Test mobile studio orchestration and security boundaries

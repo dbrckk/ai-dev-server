@@ -10177,6 +10177,11 @@ production_os = data['production_os']
 workflow_id = production_os.get('workflow_id')
 workflow_task_id = production_os.get('workflow_task_id')
 ⋮----
+contracts = data['tool_contracts']
+⋮----
+normalized = {}
+asset_forge = contracts.get('asset_forge')
+⋮----
 publish = data['play_publish']
 ⋮----
 enabled = publish.get('enabled', False)

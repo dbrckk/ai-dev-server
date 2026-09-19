@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 7ff3c72df72aaecbc3e4c638db72079cc97d56e9
-Head: 84ff280524f330774367edae5741dee03cd55902
+Base: 0cf1d0e19c321bcd255178b59afc05484f48712a
+Head: 564cd802cb86b5b3097e4af0f391c4aafaeafa2a
 
 ## Changed files
-- M tests/test_production_os_worker_runtime.py
+- M studio/core.py
 
 ## Affected areas
-- tests
+- studio
 
 ## Related test candidates
 - No direct filename-based test match detected.

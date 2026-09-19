@@ -22,20 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T21:34:43Z
+Generated: 2026-09-19T21:42:32Z
 
 ### Git
 - Branch: `main`
-- Head: `84ff280524f3`
-- Commit date: 2026-09-19T23:34:24+02:00
-- Commit: test: derive visual capabilities from Asset Forge status
+- Head: `564cd802cb86`
+- Commit date: 2026-09-19T23:42:22+02:00
+- Commit: feat: preserve structured tool contracts in Studio requests
 - Tracked files: 812
 
 ### Recently changed files
+- `studio/core.py`
 - `tests/test_production_os_worker_runtime.py`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_worker.py`
-- `docs/PRODUCTION_OS_WORKER.md`
 
 ### Project signals
 - No common build descriptor detected

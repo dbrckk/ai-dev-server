@@ -79,7 +79,7 @@ class ProductionOSWorkerTests(unittest.TestCase):
         request = build_studio_request(job)
 
         self.assertIn("dbrckk/asset-forge", request["brief"])
-        self.assertIn("asset_forge.py produce", request["brief"])
+        self.assertIn("asset-forge produce", request["brief"])
         request_check(request)
 
     def test_short_task_is_expanded_to_valid_studio_brief(self):

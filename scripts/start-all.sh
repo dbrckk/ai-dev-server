@@ -59,6 +59,12 @@ export PORT=3000
 start_bg cdesktop npx --yes cdesktop || true
 
 
+# Refresh the managed Asset Forge checkout before a new Production-OS worker starts.
+# A running worker is left untouched to avoid changing its tooling mid-job.
+if ! is_running production-os-worker; then
+  bash "$(dirname "$0")/install-asset-forge.sh"     || echo "Asset Forge refresh failed; visual worker capabilities will stay disabled."
+fi
+
 # Production-OS persistent worker. Start only when the control-plane secrets are
 # explicitly configured in the Codespace environment.
 if [ -n "${PRODUCTION_OS_URL:-}" ] \

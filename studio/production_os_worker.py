@@ -714,6 +714,7 @@ def main(
     client_factory=ProductionOSClient,
     run_once_fn=run_once,
     capacity_provider=production_capacity_snapshot,
+    capabilities_provider=worker_capabilities,
     sleeper=None,
 ) -> int:
     parser = argparse.ArgumentParser(
@@ -784,7 +785,7 @@ def main(
         sleeper = time.sleep
 
     client = client_factory(base_url, worker_token)
-    capabilities = worker_capabilities(env)
+    capabilities = capabilities_provider(env)
     client.register(
         args.worker_id,
         capabilities,

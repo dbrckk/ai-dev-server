@@ -17,6 +17,13 @@ from atomic_file import write_text as atomic_write_text
 from file_lock import exclusive
 
 
+WORKER_CAPABILITIES = [
+    "repo-analysis",
+    "software-development",
+    "visual-asset-production",
+]
+
+
 class ProductionOSWorkerError(RuntimeError):
     pass
 
@@ -427,7 +434,7 @@ def completion_payload(
         "key": str(key),
         "worker_id": str(worker_id),
         "duration_seconds": max(0.0, float(duration_seconds)),
-        "capabilities": ["software-development", "repo-analysis"],
+        "capabilities": WORKER_CAPABILITIES,
         "result": _result_payload(result),
     }
 
@@ -448,7 +455,7 @@ def failure_payload(
         "key": str(key),
         "worker_id": str(worker_id),
         "duration_seconds": max(0.0, float(duration_seconds)),
-        "capabilities": ["software-development", "repo-analysis"],
+        "capabilities": WORKER_CAPABILITIES,
         "reason": reason[:1000],
         "result": _result_payload(result),
     }
@@ -472,7 +479,7 @@ def run_once(
         import time
         clock = time.monotonic
 
-    capabilities = ["software-development", "repo-analysis"]
+    capabilities = WORKER_CAPABILITIES
     job = client.claim(worker_id, capabilities)
     if job is None:
         return {"status": "idle", "worker_id": worker_id}
@@ -731,7 +738,7 @@ def main(
         sleeper = time.sleep
 
     client = client_factory(base_url, worker_token)
-    capabilities = ["software-development", "repo-analysis"]
+    capabilities = WORKER_CAPABILITIES
     client.register(
         args.worker_id,
         capabilities,

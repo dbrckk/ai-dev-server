@@ -27,13 +27,27 @@ check_port 8082 "Free Claude Code"
 check_port 3080 "DeepSeek Harness"
 check_port 3000 "cdesktop"
 printf '\nInstalled CLIs:\n'
-for x in fcc-server fcc-claude fcc-opencode fcc-dsh claude opencode; do
+for x in fcc-server fcc-claude fcc-opencode fcc-dsh claude opencode codex; do
   if command -v "$x" >/dev/null 2>&1; then
     printf '  %-15s %s\n' "$x" "$(command -v "$x")"
   else
     printf '  %-15s missing\n' "$x"
   fi
 done
+
+echo
+echo "Background workers:"
+BASE="$HOME/.cache/ai-dev-server"
+if [ -s "$BASE/production-os-worker.pid" ] \
+  && kill -0 "$(cat "$BASE/production-os-worker.pid" 2>/dev/null)" 2>/dev/null; then
+  echo "  Production-OS worker running (pid $(cat "$BASE/production-os-worker.pid"))"
+elif [ -n "${PRODUCTION_OS_URL:-}" ] \
+  && [ -n "${PRODUCTION_OS_WORKER_TOKEN:-}" ] \
+  && [ -n "${PRODUCTION_OS_OPERATOR_TOKEN:-}" ]; then
+  echo "  Production-OS worker configured but not running"
+else
+  echo "  Production-OS worker not configured"
+fi
 
 if [ -n "${CODESPACE_NAME:-}" ] && [ -n "${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN:-}" ]; then
   echo

@@ -124,6 +124,8 @@ def _summary_url(base_url: str) -> str:
     value = value.rstrip("/")
     if value.endswith(SUMMARY_PATH):
         return value
+    if value.endswith("/v1"):
+        value = value[:-3].rstrip("/")
     return value + SUMMARY_PATH
 
 

@@ -7705,6 +7705,16 @@ def test_main_requires_all_control_plane_credentials(self)
 def test_main_forwards_capacity_snapshot_to_worker_cycle(self)
 ⋮----
 expected = {
+⋮----
+def test_continuous_mode_polls_idle_queue_and_refreshes_capacity(self)
+⋮----
+capacities = []
+⋮----
+def capacity_provider(env)
+⋮----
+value = {"remaining_tokens": len(capacities) + 1}
+⋮----
+def sleeper(seconds)
 ```
 
 ## File: test_production_os_worker_runtime.py
@@ -7770,6 +7780,16 @@ completed = client.calls[3][1]
 def test_run_once_reports_failed_pipeline_to_control_plane(self)
 ⋮----
 failed = client.calls[3][1]
+⋮----
+def test_run_once_refreshes_heartbeat_during_long_runner_execution(self)
+⋮----
+refreshed = threading.Event()
+original_heartbeat = client.heartbeat
+active_heartbeats = {"count": 0}
+⋮----
+def heartbeat(worker_id, *, active_job_keys=(), capacity=None)
+⋮----
+def test_run_once_reports_runner_exception_and_clears_active_job(self)
 ⋮----
 def test_capacity_snapshot_prefers_authenticated_omniroute(self)
 ⋮----

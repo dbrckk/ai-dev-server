@@ -99,6 +99,7 @@ scripts/
   start-cdesktop.sh
   start-dsh.sh
   start-fcc.sh
+  start-production-os-worker.sh
   status.sh
 studio/
   agents/
@@ -4289,6 +4290,17 @@ export HOST=0.0.0.0
 export PORT=3000
 start_bg cdesktop npx --yes cdesktop || true
 
+
+# Production-OS persistent worker. Start only when the control-plane secrets are
+# explicitly configured in the Codespace environment.
+if [ -n "${PRODUCTION_OS_URL:-}" ] \
+  && [ -n "${PRODUCTION_OS_WORKER_TOKEN:-}" ] \
+  && [ -n "${PRODUCTION_OS_OPERATOR_TOKEN:-}" ]; then
+  start_bg production-os-worker bash "$(dirname "$0")/start-production-os-worker.sh" || true
+else
+  echo "Production-OS worker not configured"
+fi
+
 # Give npm/npx based services enough time to initialize.
 for i in {1..15}; do
   READY=0
@@ -4312,7 +4324,7 @@ bash "$(dirname "$0")/status.sh" || true
 
 echo
 echo "=== startup log tails ==="
-for name in fcc dsh cdesktop; do
+for name in fcc dsh cdesktop production-os-worker; do
   echo "--- $name ---"
   tail -n 40 "$LOGDIR/$name.log" 2>/dev/null || true
 done
@@ -4343,6 +4355,47 @@ exec npx --yes @deepseek-ai/dsh web --no-open
 set -euo pipefail
 export PATH="$HOME/.local/bin:$PATH"
 exec fcc-server
+````
+
+## File: scripts/start-production-os-worker.sh
+````bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+export PATH="$HOME/.local/bin:$PATH"
+
+required=(
+  PRODUCTION_OS_URL
+  PRODUCTION_OS_WORKER_TOKEN
+  PRODUCTION_OS_OPERATOR_TOKEN
+)
+
+missing=()
+for name in "${required[@]}"; do
+  if [[ -z "${!name:-}" ]]; then
+    missing+=("$name")
+  fi
+done
+
+if (( ${#missing[@]} > 0 )); then
+  printf 'Missing required environment variables: %s\n' "${missing[*]}" >&2
+  exit 2
+fi
+
+if ! command -v codex >/dev/null 2>&1; then
+  echo "Codex CLI is not installed. Re-run: bash scripts/bootstrap.sh" >&2
+  exit 3
+fi
+
+worker_id="${PRODUCTION_OS_WORKER_ID:-ai-dev-server-1}"
+poll_interval="${PRODUCTION_OS_POLL_INTERVAL:-10}"
+output_root="${PRODUCTION_OS_OUTPUT_ROOT:-studio-output/production-os}"
+
+exec python studio/production_os_worker.py \
+  --worker-id "$worker_id" \
+  --output-root "$output_root" \
+  --continuous \
+  --poll-interval "$poll_interval"
 ````
 
 ## File: scripts/status.sh
@@ -4376,13 +4429,27 @@ check_port 8082 "Free Claude Code"
 check_port 3080 "DeepSeek Harness"
 check_port 3000 "cdesktop"
 printf '\nInstalled CLIs:\n'
-for x in fcc-server fcc-claude fcc-opencode fcc-dsh claude opencode; do
+for x in fcc-server fcc-claude fcc-opencode fcc-dsh claude opencode codex; do
   if command -v "$x" >/dev/null 2>&1; then
     printf '  %-15s %s\n' "$x" "$(command -v "$x")"
   else
     printf '  %-15s missing\n' "$x"
   fi
 done
+
+echo
+echo "Background workers:"
+BASE="$HOME/.cache/ai-dev-server"
+if [ -s "$BASE/production-os-worker.pid" ] \
+  && kill -0 "$(cat "$BASE/production-os-worker.pid" 2>/dev/null)" 2>/dev/null; then
+  echo "  Production-OS worker running (pid $(cat "$BASE/production-os-worker.pid"))"
+elif [ -n "${PRODUCTION_OS_URL:-}" ] \
+  && [ -n "${PRODUCTION_OS_WORKER_TOKEN:-}" ] \
+  && [ -n "${PRODUCTION_OS_OPERATOR_TOKEN:-}" ]; then
+  echo "  Production-OS worker configured but not running"
+else
+  echo "  Production-OS worker not configured"
+fi
 
 if [ -n "${CODESPACE_NAME:-}" ] && [ -n "${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN:-}" ]; then
   echo
@@ -18977,9 +19044,21 @@ project_out = root / request["id"]
 ⋮----
 request_path = project_out / "production-os-request.json"
 ⋮----
+heartbeat_interval = float(heartbeat_interval_seconds)
+⋮----
+stop_heartbeat = threading.Event()
+heartbeat_errors: list[str] = []
+⋮----
+def keep_job_alive()
+⋮----
+heartbeat_thread = threading.Thread(
+⋮----
 started = float(clock())
+⋮----
 summary = run_project(
+⋮----
 duration = max(0.0, float(clock()) - started)
+envelope = {
 ⋮----
 result_path = project_out / "production-os-result.json"
 ⋮----
@@ -19003,10 +19082,15 @@ missing = []
 ⋮----
 cycles = 1 if args.once else int(args.cycles)
 ⋮----
+poll_interval = float(args.poll_interval)
+⋮----
+sleeper = time.sleep
+⋮----
 client = client_factory(base_url, worker_token)
 ⋮----
-capacity = capacity_provider(env)
+completed_cycles = 0
 ⋮----
+capacity = capacity_provider(env)
 result = run_once_fn(
 ````
 
@@ -30149,6 +30233,16 @@ def test_main_requires_all_control_plane_credentials(self)
 def test_main_forwards_capacity_snapshot_to_worker_cycle(self)
 ⋮----
 expected = {
+⋮----
+def test_continuous_mode_polls_idle_queue_and_refreshes_capacity(self)
+⋮----
+capacities = []
+⋮----
+def capacity_provider(env)
+⋮----
+value = {"remaining_tokens": len(capacities) + 1}
+⋮----
+def sleeper(seconds)
 ````
 
 ## File: tests/test_production_os_worker_runtime.py
@@ -30214,6 +30308,16 @@ completed = client.calls[3][1]
 def test_run_once_reports_failed_pipeline_to_control_plane(self)
 ⋮----
 failed = client.calls[3][1]
+⋮----
+def test_run_once_refreshes_heartbeat_during_long_runner_execution(self)
+⋮----
+refreshed = threading.Event()
+original_heartbeat = client.heartbeat
+active_heartbeats = {"count": 0}
+⋮----
+def heartbeat(worker_id, *, active_job_keys=(), capacity=None)
+⋮----
+def test_run_once_reports_runner_exception_and_clears_active_job(self)
 ⋮----
 def test_capacity_snapshot_prefers_authenticated_omniroute(self)
 ⋮----

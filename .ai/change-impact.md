@@ -1,35 +1,24 @@
 # Change impact
 
-Base: 6dd708d3e10a4710896e3c165bf9427b057830c2
-Head: 0fdc770db3b1fcb24aecf31d8ef631180ed6082c
+Base: fa531dad6bd858a7911722139a735b43e632a6e7
+Head: 799ad2a75b7f09567a78eafd2abed54d0ac8d1d3
 
 ## Changed files
-- A studio/agents/codex.py
-- M studio/agents/orchestrator.py
-- M studio/capacity_scheduler.py
-- M studio/core.py
-- M studio/generic_project.py
-- M studio/github_runner.py
-- A studio/omniroute_capacity.py
-- A studio/production_os_worker.py
-- M tests/test_agent_router.py
-- A tests/test_capacity_scheduler_omniroute.py
-- A tests/test_codex_adapter.py
-- A tests/test_github_runner_usage.py
-- A tests/test_omniroute_capacity.py
-- A tests/test_production_os_result_contract.py
-- A tests/test_production_os_worker.py
-- A tests/test_production_os_worker_cli.py
-- A tests/test_production_os_worker_runtime.py
+- A docs/PRODUCTION_OS_WORKER.md
+- M scripts/start-all.sh
+- A scripts/start-production-os-worker.sh
+- M scripts/status.sh
+- M studio/production_os_worker.py
+- M tests/test_production_os_worker_cli.py
+- M tests/test_production_os_worker_runtime.py
 
 ## Affected areas
+- docs
+- scripts
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_orchestrator.py
-- tests/test_capacity_scheduler.py
-- tests/test_omniroute_capacity.py
 - tests/test_production_os_worker.py
 
 ## Agent guidance

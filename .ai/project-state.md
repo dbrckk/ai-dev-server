@@ -22,20 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T09:04:43Z
+Generated: 2026-09-19T09:36:35Z
 
 ### Git
 - Branch: `main`
-- Head: `0fdc770db3b1`
-- Commit date: 2026-09-19T11:04:32+02:00
-- Commit: feat: integrate Production-OS, Codex telemetry and OmniRoute
-- Tracked files: 798
+- Head: `799ad2a75b7f`
+- Commit date: 2026-09-19T11:36:24+02:00
+- Commit: feat: harden Production-OS Codex worker for continuous operation
+- Tracked files: 802
 
 ### Recently changed files
-- `studio/omniroute_capacity.py`
-- `tests/test_omniroute_capacity.py`
-- `studio/production_os_worker.py`
-- `tests/test_production_os_worker_runtime.py`
+- `scripts/status.sh`
+- `scripts/start-all.sh`
+- `docs/PRODUCTION_OS_WORKER.md`
+- `scripts/start-production-os-worker.sh`
+- `tests/test_production_os_worker_cli.py`
 
 ### Project signals
 - No common build descriptor detected

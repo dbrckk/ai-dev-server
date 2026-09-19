@@ -14940,9 +14940,21 @@ project_out = root / request["id"]
 ⋮----
 request_path = project_out / "production-os-request.json"
 ⋮----
+heartbeat_interval = float(heartbeat_interval_seconds)
+⋮----
+stop_heartbeat = threading.Event()
+heartbeat_errors: list[str] = []
+⋮----
+def keep_job_alive()
+⋮----
+heartbeat_thread = threading.Thread(
+⋮----
 started = float(clock())
+⋮----
 summary = run_project(
+⋮----
 duration = max(0.0, float(clock()) - started)
+envelope = {
 ⋮----
 result_path = project_out / "production-os-result.json"
 ⋮----
@@ -14966,10 +14978,15 @@ missing = []
 ⋮----
 cycles = 1 if args.once else int(args.cycles)
 ⋮----
+poll_interval = float(args.poll_interval)
+⋮----
+sleeper = time.sleep
+⋮----
 client = client_factory(base_url, worker_token)
 ⋮----
-capacity = capacity_provider(env)
+completed_cycles = 0
 ⋮----
+capacity = capacity_provider(env)
 result = run_once_fn(
 ````
 

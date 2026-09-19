@@ -2,11 +2,11 @@
 
 - Index mode: incremental
 - Files indexed: 610
-- Files reparsed this run: 17
-- Symbols: 4215
+- Files reparsed this run: 3
+- Symbols: 4225
 - Internal import edges: 1244
-- Impacted files: 183
-- Selected tests: 68
+- Impacted files: 4
+- Selected tests: 3
 
 ## Languages
 - python: 607 files
@@ -19,13 +19,13 @@
 - tests/test_architecture_reputation_policy_migration.py: 44 symbols
 - tests/test_architecture_replacement_planner.py: 42 symbols
 - tests/test_journeys.py: 41 symbols
-- tests/test_production_os_worker_runtime.py: 34 symbols
+- tests/test_production_os_worker_runtime.py: 39 symbols
 - studio/core.py: 32 symbols
 - tests/test_architecture_reputation_policy_approval.py: 32 symbols
 - tests/test_architecture_replacement_reputation.py: 26 symbols
 - tests/test_capacity_scheduler.py: 26 symbols
 - tests/test_ci.py: 26 symbols
-- studio/production_os_worker.py: 24 symbols
+- studio/production_os_worker.py: 25 symbols
 - studio/replacement_ci_policy_v11.py: 24 symbols
 - tests/test_architecture_feedback.py: 23 symbols
 - tests/test_architecture_reputation_policy_github_collect.py: 23 symbols
@@ -43,10 +43,10 @@
 ## ast-grep enrichment
 - ast-grep outline: available
 - AST index mode: incremental
-- AST files reparsed this run: 17
+- AST files reparsed this run: 3
 - outline files retained: 606
-- top-level items retained: 6282
-- direct members retained: 2086
+- top-level items retained: 6284
+- direct members retained: 2089
 - symbol shards: 26
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard
 

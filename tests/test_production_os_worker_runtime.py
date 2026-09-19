@@ -88,7 +88,7 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
                 {"POLLINATIONS_API_KEY": "secret"},
                 home=Path("/definitely/not/real"),
             )
-        self.assertEqual(caps, ["repo-analysis", "software-development"])
+        self.assertEqual(caps, ["android", "node", "python", "repo-analysis", "software-development"])
 
         with patch("production_os_worker.shutil.which", return_value="/usr/bin/polli"):
             caps = worker_capabilities(
@@ -179,6 +179,9 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             output_root=Path("unused"),
             run_project=lambda *args, **kwargs: self.fail("runner must not execute"),
             capabilities=[
+                "android",
+                "node",
+                "python",
                 "repo-analysis",
                 "software-development",
                 "visual-asset-production",

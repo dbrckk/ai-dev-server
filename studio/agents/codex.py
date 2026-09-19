@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 from typing import Any
+from urllib.parse import urlsplit
 
 
 _USAGE_FIELDS = (
@@ -31,6 +32,70 @@ def codex_invocation(prompt: str) -> tuple[list[str], dict[str, str]]:
         "workspace-write",
         prompt,
     ], {}
+
+
+
+def codex_omniroute_invocation(
+    prompt: str,
+    *,
+    base_url: str,
+    codex_home: str,
+) -> tuple[list[str], dict[str, str]]:
+    """Build an isolated Codex invocation routed through OmniRoute.
+
+    The custom provider is supplied as CLI config and the caller must provide a
+    dedicated CODEX_HOME. This prevents ChatGPT account authentication/config
+    from silently taking precedence over the custom Responses endpoint.
+    """
+    parsed = urlsplit(str(base_url or "").strip())
+    loopback_hosts = {"127.0.0.1", "localhost", "::1", "0.0.0.0"}
+    local_http = (
+        parsed.scheme == "http"
+        and (parsed.hostname or "").lower() in loopback_hosts
+    )
+    if (
+        not (parsed.scheme == "https" or local_http)
+        or not parsed.netloc
+        or parsed.username
+        or parsed.password
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise ValueError(
+            "Codex OmniRoute base URL must use HTTPS, except loopback-local HTTP"
+        )
+    home = str(codex_home or "").strip()
+    if not home:
+        raise ValueError("Codex OmniRoute CODEX_HOME is required")
+    base = str(base_url).strip().rstrip("/")
+    if "'" in base or "\n" in base or "\r" in base:
+        raise ValueError("Codex OmniRoute base URL contains unsupported characters")
+
+    provider = (
+        "model_providers.omniroute={ "
+        "name='OmniRoute', "
+        f"base_url='{base}', "
+        "wire_api='responses', "
+        "request_max_retries=0, "
+        "stream_max_retries=0 "
+        "}"
+    )
+    return [
+        "codex",
+        "-c",
+        'model="auto"',
+        "-c",
+        'model_provider="omniroute"',
+        "-c",
+        provider,
+        "exec",
+        "--ignore-user-config",
+        "--json",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        prompt,
+    ], {"CODEX_HOME": home}
 
 
 def _token_count(value: Any) -> int:

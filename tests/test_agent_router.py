@@ -8,9 +8,10 @@ STUDIO = ROOT / "studio"
 if str(STUDIO) not in sys.path:
     sys.path.insert(0, str(STUDIO))
 
+from agents.adapters import AgentRun
 from agents.registry import AgentRegistry, AgentSpec
 from agents.router import choose_agent, rank_agents
-from agents.orchestrator import invocation_for
+from agents.orchestrator import execute_named, invocation_for
 
 
 class AgentRouterTests(unittest.TestCase):
@@ -147,6 +148,32 @@ class AgentRouterTests(unittest.TestCase):
         self.assertEqual(extra["OPENCODE_STUDIO_API_KEY"],"super-secret")
         self.assertNotIn("super-secret",extra["OPENCODE_CONFIG_CONTENT"])
         self.assertIn("OPENCODE_STUDIO_API_KEY",extra["OPENCODE_CONFIG_CONTENT"])
+
+    def test_codex_invocation_uses_verified_headless_contract(self):
+        argv, extra = invocation_for("codex", "do work")
+
+        self.assertEqual(
+            argv,
+            ["codex", "exec", "--json", "--ephemeral", "--sandbox", "workspace-write", "do work"],
+        )
+        self.assertEqual(extra, {})
+
+    def test_codex_execute_named_exposes_token_usage(self):
+        run = AgentRun(
+            agent="codex",
+            returncode=0,
+            duration_seconds=1.5,
+            stdout_tail='{"type":"turn.completed","usage":{"input_tokens":10,"cached_input_tokens":4,"output_tokens":3}}',
+            stderr_tail="",
+        )
+        with patch("shutil.which", return_value="/bin/codex"), patch(
+            "agents.orchestrator.AgentAdapter.run", return_value=run
+        ):
+            result = execute_named("codex", "do work", cwd=ROOT)
+
+        self.assertEqual(result["status"], "passed")
+        self.assertEqual(result["attempts"][0]["usage"]["total_tokens"], 13)
+        self.assertEqual(result["attempts"][0]["usage"]["cached_input_tokens"], 4)
 
 
 if __name__ == "__main__":

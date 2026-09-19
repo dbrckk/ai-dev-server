@@ -164,6 +164,7 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
 
         self.assertEqual(result["status"], "idle")
         self.assertEqual(client.calls[0][0], "claim")
+        self.assertIn("visual-asset-production", client.calls[0][2])
 
     def test_run_once_acks_executes_and_completes_with_usage(self):
         client = _FakeClient(sample_job())

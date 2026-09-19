@@ -69,6 +69,19 @@ class ProductionOSWorkerTests(unittest.TestCase):
         self.assertIn("asset-forge/production-request/v1", request["brief"])
         request_check(request)
 
+    def test_explicit_visual_task_adds_asset_forge_guidance_without_reuse_metadata(self):
+        job = self.job()
+        job["task"] = "Create enemy sprites and integrate them"
+        job["payload"]["handoff"]["task"] = "Create enemy sprites and integrate them"
+        job["payload"]["handoff"]["final_goal"] = "Create enemy sprites and integrate them"
+        job["payload"]["handoff"].pop("reuse_candidates", None)
+
+        request = build_studio_request(job)
+
+        self.assertIn("dbrckk/asset-forge", request["brief"])
+        self.assertIn("asset_forge.py produce", request["brief"])
+        request_check(request)
+
     def test_short_task_is_expanded_to_valid_studio_brief(self):
         job = self.job()
         job["task"] = "Fix CI"

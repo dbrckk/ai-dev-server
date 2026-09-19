@@ -371,6 +371,7 @@ def _write_project_capacity_plan(
         "requested_tokens": requested,
         "token_envelope": envelope,
         "constrained": constrained,
+        "budget_source": "production-os",
         "capacity_source": capacity_source,
     }
 

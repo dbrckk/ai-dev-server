@@ -79,7 +79,7 @@ class ProductionOSWorkerTests(unittest.TestCase):
         request = build_studio_request(job)
 
         self.assertIn("dbrckk/asset-forge", request["brief"])
-        self.assertIn("asset-forge produce", request["brief"])
+        self.assertIn("asset-forge fulfill", request["brief"])
         request_check(request)
 
     def test_french_visual_task_adds_asset_forge_guidance(self):
@@ -92,7 +92,7 @@ class ProductionOSWorkerTests(unittest.TestCase):
         request = build_studio_request(job)
 
         self.assertIn("dbrckk/asset-forge", request["brief"])
-        self.assertIn("asset-forge produce", request["brief"])
+        self.assertIn("asset-forge fulfill", request["brief"])
         request_check(request)
 
     def test_short_task_is_expanded_to_valid_studio_brief(self):

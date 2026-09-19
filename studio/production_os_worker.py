@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import threading
 import urllib.error
 import urllib.request
@@ -17,11 +18,23 @@ from atomic_file import write_text as atomic_write_text
 from file_lock import exclusive
 
 
-WORKER_CAPABILITIES = [
+BASE_WORKER_CAPABILITIES = [
     "repo-analysis",
     "software-development",
-    "visual-asset-production",
 ]
+
+
+def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]:
+    env = os.environ if environ is None else environ
+    home_dir = Path.home() if home is None else Path(home)
+    polli_installed = shutil.which("polli") is not None
+    polli_authenticated = bool(
+        str(env.get("POLLINATIONS_API_KEY") or "").strip()
+    ) or (home_dir / ".pollinations" / "credentials.json").is_file()
+    capabilities = list(BASE_WORKER_CAPABILITIES)
+    if polli_installed and polli_authenticated:
+        capabilities.append("visual-asset-production")
+    return capabilities
 
 
 class ProductionOSWorkerError(RuntimeError):
@@ -456,12 +469,13 @@ def completion_payload(
     result: dict[str, Any],
     *,
     duration_seconds: float,
+    capabilities: list[str] | None = None,
 ) -> dict[str, Any]:
     return {
         "key": str(key),
         "worker_id": str(worker_id),
         "duration_seconds": max(0.0, float(duration_seconds)),
-        "capabilities": WORKER_CAPABILITIES,
+        "capabilities": list(capabilities or BASE_WORKER_CAPABILITIES),
         "result": _result_payload(result),
     }
 
@@ -472,6 +486,7 @@ def failure_payload(
     result: dict[str, Any],
     *,
     duration_seconds: float,
+    capabilities: list[str] | None = None,
 ) -> dict[str, Any]:
     status = str(result.get("status") or "failed")
     next_stage = result.get("evidence", {}).get("next_stage") if isinstance(
@@ -482,7 +497,7 @@ def failure_payload(
         "key": str(key),
         "worker_id": str(worker_id),
         "duration_seconds": max(0.0, float(duration_seconds)),
-        "capabilities": WORKER_CAPABILITIES,
+        "capabilities": list(capabilities or BASE_WORKER_CAPABILITIES),
         "reason": reason[:1000],
         "result": _result_payload(result),
     }
@@ -498,6 +513,7 @@ def run_once(
     baseline_sha: str | None = None,
     capacity: dict | None = None,
     heartbeat_interval_seconds: float = 30.0,
+    capabilities: list[str] | None = None,
 ) -> dict:
     """Claim and execute at most one Production-OS job."""
     if run_project is None:
@@ -506,7 +522,7 @@ def run_once(
         import time
         clock = time.monotonic
 
-    capabilities = WORKER_CAPABILITIES
+    capabilities = list(capabilities or worker_capabilities())
     job = client.claim(worker_id, capabilities)
     if job is None:
         return {"status": "idle", "worker_id": worker_id}
@@ -607,6 +623,7 @@ def run_once(
                 worker_id,
                 envelope,
                 duration_seconds=duration,
+                capabilities=capabilities,
             )
         )
         if capacity is None:
@@ -657,6 +674,7 @@ def run_once(
                 worker_id,
                 envelope,
                 duration_seconds=duration,
+                capabilities=capabilities,
             )
         )
         status = "completed"
@@ -667,6 +685,7 @@ def run_once(
                 worker_id,
                 envelope,
                 duration_seconds=duration,
+                capabilities=capabilities,
             )
         )
         status = "failed"
@@ -765,7 +784,7 @@ def main(
         sleeper = time.sleep
 
     client = client_factory(base_url, worker_token)
-    capabilities = WORKER_CAPABILITIES
+    capabilities = worker_capabilities(env)
     client.register(
         args.worker_id,
         capabilities,
@@ -780,6 +799,7 @@ def main(
                 worker_id=args.worker_id,
                 output_root=Path(args.output_root),
                 capacity=capacity,
+                capabilities=capabilities,
             )
             if not isinstance(result, dict):
                 raise RuntimeError("Production-OS worker returned invalid result")

@@ -4,6 +4,7 @@ from pathlib import Path
 import json
 import os
 from .adapters import AgentAdapter
+from .codex import codex_invocation, parse_codex_usage
 from .performance import bonus,eligible,load
 from .registry import DEFAULT_REGISTRY
 from .router import rank_agents
@@ -86,9 +87,22 @@ def invocation_for(name:str,prompt:str)->tuple[list[str],dict[str,str]]|None:
     # Only invocation contracts verified against upstream CLIs are enabled.
     if name=="opencode":
         return _opencode_runtime(prompt)
+    if name=="codex":
+        return codex_invocation(prompt)
     if name=="hermes":
         return (["hermes","chat","--toolsets","file","-q",prompt],{"HERMES_YOLO_MODE":"1"})
     return None
+
+
+def _run_evidence(run)->dict:
+    evidence={"agent":run.agent,"returncode":run.returncode,
+        "duration_seconds":run.duration_seconds,"stdout_tail":run.stdout_tail,"stderr_tail":run.stderr_tail}
+    if run.agent=="codex":
+        usage=parse_codex_usage(run.stdout_tail)
+        if usage is not None:
+            evidence["usage"]=usage
+    return evidence
+
 
 def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,timeout:int=1800)->dict:
     perf=load(memory_path)
@@ -124,8 +138,8 @@ def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,ti
             argv,extra_env=invocation
             run=AgentAdapter(decision.agent).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)
             ok=run.returncode==0
-            evidence={"agent":run.agent,"status":"passed" if ok else "failed","returncode":run.returncode,
-                "duration_seconds":run.duration_seconds,"stdout_tail":run.stdout_tail,"stderr_tail":run.stderr_tail}
+            evidence=_run_evidence(run)
+            evidence["status"]="passed" if ok else "failed"
             attempts.append(evidence)
             if ok: return {"status":"passed","selected":run.agent,"attempts":attempts}
         except RuntimeError as exc:
@@ -133,7 +147,7 @@ def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,ti
     return {"status":"unavailable","selected":None,"attempts":attempts}
 
 
-def ranked_agent_names(required:set[str],*,role:str,memory_path:Path,limit:int=2)->list[str]:
+def ranked_agent_names(required:set[str],*,role:str,memory_path:Path,limit:int=2,preferred:str|None=None)->list[str]:
     perf=load(memory_path)
     history_raw=os.environ.get("STUDIO_ROUTING_HISTORY_PATH","")
     history=load_routing_history(Path(history_raw)) if history_raw else []
@@ -147,13 +161,35 @@ def ranked_agent_names(required:set[str],*,role:str,memory_path:Path,limit:int=2
         reliability=reliability,
         weights=weights,
     )
+
+    def usable(decision)->bool:
+        return (
+            decision.agent.available()
+            and eligible(perf,decision.agent.name,role)
+            and invocation_for(decision.agent.name,"probe") is not None
+        )
+
+    preferred_name=str(preferred or "").strip()
+    if preferred_name=="auto":
+        preferred_name=""
+
     names=[]
+    if preferred_name:
+        preferred_decision=next(
+            (
+                decision
+                for decision in ranked
+                if decision.agent.name==preferred_name and usable(decision)
+            ),
+            None,
+        )
+        if preferred_decision is not None:
+            names.append(preferred_name)
+
     for decision in ranked:
         if len(names)>=limit:
             break
-        if not decision.agent.available() or not eligible(perf,decision.agent.name,role):
-            continue
-        if invocation_for(decision.agent.name,"probe") is None:
+        if decision.agent.name in names or not usable(decision):
             continue
         names.append(decision.agent.name)
     return names
@@ -171,8 +207,8 @@ def execute_named(name:str,prompt:str,*,cwd:Path,timeout:int=1800)->dict:
     except RuntimeError as exc:
         return {"status":"unavailable","selected":None,"attempts":[{"agent":name,"status":"error","error":str(exc)[:1000]}]}
     ok=run.returncode==0
-    evidence={"agent":run.agent,"status":"passed" if ok else "failed","returncode":run.returncode,
-        "duration_seconds":run.duration_seconds,"stdout_tail":run.stdout_tail,"stderr_tail":run.stderr_tail}
+    evidence=_run_evidence(run)
+    evidence["status"]="passed" if ok else "failed"
     return {"status":"passed" if ok else "failed","selected":run.agent if ok else None,"attempts":[evidence]}
 
 

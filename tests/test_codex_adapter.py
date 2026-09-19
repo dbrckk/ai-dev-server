@@ -97,6 +97,11 @@ class CodexAdapterTests(unittest.TestCase):
         )
         self.assertIn("http://127.0.0.1:20128/v1", provider_override)
         self.assertIn("wire_api='responses'", provider_override)
+        self.assertIn("env_key='OMNIROUTE_API_KEY'", provider_override)
+        self.assertIn(
+            'shell_environment_policy.ignore_default_excludes=false',
+            argv,
+        )
         self.assertNotIn("OPENAI_API_KEY", extra_env)
 
     def test_omniroute_invocation_rejects_insecure_remote_http(self):

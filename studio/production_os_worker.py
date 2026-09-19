@@ -12,6 +12,9 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
+from atomic_file import write_text as atomic_write_text
+from file_lock import exclusive
+
 
 class ProductionOSWorkerError(RuntimeError):
     pass
@@ -329,6 +332,78 @@ def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
     return request
 
 
+def _write_project_capacity_plan(
+    output_root: Path,
+    request: dict[str, Any],
+    handoff: dict[str, Any],
+    capacity: dict | None,
+) -> dict[str, Any] | None:
+    raw_budget = handoff.get("token_budget")
+    if isinstance(raw_budget, bool):
+        raise ValueError("Production-OS token_budget must be a positive integer")
+    try:
+        requested = int(raw_budget)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "Production-OS token_budget must be a positive integer"
+        ) from exc
+    if requested <= 0:
+        raise ValueError("Production-OS token_budget must be a positive integer")
+
+    envelope = requested
+    capacity_source = "production-os"
+    constrained = False
+    if (
+        isinstance(capacity, dict)
+        and capacity.get("authenticated_usage") is True
+        and isinstance(capacity.get("remaining_tokens"), int)
+        and not isinstance(capacity.get("remaining_tokens"), bool)
+    ):
+        remaining = max(0, int(capacity["remaining_tokens"]))
+        envelope = min(envelope, remaining)
+        constrained = envelope < requested
+        capacity_source = str(capacity.get("source") or "omniroute")
+
+    row = {
+        "id": str(request["id"]),
+        "status": "running",
+        "phase": "implementation",
+        "requested_tokens": requested,
+        "token_envelope": envelope,
+        "constrained": constrained,
+        "capacity_source": capacity_source,
+    }
+
+    path = Path(output_root) / "capacity-plan.json"
+    with exclusive(path):
+        payload = {"schema": 1, "projects": []}
+        if path.is_file():
+            try:
+                current = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, UnicodeError, json.JSONDecodeError):
+                current = None
+            if isinstance(current, dict):
+                payload = dict(current)
+        projects = payload.get("projects")
+        if not isinstance(projects, list):
+            projects = []
+        projects = [
+            item
+            for item in projects
+            if not isinstance(item, dict)
+            or str(item.get("id") or "") != str(request["id"])
+        ]
+        projects.append(row)
+        payload["schema"] = 1
+        payload["projects"] = projects
+        atomic_write_text(
+            path,
+            json.dumps(payload, sort_keys=True, indent=2) + "\n",
+            encoding="utf-8",
+        )
+    return row
+
+
 def _result_payload(result: dict[str, Any]) -> dict[str, Any]:
     usage = result.get("usage")
     evidence = result.get("evidence")
@@ -414,6 +489,8 @@ def run_once(
 
     request = build_studio_request(job)
     root = Path(output_root)
+    handoff = dict((job.get("payload") or {}).get("handoff") or {})
+    _write_project_capacity_plan(root, request, handoff, capacity)
     project_out = root / request["id"]
     project_out.mkdir(parents=True, exist_ok=True)
     request_path = project_out / "production-os-request.json"

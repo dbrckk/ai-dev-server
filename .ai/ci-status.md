@@ -1,14 +1,18 @@
 # CI status
 
-Summary: 1 success / 0 failure / 7 active
+Summary: 4 success / 1 failure / 3 active
 
-- Mobile Studio Real Build: queued / pending (6ef04828)
-- CI: queued / pending (6ef04828)
-- Multi-Engine E2E Benchmark: queued / pending (6ef04828)
-- Resilience Soak: queued / pending (6ef04828)
-- Validate AI Dev Server: queued / pending (6ef04828)
-- Fault Injection Gate: queued / pending (6ef04828)
-- Resilience Soak: queued / pending (c352ede4)
-- Fault Injection Gate: completed / success (c352ede4)
+- Fault Injection Gate: completed / success (e4b4dd16)
+- Validate AI Dev Server: completed / success (e4b4dd16)
+- Mobile Studio Real Build: in_progress / pending (e4b4dd16)
+- CI: queued / pending (e4b4dd16)
+- Resilience Soak: completed / success (e4b4dd16)
+- Multi-Engine E2E Benchmark: in_progress / pending (e4b4dd16)
+- CI: completed / failure (d1e2e7b5)
+- Mobile Studio Real Build: completed / success (d1e2e7b5)
+
+## Latest failed run structure
+- Job: python-tests
+  - Failed step: Run unit tests
 
 > Generated summary only; inspect GitHub Actions for full logs when needed.

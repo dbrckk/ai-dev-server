@@ -31,6 +31,14 @@ Do not commit token values. Put them in Codespaces secrets or another secret man
 
 Codex CLI is installed by `scripts/bootstrap.sh`.
 
+Before starting the worker, run the non-mutating readiness check:
+
+```bash
+python scripts/preflight-production-os-worker.py
+```
+
+It validates required configuration, secure service URLs, OmniRoute pairing, polling interval, output-directory writability, and a real `codex --version` probe. Secret values are never printed. The launcher runs the same preflight automatically.
+
 Start the persistent worker with:
 
 ```bash

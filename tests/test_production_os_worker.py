@@ -79,6 +79,9 @@ class ProductionOSWorkerTests(unittest.TestCase):
         request = build_studio_request(job)
 
         self.assertIn("dbrckk/asset-forge", request["brief"])
+        self.assertIn("asset-forge operational-status", request["brief"])
+        self.assertIn("rasterPng", request["brief"])
+        self.assertIn("automatic backend selection", request["brief"])
         self.assertIn("asset-forge fulfill", request["brief"])
         request_check(request)
 

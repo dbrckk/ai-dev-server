@@ -41,7 +41,7 @@ It validates required configuration, secure service URLs, OmniRoute pairing, pol
 
 The bootstrap installs Asset Forge from the E2E-verified immutable revision `7cd615b9b42956b9b3d0d44992ac3e45e1764b6b` by default. Set `ASSET_FORGE_REF` only when intentionally testing another revision.
 
-Visual production readiness is delegated to the installed Asset Forge CLI:
+Visual production readiness is delegated to the installed Asset Forge CLI. Raster generation can use Pollinations when authenticated, or the installed imagen Codex fallback when `CODEX_ACCESS_TOKEN` or `CHATGPT_ACCESS_TOKEN` is present. Backend selection is automatic; SVG and 3D remain fail-closed when their required backend is unavailable.
 
 ```bash
 asset-forge operational-status

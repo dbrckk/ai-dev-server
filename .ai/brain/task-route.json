@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 3,
     "requested_max_files": 12,
-    "score_margin": 2,
+    "score_margin": 12,
     "tier": "narrow",
-    "top_score": 35
+    "top_score": 42
   },
   "cache": {
-    "fingerprint": "3c757181b1743ff217d36e3c0aea42505f0af1fd8375a9b2e54c3578023a6846",
+    "fingerprint": "4779a3b33170c4729e13b3e7ce85809cd7c2ee8ebacabf1b32b01824b7bb0ff0",
     "hit": false
   },
-  "candidate_count": 91,
+  "candidate_count": 87,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -21,44 +21,13 @@
         "engine",
         "game"
       ],
-      "path": "tests/test_orchestrator.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 35,
-      "symbols": [
-        "GitHubRunnerTests",
-        "OrchestratorTests",
-        "missing_report",
-        "payload_for",
-        "request",
-        "test_adaptation_without_baseline_has_no_promotable_work_order",
-        "test_adapter_reports_complete_only_after_machine_completion",
-        "test_asset_forge_batch_receipt_marks_regenerated_quality",
-        "test_asset_forge_failure_receipt_marks_low_quality",
-        "test_full_pipeline_reaches_finished",
-        "test_multi_asset_request_uses_transactional_asset_forge_batch",
-        "test_non_main_is_rejected_before_generation",
-        "test_premium_visual_request_prefetches_asset_forge_before_preview",
-        "test_research_failure_prevents_synthesis",
-        "test_scheduler_rewind_can_revisit_release_build_boundedly",
-        "test_stage_return_code_two_is_human_action_not_failure",
-        "test_successful_stage_must_advance",
-        "test_unregistered_stage_research_then_synthesis"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine",
-        "game"
-      ],
       "path": "tests/test_asset_forge_bridge.py",
       "reasons": [
+        "impact",
+        "recently-changed",
         "search-index"
       ],
-      "score": 33,
+      "score": 42,
       "symbols": [
         "test_3d_character_inference_enables_lods_for_primary_assets",
         "test_3d_environment_inference_uses_environment_profile",
@@ -66,6 +35,7 @@
         "test_batch_infers_parent_asset_dependency",
         "test_batch_preserves_explicit_asset_dependencies",
         "test_brief_inference_builds_character_dependency_chain",
+        "test_brief_inference_detects_3d_character_without_2d_sprite_chain",
         "test_brief_inference_detects_3d_environment",
         "test_builds_production_os_dispatch_contract",
         "test_engine_is_inferred_from_visual_instruction",
@@ -78,6 +48,27 @@
         "test_routes_premium_visual_task",
         "test_secondary_raster_batch_uses_lighter_visual_similarity_policy",
         "test_target_repository_defaults_visual_delivery_to_assets_art_without_engine"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "studio/asset_forge_bridge.py",
+      "reasons": [
+        "impact",
+        "recently-changed",
+        "search-index"
+      ],
+      "score": 30,
+      "symbols": [
+        "_infer_asset_shape",
+        "_infer_engine",
+        "build_production_os_asset_batch",
+        "build_production_os_asset_dispatch",
+        "infer_asset_tasks_from_brief",
+        "should_route_to_asset_forge"
       ]
     },
     {

@@ -2718,6 +2718,10 @@ def test_brief_inference_builds_character_dependency_chain()
 tasks = infer_asset_tasks_from_brief(
 by_id = {item["id"]: item for item in tasks}
 ⋮----
+def test_brief_inference_detects_3d_character_without_2d_sprite_chain()
+⋮----
+character = by_id["character-3d-foundation"]
+⋮----
 def test_brief_inference_detects_3d_environment()
 ⋮----
 environment = {item["id"]: item for item in tasks}["environment-foundation"]

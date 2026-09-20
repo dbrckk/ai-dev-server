@@ -22,20 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T16:40:13Z
+Generated: 2026-09-20T16:46:01Z
 
 ### Git
 - Branch: `main`
-- Head: `faddebbf6e5d`
-- Commit date: 2026-09-20T18:40:04+02:00
-- Commit: feat: enrich per-asset visual quality telemetry
+- Head: `d59345923fa4`
+- Commit date: 2026-09-20T18:45:35+02:00
+- Commit: test: cover zero-config 3D character brief inference
 - Tracked files: 820
 
 ### Recently changed files
-- `studio/github_runner.py`
 - `tests/test_asset_forge_bridge.py`
 - `studio/asset_forge_bridge.py`
-- `tests/test_orchestrator.py`
+- `studio/github_runner.py`
 
 ### Project signals
 - No common build descriptor detected

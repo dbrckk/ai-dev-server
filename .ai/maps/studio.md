@@ -4252,9 +4252,9 @@ character_terms = (
 animation_terms = (
 environment_terms = (
 ⋮----
-padded = f" {lower} "
+is_3d = any(term in lower for term in ("3d", "3-d", "mesh", "model", "modèle 3d", "modele 3d"))
 ⋮----
-is_3d = "3d" in lower or "mesh" in lower or "model" in lower
+padded = f" {lower} "
 ⋮----
 unique = []
 seen = set()

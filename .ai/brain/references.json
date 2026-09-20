@@ -5,1957 +5,736 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "_prepare_capability_promotion_handoff": {
+    "should_route_to_asset_forge": {
       "definition": {
-        "file": "studio/github_runner.py",
-        "line": 56,
+        "file": "studio/asset_forge_bridge.py",
+        "line": 15,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/github_runner.py",
-          "line": 56,
-          "preview": "def _prepare_capability_promotion_handoff(out: Path, adaptation_state: dict, baseline_sha: str) -> dict:",
+          "file": "studio/asset_forge_bridge.py",
+          "line": 15,
+          "preview": "def should_route_to_asset_forge(task: dict) -> bool:",
           "definition_candidate": true
         },
         {
-          "file": "studio/github_runner.py",
-          "line": 451,
-          "preview": "handoff=_prepare_capability_promotion_handoff(out,adaptation_state,baseline_sha)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_github_runner_persistent.py",
-          "line": 12,
-          "preview": "from github_runner import run, _prepare_capability_promotion_handoff",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_github_runner_persistent.py",
-          "line": 176,
-          "preview": "handoff=_prepare_capability_promotion_handoff(out,state,\"c\"*40)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_github_runner_persistent.py",
-          "line": 209,
-          "preview": "_prepare_capability_promotion_handoff(out,state,\"c\"*40)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 5
-    },
-    "_usage_count": {
-      "definition": {
-        "file": "studio/github_runner.py",
-        "line": 96,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/github_runner.py",
-          "line": 96,
-          "preview": "def _usage_count(value):",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 141,
-          "preview": "input_tokens = _usage_count(usage.get(\"input_tokens\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 142,
-          "preview": "cached_input_tokens = _usage_count(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 145,
-          "preview": "output_tokens = _usage_count(usage.get(\"output_tokens\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 146,
-          "preview": "reasoning_tokens = _usage_count(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 154,
-          "preview": "_usage_count(raw_total)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "collect_agent_usage": {
-      "definition": {
-        "file": "studio/github_runner.py",
-        "line": 105,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/github_runner.py",
-          "line": 105,
-          "preview": "def collect_agent_usage(report: dict) -> dict:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 691,
-          "preview": "summary['usage']=collect_agent_usage(project_report)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_github_runner_usage.py",
-          "line": 7,
-          "preview": "from github_runner import collect_agent_usage",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_github_runner_usage.py",
-          "line": 60,
-          "preview": "collect_agent_usage(report),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_github_runner_usage.py",
-          "line": 105,
-          "preview": "collect_agent_usage(report),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_github_runner_usage.py",
-          "line": 119,
-          "preview": "collect_agent_usage({}),",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "write_production_os_result": {
-      "definition": {
-        "file": "studio/github_runner.py",
-        "line": 170,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/github_runner.py",
-          "line": 170,
-          "preview": "def write_production_os_result(out: Path, request: dict, summary: dict):",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 725,
-          "preview": "write_production_os_result(out,request,summary)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 759,
-          "preview": "from github_runner import write_production_os_result",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 760,
-          "preview": "envelope = write_production_os_result(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_result_contract.py",
-          "line": 11,
-          "preview": "from github_runner import write_production_os_result",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_result_contract.py",
-          "line": 74,
-          "preview": "envelope = write_production_os_result(out, request, summary)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_result_contract.py",
-          "line": 129,
-          "preview": "envelope = write_production_os_result(out, request, summary)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_result_contract.py",
-          "line": 145,
-          "preview": "envelope = write_production_os_result(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 8
-    },
-    "bounded_run": {
-      "definition": {
-        "file": "studio/github_runner.py",
-        "line": 267,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/ci_runner.py",
-          "line": 23,
-          "preview": "def bounded_run(args, timeout):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
-          "line": 109,
-          "preview": "runner=bounded_run, clock=time.monotonic):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_supervisor_apply.py",
-          "line": 11,
-          "preview": "from ci_runner import _run_project_for_queue, bounded_run",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_supervisor_apply.py",
-          "line": 42,
-          "preview": "runner=bounded_run,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 267,
-          "preview": "def bounded_run(args, timeout):",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 301,
-          "preview": "def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=time.monotonic,budget_seconds=85*60,baseline_sha:str|None=None)->dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci.py",
-          "line": 209,
-          "preview": "from ci_runner import bounded_run",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci.py",
-          "line": 216,
-          "preview": "bounded_run(['worker'], timeout=1)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 8
-    },
-    "_update_improvements": {
-      "definition": {
-        "file": "studio/github_runner.py",
-        "line": 283,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/github_runner.py",
-          "line": 283,
-          "preview": "def _update_improvements(out: Path, goal_state: dict, project_state: dict) -> dict:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 606,
-          "preview": "improvement=_update_improvements(out,state,project_state)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "run": {
-      "definition": {
-        "file": "studio/github_runner.py",
-        "line": 301,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "scripts/preflight-production-os-worker.py",
-          "line": 58,
-          "preview": "result = subprocess.run(",
-          "definition_candidate": false
-        },
-        {
-          "file": "scripts/preflight-production-os-worker.py",
-          "line": 80,
-          "preview": "result = subprocess.run(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 53,
-          "preview": "\"\"\"Decide whether a model review must run after trusted verification.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/adapters.py",
-          "line": 34,
-          "preview": "def run(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/adapters.py",
-          "line": 62,
-          "preview": "result = subprocess.run(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/codex.py",
-          "line": 24,
-          "preview": "an implementation run into a read-only review.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 61,
-          "preview": "argv=[\"opencode\",\"run\",\"--auto\",\"--format\",\"json\"]",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 148,
-          "preview": "def _run_evidence(run,capacity_source:str|None=None)->dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 149,
-          "preview": "evidence={\"agent\":run.agent,\"returncode\":run.returncode,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 150,
-          "preview": "\"duration_seconds\":run.duration_seconds,\"stdout_tail\":run.stdout_tail,\"stderr_tail\":run.stderr_tail}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 153,
-          "preview": "if run.agent==\"codex\":",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 154,
-          "preview": "usage=parse_codex_usage(run.stdout_tail)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 260,
-          "preview": "run=AgentAdapter(decision.agent).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 261,
-          "preview": "ok=run.returncode==0",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 262,
-          "preview": "evidence=_run_evidence(run,capacity_source)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 266,
-          "preview": "if ok: return {\"status\":\"passed\",\"selected\":run.agent,\"attempts\":attempts}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 345,
-          "preview": "run=AgentAdapter(spec).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 349,
-          "preview": "ok=run.returncode==0",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 350,
-          "preview": "evidence=_run_evidence(run,capacity_source)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 353,
-          "preview": "return {\"status\":\"passed\" if ok else \"failed\",\"selected\":run.agent if ok else None,\"attempts\":[evidence]}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/android_signing.py",
-          "line": 112,
-          "preview": "runner=subprocess.run,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 4,
-          "preview": "Candidate code is materialized only in a detached worktree. Validation commands run",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 50,
-          "preview": "result=subprocess.run(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 154,
-          "preview": "\"docker\",\"run\",\"--rm\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 191,
-          "preview": "run=_docker_command(root,command)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 194,
-          "preview": "\"returncode\":run.returncode,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 195,
-          "preview": "\"passed\":run.returncode==0,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 196,
-          "preview": "\"stdout_sha256\":hashlib.sha256((run.stdout or \"\").encode()).hexdigest(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 197,
-          "preview": "\"stderr_sha256\":hashlib.sha256((run.stderr or \"\").encode()).hexdigest(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 211,
-          "preview": "with tempfile.TemporaryDirectory(prefix=\"replacement-run-\") as tmp:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_pipeline.py",
-          "line": 20,
-          "preview": "def run(work_order_path: Path, repo_root: Path, out: Path) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_pipeline.py",
-          "line": 55,
-          "preview": "result=run(Path(args.work_order),Path(args.repo_root),out)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_planner.py",
-          "line": 567,
-          "preview": "\"run unit, integration, visual and release regression gates\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_postmerge_pipeline.py",
-          "line": 32,
-          "preview": "def run(work_order_path: Path, merged_path: Path, package_path: Path, out: Path, token: str, repository: str) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_postmerge_pipeline.py",
-          "line": 105,
-          "preview": "result=run(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_pr_validator.py",
-          "line": 101,
-          "preview": "raise ReplacementPRValidationError(\"GitHub check-run evidence malformed\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 32,
-          "preview": "result=subprocess.run([\"git\",\"rev-parse\",\"HEAD\"],cwd=root,text=True,capture_output=True,check=False)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_approval.py",
-          "line": 144,
-          "preview": "raise ApprovalProvenanceError(\"required GitHub checks lack a common workflow run\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_approval.py",
-          "line": 146,
-          "preview": "raise ApprovalProvenanceError(\"required checks do not bind attested workflow run\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_approval.py",
-          "line": 163,
-          "preview": "raise ApprovalProvenanceError(\"required GitHub check workflow run mismatch\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 78,
-          "preview": "def _workflow_path(run: dict) -> str | None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 79,
-          "preview": "if not isinstance(run,dict): return None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 80,
-          "preview": "raw=run.get(\"path\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 86,
-          "preview": "for run in runs if isinstance(runs,list) else []:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 87,
-          "preview": "if run.get(\"head_sha\")!=commit_sha or str(run.get(\"conclusion\") or \"\").lower()!=\"success\": continue",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 88,
-          "preview": "if run.get(\"name\")!=required_workflow_name or _workflow_path(run)!=required_workflow_path: continue",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 89,
-          "preview": "if required_run_id is not None and run.get(\"id\")!=required_run_id: continue",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 90,
-          "preview": "created=_timestamp(run.get(\"run_started_at\") or run.get(\"created_at\") or run.get(\"updated_at\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 92,
-          "preview": "candidates.append({**run,\"_validated_timestamp\":created})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 94,
-          "preview": "run=sorted(candidates,key=lambda x:int(x.get(\"id\") or 0),reverse=True)[0]",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 95,
-          "preview": "return {\"id\":run.get(\"id\"),\"head_sha\":commit_sha,\"conclusion\":\"success\",\"name\":run.get(\"name\"),\"path\":_workflow_path(run),\"timestamp\":run.get(\"_validated_timestamp\")}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 119,
-          "preview": "if not isinstance(required_workflow_run_id,int): raise ApprovalProvenanceError(\"required checks do not share one workflow run\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration.py",
-          "line": 1,
-          "preview": "\"\"\"Dry-run and explicitly authorized migration of persisted replacement reputation policy.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration.py",
-          "line": 3,
-          "preview": "Policy migrations never silently promote a replacement. A dry-run computes the exact",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration_cli.py",
-          "line": 1,
-          "preview": "\"\"\"CLI for dry-run and explicitly authorized reputation policy migrations.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artifact_handoff.py",
-          "line": 1,
-          "preview": "\"\"\"Trusted selection of prior autonomous-run artifacts for release handoff.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artwork_stage.py",
-          "line": 12,
-          "preview": "from run import GitHub",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artwork_validation.py",
-          "line": 9,
-          "preview": "from .capabilities.asset_artwork import run",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artwork_validation.py",
-          "line": 11,
-          "preview": "from capabilities.asset_artwork import run",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artwork_validation.py",
-          "line": 45,
-          "preview": "first=run(context)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artwork_validation.py",
-          "line": 46,
-          "preview": "second=run(context)",
+          "file": "studio/asset_forge_bridge.py",
+          "line": 183,
+          "preview": "if not should_route_to_asset_forge(task):",
           "definition_candidate": false
         },
         {
           "file": "studio/asset_forge_bridge.py",
-          "line": 92,
-          "preview": "\"course\", \"run\", \"walk\", \"attack\", \"idle\",",
+          "line": 262,
+          "preview": "if should_route_to_asset_forge(task)",
           "definition_candidate": false
         },
         {
-          "file": "studio/billing_stage.py",
+          "file": "studio/asset_forge_bridge.py",
+          "line": 269,
+          "preview": "[task for task in tasks if should_route_to_asset_forge(task)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 25,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch, build_production_os_asset_dispatch, infer_asset_tasks_from_brief, should_route_to_asset_forge",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 171,
+          "preview": "selected=[item for item in candidates[:8] if should_route_to_asset_forge(item)]",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 1,
+          "preview": "from studio.asset_forge_bridge import build_production_os_asset_dispatch, should_route_to_asset_forge",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 6,
+          "preview": "assert should_route_to_asset_forge(task) is True",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
           "line": 11,
-          "preview": "from run import GitHub",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capabilities/asset_artwork.py",
-          "line": 74,
-          "preview": "def run(context):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_runtime.py",
-          "line": 60,
-          "preview": "run = getattr(module, \"run\", None)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_runtime.py",
-          "line": 61,
-          "preview": "if not callable(run):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_runtime.py",
-          "line": 62,
-          "preview": "raise CapabilityRuntimeError(\"provider must expose callable run(context)\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_runtime.py",
-          "line": 63,
-          "preview": "return run",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_runtime.py",
-          "line": 78,
-          "preview": "run = _load_provider(provider, Path(repo_root))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_runtime.py",
-          "line": 84,
-          "preview": "result_box[\"value\"] = (\"ok\", run(context))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_stage.py",
-          "line": 11,
-          "preview": "from run import GitHub",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
-          "line": 41,
-          "preview": "containers = subprocess.run(['docker', 'ps', '-aq', '--filter',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
-          "line": 42,
-          "preview": "'label=mobile-studio-run=' + run_id], capture_output=True, text=True,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
-          "line": 45,
-          "preview": "subprocess.run(['docker', 'rm', '-f', *containers],",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 845,
-          "preview": "def run(self, args, network=False, timeout=600):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 850,
-          "preview": "cmd = ['docker', 'run', '--name', name, '--rm', '--init', '--cap-drop=ALL', '--security-opt=no-new-privileges',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 858,
-          "preview": "raise StudioError('Invalid sandbox run identifier')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 859,
-          "preview": "cmd[2:2] = ['--label', 'mobile-studio-run=' + run_id]",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 864,
-          "preview": "r = subprocess.run(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 866,
-          "preview": "subprocess.run(['docker', 'rm', '-f', name], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 870,
-          "preview": "rc, log = self.run(['flutter', 'create', '--no-pub', '--platforms=android,ios', '--project-name', name, '.'], network=True)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 880,
-          "preview": "rc, out = self.run(args, network=True, timeout=600)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 887,
-          "preview": "rc, out = self.run(args, network=False, timeout=600)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 895,
-          "preview": "rc, out = self.run(args, network=False, timeout=600)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 928,
-          "preview": "rc, out = self.run(args, network=network, timeout=900)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_qa.py",
-          "line": 21,
-          "preview": "return subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_qa.py",
-          "line": 67,
-          "preview": "created = subprocess.run(['avdmanager', 'create', 'avd', '-n', AVD_NAME, '-k', SYSTEM_IMAGE,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_qa.py",
-          "line": 125,
-          "preview": "shot = subprocess.run([adb, '-s', serial, 'exec-out', 'screencap', '-p'], stdout=handle,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_stage.py",
-          "line": 12,
-          "preview": "from run import GitHub",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/engine_detect.py",
-          "line": 10,
-          "preview": "from run import GitHub",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/engine_entry.py",
-          "line": 11,
-          "preview": "from run import GitHub, execute as execute_flutter",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 27,
-          "preview": "def _trusted_check(run, repository):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 28,
-          "preview": "if not isinstance(run,dict): return False",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 29,
-          "preview": "app=run.get('app')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 31,
-          "preview": "details=run.get('details_url')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 66,
-          "preview": "if not isinstance(runs,list): raise AutoMergeError('GitHub check-run evidence malformed')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 67,
-          "preview": "trusted=[run for run in runs if _trusted_check(run,repository)]; by_name={run.get('name'):run for run in trusted if isinstance(run.get('name'),str)}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 71,
-          "preview": "run=by_name[name]",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 72,
-          "preview": "if run.get('status')!='completed': return {'status':'awaiting_required_checks','missing_checks':[],'pull_request':number}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 73,
-          "preview": "if run.get('conclusion')!='success': raise AutoMergeError('Required promotion check failed: '+name)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_isolated_runner.py",
-          "line": 3,
-          "preview": "Candidate Python/tests run only in the pinned Flutter container with networking",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_isolated_runner.py",
-          "line": 31,
-          "preview": "result=subprocess.run(args,cwd=cwd,env=env,text=True,capture_output=True,timeout=timeout)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_isolated_runner.py",
-          "line": 56,
-          "preview": "command=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','128','--memory','1024m','--cpus','2','--tmpf",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_isolated_runner.py",
-          "line": 95,
-          "preview": "with tempfile.TemporaryDirectory(prefix='evolution-run-') as tmp:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_research.py",
-          "line": 316,
-          "preview": "result = subprocess.run([path, *args], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_stage_runner.py",
-          "line": 26,
-          "preview": "def run(script: str, args: list[str], timeout: float | None = None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_stage_runner.py",
-          "line": 30,
-          "preview": "return subprocess.run([sys.executable, script, *args], env=scrubbed_env(), timeout=timeout)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_stage_runner.py",
-          "line": 37,
-          "preview": "result = run(argv[0], argv[1:])",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_daemon.py",
-          "line": 12,
-          "preview": "from fleet_maintenance import run as maintain",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_maintenance.py",
-          "line": 42,
-          "preview": "def run(root: Path | str = \"studio-output\") -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_maintenance.py",
-          "line": 64,
-          "preview": "report = run(args.root)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_isolated_validation.py",
-          "line": 78,
-          "preview": "\"docker\",\"run\",\"--rm\",\"--network\",\"none\",\"--read-only\",\"--cap-drop\",\"ALL\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_isolated_validation.py",
-          "line": 85,
-          "preview": "result=subprocess.run(cmd,text=True,capture_output=True,timeout=timeout)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_synthesis.py",
-          "line": 22,
-          "preview": "implementation must expose run(context) and fail closed on malformed input.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 12,
-          "preview": "from generic_verify import run as verify",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 15,
-          "preview": "from generic_sandbox import run as run_command",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 16,
-          "preview": "from run import GitHub",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_sandbox.py",
-          "line": 23,
-          "preview": "def run(command:list[str],root:Path,*,timeout:int=900,network:bool=False)->dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_sandbox.py",
-          "line": 34,
-          "preview": "probe=subprocess.run([\"unshare\",\"--net\",\"true\"],env=env,stdin=subprocess.DEVNULL,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_sandbox.py",
-          "line": 46,
-          "preview": "p=subprocess.run(argv,cwd=root,env=env,stdin=subprocess.DEVNULL,",
+          "preview": "assert should_route_to_asset_forge(task) is False",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 120
+      "occurrence_count": 9
     },
-    "run_once": {
+    "_infer_engine": {
       "definition": {
-        "file": "studio/github_runner.py",
-        "line": 589,
+        "file": "studio/asset_forge_bridge.py",
+        "line": 31,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/autonomous_project.py",
-          "line": 182,
-          "preview": "run_once=None,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_project.py",
-          "line": 216,
-          "preview": "if run_once is None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_project.py",
-          "line": 218,
-          "preview": "from .multi_engine_orchestrator import run_project as run_once",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_project.py",
-          "line": 220,
-          "preview": "from multi_engine_orchestrator import run_project as run_once",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_project.py",
-          "line": 270,
-          "preview": "result = run_once(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 589,
-          "preview": "def run_once(*args):",
+          "file": "studio/asset_forge_bridge.py",
+          "line": 31,
+          "preview": "def _infer_engine(task: dict) -> str | None:",
           "definition_candidate": true
         },
         {
-          "file": "studio/github_runner.py",
-          "line": 599,
-          "preview": "run_once=run_once,",
+          "file": "studio/asset_forge_bridge.py",
+          "line": 197,
+          "preview": "engine = str(task.get(\"engine\") or \"\").strip() or _infer_engine(task)",
           "definition_candidate": false
         },
         {
-          "file": "studio/production_os_worker.py",
-          "line": 607,
-          "preview": "def run_once(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 816,
-          "preview": "run_once_fn=run_once,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_project.py",
-          "line": 87,
-          "preview": "def run_once(*args):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_project.py",
-          "line": 108,
-          "preview": "run_once=run_once,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_project.py",
-          "line": 122,
-          "preview": "def run_once(*args):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_project.py",
-          "line": 152,
-          "preview": "run_once=run_once,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_project.py",
-          "line": 164,
-          "preview": "def run_once(*args):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_project.py",
-          "line": 178,
-          "preview": "run_once=run_once,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_project.py",
-          "line": 225,
-          "preview": "run_once=lambda *a: {",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_human_handoff_status_v3.py",
-          "line": 53,
-          "preview": "run_once=require_secret,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_human_handoff_status_v3.py",
-          "line": 83,
-          "preview": "run_once=complete,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_human_handoff_status_v3.py",
-          "line": 104,
-          "preview": "run_once=lambda *args: {",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_human_handoff_status_v3.py",
-          "line": 127,
-          "preview": "run_once=should_not_run,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 11,
-          "preview": "from production_os_worker import main, run_once",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 155,
-          "preview": "return run_once(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 15,
-          "preview": "run_once,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 205,
-          "preview": "result = run_once(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 250,
-          "preview": "result = run_once(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 279,
-          "preview": "result = run_once(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 330,
-          "preview": "result = run_once(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 352,
-          "preview": "result = run_once(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 500,
-          "preview": "result = run_once(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 542,
-          "preview": "result = run_once(",
+          "file": "studio/asset_forge_bridge.py",
+          "line": 282,
+          "preview": "engine = str(task.get(\"engine\") or \"\").strip() or _infer_engine(task)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 30
+      "occurrence_count": 3
     },
-    "improvement_project_cycle": {
+    "_infer_asset_shape": {
       "definition": {
-        "file": "studio/github_runner.py",
-        "line": 614,
+        "file": "studio/asset_forge_bridge.py",
+        "line": 49,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/github_runner.py",
-          "line": 614,
-          "preview": "def improvement_project_cycle(_goal_state):",
+          "file": "studio/asset_forge_bridge.py",
+          "line": 49,
+          "preview": "def _infer_asset_shape(task: dict) -> tuple[str, str]:",
           "definition_candidate": true
         },
         {
-          "file": "studio/github_runner.py",
-          "line": 623,
-          "preview": "verified_project_cycle(candidate,improvement_project_cycle),",
+          "file": "studio/asset_forge_bridge.py",
+          "line": 156,
+          "preview": "asset_type, target_format = _infer_asset_shape({\"objective\": text})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 185,
+          "preview": "inferred_type, inferred_format = _infer_asset_shape(task)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 272,
+          "preview": "inferred_type, inferred_format = _infer_asset_shape(task)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 2
+      "occurrence_count": 4
     },
-    "main": {
+    "infer_asset_tasks_from_brief": {
       "definition": {
-        "file": "studio/github_runner.py",
-        "line": 730,
+        "file": "studio/asset_forge_bridge.py",
+        "line": 71,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "scripts/preflight-production-os-worker.py",
-          "line": 192,
-          "preview": "def main() -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "scripts/preflight-production-os-worker.py",
-          "line": 200,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_contract.py",
-          "line": 133,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_contract.py",
-          "line": 141,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_learning.py",
-          "line": 400,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_learning.py",
-          "line": 411,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 273,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 295,
-          "preview": "sys.exit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_merge.py",
-          "line": 66,
-          "preview": "if pr.get(\"base\",{}).get(\"ref\")!=\"main\":",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_merge.py",
-          "line": 96,
-          "preview": "def main(argv=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_merge.py",
-          "line": 131,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_persist.py",
-          "line": 67,
-          "preview": "\"base\":\"main\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_persist.py",
-          "line": 170,
-          "preview": "\"base\":\"main\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_persist.py",
-          "line": 187,
-          "preview": "def main(argv=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_persist.py",
-          "line": 221,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_pipeline.py",
-          "line": 47,
-          "preview": "def main(argv=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_pipeline.py",
-          "line": 66,
-          "preview": "sys.exit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_postmerge.py",
-          "line": 3,
-          "preview": "Read-only verifier for the exact merge commit. It checks that main contains the merge,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_postmerge.py",
-          "line": 66,
-          "preview": "branch=requester(api+\"/branches/main\",token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_postmerge_pipeline.py",
-          "line": 96,
-          "preview": "def main(argv=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_postmerge_pipeline.py",
-          "line": 127,
-          "preview": "sys.exit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_pr_package.py",
-          "line": 62,
-          "preview": "\"base_branch\":\"main\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_pr_validator.py",
-          "line": 72,
-          "preview": "if pr.get(\"base\",{}).get(\"ref\")!=\"main\":",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_rollback.py",
-          "line": 3,
-          "preview": "Creates a revert commit and a draft rollback PR. It never force-pushes main and never merges",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_rollback.py",
-          "line": 37,
-          "preview": "branch=requester(api+\"/branches/main\",token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_rollback.py",
-          "line": 40,
-          "preview": "raise ReplacementRollbackError(\"main advanced after replacement merge; automatic revert preparation blocked\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_rollback.py",
-          "line": 68,
-          "preview": "\"base\":\"main\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_rollback.py",
-          "line": 93,
-          "preview": "def main(argv=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_rollback.py",
-          "line": 110,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 181,
-          "preview": "def main(argv=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 200,
-          "preview": "sys.exit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_approval.py",
-          "line": 124,
-          "preview": "if pr_identity.get(\"base_ref\")!=\"main\":",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_approval.py",
-          "line": 125,
-          "preview": "raise ApprovalProvenanceError(\"github PR base is not main\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_collect.py",
-          "line": 94,
-          "preview": "if target[\"base_ref\"]!=\"main\":",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_collect.py",
-          "line": 95,
-          "preview": "raise GitHubAttestationCollectionError(\"GitHub PR review target base is not main\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration.py",
-          "line": 436,
-          "preview": "if target.get(\"base_ref\")!=\"main\":",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration.py",
-          "line": 437,
-          "preview": "raise ReputationPolicyMigrationError(\"GitHub review target base must be main\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration_cli.py",
-          "line": 32,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration_cli.py",
-          "line": 131,
-          "preview": "sys.exit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration_review.py",
-          "line": 52,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration_review.py",
+          "file": "studio/asset_forge_bridge.py",
           "line": 71,
-          "preview": "sys.exit(main())",
+          "preview": "def infer_asset_tasks_from_brief(brief: str, *, engine: str | None = None) -> list[dict]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 25,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch, build_production_os_asset_dispatch, infer_asset_tasks_from_brief, should_route_to_asset_forge",
           "definition_candidate": false
         },
         {
-          "file": "studio/artwork_stage.py",
-          "line": 57,
-          "preview": "def main() -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artwork_stage.py",
-          "line": 74,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/billing_stage.py",
-          "line": 45,
-          "preview": "def main() -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/billing_stage.py",
-          "line": 67,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_qa.py",
-          "line": 53,
-          "preview": "path = root / 'android/app/src/main/AndroidManifest.xml'",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_registry_promotion_persist.py",
-          "line": 42,
-          "preview": "\"state\":\"all\",\"head\":_repo_owner(github)+\":\"+branch,\"base\":\"main\",\"per_page\":20",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_registry_promotion_persist.py",
-          "line": 58,
-          "preview": "raise CapabilityRegistryPromotionPersistError(\"main tree missing\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_registry_promotion_persist.py",
-          "line": 62,
-          "preview": "raise CapabilityRegistryPromotionPersistError(\"main tree invalid\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_registry_promotion_persist.py",
-          "line": 87,
-          "preview": "raise CapabilityRegistryPromotionPersistError(\"main tree missing\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_registry_promotion_persist.py",
-          "line": 91,
-          "preview": "raise CapabilityRegistryPromotionPersistError(\"main tree invalid\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_registry_promotion_persist.py",
-          "line": 126,
-          "preview": "raise CapabilityRegistryPromotionPersistError(\"main sha invalid\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_registry_promotion_persist.py",
-          "line": 199,
-          "preview": "\"head\":branch,\"base\":\"main\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_registry_review.py",
-          "line": 34,
-          "preview": "if pr.get(\"base\", {}).get(\"ref\") != \"main\":",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_review.py",
-          "line": 23,
-          "preview": "if pr.get(\"base\",{}).get(\"ref\")!=\"main\":",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_stage.py",
-          "line": 39,
-          "preview": "def main() -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_stage.py",
-          "line": 56,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_scheduler.py",
-          "line": 401,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_scheduler.py",
-          "line": 493,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
-          "line": 183,
-          "preview": "def main():",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
-          "line": 184,
-          "preview": "if os.environ.get('CIRCLE_BRANCH') != 'main':",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
-          "line": 185,
-          "preview": "raise StudioError('Privileged CircleCI jobs require main')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
-          "line": 201,
-          "preview": "return provider_probe.main()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
-          "line": 207,
-          "preview": "sys.exit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 27,
-          "preview": "'implementation': 'Senior Flutter engineering team: implement the entire agreed app, real navigation, state, persistence when needed, error handling and meaningful widget/unit test",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_qa.py",
-          "line": 40,
-          "preview": "manifest = root / 'android/app/src/main/AndroidManifest.xml'",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_qa.py",
-          "line": 170,
-          "preview": "def main() -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_qa.py",
-          "line": 185,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_stage.py",
-          "line": 45,
-          "preview": "def main() -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_stage.py",
-          "line": 60,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/engine_detect.py",
-          "line": 13,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/engine_detect.py",
-          "line": 32,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/engine_entry.py",
-          "line": 76,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/engine_entry.py",
-          "line": 97,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 59,
-          "preview": "if pr.get('base',{}).get('ref')!='main' or pr.get('head',{}).get('ref')!=branch or pr.get('head',{}).get('sha')!=head_sha: raise AutoMergeError('Promotion pull request head changed",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 92,
-          "preview": "def main(argv=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 104,
-          "preview": "if __name__=='__main__': sys.exit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_executor.py",
-          "line": 142,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_executor.py",
-          "line": 166,
-          "preview": "sys.exit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_isolated_runner.py",
-          "line": 110,
-          "preview": "def main(argv=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_isolated_runner.py",
-          "line": 116,
-          "preview": "if __name__=='__main__': sys.exit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_pending.py",
-          "line": 20,
-          "preview": "query = urllib.parse.urlencode({'state':'all','base':'main','per_page':100})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_pending.py",
-          "line": 62,
-          "preview": "def main(argv=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_pending.py",
-          "line": 74,
-          "preview": "if __name__=='__main__': sys.exit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_persist.py",
-          "line": 65,
-          "preview": "query = urllib.parse.urlencode({'state': 'all', 'head': owner + ':' + branch, 'base': 'main', 'per_page': 20})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_persist.py",
+          "file": "studio/orchestrator.py",
           "line": 162,
-          "preview": "'title': f'Promote autonomous capability: {gap}', 'head': branch, 'base': 'main',",
+          "preview": "infer_asset_tasks_from_brief(",
           "definition_candidate": false
         },
         {
-          "file": "studio/evolution_persist.py",
-          "line": 169,
-          "preview": "def main(argv=None):",
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 194,
+          "preview": "from asset_forge_bridge import infer_asset_tasks_from_brief",
           "definition_candidate": false
         },
         {
-          "file": "studio/evolution_persist.py",
-          "line": 181,
-          "preview": "if __name__ == '__main__': sys.exit(main())",
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 195,
+          "preview": "tasks = infer_asset_tasks_from_brief(",
           "definition_candidate": false
         },
         {
-          "file": "studio/evolution_promotion.py",
-          "line": 155,
-          "preview": "def main(argv=None):",
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 207,
+          "preview": "from asset_forge_bridge import infer_asset_tasks_from_brief",
           "definition_candidate": false
         },
         {
-          "file": "studio/evolution_promotion.py",
-          "line": 182,
-          "preview": "sys.exit(main())",
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 208,
+          "preview": "tasks = infer_asset_tasks_from_brief(",
           "definition_candidate": false
         },
         {
-          "file": "studio/evolution_research.py",
-          "line": 388,
-          "preview": "def main(argv=None) -> int:",
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 223,
+          "preview": "from asset_forge_bridge import infer_asset_tasks_from_brief",
           "definition_candidate": false
         },
         {
-          "file": "studio/evolution_research.py",
-          "line": 410,
-          "preview": "sys.exit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_rollback.py",
-          "line": 101,
-          "preview": "def main(argv=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_rollback.py",
-          "line": 121,
-          "preview": "sys.exit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_stage_runner.py",
-          "line": 33,
-          "preview": "def main(argv=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_stage_runner.py",
-          "line": 42,
-          "preview": "sys.exit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_synthesis.py",
-          "line": 62,
-          "preview": "def main(argv=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_synthesis.py",
-          "line": 68,
-          "preview": "if __name__=='__main__': sys.exit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fault_injection_smoke.py",
-          "line": 22,
-          "preview": "def main() -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fault_injection_smoke.py",
-          "line": 118,
-          "preview": "\"base\": {\"ref\": \"main\"},",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fault_injection_smoke.py",
-          "line": 139,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_daemon.py",
-          "line": 107,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_daemon.py",
-          "line": 141,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_dashboard.py",
-          "line": 135,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_dashboard.py",
-          "line": 145,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_maintenance.py",
-          "line": 60,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_maintenance.py",
-          "line": 70,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_metrics.py",
-          "line": 80,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_metrics.py",
-          "line": 91,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_regression.py",
-          "line": 44,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_regression.py",
-          "line": 54,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_supervisor.py",
-          "line": 54,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_supervisor.py",
-          "line": 64,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_supervisor_apply.py",
-          "line": 117,
-          "preview": "def main(argv=None) -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_supervisor_apply.py",
-          "line": 135,
-          "preview": "raise SystemExit(main())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_persist.py",
-          "line": 42,
-          "preview": "query=urllib.parse.urlencode({\"state\":\"all\",\"head\":parts[1]+\":\"+branch,\"base\":\"main\",\"per_page\":20})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_persist.py",
-          "line": 115,
-          "preview": "\"head\":branch,\"base\":\"main\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_smoke.py",
-          "line": 31,
-          "preview": "\"if __name__=='__main__': unittest.main()\\n\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_smoke.py",
-          "line": 140,
-          "preview": "def main() -> int:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_smoke.py",
-          "line": 155,
-          "preview": "raise SystemExit(main())",
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 224,
+          "preview": "tasks = infer_asset_tasks_from_brief(",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 120
+      "occurrence_count": 9
+    },
+    "build_production_os_asset_dispatch": {
+      "definition": {
+        "file": "studio/asset_forge_bridge.py",
+        "line": 176,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 176,
+          "preview": "def build_production_os_asset_dispatch(",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 255,
+          "preview": "build_production_os_asset_dispatch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 25,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch, build_production_os_asset_dispatch, infer_asset_tasks_from_brief, should_route_to_asset_forge",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 220,
+          "preview": "route=build_production_os_asset_dispatch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 1,
+          "preview": "from studio.asset_forge_bridge import build_production_os_asset_dispatch, should_route_to_asset_forge",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 15,
+          "preview": "route = build_production_os_asset_dispatch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 32,
+          "preview": "route = build_production_os_asset_dispatch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 42,
+          "preview": "route = build_production_os_asset_dispatch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 54,
+          "preview": "route = build_production_os_asset_dispatch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 251,
+          "preview": "from asset_forge_bridge import build_production_os_asset_dispatch",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 252,
+          "preview": "route = build_production_os_asset_dispatch(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 11
+    },
+    "build_production_os_asset_batch": {
+      "definition": {
+        "file": "studio/asset_forge_bridge.py",
+        "line": 247,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 247,
+          "preview": "def build_production_os_asset_batch(",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 25,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch, build_production_os_asset_dispatch, infer_asset_tasks_from_brief, should_route_to_asset_forge",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 179,
+          "preview": "batch=build_production_os_asset_batch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 70,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 71,
+          "preview": "batch = build_production_os_asset_batch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 94,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 95,
+          "preview": "batch = build_production_os_asset_batch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 116,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 117,
+          "preview": "batch = build_production_os_asset_batch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 138,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 139,
+          "preview": "batch = build_production_os_asset_batch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 165,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 166,
+          "preview": "batch = build_production_os_asset_batch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 234,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 235,
+          "preview": "batch = build_production_os_asset_batch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 264,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 265,
+          "preview": "batch = build_production_os_asset_batch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 279,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 280,
+          "preview": "batch = build_production_os_asset_batch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 297,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 298,
+          "preview": "batch = build_production_os_asset_batch(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 21
+    },
+    "test_routes_premium_visual_task": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 4,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 4,
+          "preview": "def test_routes_premium_visual_task():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_ignores_plain_code_task": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 9,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 9,
+          "preview": "def test_ignores_plain_code_task():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_builds_production_os_dispatch_contract": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 14,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 14,
+          "preview": "def test_builds_production_os_dispatch_contract():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_premium_route_defaults_to_primary_importance": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 31,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 31,
+          "preview": "def test_premium_route_defaults_to_primary_importance():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_explicit_secondary_importance_is_preserved": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 41,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 41,
+          "preview": "def test_explicit_secondary_importance_is_preserved():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_route_includes_repository_delivery_target": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 53,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 53,
+          "preview": "def test_route_includes_repository_delivery_target():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_batch_preserves_explicit_asset_dependencies": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 69,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 69,
+          "preview": "def test_batch_preserves_explicit_asset_dependencies():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_batch_infers_parent_asset_dependency": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 93,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 93,
+          "preview": "def test_batch_infers_parent_asset_dependency():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_batch_infers_animation_of_dependency": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 115,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 115,
+          "preview": "def test_batch_infers_animation_of_dependency():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_primary_raster_batch_uses_stricter_visual_similarity_policy": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 137,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 137,
+          "preview": "def test_primary_raster_batch_uses_stricter_visual_similarity_policy():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_secondary_raster_batch_uses_lighter_visual_similarity_policy": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 164,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 164,
+          "preview": "def test_secondary_raster_batch_uses_lighter_visual_similarity_policy():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_brief_inference_builds_character_dependency_chain": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 193,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 193,
+          "preview": "def test_brief_inference_builds_character_dependency_chain():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_brief_inference_detects_3d_character_without_2d_sprite_chain": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 206,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 206,
+          "preview": "def test_brief_inference_detects_3d_character_without_2d_sprite_chain():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_brief_inference_detects_3d_environment": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 222,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 222,
+          "preview": "def test_brief_inference_detects_3d_environment():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_raster_quality_policy_can_be_overridden_per_task": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 233,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 233,
+          "preview": "def test_raster_quality_policy_can_be_overridden_per_task():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_target_repository_defaults_visual_delivery_to_assets_art_without_engine": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 250,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 250,
+          "preview": "def test_target_repository_defaults_visual_delivery_to_assets_art_without_engine():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_engine_is_inferred_from_visual_instruction": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 263,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 263,
+          "preview": "def test_engine_is_inferred_from_visual_instruction():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_3d_character_inference_enables_lods_for_primary_assets": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 278,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 278,
+          "preview": "def test_3d_character_inference_enables_lods_for_primary_assets():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_3d_environment_inference_uses_environment_profile": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 296,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 296,
+          "preview": "def test_3d_environment_inference_uses_environment_profile():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
     }
   }
 }

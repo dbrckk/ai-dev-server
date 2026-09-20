@@ -48,3 +48,19 @@ def test_explicit_secondary_importance_is_preserved():
         project="deadline-zero",
     )
     assert route["importance"] == "secondary"
+
+
+def test_route_includes_repository_delivery_target():
+    route = build_production_os_asset_dispatch(
+        {
+            "id": "hud-icon",
+            "objective": "Create premium professional UI icon",
+            "engine": "libgdx",
+        },
+        project="deadline-zero",
+        target_repository="dbrckk/deadline-zero",
+    )
+    assert route["target_repository"] == "dbrckk/deadline-zero"
+    assert route["target_path"] == "assets/art/hud-icon.svg"
+    assert "--target-repository" in route["command"]
+    assert "--target-path" in route["command"]

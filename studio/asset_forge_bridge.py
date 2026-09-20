@@ -45,6 +45,98 @@ def _infer_asset_shape(task: dict) -> tuple[str, str]:
     return "icon", "png"
 
 
+
+def infer_asset_tasks_from_brief(brief: str, *, engine: str | None = None) -> list[dict]:
+    text = str(brief or "").strip()
+    if not text:
+        return []
+    lower = text.lower()
+    if not any(term in lower for term in PREMIUM_TERMS) or not (
+        any(term in lower for term in VISUAL_TERMS)
+        or "pixel art" in lower
+        or "graphisme" in lower
+        or "visuel" in lower
+    ):
+        return []
+
+    inferred_engine = str(engine or "").strip() or None
+    tasks: list[dict] = []
+    character_terms = (
+        "character", "characters", "personnage", "personnages",
+        "zombie", "zombies", "hero", "héros", "enemy", "enemies",
+    )
+    animation_terms = (
+        "animation", "animations", "animate", "animated",
+        "course", "run", "walk", "attack", "idle",
+    )
+    environment_terms = (
+        "environment", "environments", "environnement", "environnements",
+        "level art", "background", "backgrounds", "décor", "decor",
+    )
+
+    if any(term in lower for term in character_terms):
+        tasks.append({
+            "id": "character-foundation",
+            "objective": text,
+            "engine": inferred_engine,
+            "importance": "primary",
+            "asset_type": "sprite-sheet",
+            "format": "png",
+        })
+        if any(term in lower for term in animation_terms):
+            tasks.append({
+                "id": "character-animation",
+                "objective": text + " Preserve the exact character identity across animation frames.",
+                "engine": inferred_engine,
+                "importance": "primary",
+                "asset_type": "sprite-sheet",
+                "format": "png",
+                "animation_of": "character-foundation",
+            })
+
+    padded = f" {lower} "
+    if any(term in padded for term in (" ui ", " interface ", " hud ", " menu ", " menus ")):
+        tasks.append({
+            "id": "ui-foundation",
+            "objective": text,
+            "engine": inferred_engine,
+            "importance": "primary",
+            "asset_type": "ui-vector",
+            "format": "svg",
+        })
+
+    if any(term in lower for term in environment_terms):
+        is_3d = "3d" in lower or "mesh" in lower or "model" in lower
+        tasks.append({
+            "id": "environment-foundation",
+            "objective": text,
+            "engine": inferred_engine,
+            "importance": "primary",
+            "asset_type": "environment" if is_3d else "sprite-sheet",
+            "format": "glb" if is_3d else "png",
+        })
+
+    if not tasks:
+        asset_type, target_format = _infer_asset_shape({"objective": text})
+        tasks.append({
+            "id": "visual-foundation",
+            "objective": text,
+            "engine": inferred_engine,
+            "importance": "primary",
+            "asset_type": asset_type,
+            "format": target_format,
+        })
+
+    unique = []
+    seen = set()
+    for task in tasks:
+        if task["id"] in seen:
+            continue
+        seen.add(task["id"])
+        unique.append(task)
+    return unique[:8]
+
+
 def build_production_os_asset_dispatch(
     task: dict,
     *,

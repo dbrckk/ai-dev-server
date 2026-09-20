@@ -156,6 +156,7 @@ def test_primary_raster_batch_uses_stricter_visual_similarity_policy():
     constraints = run["request"]["manifest"]["constraints"]
     assert constraints["visualSimilarityMin"] == 0.55
     assert constraints["visualSimilarityRetries"] == 2
+    assert constraints["technicalQualityMin"] == 0.62
     assert constraints["technicalQualityMin"] == 0.58
     assert constraints["maxBorderAlphaRatio"] == 0.04
 
@@ -184,6 +185,7 @@ def test_secondary_raster_batch_uses_lighter_visual_similarity_policy():
     constraints = variant["request"]["manifest"]["constraints"]
     assert constraints["visualSimilarityMin"] == 0.42
     assert constraints["visualSimilarityRetries"] == 1
+    assert constraints["technicalQualityMin"] == 0.50
     assert constraints["technicalQualityMin"] == 0.42
     assert constraints["maxBorderAlphaRatio"] == 0.08
 

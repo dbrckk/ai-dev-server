@@ -1744,7 +1744,7 @@ jobs:
 
       - name: Install Production OS and Asset Forge
         run: |
-          python -m pip install --no-deps ./production-os
+          python -m pip install ./production-os
           python -m pip install --no-deps ./asset-forge
           production-os --help >/dev/null
           asset-forge --help >/dev/null
@@ -9003,6 +9003,7 @@ target_format = str(task.get("format") or inferred_format).strip().lower()
 instruction = str(
 request_id = str(task.get("request_id") or f"{project}-{asset_id}").strip()
 engine = str(task.get("engine") or "").strip() or None
+importance = str(task.get("importance") or ("primary" if any(term in instruction.lower() for term in PREMIUM_TERMS) else "secondary")).strip().lower()
 ⋮----
 args = [
 ````
@@ -25975,6 +25976,12 @@ task = {"objective": "Fix API pagination bug"}
 def test_builds_production_os_dispatch_contract()
 ⋮----
 route = build_production_os_asset_dispatch(
+⋮----
+def test_premium_route_defaults_to_primary_importance()
+⋮----
+idx = route["command"].index("--importance")
+⋮----
+def test_explicit_secondary_importance_is_preserved()
 ````
 
 ## File: tests/test_asset_forge_installer.py

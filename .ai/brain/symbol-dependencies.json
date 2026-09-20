@@ -4,5 +4,180 @@
   "scope": "symbols defined in changed source files",
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
-  "symbols": {}
+  "symbols": {
+    "should_route_to_asset_forge": {
+      "source": {
+        "file": "studio/asset_forge_bridge.py",
+        "start": 15,
+        "end": 28
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_infer_asset_shape": {
+      "source": {
+        "file": "studio/asset_forge_bridge.py",
+        "start": 31,
+        "end": 45
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "build_production_os_asset_dispatch": {
+      "source": {
+        "file": "studio/asset_forge_bridge.py",
+        "start": 48,
+        "end": 92
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_infer_asset_shape",
+          "definitions": [
+            {
+              "file": "studio/asset_forge_bridge.py",
+              "line": 31,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "should_route_to_asset_forge",
+          "definitions": [
+            {
+              "file": "studio/asset_forge_bridge.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_routes_premium_visual_task": {
+      "source": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "start": 4,
+        "end": 6
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "should_route_to_asset_forge",
+          "definitions": [
+            {
+              "file": "studio/asset_forge_bridge.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_ignores_plain_code_task": {
+      "source": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "start": 9,
+        "end": 11
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 281,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "should_route_to_asset_forge",
+          "definitions": [
+            {
+              "file": "studio/asset_forge_bridge.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_builds_production_os_dispatch_contract": {
+      "source": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "start": 14,
+        "end": 28
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_production_os_asset_dispatch",
+          "definitions": [
+            {
+              "file": "studio/asset_forge_bridge.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_premium_route_defaults_to_primary_importance": {
+      "source": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "start": 31,
+        "end": 38
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_production_os_asset_dispatch",
+          "definitions": [
+            {
+              "file": "studio/asset_forge_bridge.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_explicit_secondary_importance_is_preserved": {
+      "source": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "start": 41,
+        "end": 50
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_production_os_asset_dispatch",
+          "definitions": [
+            {
+              "file": "studio/asset_forge_bridge.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    }
+  }
 }

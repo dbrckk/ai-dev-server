@@ -2684,6 +2684,12 @@ task = {"objective": "Fix API pagination bug"}
 def test_builds_production_os_dispatch_contract()
 ⋮----
 route = build_production_os_asset_dispatch(
+⋮----
+def test_premium_route_defaults_to_primary_importance()
+⋮----
+idx = route["command"].index("--importance")
+⋮----
+def test_explicit_secondary_importance_is_preserved()
 ```
 
 ## File: test_asset_forge_installer.py

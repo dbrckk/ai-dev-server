@@ -4246,6 +4246,7 @@ target_format = str(task.get("format") or inferred_format).strip().lower()
 instruction = str(
 request_id = str(task.get("request_id") or f"{project}-{asset_id}").strip()
 engine = str(task.get("engine") or "").strip() or None
+importance = str(task.get("importance") or ("primary" if any(term in instruction.lower() for term in PREMIUM_TERMS) else "secondary")).strip().lower()
 ⋮----
 args = [
 ````

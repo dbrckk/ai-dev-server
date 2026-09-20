@@ -2745,6 +2745,10 @@ manifest = batch["items"][0]["request"]["manifest"]
 def test_3d_character_inference_enables_lods_for_primary_assets()
 ⋮----
 def test_3d_environment_inference_uses_environment_profile()
+⋮----
+def test_primary_3d_environment_requires_collision_readiness()
+⋮----
+def test_secondary_3d_prop_does_not_require_collision_gate()
 ```
 
 ## File: test_asset_forge_installer.py

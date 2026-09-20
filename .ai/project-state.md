@@ -22,19 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T17:13:08Z
+Generated: 2026-09-20T17:14:32Z
 
 ### Git
 - Branch: `main`
-- Head: `05bfba9901d5`
-- Commit date: 2026-09-20T19:12:57+02:00
-- Commit: fix: preserve pipeline summary while collecting asset dedup metrics
+- Head: `6f823b094ef6`
+- Commit date: 2026-09-20T19:14:10+02:00
+- Commit: test: cover automatic 3D collision policy
 - Tracked files: 820
 
 ### Recently changed files
+- `tests/test_asset_forge_bridge.py`
+- `tests/test_production_os_result_contract.py`
 - `studio/github_runner.py`
 - `studio/asset_forge_bridge.py`
-- `tests/test_asset_forge_bridge.py`
 
 ### Project signals
 - No common build descriptor detected

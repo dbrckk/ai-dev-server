@@ -45,7 +45,13 @@ def _infer_asset_shape(task: dict) -> tuple[str, str]:
     return "icon", "png"
 
 
-def build_production_os_asset_dispatch(task: dict, *, project: str) -> dict:
+def build_production_os_asset_dispatch(
+    task: dict,
+    *,
+    project: str,
+    target_repository: str | None = None,
+    target_worktree: str | None = None,
+) -> dict:
     if not should_route_to_asset_forge(task):
         raise ValueError("task does not require asset-forge")
     inferred_type, inferred_format = _infer_asset_shape(task)
@@ -61,6 +67,10 @@ def build_production_os_asset_dispatch(task: dict, *, project: str) -> dict:
     ).strip()
     request_id = str(task.get("request_id") or f"{project}-{asset_id}").strip()
     engine = str(task.get("engine") or "").strip() or None
+    target_repository = str(task.get("target_repository") or target_repository or "").strip() or None
+    target_worktree = str(task.get("target_worktree") or target_worktree or "").strip() or None
+    default_root = "assets/art" if (engine or "").lower() in {"godot", "godot4", "godot-4", "libgdx"} else "assets/generated"
+    target_path = str(task.get("target_path") or f"{default_root}/{asset_id}.{target_format}").strip()
     importance = str(task.get("importance") or ("primary" if any(term in instruction.lower() for term in PREMIUM_TERMS) else "secondary")).strip().lower()
     if importance not in {"primary", "secondary"}:
         raise ValueError("importance must be primary or secondary")
@@ -79,6 +89,12 @@ def build_production_os_asset_dispatch(task: dict, *, project: str) -> dict:
     ]
     if engine:
         args.extend(["--engine", engine])
+    if target_repository:
+        args.extend(["--target-repository", target_repository])
+    if target_path:
+        args.extend(["--target-path", target_path])
+    if target_worktree:
+        args.extend(["--target-worktree", target_worktree])
 
     return {
         "schema_version": "ai-dev-server/asset-forge-route/v1",
@@ -88,5 +104,7 @@ def build_production_os_asset_dispatch(task: dict, *, project: str) -> dict:
         "project": project,
         "asset_id": asset_id,
         "importance": importance,
+        "target_repository": target_repository,
+        "target_path": target_path,
         "command": args,
     }

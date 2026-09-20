@@ -838,6 +838,16 @@
       "in_degree": 2,
       "out_degree": 4
     },
+    "studio/asset_forge_bridge.py": {
+      "dependencies": [
+        "studio/core.py"
+      ],
+      "dependents": [
+        "tests/test_asset_forge_bridge.py"
+      ],
+      "in_degree": 1,
+      "out_degree": 1
+    },
     "studio/atomic_file.py": {
       "dependencies": [
         "tests/test_studio.py"
@@ -1408,6 +1418,7 @@
         "studio/artifact_cas_promotion.py",
         "studio/artifact_share_policy.py",
         "studio/artwork_stage.py",
+        "studio/asset_forge_bridge.py",
         "studio/billing_qa.py",
         "studio/billing_stage.py",
         "studio/capability_registry_promotion_persist.py",
@@ -1590,7 +1601,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 205,
+      "in_degree": 206,
       "out_degree": 17
     },
     "studio/cost_drift.py": {
@@ -5292,6 +5303,14 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 4
+    },
+    "tests/test_asset_forge_bridge.py": {
+      "dependencies": [
+        "studio/asset_forge_bridge.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
     },
     "tests/test_atomic_file.py": {
       "dependencies": [

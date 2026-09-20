@@ -1,10 +1,10 @@
 # Change impact
 
-Base: fbe3e6b42f1d7a2b102074d23105dedbf90cce43
-Head: 6ca6659899a210973548026439e4775724a7d3e7
+Base: 1e53ab626935551e6ab13e86285f36a2f7f7de68
+Head: 3c09fa718b57cb2b1cf49f121a0f6e9922e3f23e
 
 ## Changed files
-- M tests/test_production_os_worker.py
+- A tests/test_asset_forge_bridge.py
 
 ## Affected areas
 - tests

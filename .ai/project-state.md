@@ -22,20 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T08:56:32Z
+Generated: 2026-09-20T10:49:21Z
 
 ### Git
 - Branch: `main`
-- Head: `6ca6659899a2`
-- Commit date: 2026-09-20T10:52:57+02:00
-- Commit: test: require capability-aware visual handoff guidance
-- Tracked files: 816
+- Head: `3c09fa718b57`
+- Commit date: 2026-09-20T12:49:09+02:00
+- Commit: test: cover asset-forge routing bridge
+- Tracked files: 818
 
 ### Recently changed files
+- `tests/test_asset_forge_bridge.py`
+- `studio/asset_forge_bridge.py`
 - `tests/test_production_os_worker.py`
 - `studio/production_os_worker.py`
 - `docs/PRODUCTION_OS_WORKER.md`
-- `.github/workflows/production-os-asset-forge-live-e2e.yml`
 
 ### Project signals
 - No common build descriptor detected

@@ -100,6 +100,7 @@ test_artwork_stage.py
 test_artwork_validation.py
 test_asset_artwork_capability.py
 test_asset_artwork_promotion.py
+test_asset_forge_bridge.py
 test_asset_forge_installer.py
 test_atomic_file.py
 test_autonomous_project.py
@@ -2668,6 +2669,21 @@ def test_promoted_artwork_syncs_only_through_registry_gate(self)
 ⋮----
 registry=sync_into_registry(new_registry(),registry_path,repo_root=root)
 item=registry["capabilities"]["asset_artwork"]
+```
+
+## File: test_asset_forge_bridge.py
+```python
+def test_routes_premium_visual_task()
+⋮----
+task = {"objective": "Create premium AAA zombie sprites for the game"}
+⋮----
+def test_ignores_plain_code_task()
+⋮----
+task = {"objective": "Fix API pagination bug"}
+⋮----
+def test_builds_production_os_dispatch_contract()
+⋮----
+route = build_production_os_asset_dispatch(
 ```
 
 ## File: test_asset_forge_installer.py

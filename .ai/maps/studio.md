@@ -105,6 +105,7 @@ artwork_candidate_bridge.py
 artwork_capability.py
 artwork_stage.py
 artwork_validation.py
+asset_forge_bridge.py
 atomic_file.py
 autonomous_project.py
 autonomous_research.py
@@ -4215,6 +4216,34 @@ benchmark_score=sum(item["asset_count"] for item in outputs)
 benchmark = {
 ⋮----
 regression = {
+````
+
+## File: asset_forge_bridge.py
+````python
+"""Asset Forge routing bridge for premium visual production tasks."""
+⋮----
+VISUAL_TERMS = {
+PREMIUM_TERMS = {"premium", "aaa", "professional", "production", "high quality", "polished"}
+⋮----
+def should_route_to_asset_forge(task: dict) -> bool
+⋮----
+text = " ".join(
+⋮----
+tokens = set(re.findall(r"[a-z0-9]+", text))
+visual = bool(tokens & VISUAL_TERMS) or "pixel art" in text
+premium = any(term in text for term in PREMIUM_TERMS)
+explicit = task.get("requires_asset_forge") is True
+⋮----
+def build_production_os_asset_dispatch(task: dict, *, project: str) -> dict
+⋮----
+asset_id = str(task.get("asset_id") or task.get("id") or "visual-asset").strip()
+asset_type = str(task.get("asset_type") or "icon").strip()
+target_format = str(task.get("format") or ("glb" if "3d" in str(task).lower() else "png")).strip().lower()
+instruction = str(
+request_id = str(task.get("request_id") or f"{project}-{asset_id}").strip()
+engine = str(task.get("engine") or "").strip() or None
+⋮----
+args = [
 ````
 
 ## File: atomic_file.py

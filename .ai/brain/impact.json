@@ -1,17 +1,209 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "59d4a71d72d2a7a64509684bb76bbb5b5b6c2dfd",
-  "head": "99bb62ef7cfe79e1895704a03e91e35402f4174e",
+  "base": "99bb62ef7cfe79e1895704a03e91e35402f4174e",
+  "head": "40bb327c722bc1956cab36b7c601df88c0ab5e7b",
   "index_mode": "incremental",
   "changed_files": [
     {
       "path": ".github/workflows/asset-forge-batch-e2e.yml",
       "status": "M"
+    },
+    {
+      "path": "studio/asset_forge_bridge.py",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_asset_forge_bridge.py",
+      "status": "M"
     }
   ],
-  "changed_source_files": [],
-  "impacted_files": [],
-  "impacted_symbols": [],
-  "selected_tests": []
+  "changed_source_files": [
+    "studio/asset_forge_bridge.py",
+    "tests/test_asset_forge_bridge.py"
+  ],
+  "impacted_files": [
+    "studio/asset_forge_bridge.py",
+    "studio/orchestrator.py",
+    "tests/test_asset_forge_bridge.py"
+  ],
+  "impacted_symbols": [
+    {
+      "name": "should_route_to_asset_forge",
+      "kind": "function",
+      "file": "studio/asset_forge_bridge.py",
+      "line": 15
+    },
+    {
+      "name": "_infer_asset_shape",
+      "kind": "function",
+      "file": "studio/asset_forge_bridge.py",
+      "line": 31
+    },
+    {
+      "name": "build_production_os_asset_dispatch",
+      "kind": "function",
+      "file": "studio/asset_forge_bridge.py",
+      "line": 48
+    },
+    {
+      "name": "build_production_os_asset_batch",
+      "kind": "function",
+      "file": "studio/asset_forge_bridge.py",
+      "line": 113
+    },
+    {
+      "name": "_recommendation_context",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 27
+    },
+    {
+      "name": "_load_recommendations",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 40
+    },
+    {
+      "name": "_evaluate_architecture",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 50
+    },
+    {
+      "name": "_asset_forge_prefetch",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 118
+    },
+    {
+      "name": "load_report",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 202
+    },
+    {
+      "name": "_remaining",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 210
+    },
+    {
+      "name": "_write_adaptation_handoff",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 215
+    },
+    {
+      "name": "_run_adaptation_pending",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 221
+    },
+    {
+      "name": "_run_adaptation_research",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 238
+    },
+    {
+      "name": "_run_adaptation_synthesis",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 252
+    },
+    {
+      "name": "_run_adaptation_benchmark",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 266
+    },
+    {
+      "name": "_run_adaptation_promotion",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 282
+    },
+    {
+      "name": "_run_adaptation_persistence",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 295
+    },
+    {
+      "name": "_run_adaptation_automerge",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 309
+    },
+    {
+      "name": "_stage_command",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 331
+    },
+    {
+      "name": "run_registered_stages",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 336
+    },
+    {
+      "name": "run_project",
+      "kind": "function",
+      "file": "studio/orchestrator.py",
+      "line": 383
+    },
+    {
+      "name": "test_routes_premium_visual_task",
+      "kind": "function",
+      "file": "tests/test_asset_forge_bridge.py",
+      "line": 4
+    },
+    {
+      "name": "test_ignores_plain_code_task",
+      "kind": "function",
+      "file": "tests/test_asset_forge_bridge.py",
+      "line": 9
+    },
+    {
+      "name": "test_builds_production_os_dispatch_contract",
+      "kind": "function",
+      "file": "tests/test_asset_forge_bridge.py",
+      "line": 14
+    },
+    {
+      "name": "test_premium_route_defaults_to_primary_importance",
+      "kind": "function",
+      "file": "tests/test_asset_forge_bridge.py",
+      "line": 31
+    },
+    {
+      "name": "test_explicit_secondary_importance_is_preserved",
+      "kind": "function",
+      "file": "tests/test_asset_forge_bridge.py",
+      "line": 41
+    },
+    {
+      "name": "test_route_includes_repository_delivery_target",
+      "kind": "function",
+      "file": "tests/test_asset_forge_bridge.py",
+      "line": 53
+    },
+    {
+      "name": "test_batch_preserves_explicit_asset_dependencies",
+      "kind": "function",
+      "file": "tests/test_asset_forge_bridge.py",
+      "line": 69
+    },
+    {
+      "name": "test_batch_infers_parent_asset_dependency",
+      "kind": "function",
+      "file": "tests/test_asset_forge_bridge.py",
+      "line": 93
+    }
+  ],
+  "selected_tests": [
+    "tests/test_asset_forge_bridge.py"
+  ]
 }

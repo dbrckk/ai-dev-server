@@ -22,19 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T11:57:21Z
+Generated: 2026-09-20T13:36:57Z
 
 ### Git
 - Branch: `main`
-- Head: `99bb62ef7cfe`
-- Commit date: 2026-09-20T13:56:44+02:00
-- Commit: ci: always retain transactional batch evidence
+- Head: `40bb327c722b`
+- Commit date: 2026-09-20T15:36:44+02:00
+- Commit: ci: verify dependency-ordered asset batch execution
 - Tracked files: 819
 
 ### Recently changed files
 - `.github/workflows/asset-forge-batch-e2e.yml`
-- `tests/test_orchestrator.py`
-- `studio/orchestrator.py`
+- `tests/test_asset_forge_bridge.py`
 - `studio/asset_forge_bridge.py`
 
 ### Project signals

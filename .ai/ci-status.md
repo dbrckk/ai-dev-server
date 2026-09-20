@@ -1,18 +1,14 @@
 # CI status
 
-Summary: 0 success / 1 failure / 7 active
+Summary: 5 success / 0 failure / 3 active
 
-- Fault Injection Gate: queued / pending (99bb62ef)
-- Transactional Asset Forge Batch E2E: in_progress / pending (99bb62ef)
-- Validate AI Dev Server: in_progress / pending (99bb62ef)
-- Resilience Soak: in_progress / pending (99bb62ef)
-- CI: in_progress / pending (99bb62ef)
-- Mobile Studio Real Build: in_progress / pending (99bb62ef)
-- Multi-Engine E2E Benchmark: queued / pending (99bb62ef)
-- Transactional Asset Forge Batch E2E: completed / failure (59d4a71d)
-
-## Latest failed run structure
-- Job: batch-e2e
-  - Failed step: Verify both assets were committed as one logical batch
+- Transactional Asset Forge Batch E2E: completed / success (40bb327c)
+- Validate AI Dev Server: in_progress / pending (40bb327c)
+- CI: completed / success (40bb327c)
+- Multi-Engine E2E Benchmark: queued / pending (40bb327c)
+- Fault Injection Gate: completed / success (40bb327c)
+- Mobile Studio Real Build: in_progress / pending (40bb327c)
+- Resilience Soak: completed / success (40bb327c)
+- Fault Injection Gate: completed / success (25a18147)
 
 > Generated summary only; inspect GitHub Actions for full logs when needed.

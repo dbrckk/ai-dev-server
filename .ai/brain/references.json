@@ -4,5 +4,360 @@
   "scope": "symbols defined in changed source files",
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
-  "symbols": {}
+  "symbols": {
+    "should_route_to_asset_forge": {
+      "definition": {
+        "file": "studio/asset_forge_bridge.py",
+        "line": 15,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 15,
+          "preview": "def should_route_to_asset_forge(task: dict) -> bool:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 55,
+          "preview": "if not should_route_to_asset_forge(task):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 128,
+          "preview": "if should_route_to_asset_forge(task)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 135,
+          "preview": "[task for task in tasks if should_route_to_asset_forge(task)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 25,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch, build_production_os_asset_dispatch, should_route_to_asset_forge",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 140,
+          "preview": "if should_route_to_asset_forge(candidate):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 146,
+          "preview": "selected=[item for item in candidates[:8] if should_route_to_asset_forge(item)]",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 1,
+          "preview": "from studio.asset_forge_bridge import build_production_os_asset_dispatch, should_route_to_asset_forge",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 6,
+          "preview": "assert should_route_to_asset_forge(task) is True",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 11,
+          "preview": "assert should_route_to_asset_forge(task) is False",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 10
+    },
+    "_infer_asset_shape": {
+      "definition": {
+        "file": "studio/asset_forge_bridge.py",
+        "line": 31,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 31,
+          "preview": "def _infer_asset_shape(task: dict) -> tuple[str, str]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 57,
+          "preview": "inferred_type, inferred_format = _infer_asset_shape(task)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 138,
+          "preview": "inferred_type, inferred_format = _infer_asset_shape(task)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
+    "build_production_os_asset_dispatch": {
+      "definition": {
+        "file": "studio/asset_forge_bridge.py",
+        "line": 48,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 48,
+          "preview": "def build_production_os_asset_dispatch(",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 121,
+          "preview": "build_production_os_asset_dispatch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 25,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch, build_production_os_asset_dispatch, should_route_to_asset_forge",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 179,
+          "preview": "route=build_production_os_asset_dispatch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 1,
+          "preview": "from studio.asset_forge_bridge import build_production_os_asset_dispatch, should_route_to_asset_forge",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 15,
+          "preview": "route = build_production_os_asset_dispatch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 32,
+          "preview": "route = build_production_os_asset_dispatch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 42,
+          "preview": "route = build_production_os_asset_dispatch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 54,
+          "preview": "route = build_production_os_asset_dispatch(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 9
+    },
+    "build_production_os_asset_batch": {
+      "definition": {
+        "file": "studio/asset_forge_bridge.py",
+        "line": 113,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 113,
+          "preview": "def build_production_os_asset_batch(",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 25,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch, build_production_os_asset_dispatch, should_route_to_asset_forge",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 152,
+          "preview": "batch=build_production_os_asset_batch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 70,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 71,
+          "preview": "batch = build_production_os_asset_batch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 94,
+          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 95,
+          "preview": "batch = build_production_os_asset_batch(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 7
+    },
+    "test_routes_premium_visual_task": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 4,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 4,
+          "preview": "def test_routes_premium_visual_task():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_ignores_plain_code_task": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 9,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 9,
+          "preview": "def test_ignores_plain_code_task():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_builds_production_os_dispatch_contract": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 14,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 14,
+          "preview": "def test_builds_production_os_dispatch_contract():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_premium_route_defaults_to_primary_importance": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 31,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 31,
+          "preview": "def test_premium_route_defaults_to_primary_importance():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_explicit_secondary_importance_is_preserved": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 41,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 41,
+          "preview": "def test_explicit_secondary_importance_is_preserved():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_route_includes_repository_delivery_target": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 53,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 53,
+          "preview": "def test_route_includes_repository_delivery_target():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_batch_preserves_explicit_asset_dependencies": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 69,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 69,
+          "preview": "def test_batch_preserves_explicit_asset_dependencies():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_batch_infers_parent_asset_dependency": {
+      "definition": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "line": 93,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_asset_forge_bridge.py",
+          "line": 93,
+          "preview": "def test_batch_infers_parent_asset_dependency():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    }
+  }
 }

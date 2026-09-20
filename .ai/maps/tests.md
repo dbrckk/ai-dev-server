@@ -2692,6 +2692,13 @@ idx = route["command"].index("--importance")
 def test_explicit_secondary_importance_is_preserved()
 ⋮----
 def test_route_includes_repository_delivery_target()
+⋮----
+def test_batch_preserves_explicit_asset_dependencies()
+⋮----
+batch = build_production_os_asset_batch(
+by_id = {item["id"]: item for item in batch["items"]}
+⋮----
+def test_batch_infers_parent_asset_dependency()
 ```
 
 ## File: test_asset_forge_installer.py

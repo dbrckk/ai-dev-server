@@ -4259,6 +4259,14 @@ items = []
 source_mode = str(task.get("source_mode") or "generated").strip().lower()
 request = {
 ⋮----
+raw_dependencies = task.get("depends_on")
+⋮----
+implicit = task.get("source_asset") or task.get("parent_asset")
+raw_dependencies = [implicit] if implicit else []
+⋮----
+raw_dependencies = [raw_dependencies]
+⋮----
+dependencies = [str(value).strip() for value in raw_dependencies if str(value).strip()]
 item = {
 ````
 

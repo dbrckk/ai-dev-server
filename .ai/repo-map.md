@@ -989,11 +989,15 @@ jobs:
           spec = {
               "items": [
                   {
+                      "id": "batch-a",
+                      "depends_on": [],
                       "request": request("batch-e2e-a", "batch-a"),
                       "source_path": "build/batch-e2e/a.svg",
                       "target_path": "assets/art/batch-a.svg",
                   },
                   {
+                      "id": "batch-b",
+                      "depends_on": ["batch-a"],
                       "request": request("batch-e2e-b", "batch-b"),
                       "source_path": "build/batch-e2e/b.svg",
                       "target_path": "assets/art/batch-b.svg",
@@ -1023,6 +1027,8 @@ jobs:
           assert result["success"] is True
           assert result["count"] == 2
           assert result["delivery_mode"] == "worktree"
+          assert result["execution_order"] == ["batch-a", "batch-b"]
+          assert result["items"][1]["depends_on"] == ["batch-a"]
           assert len(result["delivered_to"]) == 2
           PY
 
@@ -9161,6 +9167,14 @@ items = []
 source_mode = str(task.get("source_mode") or "generated").strip().lower()
 request = {
 ⋮----
+raw_dependencies = task.get("depends_on")
+⋮----
+implicit = task.get("source_asset") or task.get("parent_asset")
+raw_dependencies = [implicit] if implicit else []
+⋮----
+raw_dependencies = [raw_dependencies]
+⋮----
+dependencies = [str(value).strip() for value in raw_dependencies if str(value).strip()]
 item = {
 ````
 
@@ -26155,6 +26169,13 @@ idx = route["command"].index("--importance")
 def test_explicit_secondary_importance_is_preserved()
 ⋮----
 def test_route_includes_repository_delivery_target()
+⋮----
+def test_batch_preserves_explicit_asset_dependencies()
+⋮----
+batch = build_production_os_asset_batch(
+by_id = {item["id"]: item for item in batch["items"]}
+⋮----
+def test_batch_infers_parent_asset_dependency()
 ````
 
 ## File: tests/test_asset_forge_installer.py

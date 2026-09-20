@@ -120,6 +120,80 @@ class OrchestratorTests(unittest.TestCase):
             self.assertTrue(prefetch['batch'])
             self.assertEqual(len(prefetch['routes']),2)
 
+    def test_asset_forge_batch_receipt_marks_regenerated_quality(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); out = root / 'out'; request = root / 'request.json'
+            request.write_text(json.dumps({
+                'id':'deadline-zero',
+                'target_repo':'dbrckk/deadline-zero',
+                'asset_requests':[
+                    {'id':'hero','objective':'Create premium AAA character sprite','engine':'libgdx'},
+                    {'id':'hero-run','objective':'Create premium AAA run animation sprite','engine':'libgdx','animation_of':'hero'},
+                ],
+            }))
+            def runner(args, timeout):
+                out.mkdir(parents=True, exist_ok=True)
+                if args and args[0]=='production-os':
+                    receipt_path = Path(args[args.index('--result-file')+1])
+                    receipt_path.write_text(json.dumps({
+                        'schema_version':'production-os/asset-forge-batch/v1',
+                        'success':True,
+                        'quality_summary':{
+                            'checked':1,
+                            'regenerated':1,
+                            'minimum_score':0.81,
+                        },
+                    }))
+                    return subprocess.CompletedProcess(args,0)
+                if 'studio/run.py' in args:
+                    (out/'report.json').write_text(json.dumps({
+                        'status':'validated_preview',
+                        'completion':{'finished':False,'next_stage':'release_build'},
+                    }))
+                    return subprocess.CompletedProcess(args,0)
+                if 'studio/post_preview.py' in args:
+                    (out/'report.json').write_text(json.dumps({
+                        'status':'finished',
+                        'completion':{'finished':True,'next_stage':None},
+                    }))
+                    return subprocess.CompletedProcess(args,0)
+                self.fail('unexpected stage '+str(args))
+            result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)
+            self.assertEqual(result['status'],'complete')
+            prefetch=json.loads((out/'asset-forge-prefetch.json').read_text())
+            self.assertEqual(prefetch['status'],'completed')
+            self.assertEqual(prefetch['quality_status'],'regenerated')
+            self.assertEqual(prefetch['receipts'][0]['quality_summary']['minimum_score'],0.81)
+
+    def test_asset_forge_failure_receipt_marks_low_quality(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); out = root / 'out'; request = root / 'request.json'
+            request.write_text(json.dumps({
+                'id':'deadline-zero',
+                'target_repo':'dbrckk/deadline-zero',
+                'asset_requests':[
+                    {'id':'hero','objective':'Create premium AAA character sprite','engine':'libgdx'},
+                    {'id':'hero-run','objective':'Create premium AAA run animation sprite','engine':'libgdx','animation_of':'hero'},
+                ],
+            }))
+            def runner(args, timeout):
+                out.mkdir(parents=True, exist_ok=True)
+                if args and args[0]=='production-os':
+                    receipt_path = Path(args[args.index('--result-file')+1])
+                    receipt_path.write_text(json.dumps({
+                        'schema_version':'production-os/asset-forge-result/v1',
+                        'success':False,
+                        'error_code':'visual_quality_failed',
+                        'error_type':'RuntimeError',
+                    }))
+                    return subprocess.CompletedProcess(args,1)
+                self.fail('pipeline must stop after visual quality failure')
+            result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)
+            self.assertEqual(result['status'],'asset_forge_failed')
+            prefetch=json.loads((out/'asset-forge-prefetch.json').read_text())
+            self.assertEqual(prefetch['status'],'failed')
+            self.assertEqual(prefetch['quality_status'],'low_quality')
+
     def test_full_pipeline_reaches_finished(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}')

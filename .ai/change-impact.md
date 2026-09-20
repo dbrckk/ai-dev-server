@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 8b2895156392b5e0bf6c705b0a5819a6e29e6b78
-Head: 75170a57b61325cf3c7a22469acef13b23e88628
+Base: 3d0b2eb738fe569aaeb1954c49220101886f09e3
+Head: 77c9126e11200b539feac39e8157312a3b7c80f2
 
 ## Changed files
-- A tests/test_fleet_dashboard.py
+- M studio/github_runner.py
 
 ## Affected areas
-- tests
+- studio
 
 ## Related test candidates
 - No direct filename-based test match detected.

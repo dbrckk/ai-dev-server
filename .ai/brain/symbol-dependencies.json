@@ -5,114 +5,902 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "_asset_quality": {
+    "_prepare_capability_promotion_handoff": {
       "source": {
-        "file": "studio/fleet_dashboard.py",
-        "start": 12,
-        "end": 76
+        "file": "studio/github_runner.py",
+        "start": 56,
+        "end": 93
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_candidate_envelope",
+          "definitions": [
+            {
+              "file": "studio/capability_synthesis.py",
+              "line": 108,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_isolated_validation_result",
+          "definitions": [
+            {
+              "file": "studio/generic_capability_isolated_validation.py",
+              "line": 172,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "_usage_count": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 96,
+        "end": 102
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "collect": {
+    "collect_agent_usage": {
       "source": {
-        "file": "studio/fleet_dashboard.py",
-        "start": 79,
-        "end": 132
+        "file": "studio/github_runner.py",
+        "start": 105,
+        "end": 167
       },
       "symbol_dependencies": [
         {
-          "symbol": "_asset_quality",
+          "symbol": "_usage_count",
           "definitions": [
             {
-              "file": "studio/fleet_dashboard.py",
+              "file": "studio/github_runner.py",
+              "line": 96,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "write_production_os_result": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 170,
+        "end": 234
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "bounded_run": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 237,
+        "end": 250
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 271,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_update_improvements": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 253,
+        "end": 268
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "activate_next",
+          "definitions": [
+            {
+              "file": "studio/improvement_backlog.py",
+              "line": 84,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "merge_assessment",
+          "definitions": [
+            {
+              "file": "studio/improvement_backlog.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "new_backlog",
+          "definitions": [
+            {
+              "file": "studio/improvement_backlog.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "run": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 53,
+        "end": 53
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "run_once": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 559,
+        "end": 679
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AgentPerformanceStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_agent_performance_store.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ArtifactCasAuditStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_artifact_cas_audit_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ArtifactCasStatsStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_artifact_cas_stats_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ContextualStrategyEfficiencyStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_contextual_strategy_efficiency_store.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ExecutionCheckpointStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_execution_checkpoint_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FullGateCacheStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_full_gate_cache_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "GitHubMemoryError",
+          "definitions": [
+            {
+              "file": "studio/github_memory_store.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PhaseCostBaselineStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_phase_cost_baseline_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProviderHealthStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_provider_health_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProviderMetricsStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_provider_metrics_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "QuickGateCacheStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_quick_gate_cache_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "RemoteStateError",
+          "definitions": [
+            {
+              "file": "studio/github_goal_store.py",
+              "line": 29,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "RoutingHistoryStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_routing_history_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StrategyEfficiencyStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_strategy_efficiency_store.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "VerificationCostStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_verification_cost_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_update_improvements",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 253,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "checkpoint",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 565,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "collect_agent_usage",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "improvement_project_cycle",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 584,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ingest_run",
+          "definitions": [
+            {
+              "file": "studio/memory_lifecycle.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "persist_local",
+          "definitions": [
+            {
+              "file": "studio/github_agent_performance_store.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_artifact_cas_audit_store.py",
+              "line": 168,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_artifact_cas_stats_store.py",
+              "line": 175,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_contextual_strategy_efficiency_store.py",
+              "line": 141,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_execution_checkpoint_store.py",
+              "line": 131,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 271,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_active_improvement",
+          "definitions": [
+            {
+              "file": "studio/improvement_executor.py",
+              "line": 60,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_persistent_project",
+          "definitions": [
+            {
+              "file": "studio/autonomous_project.py",
+              "line": 169,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verified_project_cycle",
+          "definitions": [
+            {
+              "file": "studio/improvement_executor.py",
+              "line": 36,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 28
+    },
+    "improvement_project_cycle": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 584,
+        "end": 704
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AgentPerformanceStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_agent_performance_store.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ArtifactCasAuditStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_artifact_cas_audit_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ArtifactCasStatsStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_artifact_cas_stats_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ContextualStrategyEfficiencyStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_contextual_strategy_efficiency_store.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ExecutionCheckpointStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_execution_checkpoint_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FullGateCacheStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_full_gate_cache_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "GitHubMemoryError",
+          "definitions": [
+            {
+              "file": "studio/github_memory_store.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PhaseCostBaselineStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_phase_cost_baseline_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProviderHealthStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_provider_health_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProviderMetricsStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_provider_metrics_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "QuickGateCacheStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_quick_gate_cache_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "RemoteStateError",
+          "definitions": [
+            {
+              "file": "studio/github_goal_store.py",
+              "line": 29,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "RoutingHistoryStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_routing_history_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StrategyEfficiencyStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_strategy_efficiency_store.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "VerificationCostStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_verification_cost_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "checkpoint",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 565,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "collect_agent_usage",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "enabled",
+          "definitions": [
+            {
+              "file": "studio/ci_provider.py",
               "line": 12,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "inspect",
-          "definitions": [
-            {
-              "file": "studio/runtime_health.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "main": {
-      "source": {
-        "file": "studio/fleet_dashboard.py",
-        "start": 135,
-        "end": 141
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "collect",
-          "definitions": [
-            {
-              "file": "studio/fleet_dashboard.py",
-              "line": 79,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_recommendation_context": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 27,
-        "end": 38
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_load_recommendations": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 40,
-        "end": 48
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_evaluate_architecture": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 50,
-        "end": 115
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_load_recommendations",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 40,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
-          "symbol": "authorization_template",
+          "symbol": "get",
           "definitions": [
             {
-              "file": "studio/architecture_reputation_policy_migration.py",
-              "line": 315,
+              "file": "studio/run.py",
+              "line": 65,
               "kind": "function",
               "language": "python"
             }
@@ -120,11 +908,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "benchmark",
+          "symbol": "ingest_run",
           "definitions": [
             {
-              "file": "studio/architecture_benchmark.py",
-              "line": 32,
+              "file": "studio/memory_lifecycle.py",
+              "line": 21,
               "kind": "function",
               "language": "python"
             }
@@ -132,969 +920,59 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "review_digest",
+          "symbol": "persist_local",
           "definitions": [
             {
-              "file": "studio/architecture_reputation_policy_migration.py",
-              "line": 303,
+              "file": "studio/github_agent_performance_store.py",
+              "line": 77,
               "kind": "function",
               "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "transition_policy_digest",
-          "definitions": [
+            },
             {
-              "file": "studio/architecture_replacement_reputation.py",
-              "line": 73,
+              "file": "studio/github_artifact_cas_audit_store.py",
+              "line": 168,
               "kind": "function",
               "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verdict",
-          "definitions": [
+            },
             {
-              "file": "studio/core.py",
-              "line": 261,
+              "file": "studio/github_artifact_cas_stats_store.py",
+              "line": 175,
               "kind": "function",
               "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "_read_asset_forge_receipt": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 118,
-        "end": 126
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_asset_quality_status": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 129,
-        "end": 141
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_asset_forge_prefetch": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 144,
-        "end": 265
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_asset_quality_status",
-          "definitions": [
+            },
             {
-              "file": "studio/orchestrator.py",
-              "line": 129,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_read_asset_forge_receipt",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 118,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_remaining",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 275,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "build_production_os_asset_batch",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 113,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "build_production_os_asset_dispatch",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "should_route_to_asset_forge",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "load_report": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 267,
-        "end": 273
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Stage",
-          "definitions": [
-            {
-              "file": "studio/stage_registry.py",
-              "line": 11,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_remaining": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 275,
-        "end": 278
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_write_adaptation_handoff": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 280,
-        "end": 284
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "write_adaptation_request",
-          "definitions": [
-            {
-              "file": "studio/adaptation.py",
+              "file": "studio/github_contextual_strategy_efficiency_store.py",
               "line": 141,
               "kind": "function",
               "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_run_adaptation_pending": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 286,
-        "end": 301
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_remaining",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 275,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_run_adaptation_research": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 303,
-        "end": 315
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_remaining",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 275,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_run_adaptation_synthesis": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 317,
-        "end": 329
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_remaining",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 275,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_run_adaptation_benchmark": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 331,
-        "end": 345
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_remaining",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 275,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "benchmark",
-          "definitions": [
-            {
-              "file": "studio/architecture_benchmark.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_run_adaptation_promotion": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 347,
-        "end": 358
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_remaining",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 275,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "benchmark",
-          "definitions": [
-            {
-              "file": "studio/architecture_benchmark.py",
-              "line": 32,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "_run_adaptation_persistence": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 360,
-        "end": 372
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_remaining",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 275,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_run_adaptation_automerge": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 374,
-        "end": 394
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_remaining",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 275,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_stage_command": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 396,
-        "end": 399
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "run_registered_stages": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 401,
-        "end": 446
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Stage",
-          "definitions": [
-            {
-              "file": "studio/stage_registry.py",
-              "line": 11,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_evaluate_architecture",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_recommendation_context",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_remaining",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 275,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_run_adaptation_automerge",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 374,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_run_adaptation_benchmark",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 331,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_run_adaptation_pending",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 286,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_run_adaptation_persistence",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 360,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_run_adaptation_promotion",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 347,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_run_adaptation_research",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 303,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_run_adaptation_synthesis",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 317,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_stage_command",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 396,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_write_adaptation_handoff",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 280,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get_stage",
-          "definitions": [
-            {
-              "file": "studio/stage_registry.py",
-              "line": 64,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load_report",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 267,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "recommend",
-          "definitions": [
-            {
-              "file": "studio/project_recommendations.py",
-              "line": 23,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 17
-    },
-    "run_project": {
-      "source": {
-        "file": "studio/orchestrator.py",
-        "start": 448,
-        "end": 473
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_asset_forge_prefetch",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 144,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_evaluate_architecture",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_recommendation_context",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 27,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_remaining",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 275,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "load_report",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 267,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "recommend",
-          "definitions": [
-            {
-              "file": "studio/project_recommendations.py",
-              "line": 23,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 845,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_registered_stages",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 401,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 8
-    },
-    "FleetDashboardTests": {
-      "source": {
-        "file": "tests/test_fleet_dashboard.py",
-        "start": 13,
-        "end": 87
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "collect",
-          "definitions": [
-            {
-              "file": "studio/fleet_dashboard.py",
-              "line": 79,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_collect_surfaces_low_visual_quality_failure",
-          "definitions": [
-            {
-              "file": "tests/test_fleet_dashboard.py",
-              "line": 54,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_collect_surfaces_regenerated_visual_quality",
-          "definitions": [
-            {
-              "file": "tests/test_fleet_dashboard.py",
-              "line": 14,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_collect_surfaces_regenerated_visual_quality": {
-      "source": {
-        "file": "tests/test_fleet_dashboard.py",
-        "start": 14,
-        "end": 52
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "collect",
-          "definitions": [
-            {
-              "file": "studio/fleet_dashboard.py",
-              "line": 79,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_collect_surfaces_low_visual_quality_failure": {
-      "source": {
-        "file": "tests/test_fleet_dashboard.py",
-        "start": 54,
-        "end": 87
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "collect",
-          "definitions": [
-            {
-              "file": "studio/fleet_dashboard.py",
-              "line": 79,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "OrchestratorTests": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 19,
-        "end": 374
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 336,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "missing_report",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "payload_for",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 20,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 845,
-              "kind": "function",
-              "language": "python"
             },
             {
+              "file": "studio/github_execution_checkpoint_store.py",
+              "line": 131,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
               "file": "studio/github_runner.py",
-              "line": 237,
+              "line": 271,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_active_improvement",
+          "definitions": [
+            {
+              "file": "studio/improvement_executor.py",
+              "line": 60,
               "kind": "function",
               "language": "python"
             }
@@ -1102,11 +980,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "run_project",
+          "symbol": "verified_project_cycle",
           "definitions": [
             {
-              "file": "studio/orchestrator.py",
-              "line": 448,
+              "file": "studio/improvement_executor.py",
+              "line": 36,
               "kind": "function",
               "language": "python"
             }
@@ -1114,143 +992,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "run_registered_stages",
+          "symbol": "write_production_os_result",
           "definitions": [
             {
-              "file": "studio/orchestrator.py",
-              "line": 401,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_adaptation_without_baseline_has_no_promotable_work_order",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 265,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_asset_forge_batch_receipt_marks_regenerated_quality",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 123,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_asset_forge_failure_receipt_marks_low_quality",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 168,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_full_pipeline_reaches_finished",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 197,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_multi_asset_request_uses_transactional_asset_forge_batch",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 80,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_premium_visual_request_prefetches_asset_forge_before_preview",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 43,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_research_failure_prevents_synthesis",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 249,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_scheduler_rewind_can_revisit_release_build_boundedly",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 304,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_stage_return_code_two_is_human_action_not_failure",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 277,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_successful_stage_must_advance",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 365,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_unregistered_stage_research_then_synthesis",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 212,
+              "file": "studio/github_runner.py",
+              "line": 170,
               "kind": "function",
               "language": "python"
             }
@@ -1258,169 +1004,93 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 19
+      "dependency_count": 28
     },
-    "payload_for": {
+    "main": {
       "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 20,
-        "end": 33
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "missing_report": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 35,
-        "end": 41
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_premium_visual_request_prefetches_asset_forge_before_preview": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 43,
-        "end": 78
+        "file": "studio/github_runner.py",
+        "start": 700,
+        "end": 820
       },
       "symbol_dependencies": [
         {
-          "symbol": "request",
+          "symbol": "GitHub",
           "definitions": [
             {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "enabled",
+          "definitions": [
+            {
+              "file": "studio/ci_provider.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "requires_human_input",
+          "definitions": [
+            {
+              "file": "studio/human_input_request.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         },
         {
           "symbol": "run",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 845,
-              "kind": "function",
-              "language": "python"
-            },
-            {
               "file": "studio/github_runner.py",
-              "line": 237,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 448,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "runner": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 52,
-        "end": 172
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 336,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 845,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_runner.py",
-              "line": 237,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 448,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_asset_forge_batch_receipt_marks_regenerated_quality",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 123,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_asset_forge_failure_receipt_marks_low_quality",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 168,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_multi_asset_request_uses_transactional_asset_forge_batch",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 80,
+              "line": 271,
               "kind": "function",
               "language": "python"
             }
@@ -1429,751 +1099,6 @@
         }
       ],
       "dependency_count": 7
-    },
-    "test_multi_asset_request_uses_transactional_asset_forge_batch": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 80,
-        "end": 121
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 336,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 845,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_runner.py",
-              "line": 237,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 448,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_asset_forge_batch_receipt_marks_regenerated_quality": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 123,
-        "end": 166
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 845,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_runner.py",
-              "line": 237,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 448,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_asset_forge_failure_receipt_marks_low_quality": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 168,
-        "end": 195
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 845,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_runner.py",
-              "line": 237,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 448,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_full_pipeline_reaches_finished": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 197,
-        "end": 210
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 336,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "payload_for",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 20,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 845,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_runner.py",
-              "line": 237,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 448,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_unregistered_stage_research_then_synthesis": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 212,
-        "end": 247
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 336,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "missing_report",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 845,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_runner.py",
-              "line": 237,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 448,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_research_failure_prevents_synthesis": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 249,
-        "end": 263
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 336,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "missing_report",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 845,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_runner.py",
-              "line": 237,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 448,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_adaptation_without_baseline_has_no_promotable_work_order": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 265,
-        "end": 275
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "missing_report",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 35,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 845,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_runner.py",
-              "line": 237,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 448,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_stage_return_code_two_is_human_action_not_failure": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 277,
-        "end": 302
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 845,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_runner.py",
-              "line": 237,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 448,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_scheduler_rewind_can_revisit_release_build_boundedly": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 304,
-        "end": 362
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 336,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_registered_stages",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 401,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_successful_stage_must_advance": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 365,
-        "end": 374
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 845,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/github_runner.py",
-              "line": 237,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_project",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 448,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "GitHubRunnerTests": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 377,
-        "end": 396
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_adapter_reports_complete_only_after_machine_completion",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 388,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_non_main_is_rejected_before_generation",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 384,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "request": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 378,
-        "end": 382
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_non_main_is_rejected_before_generation": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 384,
-        "end": 386
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_adapter_reports_complete_only_after_machine_completion": {
-      "source": {
-        "file": "tests/test_orchestrator.py",
-        "start": 388,
-        "end": 396
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_orchestrator.py",
-              "line": 378,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
     }
   }
 }

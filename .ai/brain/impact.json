@@ -1,804 +1,338 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "39498888fdd9681a49ace23dcaa3b14c7323e3a1",
-  "head": "75170a57b61325cf3c7a22469acef13b23e88628",
+  "base": "75170a57b61325cf3c7a22469acef13b23e88628",
+  "head": "77c9126e11200b539feac39e8157312a3b7c80f2",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "studio/fleet_dashboard.py",
-      "status": "M"
-    },
-    {
-      "path": "studio/orchestrator.py",
-      "status": "M"
-    },
-    {
-      "path": "tests/test_fleet_dashboard.py",
-      "status": "A"
-    },
-    {
-      "path": "tests/test_orchestrator.py",
+      "path": "studio/github_runner.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "studio/fleet_dashboard.py",
-    "studio/orchestrator.py",
-    "tests/test_fleet_dashboard.py",
-    "tests/test_orchestrator.py"
+    "studio/github_runner.py"
   ],
   "impacted_files": [
-    "studio/ci_runner.py",
-    "studio/fleet_capacity.py",
-    "studio/fleet_daemon.py",
-    "studio/fleet_dashboard.py",
-    "studio/fleet_metrics.py",
-    "studio/fleet_supervisor.py",
-    "studio/generic_project.py",
-    "studio/multi_engine_orchestrator.py",
-    "studio/orchestrator.py",
-    "studio/release_repair.py",
-    "tests/test_agent_router.py",
-    "tests/test_evolution_automerge_orchestration.py",
-    "tests/test_evolution_pending.py",
-    "tests/test_evolution_persist.py",
-    "tests/test_fleet_dashboard.py",
-    "tests/test_fleet_operations.py",
+    "studio/github_runner.py",
+    "studio/production_os_worker.py",
+    "tests/test_github_runner_persistent.py",
+    "tests/test_github_runner_usage.py",
     "tests/test_orchestrator.py",
-    "tests/test_orchestrator_automerge.py",
-    "tests/test_star_recommendations.py"
+    "tests/test_production_os_result_contract.py"
   ],
   "impacted_symbols": [
     {
+      "name": "_prepare_capability_promotion_handoff",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 56
+    },
+    {
+      "name": "_usage_count",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 96
+    },
+    {
+      "name": "collect_agent_usage",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 105
+    },
+    {
+      "name": "write_production_os_result",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 170
+    },
+    {
       "name": "bounded_run",
       "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 23
+      "file": "studio/github_runner.py",
+      "line": 237
     },
     {
-      "name": "_admission_for_project",
+      "name": "_update_improvements",
       "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 52
+      "file": "studio/github_runner.py",
+      "line": 253
     },
     {
-      "name": "_heartbeat_loop",
+      "name": "run",
       "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 63
+      "file": "studio/github_runner.py",
+      "line": 271
     },
     {
-      "name": "save_report",
+      "name": "run_once",
       "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 73
+      "file": "studio/github_runner.py",
+      "line": 559
     },
     {
-      "name": "_run_registered_stages",
+      "name": "improvement_project_cycle",
       "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 79
-    },
-    {
-      "name": "_run_project_for_queue",
-      "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 88
-    },
-    {
-      "name": "run_queue",
-      "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 108
+      "file": "studio/github_runner.py",
+      "line": 584
     },
     {
       "name": "main",
       "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 183
+      "file": "studio/github_runner.py",
+      "line": 700
     },
     {
-      "name": "_runtime_state",
+      "name": "_asset_forge_operational_status",
       "kind": "function",
-      "file": "studio/fleet_capacity.py",
-      "line": 28
-    },
-    {
-      "name": "_project_rows",
-      "kind": "function",
-      "file": "studio/fleet_capacity.py",
-      "line": 39
-    },
-    {
-      "name": "_preemption_evidence",
-      "kind": "function",
-      "file": "studio/fleet_capacity.py",
-      "line": 201
-    },
-    {
-      "name": "_capacity_band",
-      "kind": "function",
-      "file": "studio/fleet_capacity.py",
-      "line": 225
-    },
-    {
-      "name": "_provider_rows",
-      "kind": "function",
-      "file": "studio/fleet_capacity.py",
-      "line": 240
-    },
-    {
-      "name": "plan",
-      "kind": "function",
-      "file": "studio/fleet_capacity.py",
-      "line": 286
-    },
-    {
-      "name": "persist",
-      "kind": "function",
-      "file": "studio/fleet_capacity.py",
-      "line": 426
-    },
-    {
-      "name": "tick",
-      "kind": "function",
-      "file": "studio/fleet_daemon.py",
-      "line": 22
-    },
-    {
-      "name": "run_loop",
-      "kind": "function",
-      "file": "studio/fleet_daemon.py",
-      "line": 76
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/fleet_daemon.py",
-      "line": 107
-    },
-    {
-      "name": "_asset_quality",
-      "kind": "function",
-      "file": "studio/fleet_dashboard.py",
-      "line": 12
-    },
-    {
-      "name": "collect",
-      "kind": "function",
-      "file": "studio/fleet_dashboard.py",
-      "line": 79
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/fleet_dashboard.py",
-      "line": 135
-    },
-    {
-      "name": "load",
-      "kind": "function",
-      "file": "studio/fleet_metrics.py",
-      "line": 16
-    },
-    {
-      "name": "snapshot",
-      "kind": "function",
-      "file": "studio/fleet_metrics.py",
-      "line": 30
-    },
-    {
-      "name": "append",
-      "kind": "function",
-      "file": "studio/fleet_metrics.py",
-      "line": 65
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/fleet_metrics.py",
-      "line": 80
-    },
-    {
-      "name": "plan",
-      "kind": "function",
-      "file": "studio/fleet_supervisor.py",
-      "line": 15
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/fleet_supervisor.py",
-      "line": 54
-    },
-    {
-      "name": "_snapshot",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 120
-    },
-    {
-      "name": "_apply",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 142
-    },
-    {
-      "name": "_prepare_architecture",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 165
-    },
-    {
-      "name": "_record_architecture",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 198
-    },
-    {
-      "name": "run_project",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 217
-    },
-    {
-      "name": "evaluate_model_candidate",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 772
-    },
-    {
-      "name": "_remaining",
-      "kind": "function",
-      "file": "studio/multi_engine_orchestrator.py",
-      "line": 14
-    },
-    {
-      "name": "_detect",
-      "kind": "function",
-      "file": "studio/multi_engine_orchestrator.py",
-      "line": 20
-    },
-    {
-      "name": "_run_stage",
-      "kind": "function",
-      "file": "studio/multi_engine_orchestrator.py",
-      "line": 35
-    },
-    {
-      "name": "run_project",
-      "kind": "function",
-      "file": "studio/multi_engine_orchestrator.py",
-      "line": 41
-    },
-    {
-      "name": "_recommendation_context",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 27
-    },
-    {
-      "name": "_load_recommendations",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 40
-    },
-    {
-      "name": "_evaluate_architecture",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 50
-    },
-    {
-      "name": "_read_asset_forge_receipt",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 118
-    },
-    {
-      "name": "_asset_quality_status",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 129
-    },
-    {
-      "name": "_asset_forge_prefetch",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 144
-    },
-    {
-      "name": "load_report",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 267
-    },
-    {
-      "name": "_remaining",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 275
-    },
-    {
-      "name": "_write_adaptation_handoff",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 280
-    },
-    {
-      "name": "_run_adaptation_pending",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 286
-    },
-    {
-      "name": "_run_adaptation_research",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 303
-    },
-    {
-      "name": "_run_adaptation_synthesis",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 317
-    },
-    {
-      "name": "_run_adaptation_benchmark",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 331
-    },
-    {
-      "name": "_run_adaptation_promotion",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 347
-    },
-    {
-      "name": "_run_adaptation_persistence",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 360
-    },
-    {
-      "name": "_run_adaptation_automerge",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 374
-    },
-    {
-      "name": "_stage_command",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 396
-    },
-    {
-      "name": "run_registered_stages",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 401
-    },
-    {
-      "name": "run_project",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 448
-    },
-    {
-      "name": "_persist_caches",
-      "kind": "function",
-      "file": "studio/release_repair.py",
-      "line": 27
-    },
-    {
-      "name": "_context",
-      "kind": "function",
-      "file": "studio/release_repair.py",
-      "line": 44
-    },
-    {
-      "name": "_agent_memory_path",
-      "kind": "function",
-      "file": "studio/release_repair.py",
-      "line": 67
-    },
-    {
-      "name": "_agent_candidates",
-      "kind": "function",
-      "file": "studio/release_repair.py",
-      "line": 72
-    },
-    {
-      "name": "_validate_agent_scope",
-      "kind": "function",
-      "file": "studio/release_repair.py",
-      "line": 84
-    },
-    {
-      "name": "_run_agent",
-      "kind": "function",
-      "file": "studio/release_repair.py",
-      "line": 97
-    },
-    {
-      "name": "_strategy_prior",
-      "kind": "function",
-      "file": "studio/release_repair.py",
-      "line": 121
-    },
-    {
-      "name": "_model_mutation",
-      "kind": "function",
-      "file": "studio/release_repair.py",
-      "line": 128
-    },
-    {
-      "name": "_agent_mutation",
-      "kind": "function",
-      "file": "studio/release_repair.py",
-      "line": 152
-    },
-    {
-      "name": "_hybrid_mutation",
-      "kind": "function",
-      "file": "studio/release_repair.py",
-      "line": 162
-    },
-    {
-      "name": "_agent_to_model_mutation",
-      "kind": "function",
-      "file": "studio/release_repair.py",
-      "line": 168
-    },
-    {
-      "name": "attempt",
-      "kind": "function",
-      "file": "studio/release_repair.py",
-      "line": 177
-    },
-    {
-      "name": "_restore",
-      "kind": "function",
-      "file": "studio/release_repair.py",
-      "line": 371
-    },
-    {
-      "name": "AgentRouterTests",
-      "kind": "class",
-      "file": "tests/test_agent_router.py",
-      "line": 21
-    },
-    {
-      "name": "setUp",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 22
-    },
-    {
-      "name": "test_free_preference_changes_ranking",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 29
-    },
-    {
-      "name": "test_paid_can_win_when_free_preference_disabled",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 34
-    },
-    {
-      "name": "test_unavailable_agent_is_not_selected",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 39
-    },
-    {
-      "name": "which",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 40
-    },
-    {
-      "name": "test_learned_agent_weights_affect_ranking_and_trace",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 46
-    },
-    {
-      "name": "test_architecture_discipline_penalizes_repeatedly_risky_agent",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 59
-    },
-    {
-      "name": "test_contextual_memory_changes_agent_score",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 81
-    },
-    {
-      "name": "test_cost_aware_utility_prefers_faster_agent_when_context_quality_is_equal",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 111
-    },
-    {
-      "name": "test_opencode_invocation_uses_secret_alias",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 143
-    },
-    {
-      "name": "test_codex_invocation_uses_verified_headless_contract",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 156
-    },
-    {
-      "name": "test_codex_execute_named_exposes_token_usage",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 165
-    },
-    {
-      "name": "test_codex_execute_named_prefers_isolated_omniroute_profile_when_healthy",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 185
-    },
-    {
-      "name": "fake_run",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 195
-    },
-    {
-      "name": "test_codex_execute_named_uses_chatgpt_profile_when_omniroute_is_unavailable",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 219
-    },
-    {
-      "name": "fake_run",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 229
-    },
-    {
-      "name": "test_codex_execute_named_stops_when_project_token_envelope_is_exhausted",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 250
-    },
-    {
-      "name": "test_codex_execute_named_settles_reported_usage_in_project_ledger",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 293
-    },
-    {
-      "name": "EvolutionAutoMergeOrchestrationTests",
-      "kind": "class",
-      "file": "tests/test_evolution_automerge_orchestration.py",
-      "line": 12
-    },
-    {
-      "name": "test_restarted_runner_merges_pending_promotion_without_regeneration",
-      "kind": "function",
-      "file": "tests/test_evolution_automerge_orchestration.py",
-      "line": 13
-    },
-    {
-      "name": "test_restarted_runner_waits_without_regenerating_when_checks_are_running",
-      "kind": "function",
-      "file": "tests/test_evolution_automerge_orchestration.py",
-      "line": 28
-    },
-    {
-      "name": "test_blocked_pending_proof_fails_closed_without_regeneration",
-      "kind": "function",
-      "file": "tests/test_evolution_automerge_orchestration.py",
-      "line": 41
-    },
-    {
-      "name": "order",
-      "kind": "function",
-      "file": "tests/test_evolution_pending.py",
-      "line": 16
-    },
-    {
-      "name": "branch",
-      "kind": "function",
-      "file": "tests/test_evolution_pending.py",
-      "line": 17
-    },
-    {
-      "name": "pr",
-      "kind": "function",
-      "file": "tests/test_evolution_pending.py",
-      "line": 18
-    },
-    {
-      "name": "EvolutionPendingTests",
-      "kind": "class",
-      "file": "tests/test_evolution_pending.py",
-      "line": 21
-    },
-    {
-      "name": "test_no_pr_and_no_branch_allows_new_evolution",
-      "kind": "function",
-      "file": "tests/test_evolution_pending.py",
-      "line": 22
-    },
-    {
-      "name": "request",
-      "kind": "function",
-      "file": "tests/test_evolution_pending.py",
-      "line": 23
-    },
-    {
-      "name": "test_open_pr_recovers_branch_name_sha_proof",
-      "kind": "function",
-      "file": "tests/test_evolution_pending.py",
-      "line": 30
-    },
-    {
-      "name": "request",
-      "kind": "function",
-      "file": "tests/test_evolution_pending.py",
+      "file": "studio/production_os_worker.py",
       "line": 31
     },
     {
-      "name": "test_force_moved_branch_is_orphaned",
+      "name": "worker_capabilities",
       "kind": "function",
-      "file": "tests/test_evolution_pending.py",
-      "line": 39
+      "file": "studio/production_os_worker.py",
+      "line": 60
+    },
+    {
+      "name": "ProductionOSWorkerError",
+      "kind": "class",
+      "file": "studio/production_os_worker.py",
+      "line": 79
+    },
+    {
+      "name": "_NoRedirect",
+      "kind": "class",
+      "file": "studio/production_os_worker.py",
+      "line": 83
+    },
+    {
+      "name": "redirect_request",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 84
+    },
+    {
+      "name": "_default_opener",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 90
+    },
+    {
+      "name": "ProductionOSClient",
+      "kind": "class",
+      "file": "studio/production_os_worker.py",
+      "line": 97
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 98
+    },
+    {
+      "name": "_post",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 138
+    },
+    {
+      "name": "claim",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 197
+    },
+    {
+      "name": "ack",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 214
+    },
+    {
+      "name": "complete",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 220
+    },
+    {
+      "name": "fail",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 223
+    },
+    {
+      "name": "register",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 226
+    },
+    {
+      "name": "heartbeat",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 247
+    },
+    {
+      "name": "production_capacity_snapshot",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 269
+    },
+    {
+      "name": "_project_id",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 325
+    },
+    {
+      "name": "_app_name",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 330
+    },
+    {
+      "name": "_brief",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 340
+    },
+    {
+      "name": "_is_visual_handoff",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 353
+    },
+    {
+      "name": "_asset_forge_guidance",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 394
+    },
+    {
+      "name": "build_studio_request",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 438
+    },
+    {
+      "name": "_write_project_capacity_plan",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 483
+    },
+    {
+      "name": "_result_payload",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 556
+    },
+    {
+      "name": "completion_payload",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 566
+    },
+    {
+      "name": "failure_payload",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 583
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 606
+    },
+    {
+      "name": "keep_job_alive",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 672
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 810
+    },
+    {
+      "name": "GithubRunnerPersistentTests",
+      "kind": "class",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 16
     },
     {
       "name": "request",
       "kind": "function",
-      "file": "tests/test_evolution_pending.py",
-      "line": 40
-    },
-    {
-      "name": "test_pr_head_not_equal_encoded_sha_is_orphaned",
-      "kind": "function",
-      "file": "tests/test_evolution_pending.py",
-      "line": 47
-    },
-    {
-      "name": "test_multiple_candidate_prs_fail_closed",
-      "kind": "function",
-      "file": "tests/test_evolution_pending.py",
-      "line": 52
-    },
-    {
-      "name": "test_merged_pr_survives_deleted_branch",
-      "kind": "function",
-      "file": "tests/test_evolution_pending.py",
-      "line": 57
-    },
-    {
-      "name": "test_orchestrator_maps_open_pr_to_pending_merge",
-      "kind": "function",
-      "file": "tests/test_evolution_pending.py",
-      "line": 62
-    },
-    {
-      "name": "runner",
-      "kind": "function",
-      "file": "tests/test_evolution_pending.py",
-      "line": 65
-    },
-    {
-      "name": "EvolutionPersistTests",
-      "kind": "class",
-      "file": "tests/test_evolution_persist.py",
+      "file": "tests/test_github_runner_persistent.py",
       "line": 17
     },
     {
-      "name": "fixture",
+      "name": "test_run_uses_persistent_goal_engine",
       "kind": "function",
-      "file": "tests/test_evolution_persist.py",
-      "line": 18
-    },
-    {
-      "name": "api",
-      "kind": "function",
-      "file": "tests/test_evolution_persist.py",
+      "file": "tests/test_github_runner_persistent.py",
       "line": 28
     },
     {
-      "name": "request",
+      "name": "test_human_action_is_not_reported_complete",
       "kind": "function",
-      "file": "tests/test_evolution_persist.py",
-      "line": 30
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 40
     },
     {
-      "name": "test_new_branch_encodes_exact_approved_commit_sha",
+      "name": "test_blocked_state_preserves_reason",
       "kind": "function",
-      "file": "tests/test_evolution_persist.py",
-      "line": 45
-    },
-    {
-      "name": "test_existing_identical_content_bound_branch_is_idempotent",
-      "kind": "function",
-      "file": "tests/test_evolution_persist.py",
-      "line": 52
-    },
-    {
-      "name": "test_force_moved_existing_branch_is_rejected",
-      "kind": "function",
-      "file": "tests/test_evolution_persist.py",
-      "line": 58
-    },
-    {
-      "name": "test_existing_branch_with_different_tree_is_rejected",
-      "kind": "function",
-      "file": "tests/test_evolution_persist.py",
-      "line": 64
-    },
-    {
-      "name": "test_modified_promoted_file_is_rejected_before_network",
-      "kind": "function",
-      "file": "tests/test_evolution_persist.py",
-      "line": 70
-    },
-    {
-      "name": "test_github_orchestrator_requires_persistence_evidence",
-      "kind": "function",
-      "file": "tests/test_evolution_persist.py",
-      "line": 77
-    },
-    {
-      "name": "runner",
-      "kind": "function",
-      "file": "tests/test_evolution_persist.py",
-      "line": 81
-    },
-    {
-      "name": "test_non_github_provider_does_not_attempt_github_persistence",
-      "kind": "function",
-      "file": "tests/test_evolution_persist.py",
-      "line": 86
-    },
-    {
-      "name": "FleetDashboardTests",
-      "kind": "class",
-      "file": "tests/test_fleet_dashboard.py",
-      "line": 13
-    },
-    {
-      "name": "test_collect_surfaces_regenerated_visual_quality",
-      "kind": "function",
-      "file": "tests/test_fleet_dashboard.py",
-      "line": 14
-    },
-    {
-      "name": "test_collect_surfaces_low_visual_quality_failure",
-      "kind": "function",
-      "file": "tests/test_fleet_dashboard.py",
+      "file": "tests/test_github_runner_persistent.py",
       "line": 54
     },
     {
-      "name": "FleetOperationsTests",
+      "name": "test_remote_checkpoint_ingests_memory_before_state_persistence",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 69
+    },
+    {
+      "name": "test_invalid_memory_ingestion_blocks_state_checkpoint",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 106
+    },
+    {
+      "name": "test_promotion_required_handoff_is_sealed_and_non_promoting",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 151
+    },
+    {
+      "name": "test_promotion_handoff_rejects_cross_candidate_validation",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 183
+    },
+    {
+      "name": "GitHubRunnerUsageTests",
       "kind": "class",
-      "file": "tests/test_fleet_operations.py",
-      "line": 14
+      "file": "tests/test_github_runner_usage.py",
+      "line": 10
     },
     {
-      "name": "test_dashboard_aggregates_projects",
+      "name": "test_collect_agent_usage_sums_codex_attempts_across_rounds",
       "kind": "function",
-      "file": "tests/test_fleet_operations.py",
-      "line": 15
+      "file": "tests/test_github_runner_usage.py",
+      "line": 11
     },
     {
-      "name": "test_supervisor_quarantines_state_integrity_failures",
+      "name": "test_collect_agent_usage_ignores_duplicate_non_attempt_usage_and_bad_values",
       "kind": "function",
-      "file": "tests/test_fleet_operations.py",
-      "line": 74
+      "file": "tests/test_github_runner_usage.py",
+      "line": 72
+    },
+    {
+      "name": "test_collect_agent_usage_empty_report_is_zeroed",
+      "kind": "function",
+      "file": "tests/test_github_runner_usage.py",
+      "line": 117
     },
     {
       "name": "OrchestratorTests",
@@ -981,94 +515,40 @@
       "line": 391
     },
     {
-      "name": "OrchestratorAutoMergeTests",
+      "name": "ProductionOSResultContractTests",
       "kind": "class",
-      "file": "tests/test_orchestrator_automerge.py",
-      "line": 15
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 23
     },
     {
-      "name": "test_github_automerge_uses_local_persistence_proof",
+      "name": "test_request_accepts_optional_production_os_correlation",
       "kind": "function",
-      "file": "tests/test_orchestrator_automerge.py",
-      "line": 16
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 24
     },
     {
-      "name": "runner",
+      "name": "test_request_rejects_invalid_production_os_correlation",
       "kind": "function",
-      "file": "tests/test_orchestrator_automerge.py",
-      "line": 22
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 41
     },
     {
-      "name": "test_non_github_provider_never_attempts_automerge",
+      "name": "test_result_envelope_correlates_usage_and_completion",
       "kind": "function",
-      "file": "tests/test_orchestrator_automerge.py",
-      "line": 34
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 51
     },
     {
-      "name": "StarScannerTests",
-      "kind": "class",
-      "file": "tests/test_star_recommendations.py",
-      "line": 47
-    },
-    {
-      "name": "test_structured_catalog_ranking_respects_constraints",
+      "name": "test_no_result_envelope_without_correlation",
       "kind": "function",
-      "file": "tests/test_star_recommendations.py",
-      "line": 48
-    },
-    {
-      "name": "test_markdown_parser_accepts_scored_rows",
-      "kind": "function",
-      "file": "tests/test_star_recommendations.py",
-      "line": 67
-    },
-    {
-      "name": "test_project_recommendation_writes_evidence",
-      "kind": "function",
-      "file": "tests/test_star_recommendations.py",
-      "line": 71
-    },
-    {
-      "name": "test_run_loads_bounded_recommendation_evidence",
-      "kind": "function",
-      "file": "tests/test_star_recommendations.py",
-      "line": 90
-    },
-    {
-      "name": "test_model_context_contains_recommendations_as_data",
-      "kind": "function",
-      "file": "tests/test_star_recommendations.py",
-      "line": 116
-    },
-    {
-      "name": "test_load_architecture_benchmark_is_bounded",
-      "kind": "function",
-      "file": "tests/test_star_recommendations.py",
-      "line": 128
-    },
-    {
-      "name": "test_load_replacement_work_orders_is_bounded",
-      "kind": "function",
-      "file": "tests/test_star_recommendations.py",
-      "line": 148
-    },
-    {
-      "name": "test_recommendation_context_uses_project_brief",
-      "kind": "function",
-      "file": "tests/test_star_recommendations.py",
-      "line": 169
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 89
     }
   ],
   "selected_tests": [
-    "tests/test_agent_router.py",
-    "tests/test_evolution_automerge_orchestration.py",
-    "tests/test_evolution_pending.py",
-    "tests/test_evolution_persist.py",
-    "tests/test_fleet_dashboard.py",
-    "tests/test_fleet_operations.py",
-    "tests/test_multi_engine_orchestrator.py",
+    "tests/test_github_runner_persistent.py",
+    "tests/test_github_runner_usage.py",
     "tests/test_orchestrator.py",
-    "tests/test_orchestrator_automerge.py",
-    "tests/test_star_recommendations.py"
+    "tests/test_production_os_result_contract.py"
   ]
 }

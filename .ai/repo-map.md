@@ -15306,6 +15306,21 @@ correlation = request.get("production_os")
 usage = summary.get("usage")
 ⋮----
 usage = {}
+visual_assets = None
+asset_path = out / "asset-forge-prefetch.json"
+⋮----
+asset_value = json.loads(asset_path.read_text(encoding="utf-8"))
+⋮----
+asset_value = None
+⋮----
+receipts = asset_value.get("receipts")
+⋮----
+single = asset_value.get("receipt")
+receipts = [single] if isinstance(single, dict) else []
+summaries = [
+scores = [
+visual_assets = {
+⋮----
 envelope = {
 ⋮----
 def bounded_run(args, timeout)

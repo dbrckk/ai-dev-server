@@ -22,21 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T15:06:58Z
+Generated: 2026-09-20T15:08:26Z
 
 ### Git
 - Branch: `main`
-- Head: `75170a57b613`
-- Commit date: 2026-09-20T17:06:44+02:00
-- Commit: test: cover fleet visual quality dashboard
+- Head: `77c9126e1120`
+- Commit date: 2026-09-20T17:08:16+02:00
+- Commit: feat: return visual asset quality to Production OS
 - Tracked files: 820
 
 ### Recently changed files
+- `studio/github_runner.py`
 - `tests/test_fleet_dashboard.py`
 - `tests/test_orchestrator.py`
 - `studio/fleet_dashboard.py`
 - `studio/orchestrator.py`
-- `tests/test_asset_forge_bridge.py`
 
 ### Project signals
 - No common build descriptor detected

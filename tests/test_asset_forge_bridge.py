@@ -132,3 +132,53 @@ def test_batch_infers_animation_of_dependency():
     )
     by_id = {item["id"]: item for item in batch["items"]}
     assert by_id["run-animation"]["depends_on"] == ["character"]
+
+
+def test_primary_raster_batch_uses_stricter_visual_similarity_policy():
+    from asset_forge_bridge import build_production_os_asset_batch
+    batch = build_production_os_asset_batch(
+        [
+            {
+                "id": "character",
+                "objective": "Create premium AAA character sprite",
+                "engine": "libgdx",
+            },
+            {
+                "id": "run",
+                "objective": "Create premium AAA run animation sprite",
+                "engine": "libgdx",
+                "animation_of": "character",
+            },
+        ],
+        project="deadline-zero",
+    )
+    run = {item["id"]: item for item in batch["items"]}["run"]
+    constraints = run["request"]["manifest"]["constraints"]
+    assert constraints["visualSimilarityMin"] == 0.55
+    assert constraints["visualSimilarityRetries"] == 2
+
+
+def test_secondary_raster_batch_uses_lighter_visual_similarity_policy():
+    from asset_forge_bridge import build_production_os_asset_batch
+    batch = build_production_os_asset_batch(
+        [
+            {
+                "id": "badge",
+                "objective": "Create polished UI sprite badge",
+                "engine": "libgdx",
+                "importance": "secondary",
+            },
+            {
+                "id": "badge-variant",
+                "objective": "Create polished UI sprite badge variant",
+                "engine": "libgdx",
+                "importance": "secondary",
+                "variant_of": "badge",
+            },
+        ],
+        project="deadline-zero",
+    )
+    variant = {item["id"]: item for item in batch["items"]}["badge-variant"]
+    constraints = variant["request"]["manifest"]["constraints"]
+    assert constraints["visualSimilarityMin"] == 0.42
+    assert constraints["visualSimilarityRetries"] == 1

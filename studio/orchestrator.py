@@ -169,6 +169,8 @@ def _asset_forge_prefetch(request_path,project_out,runner,deadline,clock):
         return {'status':'not_applicable','routes':[]}
 
     selected=[item for item in candidates[:8] if should_route_to_asset_forge(item)]
+    if not selected:
+        return {'status':'not_applicable','routes':[]}
     target_repository=str(request.get('target_repo') or '').strip() or None
     target_worktree=str(request.get('target_worktree') or '').strip() or None
     routes=[]

@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 0cf1d0e19c321bcd255178b59afc05484f48712a
-Head: 564cd802cb86b5b3097e4af0f391c4aafaeafa2a
+Base: 78d3b7bcbf8abdafb17764f11b5fe8b8b8b372dc
+Head: 541c5b12b76952f111c9685144e5c41053f4570f
 
 ## Changed files
-- M studio/core.py
+- M tests/test_asset_forge_installer.py
 
 ## Affected areas
-- studio
+- tests
 
 ## Related test candidates
 - No direct filename-based test match detected.

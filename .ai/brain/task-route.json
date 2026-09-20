@@ -1,18 +1,18 @@
 {
   "budget": {
-    "confidence": "high",
+    "confidence": "medium",
     "expand_to": 12,
-    "max_files": 3,
+    "max_files": 6,
     "requested_max_files": 12,
     "score_margin": 0,
-    "tier": "narrow",
-    "top_score": 35
+    "tier": "bounded",
+    "top_score": 29
   },
   "cache": {
-    "fingerprint": "6efaa6a80404a3fc12af97db1f0d9352261edd060925b312324ac3331f7e4d0d",
+    "fingerprint": "5c178d0880c7f7df294197799166fe14873c209814c08c09eca66e0c731ae8c1",
     "hit": false
   },
-  "candidate_count": 208,
+  "candidate_count": 85,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -23,10 +23,9 @@
       ],
       "path": "tests/test_godot_android_stage.py",
       "reasons": [
-        "impact",
         "search-index"
       ],
-      "score": 35,
+      "score": 29,
       "symbols": [
         "FakeGitHub",
         "GodotAndroidStageTests",
@@ -45,10 +44,9 @@
       ],
       "path": "tests/test_godot_device_stage.py",
       "reasons": [
-        "impact",
         "search-index"
       ],
-      "score": 35,
+      "score": 29,
       "symbols": [
         "FakeGitHub",
         "GodotDeviceStageTests",
@@ -71,10 +69,9 @@
       ],
       "path": "tests/test_godot_runtime_journey_stage.py",
       "reasons": [
-        "impact",
         "search-index"
       ],
-      "score": 35,
+      "score": 29,
       "symbols": [
         "FakeGitHub",
         "GodotRuntimeJourneyStageTests",
@@ -83,6 +80,51 @@
         "test_all_journeys_advance_only_to_visual_qa",
         "test_partial_success_stays_on_journey_stage",
         "test_requires_device_validated_checkpoint"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "studio/engine_detect.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 27,
+      "symbols": [
+        "main"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "studio/engine_entry.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 27,
+      "symbols": [
+        "_exact_branch_ref",
+        "detect_engine",
+        "execute"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "studio/engine_patch.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 27,
+      "symbols": [
+        "PatchPolicyError",
+        "validate"
       ]
     }
   ],

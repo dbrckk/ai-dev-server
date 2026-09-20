@@ -22,20 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-19T21:42:32Z
+Generated: 2026-09-20T07:28:24Z
 
 ### Git
 - Branch: `main`
-- Head: `564cd802cb86`
-- Commit date: 2026-09-19T23:42:22+02:00
-- Commit: feat: preserve structured tool contracts in Studio requests
+- Head: `541c5b12b769`
+- Commit date: 2026-09-20T09:28:11+02:00
+- Commit: test: require pyproject-based Asset Forge install
 - Tracked files: 812
 
 ### Recently changed files
+- `tests/test_asset_forge_installer.py`
+- `scripts/install-asset-forge.sh`
 - `studio/core.py`
 - `tests/test_production_os_worker_runtime.py`
 - `studio/production_os_worker.py`
-- `tests/test_production_os_worker.py`
 
 ### Project signals
 - No common build descriptor detected

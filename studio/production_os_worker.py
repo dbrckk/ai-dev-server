@@ -427,8 +427,10 @@ def _asset_forge_guidance(handoff: dict[str, Any]) -> str:
         return ""
     return (
         " Use dbrckk/asset-forge for visual asset production. "
-        "Represent asset work with the asset-forge/production-request/v1 contract, "
-        "run it end-to-end with asset-forge fulfill <request.json>, "
+        "Represent asset work with the asset-forge/production-request/v1 contract. "
+        "Run asset-forge operational-status before choosing the asset type and target format; "
+        "when only rasterPng is ready, choose a raster-compatible asset type and PNG target instead of SVG. "
+        "Run the request end-to-end with asset-forge fulfill <request.json> using automatic backend selection, "
         "require a successful production-report.json, then integrate and verify the produced assets before completion."
     )
 

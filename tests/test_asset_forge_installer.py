@@ -14,7 +14,7 @@ def test_asset_forge_installer_expands_environment_configuration():
     assert "\\${ASSET_FORGE_REF" not in script
     assert "${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}" in script
     assert "${ASSET_FORGE_REPOSITORY:-https://github.com/dbrckk/asset-forge.git}" in script
-    assert "${ASSET_FORGE_REF:-c96b87faa5c1a52d2b785cd7c6c3de2da4d16efa}" in script
+    assert "${ASSET_FORGE_REF:-9fc828fafb50572d07d2ee747b0643c3fdcfd324}" in script
 
 
 def test_asset_forge_installer_uses_pyproject_editable_install():
@@ -32,5 +32,5 @@ def test_asset_forge_default_ref_is_immutable_commit():
         encoding="utf-8"
     )
 
-    assert "c96b87faa5c1a52d2b785cd7c6c3de2da4d16efa" in script
+    assert "9fc828fafb50572d07d2ee747b0643c3fdcfd324" in script
     assert 'ref="${ASSET_FORGE_REF:-main}"' not in script

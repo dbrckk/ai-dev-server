@@ -77,6 +77,49 @@ class OrchestratorTests(unittest.TestCase):
             self.assertEqual(route['routes'][0]['command'][route['routes'][0]['command'].index('--asset-type')+1],'sprite-sheet')
             self.assertEqual(route['routes'][0]['command'][route['routes'][0]['command'].index('--format')+1],'png')
 
+    def test_multi_asset_request_uses_transactional_asset_forge_batch(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); out = root / 'out'; request = root / 'request.json'
+            request.write_text(json.dumps({
+                'id':'deadline-zero',
+                'target_repo':'dbrckk/deadline-zero',
+                'asset_requests':[
+                    {'id':'hud-a','objective':'Create premium professional UI icon','engine':'libgdx'},
+                    {'id':'hud-b','objective':'Create premium professional UI icon','engine':'libgdx'},
+                ],
+            }))
+            calls=[]
+            def runner(args, timeout):
+                calls.append(args)
+                out.mkdir(parents=True, exist_ok=True)
+                if args and args[0]=='production-os':
+                    self.assertIn('asset-forge-batch',args)
+                    spec = Path(args[args.index('--spec')+1])
+                    payload=json.loads(spec.read_text())
+                    self.assertEqual(len(payload['items']),2)
+                    return subprocess.CompletedProcess(args,0)
+                if 'studio/run.py' in args:
+                    (out/'report.json').write_text(json.dumps({
+                        'status':'validated_preview',
+                        'completion':{'finished':False,'next_stage':'release_build'},
+                    }))
+                    return subprocess.CompletedProcess(args,0)
+                if 'studio/post_preview.py' in args:
+                    (out/'report.json').write_text(json.dumps({
+                        'status':'finished',
+                        'completion':{'finished':True,'next_stage':None},
+                    }))
+                    return subprocess.CompletedProcess(args,0)
+                self.fail('unexpected stage '+str(args))
+            result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)
+            self.assertEqual(result['status'],'complete')
+            production_calls=[call for call in calls if call and call[0]=='production-os']
+            self.assertEqual(len(production_calls),1)
+            self.assertIn('asset-forge-batch',production_calls[0])
+            prefetch=json.loads((out/'asset-forge-prefetch.json').read_text())
+            self.assertTrue(prefetch['batch'])
+            self.assertEqual(len(prefetch['routes']),2)
+
     def test_full_pipeline_reaches_finished(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}')

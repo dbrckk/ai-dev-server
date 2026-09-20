@@ -9,6 +9,73 @@ from runtime_health import inspect
 from architecture_learning import summarize as summarize_architecture_learning
 
 
+def _asset_quality(path: Path) -> dict:
+    source = path / "asset-forge-prefetch.json"
+    if not source.is_file():
+        return {
+            "status": "not_available",
+            "quality_status": "unknown",
+            "batch": False,
+            "routes": 0,
+            "checked": 0,
+            "regenerated": 0,
+            "minimum_score": None,
+        }
+    try:
+        value = json.loads(source.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return {
+            "status": "unreadable",
+            "quality_status": "unknown",
+            "batch": False,
+            "routes": 0,
+            "checked": 0,
+            "regenerated": 0,
+            "minimum_score": None,
+        }
+    if not isinstance(value, dict):
+        return {
+            "status": "invalid",
+            "quality_status": "unknown",
+            "batch": False,
+            "routes": 0,
+            "checked": 0,
+            "regenerated": 0,
+            "minimum_score": None,
+        }
+    receipts = value.get("receipts")
+    if not isinstance(receipts, list):
+        one = value.get("receipt")
+        receipts = [one] if isinstance(one, dict) else []
+    summaries = [
+        item.get("quality_summary")
+        for item in receipts
+        if isinstance(item, dict) and isinstance(item.get("quality_summary"), dict)
+    ]
+    scores = [
+        float(summary["minimum_score"])
+        for summary in summaries
+        if isinstance(summary.get("minimum_score"), (int, float))
+    ]
+    return {
+        "status": value.get("status"),
+        "quality_status": value.get("quality_status") or "unknown",
+        "batch": bool(value.get("batch")),
+        "routes": len(value.get("routes") or []),
+        "checked": sum(int(summary.get("checked") or 0) for summary in summaries),
+        "regenerated": sum(int(summary.get("regenerated") or 0) for summary in summaries),
+        "minimum_score": min(scores) if scores else None,
+        "error_code": next(
+            (
+                item.get("error_code")
+                for item in receipts
+                if isinstance(item, dict) and item.get("error_code")
+            ),
+            None,
+        ),
+    }
+
+
 def collect(root: Path | str = "studio-output") -> dict:
     root = Path(root)
     projects = []
@@ -17,6 +84,7 @@ def collect(root: Path | str = "studio-output") -> dict:
             if not path.is_dir() or not (path / ".autonomy").exists():
                 continue
             report = inspect(path)
+            asset_quality = _asset_quality(path)
             projects.append({
                 "id": path.name,
                 "status": report.get("status"),
@@ -26,6 +94,7 @@ def collect(root: Path | str = "studio-output") -> dict:
                 "active_leases": (report.get("leases") or {}).get("claims"),
                 "telemetry_events": (report.get("telemetry") or {}).get("events", 0),
                 "errors": report.get("errors", []),
+                "visual_assets": asset_quality,
             })
     architecture = summarize_architecture_learning(root)
     eligible = [
@@ -37,6 +106,10 @@ def collect(root: Path | str = "studio-output") -> dict:
     running = sum(1 for item in projects if item.get("runtime_status") == "running")
     complete = sum(1 for item in projects if item.get("runtime_status") == "complete")
     blocked = sum(1 for item in projects if item.get("runtime_status") in {"blocked", "human_action_required"})
+    quality_ok = sum(1 for item in projects if item["visual_assets"]["quality_status"] == "ok")
+    quality_regenerated = sum(1 for item in projects if item["visual_assets"]["quality_status"] == "regenerated")
+    quality_low = sum(1 for item in projects if item["visual_assets"]["quality_status"] == "low_quality")
+    quality_unknown = len(projects) - quality_ok - quality_regenerated - quality_low
     return {
         "projects": projects,
         "architecture_learning": {
@@ -51,6 +124,10 @@ def collect(root: Path | str = "studio-output") -> dict:
             "running": running,
             "complete": complete,
             "blocked": blocked,
+            "visual_quality_ok": quality_ok,
+            "visual_quality_regenerated": quality_regenerated,
+            "visual_quality_low": quality_low,
+            "visual_quality_unknown": quality_unknown,
         },
     }
 

@@ -469,6 +469,9 @@ def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
             "workflow_task_id": workflow_task_id,
         },
     }
+    tool_contracts = handoff.get("tool_contracts")
+    if isinstance(tool_contracts, dict) and tool_contracts:
+        request["tool_contracts"] = dict(tool_contracts)
     preference = str(handoff.get("agent_preference") or "auto").strip()
     if preference:
         request["agent_preference"] = preference

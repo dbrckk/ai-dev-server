@@ -22,19 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T08:46:53Z
+Generated: 2026-09-20T08:47:58Z
 
 ### Git
 - Branch: `main`
-- Head: `d07fbe0c0429`
-- Commit date: 2026-09-20T10:46:41+02:00
-- Commit: build: add verified imagen installer
-- Tracked files: 817
+- Head: `7ba91762dec8`
+- Commit date: 2026-09-20T10:47:47+02:00
+- Commit: chore: remove duplicate imagen installer
+- Tracked files: 816
 
 ### Recently changed files
 - `scripts/install-imagen.sh`
 - `.github/workflows/production-os-asset-forge-live-e2e.yml`
-- `.github/workflows/production-os-asset-forge-e2e.yml`
 
 ### Project signals
 - No common build descriptor detected

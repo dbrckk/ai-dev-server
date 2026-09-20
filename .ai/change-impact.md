@@ -1,10 +1,10 @@
 # Change impact
 
-Base: 7a2cdf385a0550bf5e90aa71781612a2d2c2c78f
-Head: d07fbe0c0429d34e16673bab08b4c7df0ea743ee
+Base: 0e4979fa10480489fc1c2dc22c74f614e072b193
+Head: 7ba91762dec814a917894978076d13f3ab189f64
 
 ## Changed files
-- A scripts/install-imagen.sh
+- D scripts/install-imagen.sh
 
 ## Affected areas
 - scripts

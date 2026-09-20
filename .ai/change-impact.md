@@ -1,10 +1,10 @@
 # Change impact
 
-Base: b72d3468d357420a00433bbd03bcafeae7da90cc
-Head: 2c01caadacd55b4972cd2dfe19601d7512a87b64
+Base: 6981cd25fa99174fd795d945f01085830e748c6e
+Head: ca8bec8a655028586a5d8845e17d88ccba80958e
 
 ## Changed files
-- A .github/workflows/production-os-asset-forge-e2e.yml
+- M .github/workflows/production-os-asset-forge-e2e.yml
 
 ## Affected areas
 - .github

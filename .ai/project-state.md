@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T08:12:58Z
+Generated: 2026-09-20T08:14:28Z
 
 ### Git
 - Branch: `main`
-- Head: `2c01caadacd5`
-- Commit date: 2026-09-20T10:12:34+02:00
-- Commit: ci: add Production OS Asset Forge Deadline Zero E2E
+- Head: `ca8bec8a6550`
+- Commit date: 2026-09-20T10:14:16+02:00
+- Commit: security: pin E2E workflow actions by commit
 - Tracked files: 813
 
 ### Recently changed files
@@ -36,7 +36,6 @@ Generated: 2026-09-20T08:12:58Z
 - `tests/test_production_os_worker.py`
 - `studio/production_os_worker.py`
 - `tests/test_asset_forge_installer.py`
-- `scripts/install-asset-forge.sh`
 
 ### Project signals
 - No common build descriptor detected

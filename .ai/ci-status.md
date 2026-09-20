@@ -1,18 +1,14 @@
 # CI status
 
-Summary: 3 success / 1 failure / 4 active
+Summary: 1 success / 0 failure / 7 active
 
-- CI: queued / pending (2c01caad)
-- Mobile Studio Real Build: in_progress / pending (2c01caad)
-- Production OS Asset Forge Deadline Zero E2E: in_progress / pending (2c01caad)
-- Validate AI Dev Server: completed / failure (2c01caad)
-- Multi-Engine E2E Benchmark: pending / pending (2c01caad)
-- Fault Injection Gate: completed / success (2c01caad)
-- Resilience Soak: completed / success (2c01caad)
-- Resilience Soak: completed / success (b72d3468)
-
-## Latest failed run structure
-- Job: validate
-  - Failed step: Reject mutable third-party GitHub Actions
+- CI: in_progress / pending (ca8bec8a)
+- Resilience Soak: in_progress / pending (ca8bec8a)
+- Mobile Studio Real Build: pending / pending (ca8bec8a)
+- Production OS Asset Forge Deadline Zero E2E: pending / pending (ca8bec8a)
+- Multi-Engine E2E Benchmark: pending / pending (ca8bec8a)
+- Validate AI Dev Server: in_progress / pending (ca8bec8a)
+- Fault Injection Gate: in_progress / pending (ca8bec8a)
+- CI: completed / success (2c01caad)
 
 > Generated summary only; inspect GitHub Actions for full logs when needed.

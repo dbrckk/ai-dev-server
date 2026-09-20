@@ -57,6 +57,52 @@
       ],
       "dependency_count": 2
     },
+    "build_production_os_asset_batch": {
+      "source": {
+        "file": "studio/asset_forge_bridge.py",
+        "start": 113,
+        "end": 196
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_infer_asset_shape",
+          "definitions": [
+            {
+              "file": "studio/asset_forge_bridge.py",
+              "line": 31,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_production_os_asset_dispatch",
+          "definitions": [
+            {
+              "file": "studio/asset_forge_bridge.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "should_route_to_asset_forge",
+          "definitions": [
+            {
+              "file": "studio/asset_forge_bridge.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
     "_recommendation_context": {
       "source": {
         "file": "studio/orchestrator.py",
@@ -161,7 +207,7 @@
       "source": {
         "file": "studio/orchestrator.py",
         "start": 118,
-        "end": 171
+        "end": 200
       },
       "symbol_dependencies": [
         {
@@ -169,12 +215,24 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 181,
+              "line": 210,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "build_production_os_asset_batch",
+          "definitions": [
+            {
+              "file": "studio/asset_forge_bridge.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         },
         {
           "symbol": "build_production_os_asset_dispatch",
@@ -201,13 +259,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 4
     },
     "load_report": {
       "source": {
         "file": "studio/orchestrator.py",
-        "start": 173,
-        "end": 179
+        "start": 202,
+        "end": 208
       },
       "symbol_dependencies": [
         {
@@ -240,8 +298,8 @@
     "_remaining": {
       "source": {
         "file": "studio/orchestrator.py",
-        "start": 181,
-        "end": 184
+        "start": 210,
+        "end": 213
       },
       "symbol_dependencies": [],
       "dependency_count": 0
@@ -249,8 +307,8 @@
     "_write_adaptation_handoff": {
       "source": {
         "file": "studio/orchestrator.py",
-        "start": 186,
-        "end": 190
+        "start": 215,
+        "end": 219
       },
       "symbol_dependencies": [
         {
@@ -271,8 +329,8 @@
     "_run_adaptation_pending": {
       "source": {
         "file": "studio/orchestrator.py",
-        "start": 192,
-        "end": 207
+        "start": 221,
+        "end": 236
       },
       "symbol_dependencies": [
         {
@@ -292,7 +350,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 181,
+              "line": 210,
               "kind": "function",
               "language": "python"
             }
@@ -305,8 +363,8 @@
     "_run_adaptation_research": {
       "source": {
         "file": "studio/orchestrator.py",
-        "start": 209,
-        "end": 221
+        "start": 238,
+        "end": 250
       },
       "symbol_dependencies": [
         {
@@ -326,7 +384,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 181,
+              "line": 210,
               "kind": "function",
               "language": "python"
             }
@@ -339,8 +397,8 @@
     "_run_adaptation_synthesis": {
       "source": {
         "file": "studio/orchestrator.py",
-        "start": 223,
-        "end": 235
+        "start": 252,
+        "end": 264
       },
       "symbol_dependencies": [
         {
@@ -360,7 +418,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 181,
+              "line": 210,
               "kind": "function",
               "language": "python"
             }
@@ -373,8 +431,8 @@
     "_run_adaptation_benchmark": {
       "source": {
         "file": "studio/orchestrator.py",
-        "start": 237,
-        "end": 251
+        "start": 266,
+        "end": 280
       },
       "symbol_dependencies": [
         {
@@ -394,7 +452,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 181,
+              "line": 210,
               "kind": "function",
               "language": "python"
             }
@@ -419,8 +477,8 @@
     "_run_adaptation_promotion": {
       "source": {
         "file": "studio/orchestrator.py",
-        "start": 253,
-        "end": 264
+        "start": 282,
+        "end": 293
       },
       "symbol_dependencies": [
         {
@@ -440,7 +498,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 181,
+              "line": 210,
               "kind": "function",
               "language": "python"
             }
@@ -465,8 +523,8 @@
     "_run_adaptation_persistence": {
       "source": {
         "file": "studio/orchestrator.py",
-        "start": 266,
-        "end": 278
+        "start": 295,
+        "end": 307
       },
       "symbol_dependencies": [
         {
@@ -486,7 +544,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 181,
+              "line": 210,
               "kind": "function",
               "language": "python"
             }
@@ -499,8 +557,8 @@
     "_run_adaptation_automerge": {
       "source": {
         "file": "studio/orchestrator.py",
-        "start": 280,
-        "end": 300
+        "start": 309,
+        "end": 329
       },
       "symbol_dependencies": [
         {
@@ -520,7 +578,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 181,
+              "line": 210,
               "kind": "function",
               "language": "python"
             }
@@ -533,8 +591,8 @@
     "_stage_command": {
       "source": {
         "file": "studio/orchestrator.py",
-        "start": 302,
-        "end": 305
+        "start": 331,
+        "end": 334
       },
       "symbol_dependencies": [],
       "dependency_count": 0
@@ -542,8 +600,8 @@
     "run_registered_stages": {
       "source": {
         "file": "studio/orchestrator.py",
-        "start": 307,
-        "end": 352
+        "start": 336,
+        "end": 381
       },
       "symbol_dependencies": [
         {
@@ -599,7 +657,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 181,
+              "line": 210,
               "kind": "function",
               "language": "python"
             }
@@ -611,7 +669,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 280,
+              "line": 309,
               "kind": "function",
               "language": "python"
             }
@@ -623,7 +681,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 237,
+              "line": 266,
               "kind": "function",
               "language": "python"
             }
@@ -635,7 +693,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 192,
+              "line": 221,
               "kind": "function",
               "language": "python"
             }
@@ -647,7 +705,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 266,
+              "line": 295,
               "kind": "function",
               "language": "python"
             }
@@ -659,7 +717,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 253,
+              "line": 282,
               "kind": "function",
               "language": "python"
             }
@@ -671,7 +729,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 209,
+              "line": 238,
               "kind": "function",
               "language": "python"
             }
@@ -683,7 +741,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 223,
+              "line": 252,
               "kind": "function",
               "language": "python"
             }
@@ -695,7 +753,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 302,
+              "line": 331,
               "kind": "function",
               "language": "python"
             }
@@ -707,7 +765,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 186,
+              "line": 215,
               "kind": "function",
               "language": "python"
             }
@@ -731,7 +789,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 173,
+              "line": 202,
               "kind": "function",
               "language": "python"
             }
@@ -756,8 +814,8 @@
     "run_project": {
       "source": {
         "file": "studio/orchestrator.py",
-        "start": 354,
-        "end": 379
+        "start": 383,
+        "end": 408
       },
       "symbol_dependencies": [
         {
@@ -801,7 +859,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 181,
+              "line": 210,
               "kind": "function",
               "language": "python"
             }
@@ -813,7 +871,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 173,
+              "line": 202,
               "kind": "function",
               "language": "python"
             }
@@ -849,7 +907,7 @@
           "definitions": [
             {
               "file": "studio/orchestrator.py",
-              "line": 307,
+              "line": 336,
               "kind": "function",
               "language": "python"
             }
@@ -859,146 +917,1057 @@
       ],
       "dependency_count": 8
     },
-    "test_routes_premium_visual_task": {
+    "OrchestratorTests": {
       "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 4,
-        "end": 6
+        "file": "tests/test_orchestrator.py",
+        "start": 19,
+        "end": 300
       },
       "symbol_dependencies": [
         {
-          "symbol": "should_route_to_asset_forge",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_ignores_plain_code_task": {
-      "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 9,
-        "end": 11
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "API",
+          "symbol": "StudioError",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 281,
+              "line": 35,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "class_like"
+          "relation": "imported_module"
         },
         {
-          "symbol": "should_route_to_asset_forge",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 15,
+              "file": "studio/core.py",
+              "line": 336,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "missing_report",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "payload_for",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "request",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 304,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 845,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_runner.py",
+              "line": 237,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_project",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 383,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_registered_stages",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 336,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_adaptation_without_baseline_has_no_promotable_work_order",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 191,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_full_pipeline_reaches_finished",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 123,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_multi_asset_request_uses_transactional_asset_forge_batch",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_premium_visual_request_prefetches_asset_forge_before_preview",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 43,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_research_failure_prevents_synthesis",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 175,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_scheduler_rewind_can_revisit_release_build_boundedly",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 230,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_stage_return_code_two_is_human_action_not_failure",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 203,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_successful_stage_must_advance",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 291,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_unregistered_stage_research_then_synthesis",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 138,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 17
+    },
+    "payload_for": {
+      "source": {
+        "file": "tests/test_orchestrator.py",
+        "start": 20,
+        "end": 33
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "missing_report": {
+      "source": {
+        "file": "tests/test_orchestrator.py",
+        "start": 35,
+        "end": 41
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_premium_visual_request_prefetches_asset_forge_before_preview": {
+      "source": {
+        "file": "tests/test_orchestrator.py",
+        "start": 43,
+        "end": 78
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "request",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 304,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 845,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_runner.py",
+              "line": 237,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_project",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 383,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "runner": {
+      "source": {
+        "file": "tests/test_orchestrator.py",
+        "start": 52,
+        "end": 172
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 336,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "missing_report",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "payload_for",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "request",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 304,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 845,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_runner.py",
+              "line": 237,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_project",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 383,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_full_pipeline_reaches_finished",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 123,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_multi_asset_request_uses_transactional_asset_forge_batch",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_unregistered_stage_research_then_synthesis",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 138,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "test_multi_asset_request_uses_transactional_asset_forge_batch": {
+      "source": {
+        "file": "tests/test_orchestrator.py",
+        "start": 80,
+        "end": 121
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 336,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "request",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 304,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 845,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_runner.py",
+              "line": 237,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_project",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 383,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_full_pipeline_reaches_finished": {
+      "source": {
+        "file": "tests/test_orchestrator.py",
+        "start": 123,
+        "end": 136
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 336,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "payload_for",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "request",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 304,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 845,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_runner.py",
+              "line": 237,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_project",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 383,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_unregistered_stage_research_then_synthesis": {
+      "source": {
+        "file": "tests/test_orchestrator.py",
+        "start": 138,
+        "end": 173
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 336,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "missing_report",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "request",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 304,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 845,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_runner.py",
+              "line": 237,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_project",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 383,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_research_failure_prevents_synthesis": {
+      "source": {
+        "file": "tests/test_orchestrator.py",
+        "start": 175,
+        "end": 189
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 336,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "missing_report",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "request",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 304,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 845,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_runner.py",
+              "line": 237,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_project",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 383,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "test_adaptation_without_baseline_has_no_promotable_work_order": {
+      "source": {
+        "file": "tests/test_orchestrator.py",
+        "start": 191,
+        "end": 201
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "missing_report",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "request",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 304,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 845,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_runner.py",
+              "line": 237,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_project",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 383,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_stage_return_code_two_is_human_action_not_failure": {
+      "source": {
+        "file": "tests/test_orchestrator.py",
+        "start": 203,
+        "end": 228
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "request",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 304,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 845,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_runner.py",
+              "line": 237,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_project",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 383,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_scheduler_rewind_can_revisit_release_build_boundedly": {
+      "source": {
+        "file": "tests/test_orchestrator.py",
+        "start": 230,
+        "end": 288
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 336,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "request",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 304,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_registered_stages",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 336,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_successful_stage_must_advance": {
+      "source": {
+        "file": "tests/test_orchestrator.py",
+        "start": 291,
+        "end": 300
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "request",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 304,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 845,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_runner.py",
+              "line": 237,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_project",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 383,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "GitHubRunnerTests": {
+      "source": {
+        "file": "tests/test_orchestrator.py",
+        "start": 303,
+        "end": 322
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "request",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 304,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_adapter_reports_complete_only_after_machine_completion",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 314,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_non_main_is_rejected_before_generation",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 310,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "request": {
+      "source": {
+        "file": "tests/test_orchestrator.py",
+        "start": 304,
+        "end": 308
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_non_main_is_rejected_before_generation": {
+      "source": {
+        "file": "tests/test_orchestrator.py",
+        "start": 310,
+        "end": 312
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "request",
+          "definitions": [
+            {
+              "file": "tests/test_orchestrator.py",
+              "line": 304,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
       "dependency_count": 2
     },
-    "test_builds_production_os_dispatch_contract": {
+    "test_adapter_reports_complete_only_after_machine_completion": {
       "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 14,
-        "end": 28
+        "file": "tests/test_orchestrator.py",
+        "start": 314,
+        "end": 322
       },
       "symbol_dependencies": [
         {
-          "symbol": "build_production_os_asset_dispatch",
+          "symbol": "request",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 48,
+              "file": "tests/test_orchestrator.py",
+              "line": 304,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_premium_route_defaults_to_primary_importance": {
-      "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 31,
-        "end": 38
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_production_os_asset_dispatch",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_explicit_secondary_importance_is_preserved": {
-      "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 41,
-        "end": 50
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_production_os_asset_dispatch",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_route_includes_repository_delivery_target": {
-      "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 53,
-        "end": 66
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_production_os_asset_dispatch",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 48,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
       "dependency_count": 1

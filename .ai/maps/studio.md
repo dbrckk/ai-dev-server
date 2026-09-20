@@ -4251,6 +4251,15 @@ target_path = str(task.get("target_path") or f"{default_root}/{asset_id}.{target
 importance = str(task.get("importance") or ("primary" if any(term in instruction.lower() for term in PREMIUM_TERMS) else "secondary")).strip().lower()
 ⋮----
 args = [
+⋮----
+routes = [
+⋮----
+items = []
+⋮----
+source_mode = str(task.get("source_mode") or "generated").strip().lower()
+request = {
+⋮----
+item = {
 ````
 
 ## File: atomic_file.py
@@ -13779,11 +13788,26 @@ brief=request.get('brief')
 ⋮----
 candidate={
 ⋮----
+selected=[item for item in candidates[:8] if should_route_to_asset_forge(item)]
+target_repository=str(request.get('target_repo') or '').strip() or None
+target_worktree=str(request.get('target_worktree') or '').strip() or None
 routes=[]
 ⋮----
-route=build_production_os_asset_dispatch(
+batch=build_production_os_asset_batch(
+routes=batch['routes']
+spec_path=project_out/'asset-forge-batch-spec.json'
+⋮----
+command=['production-os','asset-forge-batch','--spec',str(spec_path),'--mode','auto']
 ⋮----
 remaining=_remaining(deadline,clock)
+⋮----
+result={'status':'deferred','routes':routes,'batch':True}
+⋮----
+completed=runner(command,timeout=remaining)
+⋮----
+result={'status':'failed','routes':routes,'batch':True}
+⋮----
+route=build_production_os_asset_dispatch(
 ⋮----
 result={'status':'deferred','routes':routes}
 ⋮----
@@ -13791,7 +13815,7 @@ completed=runner(route['command'],timeout=remaining)
 ⋮----
 result={'status':'failed','routes':routes,'failed_request_id':route['request_id']}
 ⋮----
-result={'status':'dispatched','routes':routes}
+result={'status':'dispatched','routes':routes,'batch':len(selected)>1}
 ⋮----
 def load_report(project_out)
 ⋮----

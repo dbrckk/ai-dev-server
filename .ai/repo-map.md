@@ -45,6 +45,7 @@ The content is organized as follows:
 .github/
   workflows/
     ai-repo-map.yml
+    asset-forge-batch-e2e.yml
     ci.yml
     fault-injection.yml
     godot-runtime-smoke.yml
@@ -894,6 +895,144 @@ concurrency:
 jobs:
   repository-standards:
     uses: dbrckk/repo-standards/.github/workflows/reusable-unified.yml@main
+````
+
+## File: .github/workflows/asset-forge-batch-e2e.yml
+````yaml
+name: Transactional Asset Forge Batch E2E
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/asset-forge-batch-e2e.yml'
+      - 'studio/asset_forge_bridge.py'
+      - 'studio/orchestrator.py'
+      - 'tests/test_orchestrator.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: transactional-asset-forge-batch-e2e
+  cancel-in-progress: true
+
+jobs:
+  batch-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout AI Dev Server
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Checkout Production OS
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: dbrckk/Production-OS
+          path: production-os
+
+      - name: Checkout Asset Forge
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: dbrckk/asset-forge
+          path: asset-forge
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+
+      - name: Install toolchain
+        run: |
+          python -m pip install ./production-os
+          python -m pip install --no-deps ./asset-forge
+          production-os asset-forge-batch --help >/dev/null
+
+      - name: Build two validated sources and batch spec
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/batch-e2e target-repo
+          cat > build/batch-e2e/a.svg <<'SVG'
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#111827"/><circle cx="32" cy="32" r="16" fill="#ffffff"/></svg>
+          SVG
+          cat > build/batch-e2e/b.svg <<'SVG'
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#111827"/><path d="M16 32h32M32 16v32" stroke="#ffffff" stroke-width="8"/></svg>
+          SVG
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          def request(request_id, asset_id):
+              return {
+                  "schema": "asset-forge/production-request/v1",
+                  "requestId": request_id,
+                  "instruction": f"Validate transactional E2E asset {asset_id}",
+                  "manifest": {
+                      "schema": "asset-forge/manifest/v1",
+                      "id": asset_id,
+                      "project": "batch-e2e",
+                      "type": "icon",
+                      "importance": "secondary",
+                      "source": {"mode": "custom", "uri": None, "author": "batch-e2e"},
+                      "license": {
+                          "id": "project-owned",
+                          "commercialUse": True,
+                          "derivatives": True,
+                          "attributionRequired": False,
+                      },
+                      "target": {"format": "svg", "engine": "libgdx"},
+                  },
+                  "delivery": {"engine": "libgdx"},
+              }
+
+          spec = {
+              "items": [
+                  {
+                      "request": request("batch-e2e-a", "batch-a"),
+                      "source_path": "build/batch-e2e/a.svg",
+                      "target_path": "assets/art/batch-a.svg",
+                  },
+                  {
+                      "request": request("batch-e2e-b", "batch-b"),
+                      "source_path": "build/batch-e2e/b.svg",
+                      "target_path": "assets/art/batch-b.svg",
+                  },
+              ]
+          }
+          Path("build/batch-e2e/spec.json").write_text(
+              json.dumps(spec, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Execute transactional batch
+        run: |
+          production-os asset-forge-batch             --spec build/batch-e2e/spec.json             --mode local             --target-worktree target-repo             --output-root build/batch-e2e/out             > build/batch-e2e/result.json
+
+      - name: Verify both assets were committed as one logical batch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s target-repo/assets/art/batch-a.svg
+          test -s target-repo/assets/art/batch-b.svg
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          result = json.loads(Path("build/batch-e2e/result.json").read_text())
+          assert result["success"] is True
+          assert result["count"] == 2
+          assert result["delivery_mode"] == "worktree"
+          assert len(result["delivered_to"]) == 2
+          PY
+
+      - name: Upload batch evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: transactional-asset-forge-batch-e2e
+          path: build/batch-e2e/
+          if-no-files-found: error
+          retention-days: 14
 ````
 
 ## File: .github/workflows/ci.yml
@@ -9013,6 +9152,15 @@ target_path = str(task.get("target_path") or f"{default_root}/{asset_id}.{target
 importance = str(task.get("importance") or ("primary" if any(term in instruction.lower() for term in PREMIUM_TERMS) else "secondary")).strip().lower()
 ⋮----
 args = [
+⋮----
+routes = [
+⋮----
+items = []
+⋮----
+source_mode = str(task.get("source_mode") or "generated").strip().lower()
+request = {
+⋮----
+item = {
 ````
 
 ## File: studio/atomic_file.py
@@ -18541,11 +18689,26 @@ brief=request.get('brief')
 ⋮----
 candidate={
 ⋮----
+selected=[item for item in candidates[:8] if should_route_to_asset_forge(item)]
+target_repository=str(request.get('target_repo') or '').strip() or None
+target_worktree=str(request.get('target_worktree') or '').strip() or None
 routes=[]
 ⋮----
-route=build_production_os_asset_dispatch(
+batch=build_production_os_asset_batch(
+routes=batch['routes']
+spec_path=project_out/'asset-forge-batch-spec.json'
+⋮----
+command=['production-os','asset-forge-batch','--spec',str(spec_path),'--mode','auto']
 ⋮----
 remaining=_remaining(deadline,clock)
+⋮----
+result={'status':'deferred','routes':routes,'batch':True}
+⋮----
+completed=runner(command,timeout=remaining)
+⋮----
+result={'status':'failed','routes':routes,'batch':True}
+⋮----
+route=build_production_os_asset_dispatch(
 ⋮----
 result={'status':'deferred','routes':routes}
 ⋮----
@@ -18553,7 +18716,7 @@ completed=runner(route['command'],timeout=remaining)
 ⋮----
 result={'status':'failed','routes':routes,'failed_request_id':route['request_id']}
 ⋮----
-result={'status':'dispatched','routes':routes}
+result={'status':'dispatched','routes':routes,'batch':len(selected)>1}
 ⋮----
 def load_report(project_out)
 ⋮----
@@ -30538,6 +30701,15 @@ def runner(args, timeout)
 result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)
 ⋮----
 route=json.loads((out/'asset-forge-prefetch.json').read_text())
+⋮----
+def test_multi_asset_request_uses_transactional_asset_forge_batch(self)
+⋮----
+spec = Path(args[args.index('--spec')+1])
+payload=json.loads(spec.read_text())
+⋮----
+production_calls=[call for call in calls if call and call[0]=='production-os']
+⋮----
+prefetch=json.loads((out/'asset-forge-prefetch.json').read_text())
 ⋮----
 def test_full_pipeline_reaches_finished(self)
 ⋮----

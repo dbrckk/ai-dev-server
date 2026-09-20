@@ -7240,6 +7240,15 @@ result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELI
 ⋮----
 route=json.loads((out/'asset-forge-prefetch.json').read_text())
 ⋮----
+def test_multi_asset_request_uses_transactional_asset_forge_batch(self)
+⋮----
+spec = Path(args[args.index('--spec')+1])
+payload=json.loads(spec.read_text())
+⋮----
+production_calls=[call for call in calls if call and call[0]=='production-os']
+⋮----
+prefetch=json.loads((out/'asset-forge-prefetch.json').read_text())
+⋮----
 def test_full_pipeline_reaches_finished(self)
 ⋮----
 root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}')

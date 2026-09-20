@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "081146a72811197c62d29e26b68cca659a1713f8",
-  "head": "781c4a47f3c2c9017ff2ec5e66adbe1d286b1a6f",
+  "base": "781c4a47f3c2c9017ff2ec5e66adbe1d286b1a6f",
+  "head": "59d4a71d72d2a7a64509684bb76bbb5b5b6c2dfd",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": ".github/workflows/production-os-asset-forge-e2e.yml",
-      "status": "M"
+      "path": ".github/workflows/asset-forge-batch-e2e.yml",
+      "status": "A"
     },
     {
       "path": "studio/asset_forge_bridge.py",
@@ -18,14 +18,14 @@
       "status": "M"
     },
     {
-      "path": "tests/test_asset_forge_bridge.py",
+      "path": "tests/test_orchestrator.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
     "studio/asset_forge_bridge.py",
     "studio/orchestrator.py",
-    "tests/test_asset_forge_bridge.py"
+    "tests/test_orchestrator.py"
   ],
   "impacted_files": [
     "studio/asset_forge_bridge.py",
@@ -61,6 +61,12 @@
       "kind": "function",
       "file": "studio/asset_forge_bridge.py",
       "line": 48
+    },
+    {
+      "name": "build_production_os_asset_batch",
+      "kind": "function",
+      "file": "studio/asset_forge_bridge.py",
+      "line": 113
     },
     {
       "name": "bounded_run",
@@ -198,79 +204,79 @@
       "name": "load_report",
       "kind": "function",
       "file": "studio/orchestrator.py",
-      "line": 173
+      "line": 202
     },
     {
       "name": "_remaining",
       "kind": "function",
       "file": "studio/orchestrator.py",
-      "line": 181
+      "line": 210
     },
     {
       "name": "_write_adaptation_handoff",
       "kind": "function",
       "file": "studio/orchestrator.py",
-      "line": 186
+      "line": 215
     },
     {
       "name": "_run_adaptation_pending",
       "kind": "function",
       "file": "studio/orchestrator.py",
-      "line": 192
+      "line": 221
     },
     {
       "name": "_run_adaptation_research",
       "kind": "function",
       "file": "studio/orchestrator.py",
-      "line": 209
+      "line": 238
     },
     {
       "name": "_run_adaptation_synthesis",
       "kind": "function",
       "file": "studio/orchestrator.py",
-      "line": 223
+      "line": 252
     },
     {
       "name": "_run_adaptation_benchmark",
       "kind": "function",
       "file": "studio/orchestrator.py",
-      "line": 237
+      "line": 266
     },
     {
       "name": "_run_adaptation_promotion",
       "kind": "function",
       "file": "studio/orchestrator.py",
-      "line": 253
+      "line": 282
     },
     {
       "name": "_run_adaptation_persistence",
       "kind": "function",
       "file": "studio/orchestrator.py",
-      "line": 266
+      "line": 295
     },
     {
       "name": "_run_adaptation_automerge",
       "kind": "function",
       "file": "studio/orchestrator.py",
-      "line": 280
+      "line": 309
     },
     {
       "name": "_stage_command",
       "kind": "function",
       "file": "studio/orchestrator.py",
-      "line": 302
+      "line": 331
     },
     {
       "name": "run_registered_stages",
       "kind": "function",
       "file": "studio/orchestrator.py",
-      "line": 307
+      "line": 336
     },
     {
       "name": "run_project",
       "kind": "function",
       "file": "studio/orchestrator.py",
-      "line": 354
+      "line": 383
     },
     {
       "name": "_persist_caches",
@@ -717,7 +723,7 @@
       "line": 52
     },
     {
-      "name": "test_full_pipeline_reaches_finished",
+      "name": "test_multi_asset_request_uses_transactional_asset_forge_batch",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
       "line": 80
@@ -726,109 +732,121 @@
       "name": "runner",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 84
+      "line": 92
+    },
+    {
+      "name": "test_full_pipeline_reaches_finished",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 123
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 127
     },
     {
       "name": "test_unregistered_stage_research_then_synthesis",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 95
+      "line": 138
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 98
+      "line": 141
     },
     {
       "name": "test_research_failure_prevents_synthesis",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 132
+      "line": 175
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 135
+      "line": 178
     },
     {
       "name": "test_adaptation_without_baseline_has_no_promotable_work_order",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 148
+      "line": 191
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 151
+      "line": 194
     },
     {
       "name": "test_stage_return_code_two_is_human_action_not_failure",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 160
+      "line": 203
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 163
+      "line": 206
     },
     {
       "name": "test_scheduler_rewind_can_revisit_release_build_boundedly",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 187
+      "line": 230
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 196
+      "line": 239
     },
     {
       "name": "test_successful_stage_must_advance",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 248
+      "line": 291
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 251
+      "line": 294
     },
     {
       "name": "GitHubRunnerTests",
       "kind": "class",
       "file": "tests/test_orchestrator.py",
-      "line": 260
+      "line": 303
     },
     {
       "name": "request",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 261
+      "line": 304
     },
     {
       "name": "test_non_main_is_rejected_before_generation",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 267
+      "line": 310
     },
     {
       "name": "test_adapter_reports_complete_only_after_machine_completion",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 271
+      "line": 314
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_orchestrator.py",
-      "line": 274
+      "line": 317
     },
     {
       "name": "OrchestratorAutoMergeTests",

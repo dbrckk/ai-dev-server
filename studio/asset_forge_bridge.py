@@ -255,6 +255,10 @@ def build_production_os_asset_batch(
         if target_format in {"png", "webp"}:
             constraints.setdefault("visualSimilarityMin", float(similarity_min))
             constraints.setdefault("visualSimilarityRetries", int(similarity_retries))
+            constraints.setdefault(
+                "technicalQualityMin",
+                0.62 if route["importance"] == "primary" else 0.50,
+            )
             constraints.setdefault("technicalQualityMin", float(technical_quality_min))
             constraints.setdefault("maxBorderAlphaRatio", float(max_border_alpha_ratio))
 

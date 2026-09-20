@@ -40,6 +40,43 @@ class OrchestratorTests(unittest.TestCase):
                 'permissions': [], 'reasons': [{'profile': MISSING_STAGE, 'source': 'source_marker', 'value': 'future_capability'}]}},
         }
 
+    def test_premium_visual_request_prefetches_asset_forge_before_preview(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); out = root / 'out'; request = root / 'request.json'
+            request.write_text(json.dumps({
+                'id':'deadline-zero',
+                'brief':'Create premium AAA zombie sprites for a Godot game.',
+                'engine':'godot4',
+            }))
+            calls=[]
+            def runner(args, timeout):
+                calls.append(args)
+                out.mkdir(parents=True, exist_ok=True)
+                if args and args[0]=='production-os':
+                    return subprocess.CompletedProcess(args,0)
+                if 'studio/run.py' in args:
+                    (out/'report.json').write_text(json.dumps({
+                        'status':'validated_preview',
+                        'completion':{'finished':False,'next_stage':'release_build'},
+                    }))
+                    return subprocess.CompletedProcess(args,0)
+                if 'studio/post_preview.py' in args:
+                    (out/'report.json').write_text(json.dumps({
+                        'status':'finished',
+                        'completion':{'finished':True,'next_stage':None},
+                    }))
+                    return subprocess.CompletedProcess(args,0)
+                self.fail('unexpected stage '+str(args))
+            result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)
+            self.assertEqual(result['status'],'complete')
+            self.assertEqual(calls[0][0],'production-os')
+            self.assertIn('asset-forge-dispatch',calls[0])
+            route=json.loads((out/'asset-forge-prefetch.json').read_text())
+            self.assertEqual(route['status'],'dispatched')
+            self.assertEqual(route['routes'][0]['project'],'deadline-zero')
+            self.assertEqual(route['routes'][0]['command'][route['routes'][0]['command'].index('--asset-type')+1],'sprite-sheet')
+            self.assertEqual(route['routes'][0]['command'][route['routes'][0]['command'].index('--format')+1],'png')
+
     def test_full_pipeline_reaches_finished(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}')

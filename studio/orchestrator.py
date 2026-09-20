@@ -22,6 +22,7 @@ from architecture_replacement_reputation import TRANSITION_POLICY_VERSION, load 
 from architecture_reputation_policy_migration import write_dry_run as write_reputation_policy_migration_review
 from repo_maintenance import probe as probe_repo_maintenance
 from repo_version_probe import probe as probe_repo_versions
+from asset_forge_bridge import build_production_os_asset_dispatch, should_route_to_asset_forge
 
 def _recommendation_context(request_path):
     try:
@@ -112,6 +113,57 @@ def _evaluate_architecture(report,project_out):
     report['architecture_replacement_work_orders']=replacement_work_orders
     (project_out/'report.json').write_text(json.dumps(report,ensure_ascii=False,sort_keys=True,separators=(',',':')))
     return evaluation
+
+
+def _asset_forge_prefetch(request_path,project_out,runner,deadline,clock):
+    try:
+        request=json.loads(Path(request_path).read_text())
+    except (OSError,json.JSONDecodeError):
+        return {'status':'not_applicable','routes':[]}
+    if not isinstance(request,dict):
+        return {'status':'not_applicable','routes':[]}
+
+    project=str(request.get('id') or request.get('app_name') or request.get('project') or 'project').strip()
+    candidates=[]
+    raw_assets=request.get('asset_requests')
+    if isinstance(raw_assets,list):
+        candidates.extend(item for item in raw_assets if isinstance(item,dict))
+
+    if not candidates:
+        brief=request.get('brief')
+        if isinstance(brief,str) and brief.strip():
+            candidate={
+                'id':'visual-foundation',
+                'objective':brief,
+                'engine':request.get('engine'),
+            }
+            if should_route_to_asset_forge(candidate):
+                candidates.append(candidate)
+
+    if not candidates:
+        return {'status':'not_applicable','routes':[]}
+
+    routes=[]
+    for item in candidates[:8]:
+        if not should_route_to_asset_forge(item):
+            continue
+        route=build_production_os_asset_dispatch(item,project=project)
+        routes.append(route)
+        try:
+            remaining=_remaining(deadline,clock)
+        except TimeoutError:
+            result={'status':'deferred','routes':routes}
+            (project_out/'asset-forge-prefetch.json').write_text(json.dumps(result,ensure_ascii=False,sort_keys=True,separators=(',',':')))
+            return result
+        completed=runner(route['command'],timeout=remaining)
+        if completed.returncode!=0:
+            result={'status':'failed','routes':routes,'failed_request_id':route['request_id']}
+            (project_out/'asset-forge-prefetch.json').write_text(json.dumps(result,ensure_ascii=False,sort_keys=True,separators=(',',':')))
+            return result
+
+    result={'status':'dispatched','routes':routes}
+    (project_out/'asset-forge-prefetch.json').write_text(json.dumps(result,ensure_ascii=False,sort_keys=True,separators=(',',':')))
+    return result
 
 def load_report(project_out):
     path=project_out/'report.json'
@@ -296,6 +348,11 @@ def run_registered_stages(request_path,project_out,work,report,deadline,runner,c
 
 def run_project(request_path,project_out,work,runner,deadline,clock=time.monotonic,baseline_sha=None):
     project_out.mkdir(parents=True,exist_ok=True)
+    asset_prefetch=_asset_forge_prefetch(request_path,project_out,runner,deadline,clock)
+    if asset_prefetch.get('status')=='failed':
+        return {'status':'asset_forge_failed','report':{},'next_stage':'asset_forge','asset_forge':asset_prefetch}
+    if asset_prefetch.get('status')=='deferred':
+        return {'status':'deferred','report':{},'next_stage':'asset_forge','asset_forge':asset_prefetch}
     recommend('planning',project_out,**_recommendation_context(request_path))
     try: remaining=_remaining(deadline,clock)
     except TimeoutError: return {'status':'deferred','report':{},'next_stage':'preview'}

@@ -22,19 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T13:36:57Z
+Generated: 2026-09-20T13:54:55Z
 
 ### Git
 - Branch: `main`
-- Head: `40bb327c722b`
-- Commit date: 2026-09-20T15:36:44+02:00
-- Commit: ci: verify dependency-ordered asset batch execution
+- Head: `568e4ae80255`
+- Commit date: 2026-09-20T15:54:39+02:00
+- Commit: test: cover inferred visual dependency aliases
 - Tracked files: 819
 
 ### Recently changed files
-- `.github/workflows/asset-forge-batch-e2e.yml`
 - `tests/test_asset_forge_bridge.py`
 - `studio/asset_forge_bridge.py`
+- `.github/workflows/asset-forge-batch-e2e.yml`
 
 ### Project signals
 - No common build descriptor detected

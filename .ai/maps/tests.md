@@ -2699,6 +2699,8 @@ batch = build_production_os_asset_batch(
 by_id = {item["id"]: item for item in batch["items"]}
 ⋮----
 def test_batch_infers_parent_asset_dependency()
+⋮----
+def test_batch_infers_animation_of_dependency()
 ```
 
 ## File: test_asset_forge_installer.py

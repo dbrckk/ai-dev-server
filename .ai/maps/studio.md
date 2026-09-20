@@ -4261,7 +4261,7 @@ request = {
 ⋮----
 raw_dependencies = task.get("depends_on")
 ⋮----
-implicit = task.get("source_asset") or task.get("parent_asset")
+implicit = (
 raw_dependencies = [implicit] if implicit else []
 ⋮----
 raw_dependencies = [raw_dependencies]

@@ -9169,7 +9169,7 @@ request = {
 ⋮----
 raw_dependencies = task.get("depends_on")
 ⋮----
-implicit = task.get("source_asset") or task.get("parent_asset")
+implicit = (
 raw_dependencies = [implicit] if implicit else []
 ⋮----
 raw_dependencies = [raw_dependencies]
@@ -26176,6 +26176,8 @@ batch = build_production_os_asset_batch(
 by_id = {item["id"]: item for item in batch["items"]}
 ⋮----
 def test_batch_infers_parent_asset_dependency()
+⋮----
+def test_batch_infers_animation_of_dependency()
 ````
 
 ## File: tests/test_asset_forge_installer.py

@@ -1,10 +1,10 @@
 # Change impact
 
-Base: 3afc2192da3b7e5bc284325e1048c74ce861bd66
-Head: 59d4a71d72d2a7a64509684bb76bbb5b5b6c2dfd
+Base: a51d39a5ccfecbb882a387037f3d28c2ac5b5bbf
+Head: 99bb62ef7cfe79e1895704a03e91e35402f4174e
 
 ## Changed files
-- A .github/workflows/asset-forge-batch-e2e.yml
+- M .github/workflows/asset-forge-batch-e2e.yml
 
 ## Affected areas
 - .github

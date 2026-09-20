@@ -1,18 +1,18 @@
 {
   "budget": {
-    "confidence": "high",
+    "confidence": "medium",
     "expand_to": 12,
-    "max_files": 3,
+    "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 3,
-    "tier": "narrow",
-    "top_score": 38
+    "score_margin": 0,
+    "tier": "bounded",
+    "top_score": 29
   },
   "cache": {
-    "fingerprint": "95a5bf6de022944666e814db4310527ad6306ed6de890ea8be3ebc5f547bd4e0",
+    "fingerprint": "1111943b0e915cb0c185747f39c94c8dfb9cbfee1b097844c955cc6d41a68406",
     "hit": false
   },
-  "candidate_count": 96,
+  "candidate_count": 88,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -21,13 +21,98 @@
         "engine",
         "game"
       ],
-      "path": "tests/test_orchestrator.py",
+      "path": "tests/test_asset_forge_bridge.py",
       "reasons": [
-        "impact",
-        "recently-changed",
         "search-index"
       ],
-      "score": 38,
+      "score": 29,
+      "symbols": [
+        "test_builds_production_os_dispatch_contract",
+        "test_explicit_secondary_importance_is_preserved",
+        "test_ignores_plain_code_task",
+        "test_premium_route_defaults_to_primary_importance",
+        "test_route_includes_repository_delivery_target",
+        "test_routes_premium_visual_task"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine",
+        "game"
+      ],
+      "path": "tests/test_godot_android_stage.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 29,
+      "symbols": [
+        "FakeGitHub",
+        "GodotAndroidStageTests",
+        "exporter",
+        "runtime",
+        "templates",
+        "test_requires_validated_preview_checkpoint",
+        "test_success_advances_only_to_device_qa"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine",
+        "game"
+      ],
+      "path": "tests/test_godot_device_stage.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 29,
+      "symbols": [
+        "FakeGitHub",
+        "GodotDeviceStageTests",
+        "exporter",
+        "runtime",
+        "state",
+        "templates",
+        "test_device_cannot_spoof_journey_or_visual_evidence",
+        "test_matching_local_apk_advances_only_to_journey_qa",
+        "test_missing_local_apk_is_reexported_and_rebound",
+        "test_requires_android_export_checkpoint",
+        "validator"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine",
+        "game"
+      ],
+      "path": "tests/test_godot_runtime_journey_stage.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 29,
+      "symbols": [
+        "FakeGitHub",
+        "GodotRuntimeJourneyStageTests",
+        "installer",
+        "runner",
+        "test_all_journeys_advance_only_to_visual_qa",
+        "test_partial_success_stays_on_journey_stage",
+        "test_requires_device_validated_checkpoint"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine",
+        "game"
+      ],
+      "path": "tests/test_orchestrator.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 29,
       "symbols": [
         "GitHubRunnerTests",
         "OrchestratorTests",
@@ -50,40 +135,15 @@
     {
       "learning_score": 0,
       "matched_terms": [
-        "engine",
-        "game"
-      ],
-      "path": "tests/test_asset_forge_bridge.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 35,
-      "symbols": [
-        "test_builds_production_os_dispatch_contract",
-        "test_explicit_secondary_importance_is_preserved",
-        "test_ignores_plain_code_task",
-        "test_premium_route_defaults_to_primary_importance",
-        "test_route_includes_repository_delivery_target",
-        "test_routes_premium_visual_task"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
         "engine"
       ],
-      "path": "studio/multi_engine_orchestrator.py",
+      "path": "studio/engine_detect.py",
       "reasons": [
-        "impact",
         "search-index"
       ],
-      "score": 33,
+      "score": 27,
       "symbols": [
-        "_detect",
-        "_remaining",
-        "_run_stage",
-        "run_project"
+        "main"
       ]
     }
   ],

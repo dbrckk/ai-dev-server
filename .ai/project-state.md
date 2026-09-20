@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T11:41:08Z
+Generated: 2026-09-20T11:57:21Z
 
 ### Git
 - Branch: `main`
-- Head: `59d4a71d72d2`
-- Commit date: 2026-09-20T13:40:53+02:00
-- Commit: ci: add transactional multi-asset E2E
+- Head: `99bb62ef7cfe`
+- Commit date: 2026-09-20T13:56:44+02:00
+- Commit: ci: always retain transactional batch evidence
 - Tracked files: 819
 
 ### Recently changed files
@@ -36,7 +36,6 @@ Generated: 2026-09-20T11:41:08Z
 - `tests/test_orchestrator.py`
 - `studio/orchestrator.py`
 - `studio/asset_forge_bridge.py`
-- `.github/workflows/production-os-asset-forge-e2e.yml`
 
 ### Project signals
 - No common build descriptor detected

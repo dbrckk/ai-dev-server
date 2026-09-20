@@ -96,25 +96,40 @@ def infer_asset_tasks_from_brief(brief: str, *, engine: str | None = None) -> li
         "level art", "background", "backgrounds", "décor", "decor",
     )
 
+    is_3d = any(term in lower for term in ("3d", "3-d", "mesh", "model", "modèle 3d", "modele 3d"))
     if any(term in lower for term in character_terms):
-        tasks.append({
-            "id": "character-foundation",
-            "objective": text,
-            "engine": inferred_engine,
-            "importance": "primary",
-            "asset_type": "sprite-sheet",
-            "format": "png",
-        })
-        if any(term in lower for term in animation_terms):
+        if is_3d:
             tasks.append({
-                "id": "character-animation",
-                "objective": text + " Preserve the exact character identity across animation frames.",
+                "id": "character-3d-foundation",
+                "objective": text,
+                "engine": inferred_engine,
+                "importance": "primary",
+                "asset_type": "character-3d",
+                "format": "glb",
+                "constraints": {
+                    "generateLods": True,
+                    "requireLods": False,
+                },
+            })
+        else:
+            tasks.append({
+                "id": "character-foundation",
+                "objective": text,
                 "engine": inferred_engine,
                 "importance": "primary",
                 "asset_type": "sprite-sheet",
                 "format": "png",
-                "animation_of": "character-foundation",
             })
+            if any(term in lower for term in animation_terms):
+                tasks.append({
+                    "id": "character-animation",
+                    "objective": text + " Preserve the exact character identity across animation frames.",
+                    "engine": inferred_engine,
+                    "importance": "primary",
+                    "asset_type": "sprite-sheet",
+                    "format": "png",
+                    "animation_of": "character-foundation",
+                })
 
     padded = f" {lower} "
     if any(term in padded for term in (" ui ", " interface ", " hud ", " menu ", " menus ")):
@@ -128,7 +143,6 @@ def infer_asset_tasks_from_brief(brief: str, *, engine: str | None = None) -> li
         })
 
     if any(term in lower for term in environment_terms):
-        is_3d = "3d" in lower or "mesh" in lower or "model" in lower
         tasks.append({
             "id": "environment-foundation",
             "objective": text,

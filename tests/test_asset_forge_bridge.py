@@ -110,3 +110,25 @@ def test_batch_infers_parent_asset_dependency():
     )
     by_id = {item["id"]: item for item in batch["items"]}
     assert by_id["atlas"]["depends_on"] == ["character"]
+
+
+def test_batch_infers_animation_of_dependency():
+    from asset_forge_bridge import build_production_os_asset_batch
+    batch = build_production_os_asset_batch(
+        [
+            {
+                "id": "character",
+                "objective": "Create premium professional character sprite",
+                "engine": "libgdx",
+            },
+            {
+                "id": "run-animation",
+                "objective": "Create premium professional run animation sprite",
+                "engine": "libgdx",
+                "animation_of": "character",
+            },
+        ],
+        project="deadline-zero",
+    )
+    by_id = {item["id"]: item for item in batch["items"]}
+    assert by_id["run-animation"]["depends_on"] == ["character"]

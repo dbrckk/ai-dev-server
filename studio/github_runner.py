@@ -243,6 +243,17 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
                         "cache_hit": bool(item.get("cache_hit")),
                         "depends_on": list(item.get("depends_on") or []),
                     })
+            dedup = []
+            cache_hits = 0
+            for receipt in receipts:
+                if not isinstance(receipt, dict):
+                    continue
+                quality = receipt.get("quality_summary")
+                if isinstance(quality, dict):
+                    cache_hits += int(quality.get("cache_hits") or 0)
+                summary = receipt.get("dedup_summary")
+                if isinstance(summary, dict):
+                    dedup.append(summary)
             visual_assets = {
                 "status": asset_value.get("status"),
                 "quality_status": asset_value.get("quality_status") or "unknown",
@@ -250,6 +261,9 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
                 "routes": len(asset_value.get("routes") or []),
                 "checked": sum(int(summary.get("checked") or 0) for summary in summaries),
                 "regenerated": sum(int(summary.get("regenerated") or 0) for summary in summaries),
+                "cache_hits": cache_hits,
+                "exact_duplicates": sum(int(item.get("exact_count") or 0) for item in dedup),
+                "near_duplicates": sum(int(item.get("near_count") or 0) for item in dedup),
                 "minimum_score": min(scores) if scores else None,
                 "items": item_rows[:16],
             }

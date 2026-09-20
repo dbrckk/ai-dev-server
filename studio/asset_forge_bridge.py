@@ -294,6 +294,10 @@ def build_production_os_asset_batch(
         if max_border_alpha_ratio is None:
             max_border_alpha_ratio = 0.04 if route["importance"] == "primary" else 0.08
         constraints = dict(task.get("constraints") or {}) if isinstance(task.get("constraints"), dict) else {}
+        constraints.setdefault(
+            "allowCrossProjectReuse",
+            route["importance"] == "secondary",
+        )
         if target_format in {"png", "webp"}:
             constraints.setdefault("visualSimilarityMin", float(similarity_min))
             constraints.setdefault("visualSimilarityRetries", int(similarity_retries))

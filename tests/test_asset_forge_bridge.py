@@ -161,6 +161,31 @@ def test_primary_raster_batch_uses_stricter_visual_similarity_policy():
     assert constraints["maxBorderAlphaRatio"] == 0.04
 
 
+def test_asset_reuse_policy_is_primary_unique_secondary_reusable():
+    from asset_forge_bridge import build_production_os_asset_batch
+    batch = build_production_os_asset_batch(
+        [
+            {
+                "id": "hero",
+                "objective": "Create premium AAA hero sprite",
+                "importance": "primary",
+            },
+            {
+                "id": "badge",
+                "objective": "Create polished professional UI icon",
+                "importance": "secondary",
+            },
+        ],
+        project="game",
+    )
+    by_id = {
+        item["id"]: item["request"]["manifest"]["constraints"]
+        for item in batch["items"]
+    }
+    assert by_id["hero"]["allowCrossProjectReuse"] is False
+    assert by_id["badge"]["allowCrossProjectReuse"] is True
+
+
 def test_primary_raster_batch_enables_optional_semantic_art_review():
     from asset_forge_bridge import build_production_os_asset_batch
     batch = build_production_os_asset_batch(

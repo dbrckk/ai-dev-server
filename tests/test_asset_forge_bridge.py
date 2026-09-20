@@ -26,3 +26,25 @@ def test_builds_production_os_dispatch_contract():
     assert route["capability"] == "asset-forge"
     assert "asset-forge-dispatch" in route["command"]
     assert "--backend" in route["command"]
+
+
+def test_premium_route_defaults_to_primary_importance():
+    route = build_production_os_asset_dispatch(
+        {"id": "hero-sprite", "objective": "Create premium AAA player sprite"},
+        project="deadline-zero",
+    )
+    assert route["importance"] == "primary"
+    idx = route["command"].index("--importance")
+    assert route["command"][idx + 1] == "primary"
+
+
+def test_explicit_secondary_importance_is_preserved():
+    route = build_production_os_asset_dispatch(
+        {
+            "id": "minor-icon",
+            "objective": "Create polished UI icon",
+            "importance": "secondary",
+        },
+        project="deadline-zero",
+    )
+    assert route["importance"] == "secondary"

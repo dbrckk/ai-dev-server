@@ -21,6 +21,7 @@ jobs:
     env:
       POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
       CODEX_ACCESS_TOKEN: ${{ secrets.CODEX_ACCESS_TOKEN }}
+      CHATGPT_ACCESS_TOKEN: ${{ secrets.CHATGPT_ACCESS_TOKEN }}
     steps:
       - name: Checkout AI Dev Server
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -64,7 +65,7 @@ jobs:
             echo "format=svg" >> "$GITHUB_OUTPUT"
             echo "asset_type=icon" >> "$GITHUB_OUTPUT"
             echo "artifact=live-production-pipeline-icon.svg" >> "$GITHUB_OUTPUT"
-          elif [ -n "$CODEX_ACCESS_TOKEN" ]; then
+          elif [ -n "$CODEX_ACCESS_TOKEN" ] || [ -n "$CHATGPT_ACCESS_TOKEN" ]; then
             echo "configured=true" >> "$GITHUB_OUTPUT"
             echo "backend=imagen-codex" >> "$GITHUB_OUTPUT"
             echo "format=png" >> "$GITHUB_OUTPUT"

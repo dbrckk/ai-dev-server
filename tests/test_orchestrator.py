@@ -70,16 +70,18 @@ class OrchestratorTests(unittest.TestCase):
             result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)
             self.assertEqual(result['status'],'complete')
             self.assertEqual(calls[0][0],'production-os')
-            self.assertIn('asset-forge-batch',calls[0])
-            spec=json.loads((out/'asset-forge-batch-spec.json').read_text())
-            self.assertEqual(len(spec['items']),2)
-            by_id={item['id']:item for item in spec['items']}
-            self.assertEqual(by_id['character-animation']['depends_on'],['character-foundation'])
-            self.assertEqual(by_id['character-foundation']['request']['manifest']['type'],'sprite-sheet')
-            self.assertEqual(by_id['character-foundation']['request']['manifest']['target']['format'],'png')
+            self.assertIn('asset-forge-dispatch',calls[0])
+            self.assertIn('--engine',calls[0])
+            self.assertEqual(calls[0][calls[0].index('--engine')+1],'godot4')
+            self.assertIn('--target-path',calls[0])
+            self.assertEqual(
+                calls[0][calls[0].index('--target-path')+1],
+                'assets/art/character-foundation.png',
+            )
             route=json.loads((out/'asset-forge-prefetch.json').read_text())
             self.assertEqual(route['status'],'dispatched')
             self.assertEqual(route['routes'][0]['project'],'deadline-zero')
+            self.assertEqual(route['routes'][0]['asset_id'],'character-foundation')
 
     def test_multi_asset_request_uses_transactional_asset_forge_batch(self):
         with tempfile.TemporaryDirectory() as tmp:

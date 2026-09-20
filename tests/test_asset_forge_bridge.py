@@ -229,3 +229,31 @@ def test_raster_quality_policy_can_be_overridden_per_task():
     constraints = batch["items"][0]["request"]["manifest"]["constraints"]
     assert constraints["technicalQualityMin"] == 0.72
     assert constraints["maxBorderAlphaRatio"] == 0.02
+
+
+def test_target_repository_defaults_visual_delivery_to_assets_art_without_engine():
+    from asset_forge_bridge import build_production_os_asset_dispatch
+    route = build_production_os_asset_dispatch(
+        {
+            "id": "hero",
+            "objective": "Create premium professional character sprite",
+        },
+        project="demo",
+        target_repository="owner/game",
+    )
+    assert route["target_path"] == "assets/art/hero.png"
+
+
+def test_engine_is_inferred_from_visual_instruction():
+    from asset_forge_bridge import build_production_os_asset_batch
+    batch = build_production_os_asset_batch(
+        [{
+            "id": "hero",
+            "objective": "Create premium professional sprite art for this libGDX game",
+        }],
+        project="demo",
+        target_repository="owner/game",
+    )
+    manifest = batch["items"][0]["request"]["manifest"]
+    assert manifest["target"]["engine"] == "libgdx"
+    assert batch["routes"][0]["target_path"] == "assets/art/hero.png"

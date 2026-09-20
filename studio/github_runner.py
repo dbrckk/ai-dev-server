@@ -174,6 +174,39 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
     usage = summary.get("usage")
     if not isinstance(usage, dict):
         usage = {}
+    visual_assets = None
+    asset_path = out / "asset-forge-prefetch.json"
+    if asset_path.is_file():
+        try:
+            asset_value = json.loads(asset_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            asset_value = None
+        if isinstance(asset_value, dict):
+            receipts = asset_value.get("receipts")
+            if not isinstance(receipts, list):
+                single = asset_value.get("receipt")
+                receipts = [single] if isinstance(single, dict) else []
+            summaries = [
+                item.get("quality_summary")
+                for item in receipts
+                if isinstance(item, dict)
+                and isinstance(item.get("quality_summary"), dict)
+            ]
+            scores = [
+                float(summary["minimum_score"])
+                for summary in summaries
+                if isinstance(summary.get("minimum_score"), (int, float))
+            ]
+            visual_assets = {
+                "status": asset_value.get("status"),
+                "quality_status": asset_value.get("quality_status") or "unknown",
+                "batch": bool(asset_value.get("batch")),
+                "routes": len(asset_value.get("routes") or []),
+                "checked": sum(int(summary.get("checked") or 0) for summary in summaries),
+                "regenerated": sum(int(summary.get("regenerated") or 0) for summary in summaries),
+                "minimum_score": min(scores) if scores else None,
+            }
+
     envelope = {
         "schema_version": "ai-dev-server/production-os-result/v1",
         "workflow_id": correlation["workflow_id"],
@@ -190,6 +223,7 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
             "pipeline_status": summary.get("status"),
             "next_stage": summary.get("next_stage"),
             "finished": bool(summary.get("finished") is True),
+            "visual_assets": visual_assets,
         },
     }
     out.mkdir(parents=True, exist_ok=True)

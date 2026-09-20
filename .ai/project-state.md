@@ -22,19 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T16:18:07Z
+Generated: 2026-09-20T16:20:43Z
 
 ### Git
 - Branch: `main`
-- Head: `399cd9aa1603`
-- Commit date: 2026-09-20T18:17:57+02:00
-- Commit: test: align simple visual brief with single asset dispatch
+- Head: `e53b931d48be`
+- Commit date: 2026-09-20T18:20:29+02:00
+- Commit: test: cover zero-config 3D profile and LOD inference
 - Tracked files: 820
 
 ### Recently changed files
-- `tests/test_orchestrator.py`
 - `tests/test_asset_forge_bridge.py`
 - `studio/asset_forge_bridge.py`
+- `tests/test_orchestrator.py`
 
 ### Project signals
 - No common build descriptor detected

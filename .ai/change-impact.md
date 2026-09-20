@@ -1,10 +1,10 @@
 # Change impact
 
-Base: f15526e70b03c602e36444784253d7cc88805f57
-Head: 399cd9aa1603469c562a70fbc20b35012323f297
+Base: 4844024f26407320d5e35d42e609a1d5adc6a6d4
+Head: e53b931d48be5454e11051d18e41f391aabc7b0c
 
 ## Changed files
-- M tests/test_orchestrator.py
+- M tests/test_asset_forge_bridge.py
 
 ## Affected areas
 - tests

@@ -2731,6 +2731,10 @@ def test_target_repository_defaults_visual_delivery_to_assets_art_without_engine
 def test_engine_is_inferred_from_visual_instruction()
 ⋮----
 manifest = batch["items"][0]["request"]["manifest"]
+⋮----
+def test_3d_character_inference_enables_lods_for_primary_assets()
+⋮----
+def test_3d_environment_inference_uses_environment_profile()
 ```
 
 ## File: test_asset_forge_installer.py

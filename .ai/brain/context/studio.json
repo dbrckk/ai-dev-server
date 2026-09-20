@@ -2,25 +2,31 @@
   "area": "studio",
   "files": [
     {
-      "path": "studio/agents/orchestrator.py",
+      "path": "studio/asset_forge_bridge.py",
       "reasons": [
-        "dependency-neighbor"
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "symbol-indexed"
       ],
-      "score": 50
+      "score": 380
+    },
+    {
+      "path": "studio/orchestrator.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 205
     },
     {
       "path": "studio/core.py",
       "reasons": [
         "dependency-neighbor"
       ],
-      "score": 50
-    },
-    {
-      "path": "studio/orchestrator.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
+      "score": 100
     },
     {
       "path": "studio/stage_registry.py",
@@ -30,14 +36,84 @@
       "score": 50
     },
     {
-      "path": "studio/github_runner.py",
+      "path": "studio/ci_runner.py",
+      "reasons": [
+        "reverse-dependency-neighbor"
+      ],
+      "score": 30
+    },
+    {
+      "path": "studio/generic_project.py",
+      "reasons": [
+        "reverse-dependency-neighbor"
+      ],
+      "score": 30
+    },
+    {
+      "path": "studio/multi_engine_orchestrator.py",
+      "reasons": [
+        "reverse-dependency-neighbor"
+      ],
+      "score": 30
+    },
+    {
+      "path": "studio/release_repair.py",
+      "reasons": [
+        "reverse-dependency-neighbor"
+      ],
+      "score": 30
+    },
+    {
+      "path": "studio/adaptation.py",
       "reasons": [
         "dependency-neighbor"
       ],
       "score": 25
     },
     {
-      "path": "studio/multi_engine_orchestrator.py",
+      "path": "studio/architecture_benchmark.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 25
+    },
+    {
+      "path": "studio/architecture_evaluator.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 25
+    },
+    {
+      "path": "studio/architecture_learning.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 25
+    },
+    {
+      "path": "studio/architecture_obsolescence.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 25
+    },
+    {
+      "path": "studio/architecture_replacement_learning.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 25
+    },
+    {
+      "path": "studio/architecture_replacement_planner.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 25
+    },
+    {
+      "path": "studio/architecture_replacement_reputation.py",
       "reasons": [
         "dependency-neighbor"
       ],

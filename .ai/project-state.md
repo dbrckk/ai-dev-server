@@ -22,19 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T08:40:55Z
+Generated: 2026-09-20T08:46:53Z
 
 ### Git
 - Branch: `main`
-- Head: `ba97378d858a`
-- Commit date: 2026-09-20T10:40:29+02:00
-- Commit: fix: honor selected backend in live visual E2E
-- Tracked files: 816
+- Head: `d07fbe0c0429`
+- Commit date: 2026-09-20T10:46:41+02:00
+- Commit: build: add verified imagen installer
+- Tracked files: 817
 
 ### Recently changed files
+- `scripts/install-imagen.sh`
 - `.github/workflows/production-os-asset-forge-live-e2e.yml`
 - `.github/workflows/production-os-asset-forge-e2e.yml`
-- `docs/PRODUCTION_OS_WORKER.md`
 
 ### Project signals
 - No common build descriptor detected

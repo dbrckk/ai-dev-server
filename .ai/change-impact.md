@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 87dce5d7ad2155f43ca3174ef712cb65fe3950d9
-Head: ba97378d858a8e3ceacecdb61ff002315cfde1a8
+Base: 7a2cdf385a0550bf5e90aa71781612a2d2c2c78f
+Head: d07fbe0c0429d34e16673bab08b4c7df0ea743ee
 
 ## Changed files
-- M .github/workflows/production-os-asset-forge-live-e2e.yml
+- A scripts/install-imagen.sh
 
 ## Affected areas
-- .github
+- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.

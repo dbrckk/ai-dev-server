@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T13:54:55Z
+Generated: 2026-09-20T14:11:12Z
 
 ### Git
 - Branch: `main`
-- Head: `568e4ae80255`
-- Commit date: 2026-09-20T15:54:39+02:00
-- Commit: test: cover inferred visual dependency aliases
+- Head: `39498888fdd9`
+- Commit date: 2026-09-20T16:10:57+02:00
+- Commit: test: cover automatic visual consistency policy
 - Tracked files: 819
 
 ### Recently changed files

@@ -4257,6 +4257,14 @@ routes = [
 items = []
 ⋮----
 source_mode = str(task.get("source_mode") or "generated").strip().lower()
+similarity_min = task.get("visual_similarity_min")
+similarity_retries = task.get("visual_similarity_retries")
+⋮----
+similarity_min = 0.55 if route["importance"] == "primary" else 0.42
+⋮----
+similarity_retries = 2 if route["importance"] == "primary" else 1
+constraints = dict(task.get("constraints") or {}) if isinstance(task.get("constraints"), dict) else {}
+⋮----
 request = {
 ⋮----
 raw_dependencies = task.get("depends_on")

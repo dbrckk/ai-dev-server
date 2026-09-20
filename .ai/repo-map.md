@@ -9165,6 +9165,14 @@ routes = [
 items = []
 ⋮----
 source_mode = str(task.get("source_mode") or "generated").strip().lower()
+similarity_min = task.get("visual_similarity_min")
+similarity_retries = task.get("visual_similarity_retries")
+⋮----
+similarity_min = 0.55 if route["importance"] == "primary" else 0.42
+⋮----
+similarity_retries = 2 if route["importance"] == "primary" else 1
+constraints = dict(task.get("constraints") or {}) if isinstance(task.get("constraints"), dict) else {}
+⋮----
 request = {
 ⋮----
 raw_dependencies = task.get("depends_on")
@@ -26178,6 +26186,16 @@ by_id = {item["id"]: item for item in batch["items"]}
 def test_batch_infers_parent_asset_dependency()
 ⋮----
 def test_batch_infers_animation_of_dependency()
+⋮----
+def test_primary_raster_batch_uses_stricter_visual_similarity_policy()
+⋮----
+run = {item["id"]: item for item in batch["items"]}["run"]
+constraints = run["request"]["manifest"]["constraints"]
+⋮----
+def test_secondary_raster_batch_uses_lighter_visual_similarity_policy()
+⋮----
+variant = {item["id"]: item for item in batch["items"]}["badge-variant"]
+constraints = variant["request"]["manifest"]["constraints"]
 ````
 
 ## File: tests/test_asset_forge_installer.py

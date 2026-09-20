@@ -2701,6 +2701,16 @@ by_id = {item["id"]: item for item in batch["items"]}
 def test_batch_infers_parent_asset_dependency()
 ⋮----
 def test_batch_infers_animation_of_dependency()
+⋮----
+def test_primary_raster_batch_uses_stricter_visual_similarity_policy()
+⋮----
+run = {item["id"]: item for item in batch["items"]}["run"]
+constraints = run["request"]["manifest"]["constraints"]
+⋮----
+def test_secondary_raster_batch_uses_lighter_visual_similarity_policy()
+⋮----
+variant = {item["id"]: item for item in batch["items"]}["badge-variant"]
+constraints = variant["request"]["manifest"]["constraints"]
 ```
 
 ## File: test_asset_forge_installer.py

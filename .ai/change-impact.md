@@ -1,7 +1,7 @@
 # Change impact
 
-Base: 85ba8c31ff09eb9eae27ce0ca0949fada0e45c08
-Head: 568e4ae8025593fb230b7a7a1178ee8f6973d75f
+Base: 3e31deb4aea31cb0cc5deb03e1d6e9d10d82386b
+Head: 39498888fdd9681a49ace23dcaa3b14c7323e3a1
 
 ## Changed files
 - M tests/test_asset_forge_bridge.py

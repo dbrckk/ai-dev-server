@@ -156,6 +156,8 @@ def test_primary_raster_batch_uses_stricter_visual_similarity_policy():
     constraints = run["request"]["manifest"]["constraints"]
     assert constraints["visualSimilarityMin"] == 0.55
     assert constraints["visualSimilarityRetries"] == 2
+    assert constraints["technicalQualityMin"] == 0.58
+    assert constraints["maxBorderAlphaRatio"] == 0.04
 
 
 def test_secondary_raster_batch_uses_lighter_visual_similarity_policy():
@@ -182,6 +184,8 @@ def test_secondary_raster_batch_uses_lighter_visual_similarity_policy():
     constraints = variant["request"]["manifest"]["constraints"]
     assert constraints["visualSimilarityMin"] == 0.42
     assert constraints["visualSimilarityRetries"] == 1
+    assert constraints["technicalQualityMin"] == 0.42
+    assert constraints["maxBorderAlphaRatio"] == 0.08
 
 
 def test_brief_inference_builds_character_dependency_chain():
@@ -206,3 +210,20 @@ def test_brief_inference_detects_3d_environment():
     environment = {item["id"]: item for item in tasks}["environment-foundation"]
     assert environment["asset_type"] == "environment"
     assert environment["format"] == "glb"
+
+
+def test_raster_quality_policy_can_be_overridden_per_task():
+    from asset_forge_bridge import build_production_os_asset_batch
+    batch = build_production_os_asset_batch(
+        [{
+            "id": "hero",
+            "objective": "Create premium AAA character sprite",
+            "engine": "libgdx",
+            "technical_quality_min": 0.72,
+            "max_border_alpha_ratio": 0.02,
+        }],
+        project="deadline-zero",
+    )
+    constraints = batch["items"][0]["request"]["manifest"]["constraints"]
+    assert constraints["technicalQualityMin"] == 0.72
+    assert constraints["maxBorderAlphaRatio"] == 0.02

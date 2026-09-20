@@ -112,7 +112,15 @@ class ProductionOSWorkerTests(unittest.TestCase):
 
         self.assertIn("dbrckk/asset-forge", request["brief"])
         self.assertIn("asset-forge fulfill", request["brief"])
-        request_check(request)
+        self.assertEqual(
+            request["tool_contracts"],
+            job["payload"]["handoff"]["tool_contracts"],
+        )
+        checked = request_check(request)
+        self.assertEqual(
+            checked["tool_contracts"]["asset_forge"]["command"],
+            "asset-forge fulfill",
+        )
 
     def test_short_task_is_expanded_to_valid_studio_brief(self):
         job = self.job()

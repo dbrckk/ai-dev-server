@@ -7293,10 +7293,6 @@ calls=[]
 def runner(args, timeout)
 result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)
 ⋮----
-spec=json.loads((out/'asset-forge-batch-spec.json').read_text())
-⋮----
-by_id={item['id']:item for item in spec['items']}
-⋮----
 route=json.loads((out/'asset-forge-prefetch.json').read_text())
 ⋮----
 def test_multi_asset_request_uses_transactional_asset_forge_batch(self)

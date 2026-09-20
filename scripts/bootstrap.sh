@@ -32,7 +32,9 @@ npx --yes cdesktop --help >/dev/null 2>&1 || true
 
 # Pollinations media generation for autonomous visual assets. Keep it optional:
 # the Production-OS worker advertises visual capabilities only when the backend is ready.
-npm install -g @pollinations/cli@0.1.15 >/dev/null 2>&1 || echo "Pollinations CLI unavailable; visual workers will stay disabled." >&2
+npm install -g @pollinations/cli@0.1.15 >/dev/null 2>&1 || echo "Pollinations CLI unavailable; visual workers may use another backend." >&2
+# Optional Codex image backend. The installer is version-pinned and sha256-verified.
+bash scripts/install-imagen-codex.sh || echo "imagen Codex backend unavailable; continuing without it." >&2
 # Keep the OpenCode integration helper as an optional convenience layer.
 npm install -g opencode-pollinations-plugin >/dev/null 2>&1 || true
 

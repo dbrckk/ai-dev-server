@@ -216,11 +216,28 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
                         if attempts and isinstance(attempts[-1], dict)
                         else None
                     )
+                    semantic = (
+                        item.get("semantic_art")
+                        if isinstance(item.get("semantic_art"), dict)
+                        else {}
+                    )
+                    semantic_scores = (
+                        semantic.get("scores")
+                        if isinstance(semantic.get("scores"), dict)
+                        else {}
+                    )
                     item_rows.append({
                         "id": item.get("id"),
                         "target_path": item.get("target_path"),
                         "sha256": item.get("sha256"),
                         "score": score if isinstance(score, (int, float)) else None,
+                        "semantic_score": (
+                            semantic_scores.get("overall")
+                            if isinstance(semantic_scores.get("overall"), (int, float))
+                            else None
+                        ),
+                        "semantic_passed": semantic.get("passed"),
+                        "semantic_available": semantic.get("available"),
                         "attempts": len(attempts),
                         "regenerated": len(attempts) > 1,
                         "cache_hit": bool(item.get("cache_hit")),

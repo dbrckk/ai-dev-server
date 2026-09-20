@@ -219,8 +219,10 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
                     item_rows.append({
                         "id": item.get("id"),
                         "target_path": item.get("target_path"),
+                        "sha256": item.get("sha256"),
                         "score": score if isinstance(score, (int, float)) else None,
                         "attempts": len(attempts),
+                        "regenerated": len(attempts) > 1,
                         "cache_hit": bool(item.get("cache_hit")),
                         "depends_on": list(item.get("depends_on") or []),
                     })

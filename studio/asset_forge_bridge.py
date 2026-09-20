@@ -49,6 +49,10 @@ def _infer_engine(task: dict) -> str | None:
 def _infer_asset_shape(task: dict) -> tuple[str, str]:
     text = " ".join(str(task.get(key) or "") for key in ("task", "objective", "instruction", "description", "title")).lower()
     if "3d" in text or "mesh" in text or "model" in text:
+        if any(term in text for term in ("character", "personnage", "hero", "héros", "enemy", "zombie")):
+            return "character-3d", "glb"
+        if any(term in text for term in ("environment", "environnement", "level", "scene", "terrain")):
+            return "environment", "glb"
         return "prop", "glb"
     if "sprite" in text or "pixel art" in text or "animation" in text:
         return "sprite-sheet", "png"
@@ -281,6 +285,12 @@ def build_production_os_asset_batch(
             constraints.setdefault("visualSimilarityRetries", int(similarity_retries))
             constraints.setdefault("technicalQualityMin", float(technical_quality_min))
             constraints.setdefault("maxBorderAlphaRatio", float(max_border_alpha_ratio))
+        if target_format == "glb":
+            constraints.setdefault(
+                "generateLods",
+                route["importance"] == "primary",
+            )
+            constraints.setdefault("requireLods", False)
 
         request = {
             "schema": "asset-forge/production-request/v1",

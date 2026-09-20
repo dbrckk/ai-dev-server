@@ -195,16 +195,27 @@ jobs:
 
       - name: Generate, process and validate live asset
         if: steps.credential.outputs.configured == 'true'
+        env:
+          BACKEND: ${{ steps.credential.outputs.backend }}
+          ARTIFACT: ${{ steps.credential.outputs.artifact }}
         run: |
-          asset-forge fulfill             build/live-e2e/production-request.json             --output-dir build/live-e2e/fulfilled
-          asset-forge validate-production-report             build/live-e2e/fulfilled/production-report.json
-          test -s build/live-e2e/fulfilled/live-production-pipeline-icon.svg
+          asset-forge fulfill \
+            build/live-e2e/production-request.json \
+            --output-dir build/live-e2e/fulfilled \
+            --backend "$BACKEND"
+          asset-forge validate-production-report \
+            build/live-e2e/fulfilled/production-report.json
+          test -s "build/live-e2e/fulfilled/$ARTIFACT"
 
       - name: Inject live asset into Deadline Zero workspace
         if: steps.credential.outputs.configured == 'true'
+        env:
+          ARTIFACT: ${{ steps.credential.outputs.artifact }}
         run: |
-          install -D             build/live-e2e/fulfilled/live-production-pipeline-icon.svg             deadline-zero/assets/art/live-production-pipeline-icon.svg
-          test -s deadline-zero/assets/art/live-production-pipeline-icon.svg
+          install -D \
+            "build/live-e2e/fulfilled/$ARTIFACT" \
+            "deadline-zero/assets/art/$ARTIFACT"
+          test -s "deadline-zero/assets/art/$ARTIFACT"
 
       - name: Validate Deadline Zero art contracts
         if: steps.credential.outputs.configured == 'true'

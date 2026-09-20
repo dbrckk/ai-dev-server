@@ -22,7 +22,7 @@ from architecture_replacement_reputation import TRANSITION_POLICY_VERSION, load 
 from architecture_reputation_policy_migration import write_dry_run as write_reputation_policy_migration_review
 from repo_maintenance import probe as probe_repo_maintenance
 from repo_version_probe import probe as probe_repo_versions
-from asset_forge_bridge import build_production_os_asset_batch, build_production_os_asset_dispatch, should_route_to_asset_forge
+from asset_forge_bridge import build_production_os_asset_batch, build_production_os_asset_dispatch, infer_asset_tasks_from_brief, should_route_to_asset_forge
 
 def _recommendation_context(request_path):
     try:
@@ -158,13 +158,12 @@ def _asset_forge_prefetch(request_path,project_out,runner,deadline,clock):
     if not candidates:
         brief=request.get('brief')
         if isinstance(brief,str) and brief.strip():
-            candidate={
-                'id':'visual-foundation',
-                'objective':brief,
-                'engine':request.get('engine'),
-            }
-            if should_route_to_asset_forge(candidate):
-                candidates.append(candidate)
+            candidates.extend(
+                infer_asset_tasks_from_brief(
+                    brief,
+                    engine=request.get('engine'),
+                )
+            )
 
     if not candidates:
         return {'status':'not_applicable','routes':[]}

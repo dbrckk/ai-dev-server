@@ -5,172 +5,67 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "should_route_to_asset_forge": {
+    "_prepare_capability_promotion_handoff": {
       "source": {
-        "file": "studio/asset_forge_bridge.py",
-        "start": 15,
-        "end": 28
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_infer_engine": {
-      "source": {
-        "file": "studio/asset_forge_bridge.py",
-        "start": 31,
-        "end": 46
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_infer_asset_shape": {
-      "source": {
-        "file": "studio/asset_forge_bridge.py",
-        "start": 49,
-        "end": 67
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "infer_asset_tasks_from_brief": {
-      "source": {
-        "file": "studio/asset_forge_bridge.py",
-        "start": 71,
-        "end": 159
+        "file": "studio/github_runner.py",
+        "start": 56,
+        "end": 93
       },
       "symbol_dependencies": [
         {
-          "symbol": "_infer_asset_shape",
+          "symbol": "StudioError",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 49,
-              "kind": "function",
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "build_production_os_asset_dispatch": {
-      "source": {
-        "file": "studio/asset_forge_bridge.py",
-        "start": 162,
-        "end": 230
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_infer_asset_shape",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 49,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "_infer_engine",
+          "symbol": "canonical",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 31,
+              "file": "studio/core.py",
+              "line": 38,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "should_route_to_asset_forge",
+          "symbol": "get",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 15,
+              "file": "studio/run.py",
+              "line": 65,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "build_production_os_asset_batch": {
-      "source": {
-        "file": "studio/asset_forge_bridge.py",
-        "start": 233,
-        "end": 360
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_infer_asset_shape",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 49,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "_infer_engine",
+          "symbol": "validate_candidate_envelope",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 31,
+              "file": "studio/capability_synthesis.py",
+              "line": 108,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "build_production_os_asset_dispatch",
+          "symbol": "validate_isolated_validation_result",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 162,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "should_route_to_asset_forge",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_routes_premium_visual_task": {
-      "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 4,
-        "end": 6
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "should_route_to_asset_forge",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 15,
+              "file": "studio/generic_capability_isolated_validation.py",
+              "line": 172,
               "kind": "function",
               "language": "python"
             }
@@ -178,33 +73,42 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 5
     },
-    "test_ignores_plain_code_task": {
+    "_usage_count": {
       "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 9,
-        "end": 11
+        "file": "studio/github_runner.py",
+        "start": 96,
+        "end": 102
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "collect_agent_usage": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 105,
+        "end": 167
       },
       "symbol_dependencies": [
         {
-          "symbol": "API",
+          "symbol": "_usage_count",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 281,
-              "kind": "class",
+              "file": "studio/github_runner.py",
+              "line": 96,
+              "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "class_like"
+          "relation": "same_file"
         },
         {
-          "symbol": "should_route_to_asset_forge",
+          "symbol": "get",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 15,
+              "file": "studio/run.py",
+              "line": 65,
               "kind": "function",
               "language": "python"
             }
@@ -214,19 +118,31 @@
       ],
       "dependency_count": 2
     },
-    "test_builds_production_os_dispatch_contract": {
+    "write_production_os_result": {
       "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 14,
-        "end": 28
+        "file": "studio/github_runner.py",
+        "start": 170,
+        "end": 264
       },
       "symbol_dependencies": [
         {
-          "symbol": "build_production_os_asset_dispatch",
+          "symbol": "canonical",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 162,
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 65,
               "kind": "function",
               "language": "python"
             }
@@ -234,21 +150,91 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 2
     },
-    "test_premium_route_defaults_to_primary_importance": {
+    "bounded_run": {
       "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 31,
-        "end": 38
+        "file": "studio/github_runner.py",
+        "start": 267,
+        "end": 280
       },
       "symbol_dependencies": [
         {
-          "symbol": "build_production_os_asset_dispatch",
+          "symbol": "StudioError",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 162,
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 301,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_update_improvements": {
+      "source": {
+        "file": "studio/github_runner.py",
+        "start": 283,
+        "end": 298
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "activate_next",
+          "definitions": [
+            {
+              "file": "studio/improvement_backlog.py",
+              "line": 84,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "merge_assessment",
+          "definitions": [
+            {
+              "file": "studio/improvement_backlog.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "new_backlog",
+          "definitions": [
+            {
+              "file": "studio/improvement_backlog.py",
+              "line": 29,
               "kind": "function",
               "language": "python"
             }
@@ -256,44 +242,22 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 4
     },
-    "test_explicit_secondary_importance_is_preserved": {
+    "run": {
       "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 41,
-        "end": 50
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_production_os_asset_dispatch",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 162,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_route_includes_repository_delivery_target": {
-      "source": {
-        "file": "tests/test_asset_forge_bridge.py",
+        "file": "studio/github_runner.py",
         "start": 53,
-        "end": 66
+        "end": 53
       },
       "symbol_dependencies": [
         {
-          "symbol": "build_production_os_asset_dispatch",
+          "symbol": "GitHub",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 162,
-              "kind": "function",
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
               "language": "python"
             }
           ],
@@ -302,19 +266,367 @@
       ],
       "dependency_count": 1
     },
-    "test_batch_preserves_explicit_asset_dependencies": {
+    "run_once": {
       "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 69,
-        "end": 90
+        "file": "studio/github_runner.py",
+        "start": 589,
+        "end": 709
       },
       "symbol_dependencies": [
         {
-          "symbol": "build_production_os_asset_batch",
+          "symbol": "AgentPerformanceStoreError",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 233,
+              "file": "studio/github_agent_performance_store.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ArtifactCasAuditStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_artifact_cas_audit_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ArtifactCasStatsStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_artifact_cas_stats_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ContextualStrategyEfficiencyStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_contextual_strategy_efficiency_store.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ExecutionCheckpointStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_execution_checkpoint_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FullGateCacheStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_full_gate_cache_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "GitHubMemoryError",
+          "definitions": [
+            {
+              "file": "studio/github_memory_store.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PhaseCostBaselineStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_phase_cost_baseline_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProviderHealthStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_provider_health_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProviderMetricsStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_provider_metrics_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "QuickGateCacheStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_quick_gate_cache_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "RemoteStateError",
+          "definitions": [
+            {
+              "file": "studio/github_goal_store.py",
+              "line": 29,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "RoutingHistoryStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_routing_history_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StrategyEfficiencyStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_strategy_efficiency_store.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "VerificationCostStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_verification_cost_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_update_improvements",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 283,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "checkpoint",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 565,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "collect_agent_usage",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "improvement_project_cycle",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 614,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ingest_run",
+          "definitions": [
+            {
+              "file": "studio/memory_lifecycle.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "persist_local",
+          "definitions": [
+            {
+              "file": "studio/github_agent_performance_store.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_artifact_cas_audit_store.py",
+              "line": 168,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_artifact_cas_stats_store.py",
+              "line": 175,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_contextual_strategy_efficiency_store.py",
+              "line": 141,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_execution_checkpoint_store.py",
+              "line": 131,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 301,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_active_improvement",
+          "definitions": [
+            {
+              "file": "studio/improvement_executor.py",
+              "line": 60,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_persistent_project",
+          "definitions": [
+            {
+              "file": "studio/autonomous_project.py",
+              "line": 169,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verified_project_cycle",
+          "definitions": [
+            {
+              "file": "studio/improvement_executor.py",
+              "line": 36,
               "kind": "function",
               "language": "python"
             }
@@ -322,249 +634,471 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 28
     },
-    "test_batch_infers_parent_asset_dependency": {
+    "improvement_project_cycle": {
       "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 93,
-        "end": 112
+        "file": "studio/github_runner.py",
+        "start": 614,
+        "end": 734
       },
       "symbol_dependencies": [
         {
-          "symbol": "build_production_os_asset_batch",
+          "symbol": "AgentPerformanceStoreError",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 233,
+              "file": "studio/github_agent_performance_store.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ArtifactCasAuditStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_artifact_cas_audit_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ArtifactCasStatsStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_artifact_cas_stats_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ContextualStrategyEfficiencyStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_contextual_strategy_efficiency_store.py",
+              "line": 17,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ExecutionCheckpointStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_execution_checkpoint_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FullGateCacheStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_full_gate_cache_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "GitHubMemoryError",
+          "definitions": [
+            {
+              "file": "studio/github_memory_store.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PhaseCostBaselineStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_phase_cost_baseline_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProviderHealthStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_provider_health_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProviderMetricsStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_provider_metrics_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "QuickGateCacheStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_quick_gate_cache_store.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "RemoteStateError",
+          "definitions": [
+            {
+              "file": "studio/github_goal_store.py",
+              "line": 29,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "RoutingHistoryStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_routing_history_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StrategyEfficiencyStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_strategy_efficiency_store.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "VerificationCostStoreError",
+          "definitions": [
+            {
+              "file": "studio/github_verification_cost_store.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "checkpoint",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 565,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "collect_agent_usage",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 105,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "enabled",
+          "definitions": [
+            {
+              "file": "studio/ci_provider.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ingest_run",
+          "definitions": [
+            {
+              "file": "studio/memory_lifecycle.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "persist_local",
+          "definitions": [
+            {
+              "file": "studio/github_agent_performance_store.py",
+              "line": 77,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_artifact_cas_audit_store.py",
+              "line": 168,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_artifact_cas_stats_store.py",
+              "line": 175,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_contextual_strategy_efficiency_store.py",
+              "line": 141,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/github_execution_checkpoint_store.py",
+              "line": 131,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 301,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_active_improvement",
+          "definitions": [
+            {
+              "file": "studio/improvement_executor.py",
+              "line": 60,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verified_project_cycle",
+          "definitions": [
+            {
+              "file": "studio/improvement_executor.py",
+              "line": 36,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "write_production_os_result",
+          "definitions": [
+            {
+              "file": "studio/github_runner.py",
+              "line": 170,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 28
     },
-    "test_batch_infers_animation_of_dependency": {
+    "main": {
       "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 115,
-        "end": 134
+        "file": "studio/github_runner.py",
+        "start": 730,
+        "end": 850
       },
       "symbol_dependencies": [
         {
-          "symbol": "build_production_os_asset_batch",
+          "symbol": "GitHub",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 233,
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_primary_raster_batch_uses_stricter_visual_similarity_policy": {
-      "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 137,
-        "end": 161
-      },
-      "symbol_dependencies": [
+        },
         {
-          "symbol": "build_production_os_asset_batch",
+          "symbol": "enabled",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 233,
+              "file": "studio/ci_provider.py",
+              "line": 12,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_secondary_raster_batch_uses_lighter_visual_similarity_policy": {
-      "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 164,
-        "end": 190
-      },
-      "symbol_dependencies": [
+        },
         {
-          "symbol": "build_production_os_asset_batch",
+          "symbol": "get",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 233,
+              "file": "studio/run.py",
+              "line": 65,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_brief_inference_builds_character_dependency_chain": {
-      "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 193,
-        "end": 203
-      },
-      "symbol_dependencies": [
+        },
         {
-          "symbol": "infer_asset_tasks_from_brief",
+          "symbol": "requires_human_input",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 71,
+              "file": "studio/human_input_request.py",
+              "line": 41,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_brief_inference_detects_3d_environment": {
-      "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 206,
-        "end": 214
-      },
-      "symbol_dependencies": [
+        },
         {
-          "symbol": "infer_asset_tasks_from_brief",
+          "symbol": "run",
           "definitions": [
             {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 71,
+              "file": "studio/github_runner.py",
+              "line": 301,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 1
-    },
-    "test_raster_quality_policy_can_be_overridden_per_task": {
-      "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 217,
-        "end": 231
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_production_os_asset_batch",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 233,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_target_repository_defaults_visual_delivery_to_assets_art_without_engine": {
-      "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 234,
-        "end": 244
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_production_os_asset_dispatch",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 162,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_engine_is_inferred_from_visual_instruction": {
-      "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 247,
-        "end": 259
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_production_os_asset_batch",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 233,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_3d_character_inference_enables_lods_for_primary_assets": {
-      "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 262,
-        "end": 277
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_production_os_asset_batch",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 233,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_3d_environment_inference_uses_environment_profile": {
-      "source": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "start": 280,
-        "end": 290
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "build_production_os_asset_batch",
-          "definitions": [
-            {
-              "file": "studio/asset_forge_bridge.py",
-              "line": 233,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
+      "dependency_count": 7
     }
   }
 }

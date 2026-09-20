@@ -22,16 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T16:20:43Z
+Generated: 2026-09-20T16:40:13Z
 
 ### Git
 - Branch: `main`
-- Head: `e53b931d48be`
-- Commit date: 2026-09-20T18:20:29+02:00
-- Commit: test: cover zero-config 3D profile and LOD inference
+- Head: `faddebbf6e5d`
+- Commit date: 2026-09-20T18:40:04+02:00
+- Commit: feat: enrich per-asset visual quality telemetry
 - Tracked files: 820
 
 ### Recently changed files
+- `studio/github_runner.py`
 - `tests/test_asset_forge_bridge.py`
 - `studio/asset_forge_bridge.py`
 - `tests/test_orchestrator.py`

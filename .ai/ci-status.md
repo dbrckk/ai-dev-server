@@ -1,15 +1,15 @@
 # CI status
 
-Summary: 0 success / 1 failure / 6 active
+Summary: 1 success / 1 failure / 6 active
 
+- Resilience Soak: in_progress / pending (faddebbf)
+- Mobile Studio Real Build: in_progress / pending (faddebbf)
+- Validate AI Dev Server: in_progress / pending (faddebbf)
+- Multi-Engine E2E Benchmark: queued / pending (faddebbf)
+- Fault Injection Gate: in_progress / pending (faddebbf)
+- CI: in_progress / pending (faddebbf)
 - Validate AI Dev Server: completed / failure (e53b931d)
-- Multi-Engine E2E Benchmark: queued / pending (e53b931d)
-- Fault Injection Gate: in_progress / pending (e53b931d)
-- Resilience Soak: in_progress / pending (e53b931d)
-- CI: queued / pending (e53b931d)
-- Production OS Asset Forge Deadline Zero E2E: queued / pending (e53b931d)
-- Mobile Studio Real Build: pending / pending (e53b931d)
-- CI: completed / cancelled (4844024f)
+- Multi-Engine E2E Benchmark: completed / success (e53b931d)
 
 ## Latest failed run structure
 - Job: validate

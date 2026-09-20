@@ -64,3 +64,49 @@ def test_route_includes_repository_delivery_target():
     assert route["target_path"] == "assets/art/hud-icon.svg"
     assert "--target-repository" in route["command"]
     assert "--target-path" in route["command"]
+
+
+def test_batch_preserves_explicit_asset_dependencies():
+    from asset_forge_bridge import build_production_os_asset_batch
+    batch = build_production_os_asset_batch(
+        [
+            {
+                "id": "character",
+                "objective": "Create premium professional character sprite",
+                "engine": "libgdx",
+            },
+            {
+                "id": "animation",
+                "objective": "Create premium professional animation sprite",
+                "engine": "libgdx",
+                "depends_on": ["character"],
+            },
+        ],
+        project="deadline-zero",
+        target_repository="dbrckk/deadline-zero",
+    )
+    by_id = {item["id"]: item for item in batch["items"]}
+    assert by_id["character"]["depends_on"] == []
+    assert by_id["animation"]["depends_on"] == ["character"]
+
+
+def test_batch_infers_parent_asset_dependency():
+    from asset_forge_bridge import build_production_os_asset_batch
+    batch = build_production_os_asset_batch(
+        [
+            {
+                "id": "character",
+                "objective": "Create premium professional character sprite",
+                "engine": "libgdx",
+            },
+            {
+                "id": "atlas",
+                "objective": "Create premium professional UI atlas",
+                "engine": "libgdx",
+                "parent_asset": "character",
+            },
+        ],
+        project="deadline-zero",
+    )
+    by_id = {item["id"]: item for item in batch["items"]}
+    assert by_id["atlas"]["depends_on"] == ["character"]

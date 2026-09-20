@@ -122,6 +122,14 @@ class ProductionOSResultContractTests(unittest.TestCase):
                         "target_path": "assets/art/hero-run.png",
                         "depends_on": ["hero"],
                         "cache_hit": False,
+                        "library": {
+                            "entry": {
+                                "version": 4,
+                                "preferred": True,
+                                "duplicateOf": None,
+                                "compositeQuality": 0.93,
+                            }
+                        },
                         "visual_similarity": {
                             "attempts": [
                                 {"score": 0.40, "passed": False},
@@ -146,6 +154,9 @@ class ProductionOSResultContractTests(unittest.TestCase):
         self.assertEqual(visual["items"][0]["score"], 0.79)
         self.assertEqual(visual["items"][0]["attempts"], 2)
         self.assertEqual(visual["items"][0]["depends_on"], ["hero"])
+        self.assertEqual(visual["items"][0]["library_version"], 4)
+        self.assertTrue(visual["items"][0]["library_preferred"])
+        self.assertEqual(visual["items"][0]["library_quality"], 0.93)
 
     def test_no_result_envelope_without_correlation(self):
         with tempfile.TemporaryDirectory() as td:

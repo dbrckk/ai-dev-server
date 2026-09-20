@@ -176,7 +176,18 @@ def build_production_os_asset_batch(
         }
         if engine:
             request["delivery"] = {"engine": engine}
+        raw_dependencies = task.get("depends_on")
+        if raw_dependencies is None:
+            implicit = task.get("source_asset") or task.get("parent_asset")
+            raw_dependencies = [implicit] if implicit else []
+        elif isinstance(raw_dependencies, str):
+            raw_dependencies = [raw_dependencies]
+        if not isinstance(raw_dependencies, list):
+            raise ValueError("asset dependency list must be an array")
+        dependencies = [str(value).strip() for value in raw_dependencies if str(value).strip()]
         item = {
+            "id": route["asset_id"],
+            "depends_on": dependencies,
             "request": request,
             "target_path": route["target_path"],
         }

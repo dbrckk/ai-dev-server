@@ -22,7 +22,7 @@ from architecture_replacement_reputation import TRANSITION_POLICY_VERSION, load 
 from architecture_reputation_policy_migration import write_dry_run as write_reputation_policy_migration_review
 from repo_maintenance import probe as probe_repo_maintenance
 from repo_version_probe import probe as probe_repo_versions
-from asset_forge_bridge import build_production_os_asset_dispatch, should_route_to_asset_forge
+from asset_forge_bridge import build_production_os_asset_batch, build_production_os_asset_dispatch, should_route_to_asset_forge
 
 def _recommendation_context(request_path):
     try:
@@ -143,30 +143,59 @@ def _asset_forge_prefetch(request_path,project_out,runner,deadline,clock):
     if not candidates:
         return {'status':'not_applicable','routes':[]}
 
+    selected=[item for item in candidates[:8] if should_route_to_asset_forge(item)]
+    target_repository=str(request.get('target_repo') or '').strip() or None
+    target_worktree=str(request.get('target_worktree') or '').strip() or None
     routes=[]
-    for item in candidates[:8]:
-        if not should_route_to_asset_forge(item):
-            continue
-        route=build_production_os_asset_dispatch(
-            item,
+
+    if len(selected)>1:
+        batch=build_production_os_asset_batch(
+            selected,
             project=project,
-            target_repository=str(request.get('target_repo') or '').strip() or None,
-            target_worktree=str(request.get('target_worktree') or '').strip() or None,
+            target_repository=target_repository,
+            target_worktree=target_worktree,
         )
-        routes.append(route)
+        routes=batch['routes']
+        spec_path=project_out/'asset-forge-batch-spec.json'
+        spec_path.write_text(json.dumps({'items':batch['items']},ensure_ascii=False,sort_keys=True,separators=(',',':')))
+        command=['production-os','asset-forge-batch','--spec',str(spec_path),'--mode','auto']
+        if target_repository:
+            command.extend(['--target-repository',target_repository])
+        if target_worktree:
+            command.extend(['--target-worktree',target_worktree])
         try:
             remaining=_remaining(deadline,clock)
         except TimeoutError:
-            result={'status':'deferred','routes':routes}
+            result={'status':'deferred','routes':routes,'batch':True}
             (project_out/'asset-forge-prefetch.json').write_text(json.dumps(result,ensure_ascii=False,sort_keys=True,separators=(',',':')))
             return result
-        completed=runner(route['command'],timeout=remaining)
+        completed=runner(command,timeout=remaining)
         if completed.returncode!=0:
-            result={'status':'failed','routes':routes,'failed_request_id':route['request_id']}
+            result={'status':'failed','routes':routes,'batch':True}
             (project_out/'asset-forge-prefetch.json').write_text(json.dumps(result,ensure_ascii=False,sort_keys=True,separators=(',',':')))
             return result
+    else:
+        for item in selected:
+            route=build_production_os_asset_dispatch(
+                item,
+                project=project,
+                target_repository=target_repository,
+                target_worktree=target_worktree,
+            )
+            routes.append(route)
+            try:
+                remaining=_remaining(deadline,clock)
+            except TimeoutError:
+                result={'status':'deferred','routes':routes}
+                (project_out/'asset-forge-prefetch.json').write_text(json.dumps(result,ensure_ascii=False,sort_keys=True,separators=(',',':')))
+                return result
+            completed=runner(route['command'],timeout=remaining)
+            if completed.returncode!=0:
+                result={'status':'failed','routes':routes,'failed_request_id':route['request_id']}
+                (project_out/'asset-forge-prefetch.json').write_text(json.dumps(result,ensure_ascii=False,sort_keys=True,separators=(',',':')))
+                return result
 
-    result={'status':'dispatched','routes':routes}
+    result={'status':'dispatched','routes':routes,'batch':len(selected)>1}
     (project_out/'asset-forge-prefetch.json').write_text(json.dumps(result,ensure_ascii=False,sort_keys=True,separators=(',',':')))
     return result
 

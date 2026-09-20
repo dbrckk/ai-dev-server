@@ -22,18 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T16:51:59Z
+Generated: 2026-09-20T17:07:00Z
 
 ### Git
 - Branch: `main`
-- Head: `f0bd4a446bf4`
-- Commit date: 2026-09-20T18:51:41+02:00
-- Commit: test: cover primary unique and secondary reusable asset policy
+- Head: `3a88208e5dbb`
+- Commit date: 2026-09-20T19:06:41+02:00
+- Commit: feat: require collision readiness for premium 3D props and environments
 - Tracked files: 820
 
 ### Recently changed files
-- `tests/test_asset_forge_bridge.py`
 - `studio/asset_forge_bridge.py`
+- `tests/test_asset_forge_bridge.py`
 - `studio/github_runner.py`
 
 ### Project signals

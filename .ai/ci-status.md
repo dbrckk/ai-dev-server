@@ -1,14 +1,14 @@
 # CI status
 
-Summary: 4 success / 0 failure / 3 active
+Summary: 1 success / 0 failure / 7 active
 
-- Resilience Soak: completed / success (f0bd4a44)
-- Multi-Engine E2E Benchmark: in_progress / pending (f0bd4a44)
-- Mobile Studio Real Build: in_progress / pending (f0bd4a44)
-- Production OS Asset Forge Deadline Zero E2E: in_progress / pending (f0bd4a44)
-- CI: completed / success (f0bd4a44)
-- Validate AI Dev Server: completed / success (f0bd4a44)
-- Fault Injection Gate: completed / success (f0bd4a44)
-- CI: completed / cancelled (5006305d)
+- Fault Injection Gate: completed / success (3a88208e)
+- CI: in_progress / pending (3a88208e)
+- Multi-Engine E2E Benchmark: in_progress / pending (3a88208e)
+- Transactional Asset Forge Batch E2E: in_progress / pending (3a88208e)
+- Resilience Soak: in_progress / pending (3a88208e)
+- Production OS Asset Forge Deadline Zero E2E: in_progress / pending (3a88208e)
+- Mobile Studio Real Build: in_progress / pending (3a88208e)
+- Validate AI Dev Server: in_progress / pending (3a88208e)
 
 > Generated summary only; inspect GitHub Actions for full logs when needed.

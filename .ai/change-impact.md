@@ -1,16 +1,16 @@
 # Change impact
 
-Base: 5006305d983e581ba362e0b4d551b9e86cbc5134
-Head: f0bd4a446bf49cae1a9c3324b826d087853b928c
+Base: 5567511d67ae8cfa9715f79f387ad3a54bfe85cc
+Head: 3a88208e5dbb692ade1293c510b44054c0604267
 
 ## Changed files
-- M tests/test_asset_forge_bridge.py
+- M studio/asset_forge_bridge.py
 
 ## Affected areas
-- tests
+- studio
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_asset_forge_bridge.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

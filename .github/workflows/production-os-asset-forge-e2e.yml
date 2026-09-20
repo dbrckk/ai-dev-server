@@ -84,7 +84,11 @@ jobs:
               "format": "svg",
               "engine": "libgdx",
           }
-          route = build_production_os_asset_dispatch(task, project="deadline-zero")
+          route = build_production_os_asset_dispatch(
+              task,
+              project="deadline-zero",
+              target_repository="dbrckk/deadline-zero",
+          )
           artwork = run({
               "label": "DZ",
               "objective": task["objective"],
@@ -104,6 +108,7 @@ jobs:
               "--source", str(source),
               "--output-dir", str(root / "fulfilled"),
               "--importance", "secondary",
+              "--target-worktree", "deadline-zero",
           ])
           (root / "route.json").write_text(
               json.dumps({**route, "command": command}, indent=2, sort_keys=True) + "\n",
@@ -127,10 +132,8 @@ jobs:
           asset-forge validate-production-report build/asset-forge-e2e/fulfilled/production-report.json
           test -s build/asset-forge-e2e/fulfilled/production-pipeline-icon.svg
 
-      - name: Inject validated asset into Deadline Zero workspace
-        run: |
-          install -D             build/asset-forge-e2e/fulfilled/production-pipeline-icon.svg             deadline-zero/assets/art/production-pipeline-icon.svg
-          test -s deadline-zero/assets/art/production-pipeline-icon.svg
+      - name: Verify automatic delivery into Deadline Zero workspace
+        run: test -s deadline-zero/assets/art/production-pipeline-icon.svg
 
       - name: Validate and compile Deadline Zero
         working-directory: deadline-zero
@@ -157,6 +160,8 @@ jobs:
               "assetForgeReportSuccess": report.get("success") is True,
               "executionMode": "local",
               "crossRepoTokenRequired": False,
+              "automaticDelivery": True,
+              "deliveredArtifact": "deadline-zero/assets/art/production-pipeline-icon.svg",
               "artifact": str(asset),
               "artifactSha256": hashlib.sha256(asset.read_bytes()).hexdigest(),
               "deadlineZeroCompileAndTests": True,

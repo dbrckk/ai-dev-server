@@ -28,12 +28,30 @@ def should_route_to_asset_forge(task: dict) -> bool:
     return explicit or (visual and premium)
 
 
+def _infer_asset_shape(task: dict) -> tuple[str, str]:
+    text = " ".join(str(task.get(key) or "") for key in ("task", "objective", "instruction", "description", "title")).lower()
+    if "3d" in text or "mesh" in text or "model" in text:
+        return "prop", "glb"
+    if "sprite" in text or "pixel art" in text or "animation" in text:
+        return "sprite-sheet", "png"
+    if "texture" in text:
+        return "texture", "png"
+    if "logo" in text:
+        return "logo", "svg"
+    if "ui" in text:
+        return "ui-vector", "svg"
+    if "icon" in text:
+        return "icon", "svg"
+    return "icon", "png"
+
+
 def build_production_os_asset_dispatch(task: dict, *, project: str) -> dict:
     if not should_route_to_asset_forge(task):
         raise ValueError("task does not require asset-forge")
+    inferred_type, inferred_format = _infer_asset_shape(task)
     asset_id = str(task.get("asset_id") or task.get("id") or "visual-asset").strip()
-    asset_type = str(task.get("asset_type") or "icon").strip()
-    target_format = str(task.get("format") or ("glb" if "3d" in str(task).lower() else "png")).strip().lower()
+    asset_type = str(task.get("asset_type") or inferred_type).strip()
+    target_format = str(task.get("format") or inferred_format).strip().lower()
     instruction = str(
         task.get("instruction")
         or task.get("objective")

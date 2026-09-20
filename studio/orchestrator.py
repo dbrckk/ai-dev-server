@@ -115,6 +115,32 @@ def _evaluate_architecture(report,project_out):
     return evaluation
 
 
+def _read_asset_forge_receipt(path):
+    path=Path(path)
+    if not path.is_file():
+        return None
+    try:
+        value=json.loads(path.read_text(encoding='utf-8'))
+    except (OSError,UnicodeError,json.JSONDecodeError):
+        return None
+    return value if isinstance(value,dict) else None
+
+
+def _asset_quality_status(receipt):
+    if not isinstance(receipt,dict):
+        return 'unknown'
+    if receipt.get('success') is False:
+        return 'low_quality' if receipt.get('error_code')=='visual_quality_failed' else 'failed'
+    quality=receipt.get('quality_summary')
+    if not isinstance(quality,dict):
+        return 'not_checked'
+    if int(quality.get('regenerated') or 0)>0:
+        return 'regenerated'
+    if int(quality.get('checked') or 0)>0:
+        return 'ok'
+    return 'not_checked'
+
+
 def _asset_forge_prefetch(request_path,project_out,runner,deadline,clock):
     try:
         request=json.loads(Path(request_path).read_text())
@@ -158,7 +184,13 @@ def _asset_forge_prefetch(request_path,project_out,runner,deadline,clock):
         routes=batch['routes']
         spec_path=project_out/'asset-forge-batch-spec.json'
         spec_path.write_text(json.dumps({'items':batch['items']},ensure_ascii=False,sort_keys=True,separators=(',',':')))
-        command=['production-os','asset-forge-batch','--spec',str(spec_path),'--mode','auto']
+        receipt_path=project_out/'asset-forge-batch-receipt.json'
+        command=[
+            'production-os','asset-forge-batch',
+            '--spec',str(spec_path),
+            '--mode','auto',
+            '--result-file',str(receipt_path),
+        ]
         if target_repository:
             command.extend(['--target-repository',target_repository])
         if target_worktree:
@@ -170,11 +202,19 @@ def _asset_forge_prefetch(request_path,project_out,runner,deadline,clock):
             (project_out/'asset-forge-prefetch.json').write_text(json.dumps(result,ensure_ascii=False,sort_keys=True,separators=(',',':')))
             return result
         completed=runner(command,timeout=remaining)
+        receipt=_read_asset_forge_receipt(receipt_path)
         if completed.returncode!=0:
-            result={'status':'failed','routes':routes,'batch':True}
+            result={
+                'status':'failed',
+                'routes':routes,
+                'batch':True,
+                'receipt':receipt,
+                'quality_status':_asset_quality_status(receipt),
+            }
             (project_out/'asset-forge-prefetch.json').write_text(json.dumps(result,ensure_ascii=False,sort_keys=True,separators=(',',':')))
             return result
     else:
+        receipts=[]
         for item in selected:
             route=build_production_os_asset_dispatch(
                 item,
@@ -183,6 +223,8 @@ def _asset_forge_prefetch(request_path,project_out,runner,deadline,clock):
                 target_worktree=target_worktree,
             )
             routes.append(route)
+            receipt_path=project_out/f"asset-forge-receipt-{route['request_id']}.json"
+            route['command'].extend(['--result-file',str(receipt_path)])
             try:
                 remaining=_remaining(deadline,clock)
             except TimeoutError:
@@ -190,12 +232,35 @@ def _asset_forge_prefetch(request_path,project_out,runner,deadline,clock):
                 (project_out/'asset-forge-prefetch.json').write_text(json.dumps(result,ensure_ascii=False,sort_keys=True,separators=(',',':')))
                 return result
             completed=runner(route['command'],timeout=remaining)
+            receipt=_read_asset_forge_receipt(receipt_path)
+            receipts.append(receipt)
             if completed.returncode!=0:
-                result={'status':'failed','routes':routes,'failed_request_id':route['request_id']}
+                result={
+                    'status':'failed',
+                    'routes':routes,
+                    'failed_request_id':route['request_id'],
+                    'receipt':receipt,
+                    'quality_status':_asset_quality_status(receipt),
+                }
                 (project_out/'asset-forge-prefetch.json').write_text(json.dumps(result,ensure_ascii=False,sort_keys=True,separators=(',',':')))
                 return result
 
-    result={'status':'dispatched','routes':routes,'batch':len(selected)>1}
+    if len(selected)>1:
+        receipts=[receipt]
+    statuses=[_asset_quality_status(value) for value in receipts if value is not None]
+    quality_status=(
+        'regenerated' if 'regenerated' in statuses
+        else 'ok' if statuses and all(value in {'ok','not_checked'} for value in statuses)
+        else 'not_checked' if statuses
+        else 'unknown'
+    )
+    result={
+        'status':'completed' if receipts and all(isinstance(value,dict) for value in receipts) else 'dispatched',
+        'routes':routes,
+        'batch':len(selected)>1,
+        'receipts':receipts,
+        'quality_status':quality_status,
+    }
     (project_out/'asset-forge-prefetch.json').write_text(json.dumps(result,ensure_ascii=False,sort_keys=True,separators=(',',':')))
     return result
 

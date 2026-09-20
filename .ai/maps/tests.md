@@ -219,6 +219,7 @@ test_godot_visual_stage.py
 test_human_handoff_status_v3.py
 test_human_input_request.py
 test_idempotent_model.py
+test_imagen_codex_installer.py
 test_immutable_artifact_cache.py
 test_improvement_backlog.py
 test_improvement_dispatch.py
@@ -6322,6 +6323,19 @@ restarted_model = FakeModel()
 def test_changed_context_causes_new_call(self)
 ⋮----
 model = FakeModel()
+```
+
+## File: test_imagen_codex_installer.py
+```python
+ROOT = Path(__file__).resolve().parents[1]
+⋮----
+def test_imagen_installer_is_version_pinned_and_checksum_verified()
+⋮----
+script = (ROOT / "scripts" / "install-imagen-codex.sh").read_text(
+⋮----
+def test_bootstrap_installs_imagen_without_making_it_mandatory()
+⋮----
+script = (ROOT / "scripts" / "bootstrap.sh").read_text(encoding="utf-8")
 ```
 
 ## File: test_immutable_artifact_cache.py

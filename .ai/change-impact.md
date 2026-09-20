@@ -1,7 +1,7 @@
 # Change impact
 
-Base: 2f110b3996955276c3c90f9b3d7ffaaec21cf6f1
-Head: 7002331a7b7fba12394735af59b8ee45f502a5de
+Base: f459c90e0da7f145bce2e00b0a546a8939cab873
+Head: 23712d2e30e73a43222cebca17db62638ea261a9
 
 ## Changed files
 - M .github/workflows/production-os-asset-forge-live-e2e.yml

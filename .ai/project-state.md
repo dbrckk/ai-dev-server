@@ -22,20 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T08:32:19Z
+Generated: 2026-09-20T08:39:33Z
 
 ### Git
 - Branch: `main`
-- Head: `7002331a7b7f`
-- Commit date: 2026-09-20T10:32:00+02:00
-- Commit: ci: skip live visual E2E cleanly without credential
-- Tracked files: 814
+- Head: `23712d2e30e7`
+- Commit date: 2026-09-20T10:39:07+02:00
+- Commit: build: repin Asset Forge with Codex image backend
+- Tracked files: 816
 
 ### Recently changed files
 - `.github/workflows/production-os-asset-forge-live-e2e.yml`
 - `.github/workflows/production-os-asset-forge-e2e.yml`
 - `docs/PRODUCTION_OS_WORKER.md`
 - `tests/test_asset_forge_installer.py`
+- `scripts/install-asset-forge.sh`
 
 ### Project signals
 - No common build descriptor detected

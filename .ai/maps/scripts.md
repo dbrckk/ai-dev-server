@@ -47,6 +47,7 @@ enable-sprites.sh
 fcc-agent-benchmark.sh
 finish-fcc.sh
 install-asset-forge.sh
+install-imagen-codex.sh
 jumpy-studio-cycle-v2.sh
 jumpy-studio-cycle-v3-runner.sh
 jumpy-studio-cycle-v3-safe.sh
@@ -232,7 +233,9 @@ npx --yes cdesktop --help >/dev/null 2>&1 || true
 
 # Pollinations media generation for autonomous visual assets. Keep it optional:
 # the Production-OS worker advertises visual capabilities only when the backend is ready.
-npm install -g @pollinations/cli@0.1.15 >/dev/null 2>&1 || echo "Pollinations CLI unavailable; visual workers will stay disabled." >&2
+npm install -g @pollinations/cli@0.1.15 >/dev/null 2>&1 || echo "Pollinations CLI unavailable; visual workers may use another backend." >&2
+# Optional Codex image backend. The installer is version-pinned and sha256-verified.
+bash scripts/install-imagen-codex.sh || echo "imagen Codex backend unavailable; continuing without it." >&2
 # Keep the OpenCode integration helper as an optional convenience layer.
 npm install -g opencode-pollinations-plugin >/dev/null 2>&1 || true
 
@@ -515,7 +518,7 @@ set -euo pipefail
 install_root="${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
 bin_dir="$HOME/.local/bin"
 repo_url="${ASSET_FORGE_REPOSITORY:-https://github.com/dbrckk/asset-forge.git}"
-ref="${ASSET_FORGE_REF:-c96b87faa5c1a52d2b785cd7c6c3de2da4d16efa}"
+ref="${ASSET_FORGE_REF:-9fc828fafb50572d07d2ee747b0643c3fdcfd324}"
 
 mkdir -p "$(dirname "$install_root")" "$bin_dir"
 
@@ -547,6 +550,48 @@ fi
 
 "$bin_dir/asset-forge" --help >/dev/null
 printf 'Asset Forge installed at %s (%s)\n' "$install_root" "$(git -C "$install_root" rev-parse --short HEAD)"
+```
+
+## File: install-imagen-codex.sh
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+version="v0.1.2"
+base_url="https://github.com/Leechael/imagen/releases/download/${version}"
+bin_dir="$HOME/.local/bin"
+mkdir -p "$bin_dir"
+
+case "$(uname -m)" in
+  x86_64|amd64)
+    archive="imagen-linux-amd64.tar.gz"
+    expected_sha256="2ae06f466ba49898ff0c8a2afdd77b74481002d3036c247316138c727ceb7cb0"
+    ;;
+  aarch64|arm64)
+    archive="imagen-linux-arm64.tar.gz"
+    expected_sha256="caf5f2987db8e4e5e255a7c464ea3355dba778f45e952254726c22a9c82ff4e3"
+    ;;
+  *)
+    echo "Unsupported imagen architecture: $(uname -m)" >&2
+    exit 2
+    ;;
+esac
+
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+
+curl --fail --location --silent --show-error \
+  "${base_url}/${archive}" \
+  --output "$tmp/$archive"
+
+printf '%s  %s\n' "$expected_sha256" "$tmp/$archive" | sha256sum --check --status
+
+tar -xzf "$tmp/$archive" -C "$tmp"
+test -f "$tmp/imagen"
+install -m 0755 "$tmp/imagen" "$bin_dir/imagen"
+
+"$bin_dir/imagen" --version >/dev/null
+printf 'imagen %s installed with verified sha256\n' "$version"
 ```
 
 ## File: jumpy-studio-cycle-v2.sh

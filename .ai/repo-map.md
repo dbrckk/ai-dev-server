@@ -85,6 +85,7 @@ scripts/
   fcc-agent-benchmark.sh
   finish-fcc.sh
   install-asset-forge.sh
+  install-imagen-codex.sh
   jumpy-studio-cycle-v2.sh
   jumpy-studio-cycle-v3-runner.sh
   jumpy-studio-cycle-v3-safe.sh
@@ -602,6 +603,7 @@ tests/
   test_human_handoff_status_v3.py
   test_human_input_request.py
   test_idempotent_model.py
+  test_imagen_codex_installer.py
   test_immutable_artifact_cache.py
   test_improvement_backlog.py
   test_improvement_dispatch.py
@@ -1710,7 +1712,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: dbrckk/asset-forge
-          ref: c96b87faa5c1a52d2b785cd7c6c3de2da4d16efa
+          ref: 9fc828fafb50572d07d2ee747b0643c3fdcfd324
           path: asset-forge
 
       - name: Checkout Deadline Zero
@@ -1952,7 +1954,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: dbrckk/asset-forge
-          ref: c96b87faa5c1a52d2b785cd7c6c3de2da4d16efa
+          ref: 9fc828fafb50572d07d2ee747b0643c3fdcfd324
           path: asset-forge
 
       - name: Checkout Deadline Zero
@@ -2862,7 +2864,9 @@ npx --yes cdesktop --help >/dev/null 2>&1 || true
 
 # Pollinations media generation for autonomous visual assets. Keep it optional:
 # the Production-OS worker advertises visual capabilities only when the backend is ready.
-npm install -g @pollinations/cli@0.1.15 >/dev/null 2>&1 || echo "Pollinations CLI unavailable; visual workers will stay disabled." >&2
+npm install -g @pollinations/cli@0.1.15 >/dev/null 2>&1 || echo "Pollinations CLI unavailable; visual workers may use another backend." >&2
+# Optional Codex image backend. The installer is version-pinned and sha256-verified.
+bash scripts/install-imagen-codex.sh || echo "imagen Codex backend unavailable; continuing without it." >&2
 # Keep the OpenCode integration helper as an optional convenience layer.
 npm install -g opencode-pollinations-plugin >/dev/null 2>&1 || true
 
@@ -3145,7 +3149,7 @@ set -euo pipefail
 install_root="${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
 bin_dir="$HOME/.local/bin"
 repo_url="${ASSET_FORGE_REPOSITORY:-https://github.com/dbrckk/asset-forge.git}"
-ref="${ASSET_FORGE_REF:-c96b87faa5c1a52d2b785cd7c6c3de2da4d16efa}"
+ref="${ASSET_FORGE_REF:-9fc828fafb50572d07d2ee747b0643c3fdcfd324}"
 
 mkdir -p "$(dirname "$install_root")" "$bin_dir"
 
@@ -3177,6 +3181,48 @@ fi
 
 "$bin_dir/asset-forge" --help >/dev/null
 printf 'Asset Forge installed at %s (%s)\n' "$install_root" "$(git -C "$install_root" rev-parse --short HEAD)"
+````
+
+## File: scripts/install-imagen-codex.sh
+````bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+version="v0.1.2"
+base_url="https://github.com/Leechael/imagen/releases/download/${version}"
+bin_dir="$HOME/.local/bin"
+mkdir -p "$bin_dir"
+
+case "$(uname -m)" in
+  x86_64|amd64)
+    archive="imagen-linux-amd64.tar.gz"
+    expected_sha256="2ae06f466ba49898ff0c8a2afdd77b74481002d3036c247316138c727ceb7cb0"
+    ;;
+  aarch64|arm64)
+    archive="imagen-linux-arm64.tar.gz"
+    expected_sha256="caf5f2987db8e4e5e255a7c464ea3355dba778f45e952254726c22a9c82ff4e3"
+    ;;
+  *)
+    echo "Unsupported imagen architecture: $(uname -m)" >&2
+    exit 2
+    ;;
+esac
+
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+
+curl --fail --location --silent --show-error \
+  "${base_url}/${archive}" \
+  --output "$tmp/$archive"
+
+printf '%s  %s\n' "$expected_sha256" "$tmp/$archive" | sha256sum --check --status
+
+tar -xzf "$tmp/$archive" -C "$tmp"
+test -f "$tmp/imagen"
+install -m 0755 "$tmp/imagen" "$bin_dir/imagen"
+
+"$bin_dir/imagen" --version >/dev/null
+printf 'imagen %s installed with verified sha256\n' "$version"
 ````
 
 ## File: scripts/jumpy-studio-cycle-v2.sh
@@ -29527,6 +29573,19 @@ restarted_model = FakeModel()
 def test_changed_context_causes_new_call(self)
 ⋮----
 model = FakeModel()
+````
+
+## File: tests/test_imagen_codex_installer.py
+````python
+ROOT = Path(__file__).resolve().parents[1]
+⋮----
+def test_imagen_installer_is_version_pinned_and_checksum_verified()
+⋮----
+script = (ROOT / "scripts" / "install-imagen-codex.sh").read_text(
+⋮----
+def test_bootstrap_installs_imagen_without_making_it_mandatory()
+⋮----
+script = (ROOT / "scripts" / "bootstrap.sh").read_text(encoding="utf-8")
 ````
 
 ## File: tests/test_immutable_artifact_cache.py

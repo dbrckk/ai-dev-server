@@ -1,17 +1,85 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "f3e5c61ef79e6825ddc9f5f9bbdad564d2501c74",
-  "head": "7002331a7b7fba12394735af59b8ee45f502a5de",
+  "base": "7002331a7b7fba12394735af59b8ee45f502a5de",
+  "head": "23712d2e30e73a43222cebca17db62638ea261a9",
   "index_mode": "incremental",
   "changed_files": [
     {
+      "path": ".github/workflows/production-os-asset-forge-e2e.yml",
+      "status": "M"
+    },
+    {
       "path": ".github/workflows/production-os-asset-forge-live-e2e.yml",
+      "status": "M"
+    },
+    {
+      "path": "docs/PRODUCTION_OS_WORKER.md",
+      "status": "M"
+    },
+    {
+      "path": "scripts/bootstrap.sh",
+      "status": "M"
+    },
+    {
+      "path": "scripts/install-asset-forge.sh",
+      "status": "M"
+    },
+    {
+      "path": "scripts/install-imagen-codex.sh",
+      "status": "A"
+    },
+    {
+      "path": "tests/test_asset_forge_installer.py",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_imagen_codex_installer.py",
       "status": "A"
     }
   ],
-  "changed_source_files": [],
-  "impacted_files": [],
-  "impacted_symbols": [],
-  "selected_tests": []
+  "changed_source_files": [
+    "tests/test_asset_forge_installer.py",
+    "tests/test_imagen_codex_installer.py"
+  ],
+  "impacted_files": [
+    "tests/test_asset_forge_installer.py",
+    "tests/test_imagen_codex_installer.py"
+  ],
+  "impacted_symbols": [
+    {
+      "name": "test_asset_forge_installer_expands_environment_configuration",
+      "kind": "function",
+      "file": "tests/test_asset_forge_installer.py",
+      "line": 7
+    },
+    {
+      "name": "test_asset_forge_installer_uses_pyproject_editable_install",
+      "kind": "function",
+      "file": "tests/test_asset_forge_installer.py",
+      "line": 20
+    },
+    {
+      "name": "test_asset_forge_default_ref_is_immutable_commit",
+      "kind": "function",
+      "file": "tests/test_asset_forge_installer.py",
+      "line": 30
+    },
+    {
+      "name": "test_imagen_installer_is_version_pinned_and_checksum_verified",
+      "kind": "function",
+      "file": "tests/test_imagen_codex_installer.py",
+      "line": 7
+    },
+    {
+      "name": "test_bootstrap_installs_imagen_without_making_it_mandatory",
+      "kind": "function",
+      "file": "tests/test_imagen_codex_installer.py",
+      "line": 19
+    }
+  ],
+  "selected_tests": [
+    "tests/test_asset_forge_installer.py",
+    "tests/test_imagen_codex_installer.py"
+  ]
 }

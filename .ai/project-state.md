@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T17:11:00Z
+Generated: 2026-09-20T17:13:08Z
 
 ### Git
 - Branch: `main`
-- Head: `16bc96acfaf1`
-- Commit date: 2026-09-20T19:10:50+02:00
-- Commit: feat: return asset cache and dedup metrics to Production OS
+- Head: `05bfba9901d5`
+- Commit date: 2026-09-20T19:12:57+02:00
+- Commit: fix: preserve pipeline summary while collecting asset dedup metrics
 - Tracked files: 820
 
 ### Recently changed files

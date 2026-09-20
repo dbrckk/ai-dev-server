@@ -1,7 +1,7 @@
 # Change impact
 
-Base: d67796f3a6016242633384f498cdbb7ff7c52815
-Head: 16bc96acfaf1afb7a261c80b3c404b2d0900ce01
+Base: d2f9481b4392e46c09a60d34e62046b60913df99
+Head: 05bfba9901d505aaf3f9b3e9d8cb0231e4bfbbb3
 
 ## Changed files
 - M studio/github_runner.py

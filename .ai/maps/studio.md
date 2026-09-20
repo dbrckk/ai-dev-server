@@ -10450,7 +10450,7 @@ cache_hits = 0
 ⋮----
 quality = receipt.get("quality_summary")
 ⋮----
-summary = receipt.get("dedup_summary")
+dedup_summary = receipt.get("dedup_summary")
 ⋮----
 visual_assets = {
 ⋮----

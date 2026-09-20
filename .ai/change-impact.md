@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 3d0b2eb738fe569aaeb1954c49220101886f09e3
-Head: 77c9126e11200b539feac39e8157312a3b7c80f2
+Base: c3ab51530f34138698fdec84ecf3486958b1bd2d
+Head: 2f21256ede32aec4ea57bc24053f326bb8b461e0
 
 ## Changed files
-- M studio/github_runner.py
+- M tests/test_production_os_worker.py
 
 ## Affected areas
-- studio
+- tests
 
 ## Related test candidates
 - No direct filename-based test match detected.

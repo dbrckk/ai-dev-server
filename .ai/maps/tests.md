@@ -7857,6 +7857,10 @@ out = Path(td)
 envelope = write_production_os_result(out, request, summary)
 persisted = json.loads(
 ⋮----
+def test_result_envelope_includes_visual_asset_quality(self)
+⋮----
+visual = envelope["evidence"]["visual_assets"]
+⋮----
 def test_no_result_envelope_without_correlation(self)
 ⋮----
 envelope = write_production_os_result(

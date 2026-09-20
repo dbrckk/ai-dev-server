@@ -22,21 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T15:08:26Z
+Generated: 2026-09-20T15:10:01Z
 
 ### Git
 - Branch: `main`
-- Head: `77c9126e1120`
-- Commit date: 2026-09-20T17:08:16+02:00
-- Commit: feat: return visual asset quality to Production OS
+- Head: `2f21256ede32`
+- Commit date: 2026-09-20T17:09:47+02:00
+- Commit: test: preserve visual quality through worker completion
 - Tracked files: 820
 
 ### Recently changed files
+- `tests/test_production_os_worker.py`
+- `tests/test_production_os_result_contract.py`
 - `studio/github_runner.py`
 - `tests/test_fleet_dashboard.py`
 - `tests/test_orchestrator.py`
-- `studio/fleet_dashboard.py`
-- `studio/orchestrator.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -22,19 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T17:17:45Z
+Generated: 2026-09-20T17:18:42Z
 
 ### Git
 - Branch: `main`
-- Head: `695fd9745932`
-- Commit date: 2026-09-20T19:17:35+02:00
-- Commit: feat: expose preferred asset library version to Production OS
+- Head: `0b229f77db85`
+- Commit date: 2026-09-20T19:18:30+02:00
+- Commit: test: cover preferred library version in Production OS evidence
 - Tracked files: 820
 
 ### Recently changed files
+- `tests/test_production_os_result_contract.py`
 - `studio/github_runner.py`
 - `tests/test_asset_forge_bridge.py`
-- `tests/test_production_os_result_contract.py`
 
 ### Project signals
 - No common build descriptor detected

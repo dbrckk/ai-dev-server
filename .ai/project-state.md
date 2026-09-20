@@ -22,21 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T10:49:21Z
+Generated: 2026-09-20T10:59:48Z
 
 ### Git
 - Branch: `main`
-- Head: `3c09fa718b57`
-- Commit date: 2026-09-20T12:49:09+02:00
-- Commit: test: cover asset-forge routing bridge
+- Head: `c5f7d8752f60`
+- Commit date: 2026-09-20T12:59:30+02:00
+- Commit: test: verify orchestrator asset-forge prefetch
 - Tracked files: 818
 
 ### Recently changed files
-- `tests/test_asset_forge_bridge.py`
+- `tests/test_orchestrator.py`
+- `studio/orchestrator.py`
 - `studio/asset_forge_bridge.py`
-- `tests/test_production_os_worker.py`
-- `studio/production_os_worker.py`
-- `docs/PRODUCTION_OS_WORKER.md`
+- `tests/test_asset_forge_bridge.py`
 
 ### Project signals
 - No common build descriptor detected

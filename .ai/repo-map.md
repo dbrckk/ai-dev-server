@@ -9054,11 +9054,15 @@ visual = bool(tokens & VISUAL_TERMS) or "pixel art" in text
 premium = any(term in text for term in PREMIUM_TERMS)
 explicit = task.get("requires_asset_forge") is True
 ⋮----
+def _infer_asset_shape(task: dict) -> tuple[str, str]
+⋮----
+text = " ".join(str(task.get(key) or "") for key in ("task", "objective", "instruction", "description", "title")).lower()
+⋮----
 def build_production_os_asset_dispatch(task: dict, *, project: str) -> dict
 ⋮----
 asset_id = str(task.get("asset_id") or task.get("id") or "visual-asset").strip()
-asset_type = str(task.get("asset_type") or "icon").strip()
-target_format = str(task.get("format") or ("glb" if "3d" in str(task).lower() else "png")).strip().lower()
+asset_type = str(task.get("asset_type") or inferred_type).strip()
+target_format = str(task.get("format") or inferred_format).strip().lower()
 instruction = str(
 request_id = str(task.get("request_id") or f"{project}-{asset_id}").strip()
 engine = str(task.get("engine") or "").strip() or None
@@ -18580,6 +18584,32 @@ migration_review=write_reputation_policy_migration_review(
 replacement_plan=write_architecture_replacement_plan(obsolescence,recommendations,project_out,learning=replacement_learning,reputation_registry=reputation_registry)
 replacement_work_orders=write_architecture_replacement_work_orders(replacement_plan,project_out)
 ⋮----
+def _asset_forge_prefetch(request_path,project_out,runner,deadline,clock)
+⋮----
+request=json.loads(Path(request_path).read_text())
+⋮----
+project=str(request.get('id') or request.get('app_name') or request.get('project') or 'project').strip()
+candidates=[]
+raw_assets=request.get('asset_requests')
+⋮----
+brief=request.get('brief')
+⋮----
+candidate={
+⋮----
+routes=[]
+⋮----
+route=build_production_os_asset_dispatch(item,project=project)
+⋮----
+remaining=_remaining(deadline,clock)
+⋮----
+result={'status':'deferred','routes':routes}
+⋮----
+completed=runner(route['command'],timeout=remaining)
+⋮----
+result={'status':'failed','routes':routes,'failed_request_id':route['request_id']}
+⋮----
+result={'status':'dispatched','routes':routes}
+⋮----
 def load_report(project_out)
 ⋮----
 path=project_out/'report.json'
@@ -18703,6 +18733,8 @@ updated_completion=updated.get('completion',{}); next_name=updated_completion.ge
 report=updated
 ⋮----
 def run_project(request_path,project_out,work,runner,deadline,clock=time.monotonic,baseline_sha=None)
+⋮----
+asset_prefetch=_asset_forge_prefetch(request_path,project_out,runner,deadline,clock)
 ⋮----
 preview=runner([sys.executable,'studio/run.py',request_path,'--work',work,'--out',str(project_out)],timeout=remaining)
 ⋮----
@@ -30544,11 +30576,21 @@ def payload_for(self, args)
 ⋮----
 def missing_report(self)
 ⋮----
+def test_premium_visual_request_prefetches_asset_forge_before_preview(self)
+⋮----
+root = Path(tmp); out = root / 'out'; request = root / 'request.json'
+⋮----
+calls=[]
+def runner(args, timeout)
+result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)
+⋮----
+route=json.loads((out/'asset-forge-prefetch.json').read_text())
+⋮----
 def test_full_pipeline_reaches_finished(self)
 ⋮----
 root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}')
 calls = []
-def runner(args, timeout)
+⋮----
 result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)
 ⋮----
 expected = ['studio/run.py', 'studio/post_preview.py', 'studio/device_stage.py', 'studio/capability_stage.py',

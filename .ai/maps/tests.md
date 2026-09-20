@@ -7222,11 +7222,21 @@ def payload_for(self, args)
 ⋮----
 def missing_report(self)
 ⋮----
+def test_premium_visual_request_prefetches_asset_forge_before_preview(self)
+⋮----
+root = Path(tmp); out = root / 'out'; request = root / 'request.json'
+⋮----
+calls=[]
+def runner(args, timeout)
+result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)
+⋮----
+route=json.loads((out/'asset-forge-prefetch.json').read_text())
+⋮----
 def test_full_pipeline_reaches_finished(self)
 ⋮----
 root = Path(tmp); out = root / 'out'; request = root / 'request.json'; request.write_text('{}')
 calls = []
-def runner(args, timeout)
+⋮----
 result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)
 ⋮----
 expected = ['studio/run.py', 'studio/post_preview.py', 'studio/device_stage.py', 'studio/capability_stage.py',

@@ -2708,6 +2708,10 @@ def test_primary_raster_batch_uses_stricter_visual_similarity_policy()
 run = {item["id"]: item for item in batch["items"]}["run"]
 constraints = run["request"]["manifest"]["constraints"]
 ⋮----
+def test_asset_reuse_policy_is_primary_unique_secondary_reusable()
+⋮----
+by_id = {
+⋮----
 def test_primary_raster_batch_enables_optional_semantic_art_review()
 ⋮----
 constraints = batch["items"][0]["request"]["manifest"]["constraints"]

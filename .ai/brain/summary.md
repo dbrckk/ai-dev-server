@@ -2,11 +2,11 @@
 
 - Index mode: incremental
 - Files indexed: 619
-- Files reparsed this run: 1
-- Symbols: 4316
+- Files reparsed this run: 2
+- Symbols: 4317
 - Internal import edges: 1252
-- Impacted files: 6
-- Selected tests: 4
+- Impacted files: 3
+- Selected tests: 1
 
 ## Languages
 - python: 616 files
@@ -31,8 +31,8 @@
 - tests/test_architecture_feedback.py: 23 symbols
 - tests/test_architecture_reputation_policy_github_collect.py: 23 symbols
 - studio/evolution_research.py: 22 symbols
+- tests/test_asset_forge_bridge.py: 21 symbols
 - studio/architecture_reputation_policy_migration.py: 20 symbols
-- tests/test_asset_forge_bridge.py: 20 symbols
 
 ## Agent routing
 - Read impact.json first after project/change context.
@@ -43,9 +43,9 @@
 ## ast-grep enrichment
 - ast-grep outline: available
 - AST index mode: incremental
-- AST files reparsed this run: 1
+- AST files reparsed this run: 2
 - outline files retained: 615
-- top-level items retained: 6392
+- top-level items retained: 6393
 - direct members retained: 2117
 - symbol shards: 26
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard

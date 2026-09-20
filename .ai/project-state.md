@@ -22,19 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T16:50:33Z
+Generated: 2026-09-20T16:51:59Z
 
 ### Git
 - Branch: `main`
-- Head: `7115e8f849a4`
-- Commit date: 2026-09-20T18:50:18+02:00
-- Commit: feat: expose semantic art score per generated asset
+- Head: `f0bd4a446bf4`
+- Commit date: 2026-09-20T18:51:41+02:00
+- Commit: test: cover primary unique and secondary reusable asset policy
 - Tracked files: 820
 
 ### Recently changed files
-- `studio/github_runner.py`
 - `tests/test_asset_forge_bridge.py`
 - `studio/asset_forge_bridge.py`
+- `studio/github_runner.py`
 
 ### Project signals
 - No common build descriptor detected

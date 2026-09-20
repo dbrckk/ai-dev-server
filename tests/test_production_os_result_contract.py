@@ -111,7 +111,19 @@ class ProductionOSResultContractTests(unittest.TestCase):
                         "checked": 2,
                         "regenerated": 1,
                         "minimum_score": 0.79,
-                    }
+                    },
+                    "items": [{
+                        "id": "hero-run",
+                        "target_path": "assets/art/hero-run.png",
+                        "depends_on": ["hero"],
+                        "cache_hit": False,
+                        "visual_similarity": {
+                            "attempts": [
+                                {"score": 0.40, "passed": False},
+                                {"score": 0.79, "passed": True},
+                            ],
+                        },
+                    }],
                 }],
             }))
             envelope = write_production_os_result(out, request, summary)
@@ -122,6 +134,10 @@ class ProductionOSResultContractTests(unittest.TestCase):
         self.assertEqual(visual["regenerated"], 1)
         self.assertEqual(visual["minimum_score"], 0.79)
         self.assertEqual(visual["routes"], 2)
+        self.assertEqual(visual["items"][0]["id"], "hero-run")
+        self.assertEqual(visual["items"][0]["score"], 0.79)
+        self.assertEqual(visual["items"][0]["attempts"], 2)
+        self.assertEqual(visual["items"][0]["depends_on"], ["hero"])
 
     def test_no_result_envelope_without_correlation(self):
         with tempfile.TemporaryDirectory() as td:

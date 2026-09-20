@@ -257,3 +257,34 @@ def test_engine_is_inferred_from_visual_instruction():
     manifest = batch["items"][0]["request"]["manifest"]
     assert manifest["target"]["engine"] == "libgdx"
     assert batch["routes"][0]["target_path"] == "assets/art/hero.png"
+
+
+def test_3d_character_inference_enables_lods_for_primary_assets():
+    from asset_forge_bridge import build_production_os_asset_batch
+    batch = build_production_os_asset_batch(
+        [{
+            "id": "boss",
+            "objective": "Create a premium AAA 3D zombie character for Godot",
+        }],
+        project="game",
+        target_repository="owner/game",
+    )
+    manifest = batch["items"][0]["request"]["manifest"]
+    assert manifest["type"] == "character-3d"
+    assert manifest["target"]["format"] == "glb"
+    assert manifest["target"]["engine"] == "godot4"
+    assert manifest["constraints"]["generateLods"] is True
+    assert manifest["constraints"]["requireLods"] is False
+
+
+def test_3d_environment_inference_uses_environment_profile():
+    from asset_forge_bridge import build_production_os_asset_batch
+    batch = build_production_os_asset_batch(
+        [{
+            "id": "arena",
+            "objective": "Create a premium professional 3D environment scene",
+        }],
+        project="game",
+        target_repository="owner/game",
+    )
+    assert batch["items"][0]["request"]["manifest"]["type"] == "environment"

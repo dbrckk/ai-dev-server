@@ -22,20 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T17:14:32Z
+Generated: 2026-09-20T17:17:45Z
 
 ### Git
 - Branch: `main`
-- Head: `6f823b094ef6`
-- Commit date: 2026-09-20T19:14:10+02:00
-- Commit: test: cover automatic 3D collision policy
+- Head: `695fd9745932`
+- Commit date: 2026-09-20T19:17:35+02:00
+- Commit: feat: expose preferred asset library version to Production OS
 - Tracked files: 820
 
 ### Recently changed files
+- `studio/github_runner.py`
 - `tests/test_asset_forge_bridge.py`
 - `tests/test_production_os_result_contract.py`
-- `studio/github_runner.py`
-- `studio/asset_forge_bridge.py`
 
 ### Project signals
 - No common build descriptor detected

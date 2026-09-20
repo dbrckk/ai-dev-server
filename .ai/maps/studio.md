@@ -10444,6 +10444,8 @@ attempts = (
 score = (
 semantic = (
 semantic_scores = (
+library = (
+library_entry = (
 ⋮----
 dedup = []
 cache_hits = 0

@@ -197,6 +197,33 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
                 for summary in summaries
                 if isinstance(summary.get("minimum_score"), (int, float))
             ]
+            item_rows = []
+            for receipt in receipts:
+                if not isinstance(receipt, dict):
+                    continue
+                for item in receipt.get("items") or []:
+                    if not isinstance(item, dict):
+                        continue
+                    visual = item.get("visual_similarity")
+                    attempts = (
+                        visual.get("attempts")
+                        if isinstance(visual, dict)
+                        and isinstance(visual.get("attempts"), list)
+                        else []
+                    )
+                    score = (
+                        attempts[-1].get("score")
+                        if attempts and isinstance(attempts[-1], dict)
+                        else None
+                    )
+                    item_rows.append({
+                        "id": item.get("id"),
+                        "target_path": item.get("target_path"),
+                        "score": score if isinstance(score, (int, float)) else None,
+                        "attempts": len(attempts),
+                        "cache_hit": bool(item.get("cache_hit")),
+                        "depends_on": list(item.get("depends_on") or []),
+                    })
             visual_assets = {
                 "status": asset_value.get("status"),
                 "quality_status": asset_value.get("quality_status") or "unknown",
@@ -205,6 +232,7 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
                 "checked": sum(int(summary.get("checked") or 0) for summary in summaries),
                 "regenerated": sum(int(summary.get("regenerated") or 0) for summary in summaries),
                 "minimum_score": min(scores) if scores else None,
+                "items": item_rows[:16],
             }
 
     envelope = {

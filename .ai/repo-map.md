@@ -1946,6 +1946,7 @@ jobs:
     timeout-minutes: 20
     env:
       POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
+      CODEX_ACCESS_TOKEN: ${{ secrets.CODEX_ACCESS_TOKEN }}
     steps:
       - name: Checkout AI Dev Server
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -1980,31 +1981,52 @@ jobs:
         with:
           gradle-version: '8.11.1'
 
-      - name: Detect live generation credential
+      - name: Select live generation backend
         id: credential
         run: |
           if [ -n "$POLLINATIONS_API_KEY" ]; then
             echo "configured=true" >> "$GITHUB_OUTPUT"
+            echo "backend=pollinations" >> "$GITHUB_OUTPUT"
+            echo "format=svg" >> "$GITHUB_OUTPUT"
+            echo "asset_type=icon" >> "$GITHUB_OUTPUT"
+            echo "artifact=live-production-pipeline-icon.svg" >> "$GITHUB_OUTPUT"
+          elif [ -n "$CODEX_ACCESS_TOKEN" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+            echo "backend=imagen-codex" >> "$GITHUB_OUTPUT"
+            echo "format=png" >> "$GITHUB_OUTPUT"
+            echo "asset_type=pixel-art" >> "$GITHUB_OUTPUT"
+            echo "artifact=live-production-pipeline-icon.png" >> "$GITHUB_OUTPUT"
           else
             echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::POLLINATIONS_API_KEY is not configured; live E2E skipped."
+            echo "::notice::No live image credential is configured; live E2E skipped."
           fi
 
       - name: Install live visual toolchain
         if: steps.credential.outputs.configured == 'true'
         run: |
           python -m pip install --no-deps ./asset-forge
-          npm install --global @pollinations/cli@0.1.15
+          if [ "${{ steps.credential.outputs.backend }}" = "pollinations" ]; then
+            npm install --global @pollinations/cli@0.1.15
+          else
+            bash scripts/install-imagen-codex.sh
+          fi
 
       - name: Verify live Asset Forge readiness
         if: steps.credential.outputs.configured == 'true'
+        env:
+          BACKEND: ${{ steps.credential.outputs.backend }}
         run: |
           asset-forge operational-status > build-operational-status.json
           python - <<'PY'
-          import json
+          import json, os
           data=json.load(open("build-operational-status.json"))
-          assert data["capabilities"]["vectorSvg"] is True, data
-          assert data["generation"]["pollinations"]["authenticated"] is True, data
+          backend=os.environ["BACKEND"]
+          if backend == "pollinations":
+              assert data["capabilities"]["vectorSvg"] is True, data
+              assert data["generation"]["pollinations"]["authenticated"] is True, data
+          else:
+              assert data["capabilities"]["rasterPng"] is True, data
+              assert data["generation"]["imagenCodex"]["authenticated"] is True, data
           PY
 
       - name: Materialize Production OS live visual handoff
@@ -2054,10 +2076,13 @@ jobs:
       - name: Create generated-source Asset Forge request
         if: steps.credential.outputs.configured == 'true'
         shell: bash
+        env:
+          ASSET_TYPE: ${{ steps.credential.outputs.asset_type }}
+          TARGET_FORMAT: ${{ steps.credential.outputs.format }}
         run: |
           set -euo pipefail
           python - <<'PY'
-          import json
+          import json, os
           from pathlib import Path
 
           request = {
@@ -2067,7 +2092,7 @@ jobs:
               "manifest": {
                   "id": "live-production-pipeline-icon",
                   "project": "deadline-zero",
-                  "type": "icon",
+                  "type": os.environ["ASSET_TYPE"],
                   "importance": "secondary",
                   "source": {"mode": "generated"},
                   "license": {
@@ -2078,7 +2103,7 @@ jobs:
                   },
                   "target": {
                       "engine": "libgdx",
-                      "format": "svg",
+                      "format": os.environ["TARGET_FORMAT"],
                       "maxBytes": 1048576
                   },
                   "constraints": {}
@@ -2096,16 +2121,27 @@ jobs:
 
       - name: Generate, process and validate live asset
         if: steps.credential.outputs.configured == 'true'
+        env:
+          BACKEND: ${{ steps.credential.outputs.backend }}
+          ARTIFACT: ${{ steps.credential.outputs.artifact }}
         run: |
-          asset-forge fulfill             build/live-e2e/production-request.json             --output-dir build/live-e2e/fulfilled
-          asset-forge validate-production-report             build/live-e2e/fulfilled/production-report.json
-          test -s build/live-e2e/fulfilled/live-production-pipeline-icon.svg
+          asset-forge fulfill \
+            build/live-e2e/production-request.json \
+            --output-dir build/live-e2e/fulfilled \
+            --backend "$BACKEND"
+          asset-forge validate-production-report \
+            build/live-e2e/fulfilled/production-report.json
+          test -s "build/live-e2e/fulfilled/$ARTIFACT"
 
       - name: Inject live asset into Deadline Zero workspace
         if: steps.credential.outputs.configured == 'true'
+        env:
+          ARTIFACT: ${{ steps.credential.outputs.artifact }}
         run: |
-          install -D             build/live-e2e/fulfilled/live-production-pipeline-icon.svg             deadline-zero/assets/art/live-production-pipeline-icon.svg
-          test -s deadline-zero/assets/art/live-production-pipeline-icon.svg
+          install -D \
+            "build/live-e2e/fulfilled/$ARTIFACT" \
+            "deadline-zero/assets/art/$ARTIFACT"
+          test -s "deadline-zero/assets/art/$ARTIFACT"
 
       - name: Validate Deadline Zero art contracts
         if: steps.credential.outputs.configured == 'true'
@@ -2129,7 +2165,13 @@ jobs:
           import json
           from pathlib import Path
           root=Path("build/live-e2e")
-          asset=root/"fulfilled"/"live-production-pipeline-icon.svg"
+          fulfilled=root/"fulfilled"
+          assets=[
+              p for p in fulfilled.iterdir()
+              if p.name.startswith("live-production-pipeline-icon.")
+          ]
+          assert len(assets) == 1, assets
+          asset=assets[0]
           report=json.loads((root/"fulfilled"/"production-report.json").read_text())
           studio=json.loads((root/"studio-request.json").read_text())
           evidence={

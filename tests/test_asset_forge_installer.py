@@ -15,3 +15,13 @@ def test_asset_forge_installer_expands_environment_configuration():
     assert "${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}" in script
     assert "${ASSET_FORGE_REPOSITORY:-https://github.com/dbrckk/asset-forge.git}" in script
     assert "${ASSET_FORGE_REF:-main}" in script
+
+
+def test_asset_forge_installer_uses_pyproject_editable_install():
+    script = (ROOT / "scripts" / "install-asset-forge.sh").read_text(
+        encoding="utf-8"
+    )
+
+    assert 'python -m pip install --user --no-deps --editable "$install_root"' in script
+    assert 'cat >"$bin_dir/asset-forge"' not in script
+    assert '"$bin_dir/asset-forge" --help' in script

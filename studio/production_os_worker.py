@@ -460,11 +460,12 @@ def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
     if not all((repository, task, workflow_id, workflow_task_id, job_key)):
         raise ValueError("Production-OS job correlation is incomplete")
 
+    brief = (_brief(task, final_goal) + _asset_forge_guidance(handoff))[:24000]
     request = {
         "id": _project_id(job_key),
         "target_repo": repository,
         "app_name": _app_name(repository),
-        "brief": (_brief(task, final_goal) + _asset_forge_guidance(handoff))[:24000],
+        "brief": brief,
         "enabled": True,
         "production_os": {
             "workflow_id": workflow_id,

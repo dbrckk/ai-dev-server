@@ -1,18 +1,68 @@
 {
   "files": [
     {
-      "path": "tests/test_asset_forge_installer.py",
+      "path": "studio/production_os_worker.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "symbol-indexed"
+      ],
+      "score": 565
+    },
+    {
+      "path": "tests/test_production_os_worker.py",
       "reasons": [
         "changed",
         "changed-source",
         "impact",
+        "reverse-dependency-neighbor",
         "selected-test",
         "symbol-indexed"
       ],
-      "score": 380
+      "score": 450
     },
     {
-      "path": "scripts/install-asset-forge.sh",
+      "path": "tests/test_production_os_worker_runtime.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 375
+    },
+    {
+      "path": "tests/test_production_os_worker_cli.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 255
+    },
+    {
+      "path": "tests/test_production_os_local_e2e.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 235
+    },
+    {
+      "path": "tests/test_production_os_worker_preflight.py",
+      "reasons": [
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 130
+    },
+    {
+      "path": ".github/workflows/production-os-asset-forge-e2e.yml",
       "reasons": [
         "changed"
       ],
@@ -21,30 +71,37 @@
     {
       "path": "studio/core.py",
       "reasons": [
-        "recent-project-state"
+        "dependency-neighbor"
       ],
-      "score": 60
+      "score": 50
     },
     {
-      "path": "studio/production_os_worker.py",
+      "path": "studio/atomic_file.py",
       "reasons": [
-        "recent-project-state"
+        "dependency-neighbor"
       ],
-      "score": 60
+      "score": 25
     },
     {
-      "path": "tests/test_production_os_worker.py",
+      "path": "studio/file_lock.py",
       "reasons": [
-        "recent-project-state"
+        "dependency-neighbor"
       ],
-      "score": 60
+      "score": 25
     },
     {
-      "path": "tests/test_production_os_worker_runtime.py",
+      "path": "studio/github_runner.py",
       "reasons": [
-        "recent-project-state"
+        "dependency-neighbor"
       ],
-      "score": 60
+      "score": 25
+    },
+    {
+      "path": "studio/omniroute_capacity.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 25
     }
   ],
   "generated_by": "dbrckk/repo-brain-v6",

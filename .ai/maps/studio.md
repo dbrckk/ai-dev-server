@@ -14935,6 +14935,8 @@ workflow_task_id = str(payload.get("workflow_task_id") or "").strip()
 job_key = str(job.get("key") or "").strip()
 ⋮----
 request = {
+tool_contracts = handoff.get("tool_contracts")
+⋮----
 preference = str(handoff.get("agent_preference") or "auto").strip()
 ⋮----
 raw_budget = handoff.get("token_budget")

@@ -4,7 +4,7 @@ set -euo pipefail
 install_root="${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
 bin_dir="$HOME/.local/bin"
 repo_url="${ASSET_FORGE_REPOSITORY:-https://github.com/dbrckk/asset-forge.git}"
-ref="${ASSET_FORGE_REF:-c96b87faa5c1a52d2b785cd7c6c3de2da4d16efa}"
+ref="${ASSET_FORGE_REF:-9fc828fafb50572d07d2ee747b0643c3fdcfd324}"
 
 mkdir -p "$(dirname "$install_root")" "$bin_dir"
 

@@ -203,6 +203,22 @@ def test_brief_inference_builds_character_dependency_chain():
     assert by_id["character-foundation"]["format"] == "png"
 
 
+def test_brief_inference_detects_3d_character_without_2d_sprite_chain():
+    from asset_forge_bridge import infer_asset_tasks_from_brief
+    tasks = infer_asset_tasks_from_brief(
+        "Create a premium AAA animated 3D zombie character model with polished visuals.",
+        engine="godot4",
+    )
+    by_id = {item["id"]: item for item in tasks}
+    assert "character-3d-foundation" in by_id
+    assert "character-foundation" not in by_id
+    assert "character-animation" not in by_id
+    character = by_id["character-3d-foundation"]
+    assert character["asset_type"] == "character-3d"
+    assert character["format"] == "glb"
+    assert character["constraints"]["generateLods"] is True
+
+
 def test_brief_inference_detects_3d_environment():
     from asset_forge_bridge import infer_asset_tasks_from_brief
     tasks = infer_asset_tasks_from_brief(

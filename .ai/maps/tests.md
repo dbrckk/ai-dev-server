@@ -2712,6 +2712,19 @@ def test_secondary_raster_batch_uses_lighter_visual_similarity_policy()
 ⋮----
 variant = {item["id"]: item for item in batch["items"]}["badge-variant"]
 constraints = variant["request"]["manifest"]["constraints"]
+⋮----
+def test_brief_inference_builds_character_dependency_chain()
+⋮----
+tasks = infer_asset_tasks_from_brief(
+by_id = {item["id"]: item for item in tasks}
+⋮----
+def test_brief_inference_detects_3d_environment()
+⋮----
+environment = {item["id"]: item for item in tasks}["environment-foundation"]
+⋮----
+def test_raster_quality_policy_can_be_overridden_per_task()
+⋮----
+constraints = batch["items"][0]["request"]["manifest"]["constraints"]
 ```
 
 ## File: test_asset_forge_installer.py
@@ -7273,6 +7286,10 @@ root = Path(tmp); out = root / 'out'; request = root / 'request.json'
 calls=[]
 def runner(args, timeout)
 result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)
+⋮----
+spec=json.loads((out/'asset-forge-batch-spec.json').read_text())
+⋮----
+by_id={item['id']:item for item in spec['items']}
 ⋮----
 route=json.loads((out/'asset-forge-prefetch.json').read_text())
 ⋮----

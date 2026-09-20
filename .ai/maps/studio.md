@@ -4238,6 +4238,25 @@ def _infer_asset_shape(task: dict) -> tuple[str, str]
 ⋮----
 text = " ".join(str(task.get(key) or "") for key in ("task", "objective", "instruction", "description", "title")).lower()
 ⋮----
+def infer_asset_tasks_from_brief(brief: str, *, engine: str | None = None) -> list[dict]
+⋮----
+text = str(brief or "").strip()
+⋮----
+lower = text.lower()
+⋮----
+inferred_engine = str(engine or "").strip() or None
+tasks: list[dict] = []
+character_terms = (
+animation_terms = (
+environment_terms = (
+⋮----
+padded = f" {lower} "
+⋮----
+is_3d = "3d" in lower or "mesh" in lower or "model" in lower
+⋮----
+unique = []
+seen = set()
+⋮----
 asset_id = str(task.get("asset_id") or task.get("id") or "visual-asset").strip()
 asset_type = str(task.get("asset_type") or inferred_type).strip()
 target_format = str(task.get("format") or inferred_format).strip().lower()
@@ -4259,10 +4278,16 @@ items = []
 source_mode = str(task.get("source_mode") or "generated").strip().lower()
 similarity_min = task.get("visual_similarity_min")
 similarity_retries = task.get("visual_similarity_retries")
+technical_quality_min = task.get("technical_quality_min")
+max_border_alpha_ratio = task.get("max_border_alpha_ratio")
 ⋮----
 similarity_min = 0.55 if route["importance"] == "primary" else 0.42
 ⋮----
 similarity_retries = 2 if route["importance"] == "primary" else 1
+⋮----
+technical_quality_min = 0.58 if route["importance"] == "primary" else 0.42
+⋮----
+max_border_alpha_ratio = 0.04 if route["importance"] == "primary" else 0.08
 constraints = dict(task.get("constraints") or {}) if isinstance(task.get("constraints"), dict) else {}
 ⋮----
 request = {
@@ -10410,6 +10435,12 @@ single = asset_value.get("receipt")
 receipts = [single] if isinstance(single, dict) else []
 summaries = [
 scores = [
+item_rows = []
+⋮----
+visual = item.get("visual_similarity")
+attempts = (
+score = (
+⋮----
 visual_assets = {
 ⋮----
 envelope = {
@@ -13845,9 +13876,8 @@ raw_assets=request.get('asset_requests')
 ⋮----
 brief=request.get('brief')
 ⋮----
-candidate={
-⋮----
 selected=[item for item in candidates[:8] if should_route_to_asset_forge(item)]
+⋮----
 target_repository=str(request.get('target_repo') or '').strip() or None
 target_worktree=str(request.get('target_worktree') or '').strip() or None
 routes=[]
@@ -15087,6 +15117,7 @@ workflow_id = str(payload.get("workflow_id") or "").strip()
 workflow_task_id = str(payload.get("workflow_task_id") or "").strip()
 job_key = str(job.get("key") or "").strip()
 ⋮----
+brief = (_brief(task, final_goal) + _asset_forge_guidance(handoff))[:24000]
 request = {
 tool_contracts = handoff.get("tool_contracts")
 ⋮----

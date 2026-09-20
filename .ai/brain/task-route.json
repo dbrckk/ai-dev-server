@@ -1,18 +1,18 @@
 {
   "budget": {
-    "confidence": "medium",
+    "confidence": "high",
     "expand_to": 12,
-    "max_files": 6,
+    "max_files": 3,
     "requested_max_files": 12,
     "score_margin": 0,
-    "tier": "bounded",
-    "top_score": 29
+    "tier": "narrow",
+    "top_score": 38
   },
   "cache": {
-    "fingerprint": "d700bf86befd27235ed6e3497cae8fcff47bf232b6958d61bdc719c9a5389bc7",
+    "fingerprint": "f9d0d746736ed579696edf4281b17405b2f6bd96cb98ef98ebcb4dc51528a1cf",
     "hit": false
   },
-  "candidate_count": 89,
+  "candidate_count": 102,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -23,18 +23,23 @@
       ],
       "path": "tests/test_asset_forge_bridge.py",
       "reasons": [
+        "impact",
+        "recently-changed",
         "search-index"
       ],
-      "score": 29,
+      "score": 38,
       "symbols": [
         "test_batch_infers_animation_of_dependency",
         "test_batch_infers_parent_asset_dependency",
         "test_batch_preserves_explicit_asset_dependencies",
+        "test_brief_inference_builds_character_dependency_chain",
+        "test_brief_inference_detects_3d_environment",
         "test_builds_production_os_dispatch_contract",
         "test_explicit_secondary_importance_is_preserved",
         "test_ignores_plain_code_task",
         "test_premium_route_defaults_to_primary_importance",
         "test_primary_raster_batch_uses_stricter_visual_similarity_policy",
+        "test_raster_quality_policy_can_be_overridden_per_task",
         "test_route_includes_repository_delivery_target",
         "test_routes_premium_visual_task",
         "test_secondary_raster_batch_uses_lighter_visual_similarity_policy"
@@ -46,78 +51,13 @@
         "engine",
         "game"
       ],
-      "path": "tests/test_godot_android_stage.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 29,
-      "symbols": [
-        "FakeGitHub",
-        "GodotAndroidStageTests",
-        "exporter",
-        "runtime",
-        "templates",
-        "test_requires_validated_preview_checkpoint",
-        "test_success_advances_only_to_device_qa"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine",
-        "game"
-      ],
-      "path": "tests/test_godot_device_stage.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 29,
-      "symbols": [
-        "FakeGitHub",
-        "GodotDeviceStageTests",
-        "exporter",
-        "runtime",
-        "state",
-        "templates",
-        "test_device_cannot_spoof_journey_or_visual_evidence",
-        "test_matching_local_apk_advances_only_to_journey_qa",
-        "test_missing_local_apk_is_reexported_and_rebound",
-        "test_requires_android_export_checkpoint",
-        "validator"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine",
-        "game"
-      ],
-      "path": "tests/test_godot_runtime_journey_stage.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 29,
-      "symbols": [
-        "FakeGitHub",
-        "GodotRuntimeJourneyStageTests",
-        "installer",
-        "runner",
-        "test_all_journeys_advance_only_to_visual_qa",
-        "test_partial_success_stays_on_journey_stage",
-        "test_requires_device_validated_checkpoint"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine",
-        "game"
-      ],
       "path": "tests/test_orchestrator.py",
       "reasons": [
+        "impact",
+        "recently-changed",
         "search-index"
       ],
-      "score": 29,
+      "score": 38,
       "symbols": [
         "GitHubRunnerTests",
         "OrchestratorTests",
@@ -144,13 +84,17 @@
       "matched_terms": [
         "engine"
       ],
-      "path": "studio/engine_detect.py",
+      "path": "studio/multi_engine_orchestrator.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 27,
+      "score": 33,
       "symbols": [
-        "main"
+        "_detect",
+        "_remaining",
+        "_run_stage",
+        "run_project"
       ]
     }
   ],

@@ -22,21 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T15:10:01Z
+Generated: 2026-09-20T16:12:08Z
 
 ### Git
 - Branch: `main`
-- Head: `2f21256ede32`
-- Commit date: 2026-09-20T17:09:47+02:00
-- Commit: test: preserve visual quality through worker completion
+- Head: `1937c7196efa`
+- Commit date: 2026-09-20T18:10:34+02:00
+- Commit: test: cover automatic technical art quality thresholds
 - Tracked files: 820
 
 ### Recently changed files
-- `tests/test_production_os_worker.py`
+- `tests/test_asset_forge_bridge.py`
+- `studio/asset_forge_bridge.py`
 - `tests/test_production_os_result_contract.py`
 - `studio/github_runner.py`
-- `tests/test_fleet_dashboard.py`
-- `tests/test_orchestrator.py`
 
 ### Project signals
 - No common build descriptor detected

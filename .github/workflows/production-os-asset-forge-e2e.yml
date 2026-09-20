@@ -60,7 +60,7 @@ jobs:
 
       - name: Install Production OS and Asset Forge
         run: |
-          python -m pip install --no-deps ./production-os
+          python -m pip install ./production-os
           python -m pip install --no-deps ./asset-forge
           production-os --help >/dev/null
           asset-forge --help >/dev/null

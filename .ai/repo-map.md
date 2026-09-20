@@ -53,6 +53,7 @@ The content is organized as follows:
     mobile-studio.yml
     multi-engine-benchmark.yml
     production-os-asset-forge-e2e.yml
+    production-os-asset-forge-live-e2e.yml
     provider-preview.yml
     remote-control.yml
     resilience-soak.yml
@@ -1915,6 +1916,244 @@ jobs:
         with:
           name: production-os-asset-forge-deadline-zero-e2e
           path: build/asset-forge-e2e/
+          if-no-files-found: error
+          retention-days: 14
+````
+
+## File: .github/workflows/production-os-asset-forge-live-e2e.yml
+````yaml
+name: Production OS Asset Forge Live E2E
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/production-os-asset-forge-live-e2e.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-os-asset-forge-live-e2e
+  cancel-in-progress: true
+
+jobs:
+  live-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
+    steps:
+      - name: Checkout AI Dev Server
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Checkout pinned Asset Forge
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: dbrckk/asset-forge
+          ref: c96b87faa5c1a52d2b785cd7c6c3de2da4d16efa
+          path: asset-forge
+
+      - name: Checkout Deadline Zero
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: dbrckk/deadline-zero
+          path: deadline-zero
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a
+        with:
+          gradle-version: '8.11.1'
+
+      - name: Detect live generation credential
+        id: credential
+        run: |
+          if [ -n "$POLLINATIONS_API_KEY" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::POLLINATIONS_API_KEY is not configured; live E2E skipped."
+          fi
+
+      - name: Install live visual toolchain
+        if: steps.credential.outputs.configured == 'true'
+        run: |
+          python -m pip install --no-deps ./asset-forge
+          npm install --global @pollinations/cli@0.1.15
+
+      - name: Verify live Asset Forge readiness
+        if: steps.credential.outputs.configured == 'true'
+        run: |
+          asset-forge operational-status > build-operational-status.json
+          python - <<'PY'
+          import json
+          data=json.load(open("build-operational-status.json"))
+          assert data["capabilities"]["vectorSvg"] is True, data
+          assert data["generation"]["pollinations"]["authenticated"] is True, data
+          PY
+
+      - name: Materialize Production OS live visual handoff
+        if: steps.credential.outputs.configured == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/live-e2e
+          PYTHONPATH="$GITHUB_WORKSPACE/studio" python - <<'PY'
+          import json
+          from pathlib import Path
+          from core import request_check
+          from production_os_worker import build_studio_request
+
+          job = {
+              "key": "deadline-zero-live-visual-e2e",
+              "repository": "dbrckk/deadline-zero",
+              "task": "Generate and integrate a live secondary Deadline Zero UI icon",
+              "payload": {
+                  "workflow_id": "asset-forge-live-e2e",
+                  "workflow_task_id": "deadline-zero-live-secondary-icon",
+                  "handoff": {
+                      "repository": "dbrckk/deadline-zero",
+                      "task": "Generate and integrate a live secondary Deadline Zero UI icon",
+                      "final_goal": "Prove the live AI visual generation path through Production OS, AI Dev Server, Asset Forge, and Deadline Zero.",
+                      "agent_preference": "codex",
+                      "token_budget": 50000,
+                      "tool_contracts": {
+                          "asset_forge": {
+                              "request_schema": "asset-forge/production-request/v1",
+                              "report_schema": "asset-forge/production-report/v1",
+                              "command": "asset-forge fulfill",
+                              "required_capability": "visual-asset-production"
+                          }
+                      }
+                  }
+              }
+          }
+          request=request_check(build_studio_request(job))
+          assert request["tool_contracts"]["asset_forge"]["command"] == "asset-forge fulfill"
+          Path("build/live-e2e/studio-request.json").write_text(
+              json.dumps(request, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Create generated-source Asset Forge request
+        if: steps.credential.outputs.configured == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          request = {
+              "schema": "asset-forge/production-request/v1",
+              "requestId": "deadline-zero-live-secondary-icon",
+              "instruction": "Create a premium dark sci-fi game UI icon for Deadline Zero representing an autonomous production pipeline: one strong geometric forge/core symbol, high contrast silhouette, subtle industrial cyberpunk character, no text, no letters, no watermark, no mockup background.",
+              "manifest": {
+                  "id": "live-production-pipeline-icon",
+                  "project": "deadline-zero",
+                  "type": "icon",
+                  "importance": "secondary",
+                  "source": {"mode": "generated"},
+                  "license": {
+                      "id": "project-owned",
+                      "commercialUse": True,
+                      "derivatives": True,
+                      "attributionRequired": False
+                  },
+                  "target": {
+                      "engine": "libgdx",
+                      "format": "svg",
+                      "maxBytes": 1048576
+                  },
+                  "constraints": {}
+              },
+              "delivery": {
+                  "engine": "libgdx",
+                  "outputDir": "build/live-e2e/fulfilled"
+              }
+          }
+          Path("build/live-e2e/production-request.json").write_text(
+              json.dumps(request, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Generate, process and validate live asset
+        if: steps.credential.outputs.configured == 'true'
+        run: |
+          asset-forge fulfill             build/live-e2e/production-request.json             --output-dir build/live-e2e/fulfilled
+          asset-forge validate-production-report             build/live-e2e/fulfilled/production-report.json
+          test -s build/live-e2e/fulfilled/live-production-pipeline-icon.svg
+
+      - name: Inject live asset into Deadline Zero workspace
+        if: steps.credential.outputs.configured == 'true'
+        run: |
+          install -D             build/live-e2e/fulfilled/live-production-pipeline-icon.svg             deadline-zero/assets/art/live-production-pipeline-icon.svg
+          test -s deadline-zero/assets/art/live-production-pipeline-icon.svg
+
+      - name: Validate Deadline Zero art contracts
+        if: steps.credential.outputs.configured == 'true'
+        working-directory: deadline-zero
+        run: |
+          python3 tools/validate_final_sprite_layout.py
+          python3 tools/sprites/validate_actor_production_contracts.py
+
+      - name: Compile and test Deadline Zero with live asset
+        if: steps.credential.outputs.configured == 'true'
+        working-directory: deadline-zero
+        run: gradle :core:compileJava :core:test :desktop:compileJava
+
+      - name: Record live E2E evidence
+        if: steps.credential.outputs.configured == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+          root=Path("build/live-e2e")
+          asset=root/"fulfilled"/"live-production-pipeline-icon.svg"
+          report=json.loads((root/"fulfilled"/"production-report.json").read_text())
+          studio=json.loads((root/"studio-request.json").read_text())
+          evidence={
+              "schema":"ai-dev-server/asset-forge-live-e2e/v1",
+              "productionOsCorrelation":studio["production_os"],
+              "targetRepo":studio["target_repo"],
+              "toolContract":studio["tool_contracts"]["asset_forge"],
+              "assetForgeReportSuccess":report.get("success") is True,
+              "liveGeneration":True,
+              "artifact":str(asset),
+              "artifactSha256":hashlib.sha256(asset.read_bytes()).hexdigest(),
+              "deadlineZeroCompileAndTests":True
+          }
+          assert evidence["assetForgeReportSuccess"]
+          (root/"e2e-evidence.json").write_text(
+              json.dumps(evidence,indent=2,sort_keys=True)+"\n",
+              encoding="utf-8"
+          )
+          PY
+
+      - name: Upload live E2E evidence
+        if: steps.credential.outputs.configured == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: production-os-asset-forge-live-deadline-zero-e2e
+          path: build/live-e2e/
           if-no-files-found: error
           retention-days: 14
 ````

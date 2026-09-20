@@ -22,20 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T08:18:08Z
+Generated: 2026-09-20T08:32:19Z
 
 ### Git
 - Branch: `main`
-- Head: `f3e5c61ef79e`
-- Commit date: 2026-09-20T10:17:50+02:00
-- Commit: ci: pin E2E Asset Forge revision
-- Tracked files: 813
+- Head: `7002331a7b7f`
+- Commit date: 2026-09-20T10:32:00+02:00
+- Commit: ci: skip live visual E2E cleanly without credential
+- Tracked files: 814
 
 ### Recently changed files
+- `.github/workflows/production-os-asset-forge-live-e2e.yml`
 - `.github/workflows/production-os-asset-forge-e2e.yml`
 - `docs/PRODUCTION_OS_WORKER.md`
 - `tests/test_asset_forge_installer.py`
-- `scripts/install-asset-forge.sh`
 
 ### Project signals
 - No common build descriptor detected

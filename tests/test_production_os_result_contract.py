@@ -110,7 +110,12 @@ class ProductionOSResultContractTests(unittest.TestCase):
                     "quality_summary": {
                         "checked": 2,
                         "regenerated": 1,
+                        "cache_hits": 1,
                         "minimum_score": 0.79,
+                    },
+                    "dedup_summary": {
+                        "exact_count": 1,
+                        "near_count": 2,
                     },
                     "items": [{
                         "id": "hero-run",
@@ -133,6 +138,9 @@ class ProductionOSResultContractTests(unittest.TestCase):
         self.assertEqual(visual["checked"], 2)
         self.assertEqual(visual["regenerated"], 1)
         self.assertEqual(visual["minimum_score"], 0.79)
+        self.assertEqual(visual["cache_hits"], 1)
+        self.assertEqual(visual["exact_duplicates"], 1)
+        self.assertEqual(visual["near_duplicates"], 2)
         self.assertEqual(visual["routes"], 2)
         self.assertEqual(visual["items"][0]["id"], "hero-run")
         self.assertEqual(visual["items"][0]["score"], 0.79)

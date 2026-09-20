@@ -182,3 +182,27 @@ def test_secondary_raster_batch_uses_lighter_visual_similarity_policy():
     constraints = variant["request"]["manifest"]["constraints"]
     assert constraints["visualSimilarityMin"] == 0.42
     assert constraints["visualSimilarityRetries"] == 1
+
+
+def test_brief_inference_builds_character_dependency_chain():
+    from asset_forge_bridge import infer_asset_tasks_from_brief
+    tasks = infer_asset_tasks_from_brief(
+        "Create premium AAA zombie character animations and polished visual assets.",
+        engine="libgdx",
+    )
+    by_id = {item["id"]: item for item in tasks}
+    assert "character-foundation" in by_id
+    assert "character-animation" in by_id
+    assert by_id["character-animation"]["animation_of"] == "character-foundation"
+    assert by_id["character-foundation"]["format"] == "png"
+
+
+def test_brief_inference_detects_3d_environment():
+    from asset_forge_bridge import infer_asset_tasks_from_brief
+    tasks = infer_asset_tasks_from_brief(
+        "Create a premium AAA 3D environment model with professional visuals.",
+        engine="godot4",
+    )
+    environment = {item["id"]: item for item in tasks}["environment-foundation"]
+    assert environment["asset_type"] == "environment"
+    assert environment["format"] == "glb"

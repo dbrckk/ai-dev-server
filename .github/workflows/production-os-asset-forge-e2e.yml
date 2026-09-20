@@ -5,10 +5,11 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/production-os-asset-forge-e2e.yml'
-      - 'studio/production_os_worker.py'
+      - 'studio/asset_forge_bridge.py'
+      - 'studio/orchestrator.py'
       - 'studio/capabilities/asset_artwork.py'
-      - 'studio/core.py'
-      - 'tests/test_production_os_worker.py'
+      - 'tests/test_asset_forge_bridge.py'
+      - 'tests/test_orchestrator.py'
   workflow_dispatch:
 
 permissions:
@@ -26,11 +27,16 @@ jobs:
       - name: Checkout AI Dev Server
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
+      - name: Checkout Production OS
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: dbrckk/Production-OS
+          path: production-os
+
       - name: Checkout Asset Forge
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: dbrckk/asset-forge
-          ref: 7cd615b9b42956b9b3d0d44992ac3e45e1764b6b
           path: asset-forge
 
       - name: Checkout Deadline Zero
@@ -52,10 +58,14 @@ jobs:
         with:
           gradle-version: '8.11.1'
 
-      - name: Install Asset Forge
-        run: python -m pip install --no-deps ./asset-forge
+      - name: Install Production OS and Asset Forge
+        run: |
+          python -m pip install --no-deps ./production-os
+          python -m pip install --no-deps ./asset-forge
+          production-os --help >/dev/null
+          asset-forge --help >/dev/null
 
-      - name: Materialize Production OS handoff through AI Dev Server
+      - name: Build routed visual request and deterministic source
         shell: bash
         run: |
           set -euo pipefail
@@ -64,147 +74,74 @@ jobs:
           import json
           from pathlib import Path
 
-          from core import request_check
-          from production_os_worker import build_studio_request
-
-          job = {
-              "key": "deadline-zero-asset-forge-e2e",
-              "repository": "dbrckk/deadline-zero",
-              "task": "Create and integrate a secondary Deadline Zero UI icon",
-              "payload": {
-                  "workflow_id": "asset-forge-e2e",
-                  "workflow_task_id": "deadline-zero-secondary-icon",
-                  "handoff": {
-                      "repository": "dbrckk/deadline-zero",
-                      "task": "Create and integrate a secondary Deadline Zero UI icon",
-                      "final_goal": "Validate the complete Production OS to AI Dev Server to Asset Forge visual asset path without modifying production art.",
-                      "agent_preference": "codex",
-                      "token_budget": 50000,
-                      "tool_contracts": {
-                          "asset_forge": {
-                              "request_schema": "asset-forge/production-request/v1",
-                              "report_schema": "asset-forge/production-report/v1",
-                              "command": "asset-forge fulfill",
-                              "required_capability": "visual-asset-production"
-                          }
-                      }
-                  }
-              }
-          }
-
-          request = request_check(build_studio_request(job))
-          assert request["target_repo"] == "dbrckk/deadline-zero"
-          assert request["tool_contracts"]["asset_forge"]["command"] == "asset-forge fulfill"
-          Path("build/asset-forge-e2e/studio-request.json").write_text(
-              json.dumps(request, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
-          )
-          PY
-
-      - name: Generate deterministic secondary artwork in AI Dev Server
-        shell: bash
-        run: |
-          set -euo pipefail
-          PYTHONPATH="$GITHUB_WORKSPACE/studio" python - <<'PY'
-          import json
-          from pathlib import Path
-
+          from asset_forge_bridge import build_production_os_asset_dispatch
           from capabilities.asset_artwork import run
 
-          result = run({
+          task = {
+              "id": "production-pipeline-icon",
+              "objective": "Create a premium professional Deadline Zero UI icon",
+              "asset_type": "icon",
+              "format": "svg",
+              "engine": "libgdx",
+          }
+          route = build_production_os_asset_dispatch(task, project="deadline-zero")
+          artwork = run({
               "label": "DZ",
-              "objective": "Deadline Zero secondary production pipeline icon",
+              "objective": task["objective"],
               "assets": ["icon"],
-              "design": {
-                  "primary": "#151923",
-                  "accent": "#D04B35"
-              }
+              "design": {"primary": "#151923", "accent": "#D04B35"},
           })
-          assert result["passed"] is True
-          icon = result["assets"]["icon"]
+          assert artwork["passed"] is True
+
           root = Path("build/asset-forge-e2e")
-          (root / "source.svg").write_text(icon["content"], encoding="utf-8")
-          (root / "artwork-result.json").write_text(
-              json.dumps(result, indent=2, sort_keys=True) + "\n",
+          source = root / "source.svg"
+          source.write_text(artwork["assets"]["icon"]["content"], encoding="utf-8")
+
+          command = list(route["command"])
+          command.extend([
+              "--mode", "local",
+              "--source-mode", "custom",
+              "--source", str(source),
+              "--output-dir", str(root / "fulfilled"),
+              "--importance", "secondary",
+          ])
+          (root / "route.json").write_text(
+              json.dumps({**route, "command": command}, indent=2, sort_keys=True) + "\n",
               encoding="utf-8",
           )
           PY
 
-      - name: Compile Asset Forge production request
+      - name: Execute routed request through Production OS and Asset Forge
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
           import json
+          import subprocess
           from pathlib import Path
 
-          request = {
-              "schema": "asset-forge/production-request/v1",
-              "requestId": "deadline-zero-secondary-icon-e2e",
-              "instruction": "Prepare a clean secondary UI icon for Deadline Zero. Preserve the supplied visual source, sanitize it, normalize it, validate it, and produce a production report.",
-              "manifest": {
-                  "id": "production-pipeline-icon",
-                  "project": "deadline-zero",
-                  "type": "icon",
-                  "importance": "secondary",
-                  "source": {
-                      "mode": "custom",
-                      "uri": None,
-                      "author": "ai-dev-server deterministic-svg-v1"
-                  },
-                  "license": {
-                      "id": "project-owned",
-                      "commercialUse": True,
-                      "derivatives": True,
-                      "attributionRequired": False
-                  },
-                  "target": {
-                      "engine": "libgdx",
-                      "format": "svg",
-                      "maxBytes": 262144
-                  },
-                  "constraints": {}
-              },
-              "delivery": {
-                  "engine": "libgdx",
-                  "outputDir": "build/asset-forge-e2e/fulfilled"
-              }
-          }
-          Path("build/asset-forge-e2e/production-request.json").write_text(
-              json.dumps(request, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
-          )
+          route = json.loads(Path("build/asset-forge-e2e/route.json").read_text())
+          completed = subprocess.run(route["command"], check=False)
+          raise SystemExit(completed.returncode)
           PY
-
-      - name: Fulfill and validate through Asset Forge
-        shell: bash
-        run: |
-          set -euo pipefail
-          asset-forge fulfill             build/asset-forge-e2e/production-request.json             --output-dir build/asset-forge-e2e/fulfilled             --source build/asset-forge-e2e/source.svg
-          asset-forge validate-production-report             build/asset-forge-e2e/fulfilled/production-report.json
+          asset-forge validate-production-report build/asset-forge-e2e/fulfilled/production-report.json
           test -s build/asset-forge-e2e/fulfilled/production-pipeline-icon.svg
 
       - name: Inject validated asset into Deadline Zero workspace
-        shell: bash
         run: |
-          set -euo pipefail
           install -D             build/asset-forge-e2e/fulfilled/production-pipeline-icon.svg             deadline-zero/assets/art/production-pipeline-icon.svg
           test -s deadline-zero/assets/art/production-pipeline-icon.svg
 
-      - name: Validate Deadline Zero production art contracts
+      - name: Validate and compile Deadline Zero
         working-directory: deadline-zero
         run: |
           python3 tools/validate_final_sprite_layout.py
           python3 tools/sprites/validate_actor_production_contracts.py
-
-      - name: Compile and test Deadline Zero with injected asset
-        working-directory: deadline-zero
-        run: gradle :core:compileJava :core:test :desktop:compileJava
+          gradle :core:compileJava :core:test :desktop:compileJava
 
       - name: Record E2E evidence
         shell: bash
         run: |
-          set -euo pipefail
           python - <<'PY'
           import hashlib
           import json
@@ -213,16 +150,16 @@ jobs:
           root = Path("build/asset-forge-e2e")
           asset = root / "fulfilled" / "production-pipeline-icon.svg"
           report = json.loads((root / "fulfilled" / "production-report.json").read_text())
-          studio = json.loads((root / "studio-request.json").read_text())
+          route = json.loads((root / "route.json").read_text())
           evidence = {
-              "schema": "ai-dev-server/asset-forge-e2e/v1",
-              "productionOsCorrelation": studio["production_os"],
-              "targetRepo": studio["target_repo"],
-              "toolContract": studio["tool_contracts"]["asset_forge"],
+              "schema": "ai-dev-server/asset-forge-e2e/v2",
+              "route": route,
               "assetForgeReportSuccess": report.get("success") is True,
+              "executionMode": "local",
+              "crossRepoTokenRequired": False,
               "artifact": str(asset),
               "artifactSha256": hashlib.sha256(asset.read_bytes()).hexdigest(),
-              "deadlineZeroCompileAndTests": True
+              "deadlineZeroCompileAndTests": True,
           }
           assert evidence["assetForgeReportSuccess"]
           (root / "e2e-evidence.json").write_text(

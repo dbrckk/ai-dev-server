@@ -241,14 +241,22 @@ def build_production_os_asset_batch(
         source_mode = str(task.get("source_mode") or "generated").strip().lower()
         similarity_min = task.get("visual_similarity_min")
         similarity_retries = task.get("visual_similarity_retries")
+        technical_quality_min = task.get("technical_quality_min")
+        max_border_alpha_ratio = task.get("max_border_alpha_ratio")
         if similarity_min is None:
             similarity_min = 0.55 if route["importance"] == "primary" else 0.42
         if similarity_retries is None:
             similarity_retries = 2 if route["importance"] == "primary" else 1
+        if technical_quality_min is None:
+            technical_quality_min = 0.58 if route["importance"] == "primary" else 0.42
+        if max_border_alpha_ratio is None:
+            max_border_alpha_ratio = 0.04 if route["importance"] == "primary" else 0.08
         constraints = dict(task.get("constraints") or {}) if isinstance(task.get("constraints"), dict) else {}
         if target_format in {"png", "webp"}:
             constraints.setdefault("visualSimilarityMin", float(similarity_min))
             constraints.setdefault("visualSimilarityRetries", int(similarity_retries))
+            constraints.setdefault("technicalQualityMin", float(technical_quality_min))
+            constraints.setdefault("maxBorderAlphaRatio", float(max_border_alpha_ratio))
 
         request = {
             "schema": "asset-forge/production-request/v1",

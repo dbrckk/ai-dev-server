@@ -86,6 +86,43 @@ class ProductionOSResultContractTests(unittest.TestCase):
         self.assertTrue(envelope["succeeded"])
         self.assertEqual(envelope["usage"]["total_tokens"], 130)
 
+    def test_result_envelope_includes_visual_asset_quality(self):
+        request = copy.deepcopy(BASE)
+        request["production_os"] = {
+            "workflow_id": "c" * 32,
+            "workflow_task_id": "instruction-visual",
+        }
+        summary = {
+            "status": "complete",
+            "finished": True,
+            "next_stage": None,
+            "usage": {},
+        }
+
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td)
+            (out / "asset-forge-prefetch.json").write_text(json.dumps({
+                "status": "completed",
+                "quality_status": "regenerated",
+                "batch": True,
+                "routes": [{}, {}],
+                "receipts": [{
+                    "quality_summary": {
+                        "checked": 2,
+                        "regenerated": 1,
+                        "minimum_score": 0.79,
+                    }
+                }],
+            }))
+            envelope = write_production_os_result(out, request, summary)
+
+        visual = envelope["evidence"]["visual_assets"]
+        self.assertEqual(visual["quality_status"], "regenerated")
+        self.assertEqual(visual["checked"], 2)
+        self.assertEqual(visual["regenerated"], 1)
+        self.assertEqual(visual["minimum_score"], 0.79)
+        self.assertEqual(visual["routes"], 2)
+
     def test_no_result_envelope_without_correlation(self):
         with tempfile.TemporaryDirectory() as td:
             out = Path(td)

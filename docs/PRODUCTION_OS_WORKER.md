@@ -39,7 +39,7 @@ python scripts/preflight-production-os-worker.py
 
 It validates required configuration, secure service URLs, OmniRoute pairing, polling interval, output-directory writability, and a real `codex --version` probe. Secret values are never printed. The launcher runs the same preflight automatically.
 
-The bootstrap installs Asset Forge from the E2E-verified immutable revision `c96b87faa5c1a52d2b785cd7c6c3de2da4d16efa` by default. Set `ASSET_FORGE_REF` only when intentionally testing another revision.
+The bootstrap installs Asset Forge from the E2E-verified immutable revision `9fc828fafb50572d07d2ee747b0643c3fdcfd324` by default. Set `ASSET_FORGE_REF` only when intentionally testing another revision.
 
 Visual production readiness is delegated to the installed Asset Forge CLI:
 

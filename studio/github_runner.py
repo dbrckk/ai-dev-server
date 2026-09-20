@@ -251,9 +251,9 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
                 quality = receipt.get("quality_summary")
                 if isinstance(quality, dict):
                     cache_hits += int(quality.get("cache_hits") or 0)
-                summary = receipt.get("dedup_summary")
-                if isinstance(summary, dict):
-                    dedup.append(summary)
+                dedup_summary = receipt.get("dedup_summary")
+                if isinstance(dedup_summary, dict):
+                    dedup.append(dedup_summary)
             visual_assets = {
                 "status": asset_value.get("status"),
                 "quality_status": asset_value.get("quality_status") or "unknown",

@@ -299,6 +299,10 @@ def build_production_os_asset_batch(
             constraints.setdefault("visualSimilarityRetries", int(similarity_retries))
             constraints.setdefault("technicalQualityMin", float(technical_quality_min))
             constraints.setdefault("maxBorderAlphaRatio", float(max_border_alpha_ratio))
+            if route["importance"] == "primary":
+                constraints.setdefault("semanticArtReview", True)
+                constraints.setdefault("semanticArtReviewRequired", False)
+                constraints.setdefault("semanticQualityMin", 0.68)
         if target_format == "glb":
             constraints.setdefault(
                 "generateLods",

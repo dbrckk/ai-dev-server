@@ -178,7 +178,14 @@ def build_production_os_asset_batch(
             request["delivery"] = {"engine": engine}
         raw_dependencies = task.get("depends_on")
         if raw_dependencies is None:
-            implicit = task.get("source_asset") or task.get("parent_asset")
+            implicit = (
+                task.get("source_asset")
+                or task.get("parent_asset")
+                or task.get("variant_of")
+                or task.get("animation_of")
+                or task.get("atlas_of")
+                or task.get("derived_from")
+            )
             raw_dependencies = [implicit] if implicit else []
         elif isinstance(raw_dependencies, str):
             raw_dependencies = [raw_dependencies]

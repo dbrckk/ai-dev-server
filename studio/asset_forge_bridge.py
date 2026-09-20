@@ -147,6 +147,17 @@ def build_production_os_asset_batch(
         ).strip()
         engine = str(task.get("engine") or "").strip() or None
         source_mode = str(task.get("source_mode") or "generated").strip().lower()
+        similarity_min = task.get("visual_similarity_min")
+        similarity_retries = task.get("visual_similarity_retries")
+        if similarity_min is None:
+            similarity_min = 0.55 if route["importance"] == "primary" else 0.42
+        if similarity_retries is None:
+            similarity_retries = 2 if route["importance"] == "primary" else 1
+        constraints = dict(task.get("constraints") or {}) if isinstance(task.get("constraints"), dict) else {}
+        if target_format in {"png", "webp"}:
+            constraints.setdefault("visualSimilarityMin", float(similarity_min))
+            constraints.setdefault("visualSimilarityRetries", int(similarity_retries))
+
         request = {
             "schema": "asset-forge/production-request/v1",
             "requestId": route["request_id"],
@@ -172,6 +183,7 @@ def build_production_os_asset_batch(
                     "format": target_format,
                     "engine": engine,
                 },
+                "constraints": constraints,
             },
         }
         if engine:

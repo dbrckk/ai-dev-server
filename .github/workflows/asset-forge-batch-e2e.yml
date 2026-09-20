@@ -88,11 +88,15 @@ jobs:
           spec = {
               "items": [
                   {
+                      "id": "batch-a",
+                      "depends_on": [],
                       "request": request("batch-e2e-a", "batch-a"),
                       "source_path": "build/batch-e2e/a.svg",
                       "target_path": "assets/art/batch-a.svg",
                   },
                   {
+                      "id": "batch-b",
+                      "depends_on": ["batch-a"],
                       "request": request("batch-e2e-b", "batch-b"),
                       "source_path": "build/batch-e2e/b.svg",
                       "target_path": "assets/art/batch-b.svg",
@@ -122,6 +126,8 @@ jobs:
           assert result["success"] is True
           assert result["count"] == 2
           assert result["delivery_mode"] == "worktree"
+          assert result["execution_order"] == ["batch-a", "batch-b"]
+          assert result["items"][1]["depends_on"] == ["batch-a"]
           assert len(result["delivered_to"]) == 2
           PY
 

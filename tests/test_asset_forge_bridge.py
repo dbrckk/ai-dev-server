@@ -345,3 +345,33 @@ def test_3d_environment_inference_uses_environment_profile():
         target_repository="owner/game",
     )
     assert batch["items"][0]["request"]["manifest"]["type"] == "environment"
+
+
+def test_primary_3d_environment_requires_collision_readiness():
+    from asset_forge_bridge import build_production_os_asset_batch
+    batch = build_production_os_asset_batch(
+        [{
+            "id": "arena",
+            "objective": "Create a premium AAA 3D environment scene for Godot",
+        }],
+        project="game",
+        target_repository="owner/game",
+    )
+    constraints = batch["items"][0]["request"]["manifest"]["constraints"]
+    assert constraints["generateLods"] is True
+    assert constraints["requireCollision"] is True
+
+
+def test_secondary_3d_prop_does_not_require_collision_gate():
+    from asset_forge_bridge import build_production_os_asset_batch
+    batch = build_production_os_asset_batch(
+        [{
+            "id": "crate",
+            "objective": "Create polished professional 3D prop for Godot",
+            "importance": "secondary",
+        }],
+        project="game",
+        target_repository="owner/game",
+    )
+    constraints = batch["items"][0]["request"]["manifest"]["constraints"]
+    assert constraints["requireCollision"] is False

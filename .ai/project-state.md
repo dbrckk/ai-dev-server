@@ -22,16 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T10:59:48Z
+Generated: 2026-09-20T11:16:44Z
 
 ### Git
 - Branch: `main`
-- Head: `c5f7d8752f60`
-- Commit date: 2026-09-20T12:59:30+02:00
-- Commit: test: verify orchestrator asset-forge prefetch
+- Head: `955992edc2e7`
+- Commit date: 2026-09-20T13:16:26+02:00
+- Commit: ci: test real local Production OS asset-forge chain
 - Tracked files: 818
 
 ### Recently changed files
+- `.github/workflows/production-os-asset-forge-e2e.yml`
 - `tests/test_orchestrator.py`
 - `studio/orchestrator.py`
 - `studio/asset_forge_bridge.py`

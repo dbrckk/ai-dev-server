@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 1d078dfb4b6779b76cea97fa24dbd4f70251e1ed
-Head: c5f7d8752f60d96db603b057493611f0e74c7e75
+Base: bd5b1663452267ed8dc668ca7318da29f325ff75
+Head: 955992edc2e77789f7d1e072217cd63a697b6efb
 
 ## Changed files
-- M tests/test_orchestrator.py
+- M .github/workflows/production-os-asset-forge-e2e.yml
 
 ## Affected areas
-- tests
+- .github
 
 ## Related test candidates
 - No direct filename-based test match detected.

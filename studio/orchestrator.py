@@ -147,7 +147,12 @@ def _asset_forge_prefetch(request_path,project_out,runner,deadline,clock):
     for item in candidates[:8]:
         if not should_route_to_asset_forge(item):
             continue
-        route=build_production_os_asset_dispatch(item,project=project)
+        route=build_production_os_asset_dispatch(
+            item,
+            project=project,
+            target_repository=str(request.get('target_repo') or '').strip() or None,
+            target_worktree=str(request.get('target_worktree') or '').strip() or None,
+        )
         routes.append(route)
         try:
             remaining=_remaining(deadline,clock)

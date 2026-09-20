@@ -2725,6 +2725,12 @@ environment = {item["id"]: item for item in tasks}["environment-foundation"]
 def test_raster_quality_policy_can_be_overridden_per_task()
 ⋮----
 constraints = batch["items"][0]["request"]["manifest"]["constraints"]
+⋮----
+def test_target_repository_defaults_visual_delivery_to_assets_art_without_engine()
+⋮----
+def test_engine_is_inferred_from_visual_instruction()
+⋮----
+manifest = batch["items"][0]["request"]["manifest"]
 ```
 
 ## File: test_asset_forge_installer.py

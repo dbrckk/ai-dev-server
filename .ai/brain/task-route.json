@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 3,
     "requested_max_files": 12,
-    "score_margin": 0,
+    "score_margin": 12,
     "tier": "narrow",
-    "top_score": 38
+    "top_score": 42
   },
   "cache": {
-    "fingerprint": "f9d0d746736ed579696edf4281b17405b2f6bd96cb98ef98ebcb4dc51528a1cf",
+    "fingerprint": "09432b939cd0b16fec979289151c1d0c0087ff2a53c84bc080f9962f9346ea75",
     "hit": false
   },
-  "candidate_count": 102,
+  "candidate_count": 87,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -27,7 +27,7 @@
         "recently-changed",
         "search-index"
       ],
-      "score": 38,
+      "score": 42,
       "symbols": [
         "test_batch_infers_animation_of_dependency",
         "test_batch_infers_parent_asset_dependency",
@@ -35,6 +35,7 @@
         "test_brief_inference_builds_character_dependency_chain",
         "test_brief_inference_detects_3d_environment",
         "test_builds_production_os_dispatch_contract",
+        "test_engine_is_inferred_from_visual_instruction",
         "test_explicit_secondary_importance_is_preserved",
         "test_ignores_plain_code_task",
         "test_premium_route_defaults_to_primary_importance",
@@ -42,7 +43,29 @@
         "test_raster_quality_policy_can_be_overridden_per_task",
         "test_route_includes_repository_delivery_target",
         "test_routes_premium_visual_task",
-        "test_secondary_raster_batch_uses_lighter_visual_similarity_policy"
+        "test_secondary_raster_batch_uses_lighter_visual_similarity_policy",
+        "test_target_repository_defaults_visual_delivery_to_assets_art_without_engine"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "studio/asset_forge_bridge.py",
+      "reasons": [
+        "impact",
+        "recently-changed",
+        "search-index"
+      ],
+      "score": 30,
+      "symbols": [
+        "_infer_asset_shape",
+        "_infer_engine",
+        "build_production_os_asset_batch",
+        "build_production_os_asset_dispatch",
+        "infer_asset_tasks_from_brief",
+        "should_route_to_asset_forge"
       ]
     },
     {
@@ -51,50 +74,19 @@
         "engine",
         "game"
       ],
-      "path": "tests/test_orchestrator.py",
+      "path": "tests/test_godot_android_stage.py",
       "reasons": [
-        "impact",
-        "recently-changed",
         "search-index"
       ],
-      "score": 38,
+      "score": 29,
       "symbols": [
-        "GitHubRunnerTests",
-        "OrchestratorTests",
-        "missing_report",
-        "payload_for",
-        "request",
-        "test_adaptation_without_baseline_has_no_promotable_work_order",
-        "test_adapter_reports_complete_only_after_machine_completion",
-        "test_asset_forge_batch_receipt_marks_regenerated_quality",
-        "test_asset_forge_failure_receipt_marks_low_quality",
-        "test_full_pipeline_reaches_finished",
-        "test_multi_asset_request_uses_transactional_asset_forge_batch",
-        "test_non_main_is_rejected_before_generation",
-        "test_premium_visual_request_prefetches_asset_forge_before_preview",
-        "test_research_failure_prevents_synthesis",
-        "test_scheduler_rewind_can_revisit_release_build_boundedly",
-        "test_stage_return_code_two_is_human_action_not_failure",
-        "test_successful_stage_must_advance",
-        "test_unregistered_stage_research_then_synthesis"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "studio/multi_engine_orchestrator.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 33,
-      "symbols": [
-        "_detect",
-        "_remaining",
-        "_run_stage",
-        "run_project"
+        "FakeGitHub",
+        "GodotAndroidStageTests",
+        "exporter",
+        "runtime",
+        "templates",
+        "test_requires_validated_preview_checkpoint",
+        "test_success_advances_only_to_device_qa"
       ]
     }
   ],

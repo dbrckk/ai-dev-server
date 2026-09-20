@@ -226,10 +226,36 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
                         if isinstance(semantic.get("scores"), dict)
                         else {}
                     )
+                    library = (
+                        item.get("library")
+                        if isinstance(item.get("library"), dict)
+                        else {}
+                    )
+                    library_entry = (
+                        library.get("entry")
+                        if isinstance(library.get("entry"), dict)
+                        else {}
+                    )
                     item_rows.append({
                         "id": item.get("id"),
                         "target_path": item.get("target_path"),
                         "sha256": item.get("sha256"),
+                        "library_version": (
+                            int(library_entry.get("version"))
+                            if isinstance(library_entry.get("version"), int)
+                            else None
+                        ),
+                        "library_preferred": (
+                            library_entry.get("preferred")
+                            if isinstance(library_entry.get("preferred"), bool)
+                            else None
+                        ),
+                        "library_duplicate_of": library_entry.get("duplicateOf"),
+                        "library_quality": (
+                            float(library_entry.get("compositeQuality"))
+                            if isinstance(library_entry.get("compositeQuality"), (int, float))
+                            else None
+                        ),
                         "score": score if isinstance(score, (int, float)) else None,
                         "semantic_score": (
                             semantic_scores.get("overall")

@@ -28,6 +28,24 @@ def should_route_to_asset_forge(task: dict) -> bool:
     return explicit or (visual and premium)
 
 
+def _infer_engine(task: dict) -> str | None:
+    text = " ".join(
+        str(task.get(key) or "")
+        for key in ("task", "objective", "instruction", "description", "title")
+    ).lower()
+    if "godot" in text:
+        return "godot4"
+    if "libgdx" in text or "lib gdx" in text:
+        return "libgdx"
+    if "unity" in text:
+        return "unity"
+    if "unreal" in text:
+        return "unreal"
+    if any(term in text for term in ("webgl", "three.js", "pixi.js", "phaser")):
+        return "web"
+    return None
+
+
 def _infer_asset_shape(task: dict) -> tuple[str, str]:
     text = " ".join(str(task.get(key) or "") for key in ("task", "objective", "instruction", "description", "title")).lower()
     if "3d" in text or "mesh" in text or "model" in text:
@@ -158,10 +176,16 @@ def build_production_os_asset_dispatch(
         or "Create a production-ready visual asset"
     ).strip()
     request_id = str(task.get("request_id") or f"{project}-{asset_id}").strip()
-    engine = str(task.get("engine") or "").strip() or None
+    engine = str(task.get("engine") or "").strip() or _infer_engine(task)
     target_repository = str(task.get("target_repository") or target_repository or "").strip() or None
     target_worktree = str(task.get("target_worktree") or target_worktree or "").strip() or None
-    default_root = "assets/art" if (engine or "").lower() in {"godot", "godot4", "godot-4", "libgdx"} else "assets/generated"
+    default_root = (
+        "assets/art"
+        if target_repository
+        or target_worktree
+        or (engine or "").lower() in {"godot", "godot4", "godot-4", "libgdx"}
+        else "assets/generated"
+    )
     target_path = str(task.get("target_path") or f"{default_root}/{asset_id}.{target_format}").strip()
     importance = str(task.get("importance") or ("primary" if any(term in instruction.lower() for term in PREMIUM_TERMS) else "secondary")).strip().lower()
     if importance not in {"primary", "secondary"}:
@@ -237,7 +261,7 @@ def build_production_os_asset_batch(
             or task.get("description")
             or "Create a production-ready visual asset"
         ).strip()
-        engine = str(task.get("engine") or "").strip() or None
+        engine = str(task.get("engine") or "").strip() or _infer_engine(task)
         source_mode = str(task.get("source_mode") or "generated").strip().lower()
         similarity_min = task.get("visual_similarity_min")
         similarity_retries = task.get("visual_similarity_retries")
@@ -255,10 +279,6 @@ def build_production_os_asset_batch(
         if target_format in {"png", "webp"}:
             constraints.setdefault("visualSimilarityMin", float(similarity_min))
             constraints.setdefault("visualSimilarityRetries", int(similarity_retries))
-            constraints.setdefault(
-                "technicalQualityMin",
-                0.62 if route["importance"] == "primary" else 0.50,
-            )
             constraints.setdefault("technicalQualityMin", float(technical_quality_min))
             constraints.setdefault("maxBorderAlphaRatio", float(max_border_alpha_ratio))
 

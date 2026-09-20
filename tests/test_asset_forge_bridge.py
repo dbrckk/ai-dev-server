@@ -161,6 +161,22 @@ def test_primary_raster_batch_uses_stricter_visual_similarity_policy():
     assert constraints["maxBorderAlphaRatio"] == 0.04
 
 
+def test_primary_raster_batch_enables_optional_semantic_art_review():
+    from asset_forge_bridge import build_production_os_asset_batch
+    batch = build_production_os_asset_batch(
+        [{
+            "id": "hero",
+            "objective": "Create premium AAA character sprite",
+            "engine": "libgdx",
+        }],
+        project="deadline-zero",
+    )
+    constraints = batch["items"][0]["request"]["manifest"]["constraints"]
+    assert constraints["semanticArtReview"] is True
+    assert constraints["semanticArtReviewRequired"] is False
+    assert constraints["semanticQualityMin"] == 0.68
+
+
 def test_secondary_raster_batch_uses_lighter_visual_similarity_policy():
     from asset_forge_bridge import build_production_os_asset_batch
     batch = build_production_os_asset_batch(

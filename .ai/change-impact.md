@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 0e4979fa10480489fc1c2dc22c74f614e072b193
-Head: 7ba91762dec814a917894978076d13f3ab189f64
+Base: fbe3e6b42f1d7a2b102074d23105dedbf90cce43
+Head: 6ca6659899a210973548026439e4775724a7d3e7
 
 ## Changed files
-- D scripts/install-imagen.sh
+- M tests/test_production_os_worker.py
 
 ## Affected areas
-- scripts
+- tests
 
 ## Related test candidates
 - No direct filename-based test match detected.

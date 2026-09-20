@@ -22,17 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T08:47:58Z
+Generated: 2026-09-20T08:56:32Z
 
 ### Git
 - Branch: `main`
-- Head: `7ba91762dec8`
-- Commit date: 2026-09-20T10:47:47+02:00
-- Commit: chore: remove duplicate imagen installer
+- Head: `6ca6659899a2`
+- Commit date: 2026-09-20T10:52:57+02:00
+- Commit: test: require capability-aware visual handoff guidance
 - Tracked files: 816
 
 ### Recently changed files
-- `scripts/install-imagen.sh`
+- `tests/test_production_os_worker.py`
+- `studio/production_os_worker.py`
+- `docs/PRODUCTION_OS_WORKER.md`
 - `.github/workflows/production-os-asset-forge-live-e2e.yml`
 
 ### Project signals

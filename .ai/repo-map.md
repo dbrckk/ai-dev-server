@@ -1712,7 +1712,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: dbrckk/asset-forge
-          ref: 9fc828fafb50572d07d2ee747b0643c3fdcfd324
+          ref: 7cd615b9b42956b9b3d0d44992ac3e45e1764b6b
           path: asset-forge
 
       - name: Checkout Deadline Zero
@@ -1947,6 +1947,7 @@ jobs:
     env:
       POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
       CODEX_ACCESS_TOKEN: ${{ secrets.CODEX_ACCESS_TOKEN }}
+      CHATGPT_ACCESS_TOKEN: ${{ secrets.CHATGPT_ACCESS_TOKEN }}
     steps:
       - name: Checkout AI Dev Server
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -1955,7 +1956,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: dbrckk/asset-forge
-          ref: 9fc828fafb50572d07d2ee747b0643c3fdcfd324
+          ref: 7cd615b9b42956b9b3d0d44992ac3e45e1764b6b
           path: asset-forge
 
       - name: Checkout Deadline Zero
@@ -1990,7 +1991,7 @@ jobs:
             echo "format=svg" >> "$GITHUB_OUTPUT"
             echo "asset_type=icon" >> "$GITHUB_OUTPUT"
             echo "artifact=live-production-pipeline-icon.svg" >> "$GITHUB_OUTPUT"
-          elif [ -n "$CODEX_ACCESS_TOKEN" ]; then
+          elif [ -n "$CODEX_ACCESS_TOKEN" ] || [ -n "$CHATGPT_ACCESS_TOKEN" ]; then
             echo "configured=true" >> "$GITHUB_OUTPUT"
             echo "backend=imagen-codex" >> "$GITHUB_OUTPUT"
             echo "format=png" >> "$GITHUB_OUTPUT"
@@ -3191,7 +3192,7 @@ set -euo pipefail
 install_root="${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
 bin_dir="$HOME/.local/bin"
 repo_url="${ASSET_FORGE_REPOSITORY:-https://github.com/dbrckk/asset-forge.git}"
-ref="${ASSET_FORGE_REF:-9fc828fafb50572d07d2ee747b0643c3fdcfd324}"
+ref="${ASSET_FORGE_REF:-7cd615b9b42956b9b3d0d44992ac3e45e1764b6b}"
 
 mkdir -p "$(dirname "$install_root")" "$bin_dir"
 

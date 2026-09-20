@@ -157,6 +157,12 @@ class ProductionOSWorkerTests(unittest.TestCase):
                 "pipeline_status": "complete",
                 "next_stage": None,
                 "finished": True,
+                "visual_assets": {
+                    "quality_status": "regenerated",
+                    "checked": 2,
+                    "regenerated": 1,
+                    "minimum_score": 0.79,
+                },
             },
         }
 
@@ -174,6 +180,14 @@ class ProductionOSWorkerTests(unittest.TestCase):
         self.assertEqual(
             payload["result"]["evidence"]["pipeline_status"],
             "complete",
+        )
+        self.assertEqual(
+            payload["result"]["evidence"]["visual_assets"]["quality_status"],
+            "regenerated",
+        )
+        self.assertEqual(
+            payload["result"]["evidence"]["visual_assets"]["minimum_score"],
+            0.79,
         )
 
     def test_failure_payload_is_bounded_and_preserves_usage(self):

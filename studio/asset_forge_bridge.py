@@ -61,6 +61,9 @@ def build_production_os_asset_dispatch(task: dict, *, project: str) -> dict:
     ).strip()
     request_id = str(task.get("request_id") or f"{project}-{asset_id}").strip()
     engine = str(task.get("engine") or "").strip() or None
+    importance = str(task.get("importance") or ("primary" if any(term in instruction.lower() for term in PREMIUM_TERMS) else "secondary")).strip().lower()
+    if importance not in {"primary", "secondary"}:
+        raise ValueError("importance must be primary or secondary")
 
     args = [
         "production-os",
@@ -71,6 +74,7 @@ def build_production_os_asset_dispatch(task: dict, *, project: str) -> dict:
         "--asset-type", asset_type,
         "--instruction", instruction,
         "--format", target_format,
+        "--importance", importance,
         "--backend", "auto",
     ]
     if engine:
@@ -83,5 +87,6 @@ def build_production_os_asset_dispatch(task: dict, *, project: str) -> dict:
         "request_id": request_id,
         "project": project,
         "asset_id": asset_id,
+        "importance": importance,
         "command": args,
     }

@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 3,
     "requested_max_files": 12,
-    "score_margin": 9,
+    "score_margin": 3,
     "tier": "narrow",
     "top_score": 38
   },
   "cache": {
-    "fingerprint": "6aca5026ac361bd57e680af521f23e1d4a11b63e9fe3a14b095b51f6e14e96ec",
+    "fingerprint": "d22d7340b1e5c85566b33e7d3f2b86140987a4a9a69d6a0567919abd0f422954",
     "hit": false
   },
-  "candidate_count": 88,
+  "candidate_count": 96,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -33,6 +33,7 @@
         "test_explicit_secondary_importance_is_preserved",
         "test_ignores_plain_code_task",
         "test_premium_route_defaults_to_primary_importance",
+        "test_route_includes_repository_delivery_target",
         "test_routes_premium_visual_task"
       ]
     },
@@ -42,44 +43,46 @@
         "engine",
         "game"
       ],
-      "path": "tests/test_godot_android_stage.py",
+      "path": "tests/test_orchestrator.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 29,
+      "score": 35,
       "symbols": [
-        "FakeGitHub",
-        "GodotAndroidStageTests",
-        "exporter",
-        "runtime",
-        "templates",
-        "test_requires_validated_preview_checkpoint",
-        "test_success_advances_only_to_device_qa"
+        "GitHubRunnerTests",
+        "OrchestratorTests",
+        "missing_report",
+        "payload_for",
+        "request",
+        "test_adaptation_without_baseline_has_no_promotable_work_order",
+        "test_adapter_reports_complete_only_after_machine_completion",
+        "test_full_pipeline_reaches_finished",
+        "test_non_main_is_rejected_before_generation",
+        "test_premium_visual_request_prefetches_asset_forge_before_preview",
+        "test_research_failure_prevents_synthesis",
+        "test_scheduler_rewind_can_revisit_release_build_boundedly",
+        "test_stage_return_code_two_is_human_action_not_failure",
+        "test_successful_stage_must_advance",
+        "test_unregistered_stage_research_then_synthesis"
       ]
     },
     {
       "learning_score": 0,
       "matched_terms": [
-        "engine",
-        "game"
+        "engine"
       ],
-      "path": "tests/test_godot_device_stage.py",
+      "path": "studio/multi_engine_orchestrator.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
-      "score": 29,
+      "score": 33,
       "symbols": [
-        "FakeGitHub",
-        "GodotDeviceStageTests",
-        "exporter",
-        "runtime",
-        "state",
-        "templates",
-        "test_device_cannot_spoof_journey_or_visual_evidence",
-        "test_matching_local_apk_advances_only_to_journey_qa",
-        "test_missing_local_apk_is_reexported_and_rebound",
-        "test_requires_android_export_checkpoint",
-        "validator"
+        "_detect",
+        "_remaining",
+        "_run_stage",
+        "run_project"
       ]
     }
   ],

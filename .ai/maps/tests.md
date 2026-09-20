@@ -2690,6 +2690,8 @@ def test_premium_route_defaults_to_primary_importance()
 idx = route["command"].index("--importance")
 ⋮----
 def test_explicit_secondary_importance_is_preserved()
+⋮----
+def test_route_includes_repository_delivery_target()
 ```
 
 ## File: test_asset_forge_installer.py

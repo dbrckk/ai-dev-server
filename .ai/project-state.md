@@ -22,20 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T11:22:49Z
+Generated: 2026-09-20T11:31:52Z
 
 ### Git
 - Branch: `main`
-- Head: `081146a72811`
-- Commit date: 2026-09-20T13:22:26+02:00
-- Commit: test: cover asset importance routing
+- Head: `781c4a47f3c2`
+- Commit date: 2026-09-20T13:31:37+02:00
+- Commit: ci: verify automatic target repository asset delivery
 - Tracked files: 818
 
 ### Recently changed files
-- `tests/test_asset_forge_bridge.py`
-- `studio/asset_forge_bridge.py`
 - `.github/workflows/production-os-asset-forge-e2e.yml`
-- `tests/test_orchestrator.py`
+- `tests/test_asset_forge_bridge.py`
+- `studio/orchestrator.py`
+- `studio/asset_forge_bridge.py`
 
 ### Project signals
 - No common build descriptor detected

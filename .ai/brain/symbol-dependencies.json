@@ -27,7 +27,7 @@
       "source": {
         "file": "studio/asset_forge_bridge.py",
         "start": 48,
-        "end": 92
+        "end": 110
       },
       "symbol_dependencies": [
         {
@@ -56,6 +56,808 @@
         }
       ],
       "dependency_count": 2
+    },
+    "_recommendation_context": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 27,
+        "end": 38
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_load_recommendations": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 40,
+        "end": 48
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_evaluate_architecture": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 50,
+        "end": 115
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_load_recommendations",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 40,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "authorization_template",
+          "definitions": [
+            {
+              "file": "studio/architecture_reputation_policy_migration.py",
+              "line": 315,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "benchmark",
+          "definitions": [
+            {
+              "file": "studio/architecture_benchmark.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "review_digest",
+          "definitions": [
+            {
+              "file": "studio/architecture_reputation_policy_migration.py",
+              "line": 303,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "transition_policy_digest",
+          "definitions": [
+            {
+              "file": "studio/architecture_replacement_reputation.py",
+              "line": 73,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verdict",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 261,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "_asset_forge_prefetch": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 118,
+        "end": 171
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_remaining",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 181,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "build_production_os_asset_dispatch",
+          "definitions": [
+            {
+              "file": "studio/asset_forge_bridge.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "should_route_to_asset_forge",
+          "definitions": [
+            {
+              "file": "studio/asset_forge_bridge.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "load_report": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 173,
+        "end": 179
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Stage",
+          "definitions": [
+            {
+              "file": "studio/stage_registry.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_remaining": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 181,
+        "end": 184
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_write_adaptation_handoff": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 186,
+        "end": 190
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "write_adaptation_request",
+          "definitions": [
+            {
+              "file": "studio/adaptation.py",
+              "line": 141,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_run_adaptation_pending": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 192,
+        "end": 207
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_remaining",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 181,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_run_adaptation_research": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 209,
+        "end": 221
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_remaining",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 181,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_run_adaptation_synthesis": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 223,
+        "end": 235
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_remaining",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 181,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_run_adaptation_benchmark": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 237,
+        "end": 251
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_remaining",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 181,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "benchmark",
+          "definitions": [
+            {
+              "file": "studio/architecture_benchmark.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_run_adaptation_promotion": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 253,
+        "end": 264
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_remaining",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 181,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "benchmark",
+          "definitions": [
+            {
+              "file": "studio/architecture_benchmark.py",
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_run_adaptation_persistence": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 266,
+        "end": 278
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_remaining",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 181,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_run_adaptation_automerge": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 280,
+        "end": 300
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_remaining",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 181,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_stage_command": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 302,
+        "end": 305
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "run_registered_stages": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 307,
+        "end": 352
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Stage",
+          "definitions": [
+            {
+              "file": "studio/stage_registry.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_evaluate_architecture",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_recommendation_context",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_remaining",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 181,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_run_adaptation_automerge",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 280,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_run_adaptation_benchmark",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 237,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_run_adaptation_pending",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 192,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_run_adaptation_persistence",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 266,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_run_adaptation_promotion",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 253,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_run_adaptation_research",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 209,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_run_adaptation_synthesis",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 223,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_stage_command",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 302,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_write_adaptation_handoff",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 186,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get_stage",
+          "definitions": [
+            {
+              "file": "studio/stage_registry.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_report",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 173,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "recommend",
+          "definitions": [
+            {
+              "file": "studio/project_recommendations.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 17
+    },
+    "run_project": {
+      "source": {
+        "file": "studio/orchestrator.py",
+        "start": 354,
+        "end": 379
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_asset_forge_prefetch",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 118,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_evaluate_architecture",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_recommendation_context",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_remaining",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 181,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "load_report",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 173,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "recommend",
+          "definitions": [
+            {
+              "file": "studio/project_recommendations.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 845,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_registered_stages",
+          "definitions": [
+            {
+              "file": "studio/orchestrator.py",
+              "line": 307,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 8
     },
     "test_routes_premium_visual_task": {
       "source": {
@@ -162,6 +964,28 @@
         "file": "tests/test_asset_forge_bridge.py",
         "start": 41,
         "end": 50
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "build_production_os_asset_dispatch",
+          "definitions": [
+            {
+              "file": "studio/asset_forge_bridge.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_route_includes_repository_delivery_target": {
+      "source": {
+        "file": "tests/test_asset_forge_bridge.py",
+        "start": 53,
+        "end": 66
       },
       "symbol_dependencies": [
         {

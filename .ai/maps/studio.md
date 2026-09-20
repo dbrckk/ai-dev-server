@@ -4238,14 +4238,16 @@ def _infer_asset_shape(task: dict) -> tuple[str, str]
 ⋮----
 text = " ".join(str(task.get(key) or "") for key in ("task", "objective", "instruction", "description", "title")).lower()
 ⋮----
-def build_production_os_asset_dispatch(task: dict, *, project: str) -> dict
-⋮----
 asset_id = str(task.get("asset_id") or task.get("id") or "visual-asset").strip()
 asset_type = str(task.get("asset_type") or inferred_type).strip()
 target_format = str(task.get("format") or inferred_format).strip().lower()
 instruction = str(
 request_id = str(task.get("request_id") or f"{project}-{asset_id}").strip()
 engine = str(task.get("engine") or "").strip() or None
+target_repository = str(task.get("target_repository") or target_repository or "").strip() or None
+target_worktree = str(task.get("target_worktree") or target_worktree or "").strip() or None
+default_root = "assets/art" if (engine or "").lower() in {"godot", "godot4", "godot-4", "libgdx"} else "assets/generated"
+target_path = str(task.get("target_path") or f"{default_root}/{asset_id}.{target_format}").strip()
 importance = str(task.get("importance") or ("primary" if any(term in instruction.lower() for term in PREMIUM_TERMS) else "secondary")).strip().lower()
 ⋮----
 args = [
@@ -13779,7 +13781,7 @@ candidate={
 ⋮----
 routes=[]
 ⋮----
-route=build_production_os_asset_dispatch(item,project=project)
+route=build_production_os_asset_dispatch(
 ⋮----
 remaining=_remaining(deadline,clock)
 ⋮----

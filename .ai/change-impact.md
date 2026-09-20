@@ -1,13 +1,13 @@
 # Change impact
 
-Base: b00c599f2b3c8f68ae7b7517f8415acee828228b
-Head: 081146a72811197c62d29e26b68cca659a1713f8
+Base: 136a8ccc5bc3665089dd57fa3e11d4da0b1114be
+Head: 781c4a47f3c2c9017ff2ec5e66adbe1d286b1a6f
 
 ## Changed files
-- M tests/test_asset_forge_bridge.py
+- M .github/workflows/production-os-asset-forge-e2e.yml
 
 ## Affected areas
-- tests
+- .github
 
 ## Related test candidates
 - No direct filename-based test match detected.

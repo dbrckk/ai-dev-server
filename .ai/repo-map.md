@@ -15351,6 +15351,8 @@ item_rows = []
 visual = item.get("visual_similarity")
 attempts = (
 score = (
+semantic = (
+semantic_scores = (
 ⋮----
 visual_assets = {
 ⋮----

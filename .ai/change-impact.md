@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 5cd5d0db21f476db0f676bf7855926be802b5d6a
-Head: c7e76c6f4e911fe952258db24835b53f8e750326
+Base: ce70346a2954b79501f99863a5e8451f4261b3b2
+Head: 7115e8f849a4b645ea1497da01f26563f1bc70e5
 
 ## Changed files
-- M tests/test_asset_forge_bridge.py
+- M studio/github_runner.py
 
 ## Affected areas
-- tests
+- studio
 
 ## Related test candidates
 - No direct filename-based test match detected.

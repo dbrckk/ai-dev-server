@@ -27,13 +27,12 @@ git -C "$install_root" fetch --depth 1 origin "$ref"
 git -C "$install_root" checkout --detach --force FETCH_HEAD
 git -C "$install_root" clean -fdx
 
-cat >"$bin_dir/asset-forge" <<'EOF'
-#!/usr/bin/env bash
-set -euo pipefail
-root="${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
-exec python "$root/asset_forge.py" "$@"
-EOF
-chmod 0755 "$bin_dir/asset-forge"
+python -m pip install --user --no-deps --editable "$install_root"
+
+if [[ ! -x "$bin_dir/asset-forge" ]]; then
+  echo "Asset Forge console script was not installed in $bin_dir" >&2
+  exit 2
+fi
 
 "$bin_dir/asset-forge" --help >/dev/null
 printf 'Asset Forge installed at %s (%s)\n' "$install_root" "$(git -C "$install_root" rev-parse --short HEAD)"

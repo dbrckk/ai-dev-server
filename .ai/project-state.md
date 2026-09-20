@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T16:46:01Z
+Generated: 2026-09-20T16:49:34Z
 
 ### Git
 - Branch: `main`
-- Head: `d59345923fa4`
-- Commit date: 2026-09-20T18:45:35+02:00
-- Commit: test: cover zero-config 3D character brief inference
+- Head: `c7e76c6f4e91`
+- Commit date: 2026-09-20T18:49:16+02:00
+- Commit: test: cover automatic semantic art QA policy
 - Tracked files: 820
 
 ### Recently changed files

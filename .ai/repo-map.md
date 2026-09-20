@@ -26275,6 +26275,10 @@ def test_primary_raster_batch_uses_stricter_visual_similarity_policy()
 run = {item["id"]: item for item in batch["items"]}["run"]
 constraints = run["request"]["manifest"]["constraints"]
 ⋮----
+def test_primary_raster_batch_enables_optional_semantic_art_review()
+⋮----
+constraints = batch["items"][0]["request"]["manifest"]["constraints"]
+⋮----
 def test_secondary_raster_batch_uses_lighter_visual_similarity_policy()
 ⋮----
 variant = {item["id"]: item for item in batch["items"]}["badge-variant"]
@@ -26294,8 +26298,6 @@ def test_brief_inference_detects_3d_environment()
 environment = {item["id"]: item for item in tasks}["environment-foundation"]
 ⋮----
 def test_raster_quality_policy_can_be_overridden_per_task()
-⋮----
-constraints = batch["items"][0]["request"]["manifest"]["constraints"]
 ⋮----
 def test_target_repository_defaults_visual_delivery_to_assets_art_without_engine()
 ⋮----

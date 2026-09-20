@@ -1709,6 +1709,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: dbrckk/asset-forge
+          ref: c96b87faa5c1a52d2b785cd7c6c3de2da4d16efa
           path: asset-forge
 
       - name: Checkout Deadline Zero
@@ -2905,7 +2906,7 @@ set -euo pipefail
 install_root="${ASSET_FORGE_HOME:-$HOME/.local/share/asset-forge}"
 bin_dir="$HOME/.local/bin"
 repo_url="${ASSET_FORGE_REPOSITORY:-https://github.com/dbrckk/asset-forge.git}"
-ref="${ASSET_FORGE_REF:-main}"
+ref="${ASSET_FORGE_REF:-c96b87faa5c1a52d2b785cd7c6c3de2da4d16efa}"
 
 mkdir -p "$(dirname "$install_root")" "$bin_dir"
 
@@ -25643,6 +25644,8 @@ def test_asset_forge_installer_expands_environment_configuration()
 script = (ROOT / "scripts" / "install-asset-forge.sh").read_text(
 ⋮----
 def test_asset_forge_installer_uses_pyproject_editable_install()
+⋮----
+def test_asset_forge_default_ref_is_immutable_commit()
 ````
 
 ## File: tests/test_atomic_file.py

@@ -2678,6 +2678,8 @@ def test_asset_forge_installer_expands_environment_configuration()
 script = (ROOT / "scripts" / "install-asset-forge.sh").read_text(
 ⋮----
 def test_asset_forge_installer_uses_pyproject_editable_install()
+⋮----
+def test_asset_forge_default_ref_is_immutable_commit()
 ```
 
 ## File: test_atomic_file.py

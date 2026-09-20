@@ -313,6 +313,11 @@ def build_production_os_asset_batch(
                 route["importance"] == "primary",
             )
             constraints.setdefault("requireLods", False)
+            if asset_type in {"prop", "environment"}:
+                constraints.setdefault(
+                    "requireCollision",
+                    route["importance"] == "primary",
+                )
 
         request = {
             "schema": "asset-forge/production-request/v1",

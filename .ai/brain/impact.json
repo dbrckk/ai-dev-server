@@ -1,302 +1,560 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "f0bd4a446bf49cae1a9c3324b826d087853b928c",
-  "head": "3a88208e5dbb692ade1293c510b44054c0604267",
+  "base": "3a88208e5dbb692ade1293c510b44054c0604267",
+  "head": "16bc96acfaf1afb7a261c80b3c404b2d0900ce01",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "studio/asset_forge_bridge.py",
+      "path": "studio/github_runner.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "studio/asset_forge_bridge.py"
+    "studio/github_runner.py"
   ],
   "impacted_files": [
-    "studio/asset_forge_bridge.py",
-    "studio/orchestrator.py",
-    "tests/test_asset_forge_bridge.py"
+    "studio/github_runner.py",
+    "studio/production_os_worker.py",
+    "tests/test_github_runner_persistent.py",
+    "tests/test_github_runner_usage.py",
+    "tests/test_orchestrator.py",
+    "tests/test_production_os_result_contract.py"
   ],
   "impacted_symbols": [
     {
-      "name": "should_route_to_asset_forge",
+      "name": "_prepare_capability_promotion_handoff",
       "kind": "function",
-      "file": "studio/asset_forge_bridge.py",
-      "line": 15
+      "file": "studio/github_runner.py",
+      "line": 56
     },
     {
-      "name": "_infer_engine",
+      "name": "_usage_count",
       "kind": "function",
-      "file": "studio/asset_forge_bridge.py",
-      "line": 31
+      "file": "studio/github_runner.py",
+      "line": 96
     },
     {
-      "name": "_infer_asset_shape",
+      "name": "collect_agent_usage",
       "kind": "function",
-      "file": "studio/asset_forge_bridge.py",
-      "line": 49
+      "file": "studio/github_runner.py",
+      "line": 105
     },
     {
-      "name": "infer_asset_tasks_from_brief",
+      "name": "write_production_os_result",
       "kind": "function",
-      "file": "studio/asset_forge_bridge.py",
-      "line": 71
+      "file": "studio/github_runner.py",
+      "line": 170
     },
     {
-      "name": "build_production_os_asset_dispatch",
+      "name": "bounded_run",
       "kind": "function",
-      "file": "studio/asset_forge_bridge.py",
-      "line": 176
+      "file": "studio/github_runner.py",
+      "line": 298
     },
     {
-      "name": "build_production_os_asset_batch",
+      "name": "_update_improvements",
       "kind": "function",
-      "file": "studio/asset_forge_bridge.py",
-      "line": 247
+      "file": "studio/github_runner.py",
+      "line": 314
     },
     {
-      "name": "_recommendation_context",
+      "name": "run",
       "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 27
-    },
-    {
-      "name": "_load_recommendations",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 40
-    },
-    {
-      "name": "_evaluate_architecture",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 50
-    },
-    {
-      "name": "_read_asset_forge_receipt",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 118
-    },
-    {
-      "name": "_asset_quality_status",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 129
-    },
-    {
-      "name": "_asset_forge_prefetch",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 144
-    },
-    {
-      "name": "load_report",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 268
-    },
-    {
-      "name": "_remaining",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 276
-    },
-    {
-      "name": "_write_adaptation_handoff",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 281
-    },
-    {
-      "name": "_run_adaptation_pending",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 287
-    },
-    {
-      "name": "_run_adaptation_research",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 304
-    },
-    {
-      "name": "_run_adaptation_synthesis",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 318
-    },
-    {
-      "name": "_run_adaptation_benchmark",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
+      "file": "studio/github_runner.py",
       "line": 332
     },
     {
-      "name": "_run_adaptation_promotion",
+      "name": "run_once",
       "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 348
+      "file": "studio/github_runner.py",
+      "line": 620
     },
     {
-      "name": "_run_adaptation_persistence",
+      "name": "improvement_project_cycle",
       "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 361
+      "file": "studio/github_runner.py",
+      "line": 645
     },
     {
-      "name": "_run_adaptation_automerge",
+      "name": "main",
       "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 375
+      "file": "studio/github_runner.py",
+      "line": 761
     },
     {
-      "name": "_stage_command",
+      "name": "_asset_forge_operational_status",
       "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 397
-    },
-    {
-      "name": "run_registered_stages",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 402
-    },
-    {
-      "name": "run_project",
-      "kind": "function",
-      "file": "studio/orchestrator.py",
-      "line": 449
-    },
-    {
-      "name": "test_routes_premium_visual_task",
-      "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 4
-    },
-    {
-      "name": "test_ignores_plain_code_task",
-      "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 9
-    },
-    {
-      "name": "test_builds_production_os_dispatch_contract",
-      "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 14
-    },
-    {
-      "name": "test_premium_route_defaults_to_primary_importance",
-      "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
+      "file": "studio/production_os_worker.py",
       "line": 31
     },
     {
-      "name": "test_explicit_secondary_importance_is_preserved",
+      "name": "worker_capabilities",
       "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 41
+      "file": "studio/production_os_worker.py",
+      "line": 60
     },
     {
-      "name": "test_route_includes_repository_delivery_target",
-      "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 53
+      "name": "ProductionOSWorkerError",
+      "kind": "class",
+      "file": "studio/production_os_worker.py",
+      "line": 79
     },
     {
-      "name": "test_batch_preserves_explicit_asset_dependencies",
-      "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 69
+      "name": "_NoRedirect",
+      "kind": "class",
+      "file": "studio/production_os_worker.py",
+      "line": 83
     },
     {
-      "name": "test_batch_infers_parent_asset_dependency",
+      "name": "redirect_request",
       "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 93
+      "file": "studio/production_os_worker.py",
+      "line": 84
     },
     {
-      "name": "test_batch_infers_animation_of_dependency",
+      "name": "_default_opener",
       "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 115
+      "file": "studio/production_os_worker.py",
+      "line": 90
     },
     {
-      "name": "test_primary_raster_batch_uses_stricter_visual_similarity_policy",
-      "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 137
+      "name": "ProductionOSClient",
+      "kind": "class",
+      "file": "studio/production_os_worker.py",
+      "line": 97
     },
     {
-      "name": "test_asset_reuse_policy_is_primary_unique_secondary_reusable",
+      "name": "__init__",
       "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 164
+      "file": "studio/production_os_worker.py",
+      "line": 98
     },
     {
-      "name": "test_primary_raster_batch_enables_optional_semantic_art_review",
+      "name": "_post",
       "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 189
+      "file": "studio/production_os_worker.py",
+      "line": 138
     },
     {
-      "name": "test_secondary_raster_batch_uses_lighter_visual_similarity_policy",
+      "name": "claim",
       "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 205
+      "file": "studio/production_os_worker.py",
+      "line": 197
     },
     {
-      "name": "test_brief_inference_builds_character_dependency_chain",
+      "name": "ack",
       "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 234
+      "file": "studio/production_os_worker.py",
+      "line": 214
     },
     {
-      "name": "test_brief_inference_detects_3d_character_without_2d_sprite_chain",
+      "name": "complete",
       "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
+      "file": "studio/production_os_worker.py",
+      "line": 220
+    },
+    {
+      "name": "fail",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 223
+    },
+    {
+      "name": "register",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 226
+    },
+    {
+      "name": "heartbeat",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
       "line": 247
     },
     {
-      "name": "test_brief_inference_detects_3d_environment",
+      "name": "production_capacity_snapshot",
       "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 263
+      "file": "studio/production_os_worker.py",
+      "line": 269
     },
     {
-      "name": "test_raster_quality_policy_can_be_overridden_per_task",
+      "name": "_project_id",
       "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
+      "file": "studio/production_os_worker.py",
+      "line": 325
+    },
+    {
+      "name": "_app_name",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 330
+    },
+    {
+      "name": "_brief",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 340
+    },
+    {
+      "name": "_is_visual_handoff",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 353
+    },
+    {
+      "name": "_asset_forge_guidance",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 394
+    },
+    {
+      "name": "build_studio_request",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 438
+    },
+    {
+      "name": "_write_project_capacity_plan",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 484
+    },
+    {
+      "name": "_result_payload",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 557
+    },
+    {
+      "name": "completion_payload",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 567
+    },
+    {
+      "name": "failure_payload",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 584
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 607
+    },
+    {
+      "name": "keep_job_alive",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 673
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 811
+    },
+    {
+      "name": "GithubRunnerPersistentTests",
+      "kind": "class",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 16
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 17
+    },
+    {
+      "name": "test_run_uses_persistent_goal_engine",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 28
+    },
+    {
+      "name": "test_human_action_is_not_reported_complete",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 40
+    },
+    {
+      "name": "test_blocked_state_preserves_reason",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 54
+    },
+    {
+      "name": "test_remote_checkpoint_ingests_memory_before_state_persistence",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 69
+    },
+    {
+      "name": "test_invalid_memory_ingestion_blocks_state_checkpoint",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 106
+    },
+    {
+      "name": "test_promotion_required_handoff_is_sealed_and_non_promoting",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 151
+    },
+    {
+      "name": "test_promotion_handoff_rejects_cross_candidate_validation",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 183
+    },
+    {
+      "name": "GitHubRunnerUsageTests",
+      "kind": "class",
+      "file": "tests/test_github_runner_usage.py",
+      "line": 10
+    },
+    {
+      "name": "test_collect_agent_usage_sums_codex_attempts_across_rounds",
+      "kind": "function",
+      "file": "tests/test_github_runner_usage.py",
+      "line": 11
+    },
+    {
+      "name": "test_collect_agent_usage_ignores_duplicate_non_attempt_usage_and_bad_values",
+      "kind": "function",
+      "file": "tests/test_github_runner_usage.py",
+      "line": 72
+    },
+    {
+      "name": "test_collect_agent_usage_empty_report_is_zeroed",
+      "kind": "function",
+      "file": "tests/test_github_runner_usage.py",
+      "line": 117
+    },
+    {
+      "name": "OrchestratorTests",
+      "kind": "class",
+      "file": "tests/test_orchestrator.py",
+      "line": 19
+    },
+    {
+      "name": "payload_for",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 20
+    },
+    {
+      "name": "missing_report",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 35
+    },
+    {
+      "name": "test_premium_visual_request_prefetches_asset_forge_before_preview",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 43
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 52
+    },
+    {
+      "name": "test_multi_asset_request_uses_transactional_asset_forge_batch",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 86
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 98
+    },
+    {
+      "name": "test_asset_forge_batch_receipt_marks_regenerated_quality",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 129
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 140
+    },
+    {
+      "name": "test_asset_forge_failure_receipt_marks_low_quality",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 174
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 185
+    },
+    {
+      "name": "test_full_pipeline_reaches_finished",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 203
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 207
+    },
+    {
+      "name": "test_unregistered_stage_research_then_synthesis",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 218
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 221
+    },
+    {
+      "name": "test_research_failure_prevents_synthesis",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 255
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 258
+    },
+    {
+      "name": "test_adaptation_without_baseline_has_no_promotable_work_order",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 271
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
       "line": 274
     },
     {
-      "name": "test_target_repository_defaults_visual_delivery_to_assets_art_without_engine",
+      "name": "test_stage_return_code_two_is_human_action_not_failure",
       "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 291
+      "file": "tests/test_orchestrator.py",
+      "line": 283
     },
     {
-      "name": "test_engine_is_inferred_from_visual_instruction",
+      "name": "runner",
       "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 304
+      "file": "tests/test_orchestrator.py",
+      "line": 286
     },
     {
-      "name": "test_3d_character_inference_enables_lods_for_primary_assets",
+      "name": "test_scheduler_rewind_can_revisit_release_build_boundedly",
       "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
+      "file": "tests/test_orchestrator.py",
+      "line": 310
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
       "line": 319
     },
     {
-      "name": "test_3d_environment_inference_uses_environment_profile",
+      "name": "test_successful_stage_must_advance",
       "kind": "function",
-      "file": "tests/test_asset_forge_bridge.py",
-      "line": 337
+      "file": "tests/test_orchestrator.py",
+      "line": 371
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 374
+    },
+    {
+      "name": "GitHubRunnerTests",
+      "kind": "class",
+      "file": "tests/test_orchestrator.py",
+      "line": 383
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 384
+    },
+    {
+      "name": "test_non_main_is_rejected_before_generation",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 390
+    },
+    {
+      "name": "test_adapter_reports_complete_only_after_machine_completion",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 394
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 397
+    },
+    {
+      "name": "ProductionOSResultContractTests",
+      "kind": "class",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 23
+    },
+    {
+      "name": "test_request_accepts_optional_production_os_correlation",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 24
+    },
+    {
+      "name": "test_request_rejects_invalid_production_os_correlation",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 41
+    },
+    {
+      "name": "test_result_envelope_correlates_usage_and_completion",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 51
+    },
+    {
+      "name": "test_result_envelope_includes_visual_asset_quality",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 89
+    },
+    {
+      "name": "test_no_result_envelope_without_correlation",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 142
     }
   ],
   "selected_tests": [
-    "tests/test_asset_forge_bridge.py"
+    "tests/test_github_runner_persistent.py",
+    "tests/test_github_runner_usage.py",
+    "tests/test_orchestrator.py",
+    "tests/test_production_os_result_contract.py"
   ]
 }

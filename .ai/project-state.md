@@ -22,19 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T17:07:00Z
+Generated: 2026-09-20T17:11:00Z
 
 ### Git
 - Branch: `main`
-- Head: `3a88208e5dbb`
-- Commit date: 2026-09-20T19:06:41+02:00
-- Commit: feat: require collision readiness for premium 3D props and environments
+- Head: `16bc96acfaf1`
+- Commit date: 2026-09-20T19:10:50+02:00
+- Commit: feat: return asset cache and dedup metrics to Production OS
 - Tracked files: 820
 
 ### Recently changed files
+- `studio/github_runner.py`
 - `studio/asset_forge_bridge.py`
 - `tests/test_asset_forge_bridge.py`
-- `studio/github_runner.py`
 
 ### Project signals
 - No common build descriptor detected

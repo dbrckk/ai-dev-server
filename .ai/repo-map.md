@@ -15354,6 +15354,13 @@ score = (
 semantic = (
 semantic_scores = (
 ⋮----
+dedup = []
+cache_hits = 0
+⋮----
+quality = receipt.get("quality_summary")
+⋮----
+summary = receipt.get("dedup_summary")
+⋮----
 visual_assets = {
 ⋮----
 envelope = {

@@ -551,6 +551,7 @@ tests/
   test_file_lock.py
   test_fleet_capacity.py
   test_fleet_daemon.py
+  test_fleet_dashboard.py
   test_fleet_maintenance.py
   test_fleet_metrics.py
   test_fleet_operations.py
@@ -12836,12 +12837,26 @@ report = tick(
 ````python
 """Aggregate health and activity for all autonomous project outputs."""
 ⋮----
+def _asset_quality(path: Path) -> dict
+⋮----
+source = path / "asset-forge-prefetch.json"
+⋮----
+value = json.loads(source.read_text(encoding="utf-8"))
+⋮----
+receipts = value.get("receipts")
+⋮----
+one = value.get("receipt")
+receipts = [one] if isinstance(one, dict) else []
+summaries = [
+scores = [
+⋮----
 def collect(root: Path | str = "studio-output") -> dict
 ⋮----
 root = Path(root)
 projects = []
 ⋮----
 report = inspect(path)
+asset_quality = _asset_quality(path)
 ⋮----
 architecture = summarize_architecture_learning(root)
 eligible = [
@@ -12850,6 +12865,10 @@ degraded = len(projects) - healthy
 running = sum(1 for item in projects if item.get("runtime_status") == "running")
 complete = sum(1 for item in projects if item.get("runtime_status") == "complete")
 blocked = sum(1 for item in projects if item.get("runtime_status") in {"blocked", "human_action_required"})
+quality_ok = sum(1 for item in projects if item["visual_assets"]["quality_status"] == "ok")
+quality_regenerated = sum(1 for item in projects if item["visual_assets"]["quality_status"] == "regenerated")
+quality_low = sum(1 for item in projects if item["visual_assets"]["quality_status"] == "low_quality")
+quality_unknown = len(projects) - quality_ok - quality_regenerated - quality_low
 ⋮----
 def main(argv=None) -> int
 ⋮----
@@ -18700,6 +18719,16 @@ migration_review=write_reputation_policy_migration_review(
 replacement_plan=write_architecture_replacement_plan(obsolescence,recommendations,project_out,learning=replacement_learning,reputation_registry=reputation_registry)
 replacement_work_orders=write_architecture_replacement_work_orders(replacement_plan,project_out)
 ⋮----
+def _read_asset_forge_receipt(path)
+⋮----
+path=Path(path)
+⋮----
+value=json.loads(path.read_text(encoding='utf-8'))
+⋮----
+def _asset_quality_status(receipt)
+⋮----
+quality=receipt.get('quality_summary')
+⋮----
 def _asset_forge_prefetch(request_path,project_out,runner,deadline,clock)
 ⋮----
 request=json.loads(Path(request_path).read_text())
@@ -18721,25 +18750,31 @@ batch=build_production_os_asset_batch(
 routes=batch['routes']
 spec_path=project_out/'asset-forge-batch-spec.json'
 ⋮----
-command=['production-os','asset-forge-batch','--spec',str(spec_path),'--mode','auto']
+receipt_path=project_out/'asset-forge-batch-receipt.json'
+command=[
 ⋮----
 remaining=_remaining(deadline,clock)
 ⋮----
 result={'status':'deferred','routes':routes,'batch':True}
 ⋮----
 completed=runner(command,timeout=remaining)
+receipt=_read_asset_forge_receipt(receipt_path)
 ⋮----
-result={'status':'failed','routes':routes,'batch':True}
+result={
+⋮----
+receipts=[]
 ⋮----
 route=build_production_os_asset_dispatch(
+⋮----
+receipt_path=project_out/f"asset-forge-receipt-{route['request_id']}.json"
 ⋮----
 result={'status':'deferred','routes':routes}
 ⋮----
 completed=runner(route['command'],timeout=remaining)
 ⋮----
-result={'status':'failed','routes':routes,'failed_request_id':route['request_id']}
-⋮----
-result={'status':'dispatched','routes':routes,'batch':len(selected)>1}
+receipts=[receipt]
+statuses=[_asset_quality_status(value) for value in receipts if value is not None]
+quality_status=(
 ⋮----
 def load_report(project_out)
 ⋮----
@@ -28190,6 +28225,22 @@ sleeps = []
 rows = fleet_daemon.run_loop(
 ````
 
+## File: tests/test_fleet_dashboard.py
+````python
+class FleetDashboardTests(unittest.TestCase)
+⋮----
+def test_collect_surfaces_regenerated_visual_quality(self)
+⋮----
+root = Path(td)
+project = root / "deadline-zero"
+⋮----
+result = collect(root)
+⋮----
+visual = result["projects"][0]["visual_assets"]
+⋮----
+def test_collect_surfaces_low_visual_quality_failure(self)
+````
+
 ## File: tests/test_fleet_maintenance.py
 ````python
 class FleetMaintenanceTests(unittest.TestCase)
@@ -30752,6 +30803,12 @@ payload=json.loads(spec.read_text())
 production_calls=[call for call in calls if call and call[0]=='production-os']
 ⋮----
 prefetch=json.loads((out/'asset-forge-prefetch.json').read_text())
+⋮----
+def test_asset_forge_batch_receipt_marks_regenerated_quality(self)
+⋮----
+receipt_path = Path(args[args.index('--result-file')+1])
+⋮----
+def test_asset_forge_failure_receipt_marks_low_quality(self)
 ⋮----
 def test_full_pipeline_reaches_finished(self)
 ⋮----

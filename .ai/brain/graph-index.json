@@ -1947,6 +1947,23 @@
     },
     {
       "dependencies": [
+        "studio/architecture_learning.py",
+        "studio/runtime_health.py"
+      ],
+      "dependents": [
+        "studio/fleet_capacity.py",
+        "studio/fleet_daemon.py",
+        "studio/fleet_metrics.py",
+        "studio/fleet_supervisor.py",
+        "tests/test_fleet_dashboard.py",
+        "tests/test_fleet_operations.py"
+      ],
+      "in_degree": 6,
+      "out_degree": 2,
+      "path": "studio/fleet_dashboard.py"
+    },
+    {
+      "dependencies": [
         "studio/core.py",
         "studio/generic_policy.py"
       ],
@@ -1978,27 +1995,10 @@
       "in_degree": 6,
       "out_degree": 2,
       "path": "studio/promoted_capabilities.py"
-    },
-    {
-      "dependencies": [
-        "studio/core.py",
-        "studio/stage_registry.py",
-        "tests/test_studio.py"
-      ],
-      "dependents": [
-        "studio/evolution_automerge.py",
-        "studio/evolution_pending.py",
-        "tests/test_evolution_automerge.py",
-        "tests/test_evolution_pending.py",
-        "tests/test_evolution_persist.py"
-      ],
-      "in_degree": 5,
-      "out_degree": 3,
-      "path": "studio/evolution_persist.py"
     }
   ],
-  "edge_count": 1786,
+  "edge_count": 1787,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 606,
+  "node_count": 607,
   "schema_version": 1
 }

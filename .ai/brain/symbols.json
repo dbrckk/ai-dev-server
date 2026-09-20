@@ -5086,15 +5086,22 @@
       "file": "studio/fleet_dashboard.py",
       "language": "python",
       "kind": "function",
-      "name": "collect",
+      "name": "_asset_quality",
       "line": 12
     },
     {
       "file": "studio/fleet_dashboard.py",
       "language": "python",
       "kind": "function",
+      "name": "collect",
+      "line": 79
+    },
+    {
+      "file": "studio/fleet_dashboard.py",
+      "language": "python",
+      "kind": "function",
       "name": "main",
-      "line": 58
+      "line": 135
     },
     {
       "file": "studio/fleet_maintenance.py",
@@ -8397,99 +8404,113 @@
       "file": "studio/orchestrator.py",
       "language": "python",
       "kind": "function",
-      "name": "_asset_forge_prefetch",
+      "name": "_read_asset_forge_receipt",
       "line": 118
     },
     {
       "file": "studio/orchestrator.py",
       "language": "python",
       "kind": "function",
+      "name": "_asset_quality_status",
+      "line": 129
+    },
+    {
+      "file": "studio/orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_asset_forge_prefetch",
+      "line": 144
+    },
+    {
+      "file": "studio/orchestrator.py",
+      "language": "python",
+      "kind": "function",
       "name": "load_report",
-      "line": 202
+      "line": 267
     },
     {
       "file": "studio/orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "_remaining",
-      "line": 210
+      "line": 275
     },
     {
       "file": "studio/orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "_write_adaptation_handoff",
-      "line": 215
+      "line": 280
     },
     {
       "file": "studio/orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "_run_adaptation_pending",
-      "line": 221
+      "line": 286
     },
     {
       "file": "studio/orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "_run_adaptation_research",
-      "line": 238
+      "line": 303
     },
     {
       "file": "studio/orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "_run_adaptation_synthesis",
-      "line": 252
+      "line": 317
     },
     {
       "file": "studio/orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "_run_adaptation_benchmark",
-      "line": 266
-    },
-    {
-      "file": "studio/orchestrator.py",
-      "language": "python",
-      "kind": "function",
-      "name": "_run_adaptation_promotion",
-      "line": 282
-    },
-    {
-      "file": "studio/orchestrator.py",
-      "language": "python",
-      "kind": "function",
-      "name": "_run_adaptation_persistence",
-      "line": 295
-    },
-    {
-      "file": "studio/orchestrator.py",
-      "language": "python",
-      "kind": "function",
-      "name": "_run_adaptation_automerge",
-      "line": 309
-    },
-    {
-      "file": "studio/orchestrator.py",
-      "language": "python",
-      "kind": "function",
-      "name": "_stage_command",
       "line": 331
     },
     {
       "file": "studio/orchestrator.py",
       "language": "python",
       "kind": "function",
+      "name": "_run_adaptation_promotion",
+      "line": 347
+    },
+    {
+      "file": "studio/orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_run_adaptation_persistence",
+      "line": 360
+    },
+    {
+      "file": "studio/orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_run_adaptation_automerge",
+      "line": 374
+    },
+    {
+      "file": "studio/orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_stage_command",
+      "line": 396
+    },
+    {
+      "file": "studio/orchestrator.py",
+      "language": "python",
+      "kind": "function",
       "name": "run_registered_stages",
-      "line": 336
+      "line": 401
     },
     {
       "file": "studio/orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "run_project",
-      "line": 383
+      "line": 448
     },
     {
       "file": "studio/performance_qa.py",
@@ -19510,6 +19531,27 @@
       "line": 85
     },
     {
+      "file": "tests/test_fleet_dashboard.py",
+      "language": "python",
+      "kind": "class",
+      "name": "FleetDashboardTests",
+      "line": 13
+    },
+    {
+      "file": "tests/test_fleet_dashboard.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_collect_surfaces_regenerated_visual_quality",
+      "line": 14
+    },
+    {
+      "file": "tests/test_fleet_dashboard.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_collect_surfaces_low_visual_quality_failure",
+      "line": 54
+    },
+    {
       "file": "tests/test_fleet_maintenance.py",
       "language": "python",
       "kind": "class",
@@ -23937,7 +23979,7 @@
       "file": "tests/test_orchestrator.py",
       "language": "python",
       "kind": "function",
-      "name": "test_full_pipeline_reaches_finished",
+      "name": "test_asset_forge_batch_receipt_marks_regenerated_quality",
       "line": 123
     },
     {
@@ -23945,126 +23987,154 @@
       "language": "python",
       "kind": "function",
       "name": "runner",
-      "line": 127
+      "line": 134
+    },
+    {
+      "file": "tests/test_orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_asset_forge_failure_receipt_marks_low_quality",
+      "line": 168
+    },
+    {
+      "file": "tests/test_orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "runner",
+      "line": 179
+    },
+    {
+      "file": "tests/test_orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_full_pipeline_reaches_finished",
+      "line": 197
+    },
+    {
+      "file": "tests/test_orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "runner",
+      "line": 201
     },
     {
       "file": "tests/test_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "test_unregistered_stage_research_then_synthesis",
-      "line": 138
+      "line": 212
     },
     {
       "file": "tests/test_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "runner",
-      "line": 141
+      "line": 215
     },
     {
       "file": "tests/test_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "test_research_failure_prevents_synthesis",
-      "line": 175
+      "line": 249
     },
     {
       "file": "tests/test_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "runner",
-      "line": 178
+      "line": 252
     },
     {
       "file": "tests/test_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "test_adaptation_without_baseline_has_no_promotable_work_order",
-      "line": 191
+      "line": 265
     },
     {
       "file": "tests/test_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "runner",
-      "line": 194
+      "line": 268
     },
     {
       "file": "tests/test_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "test_stage_return_code_two_is_human_action_not_failure",
-      "line": 203
+      "line": 277
     },
     {
       "file": "tests/test_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "runner",
-      "line": 206
+      "line": 280
     },
     {
       "file": "tests/test_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "test_scheduler_rewind_can_revisit_release_build_boundedly",
-      "line": 230
-    },
-    {
-      "file": "tests/test_orchestrator.py",
-      "language": "python",
-      "kind": "function",
-      "name": "runner",
-      "line": 239
-    },
-    {
-      "file": "tests/test_orchestrator.py",
-      "language": "python",
-      "kind": "function",
-      "name": "test_successful_stage_must_advance",
-      "line": 291
-    },
-    {
-      "file": "tests/test_orchestrator.py",
-      "language": "python",
-      "kind": "function",
-      "name": "runner",
-      "line": 294
-    },
-    {
-      "file": "tests/test_orchestrator.py",
-      "language": "python",
-      "kind": "class",
-      "name": "GitHubRunnerTests",
-      "line": 303
-    },
-    {
-      "file": "tests/test_orchestrator.py",
-      "language": "python",
-      "kind": "function",
-      "name": "request",
       "line": 304
     },
     {
       "file": "tests/test_orchestrator.py",
       "language": "python",
       "kind": "function",
-      "name": "test_non_main_is_rejected_before_generation",
-      "line": 310
+      "name": "runner",
+      "line": 313
     },
     {
       "file": "tests/test_orchestrator.py",
       "language": "python",
       "kind": "function",
-      "name": "test_adapter_reports_complete_only_after_machine_completion",
-      "line": 314
+      "name": "test_successful_stage_must_advance",
+      "line": 365
     },
     {
       "file": "tests/test_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "runner",
-      "line": 317
+      "line": 368
+    },
+    {
+      "file": "tests/test_orchestrator.py",
+      "language": "python",
+      "kind": "class",
+      "name": "GitHubRunnerTests",
+      "line": 377
+    },
+    {
+      "file": "tests/test_orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "request",
+      "line": 378
+    },
+    {
+      "file": "tests/test_orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_non_main_is_rejected_before_generation",
+      "line": 384
+    },
+    {
+      "file": "tests/test_orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_adapter_reports_complete_only_after_machine_completion",
+      "line": 388
+    },
+    {
+      "file": "tests/test_orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "runner",
+      "line": 391
     },
     {
       "file": "tests/test_orchestrator_automerge.py",

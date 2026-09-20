@@ -165,6 +165,7 @@ test_existing_project.py
 test_file_lock.py
 test_fleet_capacity.py
 test_fleet_daemon.py
+test_fleet_dashboard.py
 test_fleet_maintenance.py
 test_fleet_metrics.py
 test_fleet_operations.py
@@ -4705,6 +4706,22 @@ sleeps = []
 rows = fleet_daemon.run_loop(
 ```
 
+## File: test_fleet_dashboard.py
+```python
+class FleetDashboardTests(unittest.TestCase)
+⋮----
+def test_collect_surfaces_regenerated_visual_quality(self)
+⋮----
+root = Path(td)
+project = root / "deadline-zero"
+⋮----
+result = collect(root)
+⋮----
+visual = result["projects"][0]["visual_assets"]
+⋮----
+def test_collect_surfaces_low_visual_quality_failure(self)
+```
+
 ## File: test_fleet_maintenance.py
 ```python
 class FleetMaintenanceTests(unittest.TestCase)
@@ -7267,6 +7284,12 @@ payload=json.loads(spec.read_text())
 production_calls=[call for call in calls if call and call[0]=='production-os']
 ⋮----
 prefetch=json.loads((out/'asset-forge-prefetch.json').read_text())
+⋮----
+def test_asset_forge_batch_receipt_marks_regenerated_quality(self)
+⋮----
+receipt_path = Path(args[args.index('--result-file')+1])
+⋮----
+def test_asset_forge_failure_receipt_marks_low_quality(self)
 ⋮----
 def test_full_pipeline_reaches_finished(self)
 ⋮----

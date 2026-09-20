@@ -2,7 +2,7 @@
   "area": "studio",
   "files": [
     {
-      "path": "studio/asset_forge_bridge.py",
+      "path": "studio/orchestrator.py",
       "reasons": [
         "changed",
         "changed-source",
@@ -10,11 +10,44 @@
         "impact",
         "symbol-indexed"
       ],
-      "score": 370
+      "score": 670
     },
     {
-      "path": "studio/orchestrator.py",
+      "path": "studio/fleet_dashboard.py",
       "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "symbol-indexed"
+      ],
+      "score": 460
+    },
+    {
+      "path": "studio/core.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 325
+    },
+    {
+      "path": "studio/agents/orchestrator.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 275
+    },
+    {
+      "path": "studio/stage_registry.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 200
+    },
+    {
+      "path": "studio/fleet_capacity.py",
+      "reasons": [
+        "dependency-neighbor",
         "impact",
         "reverse-dependency-neighbor",
         "symbol-indexed"
@@ -22,102 +55,93 @@
       "score": 195
     },
     {
-      "path": "studio/core.py",
+      "path": "studio/multi_engine_orchestrator.py",
       "reasons": [
-        "dependency-neighbor"
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
       ],
-      "score": 75
-    },
-    {
-      "path": "studio/stage_registry.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
+      "score": 185
     },
     {
       "path": "studio/ci_runner.py",
       "reasons": [
-        "reverse-dependency-neighbor"
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
       ],
-      "score": 30
+      "score": 180
     },
     {
-      "path": "studio/generic_project.py",
+      "path": "studio/fleet_daemon.py",
       "reasons": [
-        "reverse-dependency-neighbor"
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
       ],
-      "score": 30
-    },
-    {
-      "path": "studio/multi_engine_orchestrator.py",
-      "reasons": [
-        "reverse-dependency-neighbor"
-      ],
-      "score": 30
+      "score": 180
     },
     {
       "path": "studio/release_repair.py",
       "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 175
+    },
+    {
+      "path": "studio/generic_project.py",
+      "reasons": [
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 165
+    },
+    {
+      "path": "studio/fleet_metrics.py",
+      "reasons": [
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 150
+    },
+    {
+      "path": "studio/fleet_supervisor.py",
+      "reasons": [
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 140
+    },
+    {
+      "path": "studio/capacity_ledger.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 100
+    },
+    {
+      "path": "studio/execution_checkpoint.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 100
+    },
+    {
+      "path": "studio/fleet_supervisor_apply.py",
+      "reasons": [
+        "dependency-neighbor",
         "reverse-dependency-neighbor"
       ],
-      "score": 30
-    },
-    {
-      "path": "studio/adaptation.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 25
-    },
-    {
-      "path": "studio/architecture_benchmark.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 25
-    },
-    {
-      "path": "studio/architecture_evaluator.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 25
-    },
-    {
-      "path": "studio/architecture_learning.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 25
-    },
-    {
-      "path": "studio/architecture_obsolescence.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 25
-    },
-    {
-      "path": "studio/architecture_replacement_learning.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 25
-    },
-    {
-      "path": "studio/architecture_replacement_planner.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 25
-    },
-    {
-      "path": "studio/architecture_replacement_reputation.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 25
+      "score": 85
     }
   ],
   "generated_by": "dbrckk/repo-brain-v6",

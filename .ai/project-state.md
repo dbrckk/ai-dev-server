@@ -22,19 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T14:11:12Z
+Generated: 2026-09-20T15:06:58Z
 
 ### Git
 - Branch: `main`
-- Head: `39498888fdd9`
-- Commit date: 2026-09-20T16:10:57+02:00
-- Commit: test: cover automatic visual consistency policy
-- Tracked files: 819
+- Head: `75170a57b613`
+- Commit date: 2026-09-20T17:06:44+02:00
+- Commit: test: cover fleet visual quality dashboard
+- Tracked files: 820
 
 ### Recently changed files
+- `tests/test_fleet_dashboard.py`
+- `tests/test_orchestrator.py`
+- `studio/fleet_dashboard.py`
+- `studio/orchestrator.py`
 - `tests/test_asset_forge_bridge.py`
-- `studio/asset_forge_bridge.py`
-- `.github/workflows/asset-forge-batch-e2e.yml`
 
 ### Project signals
 - No common build descriptor detected

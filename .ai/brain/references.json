@@ -5,442 +5,3935 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "should_route_to_asset_forge": {
+    "_asset_quality": {
       "definition": {
-        "file": "studio/asset_forge_bridge.py",
-        "line": 15,
+        "file": "studio/fleet_dashboard.py",
+        "line": 12,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/asset_forge_bridge.py",
-          "line": 15,
-          "preview": "def should_route_to_asset_forge(task: dict) -> bool:",
+          "file": "studio/fleet_dashboard.py",
+          "line": 12,
+          "preview": "def _asset_quality(path: Path) -> dict:",
           "definition_candidate": true
         },
         {
-          "file": "studio/asset_forge_bridge.py",
-          "line": 55,
-          "preview": "if not should_route_to_asset_forge(task):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/asset_forge_bridge.py",
-          "line": 128,
-          "preview": "if should_route_to_asset_forge(task)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/asset_forge_bridge.py",
-          "line": 135,
-          "preview": "[task for task in tasks if should_route_to_asset_forge(task)],",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 25,
-          "preview": "from asset_forge_bridge import build_production_os_asset_batch, build_production_os_asset_dispatch, should_route_to_asset_forge",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 140,
-          "preview": "if should_route_to_asset_forge(candidate):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 146,
-          "preview": "selected=[item for item in candidates[:8] if should_route_to_asset_forge(item)]",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 1,
-          "preview": "from studio.asset_forge_bridge import build_production_os_asset_dispatch, should_route_to_asset_forge",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 6,
-          "preview": "assert should_route_to_asset_forge(task) is True",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 11,
-          "preview": "assert should_route_to_asset_forge(task) is False",
+          "file": "studio/fleet_dashboard.py",
+          "line": 87,
+          "preview": "asset_quality = _asset_quality(path)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 10
+      "occurrence_count": 2
     },
-    "_infer_asset_shape": {
+    "collect": {
       "definition": {
-        "file": "studio/asset_forge_bridge.py",
-        "line": 31,
+        "file": "studio/fleet_dashboard.py",
+        "line": 79,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/asset_forge_bridge.py",
-          "line": 31,
-          "preview": "def _infer_asset_shape(task: dict) -> tuple[str, str]:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/asset_forge_bridge.py",
-          "line": 57,
-          "preview": "inferred_type, inferred_format = _infer_asset_shape(task)",
+          "file": "studio/architecture_reputation_policy_github_collect.py",
+          "line": 98,
+          "preview": "def collect(plan: dict, *, token: str, repository: str, pull_request: int) -> dict:",
           "definition_candidate": false
         },
         {
-          "file": "studio/asset_forge_bridge.py",
-          "line": 138,
-          "preview": "inferred_type, inferred_format = _infer_asset_shape(task)",
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 18,
+          "preview": "collect as collect_github_attestation,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_capacity.py",
+          "line": 11,
+          "preview": "from fleet_dashboard import collect",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_capacity.py",
+          "line": 51,
+          "preview": "dashboard = collect(root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_daemon.py",
+          "line": 9,
+          "preview": "from fleet_dashboard import collect",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_daemon.py",
+          "line": 34,
+          "preview": "dashboard = collect(root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_dashboard.py",
+          "line": 79,
+          "preview": "def collect(root: Path | str = \"studio-output\") -> dict:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/fleet_dashboard.py",
+          "line": 139,
+          "preview": "report = collect(args.root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_metrics.py",
+          "line": 11,
+          "preview": "from fleet_dashboard import collect",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_metrics.py",
+          "line": 31,
+          "preview": "report = collect(root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_supervisor.py",
+          "line": 8,
+          "preview": "from fleet_dashboard import collect",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_supervisor.py",
+          "line": 16,
+          "preview": "dashboard = collect(root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_github_collect.py",
+          "line": 67,
+          "preview": "result=collector.collect(self.plan(False),token=\"t\",repository=\"o/r\",pull_request=7)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_github_collect.py",
+          "line": 77,
+          "preview": "result=collector.collect(self.plan(True),token=\"t\",repository=\"o/r\",pull_request=7)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_github_collect.py",
+          "line": 93,
+          "preview": "collector.collect(self.plan(False),token=\"t\",repository=\"o/r\",pull_request=7)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_github_collect.py",
+          "line": 116,
+          "preview": "collector.collect(self.plan(False),token=\"t\",repository=\"o/r\",pull_request=7)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_github_collect.py",
+          "line": 132,
+          "preview": "collector.collect(self.plan(False),token=\"t\",repository=\"o/r\",pull_request=7)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_github_collect.py",
+          "line": 145,
+          "preview": "collector.collect(self.plan(False),token=\"t\",repository=\"o/r\",pull_request=7)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_github_collect.py",
+          "line": 155,
+          "preview": "collector.collect(self.plan(False),token=\"t\",repository=\"o/r\",pull_request=7)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_github_collect.py",
+          "line": 165,
+          "preview": "collector.collect(self.plan(False),token=\"t\",repository=\"o/r\",pull_request=7)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_github_collect.py",
+          "line": 177,
+          "preview": "collector.collect(self.plan(False),token=\"t\",repository=\"o/r\",pull_request=7)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_reputation_policy_github_collect.py",
+          "line": 181,
+          "preview": "collector.collect(self.plan(),token=\"\",repository=\"o/r\",pull_request=7)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_capacity.py",
+          "line": 16,
+          "preview": "with patch(\"fleet_capacity.collect\", return_value={\"projects\": [",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_capacity.py",
+          "line": 28,
+          "preview": "with patch(\"fleet_capacity.collect\", return_value={\"projects\": [",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_capacity.py",
+          "line": 111,
+          "preview": "with patch(\"fleet_capacity.collect\", return_value={\"projects\": [",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_capacity.py",
+          "line": 159,
+          "preview": "with patch(\"fleet_capacity.collect\", return_value={\"projects\": [",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_capacity.py",
+          "line": 197,
+          "preview": "with patch(\"fleet_capacity.collect\", return_value={\"projects\": [",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_capacity.py",
+          "line": 230,
+          "preview": "patch(\"fleet_capacity.collect\", return_value={\"projects\": [",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_daemon.py",
+          "line": 13,
+          "preview": "with patch(\"fleet_daemon.collect\", return_value={\"summary\": {\"total\": 1}}), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_daemon.py",
+          "line": 29,
+          "preview": "with patch(\"fleet_daemon.collect\", return_value={\"summary\": {\"total\": 1}}), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_daemon.py",
+          "line": 45,
+          "preview": "with patch(\"fleet_daemon.collect\", return_value={\"summary\": {\"total\": 1}}), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_daemon.py",
+          "line": 67,
+          "preview": "with patch(\"fleet_daemon.collect\", return_value={\"summary\": {\"total\": 2}}), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_dashboard.py",
+          "line": 10,
+          "preview": "from fleet_dashboard import collect",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_dashboard.py",
+          "line": 45,
+          "preview": "result = collect(root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_dashboard.py",
+          "line": 82,
+          "preview": "result = collect(root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_metrics.py",
+          "line": 42,
+          "preview": "with patch(\"fleet_metrics.collect\", return_value=dashboard):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_operations.py",
+          "line": 60,
+          "preview": "report = fleet_dashboard.collect(root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_operations.py",
+          "line": 98,
+          "preview": "with patch(\"fleet_supervisor.collect\", return_value=dashboard):",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 38
+    },
+    "main": {
+      "definition": {
+        "file": "studio/fleet_dashboard.py",
+        "line": 135,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "scripts/preflight-production-os-worker.py",
+          "line": 192,
+          "preview": "def main() -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "scripts/preflight-production-os-worker.py",
+          "line": 200,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_contract.py",
+          "line": 133,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_contract.py",
+          "line": 141,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_learning.py",
+          "line": 400,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_learning.py",
+          "line": 411,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 273,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 295,
+          "preview": "sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_merge.py",
+          "line": 66,
+          "preview": "if pr.get(\"base\",{}).get(\"ref\")!=\"main\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_merge.py",
+          "line": 96,
+          "preview": "def main(argv=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_merge.py",
+          "line": 131,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_persist.py",
+          "line": 67,
+          "preview": "\"base\":\"main\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_persist.py",
+          "line": 170,
+          "preview": "\"base\":\"main\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_persist.py",
+          "line": 187,
+          "preview": "def main(argv=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_persist.py",
+          "line": 221,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_pipeline.py",
+          "line": 47,
+          "preview": "def main(argv=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_pipeline.py",
+          "line": 66,
+          "preview": "sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_postmerge.py",
+          "line": 3,
+          "preview": "Read-only verifier for the exact merge commit. It checks that main contains the merge,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_postmerge.py",
+          "line": 66,
+          "preview": "branch=requester(api+\"/branches/main\",token)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_postmerge_pipeline.py",
+          "line": 96,
+          "preview": "def main(argv=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_postmerge_pipeline.py",
+          "line": 127,
+          "preview": "sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_pr_package.py",
+          "line": 62,
+          "preview": "\"base_branch\":\"main\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_pr_validator.py",
+          "line": 72,
+          "preview": "if pr.get(\"base\",{}).get(\"ref\")!=\"main\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_rollback.py",
+          "line": 3,
+          "preview": "Creates a revert commit and a draft rollback PR. It never force-pushes main and never merges",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_rollback.py",
+          "line": 37,
+          "preview": "branch=requester(api+\"/branches/main\",token)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_rollback.py",
+          "line": 40,
+          "preview": "raise ReplacementRollbackError(\"main advanced after replacement merge; automatic revert preparation blocked\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_rollback.py",
+          "line": 68,
+          "preview": "\"base\":\"main\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_rollback.py",
+          "line": 93,
+          "preview": "def main(argv=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_rollback.py",
+          "line": 110,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_synthesis.py",
+          "line": 181,
+          "preview": "def main(argv=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_synthesis.py",
+          "line": 200,
+          "preview": "sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_approval.py",
+          "line": 124,
+          "preview": "if pr_identity.get(\"base_ref\")!=\"main\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_approval.py",
+          "line": 125,
+          "preview": "raise ApprovalProvenanceError(\"github PR base is not main\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_collect.py",
+          "line": 94,
+          "preview": "if target[\"base_ref\"]!=\"main\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_collect.py",
+          "line": 95,
+          "preview": "raise GitHubAttestationCollectionError(\"GitHub PR review target base is not main\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration.py",
+          "line": 436,
+          "preview": "if target.get(\"base_ref\")!=\"main\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration.py",
+          "line": 437,
+          "preview": "raise ReputationPolicyMigrationError(\"GitHub review target base must be main\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 32,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 131,
+          "preview": "sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_review.py",
+          "line": 52,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_review.py",
+          "line": 71,
+          "preview": "sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_stage.py",
+          "line": 57,
+          "preview": "def main() -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_stage.py",
+          "line": 74,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/billing_stage.py",
+          "line": 45,
+          "preview": "def main() -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/billing_stage.py",
+          "line": 67,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_qa.py",
+          "line": 53,
+          "preview": "path = root / 'android/app/src/main/AndroidManifest.xml'",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 42,
+          "preview": "\"state\":\"all\",\"head\":_repo_owner(github)+\":\"+branch,\"base\":\"main\",\"per_page\":20",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 58,
+          "preview": "raise CapabilityRegistryPromotionPersistError(\"main tree missing\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 62,
+          "preview": "raise CapabilityRegistryPromotionPersistError(\"main tree invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 87,
+          "preview": "raise CapabilityRegistryPromotionPersistError(\"main tree missing\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 91,
+          "preview": "raise CapabilityRegistryPromotionPersistError(\"main tree invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 126,
+          "preview": "raise CapabilityRegistryPromotionPersistError(\"main sha invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 199,
+          "preview": "\"head\":branch,\"base\":\"main\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_review.py",
+          "line": 34,
+          "preview": "if pr.get(\"base\", {}).get(\"ref\") != \"main\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_review.py",
+          "line": 23,
+          "preview": "if pr.get(\"base\",{}).get(\"ref\")!=\"main\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_stage.py",
+          "line": 39,
+          "preview": "def main() -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_stage.py",
+          "line": 56,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_scheduler.py",
+          "line": 401,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_scheduler.py",
+          "line": 493,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 183,
+          "preview": "def main():",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 184,
+          "preview": "if os.environ.get('CIRCLE_BRANCH') != 'main':",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 185,
+          "preview": "raise StudioError('Privileged CircleCI jobs require main')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 201,
+          "preview": "return provider_probe.main()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 207,
+          "preview": "sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 27,
+          "preview": "'implementation': 'Senior Flutter engineering team: implement the entire agreed app, real navigation, state, persistence when needed, error handling and meaningful widget/unit test",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 40,
+          "preview": "manifest = root / 'android/app/src/main/AndroidManifest.xml'",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 170,
+          "preview": "def main() -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 185,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_stage.py",
+          "line": 45,
+          "preview": "def main() -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_stage.py",
+          "line": 60,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/engine_detect.py",
+          "line": 13,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/engine_detect.py",
+          "line": 32,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/engine_entry.py",
+          "line": 76,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/engine_entry.py",
+          "line": 97,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 59,
+          "preview": "if pr.get('base',{}).get('ref')!='main' or pr.get('head',{}).get('ref')!=branch or pr.get('head',{}).get('sha')!=head_sha: raise AutoMergeError('Promotion pull request head changed",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 92,
+          "preview": "def main(argv=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 104,
+          "preview": "if __name__=='__main__': sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 142,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 166,
+          "preview": "sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_isolated_runner.py",
+          "line": 110,
+          "preview": "def main(argv=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_isolated_runner.py",
+          "line": 116,
+          "preview": "if __name__=='__main__': sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_pending.py",
+          "line": 20,
+          "preview": "query = urllib.parse.urlencode({'state':'all','base':'main','per_page':100})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_pending.py",
+          "line": 62,
+          "preview": "def main(argv=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_pending.py",
+          "line": 74,
+          "preview": "if __name__=='__main__': sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_persist.py",
+          "line": 65,
+          "preview": "query = urllib.parse.urlencode({'state': 'all', 'head': owner + ':' + branch, 'base': 'main', 'per_page': 20})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_persist.py",
+          "line": 162,
+          "preview": "'title': f'Promote autonomous capability: {gap}', 'head': branch, 'base': 'main',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_persist.py",
+          "line": 169,
+          "preview": "def main(argv=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_persist.py",
+          "line": 181,
+          "preview": "if __name__ == '__main__': sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_promotion.py",
+          "line": 155,
+          "preview": "def main(argv=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_promotion.py",
+          "line": 182,
+          "preview": "sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_research.py",
+          "line": 388,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_research.py",
+          "line": 410,
+          "preview": "sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_rollback.py",
+          "line": 101,
+          "preview": "def main(argv=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_rollback.py",
+          "line": 121,
+          "preview": "sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_stage_runner.py",
+          "line": 33,
+          "preview": "def main(argv=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_stage_runner.py",
+          "line": 42,
+          "preview": "sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_synthesis.py",
+          "line": 62,
+          "preview": "def main(argv=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_synthesis.py",
+          "line": 68,
+          "preview": "if __name__=='__main__': sys.exit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fault_injection_smoke.py",
+          "line": 22,
+          "preview": "def main() -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fault_injection_smoke.py",
+          "line": 118,
+          "preview": "\"base\": {\"ref\": \"main\"},",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fault_injection_smoke.py",
+          "line": 139,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_daemon.py",
+          "line": 107,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_daemon.py",
+          "line": 141,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_dashboard.py",
+          "line": 135,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/fleet_dashboard.py",
+          "line": 145,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_maintenance.py",
+          "line": 60,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_maintenance.py",
+          "line": 70,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_metrics.py",
+          "line": 80,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_metrics.py",
+          "line": 91,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_regression.py",
+          "line": 44,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_regression.py",
+          "line": 54,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_supervisor.py",
+          "line": 54,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_supervisor.py",
+          "line": 64,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_supervisor_apply.py",
+          "line": 117,
+          "preview": "def main(argv=None) -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_supervisor_apply.py",
+          "line": 135,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_persist.py",
+          "line": 42,
+          "preview": "query=urllib.parse.urlencode({\"state\":\"all\",\"head\":parts[1]+\":\"+branch,\"base\":\"main\",\"per_page\":20})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_persist.py",
+          "line": 115,
+          "preview": "\"head\":branch,\"base\":\"main\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_smoke.py",
+          "line": 31,
+          "preview": "\"if __name__=='__main__': unittest.main()\\n\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_smoke.py",
+          "line": 140,
+          "preview": "def main() -> int:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_smoke.py",
+          "line": 155,
+          "preview": "raise SystemExit(main())",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 120
+    },
+    "_recommendation_context": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 27,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/orchestrator.py",
+          "line": 27,
+          "preview": "def _recommendation_context(request_path):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 410,
+          "preview": "recommend('adaptation',project_out,**_recommendation_context(request_path))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 455,
+          "preview": "recommend('planning',project_out,**_recommendation_context(request_path))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 467,
+          "preview": "recommend('testing',project_out,**_recommendation_context(request_path))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_star_recommendations.py",
+          "line": 13,
+          "preview": "from orchestrator import _recommendation_context",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_star_recommendations.py",
+          "line": 173,
+          "preview": "result = _recommendation_context(path)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "_load_recommendations": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 40,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/orchestrator.py",
+          "line": 40,
+          "preview": "def _load_recommendations(project_out):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 61,
+          "preview": "recommendations=_load_recommendations(project_out)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_evaluate_architecture": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 50,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/orchestrator.py",
+          "line": 50,
+          "preview": "def _evaluate_architecture(report,project_out):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 443,
+          "preview": "updated=load_report(project_out); _evaluate_architecture(updated,project_out)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 461,
+          "preview": "if report: _evaluate_architecture(report,project_out)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 464,
+          "preview": "_evaluate_architecture(report,project_out)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 470,
+          "preview": "report=load_report(project_out); _evaluate_architecture(report,project_out)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 472,
+          "preview": "report=load_report(project_out); _evaluate_architecture(report,project_out)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "_read_asset_forge_receipt": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 118,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/orchestrator.py",
+          "line": 118,
+          "preview": "def _read_asset_forge_receipt(path):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 205,
+          "preview": "receipt=_read_asset_forge_receipt(receipt_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 235,
+          "preview": "receipt=_read_asset_forge_receipt(receipt_path)",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 3
     },
-    "build_production_os_asset_dispatch": {
+    "_asset_quality_status": {
       "definition": {
-        "file": "studio/asset_forge_bridge.py",
-        "line": 48,
+        "file": "studio/orchestrator.py",
+        "line": 129,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/asset_forge_bridge.py",
-          "line": 48,
-          "preview": "def build_production_os_asset_dispatch(",
+          "file": "studio/orchestrator.py",
+          "line": 129,
+          "preview": "def _asset_quality_status(receipt):",
           "definition_candidate": true
         },
         {
-          "file": "studio/asset_forge_bridge.py",
-          "line": 121,
-          "preview": "build_production_os_asset_dispatch(",
+          "file": "studio/orchestrator.py",
+          "line": 212,
+          "preview": "'quality_status':_asset_quality_status(receipt),",
           "definition_candidate": false
         },
         {
           "file": "studio/orchestrator.py",
-          "line": 25,
-          "preview": "from asset_forge_bridge import build_production_os_asset_batch, build_production_os_asset_dispatch, should_route_to_asset_forge",
+          "line": 243,
+          "preview": "'quality_status':_asset_quality_status(receipt),",
           "definition_candidate": false
         },
         {
           "file": "studio/orchestrator.py",
-          "line": 179,
-          "preview": "route=build_production_os_asset_dispatch(",
+          "line": 250,
+          "preview": "statuses=[_asset_quality_status(value) for value in receipts if value is not None]",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "_asset_forge_prefetch": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 144,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/orchestrator.py",
+          "line": 144,
+          "preview": "def _asset_forge_prefetch(request_path,project_out,runner,deadline,clock):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 450,
+          "preview": "asset_prefetch=_asset_forge_prefetch(request_path,project_out,runner,deadline,clock)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "load_report": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 267,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 10,
+          "preview": "from orchestrator import load_report, run_project as run_flutter_project",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 1,
-          "preview": "from studio.asset_forge_bridge import build_production_os_asset_dispatch, should_route_to_asset_forge",
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 75,
+          "preview": "report=load_report(project_out) if (project_out/'report.json').is_file() else {}",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 15,
-          "preview": "route = build_production_os_asset_dispatch(",
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 92,
+          "preview": "report=load_report(project_out) if (project_out/'report.json').is_file() else {}",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_asset_forge_bridge.py",
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 107,
+          "preview": "report=load_report(project_out) if (project_out/'report.json').is_file() else {}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 125,
+          "preview": "report=load_report(project_out) if (project_out/'report.json').is_file() else {}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 136,
+          "preview": "report=load_report(project_out) if (project_out/'report.json').is_file() else {}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 147,
+          "preview": "report=load_report(project_out) if (project_out/'report.json').is_file() else {}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 164,
+          "preview": "report=load_report(project_out) if (project_out/'report.json').is_file() else {}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 267,
+          "preview": "def load_report(project_out):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 439,
+          "preview": "updated=load_report(project_out)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 442,
+          "preview": "if result.returncode!=0: return {'status':stage.failed_status,'report':load_report(project_out),'next_stage':name}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 443,
+          "preview": "updated=load_report(project_out); _evaluate_architecture(updated,project_out)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 460,
+          "preview": "report=load_report(project_out) if (project_out/'report.json').is_file() else {}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 463,
+          "preview": "report=load_report(project_out)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 466,
+          "preview": "except TimeoutError: return {'status':'deferred_release','report':load_report(project_out),'next_stage':'release_build'}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 470,
+          "preview": "report=load_report(project_out); _evaluate_architecture(report,project_out)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 472,
+          "preview": "report=load_report(project_out); _evaluate_architecture(report,project_out)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 17
+    },
+    "_remaining": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 275,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 14,
+          "preview": "def _remaining(deadline, clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 21,
+          "preview": "try: remaining=_remaining(deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 36,
+          "preview": "try: remaining=_remaining(deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 199,
+          "preview": "remaining=_remaining(deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 229,
+          "preview": "remaining=_remaining(deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 275,
+          "preview": "def _remaining(deadline,clock):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 290,
+          "preview": "try: remaining=_remaining(deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 306,
+          "preview": "try: remaining=_remaining(deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 320,
+          "preview": "try: remaining=_remaining(deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 334,
+          "preview": "try: remaining=_remaining(deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 350,
+          "preview": "try: remaining=_remaining(deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 364,
+          "preview": "try: remaining=_remaining(deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 378,
+          "preview": "try: remaining=_remaining(deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 435,
+          "preview": "try: remaining=_remaining(deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 456,
+          "preview": "try: remaining=_remaining(deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 465,
+          "preview": "try: remaining=_remaining(deadline,clock)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 16
+    },
+    "_write_adaptation_handoff": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 280,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/orchestrator.py",
+          "line": 280,
+          "preview": "def _write_adaptation_handoff(report,project_out,baseline_sha):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 411,
+          "preview": "request=_write_adaptation_handoff(report,project_out,baseline_sha)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_automerge_orchestration.py",
+          "line": 18,
+          "preview": "patch('orchestrator._write_adaptation_handoff',return_value={'status':'adaptation_required'}), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_automerge_orchestration.py",
           "line": 32,
-          "preview": "route = build_production_os_asset_dispatch(",
+          "preview": "patch('orchestrator._write_adaptation_handoff',return_value={'status':'adaptation_required'}), \\",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 42,
-          "preview": "route = build_production_os_asset_dispatch(",
+          "file": "tests/test_evolution_automerge_orchestration.py",
+          "line": 45,
+          "preview": "patch('orchestrator._write_adaptation_handoff',return_value={'status':'adaptation_required'}), \\",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 5
+    },
+    "_run_adaptation_pending": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 286,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/orchestrator.py",
+          "line": 286,
+          "preview": "def _run_adaptation_pending(project_out,deadline,runner,clock):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 413,
+          "preview": "pending_status=_run_adaptation_pending(project_out,deadline,runner,clock)",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 54,
-          "preview": "route = build_production_os_asset_dispatch(",
+          "file": "tests/test_evolution_automerge_orchestration.py",
+          "line": 19,
+          "preview": "patch('orchestrator._run_adaptation_pending',return_value='pending_merge'), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_automerge_orchestration.py",
+          "line": 33,
+          "preview": "patch('orchestrator._run_adaptation_pending',return_value='pending_merge'), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_automerge_orchestration.py",
+          "line": 46,
+          "preview": "patch('orchestrator._run_adaptation_pending',return_value='blocked'), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_pending.py",
+          "line": 12,
+          "preview": "from orchestrator import _run_adaptation_pending",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_pending.py",
+          "line": 67,
+          "preview": "with patch.dict('os.environ',{'STUDIO_CI_PROVIDER':'github'},clear=True): status=_run_adaptation_pending(out,100,runner,lambda:0)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 7
+    },
+    "_run_adaptation_research": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 303,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/orchestrator.py",
+          "line": 303,
+          "preview": "def _run_adaptation_research(project_out,deadline,runner,clock):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 419,
+          "preview": "research_status=_run_adaptation_research(project_out,deadline,runner,clock); synthesis_status='not_ready'; benchmark_status='not_ready'; promotion_status='not_ready'; persistence_s",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_automerge_orchestration.py",
+          "line": 21,
+          "preview": "patch('orchestrator._run_adaptation_research') as research:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_automerge_orchestration.py",
+          "line": 35,
+          "preview": "patch('orchestrator._run_adaptation_research') as research:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_automerge_orchestration.py",
+          "line": 47,
+          "preview": "patch('orchestrator._run_adaptation_research') as research:",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 5
+    },
+    "_run_adaptation_synthesis": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 317,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/orchestrator.py",
+          "line": 317,
+          "preview": "def _run_adaptation_synthesis(project_out,deadline,runner,clock):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 420,
+          "preview": "if research_status=='complete': synthesis_status=_run_adaptation_synthesis(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_run_adaptation_benchmark": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 331,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/orchestrator.py",
+          "line": 331,
+          "preview": "def _run_adaptation_benchmark(project_out,deadline,runner,clock):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 421,
+          "preview": "if synthesis_status=='validated': benchmark_status=_run_adaptation_benchmark(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_run_adaptation_promotion": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 347,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/orchestrator.py",
+          "line": 347,
+          "preview": "def _run_adaptation_promotion(project_out,deadline,runner,clock):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 422,
+          "preview": "if benchmark_status=='approved': promotion_status=_run_adaptation_promotion(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_run_adaptation_persistence": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 360,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/orchestrator.py",
+          "line": 360,
+          "preview": "def _run_adaptation_persistence(project_out,deadline,runner,clock):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 423,
+          "preview": "if promotion_status=='promoted': persistence_status=_run_adaptation_persistence(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_persist.py",
+          "line": 13,
+          "preview": "from orchestrator import _run_adaptation_persistence",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_persist.py",
+          "line": 83,
+          "preview": "with patch.dict('os.environ',{'STUDIO_CI_PROVIDER':'github'},clear=True): status=_run_adaptation_persistence(out,100,runner,lambda:0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_persist.py",
+          "line": 89,
+          "preview": "with patch.dict('os.environ',{'STUDIO_CI_PROVIDER':'circleci'},clear=True): status=_run_adaptation_persistence(Path(tmp),100,lambda args,timeout:calls.append(args),lambda:0)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 5
+    },
+    "_run_adaptation_automerge": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 374,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/orchestrator.py",
+          "line": 374,
+          "preview": "def _run_adaptation_automerge(project_out,deadline,runner,clock):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 415,
+          "preview": "automerge_status=_run_adaptation_automerge(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 424,
+          "preview": "if persistence_status=='persisted': automerge_status=_run_adaptation_automerge(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_automerge_orchestration.py",
+          "line": 20,
+          "preview": "patch('orchestrator._run_adaptation_automerge',return_value='merged') as merge, \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_automerge_orchestration.py",
+          "line": 34,
+          "preview": "patch('orchestrator._run_adaptation_automerge',return_value='awaiting_checks'), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator_automerge.py",
+          "line": 12,
+          "preview": "from orchestrator import _run_adaptation_automerge",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator_automerge.py",
+          "line": 27,
+          "preview": "status=_run_adaptation_automerge(out,1000,runner,lambda:0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator_automerge.py",
+          "line": 38,
+          "preview": "status=_run_adaptation_automerge(Path(tmp),100,lambda args,timeout:calls.append(args),lambda:0)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 8
+    },
+    "_stage_command": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 396,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/orchestrator.py",
+          "line": 396,
+          "preview": "def _stage_command(name,stage,request_path,work,project_out):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 437,
+          "preview": "result=runner(_stage_command(name,stage,request_path,work,project_out),timeout=remaining)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "run_registered_stages": {
+      "definition": {
+        "file": "studio/orchestrator.py",
+        "line": 401,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/ci_runner.py",
+          "line": 16,
+          "preview": "from orchestrator import run_project, run_registered_stages as _shared_run_registered_stages",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 401,
+          "preview": "def run_registered_stages(request_path,project_out,work,report,deadline,runner,clock=time.monotonic,baseline_sha=None):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 473,
+          "preview": "return run_registered_stages(request_path,project_out,work,report,deadline,runner,clock,baseline_sha)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_automerge_orchestration.py",
+          "line": 9,
+          "preview": "from orchestrator import run_registered_stages",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_automerge_orchestration.py",
+          "line": 22,
+          "preview": "result=run_registered_stages('request.json',out,tmp,report,100,lambda *a,**k:None,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_automerge_orchestration.py",
+          "line": 36,
+          "preview": "result=run_registered_stages('request.json',Path(tmp),tmp,report,100,lambda *a,**k:None,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_automerge_orchestration.py",
+          "line": 48,
+          "preview": "result=run_registered_stages('request.json',Path(tmp),tmp,report,100,lambda *a,**k:None,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 13,
+          "preview": "from orchestrator import run_project, run_registered_stages",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 348,
+          "preview": "result = run_registered_stages(",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 9
     },
-    "build_production_os_asset_batch": {
+    "run_project": {
       "definition": {
-        "file": "studio/asset_forge_bridge.py",
-        "line": 113,
+        "file": "studio/orchestrator.py",
+        "line": 448,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/asset_forge_bridge.py",
-          "line": 113,
-          "preview": "def build_production_os_asset_batch(",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 25,
-          "preview": "from asset_forge_bridge import build_production_os_asset_batch, build_production_os_asset_dispatch, should_route_to_asset_forge",
+          "file": "studio/autonomous_project.py",
+          "line": 218,
+          "preview": "from .multi_engine_orchestrator import run_project as run_once",
           "definition_candidate": false
         },
         {
-          "file": "studio/orchestrator.py",
-          "line": 152,
-          "preview": "batch=build_production_os_asset_batch(",
+          "file": "studio/autonomous_project.py",
+          "line": 220,
+          "preview": "from multi_engine_orchestrator import run_project as run_once",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 70,
-          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "file": "studio/ci_runner.py",
+          "line": 16,
+          "preview": "from orchestrator import run_project, run_registered_stages as _shared_run_registered_stages",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 71,
-          "preview": "batch = build_production_os_asset_batch(",
+          "file": "studio/ci_runner.py",
+          "line": 90,
+          "preview": "return run_project(project['file'], project_out, work, runner, deadline, clock, baseline_sha)",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 94,
-          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "file": "studio/generic_project.py",
+          "line": 217,
+          "preview": "def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict:",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 95,
-          "preview": "batch = build_production_os_asset_batch(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_asset_forge_bridge.py",
+          "file": "studio/generic_smoke.py",
           "line": 116,
-          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "preview": "result=generic_project.run_project(",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_asset_forge_bridge.py",
+          "file": "studio/github_runner.py",
+          "line": 52,
+          "preview": "from multi_engine_orchestrator import run_project as run_multi_engine_project",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 10,
+          "preview": "from orchestrator import load_report, run_project as run_flutter_project",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 11,
+          "preview": "from generic_project import run_project as run_generic_project",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 41,
+          "preview": "def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 448,
+          "preview": "def run_project(request_path,project_out,work,runner,deadline,clock=time.monotonic,baseline_sha=None):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 611,
+          "preview": "run_project=None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 619,
+          "preview": "if run_project is None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 620,
+          "preview": "from github_runner import run as run_project",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 695,
+          "preview": "summary = run_project(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 11,
+          "preview": "from multi_engine_orchestrator import run_project",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 28,
+          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 91,
+          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 98,
+          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 109,
+          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
           "line": 117,
-          "preview": "batch = build_production_os_asset_batch(",
+          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_asset_forge_bridge.py",
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 125,
+          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 132,
+          "preview": "run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
           "line": 138,
-          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "preview": "run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 139,
-          "preview": "batch = build_production_os_asset_batch(",
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 145,
+          "preview": "run_project(str(req),root/'out',str(root/'work'),runner,100,lambda:0,'a'*40)",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 162,
-          "preview": "from asset_forge_bridge import build_production_os_asset_batch",
+          "file": "tests/test_orchestrator.py",
+          "line": 13,
+          "preview": "from orchestrator import run_project, run_registered_stages",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 163,
-          "preview": "batch = build_production_os_asset_batch(",
+          "file": "tests/test_orchestrator.py",
+          "line": 70,
+          "preview": "result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 114,
+          "preview": "result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 161,
+          "preview": "result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 191,
+          "preview": "result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 205,
+          "preview": "result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 237,
+          "preview": "result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 259,
+          "preview": "result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 272,
+          "preview": "result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, None)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 299,
+          "preview": "result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 374,
+          "preview": "run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_local_e2e.py",
+          "line": 157,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 209,
+          "preview": "run_project=lambda *args, **kwargs: self.fail(\"runner must not execute\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 254,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 283,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 334,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 356,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 504,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 546,
+          "preview": "run_project=runner,",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 13
+      "occurrence_count": 44
     },
-    "test_routes_premium_visual_task": {
+    "FleetDashboardTests": {
       "definition": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "line": 4,
-        "kind": "function",
+        "file": "tests/test_fleet_dashboard.py",
+        "line": 13,
+        "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 4,
-          "preview": "def test_routes_premium_visual_task():",
+          "file": "tests/test_fleet_dashboard.py",
+          "line": 13,
+          "preview": "class FleetDashboardTests(unittest.TestCase):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_ignores_plain_code_task": {
+    "test_collect_surfaces_regenerated_visual_quality": {
       "definition": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "line": 9,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 9,
-          "preview": "def test_ignores_plain_code_task():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_builds_production_os_dispatch_contract": {
-      "definition": {
-        "file": "tests/test_asset_forge_bridge.py",
+        "file": "tests/test_fleet_dashboard.py",
         "line": 14,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_asset_forge_bridge.py",
+          "file": "tests/test_fleet_dashboard.py",
           "line": 14,
-          "preview": "def test_builds_production_os_dispatch_contract():",
+          "preview": "def test_collect_surfaces_regenerated_visual_quality(self):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_premium_route_defaults_to_primary_importance": {
+    "test_collect_surfaces_low_visual_quality_failure": {
       "definition": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "line": 31,
+        "file": "tests/test_fleet_dashboard.py",
+        "line": 54,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 31,
-          "preview": "def test_premium_route_defaults_to_primary_importance():",
+          "file": "tests/test_fleet_dashboard.py",
+          "line": 54,
+          "preview": "def test_collect_surfaces_low_visual_quality_failure(self):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_explicit_secondary_importance_is_preserved": {
+    "OrchestratorTests": {
       "definition": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "line": 41,
-        "kind": "function",
+        "file": "tests/test_orchestrator.py",
+        "line": 19,
+        "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 41,
-          "preview": "def test_explicit_secondary_importance_is_preserved():",
+          "file": "tests/test_orchestrator.py",
+          "line": 19,
+          "preview": "class OrchestratorTests(unittest.TestCase):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_route_includes_repository_delivery_target": {
+    "payload_for": {
       "definition": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "line": 53,
+        "file": "tests/test_orchestrator.py",
+        "line": 20,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 53,
-          "preview": "def test_route_includes_repository_delivery_target():",
+          "file": "tests/test_ci.py",
+          "line": 55,
+          "preview": "def payload_for(self, args):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 85,
+          "preview": "(project_out / 'report.json').write_text(json.dumps(self.payload_for(args)))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 103,
+          "preview": "(project_out / 'report.json').write_text(json.dumps(self.payload_for(args)))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 124,
+          "preview": "(project_out / 'report.json').write_text(json.dumps(self.payload_for(args)))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 20,
+          "preview": "def payload_for(self, args):",
+          "definition_candidate": true
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 203,
+          "preview": "(out / 'report.json').write_text(json.dumps(self.payload_for(args)))",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "missing_report": {
+      "definition": {
+        "file": "tests/test_orchestrator.py",
+        "line": 35,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 35,
+          "preview": "def missing_report(self):",
+          "definition_candidate": true
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 235,
+          "preview": "report = {'status': 'validated_preview'} if 'studio/run.py' in args else self.missing_report()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 257,
+          "preview": "report = {'status': 'validated_preview'} if 'studio/run.py' in args else self.missing_report()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 270,
+          "preview": "report = {'status': 'validated_preview'} if 'studio/run.py' in args else self.missing_report()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "test_premium_visual_request_prefetches_asset_forge_before_preview": {
+      "definition": {
+        "file": "tests/test_orchestrator.py",
+        "line": 43,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 43,
+          "preview": "def test_premium_visual_request_prefetches_asset_forge_before_preview(self):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_batch_preserves_explicit_asset_dependencies": {
+    "runner": {
       "definition": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "line": 69,
+        "file": "tests/test_orchestrator.py",
+        "line": 52,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 69,
-          "preview": "def test_batch_preserves_explicit_asset_dependencies():",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_batch_infers_parent_asset_dependency": {
-      "definition": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "line": 93,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+          "file": "studio/android_signing.py",
+          "line": 112,
+          "preview": "runner=subprocess.run,",
+          "definition_candidate": false
+        },
         {
-          "file": "tests/test_asset_forge_bridge.py",
+          "file": "studio/android_signing.py",
+          "line": 144,
+          "preview": "result = runner(sign, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=180)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/android_signing.py",
+          "line": 150,
+          "preview": "verify = runner(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/android_signing.py",
+          "line": 159,
+          "preview": "cert = runner(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/autonomous_project.py",
+          "line": 173,
+          "preview": "runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/autonomous_project.py",
+          "line": 271,
+          "preview": "request_path, project_out, work, runner, deadline, clock, baseline_sha",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 79,
+          "preview": "def _run_registered_stages(project, project_out, work, report, deadline, runner, clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 82,
+          "preview": "project['file'], project_out, work, report, deadline, runner, clock,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 88,
+          "preview": "def _run_project_for_queue(project, project_out, work, runner, deadline, clock, baseline_sha):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 90,
+          "preview": "return run_project(project['file'], project_out, work, runner, deadline, clock, baseline_sha)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
           "line": 93,
-          "preview": "def test_batch_infers_parent_asset_dependency():",
-          "definition_candidate": true
+          "preview": "project['file'], project_out, work, runner, deadline, clock, baseline_sha,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 109,
+          "preview": "runner=bounded_run, clock=time.monotonic):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 156,
+          "preview": "result = _run_project_for_queue(project, project_out, work, runner, deadline, clock, baseline_sha)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/engine_entry.py",
+          "line": 1,
+          "preview": "\"\"\"Trusted preview dispatcher preserving the mature Flutter runner unchanged.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_pending.py",
+          "line": 1,
+          "preview": "\"\"\"Recover a durable content-bound GitHub evolution across runner restarts.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_supervisor_apply.py",
+          "line": 42,
+          "preview": "runner=bounded_run,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_supervisor_apply.py",
+          "line": 95,
+          "preview": "runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_sandbox.py",
+          "line": 1,
+          "preview": "\"\"\"Bounded generic command runner with explicit network and secret isolation.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 237,
+          "preview": "def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=time.monotonic,budget_seconds=85*60,baseline_sha:str|None=None)->dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 531,
+          "preview": "str(request_path),out,work,runner,deadline,clock,baseline_sha,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 553,
+          "preview": "str(request_path),out,improve_work,runner,deadline,clock,baseline_sha",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 566,
+          "preview": "# checkpointed before the runner exits.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_android_export.py",
+          "line": 96,
+          "preview": "def export_debug_apk(project_root: Path, binary: Path, templates: Path, runner=subprocess.run, timeout=900, artifact_path: Path | None=None) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_android_export.py",
+          "line": 117,
+          "preview": "try: result = runner(command, env=_host_env(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_play_stage.py",
+          "line": 98,
+          "preview": "\"Set STUDIO_PLAY_COMMIT_APPROVED=1 in the trusted runner to authorize the Play edit commit.\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 3,
+          "preview": "The runner checkpoints only to studio/<request-id>. It never updates the target default",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_release_artifact.py",
+          "line": 90,
+          "preview": "runner=subprocess.run,timeout=1200)->dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_release_artifact.py",
+          "line": 105,
+          "preview": "try: result=runner(command,env=_host_env(),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_runtime.py",
+          "line": 142,
+          "preview": "def validate(project_root: Path, binary: Path, runner=subprocess.run, timeout=600) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_runtime.py",
+          "line": 151,
+          "preview": "result = runner(command, env=_host_env(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_runtime_journeys.py",
+          "line": 163,
+          "preview": "def run_journeys(project_root: Path, binary: Path, journeys: list[dict], runner=subprocess.run, timeout=600) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_runtime_journeys.py",
+          "line": 176,
+          "preview": "result=runner(command,env=_host_env(),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 3,
+          "preview": "A temporary project copy is instrumented with a trusted scene runner. The debug APK",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 155,
+          "preview": "exporter=export_debug_apk, runner=_run, sleeper=time.sleep) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 166,
+          "preview": "devices=runner([adb,'devices'],timeout=30)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 171,
+          "preview": "runner([adb,'-s',serial,'shell','settings','put','global','airplane_mode_on','1'],timeout=30)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 172,
+          "preview": "runner([adb,'-s',serial,'shell','am','broadcast','-a','android.intent.action.AIRPLANE_MODE','--ez','state','true'],timeout=30)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 173,
+          "preview": "install_result=runner([adb,'-s',serial,'install','-r','-t',str(apk)],timeout=180)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 175,
+          "preview": "runner([adb,'-s',serial,'logcat','-c'],timeout=30)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 176,
+          "preview": "launch=runner([adb,'-s',serial,'shell','monkey','-p',package,'-c','android.intent.category.LAUNCHER','1'],timeout=60)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 179,
+          "preview": "logs=runner([adb,'-s',serial,'logcat','-d','-v','brief'],timeout=60)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/improvement_executor.py",
+          "line": 38,
+          "preview": "raise ImprovementExecutionError(\"project cycle runner invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 20,
+          "preview": "def _detect(request_path,project_out,runner,deadline,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 23,
+          "preview": "result=runner([sys.executable,'studio/engine_detect.py',request_path,'--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 35,
+          "preview": "def _run_stage(script,request_path,project_out,work,runner,deadline,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 38,
+          "preview": "return runner([sys.executable,script,request_path,'--work',work,'--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 41,
+          "preview": "def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 43,
+          "preview": "engine=_detect(request_path,project_out,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 46,
+          "preview": "return run_flutter_project(request_path,project_out,work,runner,deadline,clock,baseline_sha)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 73,
+          "preview": "result=_run_stage(script,request_path,project_out,stage_work,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 90,
+          "preview": "result=_run_stage('studio/godot_release_stage.py',request_path,project_out,release_work,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 105,
+          "preview": "result=_run_stage('studio/godot_release_artifact_stage.py',request_path,project_out,artifact_work,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 123,
+          "preview": "result=_run_stage('studio/godot_store_metadata_stage.py',request_path,project_out,metadata_work,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 134,
+          "preview": "result=_run_stage('studio/godot_privacy_security_stage.py',request_path,project_out,privacy_work,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 145,
+          "preview": "result=_run_stage('studio/godot_final_review_stage.py',request_path,project_out,final_work,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 162,
+          "preview": "result=_run_stage('studio/godot_play_stage.py',request_path,project_out,play_work,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 144,
+          "preview": "def _asset_forge_prefetch(request_path,project_out,runner,deadline,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 204,
+          "preview": "completed=runner(command,timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 234,
+          "preview": "completed=runner(route['command'],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 286,
+          "preview": "def _run_adaptation_pending(project_out,deadline,runner,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 292,
+          "preview": "result=runner([sys.executable,'studio/evolution_pending.py',str(order),'--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 303,
+          "preview": "def _run_adaptation_research(project_out,deadline,runner,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 308,
+          "preview": "result=runner([sys.executable,'studio/evolution_research.py',str(order),'--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 317,
+          "preview": "def _run_adaptation_synthesis(project_out,deadline,runner,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 322,
+          "preview": "result=runner([sys.executable,'studio/evolution_synthesis.py',str(order),str(research),'--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 331,
+          "preview": "def _run_adaptation_benchmark(project_out,deadline,runner,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 336,
+          "preview": "result=runner([sys.executable,'studio/evolution_isolated_runner.py',str(order),str(candidate),'--repo-root','.','--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 347,
+          "preview": "def _run_adaptation_promotion(project_out,deadline,runner,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 352,
+          "preview": "result=runner([sys.executable,'studio/evolution_promotion.py',str(paths[0]),str(paths[1]),str(paths[2]),str(paths[3]),'--repo-root','.','--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 360,
+          "preview": "def _run_adaptation_persistence(project_out,deadline,runner,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 366,
+          "preview": "result=runner([sys.executable,'studio/evolution_persist.py',str(applied),'--repo-root','.','--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 374,
+          "preview": "def _run_adaptation_automerge(project_out,deadline,runner,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 385,
+          "preview": "result=runner(args,timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 401,
+          "preview": "def run_registered_stages(request_path,project_out,work,report,deadline,runner,clock=time.monotonic,baseline_sha=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 413,
+          "preview": "pending_status=_run_adaptation_pending(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 415,
+          "preview": "automerge_status=_run_adaptation_automerge(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 419,
+          "preview": "research_status=_run_adaptation_research(project_out,deadline,runner,clock); synthesis_status='not_ready'; benchmark_status='not_ready'; promotion_status='not_ready'; persistence_s",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 420,
+          "preview": "if research_status=='complete': synthesis_status=_run_adaptation_synthesis(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 421,
+          "preview": "if synthesis_status=='validated': benchmark_status=_run_adaptation_benchmark(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 422,
+          "preview": "if benchmark_status=='approved': promotion_status=_run_adaptation_promotion(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 423,
+          "preview": "if promotion_status=='promoted': persistence_status=_run_adaptation_persistence(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 424,
+          "preview": "if persistence_status=='persisted': automerge_status=_run_adaptation_automerge(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 437,
+          "preview": "result=runner(_stage_command(name,stage,request_path,work,project_out),timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 448,
+          "preview": "def run_project(request_path,project_out,work,runner,deadline,clock=time.monotonic,baseline_sha=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 450,
+          "preview": "asset_prefetch=_asset_forge_prefetch(request_path,project_out,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 458,
+          "preview": "preview=runner([sys.executable,'studio/run.py',request_path,'--work',work,'--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 468,
+          "preview": "release=runner([sys.executable,'studio/post_preview.py',request_path,'--work',work,'--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 473,
+          "preview": "return run_registered_stages(request_path,project_out,work,report,deadline,runner,clock,baseline_sha)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/play_stage.py",
+          "line": 150,
+          "preview": "'Set STUDIO_PLAY_COMMIT_APPROVED=1 in the trusted runner to authorize the Play edit commit.',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/release_stage_engine.py",
+          "line": 238,
+          "preview": "\"detail\": \"Provide or verify external evidence that cannot be safely fabricated by the autonomous runner.\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/runtime_journeys.py",
+          "line": 81,
+          "preview": "runner=subprocess.run, timeout: int = 1200) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/runtime_journeys.py",
+          "line": 98,
+          "preview": "result = runner(args, cwd=root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_android_signing.py",
+          "line": 75,
+          "preview": "def runner(cmd, **kwargs):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_android_signing.py",
+          "line": 93,
+          "preview": "runner=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_autonomous_project.py",
+          "line": 105,
+          "preview": "runner=lambda *a, **k: None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_autonomous_project.py",
+          "line": 149,
+          "preview": "runner=lambda *a, **k: None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_autonomous_project.py",
+          "line": 175,
+          "preview": "runner=lambda *a, **k: None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_autonomous_project.py",
+          "line": 222,
+          "preview": "runner=lambda *a, **k: None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capacity_scheduler_work_conserving.py",
+          "line": 57,
+          "preview": "{\"id\": \"runner\", \"requested_tokens\": 1000, \"priority\": 10},",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capacity_scheduler_work_conserving.py",
+          "line": 62,
+          "preview": "self.assertEqual(by_id[\"runner\"][\"token_envelope\"], 900)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 78,
+          "preview": "def runner(args, timeout):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 87,
+          "preview": "self.assertEqual(run_queue(queue, out, runner), 1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 99,
+          "preview": "def runner(args, timeout):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 105,
+          "preview": "self.assertEqual(run_queue(queue, out, runner), 0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 121,
+          "preview": "def runner(args, timeout):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 128,
+          "preview": "self.assertEqual(run_queue(queue, out, runner), 1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 159,
+          "preview": "self.assertEqual(run_queue(queue, out, runner=lambda *a, **k: None), 0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 186,
+          "preview": "def runner(args, timeout):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 191,
+          "preview": "self.assertEqual(run_queue(queue, out, runner), 1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 201,
+          "preview": "def runner(*args, **kwargs):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 203,
+          "preview": "self.assertEqual(run_queue(queue, out, runner), 1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci_adaptation.py",
+          "line": 57,
+          "preview": "def runner(args, timeout):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci_adaptation.py",
+          "line": 67,
+          "preview": "self.assertEqual(run_queue(queue, out, runner), 1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_pending.py",
+          "line": 65,
+          "preview": "def runner(args,timeout):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_pending.py",
+          "line": 67,
+          "preview": "with patch.dict('os.environ',{'STUDIO_CI_PROVIDER':'github'},clear=True): status=_run_adaptation_pending(out,100,runner,lambda:0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_persist.py",
+          "line": 81,
+          "preview": "def runner(args,timeout):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_persist.py",
+          "line": 83,
+          "preview": "with patch.dict('os.environ',{'STUDIO_CI_PROVIDER':'github'},clear=True): status=_run_adaptation_persistence(out,100,runner,lambda:0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_supervisor_apply.py",
+          "line": 46,
+          "preview": "def fake_run(project, project_out, work, runner, deadline, clock, baseline_sha):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_runner_persistent.py",
+          "line": 35,
+          "preview": "result=run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha=\"a\"*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_runner_persistent.py",
+          "line": 49,
+          "preview": "result=run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha=\"b\"*40)",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 1
+      "occurrence_count": 120
     },
-    "test_batch_infers_animation_of_dependency": {
+    "test_multi_asset_request_uses_transactional_asset_forge_batch": {
       "definition": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "line": 115,
+        "file": "tests/test_orchestrator.py",
+        "line": 80,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 115,
-          "preview": "def test_batch_infers_animation_of_dependency():",
+          "file": "tests/test_orchestrator.py",
+          "line": 80,
+          "preview": "def test_multi_asset_request_uses_transactional_asset_forge_batch(self):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_primary_raster_batch_uses_stricter_visual_similarity_policy": {
+    "test_asset_forge_batch_receipt_marks_regenerated_quality": {
       "definition": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "line": 137,
+        "file": "tests/test_orchestrator.py",
+        "line": 123,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_asset_forge_bridge.py",
-          "line": 137,
-          "preview": "def test_primary_raster_batch_uses_stricter_visual_similarity_policy():",
+          "file": "tests/test_orchestrator.py",
+          "line": 123,
+          "preview": "def test_asset_forge_batch_receipt_marks_regenerated_quality(self):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_secondary_raster_batch_uses_lighter_visual_similarity_policy": {
+    "test_asset_forge_failure_receipt_marks_low_quality": {
       "definition": {
-        "file": "tests/test_asset_forge_bridge.py",
-        "line": 161,
+        "file": "tests/test_orchestrator.py",
+        "line": 168,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_asset_forge_bridge.py",
+          "file": "tests/test_orchestrator.py",
+          "line": 168,
+          "preview": "def test_asset_forge_failure_receipt_marks_low_quality(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_full_pipeline_reaches_finished": {
+      "definition": {
+        "file": "tests/test_orchestrator.py",
+        "line": 197,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 197,
+          "preview": "def test_full_pipeline_reaches_finished(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_unregistered_stage_research_then_synthesis": {
+      "definition": {
+        "file": "tests/test_orchestrator.py",
+        "line": 212,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 212,
+          "preview": "def test_unregistered_stage_research_then_synthesis(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_research_failure_prevents_synthesis": {
+      "definition": {
+        "file": "tests/test_orchestrator.py",
+        "line": 249,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 249,
+          "preview": "def test_research_failure_prevents_synthesis(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_adaptation_without_baseline_has_no_promotable_work_order": {
+      "definition": {
+        "file": "tests/test_orchestrator.py",
+        "line": 265,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 265,
+          "preview": "def test_adaptation_without_baseline_has_no_promotable_work_order(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_stage_return_code_two_is_human_action_not_failure": {
+      "definition": {
+        "file": "tests/test_orchestrator.py",
+        "line": 277,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 277,
+          "preview": "def test_stage_return_code_two_is_human_action_not_failure(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_scheduler_rewind_can_revisit_release_build_boundedly": {
+      "definition": {
+        "file": "tests/test_orchestrator.py",
+        "line": 304,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 304,
+          "preview": "def test_scheduler_rewind_can_revisit_release_build_boundedly(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_successful_stage_must_advance": {
+      "definition": {
+        "file": "tests/test_orchestrator.py",
+        "line": 365,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 365,
+          "preview": "def test_successful_stage_must_advance(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "GitHubRunnerTests": {
+      "definition": {
+        "file": "tests/test_orchestrator.py",
+        "line": 377,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 377,
+          "preview": "class GitHubRunnerTests(unittest.TestCase):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "request": {
+      "definition": {
+        "file": "tests/test_orchestrator.py",
+        "line": 378,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/adaptation.py",
+          "line": 4,
+          "preview": "into a machine-readable evolution request that can be researched, implemented on",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/adaptation.py",
+          "line": 142,
+          "preview": "request = build_adaptation_request(report, registered_stages)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/adaptation.py",
+          "line": 143,
+          "preview": "if request['status'] != 'adaptation_required':",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/adaptation.py",
+          "line": 144,
+          "preview": "return request",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/adaptation.py",
+          "line": 149,
+          "preview": "request = attach_capability_hints(request, memory, project_id)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/adaptation.py",
+          "line": 151,
+          "preview": "path = out / 'evolution-request.json'",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/adaptation.py",
+          "line": 152,
+          "preview": "path.write_text(json.dumps(request, ensure_ascii=False, sort_keys=True, indent=2) + '\\n')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/adaptation.py",
+          "line": 153,
+          "preview": "return request",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_planner.py",
+          "line": 232,
+          "preview": "\"brief_fingerprint_source\":\"request.brief\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_persist.py",
+          "line": 4,
+          "preview": "review + PR package. It never merges the pull request.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_persist.py",
+          "line": 15,
+          "preview": "import urllib.request",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_persist.py",
+          "line": 24,
+          "preview": "req=urllib.request.Request(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_persist.py",
+          "line": 37,
+          "preview": "with urllib.request.urlopen(req,timeout=30) as response:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_persist.py",
+          "line": 42,
+          "preview": "raise ReplacementPersistenceError(\"GitHub replacement persistence request failed\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_persist.py",
+          "line": 44,
+          "preview": "raise ReplacementPersistenceError(\"GitHub replacement persistence request failed\") from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_persist.py",
+          "line": 176,
+          "preview": "raise ReplacementPersistenceError(\"replacement pull request creation failed\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_pr_package.py",
+          "line": 1,
+          "preview": "\"\"\"Prepare a content-bound pull-request package for an approved replacement review.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_collect.py",
+          "line": 60,
+          "preview": "raise GitHubAttestationCollectionError(\"pull request invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_collect.py",
+          "line": 67,
+          "preview": "raise GitHubAttestationCollectionError(\"pull request response malformed\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_collect.py",
+          "line": 104,
+          "preview": "raise GitHubAttestationCollectionError(\"pull request invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_collect.py",
+          "line": 110,
+          "preview": "raise GitHubAttestationCollectionError(\"pull request response malformed\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_collect.py",
+          "line": 113,
+          "preview": "raise GitHubAttestationCollectionError(\"pull request head SHA missing\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_collect.py",
+          "line": 130,
+          "preview": "raise GitHubAttestationCollectionError(\"pull request reviews malformed\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 44,
+          "preview": "bind_target.add_argument(\"--pull-request\",type=int,required=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 54,
+          "preview": "apply_cmd.add_argument(\"--pull-request\",type=int)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 104,
+          "preview": "raise ReputationPolicyMigrationError(\"GitHub repository and pull request required\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_stage.py",
+          "line": 59,
+          "preview": "parser.add_argument('request')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_stage.py",
+          "line": 63,
+          "preview": "state=advance(Path(args.request),Path(args.work),Path(args.out))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 81,
+          "preview": "\"--request-id\", request_id,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
           "line": 161,
-          "preview": "def test_secondary_raster_batch_uses_lighter_visual_similarity_policy():",
+          "preview": "request = {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 162,
+          "preview": "\"schema\": \"asset-forge/production-request/v1\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 190,
+          "preview": "request[\"delivery\"] = {\"engine\": engine}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 210,
+          "preview": "\"request\": request,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/billing_stage.py",
+          "line": 47,
+          "preview": "parser.add_argument('request')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/billing_stage.py",
+          "line": 51,
+          "preview": "state = advance(Path(args.request), Path(args.work), Path(args.out))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capabilities/asset_artwork.py",
+          "line": 85,
+          "preview": "raise ArtworkCapabilityError(\"assets request invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_memory.py",
+          "line": 38,
+          "preview": "raise ValueError(\"adaptation request invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 46,
+          "preview": "raise CapabilityRegistryPromotionPersistError(\"promotion pull request lookup invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 131,
+          "preview": "raise CapabilityRegistryPromotionPersistError(\"candidate review pull request mismatch\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 181,
+          "preview": "raise CapabilityRegistryPromotionPersistError(\"promotion branch has no matching pull request\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 204,
+          "preview": "raise CapabilityRegistryPromotionPersistError(\"promotion pull request creation failed\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_review.py",
+          "line": 29,
+          "preview": "raise CapabilityRegistryReviewError(\"registry review pull request invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_review.py",
+          "line": 33,
+          "preview": "raise CapabilityRegistryReviewError(\"registry pull request lookup invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_review.py",
+          "line": 35,
+          "preview": "raise CapabilityRegistryReviewError(\"registry pull request base changed\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_review.py",
+          "line": 38,
+          "preview": "raise CapabilityRegistryReviewError(\"registry pull request identity changed\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_review.py",
+          "line": 55,
+          "preview": "raise CapabilityRegistryReviewError(\"registry pull request state invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_review.py",
+          "line": 19,
+          "preview": "raise CapabilityReviewError(\"candidate review pull request invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_review.py",
+          "line": 22,
+          "preview": "raise CapabilityReviewError(\"candidate pull request lookup invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_review.py",
+          "line": 24,
+          "preview": "raise CapabilityReviewError(\"candidate pull request base changed\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_review.py",
+          "line": 27,
+          "preview": "raise CapabilityReviewError(\"candidate pull request identity changed\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_review.py",
+          "line": 39,
+          "preview": "raise CapabilityReviewError(\"candidate pull request state invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_stage.py",
+          "line": 41,
+          "preview": "parser.add_argument('request')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_stage.py",
+          "line": 45,
+          "preview": "state = advance(Path(args.request), Path(args.work), Path(args.out))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 16,
+          "preview": "import urllib.request",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 46,
+          "preview": "raise StudioError('Invalid request fields')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 124,
+          "preview": "or asset_forge.get('request_schema') != 'asset-forge/production-request/v1'",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 277,
+          "preview": "class NoRedirect(urllib.request.HTTPRedirectHandler):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 303,
+          "preview": "opener = urllib.request.build_opener(NoRedirect)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 331,
+          "preview": "req = urllib.request.Request(self.base + '/status/' + request_id,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 340,
+          "preview": "req = urllib.request.Request(self.base + path, method=method,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_stage.py",
+          "line": 47,
+          "preview": "parser.add_argument('request')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_stage.py",
+          "line": 51,
+          "preview": "state = advance(Path(args.request), Path(args.work), Path(args.out))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/engine_detect.py",
+          "line": 15,
+          "preview": "parser.add_argument('request')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/engine_detect.py",
+          "line": 19,
+          "preview": "req = request_check(json.loads(Path(args.request).read_text()))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/engine_entry.py",
+          "line": 78,
+          "preview": "parser.add_argument('request')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/engine_entry.py",
+          "line": 84,
+          "preview": "req = json.loads(Path(args.request).read_text())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 58,
+          "preview": "if not isinstance(pr,dict) or pr.get('state')!='open' or pr.get('draft') is True: raise AutoMergeError('Promotion pull request is not open and ready')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 59,
+          "preview": "if pr.get('base',{}).get('ref')!='main' or pr.get('head',{}).get('ref')!=branch or pr.get('head',{}).get('sha')!=head_sha: raise AutoMergeError('Promotion pull request head changed",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 61,
+          "preview": "if not isinstance(files,list) or len(files)!=len(allowed): raise AutoMergeError('Promotion pull request file scope changed')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 63,
+          "preview": "if names!=allowed: raise AutoMergeError('Promotion pull request contains unapproved paths')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 64,
+          "preview": "if any(item.get('status') not in {'added','modified'} for item in files if isinstance(item,dict)): raise AutoMergeError('Promotion pull request contains destructive file changes')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_automerge.py",
+          "line": 75,
+          "preview": "if pr.get('head',{}).get('sha')!=head_sha or pr.get('head',{}).get('ref')!=branch: raise AutoMergeError('Promotion pull request head changed during verification')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 1,
+          "preview": "\"\"\"Consume an evolution request into a safe, machine-readable candidate work order.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 4,
+          "preview": "adaptation request into the next bounded factory-evolution job.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 40,
+          "preview": "def validate_request(request: dict) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 41,
+          "preview": "if not isinstance(request, dict) or request.get('version') != 1:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 42,
+          "preview": "raise ValueError('Unsupported evolution request version')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 43,
+          "preview": "if request.get('status') != 'adaptation_required':",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 45,
+          "preview": "gaps = request.get('gaps')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 46,
+          "preview": "resources = request.get('resource_research')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 47,
+          "preview": "gates = request.get('promotion_gates')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 48,
+          "preview": "policy = request.get('candidate_policy')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 50,
+          "preview": "raise ValueError('Evolution request has no gaps')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 52,
+          "preview": "raise ValueError('Evolution request resources must be a list')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 54,
+          "preview": "raise ValueError('Evolution request weakens mandatory promotion gates')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 56,
+          "preview": "raise ValueError('Evolution request candidate policy missing')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 60,
+          "preview": "raise ValueError('Evolution request weakens external-code policy')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 62,
+          "preview": "raise ValueError('Evolution request weakens promotion/rollback policy')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 76,
+          "preview": "return request",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 79,
+          "preview": "def build_work_order(request: dict, baseline_sha: str) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 80,
+          "preview": "request = validate_request(request)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 84,
+          "preview": "primary = request['gaps'][0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 87,
+          "preview": "digest = hashlib.sha256(json.dumps(request, sort_keys=True, separators=(',', ':')).encode()).hexdigest()[:12]",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 91,
+          "preview": "for index, resource in enumerate(request['resource_research']):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 113,
+          "preview": "'all_gaps': request['gaps'],",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 114,
+          "preview": "'resume_stage': request.get('next_stage'),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 124,
+          "preview": "'promotion_gates': list(request['promotion_gates']),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 134,
+          "preview": "request = json.loads(request_path.read_text())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 135,
+          "preview": "work_order = build_work_order(request, baseline_sha)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 144,
+          "preview": "parser.add_argument('request')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_executor.py",
+          "line": 149,
+          "preview": "order = consume(Path(args.request), Path(args.out), args.baseline_sha)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_persist.py",
+          "line": 13,
+          "preview": "import urllib.request",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_persist.py",
+          "line": 24,
+          "preview": "req = urllib.request.Request(url, data=data, method=method, headers={",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_persist.py",
+          "line": 32,
+          "preview": "with urllib.request.urlopen(req, timeout=30) as response:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_persist.py",
+          "line": 37,
+          "preview": "raise PersistenceError('GitHub persistence request failed') from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_persist.py",
+          "line": 39,
+          "preview": "raise PersistenceError('GitHub persistence request failed') from exc",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_persist.py",
+          "line": 68,
+          "preview": "raise PersistenceError('GitHub pull request lookup malformed')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_persist.py",
+          "line": 150,
+          "preview": "if number is None: raise PersistenceError('Existing promotion branch has no matching pull request')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_persist.py",
+          "line": 165,
+          "preview": "if not isinstance(number, int): raise PersistenceError('GitHub promotion pull request creation failed')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_research.py",
+          "line": 21,
+          "preview": "from urllib.request import HTTPRedirectHandler, Request, build_opener",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_research.py",
+          "line": 107,
+          "preview": "request = Request(url, headers=headers, method='GET')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_research.py",
+          "line": 109,
+          "preview": "with build_opener(_SafeRedirect()).open(request, timeout=timeout) as response:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/existing_project.py",
+          "line": 35,
+          "preview": "raise ExistingProjectError('Existing project engine does not match request')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_capacity.py",
+          "line": 54,
+          "preview": "for request in matrix(request_dir):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_capacity.py",
+          "line": 55,
+          "preview": "project_id = str(request.get(\"id\") or \"\").strip()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_capacity.py",
+          "line": 70,
+          "preview": "or request.get(\"phase\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_capacity.py",
+          "line": 73,
+          "preview": "max_calls = max(1, int(request.get(\"max_calls\", 12)))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_capacity.py",
+          "line": 74,
+          "preview": "explicit_tokens = request.get(\"capacity_request_tokens\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_capacity.py",
+          "line": 174,
+          "preview": "\"priority\": max(1, min(100, int(request.get(\"priority\", 50)))),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_capacity.py",
+          "line": 177,
+          "preview": "or request.get(\"difficulty_band\")",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 120
+    },
+    "test_non_main_is_rejected_before_generation": {
+      "definition": {
+        "file": "tests/test_orchestrator.py",
+        "line": 384,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 384,
+          "preview": "def test_non_main_is_rejected_before_generation(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_adapter_reports_complete_only_after_machine_completion": {
+      "definition": {
+        "file": "tests/test_orchestrator.py",
+        "line": 388,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 388,
+          "preview": "def test_adapter_reports_complete_only_after_machine_completion(self):",
           "definition_candidate": true
         }
       ],

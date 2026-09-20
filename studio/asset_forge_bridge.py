@@ -108,3 +108,89 @@ def build_production_os_asset_dispatch(
         "target_path": target_path,
         "command": args,
     }
+
+
+def build_production_os_asset_batch(
+    tasks: list[dict],
+    *,
+    project: str,
+    target_repository: str | None = None,
+    target_worktree: str | None = None,
+) -> dict:
+    routes = [
+        build_production_os_asset_dispatch(
+            task,
+            project=project,
+            target_repository=target_repository,
+            target_worktree=target_worktree,
+        )
+        for task in tasks
+        if should_route_to_asset_forge(task)
+    ]
+    if not routes:
+        raise ValueError("batch contains no asset-forge tasks")
+
+    items = []
+    for task, route in zip(
+        [task for task in tasks if should_route_to_asset_forge(task)],
+        routes,
+    ):
+        inferred_type, inferred_format = _infer_asset_shape(task)
+        asset_type = str(task.get("asset_type") or inferred_type).strip()
+        target_format = str(task.get("format") or inferred_format).strip().lower()
+        instruction = str(
+            task.get("instruction")
+            or task.get("objective")
+            or task.get("task")
+            or task.get("description")
+            or "Create a production-ready visual asset"
+        ).strip()
+        engine = str(task.get("engine") or "").strip() or None
+        source_mode = str(task.get("source_mode") or "generated").strip().lower()
+        request = {
+            "schema": "asset-forge/production-request/v1",
+            "requestId": route["request_id"],
+            "instruction": instruction,
+            "manifest": {
+                "schema": "asset-forge/manifest/v1",
+                "id": route["asset_id"],
+                "project": project,
+                "type": asset_type,
+                "importance": route["importance"],
+                "source": {
+                    "mode": source_mode,
+                    "uri": task.get("source_uri"),
+                    "author": task.get("author"),
+                },
+                "license": {
+                    "id": str(task.get("license_id") or "generated"),
+                    "commercialUse": True,
+                    "derivatives": True,
+                    "attributionRequired": False,
+                },
+                "target": {
+                    "format": target_format,
+                    "engine": engine,
+                },
+            },
+        }
+        if engine:
+            request["delivery"] = {"engine": engine}
+        item = {
+            "request": request,
+            "target_path": route["target_path"],
+        }
+        if task.get("source_path"):
+            item["source_path"] = str(task["source_path"])
+        items.append(item)
+
+    return {
+        "schema_version": "ai-dev-server/asset-forge-batch-route/v1",
+        "executor": "production-os",
+        "capability": "asset-forge-batch",
+        "project": project,
+        "target_repository": target_repository,
+        "target_worktree": target_worktree,
+        "items": items,
+        "routes": routes,
+    }

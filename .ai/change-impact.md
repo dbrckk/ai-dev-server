@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 2541a55e6de2b0e519d3ca877922f6e9189af5ae
-Head: 0b229f77db85b5ea3affde190732c8b2beaf4c1a
+Base: ee847a192f1efc9dd559a357f3ade9f1fe20f20b
+Head: 3c97d8dbea264f033198c570cf8646da08fd58a9
 
 ## Changed files
-- M tests/test_production_os_result_contract.py
+- M control/request.json
 
 ## Affected areas
-- tests
+- control
 
 ## Related test candidates
 - No direct filename-based test match detected.

@@ -164,9 +164,9 @@ request.json
 ## File: request.json
 ```json
 {
-  "operation": "agent_test",
+  "operation": "start_services",
   "requested_by": "chatgpt",
-  "reason": "Direct FCC release-blocker audit of the current Jumpy HEAD",
-  "request_id": 34
+  "reason": "Reconnect Production-OS persistent worker and restore dashboard production execution",
+  "request_id": 35
 }
 ```

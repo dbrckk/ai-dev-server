@@ -22,16 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-20T17:18:42Z
+Generated: 2026-09-22T09:53:44Z
 
 ### Git
 - Branch: `main`
-- Head: `0b229f77db85`
-- Commit date: 2026-09-20T19:18:30+02:00
-- Commit: test: cover preferred library version in Production OS evidence
+- Head: `3c97d8dbea26`
+- Commit date: 2026-09-22T11:53:33+02:00
+- Commit: control: restart services for Production-OS worker
 - Tracked files: 820
 
 ### Recently changed files
+- `control/request.json`
 - `tests/test_production_os_result_contract.py`
 - `studio/github_runner.py`
 - `tests/test_asset_forge_bridge.py`

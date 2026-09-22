@@ -44,6 +44,7 @@ mobile-requests/
   example.json
   jumpy.json
 ci.json
+production-os-worker-kick.json
 promoted_capabilities.json
 provider-probe.json
 release.json
@@ -103,6 +104,11 @@ request.json
 ## File: ci.json
 ```json
 {"provider":"github"}
+```
+
+## File: production-os-worker-kick.json
+```json
+{"requested_by":"production-os","reason":"manual worker kick","sequence":0}\n
 ```
 
 ## File: promoted_capabilities.json

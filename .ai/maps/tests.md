@@ -267,6 +267,7 @@ test_preemption_apply.py
 test_preemption_controller.py
 test_privacy_stage.py
 test_privacy.py
+test_production_os_actions_worker_workflow.py
 test_production_os_local_e2e.py
 test_production_os_result_contract.py
 test_production_os_worker_cli.py
@@ -7811,6 +7812,19 @@ state = {'release_evidence': {'store_metadata': {'listing': {'title': 'Demo'}}}}
 evidence = build_privacy_package(root, out, state)
 ⋮----
 payload = json.loads((out / 'privacy/data-safety.json').read_text())
+```
+
+## File: test_production_os_actions_worker_workflow.py
+```python
+WORKFLOW = Path(".github/workflows/production-os-actions-worker.yml").read_text(
+⋮----
+def test_actions_worker_has_no_codespace_dependency()
+⋮----
+def test_actions_worker_polls_production_os_on_schedule()
+⋮----
+def test_actions_worker_uses_existing_secure_credentials()
+⋮----
+def test_actions_worker_is_single_flight_and_bounded()
 ```
 
 ## File: test_production_os_local_e2e.py

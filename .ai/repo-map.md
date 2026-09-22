@@ -53,6 +53,7 @@ The content is organized as follows:
     manage-codespace.yml
     mobile-studio.yml
     multi-engine-benchmark.yml
+    production-os-actions-worker.yml
     production-os-asset-forge-e2e.yml
     production-os-asset-forge-live-e2e.yml
     provider-preview.yml
@@ -70,6 +71,7 @@ control/
     example.json
     jumpy.json
   ci.json
+  production-os-worker-kick.json
   promoted_capabilities.json
   provider-probe.json
   release.json
@@ -653,6 +655,7 @@ tests/
   test_preemption_controller.py
   test_privacy_stage.py
   test_privacy.py
+  test_production_os_actions_worker_workflow.py
   test_production_os_local_e2e.py
   test_production_os_result_contract.py
   test_production_os_worker_cli.py
@@ -1827,6 +1830,114 @@ jobs:
           test "$FLUTTER" = success
 ````
 
+## File: .github/workflows/production-os-actions-worker.yml
+````yaml
+name: Production-OS Actions Worker
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'control/production-os-worker-kick.json'
+  schedule:
+    - cron: '*/5 * * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-os-actions-worker
+  cancel-in-progress: false
+
+jobs:
+  worker:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
+      PRODUCTION_OS_WORKER_TOKEN: ${{ secrets.PRODUCTION_OS_WORKER_TOKEN }}
+      PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
+      PRODUCTION_OS_WORKER_ID: github-actions-worker
+      STUDIO_GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
+      STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
+      STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
+      STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
+      STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
+      STUDIO_VISION_MODEL: ${{ vars.STUDIO_VISION_MODEL }}
+      STUDIO_PERSIST_REMOTE: '1'
+      PYTHONPATH: studio
+
+    steps:
+      - name: Checkout AI Dev Server
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+
+      - name: Validate worker configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=()
+          for name in PRODUCTION_OS_WORKER_TOKEN PRODUCTION_OS_OPERATOR_TOKEN STUDIO_GITHUB_TOKEN STUDIO_API_KEY; do
+            if [ -z "${!name:-}" ]; then
+              missing+=("$name")
+            fi
+          done
+          if (( ${#missing[@]} )); then
+            printf 'Missing required GitHub Actions secrets: %s\n' "${missing[*]}"
+            exit 2
+          fi
+          python - <<'PY'
+          from urllib.parse import urlsplit
+          import os
+          value=os.environ["PRODUCTION_OS_URL"].strip()
+          parsed=urlsplit(value)
+          if parsed.scheme != "https" or not parsed.netloc:
+              raise SystemExit("PRODUCTION_OS_URL must be HTTPS")
+          print("Production-OS Actions worker configuration: ready")
+          PY
+
+      - name: Install autonomous coding agent
+        run: npm install -g opencode-ai
+
+      - name: Process one Production-OS job
+        env:
+          STUDIO_CI_PROVIDER: github
+        run: |
+          python studio/production_os_worker.py \
+            --worker-id "$PRODUCTION_OS_WORKER_ID" \
+            --output-root studio-output/production-os-actions \
+            --once
+
+      - name: Retain worker evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: production-os-actions-worker-${{ github.run_number }}
+          path: studio-output/production-os-actions/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Production-OS Actions Worker"
+            echo
+            echo "Codespace dependency: none"
+            echo "Control plane: $PRODUCTION_OS_URL"
+            echo "Worker id: $PRODUCTION_OS_WORKER_ID"
+            echo "Polling mode: scheduled every 5 minutes + manual dispatch"
+          } >> "$GITHUB_STEP_SUMMARY"
+````
+
 ## File: .github/workflows/production-os-asset-forge-e2e.yml
 ````yaml
 name: Production OS Asset Forge Deadline Zero E2E
@@ -2755,6 +2866,11 @@ initial_prompt: |
 ## File: control/ci.json
 ````json
 {"provider":"github"}
+````
+
+## File: control/production-os-worker-kick.json
+````json
+{"requested_by":"production-os","reason":"manual worker kick","sequence":0}\n
 ````
 
 ## File: control/promoted_capabilities.json
@@ -31389,6 +31505,19 @@ state = {'release_evidence': {'store_metadata': {'listing': {'title': 'Demo'}}}}
 evidence = build_privacy_package(root, out, state)
 ⋮----
 payload = json.loads((out / 'privacy/data-safety.json').read_text())
+````
+
+## File: tests/test_production_os_actions_worker_workflow.py
+````python
+WORKFLOW = Path(".github/workflows/production-os-actions-worker.yml").read_text(
+⋮----
+def test_actions_worker_has_no_codespace_dependency()
+⋮----
+def test_actions_worker_polls_production_os_on_schedule()
+⋮----
+def test_actions_worker_uses_existing_secure_credentials()
+⋮----
+def test_actions_worker_is_single_flight_and_bounded()
 ````
 
 ## File: tests/test_production_os_local_e2e.py

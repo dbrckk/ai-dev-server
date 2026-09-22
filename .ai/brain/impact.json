@@ -1,17 +1,56 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "0b229f77db85b5ea3affde190732c8b2beaf4c1a",
-  "head": "3c97d8dbea264f033198c570cf8646da08fd58a9",
+  "base": "3c97d8dbea264f033198c570cf8646da08fd58a9",
+  "head": "08f5271c945b08face68c612f67961bf124b6b62",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "control/request.json",
-      "status": "M"
+      "path": ".github/workflows/production-os-actions-worker.yml",
+      "status": "A"
+    },
+    {
+      "path": "control/production-os-worker-kick.json",
+      "status": "A"
+    },
+    {
+      "path": "tests/test_production_os_actions_worker_workflow.py",
+      "status": "A"
     }
   ],
-  "changed_source_files": [],
-  "impacted_files": [],
-  "impacted_symbols": [],
-  "selected_tests": []
+  "changed_source_files": [
+    "tests/test_production_os_actions_worker_workflow.py"
+  ],
+  "impacted_files": [
+    "tests/test_production_os_actions_worker_workflow.py"
+  ],
+  "impacted_symbols": [
+    {
+      "name": "test_actions_worker_has_no_codespace_dependency",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 9
+    },
+    {
+      "name": "test_actions_worker_polls_production_os_on_schedule",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 15
+    },
+    {
+      "name": "test_actions_worker_uses_existing_secure_credentials",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 23
+    },
+    {
+      "name": "test_actions_worker_is_single_flight_and_bounded",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 31
+    }
+  ],
+  "selected_tests": [
+    "tests/test_production_os_actions_worker_workflow.py"
+  ]
 }

@@ -217,6 +217,12 @@ class ProductionOSClient:
             {"key": str(key), "worker_id": str(worker_id)},
         )
 
+    def telemetry(self, key: str, payload: dict) -> dict | None:
+        return self._post(
+            "/v1/jobs/" + urllib.parse.quote(str(key), safe="") + "/telemetry",
+            payload,
+        )
+
     def complete(self, payload: dict) -> dict | None:
         return self._post("/v1/jobs/complete", payload)
 
@@ -604,6 +610,35 @@ def failure_payload(
     }
 
 
+
+def live_telemetry_snapshot(project_out: Path) -> dict:
+    candidates = (
+        project_out / "production-os-result.json",
+        project_out / "summary.json",
+        project_out / "status.json",
+    )
+    status = {}
+    for candidate in candidates:
+        if not candidate.is_file():
+            continue
+        try:
+            value = json.loads(candidate.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            continue
+        if isinstance(value, dict):
+            status = value
+            break
+    percent = status.get("progress_percent")
+    if not isinstance(percent, (int, float)) or isinstance(percent, bool):
+        percent = None
+    usage = status.get("usage")
+    return {
+        "stage": status.get("next_stage") or status.get("status"),
+        "progress": percent,
+        "usage": dict(usage) if isinstance(usage, dict) else {},
+        "logs": [],
+    }
+
 def run_once(
     client: ProductionOSClient,
     *,
@@ -681,6 +716,12 @@ def run_once(
                         active_job_keys=(key,),
                         capacity=capacity,
                     )
+                try:
+                    snapshot = live_telemetry_snapshot(project_out)
+                    snapshot["worker_id"] = worker_id
+                    client.telemetry(key, snapshot)
+                except Exception as exc:
+                    heartbeat_errors.append("telemetry:" + type(exc).__name__)
             except Exception as exc:
                 heartbeat_errors.append(type(exc).__name__)
 

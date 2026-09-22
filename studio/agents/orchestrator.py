@@ -150,6 +150,12 @@ def _run_evidence(run,capacity_source:str|None=None)->dict:
         "duration_seconds":run.duration_seconds,"stdout_tail":run.stdout_tail,"stderr_tail":run.stderr_tail}
     if capacity_source is not None:
         evidence["capacity_source"]=capacity_source
+    if run.agent=="opencode":
+        model=str(os.environ.get("STUDIO_CODE_MODEL") or os.environ.get("STUDIO_MODEL") or "").strip()
+        base=str(os.environ.get("STUDIO_API_BASE") or "").strip()
+        if model and base:
+            evidence["provider"]="studio"
+            evidence["model"]=model
     if run.agent=="codex":
         usage=parse_codex_usage(run.stdout_tail)
         if usage is not None:

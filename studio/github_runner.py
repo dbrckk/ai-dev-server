@@ -112,7 +112,9 @@ def collect_agent_usage(report: dict) -> dict:
         "total_tokens": 0,
         "runs": 0,
         "agents": {},
+        "providers": [],
     }
+    provider_totals = {}
     if not isinstance(report, dict):
         return totals
     rounds = report.get("rounds")
@@ -164,8 +166,64 @@ def collect_agent_usage(report: dict) -> dict:
                 totals["agents"][agent] = (
                     int(totals["agents"].get(agent, 0)) + 1
                 )
+                provider = attempt.get("provider")
+                model = attempt.get("model")
+                if (
+                    isinstance(provider, str) and provider.strip()
+                    and isinstance(model, str) and model.strip()
+                ):
+                    identity = (provider.strip(), model.strip())
+                    bucket = provider_totals.setdefault(identity, {
+                        "provider": identity[0],
+                        "model": identity[1],
+                        "api_calls": 0,
+                        "input_tokens": 0,
+                        "cached_input_tokens": 0,
+                        "output_tokens": 0,
+                        "reasoning_tokens": 0,
+                        "total_tokens": 0,
+                    })
+                    bucket["api_calls"] += 1
+                    bucket["input_tokens"] += input_tokens
+                    bucket["cached_input_tokens"] += cached_input_tokens
+                    bucket["output_tokens"] += output_tokens
+                    bucket["reasoning_tokens"] += reasoning_tokens
+                    bucket["total_tokens"] += total_tokens
+    totals["providers"] = [
+        provider_totals[key] for key in sorted(provider_totals)
+    ]
     return totals
 
+
+
+_COMMIT_KEYS = {
+    "commit_sha",
+    "candidate_commit_sha",
+    "candidate_merge_commit_sha",
+    "registry_promotion_commit_sha",
+    "registry_promotion_merge_commit_sha",
+    "merge_commit_sha",
+}
+
+
+def collect_commit_shas(summary: dict) -> list[str]:
+    found = set()
+
+    def visit(value):
+        if isinstance(value, dict):
+            for key, child in value.items():
+                if key in _COMMIT_KEYS and isinstance(child, str):
+                    sha = child.strip().lower()
+                    if len(sha) == 40 and all(ch in "0123456789abcdef" for ch in sha):
+                        found.add(sha)
+                else:
+                    visit(child)
+        elif isinstance(value, list):
+            for child in value:
+                visit(child)
+
+    visit(summary)
+    return sorted(found)
 
 def write_production_os_result(out: Path, request: dict, summary: dict):
     correlation = request.get("production_os")
@@ -174,6 +232,7 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
     usage = summary.get("usage")
     if not isinstance(usage, dict):
         usage = {}
+    commits = collect_commit_shas(summary)
     visual_assets = None
     asset_path = out / "asset-forge-prefetch.json"
     if asset_path.is_file():
@@ -306,6 +365,7 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
             and summary.get("status") == "complete"
         ),
         "usage": dict(usage),
+        "commits": {"count": len(commits), "shas": commits},
         "evidence": {
             "pipeline_status": summary.get("status"),
             "next_stage": summary.get("next_stage"),

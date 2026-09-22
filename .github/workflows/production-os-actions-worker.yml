@@ -2,6 +2,10 @@ name: Production-OS Actions Worker
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'control/production-os-worker-kick.json'
   schedule:
     - cron: '*/5 * * * *'
 

@@ -1,17 +1,13 @@
 # Change impact
 
-Base: feb874e9df9c666bce7944dd384ee65174a8a217
-Head: 08f5271c945b08face68c612f67961bf124b6b62
+Base: 21b8cda3f99cab066255b987a2dd182fcb0cb9ce
+Head: c85d83b8d60ede8b0540556a4a5308bcf6c1919f
 
 ## Changed files
-- A .github/workflows/production-os-actions-worker.yml
-- A control/production-os-worker-kick.json
-- A tests/test_production_os_actions_worker_workflow.py
+- M control/production-os-worker-kick.json
 
 ## Affected areas
-- .github
 - control
-- tests
 
 ## Related test candidates
 - No direct filename-based test match detected.

@@ -2870,7 +2870,11 @@ initial_prompt: |
 
 ## File: control/production-os-worker-kick.json
 ````json
-{"requested_by":"production-os","reason":"manual worker kick","sequence":0}\n
+{
+  "requested_by": "production-os",
+  "reason": "manual worker kick after Codespaces fallback setup",
+  "sequence": 1
+}
 ````
 
 ## File: control/promoted_capabilities.json

@@ -22,18 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T10:34:21Z
+Generated: 2026-09-22T11:01:21Z
 
 ### Git
 - Branch: `main`
-- Head: `08f5271c945b`
-- Commit date: 2026-09-22T12:34:09+02:00
-- Commit: Merge pull request #198 from dbrckk/feat/production-os-actions-worker
+- Head: `c85d83b8d60e`
+- Commit date: 2026-09-22T13:01:09+02:00
+- Commit: control: kick Production-OS Actions worker
 - Tracked files: 824
 
 ### Recently changed files
-- `tests/test_production_os_actions_worker_workflow.py`
 - `control/production-os-worker-kick.json`
+- `tests/test_production_os_actions_worker_workflow.py`
 - `.github/workflows/production-os-actions-worker.yml`
 
 ### Project signals

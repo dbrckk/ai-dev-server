@@ -58,6 +58,7 @@ class ProductionOSResultContractTests(unittest.TestCase):
             "status": "complete",
             "finished": True,
             "next_stage": None,
+            "candidate_commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             "usage": {
                 "input_tokens": 100,
                 "cached_input_tokens": 20,
@@ -85,6 +86,8 @@ class ProductionOSResultContractTests(unittest.TestCase):
         self.assertEqual(envelope["workflow_task_id"], "instruction-1")
         self.assertTrue(envelope["succeeded"])
         self.assertEqual(envelope["usage"]["total_tokens"], 130)
+        self.assertEqual(envelope["commits"]["shas"], ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"])
+        self.assertEqual(envelope["commits"]["count"], 1)
 
     def test_result_envelope_includes_visual_asset_quality(self):
         request = copy.deepcopy(BASE)

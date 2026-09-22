@@ -59,6 +59,9 @@ class _FakeClient:
             ("heartbeat", worker_id, tuple(active_job_keys), capacity)
         )
 
+    def telemetry(self, key, payload):
+        self.calls.append(("telemetry", key, payload))
+
 
 class _Response:
     def __init__(self, status, payload=None):
@@ -338,6 +341,10 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
 
         self.assertEqual(result["status"], "completed")
         self.assertGreaterEqual(active_heartbeats["count"], 2)
+        telemetry = [call for call in client.calls if call[0] == "telemetry"]
+        self.assertTrue(telemetry)
+        self.assertEqual(telemetry[0][1], "job-abc123")
+        self.assertEqual(telemetry[0][2]["worker_id"], "ai-dev-1")
         self.assertEqual(client.calls[-1][0], "heartbeat")
         self.assertEqual(client.calls[-1][2], ())
 

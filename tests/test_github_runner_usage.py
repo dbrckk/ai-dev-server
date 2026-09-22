@@ -66,6 +66,7 @@ class GitHubRunnerUsageTests(unittest.TestCase):
                 "total_tokens": 168,
                 "runs": 2,
                 "agents": {"codex": 2},
+                "providers": [],
             },
         )
 
@@ -111,8 +112,28 @@ class GitHubRunnerUsageTests(unittest.TestCase):
                 "total_tokens": 14,
                 "runs": 2,
                 "agents": {"codex": 1, "opencode": 1},
+                "providers": [],
             },
         )
+
+    def test_collect_agent_usage_groups_explicit_provider_model_identity(self):
+        report = {"rounds": [{"agent_trace": [{"attempts": [{
+            "agent": "codex",
+            "provider": "nvidia",
+            "model": "nvidia/nemotron-3-super-120b-a12b",
+            "usage": {"input_tokens": 100, "output_tokens": 20, "total_tokens": 120},
+        }]}]}]}
+        usage = collect_agent_usage(report)
+        self.assertEqual(usage["providers"], [{
+            "provider": "nvidia",
+            "model": "nvidia/nemotron-3-super-120b-a12b",
+            "api_calls": 1,
+            "input_tokens": 100,
+            "cached_input_tokens": 0,
+            "output_tokens": 20,
+            "reasoning_tokens": 0,
+            "total_tokens": 120,
+        }])
 
     def test_collect_agent_usage_empty_report_is_zeroed(self):
         self.assertEqual(
@@ -125,6 +146,7 @@ class GitHubRunnerUsageTests(unittest.TestCase):
                 "total_tokens": 0,
                 "runs": 0,
                 "agents": {},
+                "providers": [],
             },
         )
 

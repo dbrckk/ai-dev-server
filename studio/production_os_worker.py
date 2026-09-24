@@ -251,6 +251,7 @@ class ProductionOSClient:
         active_job_keys=(),
         capacity: dict | None = None,
         control_state: str | None = None,
+        job_control_states: dict[str, str] | None = None,
     ) -> dict | None:
         payload = {
             "worker_id": str(worker_id),
@@ -263,6 +264,11 @@ class ProductionOSClient:
             payload["capacity"] = dict(capacity)
         if control_state is not None:
             payload["control_state"] = str(control_state)
+        if job_control_states is not None:
+            payload["job_control_states"] = {
+                str(key): str(value)
+                for key, value in job_control_states.items()
+            }
         return self._post(
             "/v1/workers/heartbeat",
             payload,
@@ -672,14 +678,33 @@ def run_once(
     if not key:
         raise ProductionOSWorkerError("claimed job has no key")
     client.ack(key, worker_id)
+    cancel_event = threading.Event()
+
+    def observe_job_control(response):
+        if not isinstance(response, dict):
+            return
+        control_payload = response.get("control")
+        if not isinstance(control_payload, dict):
+            return
+        jobs = control_payload.get("jobs")
+        if not isinstance(jobs, dict):
+            return
+        state = jobs.get(key)
+        if (
+            isinstance(state, dict)
+            and state.get("desired_state") == "cancel_requested"
+        ):
+            cancel_event.set()
+
     if capacity is None:
-        client.heartbeat(worker_id, active_job_keys=(key,))
+        response = client.heartbeat(worker_id, active_job_keys=(key,))
     else:
-        client.heartbeat(
+        response = client.heartbeat(
             worker_id,
             active_job_keys=(key,),
             capacity=capacity,
         )
+    observe_job_control(response)
 
     request = build_studio_request(job)
     root = Path(output_root)
@@ -714,13 +739,19 @@ def run_once(
         while not stop_heartbeat.wait(heartbeat_interval):
             try:
                 if capacity is None:
-                    client.heartbeat(worker_id, active_job_keys=(key,))
+                    response = client.heartbeat(
+                        worker_id,
+                        active_job_keys=(key,),
+                    )
                 else:
-                    client.heartbeat(
+                    response = client.heartbeat(
                         worker_id,
                         active_job_keys=(key,),
                         capacity=capacity,
                     )
+                observe_job_control(response)
+                if cancel_event.is_set():
+                    return
             except Exception as exc:
                 heartbeat_errors.append(type(exc).__name__)
 
@@ -737,11 +768,27 @@ def run_once(
             request_path,
             project_out,
             baseline_sha=baseline_sha,
+            cancel_event=cancel_event,
         )
     except Exception as exc:
         stop_heartbeat.set()
         heartbeat_thread.join(timeout=min(heartbeat_interval, 1.0))
         duration = max(0.0, float(clock()) - started)
+        if cancel_event.is_set():
+            kwargs = {
+                "active_job_keys":(),
+                "job_control_states":{key:"cancel_requested"},
+            }
+            if capacity is not None:
+                kwargs["capacity"] = capacity
+            client.heartbeat(worker_id, **kwargs)
+            return {
+                "status":"cancelled",
+                "worker_id":worker_id,
+                "key":key,
+                "project_id":request["id"],
+                "usage":{},
+            }
         envelope = {
             "schema_version": "ai-dev-server/production-os-result/v1",
             "workflow_id": request["production_os"]["workflow_id"],
@@ -786,6 +833,21 @@ def run_once(
     stop_heartbeat.set()
     heartbeat_thread.join(timeout=min(heartbeat_interval, 1.0))
     duration = max(0.0, float(clock()) - started)
+    if cancel_event.is_set():
+        kwargs = {
+            "active_job_keys":(),
+            "job_control_states":{key:"cancel_requested"},
+        }
+        if capacity is not None:
+            kwargs["capacity"] = capacity
+        client.heartbeat(worker_id, **kwargs)
+        return {
+            "status":"cancelled",
+            "worker_id":worker_id,
+            "key":key,
+            "project_id":request["id"],
+            "usage":{},
+        }
 
     result_path = project_out / "production-os-result.json"
     if result_path.is_file():

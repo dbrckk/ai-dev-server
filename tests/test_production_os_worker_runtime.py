@@ -402,7 +402,7 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             [call[0] for call in client.calls],
             ["heartbeat", "claim", "ack", "heartbeat", "fail", "heartbeat"],
         )
-        failed = client.calls[3][1]
+        failed = client.calls[4][1]
         self.assertEqual(failed["key"], "job-abc123")
         self.assertIn("runner_error", failed["reason"])
         self.assertIn("RuntimeError", failed["result"]["evidence"]["error_type"])

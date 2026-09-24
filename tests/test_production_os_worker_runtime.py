@@ -40,6 +40,7 @@ class _FakeClient:
     def __init__(self, job):
         self.job = job
         self.calls = []
+        self.heartbeat_response = None
 
     def claim(self, worker_id, capabilities):
         self.calls.append(("claim", worker_id, tuple(capabilities)))
@@ -54,10 +55,26 @@ class _FakeClient:
     def fail(self, payload):
         self.calls.append(("fail", payload))
 
-    def heartbeat(self, worker_id, *, active_job_keys=(), capacity=None):
+    def heartbeat(
+        self,
+        worker_id,
+        *,
+        active_job_keys=(),
+        capacity=None,
+        control_state=None,
+        job_control_states=None,
+    ):
         self.calls.append(
-            ("heartbeat", worker_id, tuple(active_job_keys), capacity)
+            (
+                "heartbeat",
+                worker_id,
+                tuple(active_job_keys),
+                capacity,
+                control_state,
+                job_control_states,
+            )
         )
+        return self.heartbeat_response
 
 
 class _Response:
@@ -199,6 +216,30 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             )
         )
 
+    def test_run_once_acknowledges_pause_without_claiming(self):
+        client = _FakeClient(sample_job())
+        client.heartbeat_response = {
+            "control": {
+                "worker": {
+                    "desired_state": "paused",
+                }
+            }
+        }
+
+        result = run_once(
+            client,
+            worker_id="ai-dev-1",
+            output_root=Path("unused"),
+            run_project=lambda *args, **kwargs: self.fail("runner must not execute"),
+        )
+
+        self.assertEqual(result["status"], "paused")
+        self.assertEqual(
+            [call[0] for call in client.calls],
+            ["heartbeat", "heartbeat"],
+        )
+        self.assertEqual(client.calls[1][4], "paused")
+
     def test_run_once_returns_idle_when_no_job_is_available(self):
         client = _FakeClient(None)
 
@@ -218,8 +259,9 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         )
 
         self.assertEqual(result["status"], "idle")
-        self.assertEqual(client.calls[0][0], "claim")
-        self.assertIn("visual-asset-production", client.calls[0][2])
+        self.assertEqual(client.calls[0][0], "heartbeat")
+        self.assertEqual(client.calls[1][0], "claim")
+        self.assertIn("visual-asset-production", client.calls[1][2])
 
     def test_run_once_acks_executes_and_completes_with_usage(self):
         client = _FakeClient(sample_job())
@@ -258,9 +300,9 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertEqual(result["status"], "completed")
         self.assertEqual(
             [call[0] for call in client.calls],
-            ["claim", "ack", "heartbeat", "complete", "heartbeat"],
+            ["heartbeat", "claim", "ack", "heartbeat", "complete", "heartbeat"],
         )
-        completed = client.calls[3][1]
+        completed = client.calls[4][1]
         self.assertEqual(completed["key"], "job-abc123")
         self.assertEqual(completed["result"]["usage"]["total_tokens"], 130)
 
@@ -287,9 +329,9 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertEqual(result["status"], "failed")
         self.assertEqual(
             [call[0] for call in client.calls],
-            ["claim", "ack", "heartbeat", "fail", "heartbeat"],
+            ["heartbeat", "claim", "ack", "heartbeat", "fail", "heartbeat"],
         )
-        failed = client.calls[3][1]
+        failed = client.calls[4][1]
         self.assertEqual(failed["result"]["usage"]["total_tokens"], 55)
         self.assertIn("blocked", failed["reason"])
 
@@ -342,6 +384,70 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertEqual(client.calls[-1][2], ())
 
 
+    def test_run_once_cooperatively_cancels_only_target_job(self):
+        client = _FakeClient(sample_job())
+        active_heartbeats = {"count": 0}
+
+        def heartbeat(
+            worker_id,
+            *,
+            active_job_keys=(),
+            capacity=None,
+            control_state=None,
+            job_control_states=None,
+        ):
+            client.calls.append(
+                (
+                    "heartbeat",
+                    worker_id,
+                    tuple(active_job_keys),
+                    capacity,
+                    control_state,
+                    job_control_states,
+                )
+            )
+            if active_job_keys:
+                active_heartbeats["count"] += 1
+                if active_heartbeats["count"] >= 2:
+                    return {
+                        "control":{
+                            "jobs":{
+                                "job-abc123":{
+                                    "desired_state":"cancel_requested"
+                                }
+                            }
+                        }
+                    }
+            return None
+
+        client.heartbeat = heartbeat
+
+        def runner(request_path, out, **kwargs):
+            cancel_event = kwargs["cancel_event"]
+            self.assertTrue(
+                cancel_event.wait(0.5),
+                "cancel event was not triggered by heartbeat",
+            )
+            raise RuntimeError("interrupted after cancel")
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client,
+                worker_id="ai-dev-1",
+                output_root=Path(td),
+                run_project=runner,
+                heartbeat_interval_seconds=0.01,
+            )
+
+        self.assertEqual(result["status"], "cancelled")
+        self.assertNotIn("fail", [call[0] for call in client.calls])
+        final = client.calls[-1]
+        self.assertEqual(final[0], "heartbeat")
+        self.assertEqual(
+            final[5],
+            {"job-abc123":"cancel_requested"},
+        )
+
     def test_run_once_reports_runner_exception_and_clears_active_job(self):
         client = _FakeClient(sample_job())
 
@@ -360,13 +466,13 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertEqual(result["status"], "failed")
         self.assertEqual(
             [call[0] for call in client.calls],
-            ["claim", "ack", "heartbeat", "fail", "heartbeat"],
+            ["heartbeat", "claim", "ack", "heartbeat", "fail", "heartbeat"],
         )
-        failed = client.calls[3][1]
+        failed = client.calls[4][1]
         self.assertEqual(failed["key"], "job-abc123")
         self.assertIn("runner_error", failed["reason"])
         self.assertIn("RuntimeError", failed["result"]["evidence"]["error_type"])
-        self.assertEqual(client.calls[4][2], ())
+        self.assertEqual(client.calls[5][2], ())
 
     def test_capacity_snapshot_prefers_authenticated_omniroute(self):
         from production_os_worker import production_capacity_snapshot

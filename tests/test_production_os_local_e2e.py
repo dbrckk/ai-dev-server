@@ -218,6 +218,7 @@ class ProductionOSLocalE2ETests(unittest.TestCase):
             paths,
             [
                 "/v1/workers/register",
+                "/v1/workers/heartbeat",
                 "/v1/jobs/claim",
                 "/v1/jobs/ack",
                 "/v1/workers/heartbeat",

@@ -62,6 +62,7 @@ class _FakeClient:
         active_job_keys=(),
         capacity=None,
         control_state=None,
+        job_control_states=None,
     ):
         self.calls.append(
             (
@@ -70,6 +71,7 @@ class _FakeClient:
                 tuple(active_job_keys),
                 capacity,
                 control_state,
+                job_control_states,
             )
         )
         return self.heartbeat_response
@@ -381,6 +383,70 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertEqual(client.calls[-1][0], "heartbeat")
         self.assertEqual(client.calls[-1][2], ())
 
+
+    def test_run_once_cooperatively_cancels_only_target_job(self):
+        client = _FakeClient(sample_job())
+        active_heartbeats = {"count": 0}
+
+        def heartbeat(
+            worker_id,
+            *,
+            active_job_keys=(),
+            capacity=None,
+            control_state=None,
+            job_control_states=None,
+        ):
+            client.calls.append(
+                (
+                    "heartbeat",
+                    worker_id,
+                    tuple(active_job_keys),
+                    capacity,
+                    control_state,
+                    job_control_states,
+                )
+            )
+            if active_job_keys:
+                active_heartbeats["count"] += 1
+                if active_heartbeats["count"] >= 2:
+                    return {
+                        "control":{
+                            "jobs":{
+                                "job-abc123":{
+                                    "desired_state":"cancel_requested"
+                                }
+                            }
+                        }
+                    }
+            return None
+
+        client.heartbeat = heartbeat
+
+        def runner(request_path, out, **kwargs):
+            cancel_event = kwargs["cancel_event"]
+            self.assertTrue(
+                cancel_event.wait(0.5),
+                "cancel event was not triggered by heartbeat",
+            )
+            raise RuntimeError("interrupted after cancel")
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client,
+                worker_id="ai-dev-1",
+                output_root=Path(td),
+                run_project=runner,
+                heartbeat_interval_seconds=0.01,
+            )
+
+        self.assertEqual(result["status"], "cancelled")
+        self.assertNotIn("fail", [call[0] for call in client.calls])
+        final = client.calls[-1]
+        self.assertEqual(final[0], "heartbeat")
+        self.assertEqual(
+            final[5],
+            {"job-abc123":"cancel_requested"},
+        )
 
     def test_run_once_reports_runner_exception_and_clears_active_job(self):
         client = _FakeClient(sample_job())

@@ -321,20 +321,68 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
     return envelope
 
 
-def bounded_run(args, timeout):
-    run_id=uuid.uuid4().hex; env=dict(os.environ,STUDIO_RUN_ID=run_id); process=subprocess.Popen(args,env=env,start_new_session=True)
-    try: return subprocess.CompletedProcess(args,process.wait(timeout=timeout))
+def _stop_bounded_process(process, run_id: str, *, cleanup_error: str) -> None:
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+        process.wait(timeout=10)
+    except (ProcessLookupError, subprocess.TimeoutExpired):
+        pass
+    try:
+        os.killpg(process.pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+    try:
+        process.wait(timeout=5)
     except subprocess.TimeoutExpired:
-        try: os.killpg(process.pid,signal.SIGTERM); process.wait(timeout=10)
-        except (ProcessLookupError,subprocess.TimeoutExpired): pass
-        try: os.killpg(process.pid,signal.SIGKILL)
-        except ProcessLookupError: pass
-        process.wait()
+        pass
+    try:
+        containers = subprocess.run(
+            [
+                'docker','ps','-aq','--filter',
+                'label=mobile-studio-run=' + run_id,
+            ],
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=True,
+        ).stdout.split()
+        if containers:
+            subprocess.run(
+                ['docker','rm','-f',*containers],
+                capture_output=True,
+                timeout=30,
+                check=True,
+            )
+    except (OSError, subprocess.SubprocessError):
+        raise StudioError(cleanup_error) from None
+
+
+def bounded_run(args, timeout, cancel_event=None):
+    run_id = uuid.uuid4().hex
+    env = dict(os.environ, STUDIO_RUN_ID=run_id)
+    process = subprocess.Popen(args, env=env, start_new_session=True)
+    deadline = time.monotonic() + float(timeout)
+    while True:
+        if cancel_event is not None and cancel_event.is_set():
+            _stop_bounded_process(
+                process,
+                run_id,
+                cleanup_error='Cancelled worker stopped but container cleanup failed',
+            )
+            raise StudioError('Production-OS cancellation requested')
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            _stop_bounded_process(
+                process,
+                run_id,
+                cleanup_error='Timed-out worker stopped but container cleanup failed',
+            )
+            raise subprocess.TimeoutExpired(args, timeout)
         try:
-            containers=subprocess.run(['docker','ps','-aq','--filter','label=mobile-studio-run='+run_id],capture_output=True,text=True,timeout=15,check=True).stdout.split()
-            if containers: subprocess.run(['docker','rm','-f',*containers],capture_output=True,timeout=30,check=True)
-        except (OSError,subprocess.SubprocessError): raise StudioError('Timed-out worker stopped but container cleanup failed') from None
-        raise
+            code = process.wait(timeout=min(0.25, remaining))
+            return subprocess.CompletedProcess(args, code)
+        except subprocess.TimeoutExpired:
+            continue
 
 
 def _update_improvements(out: Path, goal_state: dict, project_state: dict) -> dict:
@@ -355,8 +403,22 @@ def _update_improvements(out: Path, goal_state: dict, project_state: dict) -> di
     }
 
 
-def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=time.monotonic,budget_seconds=85*60,baseline_sha:str|None=None)->dict:
+def run(
+    request_path: Path,
+    out=Path('studio-output'),
+    runner=bounded_run,
+    clock=time.monotonic,
+    budget_seconds=85 * 60,
+    baseline_sha: str | None = None,
+    cancel_event=None,
+) -> dict:
     request=request_check(json.loads(request_path.read_text()))
+    def effective_runner(args, timeout):
+        if cancel_event is not None and cancel_event.is_set():
+            raise StudioError('Production-OS cancellation requested')
+        if runner is bounded_run:
+            return bounded_run(args, timeout, cancel_event=cancel_event)
+        return runner(args, timeout)
     if not request['enabled']:
         result={'status':'disabled','next_stage':None,'finished':False}; out.mkdir(parents=True,exist_ok=True); (out/'github-pipeline.json').write_text(canonical(result)); return result
     os.environ['STUDIO_PROJECT_ID']=request['id']
@@ -649,7 +711,7 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
         return result
     with tempfile.TemporaryDirectory(prefix='studio-github-') as work:
         state=run_persistent_project(
-            str(request_path),out,work,runner,deadline,clock,baseline_sha,
+            str(request_path),out,work,effective_runner,deadline,clock,baseline_sha,
             goal_id=request['id'],
             objective='Complete project '+request['id']+' with verified release evidence',
             max_cycles=4,
@@ -671,7 +733,7 @@ def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=tim
             def improvement_project_cycle(_goal_state):
                 with tempfile.TemporaryDirectory(prefix='studio-improvement-') as improve_work:
                     return run_multi_engine_project(
-                        str(request_path),out,improve_work,runner,deadline,clock,baseline_sha
+                        str(request_path),out,improve_work,effective_runner,deadline,clock,baseline_sha
                     )
             improvement_run=run_active_improvement(
                 backlog_path,

@@ -250,6 +250,7 @@ class ProductionOSClient:
         *,
         active_job_keys=(),
         capacity: dict | None = None,
+        control_state: str | None = None,
     ) -> dict | None:
         payload = {
             "worker_id": str(worker_id),
@@ -260,6 +261,8 @@ class ProductionOSClient:
         }
         if capacity is not None:
             payload["capacity"] = dict(capacity)
+        if control_state is not None:
+            payload["control_state"] = str(control_state)
         return self._post(
             "/v1/workers/heartbeat",
             payload,
@@ -624,6 +627,43 @@ def run_once(
         clock = time.monotonic
 
     capabilities = list(capabilities or worker_capabilities())
+    if capacity is None:
+        preflight = client.heartbeat(worker_id, active_job_keys=())
+    else:
+        preflight = client.heartbeat(
+            worker_id,
+            active_job_keys=(),
+            capacity=capacity,
+        )
+    worker_control = (
+        ((preflight or {}).get("control") or {}).get("worker")
+        if isinstance(preflight, dict)
+        else None
+    )
+    desired_state = (
+        str(worker_control.get("desired_state") or "active")
+        if isinstance(worker_control, dict)
+        else "active"
+    )
+    if desired_state in {"paused", "draining"}:
+        if capacity is None:
+            client.heartbeat(
+                worker_id,
+                active_job_keys=(),
+                control_state=desired_state,
+            )
+        else:
+            client.heartbeat(
+                worker_id,
+                active_job_keys=(),
+                capacity=capacity,
+                control_state=desired_state,
+            )
+        return {
+            "status": desired_state,
+            "worker_id": worker_id,
+        }
+
     job = client.claim(worker_id, capabilities)
     if job is None:
         return {"status": "idle", "worker_id": worker_id}

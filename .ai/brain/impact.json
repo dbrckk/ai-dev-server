@@ -1,17 +1,1106 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "08f5271c945b08face68c612f67961bf124b6b62",
-  "head": "c85d83b8d60ede8b0540556a4a5308bcf6c1919f",
+  "base": "c85d83b8d60ede8b0540556a4a5308bcf6c1919f",
+  "head": "73e59db54ad912071c7ab8fd218caa682b588028",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "control/production-os-worker-kick.json",
+      "path": "studio/github_runner.py",
+      "status": "M"
+    },
+    {
+      "path": "studio/production_os_worker.py",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_production_os_local_e2e.py",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_production_os_worker_runtime.py",
       "status": "M"
     }
   ],
-  "changed_source_files": [],
-  "impacted_files": [],
-  "impacted_symbols": [],
-  "selected_tests": []
+  "changed_source_files": [
+    "studio/github_runner.py",
+    "studio/production_os_worker.py",
+    "tests/test_production_os_local_e2e.py",
+    "tests/test_production_os_worker_runtime.py"
+  ],
+  "impacted_files": [
+    "studio/github_runner.py",
+    "studio/production_os_worker.py",
+    "tests/test_github_runner_persistent.py",
+    "tests/test_github_runner_usage.py",
+    "tests/test_orchestrator.py",
+    "tests/test_production_os_local_e2e.py",
+    "tests/test_production_os_result_contract.py",
+    "tests/test_production_os_worker.py",
+    "tests/test_production_os_worker_cli.py",
+    "tests/test_production_os_worker_runtime.py"
+  ],
+  "impacted_symbols": [
+    {
+      "name": "_prepare_capability_promotion_handoff",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 56
+    },
+    {
+      "name": "_usage_count",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 96
+    },
+    {
+      "name": "collect_agent_usage",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 105
+    },
+    {
+      "name": "write_production_os_result",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 170
+    },
+    {
+      "name": "_stop_bounded_process",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 324
+    },
+    {
+      "name": "bounded_run",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 360
+    },
+    {
+      "name": "_update_improvements",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 388
+    },
+    {
+      "name": "run",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 406
+    },
+    {
+      "name": "effective_runner",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 416
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 708
+    },
+    {
+      "name": "improvement_project_cycle",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 733
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 849
+    },
+    {
+      "name": "_asset_forge_operational_status",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 31
+    },
+    {
+      "name": "worker_capabilities",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 60
+    },
+    {
+      "name": "ProductionOSWorkerError",
+      "kind": "class",
+      "file": "studio/production_os_worker.py",
+      "line": 79
+    },
+    {
+      "name": "_NoRedirect",
+      "kind": "class",
+      "file": "studio/production_os_worker.py",
+      "line": 83
+    },
+    {
+      "name": "redirect_request",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 84
+    },
+    {
+      "name": "_default_opener",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 90
+    },
+    {
+      "name": "ProductionOSClient",
+      "kind": "class",
+      "file": "studio/production_os_worker.py",
+      "line": 97
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 98
+    },
+    {
+      "name": "_post",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 138
+    },
+    {
+      "name": "claim",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 197
+    },
+    {
+      "name": "ack",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 214
+    },
+    {
+      "name": "complete",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 220
+    },
+    {
+      "name": "fail",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 223
+    },
+    {
+      "name": "register",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 226
+    },
+    {
+      "name": "heartbeat",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 247
+    },
+    {
+      "name": "production_capacity_snapshot",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 278
+    },
+    {
+      "name": "_project_id",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 334
+    },
+    {
+      "name": "_app_name",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 339
+    },
+    {
+      "name": "_brief",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 349
+    },
+    {
+      "name": "_is_visual_handoff",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 362
+    },
+    {
+      "name": "_asset_forge_guidance",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 403
+    },
+    {
+      "name": "build_studio_request",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 447
+    },
+    {
+      "name": "_write_project_capacity_plan",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 493
+    },
+    {
+      "name": "_result_payload",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 566
+    },
+    {
+      "name": "completion_payload",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 576
+    },
+    {
+      "name": "failure_payload",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 593
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 616
+    },
+    {
+      "name": "observe_job_control",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 683
+    },
+    {
+      "name": "keep_job_alive",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 738
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 913
+    },
+    {
+      "name": "GithubRunnerPersistentTests",
+      "kind": "class",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 16
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 17
+    },
+    {
+      "name": "test_run_uses_persistent_goal_engine",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 28
+    },
+    {
+      "name": "test_human_action_is_not_reported_complete",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 40
+    },
+    {
+      "name": "test_blocked_state_preserves_reason",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 54
+    },
+    {
+      "name": "test_remote_checkpoint_ingests_memory_before_state_persistence",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 69
+    },
+    {
+      "name": "test_invalid_memory_ingestion_blocks_state_checkpoint",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 106
+    },
+    {
+      "name": "test_promotion_required_handoff_is_sealed_and_non_promoting",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 151
+    },
+    {
+      "name": "test_promotion_handoff_rejects_cross_candidate_validation",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 183
+    },
+    {
+      "name": "GitHubRunnerUsageTests",
+      "kind": "class",
+      "file": "tests/test_github_runner_usage.py",
+      "line": 10
+    },
+    {
+      "name": "test_collect_agent_usage_sums_codex_attempts_across_rounds",
+      "kind": "function",
+      "file": "tests/test_github_runner_usage.py",
+      "line": 11
+    },
+    {
+      "name": "test_collect_agent_usage_ignores_duplicate_non_attempt_usage_and_bad_values",
+      "kind": "function",
+      "file": "tests/test_github_runner_usage.py",
+      "line": 72
+    },
+    {
+      "name": "test_collect_agent_usage_empty_report_is_zeroed",
+      "kind": "function",
+      "file": "tests/test_github_runner_usage.py",
+      "line": 117
+    },
+    {
+      "name": "OrchestratorTests",
+      "kind": "class",
+      "file": "tests/test_orchestrator.py",
+      "line": 19
+    },
+    {
+      "name": "payload_for",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 20
+    },
+    {
+      "name": "missing_report",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 35
+    },
+    {
+      "name": "test_premium_visual_request_prefetches_asset_forge_before_preview",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 43
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 52
+    },
+    {
+      "name": "test_multi_asset_request_uses_transactional_asset_forge_batch",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 86
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 98
+    },
+    {
+      "name": "test_asset_forge_batch_receipt_marks_regenerated_quality",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 129
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 140
+    },
+    {
+      "name": "test_asset_forge_failure_receipt_marks_low_quality",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 174
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 185
+    },
+    {
+      "name": "test_full_pipeline_reaches_finished",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 203
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 207
+    },
+    {
+      "name": "test_unregistered_stage_research_then_synthesis",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 218
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 221
+    },
+    {
+      "name": "test_research_failure_prevents_synthesis",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 255
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 258
+    },
+    {
+      "name": "test_adaptation_without_baseline_has_no_promotable_work_order",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 271
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 274
+    },
+    {
+      "name": "test_stage_return_code_two_is_human_action_not_failure",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 283
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 286
+    },
+    {
+      "name": "test_scheduler_rewind_can_revisit_release_build_boundedly",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 310
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 319
+    },
+    {
+      "name": "test_successful_stage_must_advance",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 371
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 374
+    },
+    {
+      "name": "GitHubRunnerTests",
+      "kind": "class",
+      "file": "tests/test_orchestrator.py",
+      "line": 383
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 384
+    },
+    {
+      "name": "test_non_main_is_rejected_before_generation",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 390
+    },
+    {
+      "name": "test_adapter_reports_complete_only_after_machine_completion",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 394
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 397
+    },
+    {
+      "name": "_ControlPlane",
+      "kind": "class",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 14
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 15
+    },
+    {
+      "name": "Handler",
+      "kind": "class",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 20
+    },
+    {
+      "name": "log_message",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 21
+    },
+    {
+      "name": "do_POST",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 24
+    },
+    {
+      "name": "_send",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 79
+    },
+    {
+      "name": "url",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 98
+    },
+    {
+      "name": "__enter__",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 102
+    },
+    {
+      "name": "__exit__",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 106
+    },
+    {
+      "name": "ProductionOSLocalE2ETests",
+      "kind": "class",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 112
+    },
+    {
+      "name": "test_worker_completes_real_http_control_plane_cycle",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 113
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 117
+    },
+    {
+      "name": "execute_once",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 154
+    },
+    {
+      "name": "ProductionOSResultContractTests",
+      "kind": "class",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 23
+    },
+    {
+      "name": "test_request_accepts_optional_production_os_correlation",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 24
+    },
+    {
+      "name": "test_request_rejects_invalid_production_os_correlation",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 41
+    },
+    {
+      "name": "test_result_envelope_correlates_usage_and_completion",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 51
+    },
+    {
+      "name": "test_result_envelope_includes_visual_asset_quality",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 89
+    },
+    {
+      "name": "test_no_result_envelope_without_correlation",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 161
+    },
+    {
+      "name": "ProductionOSWorkerTests",
+      "kind": "class",
+      "file": "tests/test_production_os_worker.py",
+      "line": 17
+    },
+    {
+      "name": "job",
+      "kind": "function",
+      "file": "tests/test_production_os_worker.py",
+      "line": 18
+    },
+    {
+      "name": "test_build_studio_request_preserves_goal_and_workflow_correlation",
+      "kind": "function",
+      "file": "tests/test_production_os_worker.py",
+      "line": 36
+    },
+    {
+      "name": "test_visual_reuse_adds_asset_forge_guidance",
+      "kind": "function",
+      "file": "tests/test_production_os_worker.py",
+      "line": 56
+    },
+    {
+      "name": "test_explicit_visual_task_adds_asset_forge_guidance_without_reuse_metadata",
+      "kind": "function",
+      "file": "tests/test_production_os_worker.py",
+      "line": 72
+    },
+    {
+      "name": "test_french_visual_task_adds_asset_forge_guidance",
+      "kind": "function",
+      "file": "tests/test_production_os_worker.py",
+      "line": 88
+    },
+    {
+      "name": "test_structured_asset_forge_contract_enables_guidance_without_keywords",
+      "kind": "function",
+      "file": "tests/test_production_os_worker.py",
+      "line": 101
+    },
+    {
+      "name": "test_short_task_is_expanded_to_valid_studio_brief",
+      "kind": "function",
+      "file": "tests/test_production_os_worker.py",
+      "line": 128
+    },
+    {
+      "name": "test_completion_payload_forwards_usage_and_evidence",
+      "kind": "function",
+      "file": "tests/test_production_os_worker.py",
+      "line": 140
+    },
+    {
+      "name": "test_failure_payload_is_bounded_and_preserves_usage",
+      "kind": "function",
+      "file": "tests/test_production_os_worker.py",
+      "line": 193
+    },
+    {
+      "name": "_Client",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 10
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 11
+    },
+    {
+      "name": "register",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 16
+    },
+    {
+      "name": "ProductionOSWorkerCLITests",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 22
+    },
+    {
+      "name": "test_main_registers_worker_and_runs_once",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 23
+    },
+    {
+      "name": "factory",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 27
+    },
+    {
+      "name": "run_once_fn",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 32
+    },
+    {
+      "name": "test_main_runs_bounded_cycles_until_queue_is_idle",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 83
+    },
+    {
+      "name": "factory",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 92
+    },
+    {
+      "name": "run_once_fn",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 97
+    },
+    {
+      "name": "test_main_requires_all_control_plane_credentials",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 120
+    },
+    {
+      "name": "test_main_forwards_capacity_snapshot_to_worker_cycle",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 140
+    },
+    {
+      "name": "test_continuous_mode_polls_idle_queue_and_refreshes_capacity",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 172
+    },
+    {
+      "name": "capacity_provider",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 176
+    },
+    {
+      "name": "run_once_fn",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 181
+    },
+    {
+      "name": "sleeper",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 185
+    },
+    {
+      "name": "sample_job",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 20
+    },
+    {
+      "name": "_FakeClient",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 39
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 40
+    },
+    {
+      "name": "claim",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 45
+    },
+    {
+      "name": "ack",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 49
+    },
+    {
+      "name": "complete",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 52
+    },
+    {
+      "name": "fail",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 55
+    },
+    {
+      "name": "heartbeat",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 58
+    },
+    {
+      "name": "_Response",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 80
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 81
+    },
+    {
+      "name": "__enter__",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 89
+    },
+    {
+      "name": "__exit__",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 92
+    },
+    {
+      "name": "read",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 95
+    },
+    {
+      "name": "ProductionOSWorkerRuntimeTests",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 101
+    },
+    {
+      "name": "test_worker_capabilities_require_ready_visual_backend",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 102
+    },
+    {
+      "name": "Result",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 113
+    },
+    {
+      "name": "test_client_rejects_insecure_remote_control_plane",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 147
+    },
+    {
+      "name": "test_client_allows_loopback_http",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 157
+    },
+    {
+      "name": "test_client_claim_posts_bearer_json_and_handles_no_content",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 165
+    },
+    {
+      "name": "opener",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 168
+    },
+    {
+      "name": "test_run_once_acknowledges_pause_without_claiming",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 219
+    },
+    {
+      "name": "test_run_once_returns_idle_when_no_job_is_available",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 243
+    },
+    {
+      "name": "test_run_once_acks_executes_and_completes_with_usage",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 266
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 269
+    },
+    {
+      "name": "test_run_once_reports_failed_pipeline_to_control_plane",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 309
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 312
+    },
+    {
+      "name": "test_run_once_refreshes_heartbeat_during_long_runner_execution",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 340
+    },
+    {
+      "name": "heartbeat",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 346
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 359
+    },
+    {
+      "name": "test_run_once_cooperatively_cancels_only_target_job",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 387
+    },
+    {
+      "name": "heartbeat",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 391
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 425
+    },
+    {
+      "name": "test_run_once_reports_runner_exception_and_clears_active_job",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 451
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 454
+    },
+    {
+      "name": "test_capacity_snapshot_prefers_authenticated_omniroute",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 477
+    },
+    {
+      "name": "Snapshot",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 480
+    },
+    {
+      "name": "fetch",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 490
+    },
+    {
+      "name": "test_capacity_snapshot_fails_closed_without_authenticated_usage",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 511
+    },
+    {
+      "name": "Snapshot",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 514
+    },
+    {
+      "name": "test_client_heartbeat_posts_capacity_snapshot",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 533
+    },
+    {
+      "name": "opener",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 536
+    },
+    {
+      "name": "test_run_once_writes_project_token_envelope_before_execution",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 574
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 583
+    },
+    {
+      "name": "test_project_token_envelope_is_capped_by_live_global_remaining_capacity",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 617
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 626
+    }
+  ],
+  "selected_tests": [
+    "tests/test_github_runner_persistent.py",
+    "tests/test_github_runner_usage.py",
+    "tests/test_orchestrator.py",
+    "tests/test_production_os_local_e2e.py",
+    "tests/test_production_os_result_contract.py",
+    "tests/test_production_os_worker.py",
+    "tests/test_production_os_worker_cli.py",
+    "tests/test_production_os_worker_preflight.py",
+    "tests/test_production_os_worker_runtime.py"
+  ]
 }

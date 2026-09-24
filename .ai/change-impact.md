@@ -1,16 +1,20 @@
 # Change impact
 
-Base: 21b8cda3f99cab066255b987a2dd182fcb0cb9ce
-Head: c85d83b8d60ede8b0540556a4a5308bcf6c1919f
+Base: 1ceb762e97a3e5f5b60e806fdbc992d2e16100bf
+Head: 73e59db54ad912071c7ab8fd218caa682b588028
 
 ## Changed files
-- M control/production-os-worker-kick.json
+- M studio/github_runner.py
+- M studio/production_os_worker.py
+- M tests/test_production_os_local_e2e.py
+- M tests/test_production_os_worker_runtime.py
 
 ## Affected areas
-- control
+- studio
+- tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_production_os_worker.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

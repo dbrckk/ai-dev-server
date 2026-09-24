@@ -10458,11 +10458,20 @@ visual_assets = {
 ⋮----
 envelope = {
 ⋮----
-def bounded_run(args, timeout)
+def _stop_bounded_process(process, run_id: str, *, cleanup_error: str) -> None
 ⋮----
-run_id=uuid.uuid4().hex; env=dict(os.environ,STUDIO_RUN_ID=run_id); process=subprocess.Popen(args,env=env,start_new_session=True)
+containers = subprocess.run(
 ⋮----
-containers=subprocess.run(['docker','ps','-aq','--filter','label=mobile-studio-run='+run_id],capture_output=True,text=True,timeout=15,check=True).stdout.split()
+def bounded_run(args, timeout, cancel_event=None)
+⋮----
+run_id = uuid.uuid4().hex
+env = dict(os.environ, STUDIO_RUN_ID=run_id)
+process = subprocess.Popen(args, env=env, start_new_session=True)
+deadline = time.monotonic() + float(timeout)
+⋮----
+remaining = deadline - time.monotonic()
+⋮----
+code = process.wait(timeout=min(0.25, remaining))
 ⋮----
 def _update_improvements(out: Path, goal_state: dict, project_state: dict) -> dict
 ⋮----
@@ -10475,9 +10484,8 @@ backlog=activate_next(backlog)
 ⋮----
 active=next((item for item in backlog['items'] if item['status']=='active'),None)
 ⋮----
-def run(request_path:Path,out=Path('studio-output'),runner=bounded_run,clock=time.monotonic,budget_seconds=85*60,baseline_sha:str|None=None)->dict
-⋮----
 request=request_check(json.loads(request_path.read_text()))
+def effective_runner(args, timeout)
 ⋮----
 result={'status':'disabled','next_stage':None,'finished':False}; out.mkdir(parents=True,exist_ok=True); (out/'github-pipeline.json').write_text(canonical(result)); return result
 ⋮----
@@ -15179,9 +15187,30 @@ reason = status if not next_stage else f"{status}: {next_stage}"
 clock = time.monotonic
 ⋮----
 capabilities = list(capabilities or worker_capabilities())
+⋮----
+preflight = client.heartbeat(worker_id, active_job_keys=())
+⋮----
+preflight = client.heartbeat(
+worker_control = (
+desired_state = (
+⋮----
 job = client.claim(worker_id, capabilities)
 ⋮----
 key = str(job.get("key") or "")
+⋮----
+cancel_event = threading.Event()
+⋮----
+def observe_job_control(response)
+⋮----
+control_payload = response.get("control")
+⋮----
+jobs = control_payload.get("jobs")
+⋮----
+state = jobs.get(key)
+⋮----
+response = client.heartbeat(worker_id, active_job_keys=(key,))
+⋮----
+response = client.heartbeat(
 ⋮----
 request = build_studio_request(job)
 root = Path(output_root)
@@ -15205,6 +15234,9 @@ started = float(clock())
 summary = run_project(
 ⋮----
 duration = max(0.0, float(clock()) - started)
+⋮----
+kwargs = {
+⋮----
 envelope = {
 ⋮----
 result_path = project_out / "production-os-result.json"

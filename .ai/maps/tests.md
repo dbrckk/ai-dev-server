@@ -8021,8 +8021,6 @@ def complete(self, payload)
 ⋮----
 def fail(self, payload)
 ⋮----
-def heartbeat(self, worker_id, *, active_job_keys=(), capacity=None)
-⋮----
 class _Response
 ⋮----
 def __init__(self, status, payload=None)
@@ -8059,25 +8057,27 @@ def opener(request, timeout)
 ⋮----
 job = client.claim(
 ⋮----
+def test_run_once_acknowledges_pause_without_claiming(self)
+⋮----
+client = _FakeClient(sample_job())
+⋮----
+result = run_once(
+⋮----
 def test_run_once_returns_idle_when_no_job_is_available(self)
 ⋮----
 client = _FakeClient(None)
 ⋮----
-result = run_once(
-⋮----
 def test_run_once_acks_executes_and_completes_with_usage(self)
-⋮----
-client = _FakeClient(sample_job())
 ⋮----
 def runner(request_path, out, **kwargs)
 ⋮----
 request = json.loads(Path(request_path).read_text(encoding="utf-8"))
 ⋮----
-completed = client.calls[3][1]
+completed = client.calls[4][1]
 ⋮----
 def test_run_once_reports_failed_pipeline_to_control_plane(self)
 ⋮----
-failed = client.calls[3][1]
+failed = client.calls[4][1]
 ⋮----
 def test_run_once_refreshes_heartbeat_during_long_runner_execution(self)
 ⋮----
@@ -8086,6 +8086,12 @@ original_heartbeat = client.heartbeat
 active_heartbeats = {"count": 0}
 ⋮----
 def heartbeat(worker_id, *, active_job_keys=(), capacity=None)
+⋮----
+def test_run_once_cooperatively_cancels_only_target_job(self)
+⋮----
+cancel_event = kwargs["cancel_event"]
+⋮----
+final = client.calls[-1]
 ⋮----
 def test_run_once_reports_runner_exception_and_clears_active_job(self)
 ⋮----

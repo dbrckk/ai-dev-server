@@ -22,16 +22,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-22T11:01:21Z
+Generated: 2026-09-24T15:03:21Z
 
 ### Git
 - Branch: `main`
-- Head: `c85d83b8d60e`
-- Commit date: 2026-09-22T13:01:09+02:00
-- Commit: control: kick Production-OS Actions worker
+- Head: `73e59db54ad9`
+- Commit date: 2026-09-24T17:03:09+02:00
+- Commit: feat: honor Production-OS worker control state
 - Tracked files: 824
 
 ### Recently changed files
+- `studio/github_runner.py`
+- `studio/production_os_worker.py`
+- `tests/test_production_os_local_e2e.py`
+- `tests/test_production_os_worker_runtime.py`
 - `control/production-os-worker-kick.json`
 - `tests/test_production_os_actions_worker_workflow.py`
 - `.github/workflows/production-os-actions-worker.yml`

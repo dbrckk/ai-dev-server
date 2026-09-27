@@ -906,6 +906,11 @@ def run(
         else {}
     )
     summary['usage']=collect_agent_usage(project_report)
+    if isinstance(project_report.get('pull_request'),dict):
+        summary['pull_request']=dict(project_report['pull_request'])
+    checkpoint_commit=project_report.get('checkpoint_commit')
+    if isinstance(checkpoint_commit,str) and len(checkpoint_commit)==40:
+        summary['commit_shas']=[checkpoint_commit]
     if improvement is not None:
         summary['improvement_status']=improvement['status']
         summary['improvement_next']=improvement['active_candidate']

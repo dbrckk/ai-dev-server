@@ -146,6 +146,29 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             ["/usr/bin/asset-forge", "operational-status"],
         )
 
+    def test_worker_capabilities_add_requested_specialties(self):
+        with patch("production_os_worker.shutil.which", return_value=None):
+            caps = worker_capabilities({
+                "PRODUCTION_OS_WORKER_SPECIALTIES": "debug,review,code",
+            })
+
+        self.assertIn("code-implementation", caps)
+        self.assertIn("test-debug", caps)
+        self.assertIn("code-review", caps)
+        self.assertNotIn("browser-ui-validation", caps)
+
+
+    def test_worker_capabilities_reject_unknown_specialty(self):
+        with patch("production_os_worker.shutil.which", return_value=None):
+            with self.assertRaisesRegex(
+                ProductionOSWorkerError,
+                "Unknown worker specialties",
+            ):
+                worker_capabilities({
+                    "PRODUCTION_OS_WORKER_SPECIALTIES": "debug,unknown",
+                })
+
+
     def test_client_rejects_insecure_remote_control_plane(self):
         with self.assertRaisesRegex(
             ProductionOSWorkerError,

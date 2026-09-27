@@ -113,6 +113,17 @@ class ProductionOSResultContractTests(unittest.TestCase):
                 "number": 201,
                 "state": "open",
             },
+            "ci": {
+                "provider": "github-actions",
+                "status": "failed",
+                "workflow": "CI",
+                "job": "tests",
+                "step": "pytest",
+                "conclusion": "failure",
+                "url": "https://github.com/owner/app/actions/runs/123",
+                "sha": "0123456789abcdef0123456789abcdef01234567",
+                "log_excerpt": "FAILED tests/test_app.py::test_login",
+            },
         }
 
         with tempfile.TemporaryDirectory() as td:
@@ -144,6 +155,11 @@ class ProductionOSResultContractTests(unittest.TestCase):
             evidence["pull_request"],
             {"number": 201, "state": "open"},
         )
+        self.assertEqual(evidence["ci"]["provider"], "github-actions")
+        self.assertEqual(evidence["ci"]["workflow"], "CI")
+        self.assertEqual(evidence["ci"]["job"], "tests")
+        self.assertEqual(evidence["ci"]["step"], "pytest")
+        self.assertIn("FAILED", evidence["ci"]["log_excerpt"])
 
 
     def test_result_envelope_includes_visual_asset_quality(self):

@@ -179,6 +179,57 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertNotIn("browser-ui-validation", caps)
 
 
+    def test_mobile_specialty_requires_operational_android_runtime(self):
+        def which(name):
+            if name == "adb":
+                return "/sdk/platform-tools/adb"
+            if name == "emulator":
+                return "/sdk/emulator/emulator"
+            return None
+
+        completed = type("Completed", (), {"returncode": 0})()
+        with patch(
+            "production_os_worker.shutil.which",
+            side_effect=which,
+        ), patch(
+            "production_os_worker.Path.exists",
+            return_value=True,
+        ), patch(
+            "production_os_worker.os.access",
+            return_value=True,
+        ), patch(
+            "production_os_worker.subprocess.run",
+            return_value=completed,
+        ):
+            caps = worker_capabilities({
+                "PRODUCTION_OS_WORKER_SPECIALTIES": "mobile",
+            })
+
+        self.assertIn("mobile-ui-validation", caps)
+
+
+    def test_mobile_specialty_is_not_advertised_without_kvm(self):
+        def which(name):
+            if name == "adb":
+                return "/sdk/platform-tools/adb"
+            if name == "emulator":
+                return "/sdk/emulator/emulator"
+            return None
+
+        with patch(
+            "production_os_worker.shutil.which",
+            side_effect=which,
+        ), patch(
+            "production_os_worker.Path.exists",
+            return_value=False,
+        ):
+            caps = worker_capabilities({
+                "PRODUCTION_OS_WORKER_SPECIALTIES": "mobile",
+            })
+
+        self.assertNotIn("mobile-ui-validation", caps)
+
+
     def test_worker_capabilities_reject_unknown_specialty(self):
         with patch("production_os_worker.shutil.which", return_value=None):
             with self.assertRaisesRegex(

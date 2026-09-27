@@ -420,6 +420,7 @@ def _run_browser_validation(req: dict, work: Path, out: Path) -> dict | None:
         "page_errors":page_errors,
         "screenshots":screenshots,
         "copied_artifacts":copied,
+        "adb_verification":adb_verification,
         "execution":{
             "returncode":execution.get("returncode"),
             "duration_seconds":execution.get("duration_seconds"),
@@ -436,6 +437,74 @@ def _mobile_validation_contract(req: dict) -> dict | None:
         return None
     contract = contracts.get("mobile_validation")
     return contract if isinstance(contract, dict) else None
+
+
+def _verify_android_emulator_evidence(
+    work: Path,
+    *,
+    device_serial: str | None,
+    package_name: str | None,
+    activity: str | None,
+) -> dict:
+    serial = str(device_serial or "").strip()
+    package = str(package_name or "").strip()
+    target_activity = str(activity or "").strip()
+    if (
+        not serial.startswith("emulator-")
+        or not serial[9:].isdigit()
+        or not package
+        or not target_activity
+    ):
+        return {
+            "passed":False,
+            "reason":"mobile-adb-identity-invalid",
+        }
+
+    state = run_command(
+        ["adb", "-s", serial, "get-state"],
+        work,
+        timeout=20,
+        network=False,
+    )
+    state_ok = (
+        state.get("passed") is True
+        and "device" in str(state.get("log_tail") or "").lower()
+    )
+
+    installed = run_command(
+        ["adb", "-s", serial, "shell", "pm", "path", package],
+        work,
+        timeout=30,
+        network=False,
+    )
+    installed_ok = (
+        installed.get("passed") is True
+        and "package:" in str(installed.get("log_tail") or "").lower()
+    )
+
+    foreground = run_command(
+        ["adb", "-s", serial, "shell", "dumpsys", "activity", "activities"],
+        work,
+        timeout=30,
+        network=False,
+    )
+    foreground_text = str(foreground.get("log_tail") or "")
+    foreground_ok = (
+        foreground.get("passed") is True
+        and package in foreground_text
+    )
+
+    passed = state_ok and installed_ok and foreground_ok
+    return {
+        "passed":passed,
+        "reason":None if passed else "mobile-adb-runtime-verification-failed",
+        "device_state_verified":state_ok,
+        "package_installed_verified":installed_ok,
+        "activity_visible_verified":foreground_ok,
+        "device_state_log":str(state.get("log_tail") or "")[-1200:],
+        "package_log":str(installed.get("log_tail") or "")[-1200:],
+        "activity_log":foreground_text[-3000:],
+    }
 
 
 def _run_mobile_validation(req: dict, work: Path, out: Path) -> dict | None:
@@ -525,6 +594,13 @@ def _run_mobile_validation(req: dict, work: Path, out: Path) -> dict | None:
         if not valid_report and report_error is None:
             report_error = "mobile-validation-report-contract-invalid"
 
+    adb_verification = _verify_android_emulator_evidence(
+        work,
+        device_serial=device_serial,
+        package_name=package_name,
+        activity=activity,
+    )
+
     evidence_root = out / "mobile-validation"
     copied = []
     total_bytes = 0
@@ -557,6 +633,7 @@ def _run_mobile_validation(req: dict, work: Path, out: Path) -> dict | None:
         execution.get("passed") is True
         and valid_report
         and not fatal_errors
+        and adb_verification.get("passed") is True
     )
     reason = None
     if not passed:
@@ -566,6 +643,11 @@ def _run_mobile_validation(req: dict, work: Path, out: Path) -> dict | None:
             reason = report_error
         elif fatal_errors:
             reason = "mobile-fatal-errors"
+        elif adb_verification.get("passed") is not True:
+            reason = str(
+                adb_verification.get("reason")
+                or "mobile-adb-runtime-verification-failed"
+            )
         else:
             reason = "mobile-validation-failed"
 

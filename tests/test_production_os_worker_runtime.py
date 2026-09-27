@@ -241,6 +241,50 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             )
         )
 
+    def test_managed_project_stages_share_stable_studio_project_id(self):
+        first = sample_job()
+        first["key"] = "job-implementation"
+        first["payload"]["managed_project_id"] = "managed-1234"
+        first["payload"]["workflow_task_id"] = "implementation"
+
+        second = sample_job()
+        second["key"] = "job-review"
+        second["payload"]["managed_project_id"] = "managed-1234"
+        second["payload"]["workflow_task_id"] = "review"
+
+        first_request = build_studio_request(first)
+        second_request = build_studio_request(second)
+
+        self.assertEqual(first_request["id"], second_request["id"])
+        self.assertTrue(first_request["id"].startswith("mp-"))
+
+
+    def test_different_managed_projects_do_not_share_studio_branch(self):
+        first = sample_job()
+        first["payload"]["managed_project_id"] = "managed-1234"
+
+        second = sample_job()
+        second["key"] = "job-other"
+        second["payload"]["managed_project_id"] = "managed-5678"
+
+        self.assertNotEqual(
+            build_studio_request(first)["id"],
+            build_studio_request(second)["id"],
+        )
+
+
+    def test_non_managed_job_keeps_job_scoped_project_id(self):
+        first = sample_job()
+        second = sample_job()
+        second["key"] = "job-other"
+
+        self.assertNotEqual(
+            build_studio_request(first)["id"],
+            build_studio_request(second)["id"],
+        )
+        self.assertTrue(build_studio_request(first)["id"].startswith("pos-"))
+
+
     def test_build_studio_request_includes_cooperative_upstream_context(self):
         job = sample_job()
         job["payload"]["handoff"]["upstream_context"] = [

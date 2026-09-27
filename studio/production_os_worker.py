@@ -563,6 +563,50 @@ def _write_project_capacity_plan(
     return row
 
 
+def _attach_failed_ci_diagnostic(
+    envelope: dict[str, Any],
+    request: dict[str, Any],
+    *,
+    environ=None,
+) -> dict[str, Any]:
+    if not isinstance(envelope, dict) or envelope.get("succeeded") is True:
+        return envelope
+    evidence = envelope.get("evidence")
+    if not isinstance(evidence, dict):
+        evidence = {}
+        envelope["evidence"] = evidence
+    if isinstance(evidence.get("ci"), dict):
+        return envelope
+
+    commits = evidence.get("commit_shas")
+    if not isinstance(commits, list) or not commits:
+        return envelope
+    sha = str(commits[-1] or "").strip()
+    if not sha:
+        return envelope
+
+    env = os.environ if environ is None else environ
+    token = str(env.get("STUDIO_GITHUB_TOKEN") or "").strip()
+    if not token:
+        return envelope
+    repository = str(
+        envelope.get("target_repo")
+        or request.get("target_repo")
+        or ""
+    ).strip()
+    if not repository:
+        return envelope
+
+    try:
+        from ci_diagnostics import collect_failed_ci
+        diagnostic = collect_failed_ci(repository, sha, token)
+    except Exception:
+        return envelope
+    if isinstance(diagnostic, dict) and diagnostic:
+        evidence["ci"] = diagnostic
+    return envelope
+
+
 def _result_payload(result: dict[str, Any]) -> dict[str, Any]:
     usage = result.get("usage")
     evidence = result.get("evidence")
@@ -956,6 +1000,8 @@ def run_once(
         raise ProductionOSWorkerError(
             "AI Dev Server did not produce a correlated result"
         )
+
+    envelope = _attach_failed_ci_diagnostic(envelope, request)
 
     if envelope.get("succeeded") is True:
         client.complete(

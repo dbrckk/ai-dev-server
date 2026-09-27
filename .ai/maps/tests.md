@@ -8102,11 +8102,13 @@ def opener(request, timeout)
 ⋮----
 job = client.claim(
 ⋮----
-def test_build_studio_request_includes_retry_ci_context_in_brief(self)
+def test_build_studio_request_includes_cooperative_upstream_context(self)
 ⋮----
 job = sample_job()
 ⋮----
 request = build_studio_request(job)
+⋮----
+def test_build_studio_request_includes_retry_ci_context_in_brief(self)
 ⋮----
 def test_run_once_acknowledges_pause_without_claiming(self)
 ⋮----

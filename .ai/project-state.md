@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T08:51:45Z
+Generated: 2026-09-27T09:09:43Z
 
 ### Git
 - Branch: `main`
-- Head: `e02bb273b663`
-- Commit date: 2026-09-27T10:51:27+02:00
-- Commit: feat: add specialist worker roles
+- Head: `2677ebdf13d6`
+- Commit date: 2026-09-27T11:09:32+02:00
+- Commit: feat: consume cooperative upstream agent context
 - Tracked files: 827
 
 ### Recently changed files
@@ -45,7 +45,6 @@ Generated: 2026-09-27T08:51:45Z
 - `tests/test_production_os_result_contract.py`
 - `tests/test_production_os_local_e2e.py`
 - `control/production-os-worker-kick.json`
-- `tests/test_production_os_actions_worker_workflow.py`
 
 ### Project signals
 - No common build descriptor detected

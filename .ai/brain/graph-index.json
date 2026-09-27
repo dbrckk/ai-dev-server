@@ -603,6 +603,7 @@
         "studio/orchestrator.py",
         "studio/play_stage.py",
         "studio/post_preview.py",
+        "studio/production_os_worker.py",
         "studio/project_context.py",
         "studio/release_repair.py",
         "studio/release_stage_engine.py",
@@ -631,7 +632,7 @@
         "tests/test_task_scheduler.py",
         "tests/test_workflow_checkpoint.py"
       ],
-      "in_degree": 57,
+      "in_degree": 58,
       "out_degree": 0,
       "path": "studio/stage_registry.py"
     },
@@ -1438,6 +1439,27 @@
     },
     {
       "dependencies": [
+        "studio/atomic_file.py",
+        "studio/ci_diagnostics.py",
+        "studio/core.py",
+        "studio/file_lock.py",
+        "studio/github_runner.py",
+        "studio/omniroute_capacity.py",
+        "studio/stage_registry.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "tests/test_production_os_local_e2e.py",
+        "tests/test_production_os_worker.py",
+        "tests/test_production_os_worker_cli.py",
+        "tests/test_production_os_worker_runtime.py"
+      ],
+      "in_degree": 4,
+      "out_degree": 8,
+      "path": "studio/production_os_worker.py"
+    },
+    {
+      "dependencies": [
         "studio/core.py"
       ],
       "dependents": [
@@ -1475,26 +1497,6 @@
       "in_degree": 6,
       "out_degree": 5,
       "path": "studio/generic_capability_isolated_validation.py"
-    },
-    {
-      "dependencies": [
-        "studio/atomic_file.py",
-        "studio/ci_diagnostics.py",
-        "studio/core.py",
-        "studio/file_lock.py",
-        "studio/github_runner.py",
-        "studio/omniroute_capacity.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "tests/test_production_os_local_e2e.py",
-        "tests/test_production_os_worker.py",
-        "tests/test_production_os_worker_cli.py",
-        "tests/test_production_os_worker_runtime.py"
-      ],
-      "in_degree": 4,
-      "out_degree": 7,
-      "path": "studio/production_os_worker.py"
     },
     {
       "dependencies": [
@@ -2000,7 +2002,7 @@
       "path": "studio/promoted_capabilities.py"
     }
   ],
-  "edge_count": 1794,
+  "edge_count": 1795,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 610,
   "schema_version": 1

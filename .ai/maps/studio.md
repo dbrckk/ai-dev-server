@@ -15310,6 +15310,34 @@ route = " / ".join(
 conclusion = str(ci.get("conclusion") or ci.get("status") or "").strip()
 excerpt = str(ci.get("log_excerpt") or "").strip()
 ⋮----
+def _upstream_guidance(handoff: dict[str, Any]) -> str
+⋮----
+upstream = handoff.get("upstream_context")
+⋮----
+parts = [
+⋮----
+task_id = str(item.get("task_id") or "upstream").strip()[:120]
+title = str(item.get("title") or "").strip()[:240]
+⋮----
+summary = str(item.get("summary") or "").strip()
+⋮----
+validation = item.get("validation")
+⋮----
+status = str(validation.get("status") or "").strip()[:120]
+⋮----
+names = (
+⋮----
+commits = item.get("commit_shas")
+⋮----
+changed = item.get("changed_files")
+⋮----
+pr = item.get("pull_request")
+⋮----
+pr_number = pr.get("number")
+pr_state = str(pr.get("state") or "").strip()
+⋮----
+ci = item.get("ci")
+⋮----
 def _asset_forge_guidance(handoff: dict[str, Any]) -> str
 ⋮----
 candidates = handoff.get("reuse_candidates", [])

@@ -386,6 +386,59 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
     else:
         ci = None
 
+    browser_validation = summary.get("browser_validation")
+    if not isinstance(browser_validation, dict):
+        browser_validation = summary_evidence.get("browser_validation")
+    if isinstance(browser_validation, dict):
+        normalized_browser = {
+            "status": str(browser_validation.get("status") or "").strip()[:120] or None,
+            "passed": (
+                bool(browser_validation.get("passed"))
+                if isinstance(browser_validation.get("passed"), bool)
+                else None
+            ),
+            "reason": str(browser_validation.get("reason") or "").strip()[:500] or None,
+            "runtime": str(browser_validation.get("runtime") or "").strip()[:120] or None,
+            "script": str(browser_validation.get("script") or "").strip()[:300] or None,
+            "url": str(browser_validation.get("url") or "").strip()[:2000] or None,
+            "console_errors": [
+                str(item).strip()[:1000]
+                for item in (browser_validation.get("console_errors") or [])
+                if str(item).strip()
+            ][:50],
+            "page_errors": [
+                str(item).strip()[:1000]
+                for item in (browser_validation.get("page_errors") or [])
+                if str(item).strip()
+            ][:50],
+            "screenshots": [
+                str(item).strip()[:500]
+                for item in (browser_validation.get("screenshots") or [])
+                if str(item).strip()
+            ][:20],
+            "copied_artifacts": [
+                str(item).strip()[:500]
+                for item in (browser_validation.get("copied_artifacts") or [])
+                if str(item).strip()
+            ][:25],
+        }
+        execution = browser_validation.get("execution")
+        if isinstance(execution, dict):
+            normalized_browser["execution"] = {
+                "returncode": execution.get("returncode"),
+                "duration_seconds": execution.get("duration_seconds"),
+                "credential_isolated": execution.get("credential_isolated"),
+                "network_allowed": execution.get("network_allowed"),
+                "log_tail": str(execution.get("log_tail") or "")[-4000:],
+            }
+        browser_validation = {
+            key: value
+            for key, value in normalized_browser.items()
+            if value not in (None, [], "")
+        }
+    else:
+        browser_validation = None
+
     envelope = {
         "schema_version": "ai-dev-server/production-os-result/v1",
         "workflow_id": correlation["workflow_id"],
@@ -408,6 +461,11 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
             "changed_files": changed_files,
             "pull_request": dict(pull_request) if pull_request is not None else None,
             "ci": dict(ci) if ci is not None else None,
+            "browser_validation": (
+                dict(browser_validation)
+                if browser_validation is not None
+                else None
+            ),
             "visual_assets": visual_assets,
         },
     }
@@ -908,6 +966,8 @@ def run(
     summary['usage']=collect_agent_usage(project_report)
     if isinstance(project_report.get('pull_request'),dict):
         summary['pull_request']=dict(project_report['pull_request'])
+    if isinstance(project_report.get('browser_validation'),dict):
+        summary['browser_validation']=dict(project_report['browser_validation'])
     checkpoint_commit=project_report.get('checkpoint_commit')
     if isinstance(checkpoint_commit,str) and len(checkpoint_commit)==40:
         summary['commit_shas']=[checkpoint_commit]

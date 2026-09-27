@@ -2,6 +2,8 @@
 from __future__ import annotations
 import re
 
+from github_pr_gate import evaluate as evaluate_pr_gate
+
 SHA40=re.compile(r"[0-9a-f]{40}")
 
 class CapabilityReviewError(RuntimeError): pass
@@ -33,7 +35,16 @@ def inspect(github,review):
             raise CapabilityReviewError("candidate merge identity invalid")
         return {"status":"candidate_merged","merge_commit_sha":merge_sha,"pull_request":number}
     if state=="open":
-        return {"status":"candidate_review_pending","pull_request":number}
+        gate=evaluate_pr_gate(github,commit_sha)
+        status={
+            "ready":"candidate_review_ready",
+            "failed":"candidate_review_failed",
+        }.get(gate["state"],"candidate_review_pending")
+        return {
+            "status":status,
+            "pull_request":number,
+            "checks":gate,
+        }
     if state=="closed":
         return {"status":"candidate_review_rejected","pull_request":number}
     raise CapabilityReviewError("candidate pull request state invalid")

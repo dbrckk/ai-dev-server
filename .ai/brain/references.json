@@ -8,50 +8,50 @@
     "_snapshot": {
       "definition": {
         "file": "studio/generic_project.py",
-        "line": 122,
+        "line": 123,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/generic_project.py",
-          "line": 122,
+          "line": 123,
           "preview": "def _snapshot(root: Path, limit_bytes: int = 420_000) -> dict:",
           "definition_candidate": true
         },
         {
           "file": "studio/generic_project.py",
-          "line": 584,
+          "line": 600,
           "preview": "snapshot = _snapshot(work)",
           "definition_candidate": false
         },
         {
           "file": "studio/generic_project.py",
-          "line": 828,
+          "line": 844,
           "preview": "\"repository\": _snapshot(work),",
           "definition_candidate": false
         },
         {
           "file": "studio/generic_project.py",
-          "line": 1126,
+          "line": 1142,
           "preview": "\"repository\":_snapshot(work,260_000),",
           "definition_candidate": false
         },
         {
           "file": "studio/generic_project.py",
-          "line": 1266,
+          "line": 1282,
           "preview": "\"repository\":_snapshot(work,260_000),",
           "definition_candidate": false
         },
         {
           "file": "studio/generic_project.py",
-          "line": 1618,
+          "line": 1634,
           "preview": "\"repository\": _snapshot(work, 320_000),",
           "definition_candidate": false
         },
         {
           "file": "studio/generic_project.py",
-          "line": 1738,
+          "line": 1754,
           "preview": "\"repository\": _snapshot(work, 300_000),",
           "definition_candidate": false
         }
@@ -61,44 +61,44 @@
     "_apply": {
       "definition": {
         "file": "studio/generic_project.py",
-        "line": 144,
+        "line": 145,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/generic_project.py",
-          "line": 144,
+          "line": 145,
           "preview": "def _apply(",
           "definition_candidate": true
         },
         {
           "file": "studio/generic_project.py",
-          "line": 1024,
+          "line": 1040,
           "preview": "model_changed = _apply(",
           "definition_candidate": false
         },
         {
           "file": "studio/generic_project.py",
-          "line": 1396,
+          "line": 1412,
           "preview": "changed.extend(_apply(",
           "definition_candidate": false
         },
         {
           "file": "studio/generic_project.py",
-          "line": 1428,
+          "line": 1444,
           "preview": "changed.extend(_apply(",
           "definition_candidate": false
         },
         {
           "file": "studio/generic_project.py",
-          "line": 1550,
+          "line": 1566,
           "preview": "changed.extend(_apply(",
           "definition_candidate": false
         },
         {
           "file": "studio/generic_project.py",
-          "line": 1578,
+          "line": 1594,
           "preview": "changed.extend(_apply(",
           "definition_candidate": false
         }
@@ -108,20 +108,20 @@
     "_prepare_architecture": {
       "definition": {
         "file": "studio/generic_project.py",
-        "line": 167,
+        "line": 168,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/generic_project.py",
-          "line": 167,
+          "line": 168,
           "preview": "def _prepare_architecture(req: dict, out: Path, state: dict) -> Path:",
           "definition_candidate": true
         },
         {
           "file": "studio/generic_project.py",
-          "line": 489,
+          "line": 505,
           "preview": "architecture_root = _prepare_architecture(req, out, state)",
           "definition_candidate": false
         },
@@ -137,20 +137,20 @@
     "_record_architecture": {
       "definition": {
         "file": "studio/generic_project.py",
-        "line": 200,
+        "line": 201,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/generic_project.py",
-          "line": 200,
+          "line": 201,
           "preview": "def _record_architecture(state: dict, out: Path, architecture_root: Path) -> None:",
           "definition_candidate": true
         },
         {
           "file": "studio/generic_project.py",
-          "line": 2119,
+          "line": 2135,
           "preview": "_record_architecture(state, out, architecture_root)",
           "definition_candidate": false
         },
@@ -172,21 +172,44 @@
     "_browser_validation_contract": {
       "definition": {
         "file": "studio/generic_project.py",
-        "line": 219,
+        "line": 220,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/generic_project.py",
-          "line": 219,
+          "line": 220,
           "preview": "def _browser_validation_contract(req: dict) -> dict | None:",
           "definition_candidate": true
         },
         {
           "file": "studio/generic_project.py",
-          "line": 261,
+          "line": 276,
           "preview": "contract = _browser_validation_contract(req)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_valid_browser_test_url": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 228,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_project.py",
+          "line": 228,
+          "preview": "def _valid_browser_test_url(value: str | None) -> bool:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 327,
+          "preview": "tested_url_valid = _valid_browser_test_url(tested_url)",
           "definition_candidate": false
         }
       ],
@@ -195,20 +218,20 @@
     "_valid_browser_screenshot": {
       "definition": {
         "file": "studio/generic_project.py",
-        "line": 227,
+        "line": 242,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/generic_project.py",
-          "line": 227,
+          "line": 242,
           "preview": "def _valid_browser_screenshot(path: Path) -> bool:",
           "definition_candidate": true
         },
         {
           "file": "studio/generic_project.py",
-          "line": 335,
+          "line": 351,
           "preview": "and _valid_browser_screenshot(candidate)",
           "definition_candidate": false
         }
@@ -218,20 +241,20 @@
     "_run_browser_validation": {
       "definition": {
         "file": "studio/generic_project.py",
-        "line": 260,
+        "line": 275,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/generic_project.py",
-          "line": 260,
+          "line": 275,
           "preview": "def _run_browser_validation(req: dict, work: Path, out: Path) -> dict | None:",
           "definition_candidate": true
         },
         {
           "file": "studio/generic_project.py",
-          "line": 1821,
+          "line": 1837,
           "preview": "browser_validation = _run_browser_validation(req, work, out)",
           "definition_candidate": false
         },
@@ -243,35 +266,41 @@
         },
         {
           "file": "tests/test_browser_validation_contract.py",
-          "line": 101,
+          "line": 102,
           "preview": "result = _run_browser_validation(",
           "definition_candidate": false
         },
         {
           "file": "tests/test_browser_validation_contract.py",
-          "line": 120,
+          "line": 121,
           "preview": "result = _run_browser_validation(request(), work, out)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_browser_validation_contract.py",
-          "line": 143,
+          "line": 144,
           "preview": "result = _run_browser_validation(",
           "definition_candidate": false
         },
         {
           "file": "tests/test_browser_validation_contract.py",
-          "line": 167,
+          "line": 168,
+          "preview": "result = _run_browser_validation(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_browser_validation_contract.py",
+          "line": 195,
           "preview": "result = _run_browser_validation(",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 7
+      "occurrence_count": 8
     },
     "run_project": {
       "definition": {
         "file": "studio/generic_project.py",
-        "line": 417,
+        "line": 433,
         "kind": "function",
         "language": "python"
       },
@@ -302,7 +331,7 @@
         },
         {
           "file": "studio/generic_project.py",
-          "line": 417,
+          "line": 433,
           "preview": "def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict:",
           "definition_candidate": true
         },
@@ -576,26 +605,26 @@
     "evaluate_model_candidate": {
       "definition": {
         "file": "studio/generic_project.py",
-        "line": 976,
+        "line": 992,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/generic_project.py",
-          "line": 976,
+          "line": 992,
           "preview": "def evaluate_model_candidate(",
           "definition_candidate": true
         },
         {
           "file": "studio/generic_project.py",
-          "line": 1135,
+          "line": 1151,
           "preview": "evaluate_model_candidate()",
           "definition_candidate": false
         },
         {
           "file": "studio/generic_project.py",
-          "line": 1318,
+          "line": 1334,
           "preview": "candidate = evaluate_model_candidate(",
           "definition_candidate": false
         }
@@ -1366,36 +1395,42 @@
         },
         {
           "file": "tests/test_browser_validation_contract.py",
-          "line": 118,
+          "line": 119,
           "preview": "self._write_script(work)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_browser_validation_contract.py",
-          "line": 138,
+          "line": 139,
           "preview": "self._write_script(",
           "definition_candidate": false
         },
         {
           "file": "tests/test_browser_validation_contract.py",
-          "line": 162,
+          "line": 163,
+          "preview": "self._write_script(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_browser_validation_contract.py",
+          "line": 190,
           "preview": "self._write_script(",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 4
+      "occurrence_count": 5
     },
     "test_runtime_browser_artifacts_are_not_publishable": {
       "definition": {
         "file": "tests/test_browser_validation_contract.py",
-        "line": 71,
+        "line": 72,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_browser_validation_contract.py",
-          "line": 71,
+          "line": 72,
           "preview": "def test_runtime_browser_artifacts_are_not_publishable(self):",
           "definition_candidate": true
         }
@@ -1405,14 +1440,14 @@
     "test_request_check_accepts_browser_validation_contract": {
       "definition": {
         "file": "tests/test_browser_validation_contract.py",
-        "line": 82,
+        "line": 83,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_browser_validation_contract.py",
-          "line": 82,
+          "line": 83,
           "preview": "def test_request_check_accepts_browser_validation_contract(self):",
           "definition_candidate": true
         }
@@ -1422,14 +1457,14 @@
     "test_request_check_rejects_mutated_browser_validation_contract": {
       "definition": {
         "file": "tests/test_browser_validation_contract.py",
-        "line": 89,
+        "line": 90,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_browser_validation_contract.py",
-          "line": 89,
+          "line": 90,
           "preview": "def test_request_check_rejects_mutated_browser_validation_contract(self):",
           "definition_candidate": true
         }
@@ -1439,14 +1474,14 @@
     "test_browser_validation_requires_script": {
       "definition": {
         "file": "tests/test_browser_validation_contract.py",
-        "line": 98,
+        "line": 99,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_browser_validation_contract.py",
-          "line": 98,
+          "line": 99,
           "preview": "def test_browser_validation_requires_script(self):",
           "definition_candidate": true
         }
@@ -1456,14 +1491,14 @@
     "test_browser_validation_accepts_report_and_copies_artifacts": {
       "definition": {
         "file": "tests/test_browser_validation_contract.py",
-        "line": 112,
+        "line": 113,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_browser_validation_contract.py",
-          "line": 112,
+          "line": 113,
           "preview": "def test_browser_validation_accepts_report_and_copies_artifacts(self):",
           "definition_candidate": true
         }
@@ -1473,15 +1508,32 @@
     "test_browser_validation_rejects_fake_screenshot_bytes": {
       "definition": {
         "file": "tests/test_browser_validation_contract.py",
-        "line": 133,
+        "line": 134,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_browser_validation_contract.py",
-          "line": 133,
+          "line": 134,
           "preview": "def test_browser_validation_rejects_fake_screenshot_bytes(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_browser_validation_rejects_external_test_url": {
+      "definition": {
+        "file": "tests/test_browser_validation_contract.py",
+        "line": 158,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_browser_validation_contract.py",
+          "line": 158,
+          "preview": "def test_browser_validation_rejects_external_test_url(self):",
           "definition_candidate": true
         }
       ],
@@ -1490,14 +1542,14 @@
     "test_browser_validation_fails_on_console_errors": {
       "definition": {
         "file": "tests/test_browser_validation_contract.py",
-        "line": 157,
+        "line": 185,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_browser_validation_contract.py",
-          "line": 157,
+          "line": 185,
           "preview": "def test_browser_validation_fails_on_console_errors(self):",
           "definition_candidate": true
         }

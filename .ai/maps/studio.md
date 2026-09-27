@@ -8839,6 +8839,14 @@ contracts = req.get("tool_contracts")
 ⋮----
 contract = contracts.get("browser_validation")
 ⋮----
+def _valid_browser_test_url(value: str | None) -> bool
+⋮----
+text = str(value or "").strip()
+⋮----
+parsed = urlparse(text)
+⋮----
+host = (parsed.hostname or "").strip().lower()
+⋮----
 def _valid_browser_screenshot(path: Path) -> bool
 ⋮----
 size = path.stat().st_size
@@ -8880,6 +8888,7 @@ page_errors = []
 tested_url = None
 ⋮----
 tested_url = str(report.get("url") or "").strip()[:2000] or None
+tested_url_valid = _valid_browser_test_url(tested_url)
 raw_console = report.get("console_errors")
 raw_page = report.get("page_errors")
 raw_screenshots = report.get("screenshots")

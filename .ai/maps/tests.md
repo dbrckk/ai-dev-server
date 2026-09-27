@@ -2934,6 +2934,8 @@ result = _run_browser_validation(request(), work, out)
 ⋮----
 def test_browser_validation_rejects_fake_screenshot_bytes(self)
 ⋮----
+def test_browser_validation_rejects_external_test_url(self)
+⋮----
 def test_browser_validation_fails_on_console_errors(self)
 ```
 

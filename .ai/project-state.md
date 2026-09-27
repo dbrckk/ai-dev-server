@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T12:40:21Z
+Generated: 2026-09-27T12:54:23Z
 
 ### Git
 - Branch: `main`
-- Head: `5cfc194609f0`
-- Commit date: 2026-09-27T14:40:10+02:00
-- Commit: fix: verify browser screenshot bytes
+- Head: `33ea95995460`
+- Commit date: 2026-09-27T14:54:03+02:00
+- Commit: fix: bind browser validation to local previews
 - Tracked files: 830
 
 ### Recently changed files
@@ -41,8 +41,6 @@ Generated: 2026-09-27T12:40:21Z
 - `studio/generic_policy.py`
 - `studio/github_runner.py`
 - `tests/test_production_os_result_contract.py`
-- `studio/generic_repository.py`
-- `tests/test_generic_repository_pull_request.py`
 
 ### Project signals
 - No common build descriptor detected

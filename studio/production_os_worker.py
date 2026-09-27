@@ -285,14 +285,24 @@ class ProductionOSClient:
         operator_token: str | None = None,
     ) -> dict | None:
         legacy_operator_token = str(operator_token or "").strip() or None
+        if legacy_operator_token is not None:
+            return self._post(
+                "/v1/workers/register",
+                {
+                    "worker_id": str(worker_id),
+                    "capabilities": [str(item) for item in capabilities],
+                    "max_concurrency": 1,
+                },
+                token=legacy_operator_token,
+            )
         return self._post(
-            "/v1/workers/register",
+            "/v1/workers/session",
             {
                 "worker_id": str(worker_id),
                 "capabilities": [str(item) for item in capabilities],
                 "max_concurrency": 1,
+                "active_job_keys": [],
             },
-            token=legacy_operator_token,
         )
 
     def heartbeat(

@@ -9258,6 +9258,8 @@ complete = False
 remaining_items = review.get("remaining")
 ⋮----
 base_sha = repo.publish(base_sha, work, "Autonomous generic project round " + str(round_index))
+⋮----
+pull_request = repo.ensure_pull_request(
 ````
 
 ## File: generic_repository.py
@@ -9304,6 +9306,18 @@ blob=self.github.get("/git/blobs/"+item["sha"])
 text=base64.b64decode(blob["content"]).decode("utf-8")
 ⋮----
 target=root/path
+⋮----
+def ensure_pull_request(self, *, title: str, body: str = "") -> dict
+⋮----
+metadata = self.github.get("")
+default = metadata.get("default_branch") if isinstance(metadata, dict) else None
+⋮----
+pulls = self.github.get("/pulls?state=open&per_page=100")
+⋮----
+head = pr.get("head") if isinstance(pr.get("head"), dict) else {}
+base = pr.get("base") if isinstance(pr.get("base"), dict) else {}
+⋮----
+created = self.github.call(
 ⋮----
 def publish(self,base_sha:str,root:Path,message:str)->str
 ⋮----
@@ -10768,6 +10782,8 @@ improvement_run=run_active_improvement(
 memory=ingest_run(memory,request['id'],out)
 ⋮----
 project_report=(
+⋮----
+checkpoint_commit=project_report.get('checkpoint_commit')
 ⋮----
 missing=improvement_run['missing_capability']
 ⋮----

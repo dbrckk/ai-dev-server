@@ -182,6 +182,7 @@ test_generic_capability_synthesis_state.py
 test_generic_capability_validation_report.py
 test_generic_model_capacity.py
 test_generic_policy.py
+test_generic_repository_pull_request.py
 test_generic_toolchain.py
 test_generic_verifier_adaptation.py
 test_github_artifact_cas_audit_store.py
@@ -5173,6 +5174,39 @@ def test_common_source_is_editable(self)
 def test_sensitive_and_ci_paths_are_blocked(self)
 ⋮----
 def test_patch_rejects_secret_pattern(self)
+```
+
+## File: test_generic_repository_pull_request.py
+```python
+class FakeGitHub
+⋮----
+def __init__(self, pulls=None)
+⋮----
+def get(self, path)
+⋮----
+def call(self, method, path, payload)
+⋮----
+created = {
+⋮----
+def test_ensure_pull_request_creates_one_for_managed_branch()
+⋮----
+github = FakeGitHub()
+repository = GenericRepository(
+⋮----
+result = repository.ensure_pull_request(
+⋮----
+posts = [
+⋮----
+def test_ensure_pull_request_reuses_existing_exact_branch_pr()
+⋮----
+github = FakeGitHub([
+⋮----
+first = repository.ensure_pull_request(title="Managed project")
+second = repository.ensure_pull_request(title="Managed project")
+⋮----
+def test_ensure_pull_request_ignores_other_studio_branch()
+⋮----
+result = repository.ensure_pull_request(title="Managed project")
 ```
 
 ## File: test_generic_toolchain.py

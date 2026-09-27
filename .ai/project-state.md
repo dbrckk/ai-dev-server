@@ -22,18 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T09:31:08Z
+Generated: 2026-09-27T09:44:01Z
 
 ### Git
 - Branch: `main`
-- Head: `d51d850167fa`
-- Commit date: 2026-09-27T11:30:56+02:00
-- Commit: fix: preserve managed branch continuity across cooperative stages
-- Tracked files: 828
+- Head: `c0883619ab4e`
+- Commit date: 2026-09-27T11:43:51+02:00
+- Commit: feat: keep managed project work on one pull request
+- Tracked files: 829
 
 ### Recently changed files
-- `studio/core.py`
 - `studio/generic_project.py`
+- `studio/generic_repository.py`
+- `studio/github_runner.py`
+- `tests/test_generic_repository_pull_request.py`
+- `studio/core.py`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_worker_runtime.py`
 - `tests/test_repository_branch_identity.py`
@@ -41,12 +44,10 @@ Generated: 2026-09-27T09:31:08Z
 - `studio/capability_review.py`
 - `studio/ci_diagnostics.py`
 - `studio/github_pr_gate.py`
-- `studio/github_runner.py`
 - `tests/test_capability_registry_review.py`
 - `tests/test_capability_review.py`
 - `tests/test_ci_diagnostics.py`
 - `tests/test_production_os_result_contract.py`
-- `tests/test_production_os_local_e2e.py`
 
 ### Project signals
 - No common build descriptor detected

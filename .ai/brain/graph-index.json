@@ -295,6 +295,7 @@
         "studio/generic_capability_persist.py",
         "studio/generic_capability_synthesis.py",
         "studio/generic_model.py",
+        "studio/generic_repository.py",
         "studio/generic_verify.py",
         "studio/github_artifact_cas_audit_store.py",
         "studio/github_artifact_cas_stats_store.py",
@@ -318,7 +319,6 @@
         "studio/godot_android_stage.py",
         "studio/godot_baseline.py",
         "studio/godot_device_qa.py",
-        "studio/godot_device_stage.py",
         "studio/godot_model.py",
         "studio/godot_visual_qa.py",
         "studio/native_qa.py",
@@ -1799,24 +1799,6 @@
     },
     {
       "dependencies": [
-        "studio/core.py",
-        "studio/godot_android_export.py",
-        "studio/godot_device_qa.py",
-        "studio/godot_preview.py",
-        "studio/godot_runtime.py",
-        "studio/run.py",
-        "studio/stage_registry.py",
-        "tests/test_studio.py"
-      ],
-      "dependents": [
-        "tests/test_godot_device_stage.py"
-      ],
-      "in_degree": 1,
-      "out_degree": 8,
-      "path": "studio/godot_device_stage.py"
-    },
-    {
-      "dependencies": [
         "studio/completion.py",
         "studio/core.py",
         "studio/project_budget.py",
@@ -2001,10 +1983,27 @@
       "in_degree": 6,
       "out_degree": 2,
       "path": "studio/promoted_capabilities.py"
+    },
+    {
+      "dependencies": [
+        "studio/core.py",
+        "studio/stage_registry.py",
+        "tests/test_studio.py"
+      ],
+      "dependents": [
+        "studio/evolution_automerge.py",
+        "studio/evolution_pending.py",
+        "tests/test_evolution_automerge.py",
+        "tests/test_evolution_pending.py",
+        "tests/test_evolution_persist.py"
+      ],
+      "in_degree": 5,
+      "out_degree": 3,
+      "path": "studio/evolution_persist.py"
     }
   ],
-  "edge_count": 1798,
+  "edge_count": 1800,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 611,
+  "node_count": 612,
   "schema_version": 1
 }

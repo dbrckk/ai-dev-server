@@ -13,7 +13,7 @@ class _Client:
         self.token = token
         self.calls = []
 
-    def register(self, worker_id, capabilities, operator_token):
+    def register(self, worker_id, capabilities, operator_token=None):
         self.calls.append(
             ("register", worker_id, tuple(capabilities), operator_token)
         )
@@ -36,7 +36,6 @@ class ProductionOSWorkerCLITests(unittest.TestCase):
         env = {
             "PRODUCTION_OS_URL": "http://127.0.0.1:8787",
             "PRODUCTION_OS_WORKER_TOKEN": "worker-secret",
-            "PRODUCTION_OS_OPERATOR_TOKEN": "operator-secret",
         }
 
         rc = main(
@@ -69,7 +68,7 @@ class ProductionOSWorkerCLITests(unittest.TestCase):
                     "register",
                     "ai-dev-1",
                     ("android", "node", "python", "repo-analysis", "software-development", "visual-asset-production"),
-                    "operator-secret",
+                    None,
                 )
             ],
         )
@@ -117,16 +116,15 @@ class ProductionOSWorkerCLITests(unittest.TestCase):
         self.assertEqual(len(calls), 3)
         self.assertEqual(len(clients[0].calls), 1)
 
-    def test_main_requires_all_control_plane_credentials(self):
+    def test_main_requires_worker_token_but_not_operator_token(self):
         with self.assertRaisesRegex(
             RuntimeError,
-            "PRODUCTION_OS_OPERATOR_TOKEN",
+            "PRODUCTION_OS_WORKER_TOKEN",
         ):
             main(
                 ["--once"],
                 environ={
                     "PRODUCTION_OS_URL": "http://127.0.0.1:8787",
-                    "PRODUCTION_OS_WORKER_TOKEN": "worker-secret",
                 },
                 client_factory=lambda *args: self.fail(
                     "client must not be created"
@@ -135,6 +133,30 @@ class ProductionOSWorkerCLITests(unittest.TestCase):
                     "worker must not run"
                 ),
             )
+
+        clients = []
+        rc = main(
+            ["--once"],
+            environ={
+                "PRODUCTION_OS_URL": "http://127.0.0.1:8787",
+                "PRODUCTION_OS_WORKER_TOKEN": "worker-secret",
+            },
+            client_factory=lambda base_url, token: (
+                clients.append(_Client(base_url, token)) or clients[-1]
+            ),
+            run_once_fn=lambda *args, **kwargs: {"status":"idle"},
+            capabilities_provider=lambda env: ["software-development"],
+        )
+        self.assertEqual(rc, 0)
+        self.assertEqual(
+            clients[0].calls,
+            [(
+                "register",
+                "ai-dev-server-1",
+                ("software-development",),
+                None,
+            )],
+        )
 
 
     def test_main_forwards_capacity_snapshot_to_worker_cycle(self):

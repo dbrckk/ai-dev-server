@@ -8,6 +8,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import threading
 import urllib.error
 import urllib.request
@@ -33,6 +34,35 @@ SPECIALIST_CAPABILITIES = {
     "review": "code-review",
     "browser": "browser-ui-validation",
 }
+
+
+def _browser_validation_operational(environ=None) -> bool:
+    env = dict(os.environ)
+    if environ is not None:
+        env.update({str(key): str(value) for key, value in environ.items()})
+    probe = (
+        "from playwright.sync_api import sync_playwright; "
+        "p=sync_playwright().start(); "
+        "b=p.chromium.launch(headless=True); "
+        "page=b.new_page(); "
+        "page.set_content('<title>production-os-browser-probe</title>'); "
+        "assert page.title()=='production-os-browser-probe'; "
+        "b.close(); p.stop()"
+    )
+    try:
+        completed = subprocess.run(
+            [sys.executable, "-c", probe],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=20,
+            check=False,
+            env=env,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return completed.returncode == 0
 
 
 def _asset_forge_operational_status(environ=None) -> dict | None:
@@ -81,7 +111,10 @@ def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]:
     capabilities.extend(
         SPECIALIST_CAPABILITIES[name]
         for name in sorted(specialties)
+        if name != "browser"
     )
+    if "browser" in specialties and _browser_validation_operational(environ):
+        capabilities.append(SPECIALIST_CAPABILITIES["browser"])
     status = _asset_forge_operational_status(environ)
     if not isinstance(status, dict):
         return capabilities

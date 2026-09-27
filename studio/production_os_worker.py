@@ -613,6 +613,45 @@ def failure_payload(
     }
 
 
+_RETRYABLE_RUNNER_ERROR_TOKENS = (
+    "timeout",
+    "timed out",
+    "temporary",
+    "temporarily",
+    "unavailable",
+    "connection",
+    "rate limit",
+    "429",
+    "502",
+    "503",
+    "504",
+    "provider",
+)
+
+
+def _retryable_runner_error(exc: Exception) -> bool:
+    if isinstance(exc, (TimeoutError, ConnectionError, subprocess.TimeoutExpired)):
+        return True
+    message = str(exc).lower()
+    return any(token in message for token in _RETRYABLE_RUNNER_ERROR_TOKENS)
+
+
+def _summary_requests_retry(summary: dict[str, Any]) -> bool:
+    if not isinstance(summary, dict):
+        return False
+    if str(summary.get("next_stage") or "").lower() == "retry":
+        return True
+    evidence = summary.get("evidence")
+    if isinstance(evidence, dict):
+        if str(evidence.get("next_stage") or "").lower() == "retry":
+            return True
+    return str(summary.get("status") or "").lower() in {
+        "runner_error",
+        "transient_failure",
+        "retry",
+    }
+
+
 def run_once(
     client: ProductionOSClient,
     *,
@@ -624,6 +663,8 @@ def run_once(
     capacity: dict | None = None,
     heartbeat_interval_seconds: float = 30.0,
     capabilities: list[str] | None = None,
+    runner_retry_attempts: int = 2,
+    runner_retry_backoff_seconds: float = 1.0,
 ) -> dict:
     """Claim and execute at most one Production-OS job."""
     if run_project is None:
@@ -731,6 +772,26 @@ def run_once(
         ) from exc
     if heartbeat_interval <= 0:
         raise ProductionOSWorkerError("heartbeat interval must be positive")
+    try:
+        retry_attempts = int(runner_retry_attempts)
+    except (TypeError, ValueError) as exc:
+        raise ProductionOSWorkerError(
+            "runner retry attempts must be between 0 and 10"
+        ) from exc
+    if retry_attempts < 0 or retry_attempts > 10:
+        raise ProductionOSWorkerError(
+            "runner retry attempts must be between 0 and 10"
+        )
+    try:
+        retry_backoff = float(runner_retry_backoff_seconds)
+    except (TypeError, ValueError) as exc:
+        raise ProductionOSWorkerError(
+            "runner retry backoff must be between 0 and 60 seconds"
+        ) from exc
+    if retry_backoff < 0 or retry_backoff > 60:
+        raise ProductionOSWorkerError(
+            "runner retry backoff must be between 0 and 60 seconds"
+        )
 
     stop_heartbeat = threading.Event()
     heartbeat_errors: list[str] = []
@@ -763,13 +824,39 @@ def run_once(
     heartbeat_thread.start()
 
     started = float(clock())
+    runner_attempt = 0
     try:
-        summary = run_project(
-            request_path,
-            project_out,
-            baseline_sha=baseline_sha,
-            cancel_event=cancel_event,
-        )
+        while True:
+            runner_attempt += 1
+            try:
+                summary = run_project(
+                    request_path,
+                    project_out,
+                    baseline_sha=baseline_sha,
+                    cancel_event=cancel_event,
+                )
+            except Exception as exc:
+                if cancel_event.is_set():
+                    raise
+                if (
+                    runner_attempt > retry_attempts
+                    or not _retryable_runner_error(exc)
+                ):
+                    raise
+                delay = retry_backoff * (2 ** (runner_attempt - 1))
+                if delay > 0 and cancel_event.wait(delay):
+                    raise
+                continue
+            if (
+                runner_attempt <= retry_attempts
+                and _summary_requests_retry(summary)
+                and not cancel_event.is_set()
+            ):
+                delay = retry_backoff * (2 ** (runner_attempt - 1))
+                if delay > 0 and cancel_event.wait(delay):
+                    break
+                continue
+            break
     except Exception as exc:
         stop_heartbeat.set()
         heartbeat_thread.join(timeout=min(heartbeat_interval, 1.0))

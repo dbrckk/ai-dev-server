@@ -72,7 +72,9 @@ def _mobile_validation_operational(environ=None) -> bool:
         env.update({str(key): str(value) for key, value in environ.items()})
     adb = shutil.which("adb")
     emulator = shutil.which("emulator")
-    if not adb or not emulator:
+    sdkmanager = shutil.which("sdkmanager")
+    avdmanager = shutil.which("avdmanager")
+    if not adb or not emulator or not sdkmanager or not avdmanager:
         return False
     kvm = Path("/dev/kvm")
     if not (
@@ -82,12 +84,13 @@ def _mobile_validation_operational(environ=None) -> bool:
     ):
         return False
     probes = (
-        ([adb, "version"], 10, False),
-        ([emulator, "-version"], 10, False),
-        ([emulator, "-accel-check"], 20, False),
-        ([emulator, "-list-avds"], 10, True),
+        ([adb, "version"], 10),
+        ([emulator, "-version"], 10),
+        ([emulator, "-accel-check"], 20),
+        ([sdkmanager, "--version"], 10),
+        ([avdmanager, "list", "target"], 20),
     )
-    for command, timeout, require_output in probes:
+    for command, timeout in probes:
         try:
             completed = subprocess.run(
                 command,
@@ -102,8 +105,6 @@ def _mobile_validation_operational(environ=None) -> bool:
         except (OSError, subprocess.TimeoutExpired):
             return False
         if completed.returncode != 0:
-            return False
-        if require_output and not str(completed.stdout or "").strip():
             return False
     return True
 

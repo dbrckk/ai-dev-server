@@ -360,6 +360,32 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
     if not isinstance(pull_request, dict):
         pull_request = None
 
+    ci = summary.get("ci")
+    if not isinstance(ci, dict):
+        ci = summary_evidence.get("ci")
+    if isinstance(ci, dict):
+        ci = {
+            key: (
+                str(ci.get(key)).strip()[:8000]
+                if ci.get(key) is not None
+                else None
+            )
+            for key in (
+                "provider",
+                "status",
+                "workflow",
+                "job",
+                "step",
+                "conclusion",
+                "url",
+                "sha",
+                "log_excerpt",
+            )
+        }
+        ci = {key: value for key, value in ci.items() if value}
+    else:
+        ci = None
+
     envelope = {
         "schema_version": "ai-dev-server/production-os-result/v1",
         "workflow_id": correlation["workflow_id"],
@@ -381,6 +407,7 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
             "commit_shas": commit_shas,
             "changed_files": changed_files,
             "pull_request": dict(pull_request) if pull_request is not None else None,
+            "ci": dict(ci) if ci is not None else None,
             "visual_assets": visual_assets,
         },
     }

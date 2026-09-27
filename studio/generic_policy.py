@@ -10,6 +10,7 @@ BLOCKED_PARTS = {
     ".git", ".github", ".idea", ".vscode", "node_modules", "vendor",
     "build", "dist", ".next", ".gradle", "target", "__pycache__", ".studio-venv", ".studio-cmake-build",
     "browser-artifacts",
+    "mobile-artifacts",
 }
 BLOCKED_NAMES = {
     ".env", ".env.local", ".env.production", "id_rsa", "id_ed25519",

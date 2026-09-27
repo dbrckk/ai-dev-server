@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import re
 
+from github_pr_gate import evaluate as evaluate_pr_gate
+
 SHA40 = re.compile(r"[0-9a-f]{40}")
 
 
@@ -49,7 +51,16 @@ def inspect(github, review: dict) -> dict:
             "pull_request": number,
         }
     if state == "open":
-        return {"status": "registry_review_pending", "pull_request": number}
+        gate = evaluate_pr_gate(github, commit_sha)
+        status = {
+            "ready":"registry_review_ready",
+            "failed":"registry_review_failed",
+        }.get(gate["state"], "registry_review_pending")
+        return {
+            "status": status,
+            "pull_request": number,
+            "checks": gate,
+        }
     if state == "closed":
         return {"status": "registry_review_rejected", "pull_request": number}
     raise CapabilityRegistryReviewError("registry pull request state invalid")

@@ -185,6 +185,10 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
                 return "/sdk/platform-tools/adb"
             if name == "emulator":
                 return "/sdk/emulator/emulator"
+            if name == "sdkmanager":
+                return "/sdk/cmdline-tools/latest/bin/sdkmanager"
+            if name == "avdmanager":
+                return "/sdk/cmdline-tools/latest/bin/avdmanager"
             return None
 
         completed = type(
@@ -212,7 +216,7 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertIn("mobile-ui-validation", caps)
 
 
-    def test_mobile_specialty_is_not_advertised_without_configured_avd(self):
+    def test_mobile_specialty_is_not_advertised_without_provisioning_tools(self):
         def which(name):
             if name == "adb":
                 return "/sdk/platform-tools/adb"
@@ -220,29 +224,9 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
                 return "/sdk/emulator/emulator"
             return None
 
-        calls = {"count":0}
-
-        def run(*args, **kwargs):
-            calls["count"] += 1
-            stdout = "" if calls["count"] == 4 else "ok\n"
-            return type(
-                "Completed",
-                (),
-                {"returncode":0, "stdout":stdout},
-            )()
-
         with patch(
             "production_os_worker.shutil.which",
             side_effect=which,
-        ), patch(
-            "production_os_worker.Path.exists",
-            return_value=True,
-        ), patch(
-            "production_os_worker.os.access",
-            return_value=True,
-        ), patch(
-            "production_os_worker.subprocess.run",
-            side_effect=run,
         ):
             caps = worker_capabilities({
                 "PRODUCTION_OS_WORKER_SPECIALTIES": "mobile",
@@ -257,6 +241,10 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
                 return "/sdk/platform-tools/adb"
             if name == "emulator":
                 return "/sdk/emulator/emulator"
+            if name == "sdkmanager":
+                return "/sdk/cmdline-tools/latest/bin/sdkmanager"
+            if name == "avdmanager":
+                return "/sdk/cmdline-tools/latest/bin/avdmanager"
             return None
 
         with patch(

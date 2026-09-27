@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 import re
 import tempfile
@@ -18,7 +19,19 @@ SHA_RE = re.compile(r'[0-9a-f]{40}')
 
 
 def _get_json(url: str) -> dict:
-    req = urllib.request.Request(url, headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'ai-dev-server-godot-probe'})
+    token = str(
+        os.environ.get("GITHUB_TOKEN")
+        or os.environ.get("GH_TOKEN")
+        or ""
+    ).strip()
+    headers = {
+        "Accept":"application/vnd.github+json",
+        "User-Agent":"ai-dev-server-godot-probe",
+        "X-GitHub-Api-Version":"2022-11-28",
+    }
+    if token:
+        headers["Authorization"] = "Bearer " + token
+    req = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(req, timeout=45) as response:
         raw = response.read(MAX_RESPONSE_BYTES + 1)
     if len(raw) > MAX_RESPONSE_BYTES:

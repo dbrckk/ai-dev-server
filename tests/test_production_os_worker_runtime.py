@@ -158,6 +158,26 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertNotIn("browser-ui-validation", caps)
 
 
+    def test_browser_specialty_requires_operational_playwright(self):
+        completed = type("Completed", (), {"returncode": 0})()
+        with patch("production_os_worker.subprocess.run", return_value=completed):
+            caps = worker_capabilities({
+                "PRODUCTION_OS_WORKER_SPECIALTIES": "browser",
+            })
+
+        self.assertIn("browser-ui-validation", caps)
+
+
+    def test_browser_specialty_is_not_advertised_when_probe_fails(self):
+        completed = type("Completed", (), {"returncode": 1})()
+        with patch("production_os_worker.subprocess.run", return_value=completed):
+            caps = worker_capabilities({
+                "PRODUCTION_OS_WORKER_SPECIALTIES": "browser",
+            })
+
+        self.assertNotIn("browser-ui-validation", caps)
+
+
     def test_worker_capabilities_reject_unknown_specialty(self):
         with patch("production_os_worker.shutil.which", return_value=None):
             with self.assertRaisesRegex(

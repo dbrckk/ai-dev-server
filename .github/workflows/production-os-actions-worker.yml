@@ -23,7 +23,6 @@ jobs:
     env:
       PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
       PRODUCTION_OS_WORKER_TOKEN: ${{ secrets.PRODUCTION_OS_WORKER_TOKEN }}
-      PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
       PRODUCTION_OS_WORKER_ID: github-actions-worker
       STUDIO_GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
       STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
@@ -50,7 +49,7 @@ jobs:
         run: |
           set -euo pipefail
           missing=()
-          for name in PRODUCTION_OS_WORKER_TOKEN PRODUCTION_OS_OPERATOR_TOKEN STUDIO_GITHUB_TOKEN STUDIO_API_KEY; do
+          for name in PRODUCTION_OS_WORKER_TOKEN STUDIO_GITHUB_TOKEN STUDIO_API_KEY; do
             if [ -z "${!name:-}" ]; then
               missing+=("$name")
             fi

@@ -400,6 +400,58 @@ def _is_visual_handoff(handoff: dict[str, Any]) -> bool:
     return any(re.search(pattern, text) for pattern in patterns)
 
 
+def _retry_guidance(handoff: dict[str, Any]) -> str:
+    context = handoff.get("retry_context")
+    if not isinstance(context, dict):
+        return ""
+    parts = [" Previous autonomous attempt failed; use this verified failure context before changing code."]
+    summary = str(context.get("summary") or "").strip()
+    if summary:
+        parts.append(" Previous result: " + summary[:1200])
+    validation = context.get("validation")
+    if isinstance(validation, dict):
+        status = str(validation.get("status") or "").strip()
+        tests = validation.get("tests")
+        test_names = (
+            [str(item).strip()[:200] for item in tests if str(item).strip()][:12]
+            if isinstance(tests, list)
+            else []
+        )
+        if status or test_names:
+            parts.append(
+                " Validation: "
+                + (status[:120] or "unknown")
+                + ((" (" + ", ".join(test_names) + ")") if test_names else "")
+                + "."
+            )
+    ci = context.get("ci")
+    if isinstance(ci, dict):
+        route = " / ".join(
+            str(ci.get(key) or "").strip()[:240]
+            for key in ("workflow", "job", "step")
+            if str(ci.get(key) or "").strip()
+        )
+        conclusion = str(ci.get("conclusion") or ci.get("status") or "").strip()
+        excerpt = str(ci.get("log_excerpt") or "").strip()
+        if route or conclusion:
+            parts.append(
+                " CI failure: "
+                + (route or "unknown check")
+                + ((" / " + conclusion[:120]) if conclusion else "")
+                + "."
+            )
+        if excerpt:
+            parts.append(
+                " Relevant CI log excerpt:\n"
+                + excerpt[:6000]
+                + "\nEnd CI excerpt."
+            )
+    parts.append(
+        " Diagnose the root cause from this evidence, make the smallest correct fix, then rerun the relevant verification."
+    )
+    return "".join(parts)
+
+
 def _asset_forge_guidance(handoff: dict[str, Any]) -> str:
     candidates = handoff.get("reuse_candidates", [])
     if not isinstance(candidates, list):
@@ -469,7 +521,11 @@ def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
     if not all((repository, task, workflow_id, workflow_task_id, job_key)):
         raise ValueError("Production-OS job correlation is incomplete")
 
-    brief = (_brief(task, final_goal) + _asset_forge_guidance(handoff))[:24000]
+    brief = (
+        _brief(task, final_goal)
+        + _retry_guidance(handoff)
+        + _asset_forge_guidance(handoff)
+    )[:24000]
     request = {
         "id": _project_id(job_key),
         "target_repo": repository,
@@ -563,6 +619,50 @@ def _write_project_capacity_plan(
     return row
 
 
+def _attach_failed_ci_diagnostic(
+    envelope: dict[str, Any],
+    request: dict[str, Any],
+    *,
+    environ=None,
+) -> dict[str, Any]:
+    if not isinstance(envelope, dict) or envelope.get("succeeded") is True:
+        return envelope
+    evidence = envelope.get("evidence")
+    if not isinstance(evidence, dict):
+        evidence = {}
+        envelope["evidence"] = evidence
+    if isinstance(evidence.get("ci"), dict):
+        return envelope
+
+    commits = evidence.get("commit_shas")
+    if not isinstance(commits, list) or not commits:
+        return envelope
+    sha = str(commits[-1] or "").strip()
+    if not sha:
+        return envelope
+
+    env = os.environ if environ is None else environ
+    token = str(env.get("STUDIO_GITHUB_TOKEN") or "").strip()
+    if not token:
+        return envelope
+    repository = str(
+        envelope.get("target_repo")
+        or request.get("target_repo")
+        or ""
+    ).strip()
+    if not repository:
+        return envelope
+
+    try:
+        from ci_diagnostics import collect_failed_ci
+        diagnostic = collect_failed_ci(repository, sha, token)
+    except Exception:
+        return envelope
+    if isinstance(diagnostic, dict) and diagnostic:
+        evidence["ci"] = diagnostic
+    return envelope
+
+
 def _result_payload(result: dict[str, Any]) -> dict[str, Any]:
     usage = result.get("usage")
     evidence = result.get("evidence")
@@ -613,6 +713,45 @@ def failure_payload(
     }
 
 
+_RETRYABLE_RUNNER_ERROR_TOKENS = (
+    "timeout",
+    "timed out",
+    "temporary",
+    "temporarily",
+    "unavailable",
+    "connection",
+    "rate limit",
+    "429",
+    "502",
+    "503",
+    "504",
+    "provider",
+)
+
+
+def _retryable_runner_error(exc: Exception) -> bool:
+    if isinstance(exc, (TimeoutError, ConnectionError, subprocess.TimeoutExpired)):
+        return True
+    message = str(exc).lower()
+    return any(token in message for token in _RETRYABLE_RUNNER_ERROR_TOKENS)
+
+
+def _summary_requests_retry(summary: dict[str, Any]) -> bool:
+    if not isinstance(summary, dict):
+        return False
+    if str(summary.get("next_stage") or "").lower() == "retry":
+        return True
+    evidence = summary.get("evidence")
+    if isinstance(evidence, dict):
+        if str(evidence.get("next_stage") or "").lower() == "retry":
+            return True
+    return str(summary.get("status") or "").lower() in {
+        "runner_error",
+        "transient_failure",
+        "retry",
+    }
+
+
 def run_once(
     client: ProductionOSClient,
     *,
@@ -624,6 +763,8 @@ def run_once(
     capacity: dict | None = None,
     heartbeat_interval_seconds: float = 30.0,
     capabilities: list[str] | None = None,
+    runner_retry_attempts: int = 2,
+    runner_retry_backoff_seconds: float = 1.0,
 ) -> dict:
     """Claim and execute at most one Production-OS job."""
     if run_project is None:
@@ -731,6 +872,26 @@ def run_once(
         ) from exc
     if heartbeat_interval <= 0:
         raise ProductionOSWorkerError("heartbeat interval must be positive")
+    try:
+        retry_attempts = int(runner_retry_attempts)
+    except (TypeError, ValueError) as exc:
+        raise ProductionOSWorkerError(
+            "runner retry attempts must be between 0 and 10"
+        ) from exc
+    if retry_attempts < 0 or retry_attempts > 10:
+        raise ProductionOSWorkerError(
+            "runner retry attempts must be between 0 and 10"
+        )
+    try:
+        retry_backoff = float(runner_retry_backoff_seconds)
+    except (TypeError, ValueError) as exc:
+        raise ProductionOSWorkerError(
+            "runner retry backoff must be between 0 and 60 seconds"
+        ) from exc
+    if retry_backoff < 0 or retry_backoff > 60:
+        raise ProductionOSWorkerError(
+            "runner retry backoff must be between 0 and 60 seconds"
+        )
 
     stop_heartbeat = threading.Event()
     heartbeat_errors: list[str] = []
@@ -763,13 +924,39 @@ def run_once(
     heartbeat_thread.start()
 
     started = float(clock())
+    runner_attempt = 0
     try:
-        summary = run_project(
-            request_path,
-            project_out,
-            baseline_sha=baseline_sha,
-            cancel_event=cancel_event,
-        )
+        while True:
+            runner_attempt += 1
+            try:
+                summary = run_project(
+                    request_path,
+                    project_out,
+                    baseline_sha=baseline_sha,
+                    cancel_event=cancel_event,
+                )
+            except Exception as exc:
+                if cancel_event.is_set():
+                    raise
+                if (
+                    runner_attempt > retry_attempts
+                    or not _retryable_runner_error(exc)
+                ):
+                    raise
+                delay = retry_backoff * (2 ** (runner_attempt - 1))
+                if delay > 0 and cancel_event.wait(delay):
+                    raise
+                continue
+            if (
+                runner_attempt <= retry_attempts
+                and _summary_requests_retry(summary)
+                and not cancel_event.is_set()
+            ):
+                delay = retry_backoff * (2 ** (runner_attempt - 1))
+                if delay > 0 and cancel_event.wait(delay):
+                    break
+                continue
+            break
     except Exception as exc:
         stop_heartbeat.set()
         heartbeat_thread.join(timeout=min(heartbeat_interval, 1.0))
@@ -869,6 +1056,8 @@ def run_once(
         raise ProductionOSWorkerError(
             "AI Dev Server did not produce a correlated result"
         )
+
+    envelope = _attach_failed_ci_diagnostic(envelope, request)
 
     if envelope.get("succeeded") is True:
         client.complete(

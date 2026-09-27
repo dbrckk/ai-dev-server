@@ -86,6 +86,82 @@ class ProductionOSResultContractTests(unittest.TestCase):
         self.assertTrue(envelope["succeeded"])
         self.assertEqual(envelope["usage"]["total_tokens"], 130)
 
+    def test_result_envelope_preserves_delivery_evidence_for_production_os(self):
+        request = copy.deepcopy(BASE)
+        request["production_os"] = {
+            "workflow_id": "d" * 32,
+            "workflow_task_id": "delivery-evidence",
+        }
+        summary = {
+            "status": "complete",
+            "finished": True,
+            "next_stage": None,
+            "usage": {"total_tokens": 42},
+            "summary": "Implementation finished and verified.",
+            "validation": {
+                "status": "passed",
+                "tests": ["unit", "integration"],
+            },
+            "commit_shas": [
+                "0123456789abcdef0123456789abcdef01234567",
+            ],
+            "changed_files": [
+                "src/app.py",
+                "tests/test_app.py",
+            ],
+            "pull_request": {
+                "number": 201,
+                "state": "open",
+            },
+            "ci": {
+                "provider": "github-actions",
+                "status": "failed",
+                "workflow": "CI",
+                "job": "tests",
+                "step": "pytest",
+                "conclusion": "failure",
+                "url": "https://github.com/owner/app/actions/runs/123",
+                "sha": "0123456789abcdef0123456789abcdef01234567",
+                "log_excerpt": "FAILED tests/test_app.py::test_login",
+            },
+        }
+
+        with tempfile.TemporaryDirectory() as td:
+            envelope = write_production_os_result(
+                Path(td),
+                request,
+                summary,
+            )
+
+        evidence = envelope["evidence"]
+        self.assertEqual(
+            evidence["summary"],
+            "Implementation finished and verified.",
+        )
+        self.assertEqual(evidence["validation"]["status"], "passed")
+        self.assertEqual(
+            evidence["validation"]["tests"],
+            ["unit", "integration"],
+        )
+        self.assertEqual(
+            evidence["commit_shas"],
+            ["0123456789abcdef0123456789abcdef01234567"],
+        )
+        self.assertEqual(
+            evidence["changed_files"],
+            ["src/app.py", "tests/test_app.py"],
+        )
+        self.assertEqual(
+            evidence["pull_request"],
+            {"number": 201, "state": "open"},
+        )
+        self.assertEqual(evidence["ci"]["provider"], "github-actions")
+        self.assertEqual(evidence["ci"]["workflow"], "CI")
+        self.assertEqual(evidence["ci"]["job"], "tests")
+        self.assertEqual(evidence["ci"]["step"], "pytest")
+        self.assertIn("FAILED", evidence["ci"]["log_excerpt"])
+
+
     def test_result_envelope_includes_visual_asset_quality(self):
         request = copy.deepcopy(BASE)
         request["production_os"] = {

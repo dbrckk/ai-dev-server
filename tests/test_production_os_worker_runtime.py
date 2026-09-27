@@ -12,6 +12,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 from production_os_worker import (
     ProductionOSClient,
     ProductionOSWorkerError,
+    _attach_failed_ci_diagnostic,
+    build_studio_request,
     run_once,
     worker_capabilities,
 )
@@ -215,6 +217,32 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
                 ["software-development"],
             )
         )
+
+    def test_build_studio_request_includes_retry_ci_context_in_brief(self):
+        job = sample_job()
+        job["payload"]["handoff"]["retry_context"] = {
+            "summary":"integration tests failed",
+            "validation":{"status":"failed","tests":["integration"]},
+            "ci":{
+                "workflow":"CI",
+                "job":"tests",
+                "step":"pytest",
+                "conclusion":"failure",
+                "log_excerpt":"FAILED tests/test_app.py::test_login",
+            },
+        }
+
+        request = build_studio_request(job)
+
+        self.assertIn("Previous autonomous attempt failed", request["brief"])
+        self.assertIn("integration tests failed", request["brief"])
+        self.assertIn("CI / tests / pytest / failure", request["brief"])
+        self.assertIn(
+            "FAILED tests/test_app.py::test_login",
+            request["brief"],
+        )
+        self.assertIn("smallest correct fix", request["brief"])
+
 
     def test_run_once_acknowledges_pause_without_claiming(self):
         client = _FakeClient(sample_job())
@@ -473,6 +501,150 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertIn("runner_error", failed["reason"])
         self.assertIn("RuntimeError", failed["result"]["evidence"]["error_type"])
         self.assertEqual(client.calls[5][2], ())
+
+    def test_failed_envelope_is_enriched_with_ci_diagnostic_when_sha_exists(self):
+        envelope = {
+            "target_repo": "dbrckk/example",
+            "succeeded": False,
+            "evidence": {
+                "commit_shas": [
+                    "0123456789abcdef0123456789abcdef01234567"
+                ]
+            },
+        }
+        request = {"target_repo": "dbrckk/example"}
+        diagnostic = {
+            "provider": "github-actions",
+            "status": "failed",
+            "workflow": "CI",
+            "job": "tests",
+            "step": "pytest",
+            "conclusion": "failure",
+            "sha": "0123456789abcdef0123456789abcdef01234567",
+        }
+
+        with patch(
+            "ci_diagnostics.collect_failed_ci",
+            return_value=diagnostic,
+        ) as collect:
+            result = _attach_failed_ci_diagnostic(
+                envelope,
+                request,
+                environ={"STUDIO_GITHUB_TOKEN": "secret"},
+            )
+
+        self.assertEqual(result["evidence"]["ci"], diagnostic)
+        collect.assert_called_once_with(
+            "dbrckk/example",
+            "0123456789abcdef0123456789abcdef01234567",
+            "secret",
+        )
+
+
+    def test_failed_envelope_ci_enrichment_is_optional_without_token(self):
+        envelope = {
+            "target_repo": "dbrckk/example",
+            "succeeded": False,
+            "evidence": {"commit_shas": ["0123456"]},
+        }
+
+        result = _attach_failed_ci_diagnostic(
+            envelope,
+            {"target_repo": "dbrckk/example"},
+            environ={},
+        )
+
+        self.assertNotIn("ci", result["evidence"])
+
+
+    def test_run_once_retries_transient_runner_error_then_completes(self):
+        client = _FakeClient(sample_job())
+        attempts = {"count": 0}
+
+        def runner(request_path, out, **kwargs):
+            attempts["count"] += 1
+            if attempts["count"] == 1:
+                raise RuntimeError("provider temporarily unavailable")
+            return {
+                "status": "complete",
+                "finished": True,
+                "next_stage": None,
+                "usage": {"total_tokens": 7},
+            }
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client,
+                worker_id="ai-dev-1",
+                output_root=Path(td),
+                run_project=runner,
+                clock=lambda: 10.0,
+                runner_retry_backoff_seconds=0,
+            )
+
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(attempts["count"], 2)
+        self.assertIn("complete", [call[0] for call in client.calls])
+        self.assertNotIn("fail", [call[0] for call in client.calls])
+
+
+    def test_run_once_retries_explicit_retry_summary_then_completes(self):
+        client = _FakeClient(sample_job())
+        attempts = {"count": 0}
+
+        def runner(request_path, out, **kwargs):
+            attempts["count"] += 1
+            if attempts["count"] == 1:
+                return {
+                    "status": "blocked",
+                    "finished": False,
+                    "next_stage": "retry",
+                    "usage": {"total_tokens": 3},
+                }
+            return {
+                "status": "complete",
+                "finished": True,
+                "next_stage": None,
+                "usage": {"total_tokens": 9},
+            }
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client,
+                worker_id="ai-dev-1",
+                output_root=Path(td),
+                run_project=runner,
+                clock=lambda: 20.0,
+                runner_retry_backoff_seconds=0,
+            )
+
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(attempts["count"], 2)
+        self.assertNotIn("fail", [call[0] for call in client.calls])
+
+
+    def test_run_once_does_not_retry_non_transient_runner_error(self):
+        client = _FakeClient(sample_job())
+        attempts = {"count": 0}
+
+        def runner(request_path, out, **kwargs):
+            attempts["count"] += 1
+            raise RuntimeError("invalid project configuration")
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client,
+                worker_id="ai-dev-1",
+                output_root=Path(td),
+                run_project=runner,
+                clock=lambda: 30.0,
+                runner_retry_backoff_seconds=0,
+            )
+
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(attempts["count"], 1)
+        self.assertIn("fail", [call[0] for call in client.calls])
+
 
     def test_capacity_snapshot_prefers_authenticated_omniroute(self):
         from production_os_worker import production_capacity_snapshot

@@ -294,6 +294,98 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
                 "items": item_rows[:16],
             }
 
+    summary_evidence = (
+        summary.get("evidence")
+        if isinstance(summary.get("evidence"), dict)
+        else {}
+    )
+    validation = summary.get("validation")
+    if not isinstance(validation, dict):
+        validation = summary_evidence.get("validation")
+    if not isinstance(validation, dict):
+        validation = None
+
+    result_summary = (
+        summary.get("summary")
+        or summary_evidence.get("summary")
+        or summary.get("message")
+        or summary_evidence.get("message")
+    )
+    if result_summary is not None:
+        result_summary = str(result_summary).strip()[:4000] or None
+
+    raw_commits = (
+        summary.get("commit_shas")
+        or summary_evidence.get("commit_shas")
+        or summary.get("commits")
+        or summary_evidence.get("commits")
+    )
+    if isinstance(raw_commits, (str, dict)):
+        raw_commits = [raw_commits]
+    commit_shas = []
+    if isinstance(raw_commits, (list, tuple)):
+        for item in raw_commits:
+            value = (
+                str(item.get("sha") or "").strip().lower()
+                if isinstance(item, dict)
+                else str(item or "").strip().lower()
+            )
+            if (
+                7 <= len(value) <= 40
+                and all(ch in "0123456789abcdef" for ch in value)
+                and value not in commit_shas
+            ):
+                commit_shas.append(value)
+            if len(commit_shas) >= 20:
+                break
+
+    raw_changed_files = (
+        summary.get("changed_files")
+        or summary_evidence.get("changed_files")
+        or []
+    )
+    changed_files = []
+    if isinstance(raw_changed_files, (list, tuple)):
+        for item in raw_changed_files:
+            value = str(item or "").strip()
+            if value and value not in changed_files:
+                changed_files.append(value[:500])
+            if len(changed_files) >= 100:
+                break
+
+    pull_request = (
+        summary.get("pull_request")
+        or summary_evidence.get("pull_request")
+    )
+    if not isinstance(pull_request, dict):
+        pull_request = None
+
+    ci = summary.get("ci")
+    if not isinstance(ci, dict):
+        ci = summary_evidence.get("ci")
+    if isinstance(ci, dict):
+        ci = {
+            key: (
+                str(ci.get(key)).strip()[:8000]
+                if ci.get(key) is not None
+                else None
+            )
+            for key in (
+                "provider",
+                "status",
+                "workflow",
+                "job",
+                "step",
+                "conclusion",
+                "url",
+                "sha",
+                "log_excerpt",
+            )
+        }
+        ci = {key: value for key, value in ci.items() if value}
+    else:
+        ci = None
+
     envelope = {
         "schema_version": "ai-dev-server/production-os-result/v1",
         "workflow_id": correlation["workflow_id"],
@@ -310,6 +402,12 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
             "pipeline_status": summary.get("status"),
             "next_stage": summary.get("next_stage"),
             "finished": bool(summary.get("finished") is True),
+            "summary": result_summary,
+            "validation": dict(validation) if validation is not None else None,
+            "commit_shas": commit_shas,
+            "changed_files": changed_files,
+            "pull_request": dict(pull_request) if pull_request is not None else None,
+            "ci": dict(ci) if ci is not None else None,
             "visual_assets": visual_assets,
         },
     }

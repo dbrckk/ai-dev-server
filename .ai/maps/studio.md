@@ -15191,6 +15191,8 @@ evidence = state.get('release_evidence', {}).get('privacy_policy')
 ⋮----
 BASE_WORKER_CAPABILITIES = [
 ⋮----
+SPECIALIST_CAPABILITIES = {
+⋮----
 def _asset_forge_operational_status(environ=None) -> dict | None
 ⋮----
 executable = shutil.which("asset-forge")
@@ -15204,7 +15206,11 @@ payload = json.loads(completed.stdout)
 def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]
 ⋮----
 del home  # Kept for backwards-compatible callers/tests.
+env = os.environ if environ is None else environ
 capabilities = list(BASE_WORKER_CAPABILITIES)
+specialties = {
+unknown = specialties.difference(SPECIALIST_CAPABILITIES)
+⋮----
 status = _asset_forge_operational_status(environ)
 ⋮----
 visual = status.get("capabilities")
@@ -15252,7 +15258,7 @@ secret = str(operator_token or "").strip()
 payload = {
 ⋮----
 """Return a safe global token-capacity snapshot for Production-OS."""
-env = os.environ if environ is None else environ
+⋮----
 base_url = str(env.get("OMNIROUTE_URL") or "").strip()
 ⋮----
 snapshot = fetch_summary(

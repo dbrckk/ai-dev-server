@@ -8082,6 +8082,12 @@ returncode = 0
 stdout = json.dumps(
 stderr = ""
 ⋮----
+def test_worker_capabilities_add_requested_specialties(self)
+⋮----
+caps = worker_capabilities({
+⋮----
+def test_worker_capabilities_reject_unknown_specialty(self)
+⋮----
 def test_client_rejects_insecure_remote_control_plane(self)
 ⋮----
 def test_client_allows_loopback_http(self)

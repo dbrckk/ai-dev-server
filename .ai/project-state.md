@@ -22,27 +22,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T07:48:19Z
+Generated: 2026-09-27T08:51:45Z
 
 ### Git
 - Branch: `main`
-- Head: `096844f40208`
-- Commit date: 2026-09-27T09:48:08+02:00
-- Commit: feat: close autonomous retry and CI diagnostic loop
+- Head: `e02bb273b663`
+- Commit date: 2026-09-27T10:51:27+02:00
+- Commit: feat: add specialist worker roles
 - Tracked files: 827
 
 ### Recently changed files
+- `studio/production_os_worker.py`
+- `tests/test_production_os_worker_runtime.py`
 - `studio/capability_registry_review.py`
 - `studio/capability_review.py`
 - `studio/ci_diagnostics.py`
 - `studio/github_pr_gate.py`
 - `studio/github_runner.py`
-- `studio/production_os_worker.py`
 - `tests/test_capability_registry_review.py`
 - `tests/test_capability_review.py`
 - `tests/test_ci_diagnostics.py`
 - `tests/test_production_os_result_contract.py`
-- `tests/test_production_os_worker_runtime.py`
 - `tests/test_production_os_local_e2e.py`
 - `control/production-os-worker-kick.json`
 - `tests/test_production_os_actions_worker_workflow.py`

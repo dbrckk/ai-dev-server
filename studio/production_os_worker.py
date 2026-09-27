@@ -444,10 +444,21 @@ def _repository_branch_id(
     ).strip()
     if not managed_project_id:
         return None
+    kind = str(
+        payload.get("managed_project_kind")
+        or ""
+    ).strip().lower()
+    generation = str(
+        payload.get("managed_project_generation")
+        or ""
+    ).strip()
+    identity = repository + "\0" + managed_project_id
+    if kind == "rollback":
+        identity += "\0rollback\0" + generation
     digest = hashlib.sha256(
-        (repository + "\0" + managed_project_id).encode("utf-8")
+        identity.encode("utf-8")
     ).hexdigest()[:24]
-    return "mp-" + digest
+    return ("rb-" if kind == "rollback" else "mp-") + digest
 
 
 def _app_name(repository: str) -> str:

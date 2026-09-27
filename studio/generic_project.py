@@ -216,7 +216,11 @@ def _record_architecture(state: dict, out: Path, architecture_root: Path) -> Non
 
 def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict:
     github = GitHub(req["target_repo"])
-    repo = GenericRepository(github, req["target_repo"], req["id"])
+    repo = GenericRepository(
+        github,
+        req["target_repo"],
+        req.get("repository_branch_id") or req["id"],
+    )
     base_sha, restore = repo.restore(work)
     checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
     safe_rewrite_learning_path = out / ".autonomy" / "safe-rewrite-learning.json"

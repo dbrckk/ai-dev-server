@@ -120,7 +120,11 @@ class MobileValidationContractTests(unittest.TestCase):
             "production_os_worker.subprocess.run",
             return_value=completed,
         ):
-            which.side_effect = lambda name, path=None: "/sdk/" + name
+            which.side_effect = lambda name, path=None: (
+                "/sdk/" + name
+                if name in {"adb", "emulator", "sdkmanager", "avdmanager"}
+                else None
+            )
             caps = worker_capabilities({
                 "PRODUCTION_OS_WORKER_SPECIALTIES":"mobile",
                 "PATH":"/sdk",
@@ -130,7 +134,9 @@ class MobileValidationContractTests(unittest.TestCase):
     def test_mobile_specialty_is_not_advertised_without_emulator(self):
         with patch("production_os_worker.shutil.which") as which:
             which.side_effect = lambda name, path=None: (
-                None if name == "emulator" else "/sdk/" + name
+                None
+                if name not in {"adb", "sdkmanager", "avdmanager"}
+                else "/sdk/" + name
             )
             caps = worker_capabilities({
                 "PRODUCTION_OS_WORKER_SPECIALTIES":"mobile",

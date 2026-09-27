@@ -474,6 +474,79 @@ def _retry_guidance(handoff: dict[str, Any]) -> str:
     return "".join(parts)
 
 
+def _upstream_guidance(handoff: dict[str, Any]) -> str:
+    upstream = handoff.get("upstream_context")
+    if not isinstance(upstream, list) or not upstream:
+        return ""
+    parts = [
+        " Previous cooperative stages produced the following verified context. "
+        "Treat it as evidence, inspect the repository state directly, and do not redo completed work unless verification shows it is necessary."
+    ]
+    for item in upstream[:8]:
+        if not isinstance(item, dict):
+            continue
+        task_id = str(item.get("task_id") or "upstream").strip()[:120]
+        title = str(item.get("title") or "").strip()[:240]
+        parts.append("\nUpstream stage: " + task_id + ((" — " + title) if title else ""))
+        summary = str(item.get("summary") or "").strip()
+        if summary:
+            parts.append("\nSummary: " + summary[:1800])
+        validation = item.get("validation")
+        if isinstance(validation, dict):
+            status = str(validation.get("status") or "").strip()[:120]
+            tests = validation.get("tests")
+            names = (
+                [str(value).strip()[:180] for value in tests if str(value).strip()][:12]
+                if isinstance(tests, list)
+                else []
+            )
+            if status or names:
+                parts.append(
+                    "\nValidation: "
+                    + (status or "unknown")
+                    + ((" (" + ", ".join(names) + ")") if names else "")
+                )
+        commits = item.get("commit_shas")
+        if isinstance(commits, list) and commits:
+            parts.append(
+                "\nCommits: "
+                + ", ".join(str(value).strip()[:40] for value in commits[:8])
+            )
+        changed = item.get("changed_files")
+        if isinstance(changed, list) and changed:
+            parts.append(
+                "\nChanged files: "
+                + ", ".join(str(value).strip()[:240] for value in changed[:20])
+            )
+        pr = item.get("pull_request")
+        if isinstance(pr, dict) and pr:
+            pr_number = pr.get("number")
+            pr_state = str(pr.get("state") or "").strip()
+            parts.append(
+                "\nPull request: "
+                + ((f"#{pr_number}") if pr_number is not None else "present")
+                + ((" (" + pr_state[:120] + ")") if pr_state else "")
+            )
+        ci = item.get("ci")
+        if isinstance(ci, dict):
+            route = " / ".join(
+                str(ci.get(key) or "").strip()[:180]
+                for key in ("workflow", "job", "step")
+                if str(ci.get(key) or "").strip()
+            )
+            conclusion = str(ci.get("conclusion") or ci.get("status") or "").strip()
+            if route or conclusion:
+                parts.append(
+                    "\nCI: "
+                    + (route or "unknown")
+                    + ((" / " + conclusion[:120]) if conclusion else "")
+                )
+    parts.append(
+        "\nUse this context to continue from the current repository state and produce only the work required for your stage."
+    )
+    return "".join(parts)[:10000]
+
+
 def _asset_forge_guidance(handoff: dict[str, Any]) -> str:
     candidates = handoff.get("reuse_candidates", [])
     if not isinstance(candidates, list):
@@ -545,6 +618,7 @@ def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
 
     brief = (
         _brief(task, final_goal)
+        + _upstream_guidance(handoff)
         + _retry_guidance(handoff)
         + _asset_forge_guidance(handoff)
     )[:24000]

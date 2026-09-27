@@ -241,6 +241,37 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             )
         )
 
+    def test_build_studio_request_includes_cooperative_upstream_context(self):
+        job = sample_job()
+        job["payload"]["handoff"]["upstream_context"] = [
+            {
+                "task_id":"implementation",
+                "title":"Implement feature",
+                "summary":"implemented login flow",
+                "validation":{"status":"passed","tests":["unit"]},
+                "commit_shas":["a"*40],
+                "changed_files":["src/auth.py","tests/test_auth.py"],
+                "pull_request":{"number":12,"state":"open"},
+                "ci":{
+                    "workflow":"CI",
+                    "job":"tests",
+                    "step":"pytest",
+                    "conclusion":"success",
+                },
+            }
+        ]
+
+        request = build_studio_request(job)
+
+        self.assertIn("Previous cooperative stages", request["brief"])
+        self.assertIn("implementation", request["brief"])
+        self.assertIn("implemented login flow", request["brief"])
+        self.assertIn("src/auth.py", request["brief"])
+        self.assertIn("#12", request["brief"])
+        self.assertIn("CI / tests / pytest / success", request["brief"])
+        self.assertIn("do not redo completed work", request["brief"])
+
+
     def test_build_studio_request_includes_retry_ci_context_in_brief(self):
         job = sample_job()
         job["payload"]["handoff"]["retry_context"] = {

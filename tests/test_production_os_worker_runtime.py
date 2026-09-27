@@ -16,6 +16,7 @@ from production_os_worker import (
     build_studio_request,
     run_once,
     worker_capabilities,
+    main as worker_main,
 )
 
 
@@ -260,6 +261,67 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
                 ["software-development"],
             )
         )
+
+    def test_client_register_uses_worker_token_by_default(self):
+        seen = []
+
+        def opener(request, timeout):
+            seen.append({
+                "authorization":request.get_header("Authorization"),
+                "body":json.loads(request.data.decode("utf-8")),
+            })
+            return _Response(200, {"worker":{"worker_id":"ai-dev-1"}})
+
+        client = ProductionOSClient(
+            "http://127.0.0.1:8787",
+            "worker-secret",
+            opener=opener,
+        )
+        client.register(
+            "ai-dev-1",
+            ["software-development"],
+        )
+
+        self.assertEqual(
+            seen[0]["authorization"],
+            "Bearer worker-secret",
+        )
+        self.assertEqual(
+            seen[0]["body"]["worker_id"],
+            "ai-dev-1",
+        )
+
+
+    def test_worker_main_no_longer_requires_operator_token(self):
+        calls = []
+
+        class Client:
+            def register(self, worker_id, capabilities, operator_token=None):
+                calls.append(("register", worker_id, tuple(capabilities), operator_token))
+
+        result = worker_main(
+            ["--once"],
+            environ={
+                "PRODUCTION_OS_URL":"http://127.0.0.1:8787",
+                "PRODUCTION_OS_WORKER_TOKEN":"worker-secret",
+            },
+            client_factory=lambda base_url, token: Client(),
+            run_once_fn=lambda *args, **kwargs: {"status":"idle"},
+            capacity_provider=lambda env: None,
+            capabilities_provider=lambda env: ["software-development"],
+        )
+
+        self.assertEqual(result, 0)
+        self.assertEqual(
+            calls,
+            [(
+                "register",
+                "ai-dev-server-1",
+                ("software-development",),
+                None,
+            )],
+        )
+
 
     def test_managed_project_stages_share_branch_but_not_execution_id(self):
         first = sample_job()

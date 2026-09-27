@@ -24,6 +24,7 @@ jobs:
       PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
       PRODUCTION_OS_WORKER_TOKEN: ${{ secrets.PRODUCTION_OS_WORKER_TOKEN }}
       PRODUCTION_OS_WORKER_ID: github-actions-worker
+      PRODUCTION_OS_WORKER_SPECIALTIES: mobile
       STUDIO_GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
       STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
       STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
@@ -70,6 +71,40 @@ jobs:
 
       - name: Install autonomous coding agent
         run: npm install -g opencode-ai
+
+      - name: Prepare native mobile validation runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${ANDROID_HOME:?ANDROID_HOME must be set}"
+          android_paths=(
+            "$ANDROID_HOME/platform-tools"
+            "$ANDROID_HOME/cmdline-tools/latest/bin"
+            "$ANDROID_HOME/emulator"
+          )
+          for dir in "${android_paths[@]}"; do
+            echo "$dir" >> "$GITHUB_PATH"
+          done
+          export PATH="$(IFS=:; echo "${android_paths[*]}"):$PATH"
+
+          missing=()
+          for name in adb sdkmanager avdmanager emulator; do
+            command -v "$name" >/dev/null 2>&1 || missing+=("$name")
+          done
+          if (( ${#missing[@]} )); then
+            echo "Android tools missing (${missing[*]}), using bounded bootstrap"
+            bash scripts/bootstrap-android-ci.sh
+            export PATH="$(IFS=:; echo "${android_paths[*]}"):$PATH"
+          fi
+
+          for name in adb sdkmanager avdmanager emulator; do
+            command -v "$name"
+          done
+          test -e /dev/kvm
+          sudo chmod 666 /dev/kvm
+          test -r /dev/kvm
+          test -w /dev/kvm
+          emulator -accel-check
 
       - name: Process one Production-OS job
         env:

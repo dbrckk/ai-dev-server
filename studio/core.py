@@ -116,7 +116,7 @@ def request_check(data):
         }
     if 'tool_contracts' in data:
         contracts = data['tool_contracts']
-        if not isinstance(contracts, dict) or set(contracts) - {'asset_forge', 'browser_validation'}:
+        if not isinstance(contracts, dict) or set(contracts) - {'asset_forge', 'browser_validation', 'mobile_validation'}:
             raise StudioError('Invalid tool_contracts')
         normalized = {}
         asset_forge = contracts.get('asset_forge')
@@ -158,6 +158,25 @@ def request_check(data):
             ):
                 raise StudioError('Invalid browser validation tool contract')
             normalized['browser_validation'] = dict(browser_validation)
+        mobile_validation = contracts.get('mobile_validation')
+        if mobile_validation is not None:
+            if (
+                not isinstance(mobile_validation, dict)
+                or set(mobile_validation) != {
+                    'schema',
+                    'report_schema',
+                    'script',
+                    'artifacts_dir',
+                    'runtime',
+                }
+                or mobile_validation.get('schema') != 'production-os/mobile-validation/v1'
+                or mobile_validation.get('report_schema') != 'production-os/mobile-validation-report/v1'
+                or mobile_validation.get('script') != '.production-os/mobile_validate.py'
+                or mobile_validation.get('artifacts_dir') != '.production-os/mobile-artifacts'
+                or mobile_validation.get('runtime') != 'android-adb-emulator'
+            ):
+                raise StudioError('Invalid mobile validation tool contract')
+            normalized['mobile_validation'] = dict(mobile_validation)
         data['tool_contracts'] = normalized
     if 'play_publish' in data:
         publish = data['play_publish']

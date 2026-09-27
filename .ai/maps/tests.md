@@ -106,6 +106,7 @@ test_atomic_file.py
 test_autonomous_project.py
 test_autonomous_research.py
 test_billing_qa.py
+test_browser_validation_contract.py
 test_candidate_portfolio_learning.py
 test_capability_adaptation_state.py
 test_capability_candidate_review_state.py
@@ -2894,6 +2895,45 @@ def test_wrong_apk_hash_is_rejected(self)
 value = self.evidence(apk)
 ⋮----
 def test_incomplete_purchase_lifecycle_is_rejected(self)
+```
+
+## File: test_browser_validation_contract.py
+```python
+CONTRACT = {
+⋮----
+def request()
+⋮----
+class BrowserValidationContractTests(unittest.TestCase)
+⋮----
+def _write_script(self, root: Path, *, console_errors=None, page_errors=None)
+⋮----
+script = root / ".production-os" / "browser_validate.py"
+⋮----
+payload = {
+⋮----
+def test_runtime_browser_artifacts_are_not_publishable(self)
+⋮----
+def test_request_check_accepts_browser_validation_contract(self)
+⋮----
+checked = request_check(request())
+⋮----
+def test_request_check_rejects_mutated_browser_validation_contract(self)
+⋮----
+value = request()
+⋮----
+def test_browser_validation_requires_script(self)
+⋮----
+root = Path(td)
+result = _run_browser_validation(
+⋮----
+def test_browser_validation_accepts_report_and_copies_artifacts(self)
+⋮----
+work = root / "work"
+out = root / "out"
+⋮----
+result = _run_browser_validation(request(), work, out)
+⋮----
+def test_browser_validation_fails_on_console_errors(self)
 ```
 
 ## File: test_candidate_portfolio_learning.py

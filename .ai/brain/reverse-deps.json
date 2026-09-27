@@ -1570,6 +1570,7 @@
         "tests/test_artifact_cas_promotion.py",
         "tests/test_asset_forge_bridge.py",
         "tests/test_billing_qa.py",
+        "tests/test_browser_validation_contract.py",
         "tests/test_capability_candidate_validator.py",
         "tests/test_capability_synthesis.py",
         "tests/test_capacity_efficiency.py",
@@ -1623,7 +1624,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 208,
+      "in_degree": 209,
       "out_degree": 17
     },
     "studio/cost_drift.py": {
@@ -2256,9 +2257,10 @@
         "studio/generic_project.py",
         "studio/generic_repository.py",
         "studio/project_engine.py",
+        "tests/test_browser_validation_contract.py",
         "tests/test_generic_policy.py"
       ],
-      "in_degree": 5,
+      "in_degree": 6,
       "out_degree": 0
     },
     "studio/generic_project.py": {
@@ -2324,15 +2326,17 @@
         "studio/strategy_efficiency.py",
         "studio/task_context.py",
         "studio/verification_cost.py",
+        "tests/test_studio.py",
         "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/generic_smoke.py",
         "studio/multi_engine_orchestrator.py",
+        "tests/test_browser_validation_contract.py",
         "tests/test_generic_architecture.py"
       ],
-      "in_degree": 3,
-      "out_degree": 62
+      "in_degree": 4,
+      "out_degree": 63
     },
     "studio/generic_repository.py": {
       "dependencies": [
@@ -2777,8 +2781,7 @@
     },
     "studio/godot_device_qa.py": {
       "dependencies": [
-        "studio/core.py",
-        "tests/test_studio.py"
+        "studio/core.py"
       ],
       "dependents": [
         "studio/godot_device_stage.py",
@@ -2786,7 +2789,7 @@
         "tests/test_godot_device_qa.py"
       ],
       "in_degree": 3,
-      "out_degree": 2
+      "out_degree": 1
     },
     "studio/godot_device_stage.py": {
       "dependencies": [
@@ -5385,6 +5388,16 @@
       "in_degree": 0,
       "out_degree": 3
     },
+    "tests/test_browser_validation_contract.py": {
+      "dependencies": [
+        "studio/core.py",
+        "studio/generic_policy.py",
+        "studio/generic_project.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
     "tests/test_candidate_portfolio_learning.py": {
       "dependencies": [
         "studio/candidate_portfolio_learning.py",
@@ -7414,6 +7427,7 @@
         "studio/generic_capability_persist.py",
         "studio/generic_capability_synthesis.py",
         "studio/generic_model.py",
+        "studio/generic_project.py",
         "studio/generic_repository.py",
         "studio/generic_verify.py",
         "studio/github_artifact_cas_audit_store.py",
@@ -7437,7 +7451,6 @@
         "studio/godot_android_export.py",
         "studio/godot_android_stage.py",
         "studio/godot_baseline.py",
-        "studio/godot_device_qa.py",
         "studio/godot_model.py",
         "studio/godot_visual_qa.py",
         "studio/native_qa.py",

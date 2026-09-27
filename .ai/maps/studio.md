@@ -6129,6 +6129,8 @@ contracts = data['tool_contracts']
 normalized = {}
 asset_forge = contracts.get('asset_forge')
 ⋮----
+browser_validation = contracts.get('browser_validation')
+⋮----
 publish = data['play_publish']
 ⋮----
 enabled = publish.get('enabled', False)
@@ -8831,6 +8833,81 @@ learning = summarize_architecture_learning(architecture_root)
 ⋮----
 def _record_architecture(state: dict, out: Path, architecture_root: Path) -> None
 ⋮----
+def _browser_validation_contract(req: dict) -> dict | None
+⋮----
+contracts = req.get("tool_contracts")
+⋮----
+contract = contracts.get("browser_validation")
+⋮----
+def _run_browser_validation(req: dict, work: Path, out: Path) -> dict | None
+⋮----
+contract = _browser_validation_contract(req)
+⋮----
+script_rel = str(contract.get("script") or "")
+artifacts_rel = str(contract.get("artifacts_dir") or "")
+script = (work / script_rel).resolve()
+artifacts = (work / artifacts_rel).resolve()
+root = work.resolve()
+⋮----
+execution = run_command(
+report_path = artifacts / "report.json"
+report = None
+report_error = None
+⋮----
+value = json.loads(report_path.read_text(encoding="utf-8"))
+⋮----
+report = value
+⋮----
+report_error = "browser-validation-report-not-object"
+⋮----
+report_error = "browser-validation-report-invalid-json"
+⋮----
+report_error = "browser-validation-report-missing"
+⋮----
+valid_report = False
+screenshots = []
+console_errors = []
+page_errors = []
+tested_url = None
+⋮----
+tested_url = str(report.get("url") or "").strip()[:2000] or None
+raw_console = report.get("console_errors")
+raw_page = report.get("page_errors")
+raw_screenshots = report.get("screenshots")
+console_errors = (
+page_errors = (
+⋮----
+rel = str(item or "").strip().replace("\\", "/")
+⋮----
+candidate = (artifacts / rel).resolve()
+⋮----
+valid_report = (
+⋮----
+report_error = "browser-validation-report-contract-invalid"
+⋮----
+evidence_root = out / "browser-validation"
+copied = []
+total_bytes = 0
+⋮----
+rel = source.relative_to(artifacts)
+⋮----
+size = source.stat().st_size
+⋮----
+target = evidence_root / rel
+⋮----
+passed = (
+reason = None
+⋮----
+reason = "browser-validation-script-failed"
+⋮----
+reason = report_error
+⋮----
+reason = "browser-console-errors"
+⋮----
+reason = "browser-page-errors"
+⋮----
+reason = "browser-validation-failed"
+⋮----
 def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict
 ⋮----
 github = GitHub(req["target_repo"])
@@ -9180,6 +9257,9 @@ review_history = load_phase_cost_baselines(phase_baseline_path)
 review_baseline = phase_cost_baseline(review_history, state["toolchain"], "review")
 ⋮----
 complete = review.get("complete") is True and verification.get("passed") is True
+browser_validation = _run_browser_validation(req, work, out)
+⋮----
+complete = False
 ⋮----
 review_provider = review_model.get("provider")
 ⋮----
@@ -9253,9 +9333,9 @@ round_state = {
 ⋮----
 drift_decision = drift_detector.decision()
 ⋮----
-complete = False
-⋮----
 remaining_items = review.get("remaining")
+⋮----
+browser_reason = str(
 ⋮----
 base_sha = repo.publish(base_sha, work, "Autonomous generic project round " + str(round_index))
 ⋮----
@@ -10644,6 +10724,17 @@ ci = {
 ci = {key: value for key, value in ci.items() if value}
 ⋮----
 ci = None
+⋮----
+browser_validation = summary.get("browser_validation")
+⋮----
+browser_validation = summary_evidence.get("browser_validation")
+⋮----
+normalized_browser = {
+execution = browser_validation.get("execution")
+⋮----
+browser_validation = {
+⋮----
+browser_validation = None
 ⋮----
 envelope = {
 ⋮----

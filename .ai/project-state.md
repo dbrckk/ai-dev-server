@@ -22,23 +22,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T10:14:38Z
+Generated: 2026-09-27T11:08:20Z
 
 ### Git
 - Branch: `main`
-- Head: `389c253e0a40`
-- Commit date: 2026-09-27T12:13:33+02:00
-- Commit: fix: probe Playwright before advertising browser validation
-- Tracked files: 829
+- Head: `7499f56de86c`
+- Commit date: 2026-09-27T13:08:03+02:00
+- Commit: feat: enforce structured browser validation evidence
+- Tracked files: 830
 
 ### Recently changed files
+- `studio/core.py`
+- `studio/generic_policy.py`
+- `studio/generic_project.py`
+- `studio/github_runner.py`
+- `tests/test_browser_validation_contract.py`
+- `tests/test_production_os_result_contract.py`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_worker_runtime.py`
-- `studio/generic_project.py`
 - `studio/generic_repository.py`
-- `studio/github_runner.py`
 - `tests/test_generic_repository_pull_request.py`
-- `studio/core.py`
 - `tests/test_repository_branch_identity.py`
 
 ### Project signals

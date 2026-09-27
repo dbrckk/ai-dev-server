@@ -1,18 +1,22 @@
 # Change impact
 
-Base: 45f2420c55da51b7318b26aa487497cfebe21dfa
-Head: 389c253e0a409a25b18eb36dda8523cdfd3931d6
+Base: ad39307341f2d0e232903fb9254fe04e11ace2f5
+Head: 7499f56de86c32ae568f60571c6d810e6d84162a
 
 ## Changed files
-- M studio/production_os_worker.py
-- M tests/test_production_os_worker_runtime.py
+- M studio/core.py
+- M studio/generic_policy.py
+- M studio/generic_project.py
+- M studio/github_runner.py
+- A tests/test_browser_validation_contract.py
+- M tests/test_production_os_result_contract.py
 
 ## Affected areas
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_production_os_worker.py
+- tests/test_generic_policy.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

@@ -1911,6 +1911,23 @@ Objective and current plan:
         )
         save_checkpoint(checkpoint_path, checkpoint)
         state["checkpoint_commit"] = base_sha
+        if req.get("production_os"):
+            try:
+                pull_request = repo.ensure_pull_request(
+                    title="Autonomous managed project: " + str(req.get("app_name") or req["id"]),
+                    body=(
+                        "Managed by Production-OS. This pull request is updated "
+                        "across cooperative implementation, validation, review "
+                        "and UI-validation stages. Do not merge until required "
+                        "checks and promotion gates are green."
+                    ),
+                )
+                state["pull_request"] = pull_request
+            except StudioError as exc:
+                state["pull_request"] = {
+                    "state":"unavailable",
+                    "error":str(exc)[:500],
+                }
         state["execution_checkpoint"] = {
             "round": checkpoint["round"],
             "phase": checkpoint["phase"],

@@ -420,7 +420,6 @@ def _run_browser_validation(req: dict, work: Path, out: Path) -> dict | None:
         "page_errors":page_errors,
         "screenshots":screenshots,
         "copied_artifacts":copied,
-        "adb_verification":adb_verification,
         "execution":{
             "returncode":execution.get("returncode"),
             "duration_seconds":execution.get("duration_seconds"),
@@ -663,6 +662,7 @@ def _run_mobile_validation(req: dict, work: Path, out: Path) -> dict | None:
         "fatal_errors":fatal_errors,
         "screenshots":screenshots,
         "copied_artifacts":copied,
+        "adb_verification":adb_verification,
         "execution":{
             "returncode":execution.get("returncode"),
             "duration_seconds":execution.get("duration_seconds"),

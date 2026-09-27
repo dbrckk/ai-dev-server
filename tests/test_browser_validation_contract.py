@@ -8,6 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 from core import StudioError, request_check
 from generic_project import _run_browser_validation
+from generic_policy import editable
 
 
 CONTRACT = {
@@ -49,6 +50,17 @@ class BrowserValidationContractTests(unittest.TestCase):
             "(root/'home.png').write_bytes(b'fake-png-evidence')\n"
             f"(root/'report.json').write_text({json.dumps(json.dumps(payload))},encoding='utf-8')\n",
             encoding="utf-8",
+        )
+
+    def test_runtime_browser_artifacts_are_not_publishable(self):
+        self.assertTrue(
+            editable(".production-os/browser_validate.py")
+        )
+        self.assertFalse(
+            editable(".production-os/browser-artifacts/report.json")
+        )
+        self.assertFalse(
+            editable(".production-os/browser-artifacts/home.png")
         )
 
     def test_request_check_accepts_browser_validation_contract(self):

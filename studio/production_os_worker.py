@@ -358,6 +358,24 @@ def _project_id(job_key: str) -> str:
     return "pos-" + digest
 
 
+def _execution_project_id(
+    payload: dict[str, Any],
+    *,
+    job_key: str,
+    repository: str,
+) -> str:
+    managed_project_id = str(
+        payload.get("managed_project_id")
+        or ""
+    ).strip()
+    if managed_project_id:
+        digest = hashlib.sha256(
+            (repository + "\0" + managed_project_id).encode("utf-8")
+        ).hexdigest()[:24]
+        return "mp-" + digest
+    return _project_id(job_key)
+
+
 def _app_name(repository: str) -> str:
     name = str(repository).rsplit("/", 1)[-1].lower()
     name = re.sub(r"[^a-z0-9_]+", "_", name).strip("_")
@@ -623,7 +641,11 @@ def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
         + _asset_forge_guidance(handoff)
     )[:24000]
     request = {
-        "id": _project_id(job_key),
+        "id": _execution_project_id(
+            payload,
+            job_key=job_key,
+            repository=repository,
+        ),
         "target_repo": repository,
         "app_name": _app_name(repository),
         "brief": brief,

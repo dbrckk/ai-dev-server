@@ -400,6 +400,58 @@ def _is_visual_handoff(handoff: dict[str, Any]) -> bool:
     return any(re.search(pattern, text) for pattern in patterns)
 
 
+def _retry_guidance(handoff: dict[str, Any]) -> str:
+    context = handoff.get("retry_context")
+    if not isinstance(context, dict):
+        return ""
+    parts = [" Previous autonomous attempt failed; use this verified failure context before changing code."]
+    summary = str(context.get("summary") or "").strip()
+    if summary:
+        parts.append(" Previous result: " + summary[:1200])
+    validation = context.get("validation")
+    if isinstance(validation, dict):
+        status = str(validation.get("status") or "").strip()
+        tests = validation.get("tests")
+        test_names = (
+            [str(item).strip()[:200] for item in tests if str(item).strip()][:12]
+            if isinstance(tests, list)
+            else []
+        )
+        if status or test_names:
+            parts.append(
+                " Validation: "
+                + (status[:120] or "unknown")
+                + ((" (" + ", ".join(test_names) + ")") if test_names else "")
+                + "."
+            )
+    ci = context.get("ci")
+    if isinstance(ci, dict):
+        route = " / ".join(
+            str(ci.get(key) or "").strip()[:240]
+            for key in ("workflow", "job", "step")
+            if str(ci.get(key) or "").strip()
+        )
+        conclusion = str(ci.get("conclusion") or ci.get("status") or "").strip()
+        excerpt = str(ci.get("log_excerpt") or "").strip()
+        if route or conclusion:
+            parts.append(
+                " CI failure: "
+                + (route or "unknown check")
+                + ((" / " + conclusion[:120]) if conclusion else "")
+                + "."
+            )
+        if excerpt:
+            parts.append(
+                " Relevant CI log excerpt:\n"
+                + excerpt[:6000]
+                + "\nEnd CI excerpt."
+            )
+    parts.append(
+        " Diagnose the root cause from this evidence, make the smallest correct fix, then rerun the relevant verification."
+    )
+    return "".join(parts)
+
+
 def _asset_forge_guidance(handoff: dict[str, Any]) -> str:
     candidates = handoff.get("reuse_candidates", [])
     if not isinstance(candidates, list):
@@ -469,7 +521,11 @@ def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
     if not all((repository, task, workflow_id, workflow_task_id, job_key)):
         raise ValueError("Production-OS job correlation is incomplete")
 
-    brief = (_brief(task, final_goal) + _asset_forge_guidance(handoff))[:24000]
+    brief = (
+        _brief(task, final_goal)
+        + _retry_guidance(handoff)
+        + _asset_forge_guidance(handoff)
+    )[:24000]
     request = {
         "id": _project_id(job_key),
         "target_repo": repository,

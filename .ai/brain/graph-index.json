@@ -22,6 +22,7 @@
         "studio/routing_history.py",
         "studio/stage_registry.py",
         "tests/test_journeys.py",
+        "tests/test_production_os_worker_runtime.py",
         "tests/test_studio.py",
         "tests/test_unified_routing_score.py"
       ],
@@ -237,7 +238,7 @@
         "tests/test_transport.py"
       ],
       "in_degree": 209,
-      "out_degree": 17,
+      "out_degree": 18,
       "path": "studio/core.py"
     },
     {
@@ -1380,6 +1381,28 @@
     },
     {
       "dependencies": [
+        "studio/atomic_file.py",
+        "studio/ci_diagnostics.py",
+        "studio/core.py",
+        "studio/file_lock.py",
+        "studio/github_runner.py",
+        "studio/omniroute_capacity.py",
+        "studio/stage_registry.py",
+        "tests/test_production_os_worker_runtime.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "tests/test_production_os_local_e2e.py",
+        "tests/test_production_os_worker.py",
+        "tests/test_production_os_worker_cli.py",
+        "tests/test_production_os_worker_runtime.py"
+      ],
+      "in_degree": 4,
+      "out_degree": 9,
+      "path": "studio/production_os_worker.py"
+    },
+    {
+      "dependencies": [
         "studio/atomic_file.py"
       ],
       "dependents": [
@@ -1440,27 +1463,6 @@
       "in_degree": 7,
       "out_degree": 5,
       "path": "studio/artifact_cas.py"
-    },
-    {
-      "dependencies": [
-        "studio/atomic_file.py",
-        "studio/ci_diagnostics.py",
-        "studio/core.py",
-        "studio/file_lock.py",
-        "studio/github_runner.py",
-        "studio/omniroute_capacity.py",
-        "studio/stage_registry.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "tests/test_production_os_local_e2e.py",
-        "tests/test_production_os_worker.py",
-        "tests/test_production_os_worker_cli.py",
-        "tests/test_production_os_worker_runtime.py"
-      ],
-      "in_degree": 4,
-      "out_degree": 8,
-      "path": "studio/production_os_worker.py"
     },
     {
       "dependencies": [
@@ -1870,6 +1872,23 @@
     },
     {
       "dependencies": [
+        "tests/test_production_os_worker_runtime.py"
+      ],
+      "dependents": [
+        "studio/artwork_capability.py",
+        "studio/godot_store_metadata_qa.py",
+        "studio/store_stage.py",
+        "tests/test_artwork_capability.py",
+        "tests/test_artwork_stage.py",
+        "tests/test_godot_store_metadata_qa.py",
+        "tests/test_store.py"
+      ],
+      "in_degree": 7,
+      "out_degree": 1,
+      "path": "studio/store_package.py"
+    },
+    {
+      "dependencies": [
         "studio/atomic_file.py",
         "tests/test_studio.py"
       ],
@@ -1986,26 +2005,9 @@
       "in_degree": 6,
       "out_degree": 2,
       "path": "studio/promoted_capabilities.py"
-    },
-    {
-      "dependencies": [
-        "studio/core.py",
-        "studio/stage_registry.py",
-        "tests/test_studio.py"
-      ],
-      "dependents": [
-        "studio/evolution_automerge.py",
-        "studio/evolution_pending.py",
-        "tests/test_evolution_automerge.py",
-        "tests/test_evolution_pending.py",
-        "tests/test_evolution_persist.py"
-      ],
-      "in_degree": 5,
-      "out_degree": 3,
-      "path": "studio/evolution_persist.py"
     }
   ],
-  "edge_count": 1803,
+  "edge_count": 1809,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 613,
   "schema_version": 1

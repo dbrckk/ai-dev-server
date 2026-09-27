@@ -15366,7 +15366,7 @@ def complete(self, payload: dict) -> dict | None
 ⋮----
 def fail(self, payload: dict) -> dict | None
 ⋮----
-secret = str(operator_token or "").strip()
+legacy_operator_token = str(operator_token or "").strip() or None
 ⋮----
 payload = {
 ⋮----

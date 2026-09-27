@@ -22,24 +22,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T11:08:20Z
+Generated: 2026-09-27T12:39:11Z
 
 ### Git
 - Branch: `main`
-- Head: `7499f56de86c`
-- Commit date: 2026-09-27T13:08:03+02:00
-- Commit: feat: enforce structured browser validation evidence
+- Head: `02e9f930a8af`
+- Commit date: 2026-09-27T14:39:00+02:00
+- Commit: feat: self-register workers through native sessions
 - Tracked files: 830
 
 ### Recently changed files
+- `studio/production_os_worker.py`
+- `tests/test_production_os_worker_cli.py`
+- `tests/test_production_os_worker_runtime.py`
 - `studio/core.py`
 - `studio/generic_policy.py`
 - `studio/generic_project.py`
 - `studio/github_runner.py`
 - `tests/test_browser_validation_contract.py`
 - `tests/test_production_os_result_contract.py`
-- `studio/production_os_worker.py`
-- `tests/test_production_os_worker_runtime.py`
 - `studio/generic_repository.py`
 - `tests/test_generic_repository_pull_request.py`
 - `tests/test_repository_branch_identity.py`

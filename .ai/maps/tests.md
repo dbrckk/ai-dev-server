@@ -8037,7 +8037,7 @@ class _Client
 ⋮----
 def __init__(self, base_url, token)
 ⋮----
-def register(self, worker_id, capabilities, operator_token)
+def register(self, worker_id, capabilities, operator_token=None)
 ⋮----
 class ProductionOSWorkerCLITests(unittest.TestCase)
 ⋮----
@@ -8061,7 +8061,7 @@ def test_main_runs_bounded_cycles_until_queue_is_idle(self)
 calls = []
 outcomes = iter([
 ⋮----
-def test_main_requires_all_control_plane_credentials(self)
+def test_main_requires_worker_token_but_not_operator_token(self)
 ⋮----
 def test_main_forwards_capacity_snapshot_to_worker_cycle(self)
 ⋮----
@@ -8184,6 +8184,20 @@ seen = []
 def opener(request, timeout)
 ⋮----
 job = client.claim(
+⋮----
+def test_client_register_uses_worker_token_by_default(self)
+⋮----
+def test_client_register_preserves_legacy_operator_registration(self)
+⋮----
+def test_worker_main_no_longer_requires_operator_token(self)
+⋮----
+calls = []
+⋮----
+class Client
+⋮----
+def register(self, worker_id, capabilities, operator_token=None)
+⋮----
+result = worker_main(
 ⋮----
 def test_managed_project_stages_share_branch_but_not_execution_id(self)
 ⋮----

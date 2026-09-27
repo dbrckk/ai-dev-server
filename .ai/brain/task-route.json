@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 3,
     "requested_max_files": 12,
-    "score_margin": 0,
+    "score_margin": 4,
     "tier": "narrow",
-    "top_score": 35
+    "top_score": 33
   },
   "cache": {
-    "fingerprint": "e148a2b4dd73710a20bd1afc3debad45e36ea2adfa926e7ea381cacbd9f4b981",
+    "fingerprint": "c388e145e4ad7bf5bc8a78ea07e691e6de53cc4e74848eb68d8c39f3029d383d",
     "hit": false
   },
-  "candidate_count": 218,
+  "candidate_count": 91,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -21,12 +21,45 @@
         "engine",
         "game"
       ],
-      "path": "tests/test_godot_android_stage.py",
+      "path": "tests/test_asset_forge_bridge.py",
       "reasons": [
-        "impact",
         "search-index"
       ],
-      "score": 35,
+      "score": 33,
+      "symbols": [
+        "test_3d_character_inference_enables_lods_for_primary_assets",
+        "test_3d_environment_inference_uses_environment_profile",
+        "test_asset_reuse_policy_is_primary_unique_secondary_reusable",
+        "test_batch_infers_animation_of_dependency",
+        "test_batch_infers_parent_asset_dependency",
+        "test_batch_preserves_explicit_asset_dependencies",
+        "test_brief_inference_builds_character_dependency_chain",
+        "test_brief_inference_detects_3d_character_without_2d_sprite_chain",
+        "test_brief_inference_detects_3d_environment",
+        "test_builds_production_os_dispatch_contract",
+        "test_engine_is_inferred_from_visual_instruction",
+        "test_explicit_secondary_importance_is_preserved",
+        "test_ignores_plain_code_task",
+        "test_premium_route_defaults_to_primary_importance",
+        "test_primary_3d_environment_requires_collision_readiness",
+        "test_primary_raster_batch_enables_optional_semantic_art_review",
+        "test_primary_raster_batch_uses_stricter_visual_similarity_policy",
+        "test_raster_quality_policy_can_be_overridden_per_task",
+        "test_route_includes_repository_delivery_target",
+        "test_routes_premium_visual_task"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine",
+        "game"
+      ],
+      "path": "tests/test_godot_android_stage.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 29,
       "symbols": [
         "FakeGitHub",
         "GodotAndroidStageTests",
@@ -45,10 +78,9 @@
       ],
       "path": "tests/test_godot_device_stage.py",
       "reasons": [
-        "impact",
         "search-index"
       ],
-      "score": 35,
+      "score": 29,
       "symbols": [
         "FakeGitHub",
         "GodotDeviceStageTests",
@@ -61,28 +93,6 @@
         "test_missing_local_apk_is_reexported_and_rebound",
         "test_requires_android_export_checkpoint",
         "validator"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine",
-        "game"
-      ],
-      "path": "tests/test_godot_runtime_journey_stage.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 35,
-      "symbols": [
-        "FakeGitHub",
-        "GodotRuntimeJourneyStageTests",
-        "installer",
-        "runner",
-        "test_all_journeys_advance_only_to_visual_qa",
-        "test_partial_success_stays_on_journey_stage",
-        "test_requires_device_validated_checkpoint"
       ]
     }
   ],

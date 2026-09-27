@@ -1865,6 +1865,7 @@ jobs:
       PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
       PRODUCTION_OS_WORKER_TOKEN: ${{ secrets.PRODUCTION_OS_WORKER_TOKEN }}
       PRODUCTION_OS_WORKER_ID: github-actions-worker
+      PRODUCTION_OS_WORKER_SPECIALTIES: mobile
       STUDIO_GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
       STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
       STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
@@ -1911,6 +1912,40 @@ jobs:
 
       - name: Install autonomous coding agent
         run: npm install -g opencode-ai
+
+      - name: Prepare native mobile validation runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${ANDROID_HOME:?ANDROID_HOME must be set}"
+          android_paths=(
+            "$ANDROID_HOME/platform-tools"
+            "$ANDROID_HOME/cmdline-tools/latest/bin"
+            "$ANDROID_HOME/emulator"
+          )
+          for dir in "${android_paths[@]}"; do
+            echo "$dir" >> "$GITHUB_PATH"
+          done
+          export PATH="$(IFS=:; echo "${android_paths[*]}"):$PATH"
+
+          missing=()
+          for name in adb sdkmanager avdmanager emulator; do
+            command -v "$name" >/dev/null 2>&1 || missing+=("$name")
+          done
+          if (( ${#missing[@]} )); then
+            echo "Android tools missing (${missing[*]}), using bounded bootstrap"
+            bash scripts/bootstrap-android-ci.sh
+            export PATH="$(IFS=:; echo "${android_paths[*]}"):$PATH"
+          fi
+
+          for name in adb sdkmanager avdmanager emulator; do
+            command -v "$name"
+          done
+          test -e /dev/kvm
+          sudo chmod 666 /dev/kvm
+          test -r /dev/kvm
+          test -w /dev/kvm
+          emulator -accel-check
 
       - name: Process one Production-OS job
         env:
@@ -20516,6 +20551,10 @@ digest = hashlib.sha256(str(job_key).encode("utf-8")).hexdigest()[:24]
 ⋮----
 managed_project_id = str(
 ⋮----
+kind = str(
+generation = str(
+identity = repository + "\0" + managed_project_id
+⋮----
 digest = hashlib.sha256(
 ⋮----
 def _app_name(repository: str) -> str
@@ -32195,6 +32234,8 @@ def test_actions_worker_polls_production_os_on_schedule()
 ⋮----
 def test_actions_worker_uses_existing_secure_credentials()
 ⋮----
+def test_actions_worker_enables_real_mobile_specialist_runtime()
+⋮----
 def test_actions_worker_is_single_flight_and_bounded()
 ````
 
@@ -32470,6 +32511,17 @@ first_request = build_studio_request(first)
 second_request = build_studio_request(second)
 ⋮----
 def test_different_managed_projects_do_not_share_repository_branch(self)
+⋮----
+def test_rollback_generation_uses_fresh_branch_identity(self)
+⋮----
+normal = sample_job()
+⋮----
+rollback = sample_job()
+⋮----
+normal_request = build_studio_request(normal)
+rollback_request = build_studio_request(rollback)
+⋮----
+def test_rollback_generations_do_not_share_branch(self)
 ⋮----
 def test_non_managed_job_keeps_job_scoped_identity_without_branch_override(self)
 ⋮----

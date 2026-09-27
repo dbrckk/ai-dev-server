@@ -15483,6 +15483,10 @@ digest = hashlib.sha256(str(job_key).encode("utf-8")).hexdigest()[:24]
 ⋮----
 managed_project_id = str(
 ⋮----
+kind = str(
+generation = str(
+identity = repository + "\0" + managed_project_id
+⋮----
 digest = hashlib.sha256(
 ⋮----
 def _app_name(repository: str) -> str

@@ -7992,6 +7992,8 @@ def test_actions_worker_polls_production_os_on_schedule()
 ⋮----
 def test_actions_worker_uses_existing_secure_credentials()
 ⋮----
+def test_actions_worker_enables_real_mobile_specialist_runtime()
+⋮----
 def test_actions_worker_is_single_flight_and_bounded()
 ```
 
@@ -8267,6 +8269,17 @@ first_request = build_studio_request(first)
 second_request = build_studio_request(second)
 ⋮----
 def test_different_managed_projects_do_not_share_repository_branch(self)
+⋮----
+def test_rollback_generation_uses_fresh_branch_identity(self)
+⋮----
+normal = sample_job()
+⋮----
+rollback = sample_job()
+⋮----
+normal_request = build_studio_request(normal)
+rollback_request = build_studio_request(rollback)
+⋮----
+def test_rollback_generations_do_not_share_branch(self)
 ⋮----
 def test_non_managed_job_keeps_job_scoped_identity_without_branch_override(self)
 ⋮----

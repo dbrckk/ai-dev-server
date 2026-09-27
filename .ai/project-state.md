@@ -22,27 +22,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T14:59:20Z
+Generated: 2026-09-27T15:16:56Z
 
 ### Git
 - Branch: `main`
-- Head: `55d1dc8bbfcd`
-- Commit date: 2026-09-27T16:59:00+02:00
-- Commit: feat: add Android emulator UI validation specialist
+- Head: `694936b972f7`
+- Commit date: 2026-09-27T17:16:28+02:00
+- Commit: fix: start rollback generations from fresh branches
 - Tracked files: 831
 
 ### Recently changed files
+- `studio/production_os_worker.py`
+- `tests/test_production_os_worker_runtime.py`
+- `.github/workflows/production-os-actions-worker.yml`
+- `tests/test_production_os_actions_worker_workflow.py`
 - `studio/core.py`
 - `studio/generic_policy.py`
 - `studio/generic_project.py`
 - `studio/github_runner.py`
-- `studio/production_os_worker.py`
 - `tests/test_mobile_validation_contract.py`
 - `tests/test_production_os_result_contract.py`
-- `.github/workflows/production-os-actions-worker.yml`
 - `tests/test_browser_validation_contract.py`
-- `tests/test_production_os_worker_cli.py`
-- `tests/test_production_os_worker_runtime.py`
 
 ### Project signals
 - No common build descriptor detected

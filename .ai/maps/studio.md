@@ -15211,13 +15211,17 @@ BASE_WORKER_CAPABILITIES = [
 ⋮----
 SPECIALIST_CAPABILITIES = {
 ⋮----
-def _asset_forge_operational_status(environ=None) -> dict | None
-⋮----
-executable = shutil.which("asset-forge")
+def _browser_validation_operational(environ=None) -> bool
 ⋮----
 env = dict(os.environ)
 ⋮----
+probe = (
+⋮----
 completed = subprocess.run(
+⋮----
+def _asset_forge_operational_status(environ=None) -> dict | None
+⋮----
+executable = shutil.which("asset-forge")
 ⋮----
 payload = json.loads(completed.stdout)
 ⋮----

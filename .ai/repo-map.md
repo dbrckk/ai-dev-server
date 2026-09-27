@@ -20243,13 +20243,17 @@ BASE_WORKER_CAPABILITIES = [
 ⋮----
 SPECIALIST_CAPABILITIES = {
 ⋮----
-def _asset_forge_operational_status(environ=None) -> dict | None
-⋮----
-executable = shutil.which("asset-forge")
+def _browser_validation_operational(environ=None) -> bool
 ⋮----
 env = dict(os.environ)
 ⋮----
+probe = (
+⋮----
 completed = subprocess.run(
+⋮----
+def _asset_forge_operational_status(environ=None) -> dict | None
+⋮----
+executable = shutil.which("asset-forge")
 ⋮----
 payload = json.loads(completed.stdout)
 ⋮----
@@ -32130,6 +32134,14 @@ stderr = ""
 def test_worker_capabilities_add_requested_specialties(self)
 ⋮----
 caps = worker_capabilities({
+⋮----
+def test_browser_specialty_requires_operational_playwright(self)
+⋮----
+completed = type("Completed", (), {"returncode": 0})()
+⋮----
+def test_browser_specialty_is_not_advertised_when_probe_fails(self)
+⋮----
+completed = type("Completed", (), {"returncode": 1})()
 ⋮----
 def test_worker_capabilities_reject_unknown_specialty(self)
 ⋮----

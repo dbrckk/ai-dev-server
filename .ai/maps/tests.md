@@ -8121,6 +8121,14 @@ def test_worker_capabilities_add_requested_specialties(self)
 ⋮----
 caps = worker_capabilities({
 ⋮----
+def test_browser_specialty_requires_operational_playwright(self)
+⋮----
+completed = type("Completed", (), {"returncode": 0})()
+⋮----
+def test_browser_specialty_is_not_advertised_when_probe_fails(self)
+⋮----
+completed = type("Completed", (), {"returncode": 1})()
+⋮----
 def test_worker_capabilities_reject_unknown_specialty(self)
 ⋮----
 def test_client_rejects_insecure_remote_control_plane(self)

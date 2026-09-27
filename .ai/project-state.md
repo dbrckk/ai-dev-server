@@ -22,32 +22,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T09:44:01Z
+Generated: 2026-09-27T10:14:38Z
 
 ### Git
 - Branch: `main`
-- Head: `c0883619ab4e`
-- Commit date: 2026-09-27T11:43:51+02:00
-- Commit: feat: keep managed project work on one pull request
+- Head: `389c253e0a40`
+- Commit date: 2026-09-27T12:13:33+02:00
+- Commit: fix: probe Playwright before advertising browser validation
 - Tracked files: 829
 
 ### Recently changed files
+- `studio/production_os_worker.py`
+- `tests/test_production_os_worker_runtime.py`
 - `studio/generic_project.py`
 - `studio/generic_repository.py`
 - `studio/github_runner.py`
 - `tests/test_generic_repository_pull_request.py`
 - `studio/core.py`
-- `studio/production_os_worker.py`
-- `tests/test_production_os_worker_runtime.py`
 - `tests/test_repository_branch_identity.py`
-- `studio/capability_registry_review.py`
-- `studio/capability_review.py`
-- `studio/ci_diagnostics.py`
-- `studio/github_pr_gate.py`
-- `tests/test_capability_registry_review.py`
-- `tests/test_capability_review.py`
-- `tests/test_ci_diagnostics.py`
-- `tests/test_production_os_result_contract.py`
 
 ### Project signals
 - No common build descriptor detected

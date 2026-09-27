@@ -1,20 +1,18 @@
 # Change impact
 
-Base: bcaff9add4ddb4bf1912868e0d9a896bd32d5cfd
-Head: c0883619ab4e9ea41d538e56b2a90f859d246c67
+Base: 45f2420c55da51b7318b26aa487497cfebe21dfa
+Head: 389c253e0a409a25b18eb36dda8523cdfd3931d6
 
 ## Changed files
-- M studio/generic_project.py
-- M studio/generic_repository.py
-- M studio/github_runner.py
-- A tests/test_generic_repository_pull_request.py
+- M studio/production_os_worker.py
+- M tests/test_production_os_worker_runtime.py
 
 ## Affected areas
 - studio
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_production_os_worker.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

@@ -9,7 +9,7 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 from core import StudioError, request_check
-from generic_project import _run_mobile_validation
+from generic_project import _run_mobile_validation, _verify_android_emulator_evidence
 from generic_policy import editable
 from production_os_worker import worker_capabilities
 
@@ -89,7 +89,17 @@ class MobileValidationContractTests(unittest.TestCase):
             work.mkdir()
             self._write_script(work)
 
-            result = _run_mobile_validation(request(), work, out)
+            with patch(
+                "generic_project._verify_android_emulator_evidence",
+                return_value={
+                    "passed":True,
+                    "reason":None,
+                    "device_state_verified":True,
+                    "package_installed_verified":True,
+                    "activity_visible_verified":True,
+                },
+            ):
+                result = _run_mobile_validation(request(), work, out)
 
             self.assertTrue(result["passed"])
             self.assertEqual(result["device_serial"], "emulator-5554")
@@ -113,6 +123,51 @@ class MobileValidationContractTests(unittest.TestCase):
 
             self.assertFalse(result["passed"])
             self.assertEqual(result["reason"], "mobile-fatal-errors")
+
+    def test_android_emulator_evidence_requires_real_emulator_identity(self):
+        result = _verify_android_emulator_evidence(
+            Path("."),
+            device_serial="physical-device-123",
+            package_name="com.example.app",
+            activity="com.example.app/.MainActivity",
+        )
+        self.assertFalse(result["passed"])
+        self.assertEqual(
+            result["reason"],
+            "mobile-adb-identity-invalid",
+        )
+
+    def test_android_emulator_evidence_verifies_device_package_and_activity(self):
+        responses = [
+            {
+                "passed":True,
+                "log_tail":"device",
+            },
+            {
+                "passed":True,
+                "log_tail":"package:/data/app/com.example.app/base.apk",
+            },
+            {
+                "passed":True,
+                "log_tail":"mResumedActivity: com.example.app/.MainActivity",
+            },
+        ]
+        with patch(
+            "generic_project.run_command",
+            side_effect=responses,
+        ) as command:
+            result = _verify_android_emulator_evidence(
+                Path("."),
+                device_serial="emulator-5554",
+                package_name="com.example.app",
+                activity="com.example.app/.MainActivity",
+            )
+
+        self.assertTrue(result["passed"])
+        self.assertTrue(result["device_state_verified"])
+        self.assertTrue(result["package_installed_verified"])
+        self.assertTrue(result["activity_visible_verified"])
+        self.assertEqual(command.call_count, 3)
 
     def test_mobile_specialty_requires_android_toolchain_probe(self):
         completed = type("Completed", (), {"returncode": 0})()

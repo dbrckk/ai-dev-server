@@ -217,6 +217,7 @@
         "tests/test_journeys.py",
         "tests/test_jumpy_v13_migration.py",
         "tests/test_local_api_security.py",
+        "tests/test_mobile_validation_contract.py",
         "tests/test_multi_engine_orchestrator.py",
         "tests/test_orchestrator.py",
         "tests/test_patch_safety_rebuild.py",
@@ -237,7 +238,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 209,
+      "in_degree": 210,
       "out_degree": 18,
       "path": "studio/core.py"
     },
@@ -425,9 +426,10 @@
         "studio/generic_smoke.py",
         "studio/multi_engine_orchestrator.py",
         "tests/test_browser_validation_contract.py",
-        "tests/test_generic_architecture.py"
+        "tests/test_generic_architecture.py",
+        "tests/test_mobile_validation_contract.py"
       ],
-      "in_degree": 4,
+      "in_degree": 5,
       "out_degree": 63,
       "path": "studio/generic_project.py"
     },
@@ -1336,6 +1338,29 @@
     },
     {
       "dependencies": [
+        "studio/atomic_file.py",
+        "studio/ci_diagnostics.py",
+        "studio/core.py",
+        "studio/file_lock.py",
+        "studio/github_runner.py",
+        "studio/omniroute_capacity.py",
+        "studio/stage_registry.py",
+        "tests/test_production_os_worker_runtime.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "tests/test_mobile_validation_contract.py",
+        "tests/test_production_os_local_e2e.py",
+        "tests/test_production_os_worker.py",
+        "tests/test_production_os_worker_cli.py",
+        "tests/test_production_os_worker_runtime.py"
+      ],
+      "in_degree": 5,
+      "out_degree": 9,
+      "path": "studio/production_os_worker.py"
+    },
+    {
+      "dependencies": [
         "studio/core.py",
         "studio/engine_patch.py",
         "studio/journeys.py",
@@ -1378,28 +1403,6 @@
       "in_degree": 10,
       "out_degree": 3,
       "path": "studio/durable_state.py"
-    },
-    {
-      "dependencies": [
-        "studio/atomic_file.py",
-        "studio/ci_diagnostics.py",
-        "studio/core.py",
-        "studio/file_lock.py",
-        "studio/github_runner.py",
-        "studio/omniroute_capacity.py",
-        "studio/stage_registry.py",
-        "tests/test_production_os_worker_runtime.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "tests/test_production_os_local_e2e.py",
-        "tests/test_production_os_worker.py",
-        "tests/test_production_os_worker_cli.py",
-        "tests/test_production_os_worker_runtime.py"
-      ],
-      "in_degree": 4,
-      "out_degree": 9,
-      "path": "studio/production_os_worker.py"
     },
     {
       "dependencies": [
@@ -2007,8 +2010,8 @@
       "path": "studio/promoted_capabilities.py"
     }
   ],
-  "edge_count": 1809,
+  "edge_count": 1813,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 613,
+  "node_count": 614,
   "schema_version": 1
 }

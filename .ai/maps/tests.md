@@ -245,6 +245,7 @@ test_memory_lifecycle.py
 test_meta_router.py
 test_mobile_studio_provider_fallbacks.py
 test_mobile_studio_runtime_triggers.py
+test_mobile_validation_contract.py
 test_model_portfolio_audit.py
 test_model_portfolio_learning.py
 test_model_portfolio.py
@@ -7137,6 +7138,60 @@ class MobileStudioRuntimeTriggerTests(unittest.TestCase)
 def test_runtime_changes_retrigger_autonomous_mobile_studio(self)
 ⋮----
 text = WORKFLOW.read_text(encoding="utf-8")
+```
+
+## File: test_mobile_validation_contract.py
+```python
+CONTRACT = {
+⋮----
+def request()
+⋮----
+class MobileValidationContractTests(unittest.TestCase)
+⋮----
+def _write_script(self, root: Path, *, fatal_errors=None)
+⋮----
+script = root / ".production-os" / "mobile_validate.py"
+⋮----
+payload = {
+png = (
+⋮----
+def test_mobile_runtime_artifacts_are_not_publishable(self)
+⋮----
+def test_request_check_accepts_mobile_contract(self)
+⋮----
+checked = request_check(request())
+⋮----
+def test_request_check_rejects_mutated_mobile_contract(self)
+⋮----
+value = request()
+⋮----
+def test_mobile_validation_accepts_structured_emulator_evidence(self)
+⋮----
+root = Path(td)
+work = root / "work"
+out = root / "out"
+⋮----
+result = _run_mobile_validation(request(), work, out)
+⋮----
+def test_mobile_validation_fails_on_fatal_errors(self)
+⋮----
+result = _run_mobile_validation(
+⋮----
+def test_android_emulator_evidence_requires_real_emulator_identity(self)
+⋮----
+result = _verify_android_emulator_evidence(
+⋮----
+def test_android_emulator_evidence_verifies_device_package_and_activity(self)
+⋮----
+responses = [
+⋮----
+def test_mobile_specialty_requires_android_toolchain_probe(self)
+⋮----
+completed = type("Completed", (), {"returncode": 0})()
+⋮----
+caps = worker_capabilities({
+⋮----
+def test_mobile_specialty_is_not_advertised_without_emulator(self)
 ```
 
 ## File: test_model_portfolio_audit.py

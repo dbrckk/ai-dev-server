@@ -1,16 +1,24 @@
 # Change impact
 
-Base: ae09bd2fe92d278c6efbd5c12d28b1df41295a03
-Head: 3b822a29901250358d45aa23602a9357012fa508
+Base: 6d61f501cea3e8856834ed8133e22674e9825744
+Head: 55d1dc8bbfcdbba6930925a452fb01d36b809814
 
 ## Changed files
-- M .github/workflows/production-os-actions-worker.yml
+- M studio/core.py
+- M studio/generic_policy.py
+- M studio/generic_project.py
+- M studio/github_runner.py
+- M studio/production_os_worker.py
+- A tests/test_mobile_validation_contract.py
+- M tests/test_production_os_result_contract.py
 
 ## Affected areas
-- .github
+- studio
+- tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_generic_policy.py
+- tests/test_production_os_worker.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

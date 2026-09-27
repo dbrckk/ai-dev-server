@@ -1,15 +1,15 @@
 # Repo Brain
 
 - Index mode: incremental
-- Files indexed: 626
-- Files reparsed this run: 0
-- Symbols: 4408
-- Internal import edges: 1263
-- Impacted files: 0
-- Selected tests: 0
+- Files indexed: 627
+- Files reparsed this run: 7
+- Symbols: 4424
+- Internal import edges: 1267
+- Impacted files: 176
+- Selected tests: 63
 
 ## Languages
-- python: 623 files
+- python: 624 files
 - gdscript: 3 files
 
 ## Highest-density symbol files
@@ -20,7 +20,7 @@
 - tests/test_architecture_reputation_policy_migration.py: 44 symbols
 - tests/test_architecture_replacement_planner.py: 42 symbols
 - tests/test_journeys.py: 41 symbols
-- studio/production_os_worker.py: 37 symbols
+- studio/production_os_worker.py: 38 symbols
 - studio/core.py: 32 symbols
 - tests/test_architecture_reputation_policy_approval.py: 32 symbols
 - tests/test_orchestrator.py: 30 symbols
@@ -43,10 +43,10 @@
 ## ast-grep enrichment
 - ast-grep outline: available
 - AST index mode: incremental
-- AST files reparsed this run: 0
-- outline files retained: 622
-- top-level items retained: 6471
-- direct members retained: 2160
+- AST files reparsed this run: 7
+- outline files retained: 623
+- top-level items retained: 6489
+- direct members retained: 2170
 - symbol shards: 26
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard
 

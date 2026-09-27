@@ -22,26 +22,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T13:08:54Z
+Generated: 2026-09-27T14:59:20Z
 
 ### Git
 - Branch: `main`
-- Head: `3b822a299012`
-- Commit date: 2026-09-27T15:08:38+02:00
-- Commit: fix: remove operator token from Actions bootstrap
-- Tracked files: 830
+- Head: `55d1dc8bbfcd`
+- Commit date: 2026-09-27T16:59:00+02:00
+- Commit: feat: add Android emulator UI validation specialist
+- Tracked files: 831
 
 ### Recently changed files
-- `.github/workflows/production-os-actions-worker.yml`
-- `studio/generic_project.py`
-- `tests/test_browser_validation_contract.py`
-- `studio/production_os_worker.py`
-- `tests/test_production_os_worker_cli.py`
-- `tests/test_production_os_worker_runtime.py`
 - `studio/core.py`
 - `studio/generic_policy.py`
+- `studio/generic_project.py`
 - `studio/github_runner.py`
+- `studio/production_os_worker.py`
+- `tests/test_mobile_validation_contract.py`
 - `tests/test_production_os_result_contract.py`
+- `.github/workflows/production-os-actions-worker.yml`
+- `tests/test_browser_validation_contract.py`
+- `tests/test_production_os_worker_cli.py`
+- `tests/test_production_os_worker_runtime.py`
 
 ### Project signals
 - No common build descriptor detected

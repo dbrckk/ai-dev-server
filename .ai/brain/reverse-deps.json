@@ -1605,6 +1605,7 @@
         "tests/test_journeys.py",
         "tests/test_jumpy_v13_migration.py",
         "tests/test_local_api_security.py",
+        "tests/test_mobile_validation_contract.py",
         "tests/test_multi_engine_orchestrator.py",
         "tests/test_orchestrator.py",
         "tests/test_patch_safety_rebuild.py",
@@ -1625,7 +1626,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 209,
+      "in_degree": 210,
       "out_degree": 18
     },
     "studio/cost_drift.py": {
@@ -2259,9 +2260,10 @@
         "studio/generic_repository.py",
         "studio/project_engine.py",
         "tests/test_browser_validation_contract.py",
-        "tests/test_generic_policy.py"
+        "tests/test_generic_policy.py",
+        "tests/test_mobile_validation_contract.py"
       ],
-      "in_degree": 6,
+      "in_degree": 7,
       "out_degree": 0
     },
     "studio/generic_project.py": {
@@ -2334,9 +2336,10 @@
         "studio/generic_smoke.py",
         "studio/multi_engine_orchestrator.py",
         "tests/test_browser_validation_contract.py",
-        "tests/test_generic_architecture.py"
+        "tests/test_generic_architecture.py",
+        "tests/test_mobile_validation_contract.py"
       ],
-      "in_degree": 4,
+      "in_degree": 5,
       "out_degree": 63
     },
     "studio/generic_repository.py": {
@@ -3771,12 +3774,13 @@
         "tests/test_unified_routing_score.py"
       ],
       "dependents": [
+        "tests/test_mobile_validation_contract.py",
         "tests/test_production_os_local_e2e.py",
         "tests/test_production_os_worker.py",
         "tests/test_production_os_worker_cli.py",
         "tests/test_production_os_worker_runtime.py"
       ],
-      "in_degree": 4,
+      "in_degree": 5,
       "out_degree": 9
     },
     "studio/project_budget.py": {
@@ -6629,6 +6633,17 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 1
+    },
+    "tests/test_mobile_validation_contract.py": {
+      "dependencies": [
+        "studio/core.py",
+        "studio/generic_policy.py",
+        "studio/generic_project.py",
+        "studio/production_os_worker.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 4
     },
     "tests/test_model_portfolio.py": {
       "dependencies": [

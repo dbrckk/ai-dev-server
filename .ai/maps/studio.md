@@ -6131,6 +6131,8 @@ asset_forge = contracts.get('asset_forge')
 ⋮----
 browser_validation = contracts.get('browser_validation')
 ⋮----
+mobile_validation = contracts.get('mobile_validation')
+⋮----
 publish = data['play_publish']
 ⋮----
 enabled = publish.get('enabled', False)
@@ -8926,6 +8928,62 @@ reason = "browser-page-errors"
 ⋮----
 reason = "browser-validation-failed"
 ⋮----
+def _mobile_validation_contract(req: dict) -> dict | None
+⋮----
+contract = contracts.get("mobile_validation")
+⋮----
+serial = str(device_serial or "").strip()
+package = str(package_name or "").strip()
+target_activity = str(activity or "").strip()
+⋮----
+state = run_command(
+state_ok = (
+⋮----
+installed = run_command(
+installed_ok = (
+⋮----
+foreground = run_command(
+foreground_text = str(foreground.get("log_tail") or "")
+foreground_ok = (
+⋮----
+passed = state_ok and installed_ok and foreground_ok
+⋮----
+def _run_mobile_validation(req: dict, work: Path, out: Path) -> dict | None
+⋮----
+contract = _mobile_validation_contract(req)
+⋮----
+report_error = "mobile-validation-report-not-object"
+⋮----
+report_error = "mobile-validation-report-invalid-json"
+⋮----
+report_error = "mobile-validation-report-missing"
+⋮----
+fatal_errors = []
+package_name = None
+activity = None
+device_serial = None
+⋮----
+package_name = str(report.get("package_name") or "").strip()[:240] or None
+activity = str(report.get("activity") or "").strip()[:500] or None
+device_serial = str(report.get("device_serial") or "").strip()[:240] or None
+raw_fatal = report.get("fatal_errors")
+⋮----
+fatal_errors = (
+⋮----
+report_error = "mobile-validation-report-contract-invalid"
+⋮----
+adb_verification = _verify_android_emulator_evidence(
+⋮----
+evidence_root = out / "mobile-validation"
+⋮----
+reason = "mobile-validation-script-failed"
+⋮----
+reason = "mobile-fatal-errors"
+⋮----
+reason = str(
+⋮----
+reason = "mobile-validation-failed"
+⋮----
 def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict
 ⋮----
 github = GitHub(req["target_repo"])
@@ -9278,6 +9336,7 @@ complete = review.get("complete") is True and verification.get("passed") is True
 browser_validation = _run_browser_validation(req, work, out)
 ⋮----
 complete = False
+mobile_validation = _run_mobile_validation(req, work, out)
 ⋮----
 review_provider = review_model.get("provider")
 ⋮----
@@ -9354,6 +9413,8 @@ drift_decision = drift_detector.decision()
 remaining_items = review.get("remaining")
 ⋮----
 browser_reason = str(
+⋮----
+mobile_reason = str(
 ⋮----
 base_sha = repo.publish(base_sha, work, "Autonomous generic project round " + str(round_index))
 ⋮----
@@ -10753,6 +10814,19 @@ execution = browser_validation.get("execution")
 browser_validation = {
 ⋮----
 browser_validation = None
+⋮----
+mobile_validation = summary.get("mobile_validation")
+⋮----
+mobile_validation = summary_evidence.get("mobile_validation")
+⋮----
+normalized_mobile = {
+adb_verification = mobile_validation.get("adb_verification")
+⋮----
+execution = mobile_validation.get("execution")
+⋮----
+mobile_validation = {
+⋮----
+mobile_validation = None
 ⋮----
 envelope = {
 ⋮----
@@ -15327,6 +15401,13 @@ env = dict(os.environ)
 probe = (
 ⋮----
 completed = subprocess.run(
+⋮----
+def _mobile_validation_operational(environ=None) -> bool
+⋮----
+required = ("adb", "emulator", "sdkmanager", "avdmanager")
+resolved = [shutil.which(name, path=env.get("PATH")) for name in required]
+⋮----
+probes = (
 ⋮----
 def _asset_forge_operational_status(environ=None) -> dict | None
 ⋮----

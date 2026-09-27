@@ -358,6 +358,23 @@ def _project_id(job_key: str) -> str:
     return "pos-" + digest
 
 
+def _repository_branch_id(
+    payload: dict[str, Any],
+    *,
+    repository: str,
+) -> str | None:
+    managed_project_id = str(
+        payload.get("managed_project_id")
+        or ""
+    ).strip()
+    if not managed_project_id:
+        return None
+    digest = hashlib.sha256(
+        (repository + "\0" + managed_project_id).encode("utf-8")
+    ).hexdigest()[:24]
+    return "mp-" + digest
+
+
 def _app_name(repository: str) -> str:
     name = str(repository).rsplit("/", 1)[-1].lower()
     name = re.sub(r"[^a-z0-9_]+", "_", name).strip("_")
@@ -633,6 +650,12 @@ def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
             "workflow_task_id": workflow_task_id,
         },
     }
+    repository_branch_id = _repository_branch_id(
+        payload,
+        repository=repository,
+    )
+    if repository_branch_id is not None:
+        request["repository_branch_id"] = repository_branch_id
     tool_contracts = handoff.get("tool_contracts")
     if isinstance(tool_contracts, dict) and tool_contracts:
         request["tool_contracts"] = dict(tool_contracts)

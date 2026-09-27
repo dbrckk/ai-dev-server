@@ -42,7 +42,7 @@ def request_check(data):
     if not isinstance(data, dict):
         raise StudioError('Request must be an object')
     required = {'id', 'target_repo', 'app_name', 'brief', 'enabled'}
-    if set(data) - (required | {'max_rounds', 'max_calls', 'max_cycles', 'priority', 'play_publish', 'max_project_model_calls', 'max_project_repair_calls', 'max_api_cost_usd', 'production_os', 'agent_preference', 'tool_contracts'}) or not required <= set(data):
+    if set(data) - (required | {'max_rounds', 'max_calls', 'max_cycles', 'priority', 'play_publish', 'max_project_model_calls', 'max_project_repair_calls', 'max_api_cost_usd', 'production_os', 'agent_preference', 'tool_contracts', 'repository_branch_id'}) or not required <= set(data):
         raise StudioError('Invalid request fields')
     if not isinstance(data['enabled'], bool):
         raise StudioError('enabled must be boolean')
@@ -51,6 +51,14 @@ def request_check(data):
             raise StudioError('Invalid ' + key)
     if not isinstance(data['brief'], str) or not 20 <= len(data['brief']) <= 24000:
         raise StudioError('brief must contain 20..24000 characters')
+    if 'repository_branch_id' in data:
+        branch_id = data['repository_branch_id']
+        if (
+            not isinstance(branch_id, str)
+            or not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,47}', branch_id)
+        ):
+            raise StudioError('Invalid repository_branch_id')
+        data['repository_branch_id'] = branch_id
     for key, default, maximum in [('max_rounds', 3, 6), ('max_calls', 12, 30), ('max_cycles', 5, 10)]:
         val = data.get(key, default)
         if type(val) is not int or not 1 <= val <= maximum:

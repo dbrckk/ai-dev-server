@@ -280,6 +280,51 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         )
 
 
+    def test_rollback_generation_uses_fresh_branch_identity(self):
+        normal = sample_job()
+        normal["payload"]["managed_project_id"] = "managed-1234"
+        normal["payload"]["managed_project_generation"] = 1
+        normal["payload"]["managed_project_kind"] = "initial"
+
+        rollback = sample_job()
+        rollback["key"] = "job-rollback"
+        rollback["payload"]["managed_project_id"] = "managed-1234"
+        rollback["payload"]["managed_project_generation"] = 2
+        rollback["payload"]["managed_project_kind"] = "rollback"
+
+        normal_request = build_studio_request(normal)
+        rollback_request = build_studio_request(rollback)
+
+        self.assertTrue(
+            normal_request["repository_branch_id"].startswith("mp-")
+        )
+        self.assertTrue(
+            rollback_request["repository_branch_id"].startswith("rb-")
+        )
+        self.assertNotEqual(
+            normal_request["repository_branch_id"],
+            rollback_request["repository_branch_id"],
+        )
+
+
+    def test_rollback_generations_do_not_share_branch(self):
+        first = sample_job()
+        first["payload"]["managed_project_id"] = "managed-1234"
+        first["payload"]["managed_project_generation"] = 2
+        first["payload"]["managed_project_kind"] = "rollback"
+
+        second = sample_job()
+        second["key"] = "job-rollback-2"
+        second["payload"]["managed_project_id"] = "managed-1234"
+        second["payload"]["managed_project_generation"] = 3
+        second["payload"]["managed_project_kind"] = "rollback"
+
+        self.assertNotEqual(
+            build_studio_request(first)["repository_branch_id"],
+            build_studio_request(second)["repository_branch_id"],
+        )
+
+
     def test_non_managed_job_keeps_job_scoped_identity_without_branch_override(self):
         first = sample_job()
         second = sample_job()

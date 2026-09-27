@@ -6,6 +6,7 @@ import shutil
 import sys
 import time
 from pathlib import Path
+from urllib.parse import urlparse
 
 from core import StudioError, canonical
 from generic_model import ask
@@ -224,6 +225,20 @@ def _browser_validation_contract(req: dict) -> dict | None:
     return contract if isinstance(contract, dict) else None
 
 
+def _valid_browser_test_url(value: str | None) -> bool:
+    text = str(value or "").strip()
+    if not text:
+        return False
+    try:
+        parsed = urlparse(text)
+    except ValueError:
+        return False
+    if parsed.scheme not in {"http", "https"}:
+        return False
+    host = (parsed.hostname or "").strip().lower()
+    return host in {"localhost", "127.0.0.1", "::1"}
+
+
 def _valid_browser_screenshot(path: Path) -> bool:
     try:
         size = path.stat().st_size
@@ -309,6 +324,7 @@ def _run_browser_validation(req: dict, work: Path, out: Path) -> dict | None:
     tested_url = None
     if isinstance(report, dict):
         tested_url = str(report.get("url") or "").strip()[:2000] or None
+        tested_url_valid = _valid_browser_test_url(tested_url)
         raw_console = report.get("console_errors")
         raw_page = report.get("page_errors")
         raw_screenshots = report.get("screenshots")
@@ -338,7 +354,7 @@ def _run_browser_validation(req: dict, work: Path, out: Path) -> dict | None:
         valid_report = (
             report.get("schema_version")
             == str(contract.get("report_schema") or "")
-            and tested_url is not None
+            and tested_url_valid
             and isinstance(raw_console, list)
             and isinstance(raw_page, list)
             and bool(screenshots)

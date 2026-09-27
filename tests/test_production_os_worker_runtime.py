@@ -246,16 +246,8 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             "Bearer worker-secret",
         )
         self.assertEqual(
-            seen[0]["url"],
-            "http://127.0.0.1:8787/v1/workers/session",
-        )
-        self.assertEqual(
             seen[0]["body"]["worker_id"],
             "ai-dev-1",
-        )
-        self.assertEqual(
-            seen[0]["body"]["active_job_keys"],
-            [],
         )
 
         client = ProductionOSClient(
@@ -296,8 +288,16 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             "Bearer worker-secret",
         )
         self.assertEqual(
+            seen[0]["url"],
+            "http://127.0.0.1:8787/v1/workers/session",
+        )
+        self.assertEqual(
             seen[0]["body"]["worker_id"],
             "ai-dev-1",
+        )
+        self.assertEqual(
+            seen[0]["body"]["active_job_keys"],
+            [],
         )
 
 

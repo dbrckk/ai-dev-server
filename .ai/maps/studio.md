@@ -8839,6 +8839,15 @@ contracts = req.get("tool_contracts")
 ⋮----
 contract = contracts.get("browser_validation")
 ⋮----
+def _valid_browser_screenshot(path: Path) -> bool
+⋮----
+size = path.stat().st_size
+⋮----
+head = handle.read(32)
+⋮----
+width = int.from_bytes(head[16:20], "big")
+height = int.from_bytes(head[20:24], "big")
+⋮----
 def _run_browser_validation(req: dict, work: Path, out: Path) -> dict | None
 ⋮----
 contract = _browser_validation_contract(req)

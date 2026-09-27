@@ -2905,11 +2905,10 @@ def request()
 ⋮----
 class BrowserValidationContractTests(unittest.TestCase)
 ⋮----
-def _write_script(self, root: Path, *, console_errors=None, page_errors=None)
-⋮----
 script = root / ".production-os" / "browser_validate.py"
 ⋮----
 payload = {
+image_bytes = (
 ⋮----
 def test_runtime_browser_artifacts_are_not_publishable(self)
 ⋮----
@@ -2932,6 +2931,8 @@ work = root / "work"
 out = root / "out"
 ⋮----
 result = _run_browser_validation(request(), work, out)
+⋮----
+def test_browser_validation_rejects_fake_screenshot_bytes(self)
 ⋮----
 def test_browser_validation_fails_on_console_errors(self)
 ```

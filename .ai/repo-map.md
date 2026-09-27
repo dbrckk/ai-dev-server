@@ -13872,6 +13872,15 @@ contracts = req.get("tool_contracts")
 ⋮----
 contract = contracts.get("browser_validation")
 ⋮----
+def _valid_browser_screenshot(path: Path) -> bool
+⋮----
+size = path.stat().st_size
+⋮----
+head = handle.read(32)
+⋮----
+width = int.from_bytes(head[16:20], "big")
+height = int.from_bytes(head[20:24], "big")
+⋮----
 def _run_browser_validation(req: dict, work: Path, out: Path) -> dict | None
 ⋮----
 contract = _browser_validation_contract(req)
@@ -27010,11 +27019,10 @@ def request()
 ⋮----
 class BrowserValidationContractTests(unittest.TestCase)
 ⋮----
-def _write_script(self, root: Path, *, console_errors=None, page_errors=None)
-⋮----
 script = root / ".production-os" / "browser_validate.py"
 ⋮----
 payload = {
+image_bytes = (
 ⋮----
 def test_runtime_browser_artifacts_are_not_publishable(self)
 ⋮----
@@ -27037,6 +27045,8 @@ work = root / "work"
 out = root / "out"
 ⋮----
 result = _run_browser_validation(request(), work, out)
+⋮----
+def test_browser_validation_rejects_fake_screenshot_bytes(self)
 ⋮----
 def test_browser_validation_fails_on_console_errors(self)
 ````

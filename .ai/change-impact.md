@@ -1,19 +1,18 @@
 # Change impact
 
-Base: f0ba7366444a6141e720a7b4a9b82d83f974ee9e
-Head: 02e9f930a8aff6a10cc5de32d1d80b4038470aea
+Base: b79bcd4264d3a6df27f1951be611c2fe50cf725d
+Head: 5cfc194609f0c37c7ec728d43752934e5f34d8bd
 
 ## Changed files
-- M studio/production_os_worker.py
-- M tests/test_production_os_worker_cli.py
-- M tests/test_production_os_worker_runtime.py
+- M studio/generic_project.py
+- M tests/test_browser_validation_contract.py
 
 ## Affected areas
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_production_os_worker.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

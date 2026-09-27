@@ -83,6 +83,7 @@ jobs:
       - name: Probe pinned real Jumpy repository
         env:
           PYTHONPATH: studio
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           python studio/godot_repository_probe.py dbrckk/Jumpy f32cc45e2e1b8713c3aa41961810bcbc90ab97c0 --out /tmp/jumpy-godot-probe.json
           python -m json.tool /tmp/jumpy-godot-probe.json

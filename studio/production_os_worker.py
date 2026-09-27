@@ -82,11 +82,12 @@ def _mobile_validation_operational(environ=None) -> bool:
     ):
         return False
     probes = (
-        ([adb, "version"], 10),
-        ([emulator, "-version"], 10),
-        ([emulator, "-accel-check"], 20),
+        ([adb, "version"], 10, False),
+        ([emulator, "-version"], 10, False),
+        ([emulator, "-accel-check"], 20, False),
+        ([emulator, "-list-avds"], 10, True),
     )
-    for command, timeout in probes:
+    for command, timeout, require_output in probes:
         try:
             completed = subprocess.run(
                 command,
@@ -101,6 +102,8 @@ def _mobile_validation_operational(environ=None) -> bool:
         except (OSError, subprocess.TimeoutExpired):
             return False
         if completed.returncode != 0:
+            return False
+        if require_output and not str(completed.stdout or "").strip():
             return False
     return True
 

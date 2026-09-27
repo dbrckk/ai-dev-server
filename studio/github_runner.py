@@ -472,6 +472,27 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
                 if str(item).strip()
             ][:30],
         }
+        adb_verification = mobile_validation.get("adb_verification")
+        if isinstance(adb_verification, dict):
+            normalized_mobile["adb_verification"] = {
+                "passed": (
+                    bool(adb_verification.get("passed"))
+                    if isinstance(adb_verification.get("passed"), bool)
+                    else None
+                ),
+                "reason": str(adb_verification.get("reason") or "").strip()[:500] or None,
+                "device_state_verified": adb_verification.get("device_state_verified"),
+                "package_installed_verified": adb_verification.get("package_installed_verified"),
+                "activity_visible_verified": adb_verification.get("activity_visible_verified"),
+                "device_state_log": str(adb_verification.get("device_state_log") or "")[-1200:],
+                "package_log": str(adb_verification.get("package_log") or "")[-1200:],
+                "activity_log": str(adb_verification.get("activity_log") or "")[-3000:],
+            }
+            normalized_mobile["adb_verification"] = {
+                key: value
+                for key, value in normalized_mobile["adb_verification"].items()
+                if value not in (None, "")
+            }
         execution = mobile_validation.get("execution")
         if isinstance(execution, dict):
             normalized_mobile["execution"] = {

@@ -32,7 +32,14 @@ def request():
 
 
 class BrowserValidationContractTests(unittest.TestCase):
-    def _write_script(self, root: Path, *, console_errors=None, page_errors=None):
+    def _write_script(
+        self,
+        root: Path,
+        *,
+        console_errors=None,
+        page_errors=None,
+        valid_screenshot=True,
+    ):
         script = root / ".production-os" / "browser_validate.py"
         script.parent.mkdir(parents=True, exist_ok=True)
         payload = {
@@ -42,13 +49,22 @@ class BrowserValidationContractTests(unittest.TestCase):
             "page_errors":page_errors or [],
             "screenshots":["home.png"],
         }
+        image_bytes = (
+            "import base64\n"
+            "(root/'home.png').write_bytes(base64.b64decode("
+            "'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwC"
+            "AAAAC0lEQVR42mP8/x8AAusB9Y9Zl3sAAAAASUVORK5CYII='"
+            "))\n"
+            if valid_screenshot
+            else "(root/'home.png').write_bytes(b'fake-png-evidence')\n"
+        )
         script.write_text(
             "import json\n"
             "from pathlib import Path\n"
             "root=Path('.production-os/browser-artifacts')\n"
             "root.mkdir(parents=True,exist_ok=True)\n"
-            "(root/'home.png').write_bytes(b'fake-png-evidence')\n"
-            f"(root/'report.json').write_text({json.dumps(json.dumps(payload))},encoding='utf-8')\n",
+            + image_bytes
+            + f"(root/'report.json').write_text({json.dumps(json.dumps(payload))},encoding='utf-8')\n",
             encoding="utf-8",
         )
 
@@ -113,6 +129,30 @@ class BrowserValidationContractTests(unittest.TestCase):
             self.assertTrue(
                 (out / "browser-validation" / "home.png").is_file()
             )
+
+    def test_browser_validation_rejects_fake_screenshot_bytes(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            work = root / "work"
+            work.mkdir()
+            self._write_script(
+                work,
+                valid_screenshot=False,
+            )
+
+            result = _run_browser_validation(
+                request(),
+                work,
+                root / "out",
+            )
+
+            self.assertFalse(result["passed"])
+            self.assertEqual(
+                result["reason"],
+                "browser-validation-report-contract-invalid",
+            )
+            self.assertEqual(result["screenshots"], [])
+
 
     def test_browser_validation_fails_on_console_errors(self):
         with tempfile.TemporaryDirectory() as td:

@@ -308,6 +308,7 @@ test_repair_strategy.py
 test_replacement_ci_policy.py
 test_repo_maintenance.py
 test_repo_version_probe.py
+test_repository_branch_identity.py
 test_repository_research_provider.py
 test_request_budget.py
 test_request_contract.py
@@ -8102,6 +8103,19 @@ def opener(request, timeout)
 ⋮----
 job = client.claim(
 ⋮----
+def test_managed_project_stages_share_branch_but_not_execution_id(self)
+⋮----
+first = sample_job()
+⋮----
+second = sample_job()
+⋮----
+first_request = build_studio_request(first)
+second_request = build_studio_request(second)
+⋮----
+def test_different_managed_projects_do_not_share_repository_branch(self)
+⋮----
+def test_non_managed_job_keeps_job_scoped_identity_without_branch_override(self)
+⋮----
 def test_build_studio_request_includes_cooperative_upstream_context(self)
 ⋮----
 job = sample_job()
@@ -9409,6 +9423,25 @@ def test_non_semver_is_unknown(self)
 def test_release_context_is_bounded(self)
 ⋮----
 result=classify_release({"tag_name":"v5.1.0","prerelease":False,"draft":False})
+```
+
+## File: test_repository_branch_identity.py
+```python
+BASE = {
+⋮----
+class RepositoryBranchIdentityTests(unittest.TestCase)
+⋮----
+def test_request_check_accepts_safe_repository_branch_identity(self)
+⋮----
+request = dict(BASE)
+⋮----
+checked = request_check(request)
+⋮----
+def test_request_check_rejects_unsafe_repository_branch_identity(self)
+⋮----
+def test_generic_repository_branch_is_independent_from_execution_request_id(self)
+⋮----
+repository = GenericRepository(
 ```
 
 ## File: test_repository_research_provider.py

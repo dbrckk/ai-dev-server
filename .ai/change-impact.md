@@ -1,11 +1,14 @@
 # Change impact
 
-Base: 55ae62f5f7da5c4ea45c9c616a2f0b81e91793cc
-Head: 2677ebdf13d624dbfc8bb2fad511e2bb9a3efaf5
+Base: 88d6165ddfca9c0200c0ce2a4ac50f8a464a8e2e
+Head: d51d850167fa4da873b287fe2bbc1316315d56b5
 
 ## Changed files
+- M studio/core.py
+- M studio/generic_project.py
 - M studio/production_os_worker.py
 - M tests/test_production_os_worker_runtime.py
+- A tests/test_repository_branch_identity.py
 
 ## Affected areas
 - studio

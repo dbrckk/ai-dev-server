@@ -22,18 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T09:09:43Z
+Generated: 2026-09-27T09:31:08Z
 
 ### Git
 - Branch: `main`
-- Head: `2677ebdf13d6`
-- Commit date: 2026-09-27T11:09:32+02:00
-- Commit: feat: consume cooperative upstream agent context
-- Tracked files: 827
+- Head: `d51d850167fa`
+- Commit date: 2026-09-27T11:30:56+02:00
+- Commit: fix: preserve managed branch continuity across cooperative stages
+- Tracked files: 828
 
 ### Recently changed files
+- `studio/core.py`
+- `studio/generic_project.py`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_worker_runtime.py`
+- `tests/test_repository_branch_identity.py`
 - `studio/capability_registry_review.py`
 - `studio/capability_review.py`
 - `studio/ci_diagnostics.py`
@@ -44,7 +47,6 @@ Generated: 2026-09-27T09:09:43Z
 - `tests/test_ci_diagnostics.py`
 - `tests/test_production_os_result_contract.py`
 - `tests/test_production_os_local_e2e.py`
-- `control/production-os-worker-kick.json`
 
 ### Project signals
 - No common build descriptor detected

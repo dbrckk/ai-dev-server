@@ -1613,6 +1613,7 @@
         "tests/test_project_context.py",
         "tests/test_release.py",
         "tests/test_release_repair.py",
+        "tests/test_repository_branch_identity.py",
         "tests/test_request_budget.py",
         "tests/test_request_contract.py",
         "tests/test_request_priority.py",
@@ -1622,7 +1623,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 207,
+      "in_degree": 208,
       "out_degree": 17
     },
     "studio/cost_drift.py": {
@@ -2341,9 +2342,10 @@
       ],
       "dependents": [
         "studio/generic_project.py",
-        "studio/generic_smoke.py"
+        "studio/generic_smoke.py",
+        "tests/test_repository_branch_identity.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 3
     },
     "studio/generic_sandbox.py": {
@@ -7133,6 +7135,15 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 1
+    },
+    "tests/test_repository_branch_identity.py": {
+      "dependencies": [
+        "studio/core.py",
+        "studio/generic_repository.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
     },
     "tests/test_repository_research_provider.py": {
       "dependencies": [

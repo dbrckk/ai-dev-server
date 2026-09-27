@@ -6103,6 +6103,8 @@ def request_check(data)
 ⋮----
 required = {'id', 'target_repo', 'app_name', 'brief', 'enabled'}
 ⋮----
+branch_id = data['repository_branch_id']
+⋮----
 val = data.get(key, default)
 ⋮----
 priority = data.get('priority', 50)
@@ -8832,7 +8834,7 @@ def _record_architecture(state: dict, out: Path, architecture_root: Path) -> Non
 def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict
 ⋮----
 github = GitHub(req["target_repo"])
-repo = GenericRepository(github, req["target_repo"], req["id"])
+repo = GenericRepository(
 ⋮----
 checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
 safe_rewrite_learning_path = out / ".autonomy" / "safe-rewrite-learning.json"
@@ -15269,6 +15271,10 @@ def _project_id(job_key: str) -> str
 ⋮----
 digest = hashlib.sha256(str(job_key).encode("utf-8")).hexdigest()[:24]
 ⋮----
+managed_project_id = str(
+⋮----
+digest = hashlib.sha256(
+⋮----
 def _app_name(repository: str) -> str
 ⋮----
 name = str(repository).rsplit("/", 1)[-1].lower()
@@ -15366,6 +15372,8 @@ job_key = str(job.get("key") or "").strip()
 ⋮----
 brief = (
 request = {
+repository_branch_id = _repository_branch_id(
+⋮----
 tool_contracts = handoff.get("tool_contracts")
 ⋮----
 preference = str(handoff.get("agent_preference") or "auto").strip()

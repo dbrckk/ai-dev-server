@@ -241,7 +241,7 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             )
         )
 
-    def test_managed_project_stages_share_stable_studio_project_id(self):
+    def test_managed_project_stages_share_branch_but_not_execution_id(self):
         first = sample_job()
         first["key"] = "job-implementation"
         first["payload"]["managed_project_id"] = "managed-1234"
@@ -255,11 +255,18 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         first_request = build_studio_request(first)
         second_request = build_studio_request(second)
 
-        self.assertEqual(first_request["id"], second_request["id"])
-        self.assertTrue(first_request["id"].startswith("mp-"))
+        self.assertNotEqual(first_request["id"], second_request["id"])
+        self.assertTrue(first_request["id"].startswith("pos-"))
+        self.assertEqual(
+            first_request["repository_branch_id"],
+            second_request["repository_branch_id"],
+        )
+        self.assertTrue(
+            first_request["repository_branch_id"].startswith("mp-")
+        )
 
 
-    def test_different_managed_projects_do_not_share_studio_branch(self):
+    def test_different_managed_projects_do_not_share_repository_branch(self):
         first = sample_job()
         first["payload"]["managed_project_id"] = "managed-1234"
 
@@ -268,21 +275,21 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         second["payload"]["managed_project_id"] = "managed-5678"
 
         self.assertNotEqual(
-            build_studio_request(first)["id"],
-            build_studio_request(second)["id"],
+            build_studio_request(first)["repository_branch_id"],
+            build_studio_request(second)["repository_branch_id"],
         )
 
 
-    def test_non_managed_job_keeps_job_scoped_project_id(self):
+    def test_non_managed_job_keeps_job_scoped_identity_without_branch_override(self):
         first = sample_job()
         second = sample_job()
         second["key"] = "job-other"
 
-        self.assertNotEqual(
-            build_studio_request(first)["id"],
-            build_studio_request(second)["id"],
-        )
-        self.assertTrue(build_studio_request(first)["id"].startswith("pos-"))
+        first_request = build_studio_request(first)
+        second_request = build_studio_request(second)
+        self.assertNotEqual(first_request["id"], second_request["id"])
+        self.assertNotIn("repository_branch_id", first_request)
+        self.assertTrue(first_request["id"].startswith("pos-"))
 
 
     def test_build_studio_request_includes_cooperative_upstream_context(self):

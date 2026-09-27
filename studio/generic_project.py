@@ -224,6 +224,39 @@ def _browser_validation_contract(req: dict) -> dict | None:
     return contract if isinstance(contract, dict) else None
 
 
+def _valid_browser_screenshot(path: Path) -> bool:
+    try:
+        size = path.stat().st_size
+        if size < 64 or size > 5_000_000:
+            return False
+        with path.open("rb") as handle:
+            head = handle.read(32)
+            if path.suffix.lower() == ".png":
+                if (
+                    len(head) < 24
+                    or head[:8] != b"\x89PNG\r\n\x1a\n"
+                    or head[12:16] != b"IHDR"
+                ):
+                    return False
+                width = int.from_bytes(head[16:20], "big")
+                height = int.from_bytes(head[20:24], "big")
+                return 0 < width <= 32768 and 0 < height <= 32768
+            if path.suffix.lower() in {".jpg", ".jpeg"}:
+                if head[:3] != b"\xff\xd8\xff":
+                    return False
+                handle.seek(-2, 2)
+                return handle.read(2) == b"\xff\xd9"
+            if path.suffix.lower() == ".webp":
+                return (
+                    len(head) >= 12
+                    and head[:4] == b"RIFF"
+                    and head[8:12] == b"WEBP"
+                )
+    except (OSError, ValueError):
+        return False
+    return False
+
+
 def _run_browser_validation(req: dict, work: Path, out: Path) -> dict | None:
     contract = _browser_validation_contract(req)
     if contract is None:
@@ -299,6 +332,7 @@ def _run_browser_validation(req: dict, work: Path, out: Path) -> dict | None:
                     candidate.is_relative_to(artifacts)
                     and candidate.is_file()
                     and candidate.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp"}
+                    and _valid_browser_screenshot(candidate)
                 ):
                     screenshots.append(rel)
         valid_report = (

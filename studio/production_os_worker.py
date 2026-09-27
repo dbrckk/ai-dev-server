@@ -282,13 +282,9 @@ class ProductionOSClient:
         self,
         worker_id: str,
         capabilities: list[str],
-        operator_token: str,
+        operator_token: str | None = None,
     ) -> dict | None:
-        secret = str(operator_token or "").strip()
-        if not secret:
-            raise ProductionOSWorkerError(
-                "Production-OS operator token is required"
-            )
+        legacy_operator_token = str(operator_token or "").strip() or None
         return self._post(
             "/v1/workers/register",
             {
@@ -296,7 +292,7 @@ class ProductionOSClient:
                 "capabilities": [str(item) for item in capabilities],
                 "max_concurrency": 1,
             },
-            token=secret,
+            token=legacy_operator_token,
         )
 
     def heartbeat(
@@ -1300,15 +1296,13 @@ def main(
     ).strip()
     operator_token = str(
         env.get("PRODUCTION_OS_OPERATOR_TOKEN") or ""
-    ).strip()
+    ).strip() or None
 
     missing = []
     if not base_url:
         missing.append("PRODUCTION_OS_URL")
     if not worker_token:
         missing.append("PRODUCTION_OS_WORKER_TOKEN")
-    if not operator_token:
-        missing.append("PRODUCTION_OS_OPERATOR_TOKEN")
     if missing:
         raise RuntimeError(
             "Missing Production-OS configuration: " + ", ".join(missing)

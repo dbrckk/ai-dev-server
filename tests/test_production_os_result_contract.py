@@ -142,6 +142,29 @@ class ProductionOSResultContractTests(unittest.TestCase):
                     "log_tail": "browser validation passed",
                 },
             },
+            "mobile_validation": {
+                "status": "passed",
+                "passed": True,
+                "runtime": "android-adb-emulator",
+                "script": ".production-os/mobile_validate.py",
+                "package_name": "com.example.app",
+                "activity": "com.example.app.MainActivity",
+                "device_serial": "emulator-5554",
+                "fatal_errors": [],
+                "screenshots": ["mobile-home.png"],
+                "copied_artifacts": [
+                    "mobile-home.png",
+                    "report.json",
+                    "logcat.txt",
+                ],
+                "execution": {
+                    "returncode": 0,
+                    "duration_seconds": 28.5,
+                    "credential_isolated": True,
+                    "network_allowed": True,
+                    "log_tail": "mobile validation passed",
+                },
+            },
         }
 
         with tempfile.TemporaryDirectory() as td:
@@ -189,6 +212,33 @@ class ProductionOSResultContractTests(unittest.TestCase):
         )
         self.assertEqual(
             evidence["browser_validation"]["execution"]["returncode"],
+            0,
+        )
+
+
+        self.assertTrue(evidence["mobile_validation"]["passed"])
+        self.assertEqual(
+            evidence["mobile_validation"]["runtime"],
+            "android-adb-emulator",
+        )
+        self.assertEqual(
+            evidence["mobile_validation"]["package_name"],
+            "com.example.app",
+        )
+        self.assertEqual(
+            evidence["mobile_validation"]["activity"],
+            "com.example.app.MainActivity",
+        )
+        self.assertEqual(
+            evidence["mobile_validation"]["device_serial"],
+            "emulator-5554",
+        )
+        self.assertEqual(
+            evidence["mobile_validation"]["screenshots"],
+            ["mobile-home.png"],
+        )
+        self.assertEqual(
+            evidence["mobile_validation"]["execution"]["returncode"],
             0,
         )
 

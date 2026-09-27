@@ -39,12 +39,13 @@ class BrowserValidationContractTests(unittest.TestCase):
         console_errors=None,
         page_errors=None,
         valid_screenshot=True,
+        url="http://127.0.0.1:4173/",
     ):
         script = root / ".production-os" / "browser_validate.py"
         script.parent.mkdir(parents=True, exist_ok=True)
         payload = {
             "schema_version":"production-os/browser-validation-report/v1",
-            "url":"http://127.0.0.1:4173/",
+            "url":url,
             "console_errors":console_errors or [],
             "page_errors":page_errors or [],
             "screenshots":["home.png"],
@@ -152,6 +153,33 @@ class BrowserValidationContractTests(unittest.TestCase):
                 "browser-validation-report-contract-invalid",
             )
             self.assertEqual(result["screenshots"], [])
+
+
+    def test_browser_validation_rejects_external_test_url(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            work = root / "work"
+            work.mkdir()
+            self._write_script(
+                work,
+                url="https://example.com/",
+            )
+
+            result = _run_browser_validation(
+                request(),
+                work,
+                root / "out",
+            )
+
+            self.assertFalse(result["passed"])
+            self.assertEqual(
+                result["reason"],
+                "browser-validation-report-contract-invalid",
+            )
+            self.assertEqual(
+                result["url"],
+                "https://example.com/",
+            )
 
 
     def test_browser_validation_fails_on_console_errors(self):

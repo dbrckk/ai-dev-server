@@ -33,6 +33,7 @@ SPECIALIST_CAPABILITIES = {
     "debug": "test-debug",
     "review": "code-review",
     "browser": "browser-ui-validation",
+    "mobile": "mobile-ui-validation",
 }
 
 
@@ -63,6 +64,39 @@ def _browser_validation_operational(environ=None) -> bool:
     except (OSError, subprocess.TimeoutExpired):
         return False
     return completed.returncode == 0
+
+
+def _mobile_validation_operational(environ=None) -> bool:
+    env = dict(os.environ)
+    if environ is not None:
+        env.update({str(key): str(value) for key, value in environ.items()})
+    required = ("adb", "emulator", "sdkmanager", "avdmanager")
+    resolved = [shutil.which(name, path=env.get("PATH")) for name in required]
+    if not all(resolved):
+        return False
+    probes = (
+        ([resolved[0], "version"], 10),
+        ([resolved[1], "-version"], 10),
+        ([resolved[2], "--version"], 10),
+        ([resolved[3], "list", "avd"], 15),
+    )
+    for command, timeout in probes:
+        try:
+            completed = subprocess.run(
+                command,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=timeout,
+                check=False,
+                env=env,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return False
+        if completed.returncode != 0:
+            return False
+    return True
 
 
 def _asset_forge_operational_status(environ=None) -> dict | None:
@@ -111,10 +145,12 @@ def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]:
     capabilities.extend(
         SPECIALIST_CAPABILITIES[name]
         for name in sorted(specialties)
-        if name != "browser"
+        if name not in {"browser", "mobile"}
     )
     if "browser" in specialties and _browser_validation_operational(environ):
         capabilities.append(SPECIALIST_CAPABILITIES["browser"])
+    if "mobile" in specialties and _mobile_validation_operational(environ):
+        capabilities.append(SPECIALIST_CAPABILITIES["mobile"])
     status = _asset_forge_operational_status(environ)
     if not isinstance(status, dict):
         return capabilities

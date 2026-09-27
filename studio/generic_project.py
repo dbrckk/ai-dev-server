@@ -430,6 +430,249 @@ def _run_browser_validation(req: dict, work: Path, out: Path) -> dict | None:
     }
 
 
+def _mobile_validation_contract(req: dict) -> dict | None:
+    contracts = req.get("tool_contracts")
+    if not isinstance(contracts, dict):
+        return None
+    contract = contracts.get("mobile_validation")
+    return contract if isinstance(contract, dict) else None
+
+
+def _verify_android_emulator_evidence(
+    work: Path,
+    *,
+    device_serial: str | None,
+    package_name: str | None,
+    activity: str | None,
+) -> dict:
+    serial = str(device_serial or "").strip()
+    package = str(package_name or "").strip()
+    target_activity = str(activity or "").strip()
+    if (
+        not serial.startswith("emulator-")
+        or not serial[9:].isdigit()
+        or not package
+        or not target_activity
+    ):
+        return {
+            "passed":False,
+            "reason":"mobile-adb-identity-invalid",
+        }
+
+    state = run_command(
+        ["adb", "-s", serial, "get-state"],
+        work,
+        timeout=20,
+        network=False,
+    )
+    state_ok = (
+        state.get("passed") is True
+        and "device" in str(state.get("log_tail") or "").lower()
+    )
+
+    installed = run_command(
+        ["adb", "-s", serial, "shell", "pm", "path", package],
+        work,
+        timeout=30,
+        network=False,
+    )
+    installed_ok = (
+        installed.get("passed") is True
+        and "package:" in str(installed.get("log_tail") or "").lower()
+    )
+
+    foreground = run_command(
+        ["adb", "-s", serial, "shell", "dumpsys", "activity", "activities"],
+        work,
+        timeout=30,
+        network=False,
+    )
+    foreground_text = str(foreground.get("log_tail") or "")
+    foreground_ok = (
+        foreground.get("passed") is True
+        and package in foreground_text
+    )
+
+    passed = state_ok and installed_ok and foreground_ok
+    return {
+        "passed":passed,
+        "reason":None if passed else "mobile-adb-runtime-verification-failed",
+        "device_state_verified":state_ok,
+        "package_installed_verified":installed_ok,
+        "activity_visible_verified":foreground_ok,
+        "device_state_log":str(state.get("log_tail") or "")[-1200:],
+        "package_log":str(installed.get("log_tail") or "")[-1200:],
+        "activity_log":foreground_text[-3000:],
+    }
+
+
+def _run_mobile_validation(req: dict, work: Path, out: Path) -> dict | None:
+    contract = _mobile_validation_contract(req)
+    if contract is None:
+        return None
+
+    script_rel = str(contract.get("script") or "")
+    artifacts_rel = str(contract.get("artifacts_dir") or "")
+    script = (work / script_rel).resolve()
+    artifacts = (work / artifacts_rel).resolve()
+    root = work.resolve()
+    if not script.is_relative_to(root) or not artifacts.is_relative_to(root):
+        return {
+            "status":"failed",
+            "passed":False,
+            "reason":"mobile-validation-path-escaped-workspace",
+        }
+    if not script.is_file():
+        return {
+            "status":"failed",
+            "passed":False,
+            "reason":"mobile-validation-script-missing",
+            "script":script_rel,
+        }
+
+    execution = run_command(
+        [sys.executable, script_rel],
+        work,
+        timeout=900,
+        network=True,
+    )
+    report_path = artifacts / "report.json"
+    report = None
+    report_error = None
+    if report_path.is_file():
+        try:
+            value = json.loads(report_path.read_text(encoding="utf-8"))
+            if isinstance(value, dict):
+                report = value
+            else:
+                report_error = "mobile-validation-report-not-object"
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            report_error = "mobile-validation-report-invalid-json"
+    else:
+        report_error = "mobile-validation-report-missing"
+
+    valid_report = False
+    screenshots = []
+    fatal_errors = []
+    package_name = None
+    activity = None
+    device_serial = None
+    if isinstance(report, dict):
+        package_name = str(report.get("package_name") or "").strip()[:240] or None
+        activity = str(report.get("activity") or "").strip()[:500] or None
+        device_serial = str(report.get("device_serial") or "").strip()[:240] or None
+        raw_fatal = report.get("fatal_errors")
+        raw_screenshots = report.get("screenshots")
+        fatal_errors = (
+            [str(item).strip()[:1200] for item in raw_fatal if str(item).strip()][:50]
+            if isinstance(raw_fatal, list)
+            else []
+        )
+        if isinstance(raw_screenshots, list):
+            for item in raw_screenshots[:20]:
+                rel = str(item or "").strip().replace("\\", "/")
+                if not rel:
+                    continue
+                candidate = (artifacts / rel).resolve()
+                if (
+                    candidate.is_relative_to(artifacts)
+                    and candidate.is_file()
+                    and candidate.suffix.lower() == ".png"
+                    and _valid_browser_screenshot(candidate)
+                ):
+                    screenshots.append(rel)
+        valid_report = (
+            report.get("schema_version")
+            == str(contract.get("report_schema") or "")
+            and package_name is not None
+            and activity is not None
+            and device_serial is not None
+            and isinstance(raw_fatal, list)
+            and bool(screenshots)
+        )
+        if not valid_report and report_error is None:
+            report_error = "mobile-validation-report-contract-invalid"
+
+    adb_verification = _verify_android_emulator_evidence(
+        work,
+        device_serial=device_serial,
+        package_name=package_name,
+        activity=activity,
+    )
+
+    evidence_root = out / "mobile-validation"
+    copied = []
+    total_bytes = 0
+    if artifacts.is_dir():
+        evidence_root.mkdir(parents=True, exist_ok=True)
+        for source in sorted(artifacts.rglob("*")):
+            if not source.is_file() or source.is_symlink():
+                continue
+            rel = source.relative_to(artifacts)
+            if source.suffix.lower() not in {".png", ".json", ".txt", ".log"}:
+                continue
+            try:
+                size = source.stat().st_size
+            except OSError:
+                continue
+            if size < 0 or size > 8_000_000 or total_bytes + size > 20_000_000:
+                continue
+            target = evidence_root / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                shutil.copy2(source, target)
+            except OSError:
+                continue
+            copied.append(rel.as_posix())
+            total_bytes += size
+            if len(copied) >= 30:
+                break
+
+    passed = (
+        execution.get("passed") is True
+        and valid_report
+        and not fatal_errors
+        and adb_verification.get("passed") is True
+    )
+    reason = None
+    if not passed:
+        if execution.get("passed") is not True:
+            reason = "mobile-validation-script-failed"
+        elif report_error:
+            reason = report_error
+        elif fatal_errors:
+            reason = "mobile-fatal-errors"
+        elif adb_verification.get("passed") is not True:
+            reason = str(
+                adb_verification.get("reason")
+                or "mobile-adb-runtime-verification-failed"
+            )
+        else:
+            reason = "mobile-validation-failed"
+
+    return {
+        "status":"passed" if passed else "failed",
+        "passed":passed,
+        "reason":reason,
+        "runtime":str(contract.get("runtime") or "")[:120],
+        "script":script_rel,
+        "package_name":package_name,
+        "activity":activity,
+        "device_serial":device_serial,
+        "fatal_errors":fatal_errors,
+        "screenshots":screenshots,
+        "copied_artifacts":copied,
+        "adb_verification":adb_verification,
+        "execution":{
+            "returncode":execution.get("returncode"),
+            "duration_seconds":execution.get("duration_seconds"),
+            "credential_isolated":execution.get("credential_isolated"),
+            "network_allowed":execution.get("network_allowed"),
+            "log_tail":str(execution.get("log_tail") or "")[-6000:],
+        },
+    }
+
+
 def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict:
     github = GitHub(req["target_repo"])
     repo = GenericRepository(
@@ -1839,6 +2082,11 @@ Objective and current plan:
             state["browser_validation"] = browser_validation
             if browser_validation.get("passed") is not True:
                 complete = False
+        mobile_validation = _run_mobile_validation(req, work, out)
+        if mobile_validation is not None:
+            state["mobile_validation"] = mobile_validation
+            if mobile_validation.get("passed") is not True:
+                complete = False
 
         if isinstance(review_model, dict) and verification.get("passed") in {True, False}:
             review_provider = review_model.get("provider")
@@ -2093,6 +2341,7 @@ Objective and current plan:
             "review": review,
             "review_decision": review_decision,
             "browser_validation": browser_validation,
+            "mobile_validation": mobile_validation,
             "progress_trace": progress_trace,
             "agent_trace": agent_trace,
             "phase_quotas_final": phase_quotas.as_dict(),
@@ -2130,6 +2379,16 @@ Objective and current plan:
             )
             if browser_reason not in state["blockers"]:
                 state["blockers"].append(browser_reason)
+        if (
+            isinstance(mobile_validation, dict)
+            and mobile_validation.get("passed") is not True
+        ):
+            mobile_reason = str(
+                mobile_validation.get("reason")
+                or "mobile-validation-failed"
+            )
+            if mobile_reason not in state["blockers"]:
+                state["blockers"].append(mobile_reason)
         state["model_calls_this_cycle"] = int(cost_controller.snapshot().get("model_calls", 0))
         state["checkpoint_replays_this_cycle"] = 0
         _record_architecture(state, out, architecture_root)

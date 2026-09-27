@@ -439,6 +439,77 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
     else:
         browser_validation = None
 
+    mobile_validation = summary.get("mobile_validation")
+    if not isinstance(mobile_validation, dict):
+        mobile_validation = summary_evidence.get("mobile_validation")
+    if isinstance(mobile_validation, dict):
+        normalized_mobile = {
+            "status": str(mobile_validation.get("status") or "").strip()[:120] or None,
+            "passed": (
+                bool(mobile_validation.get("passed"))
+                if isinstance(mobile_validation.get("passed"), bool)
+                else None
+            ),
+            "reason": str(mobile_validation.get("reason") or "").strip()[:500] or None,
+            "runtime": str(mobile_validation.get("runtime") or "").strip()[:120] or None,
+            "script": str(mobile_validation.get("script") or "").strip()[:300] or None,
+            "package_name": str(mobile_validation.get("package_name") or "").strip()[:240] or None,
+            "activity": str(mobile_validation.get("activity") or "").strip()[:500] or None,
+            "device_serial": str(mobile_validation.get("device_serial") or "").strip()[:240] or None,
+            "fatal_errors": [
+                str(item).strip()[:1200]
+                for item in (mobile_validation.get("fatal_errors") or [])
+                if str(item).strip()
+            ][:50],
+            "screenshots": [
+                str(item).strip()[:500]
+                for item in (mobile_validation.get("screenshots") or [])
+                if str(item).strip()
+            ][:20],
+            "copied_artifacts": [
+                str(item).strip()[:500]
+                for item in (mobile_validation.get("copied_artifacts") or [])
+                if str(item).strip()
+            ][:30],
+        }
+        adb_verification = mobile_validation.get("adb_verification")
+        if isinstance(adb_verification, dict):
+            normalized_mobile["adb_verification"] = {
+                "passed": (
+                    bool(adb_verification.get("passed"))
+                    if isinstance(adb_verification.get("passed"), bool)
+                    else None
+                ),
+                "reason": str(adb_verification.get("reason") or "").strip()[:500] or None,
+                "device_state_verified": adb_verification.get("device_state_verified"),
+                "package_installed_verified": adb_verification.get("package_installed_verified"),
+                "activity_visible_verified": adb_verification.get("activity_visible_verified"),
+                "device_state_log": str(adb_verification.get("device_state_log") or "")[-1200:],
+                "package_log": str(adb_verification.get("package_log") or "")[-1200:],
+                "activity_log": str(adb_verification.get("activity_log") or "")[-3000:],
+            }
+            normalized_mobile["adb_verification"] = {
+                key: value
+                for key, value in normalized_mobile["adb_verification"].items()
+                if value not in (None, "")
+            }
+        execution = mobile_validation.get("execution")
+        if isinstance(execution, dict):
+            normalized_mobile["execution"] = {
+                "returncode": execution.get("returncode"),
+                "duration_seconds": execution.get("duration_seconds"),
+                "credential_isolated": execution.get("credential_isolated"),
+                "network_allowed": execution.get("network_allowed"),
+                "log_tail": str(execution.get("log_tail") or "")[-4000:],
+            }
+        mobile_validation = {
+            key: value
+            for key, value in normalized_mobile.items()
+            if value not in (None, [], "")
+        }
+    else:
+        mobile_validation = None
+
     envelope = {
         "schema_version": "ai-dev-server/production-os-result/v1",
         "workflow_id": correlation["workflow_id"],
@@ -464,6 +535,11 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
             "browser_validation": (
                 dict(browser_validation)
                 if browser_validation is not None
+                else None
+            ),
+            "mobile_validation": (
+                dict(mobile_validation)
+                if mobile_validation is not None
                 else None
             ),
             "visual_assets": visual_assets,
@@ -968,6 +1044,8 @@ def run(
         summary['pull_request']=dict(project_report['pull_request'])
     if isinstance(project_report.get('browser_validation'),dict):
         summary['browser_validation']=dict(project_report['browser_validation'])
+    if isinstance(project_report.get('mobile_validation'),dict):
+        summary['mobile_validation']=dict(project_report['mobile_validation'])
     checkpoint_commit=project_report.get('checkpoint_commit')
     if isinstance(checkpoint_commit,str) and len(checkpoint_commit)==40:
         summary['commit_shas']=[checkpoint_commit]

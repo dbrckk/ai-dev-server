@@ -160,7 +160,11 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
 
 
     def test_browser_specialty_requires_operational_playwright(self):
-        completed = type("Completed", (), {"returncode": 0})()
+        completed = type(
+            "Completed",
+            (),
+            {"returncode": 0, "stdout": "production-os-mobile\n"},
+        )()
         with patch("production_os_worker.subprocess.run", return_value=completed):
             caps = worker_capabilities({
                 "PRODUCTION_OS_WORKER_SPECIALTIES": "browser",
@@ -206,6 +210,45 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             })
 
         self.assertIn("mobile-ui-validation", caps)
+
+
+    def test_mobile_specialty_is_not_advertised_without_configured_avd(self):
+        def which(name):
+            if name == "adb":
+                return "/sdk/platform-tools/adb"
+            if name == "emulator":
+                return "/sdk/emulator/emulator"
+            return None
+
+        calls = {"count":0}
+
+        def run(*args, **kwargs):
+            calls["count"] += 1
+            stdout = "" if calls["count"] == 4 else "ok\n"
+            return type(
+                "Completed",
+                (),
+                {"returncode":0, "stdout":stdout},
+            )()
+
+        with patch(
+            "production_os_worker.shutil.which",
+            side_effect=which,
+        ), patch(
+            "production_os_worker.Path.exists",
+            return_value=True,
+        ), patch(
+            "production_os_worker.os.access",
+            return_value=True,
+        ), patch(
+            "production_os_worker.subprocess.run",
+            side_effect=run,
+        ):
+            caps = worker_capabilities({
+                "PRODUCTION_OS_WORKER_SPECIALTIES": "mobile",
+            })
+
+        self.assertNotIn("mobile-ui-validation", caps)
 
 
     def test_mobile_specialty_is_not_advertised_without_kvm(self):

@@ -13,6 +13,7 @@ from production_os_worker import (
     ProductionOSClient,
     ProductionOSWorkerError,
     _attach_failed_ci_diagnostic,
+    build_studio_request,
     run_once,
     worker_capabilities,
 )
@@ -216,6 +217,32 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
                 ["software-development"],
             )
         )
+
+    def test_build_studio_request_includes_retry_ci_context_in_brief(self):
+        job = sample_job()
+        job["payload"]["handoff"]["retry_context"] = {
+            "summary":"integration tests failed",
+            "validation":{"status":"failed","tests":["integration"]},
+            "ci":{
+                "workflow":"CI",
+                "job":"tests",
+                "step":"pytest",
+                "conclusion":"failure",
+                "log_excerpt":"FAILED tests/test_app.py::test_login",
+            },
+        }
+
+        request = build_studio_request(job)
+
+        self.assertIn("Previous autonomous attempt failed", request["brief"])
+        self.assertIn("integration tests failed", request["brief"])
+        self.assertIn("CI / tests / pytest / failure", request["brief"])
+        self.assertIn(
+            "FAILED tests/test_app.py::test_login",
+            request["brief"],
+        )
+        self.assertIn("smallest correct fix", request["brief"])
+
 
     def test_run_once_acknowledges_pause_without_claiming(self):
         client = _FakeClient(sample_job())

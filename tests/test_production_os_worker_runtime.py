@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 from production_os_worker import (
     ProductionOSClient,
     ProductionOSWorkerError,
+    _attach_failed_ci_diagnostic,
     run_once,
     worker_capabilities,
 )
@@ -473,6 +474,61 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertIn("runner_error", failed["reason"])
         self.assertIn("RuntimeError", failed["result"]["evidence"]["error_type"])
         self.assertEqual(client.calls[5][2], ())
+
+    def test_failed_envelope_is_enriched_with_ci_diagnostic_when_sha_exists(self):
+        envelope = {
+            "target_repo": "dbrckk/example",
+            "succeeded": False,
+            "evidence": {
+                "commit_shas": [
+                    "0123456789abcdef0123456789abcdef01234567"
+                ]
+            },
+        }
+        request = {"target_repo": "dbrckk/example"}
+        diagnostic = {
+            "provider": "github-actions",
+            "status": "failed",
+            "workflow": "CI",
+            "job": "tests",
+            "step": "pytest",
+            "conclusion": "failure",
+            "sha": "0123456789abcdef0123456789abcdef01234567",
+        }
+
+        with patch(
+            "ci_diagnostics.collect_failed_ci",
+            return_value=diagnostic,
+        ) as collect:
+            result = _attach_failed_ci_diagnostic(
+                envelope,
+                request,
+                environ={"STUDIO_GITHUB_TOKEN": "secret"},
+            )
+
+        self.assertEqual(result["evidence"]["ci"], diagnostic)
+        collect.assert_called_once_with(
+            "dbrckk/example",
+            "0123456789abcdef0123456789abcdef01234567",
+            "secret",
+        )
+
+
+    def test_failed_envelope_ci_enrichment_is_optional_without_token(self):
+        envelope = {
+            "target_repo": "dbrckk/example",
+            "succeeded": False,
+            "evidence": {"commit_shas": ["0123456"]},
+        }
+
+        result = _attach_failed_ci_diagnostic(
+            envelope,
+            {"target_repo": "dbrckk/example"},
+            environ={},
+        )
+
+        self.assertNotIn("ci", result["evidence"])
+
 
     def test_run_once_retries_transient_runner_error_then_completes(self):
         client = _FakeClient(sample_job())

@@ -179,6 +179,72 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertNotIn("browser-ui-validation", caps)
 
 
+    def test_mobile_specialty_requires_operational_android_runtime(self):
+        completed = type("Completed", (), {"returncode": 0})()
+
+        def which(name):
+            return {
+                "adb":"/sdk/platform-tools/adb",
+                "emulator":"/sdk/emulator/emulator",
+            }.get(name)
+
+        with (
+            patch("production_os_worker.shutil.which", side_effect=which),
+            patch(
+                "production_os_worker.subprocess.run",
+                return_value=completed,
+            ) as run,
+        ):
+            caps = worker_capabilities({
+                "PRODUCTION_OS_WORKER_SPECIALTIES": "mobile",
+            })
+
+        self.assertIn("mobile-ui-validation", caps)
+        commands = [call.args[0] for call in run.call_args_list]
+        self.assertIn(["/sdk/platform-tools/adb", "version"], commands)
+        self.assertIn(["/sdk/emulator/emulator", "-version"], commands)
+
+
+    def test_mobile_specialty_is_not_advertised_without_emulator(self):
+        def which(name):
+            if name == "adb":
+                return "/sdk/platform-tools/adb"
+            return None
+
+        with patch(
+            "production_os_worker.shutil.which",
+            side_effect=which,
+        ):
+            caps = worker_capabilities({
+                "PRODUCTION_OS_WORKER_SPECIALTIES": "mobile",
+            })
+
+        self.assertNotIn("mobile-ui-validation", caps)
+
+
+    def test_mobile_specialty_is_not_advertised_when_probe_fails(self):
+        completed = type("Completed", (), {"returncode": 1})()
+
+        def which(name):
+            return {
+                "adb":"/sdk/platform-tools/adb",
+                "emulator":"/sdk/emulator/emulator",
+            }.get(name)
+
+        with (
+            patch("production_os_worker.shutil.which", side_effect=which),
+            patch(
+                "production_os_worker.subprocess.run",
+                return_value=completed,
+            ),
+        ):
+            caps = worker_capabilities({
+                "PRODUCTION_OS_WORKER_SPECIALTIES": "mobile",
+            })
+
+        self.assertNotIn("mobile-ui-validation", caps)
+
+
     def test_worker_capabilities_reject_unknown_specialty(self):
         with patch("production_os_worker.shutil.which", return_value=None):
             with self.assertRaisesRegex(

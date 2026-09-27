@@ -116,7 +116,7 @@ def request_check(data):
         }
     if 'tool_contracts' in data:
         contracts = data['tool_contracts']
-        if not isinstance(contracts, dict) or set(contracts) - {'asset_forge'}:
+        if not isinstance(contracts, dict) or set(contracts) - {'asset_forge', 'browser_validation'}:
             raise StudioError('Invalid tool_contracts')
         normalized = {}
         asset_forge = contracts.get('asset_forge')
@@ -139,6 +139,25 @@ def request_check(data):
             ):
                 raise StudioError('Invalid Asset Forge tool contract')
             normalized['asset_forge'] = dict(asset_forge)
+        browser_validation = contracts.get('browser_validation')
+        if browser_validation is not None:
+            if (
+                not isinstance(browser_validation, dict)
+                or set(browser_validation) != {
+                    'schema',
+                    'report_schema',
+                    'script',
+                    'artifacts_dir',
+                    'runtime',
+                }
+                or browser_validation.get('schema') != 'production-os/browser-validation/v1'
+                or browser_validation.get('report_schema') != 'production-os/browser-validation-report/v1'
+                or browser_validation.get('script') != '.production-os/browser_validate.py'
+                or browser_validation.get('artifacts_dir') != '.production-os/browser-artifacts'
+                or browser_validation.get('runtime') != 'python-playwright-chromium'
+            ):
+                raise StudioError('Invalid browser validation tool contract')
+            normalized['browser_validation'] = dict(browser_validation)
         data['tool_contracts'] = normalized
     if 'play_publish' in data:
         publish = data['play_publish']

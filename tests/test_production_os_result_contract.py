@@ -124,6 +124,24 @@ class ProductionOSResultContractTests(unittest.TestCase):
                 "sha": "0123456789abcdef0123456789abcdef01234567",
                 "log_excerpt": "FAILED tests/test_app.py::test_login",
             },
+            "browser_validation": {
+                "status": "passed",
+                "passed": True,
+                "runtime": "python-playwright-chromium",
+                "script": ".production-os/browser_validate.py",
+                "url": "http://127.0.0.1:4173/",
+                "console_errors": [],
+                "page_errors": [],
+                "screenshots": ["home.png"],
+                "copied_artifacts": ["home.png", "report.json"],
+                "execution": {
+                    "returncode": 0,
+                    "duration_seconds": 1.25,
+                    "credential_isolated": True,
+                    "network_allowed": True,
+                    "log_tail": "browser validation passed",
+                },
+            },
         }
 
         with tempfile.TemporaryDirectory() as td:
@@ -160,6 +178,19 @@ class ProductionOSResultContractTests(unittest.TestCase):
         self.assertEqual(evidence["ci"]["job"], "tests")
         self.assertEqual(evidence["ci"]["step"], "pytest")
         self.assertIn("FAILED", evidence["ci"]["log_excerpt"])
+        self.assertTrue(evidence["browser_validation"]["passed"])
+        self.assertEqual(
+            evidence["browser_validation"]["runtime"],
+            "python-playwright-chromium",
+        )
+        self.assertEqual(
+            evidence["browser_validation"]["screenshots"],
+            ["home.png"],
+        )
+        self.assertEqual(
+            evidence["browser_validation"]["execution"]["returncode"],
+            0,
+        )
 
 
     def test_result_envelope_includes_visual_asset_quality(self):

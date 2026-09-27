@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import shutil
+import sys
 import time
 from pathlib import Path
 
@@ -212,6 +214,170 @@ def _record_architecture(state: dict, out: Path, architecture_root: Path) -> Non
         state["architecture_learning"] = write_architecture_learning(architecture_root)
     except OSError:
         state["architecture_learning"] = {"status": "unavailable"}
+
+
+def _browser_validation_contract(req: dict) -> dict | None:
+    contracts = req.get("tool_contracts")
+    if not isinstance(contracts, dict):
+        return None
+    contract = contracts.get("browser_validation")
+    return contract if isinstance(contract, dict) else None
+
+
+def _run_browser_validation(req: dict, work: Path, out: Path) -> dict | None:
+    contract = _browser_validation_contract(req)
+    if contract is None:
+        return None
+
+    script_rel = str(contract.get("script") or "")
+    artifacts_rel = str(contract.get("artifacts_dir") or "")
+    script = (work / script_rel).resolve()
+    artifacts = (work / artifacts_rel).resolve()
+    root = work.resolve()
+    if not script.is_relative_to(root) or not artifacts.is_relative_to(root):
+        return {
+            "status":"failed",
+            "passed":False,
+            "reason":"browser-validation-path-escaped-workspace",
+        }
+    if not script.is_file():
+        return {
+            "status":"failed",
+            "passed":False,
+            "reason":"browser-validation-script-missing",
+            "script":script_rel,
+        }
+
+    execution = run_command(
+        [sys.executable, script_rel],
+        work,
+        timeout=300,
+        network=True,
+    )
+    report_path = artifacts / "report.json"
+    report = None
+    report_error = None
+    if report_path.is_file():
+        try:
+            value = json.loads(report_path.read_text(encoding="utf-8"))
+            if isinstance(value, dict):
+                report = value
+            else:
+                report_error = "browser-validation-report-not-object"
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            report_error = "browser-validation-report-invalid-json"
+    else:
+        report_error = "browser-validation-report-missing"
+
+    valid_report = False
+    screenshots = []
+    console_errors = []
+    page_errors = []
+    tested_url = None
+    if isinstance(report, dict):
+        tested_url = str(report.get("url") or "").strip()[:2000] or None
+        raw_console = report.get("console_errors")
+        raw_page = report.get("page_errors")
+        raw_screenshots = report.get("screenshots")
+        console_errors = (
+            [str(item).strip()[:1000] for item in raw_console if str(item).strip()][:50]
+            if isinstance(raw_console, list)
+            else []
+        )
+        page_errors = (
+            [str(item).strip()[:1000] for item in raw_page if str(item).strip()][:50]
+            if isinstance(raw_page, list)
+            else []
+        )
+        if isinstance(raw_screenshots, list):
+            for item in raw_screenshots[:20]:
+                rel = str(item or "").strip().replace("\\", "/")
+                if not rel:
+                    continue
+                candidate = (artifacts / rel).resolve()
+                if (
+                    candidate.is_relative_to(artifacts)
+                    and candidate.is_file()
+                    and candidate.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp"}
+                ):
+                    screenshots.append(rel)
+        valid_report = (
+            report.get("schema_version")
+            == str(contract.get("report_schema") or "")
+            and tested_url is not None
+            and isinstance(raw_console, list)
+            and isinstance(raw_page, list)
+            and bool(screenshots)
+        )
+        if not valid_report and report_error is None:
+            report_error = "browser-validation-report-contract-invalid"
+
+    evidence_root = out / "browser-validation"
+    copied = []
+    total_bytes = 0
+    if artifacts.is_dir():
+        evidence_root.mkdir(parents=True, exist_ok=True)
+        for source in sorted(artifacts.rglob("*")):
+            if not source.is_file() or source.is_symlink():
+                continue
+            rel = source.relative_to(artifacts)
+            if source.suffix.lower() not in {".png", ".jpg", ".jpeg", ".webp", ".json", ".txt"}:
+                continue
+            try:
+                size = source.stat().st_size
+            except OSError:
+                continue
+            if size < 0 or size > 5_000_000 or total_bytes + size > 12_000_000:
+                continue
+            target = evidence_root / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                shutil.copy2(source, target)
+            except OSError:
+                continue
+            copied.append(rel.as_posix())
+            total_bytes += size
+            if len(copied) >= 25:
+                break
+
+    passed = (
+        execution.get("passed") is True
+        and valid_report
+        and not console_errors
+        and not page_errors
+    )
+    reason = None
+    if not passed:
+        if execution.get("passed") is not True:
+            reason = "browser-validation-script-failed"
+        elif report_error:
+            reason = report_error
+        elif console_errors:
+            reason = "browser-console-errors"
+        elif page_errors:
+            reason = "browser-page-errors"
+        else:
+            reason = "browser-validation-failed"
+
+    return {
+        "status":"passed" if passed else "failed",
+        "passed":passed,
+        "reason":reason,
+        "runtime":str(contract.get("runtime") or "")[:120],
+        "script":script_rel,
+        "url":tested_url,
+        "console_errors":console_errors,
+        "page_errors":page_errors,
+        "screenshots":screenshots,
+        "copied_artifacts":copied,
+        "execution":{
+            "returncode":execution.get("returncode"),
+            "duration_seconds":execution.get("duration_seconds"),
+            "credential_isolated":execution.get("credential_isolated"),
+            "network_allowed":execution.get("network_allowed"),
+            "log_tail":str(execution.get("log_tail") or "")[-6000:],
+        },
+    }
 
 
 def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict:
@@ -1618,6 +1784,11 @@ Objective and current plan:
                 unused_seconds=phase_quotas.review - review_elapsed,
             )
         complete = review.get("complete") is True and verification.get("passed") is True
+        browser_validation = _run_browser_validation(req, work, out)
+        if browser_validation is not None:
+            state["browser_validation"] = browser_validation
+            if browser_validation.get("passed") is not True:
+                complete = False
 
         if isinstance(review_model, dict) and verification.get("passed") in {True, False}:
             review_provider = review_model.get("provider")
@@ -1871,6 +2042,7 @@ Objective and current plan:
             "verification": verification,
             "review": review,
             "review_decision": review_decision,
+            "browser_validation": browser_validation,
             "progress_trace": progress_trace,
             "agent_trace": agent_trace,
             "phase_quotas_final": phase_quotas.as_dict(),
@@ -1898,6 +2070,16 @@ Objective and current plan:
             if isinstance(remaining_items, list) and not complete
             else []
         )
+        if (
+            isinstance(browser_validation, dict)
+            and browser_validation.get("passed") is not True
+        ):
+            browser_reason = str(
+                browser_validation.get("reason")
+                or "browser-validation-failed"
+            )
+            if browser_reason not in state["blockers"]:
+                state["blockers"].append(browser_reason)
         state["model_calls_this_cycle"] = int(cost_controller.snapshot().get("model_calls", 0))
         state["checkpoint_replays_this_cycle"] = 0
         _record_architecture(state, out, architecture_root)

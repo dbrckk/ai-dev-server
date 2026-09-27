@@ -18,10 +18,17 @@ REVIEW={
 }
 
 class GitHub:
-    def __init__(self,pr): self.pr=pr
+    def __init__(self,pr,runs=None,statuses=None):
+        self.pr=pr
+        self.runs=[] if runs is None else runs
+        self.statuses=[] if statuses is None else statuses
     def get(self,path):
-        if path!="/pulls/24": raise AssertionError(path)
-        return self.pr
+        if path=="/pulls/24": return self.pr
+        if path.startswith("/actions/runs?head_sha="):
+            return {"workflow_runs":self.runs}
+        if path=="/commits/"+REVIEW["commit_sha"]+"/status":
+            return {"statuses":self.statuses}
+        raise AssertionError(path)
 
 def pr(state="open",merged=False):
     return {
@@ -36,6 +43,30 @@ def pr(state="open",merged=False):
 class CapabilityRegistryReviewTests(unittest.TestCase):
     def test_open_exact_pr_remains_pending(self):
         self.assertEqual(inspect(GitHub(pr()),REVIEW)["status"],"registry_review_pending")
+
+    def test_open_registry_pr_reports_ready_when_checks_pass(self):
+        result=inspect(
+            GitHub(
+                pr(),
+                runs=[{"name":"CI","status":"completed","conclusion":"success"}],
+                statuses=[{"context":"circleci/smoke","state":"success"}],
+            ),
+            REVIEW,
+        )
+        self.assertEqual(result["status"],"registry_review_ready")
+        self.assertEqual(result["checks"]["state"],"ready")
+
+    def test_open_registry_pr_reports_failed_when_check_fails(self):
+        result=inspect(
+            GitHub(
+                pr(),
+                statuses=[{"context":"circleci/smoke","state":"failure"}],
+            ),
+            REVIEW,
+        )
+        self.assertEqual(result["status"],"registry_review_failed")
+        self.assertEqual(result["checks"]["state"],"failed")
+
 
     def test_merged_exact_pr_reports_merge_without_activation(self):
         result=inspect(GitHub(pr(state="closed",merged=True)),REVIEW)

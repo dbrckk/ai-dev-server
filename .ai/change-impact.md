@@ -1,15 +1,13 @@
 # Change impact
 
-Base: 19c8e97d791f1761b7f6677734275af062268b80
-Head: 33ea95995460d2200c213e0e14e0a7666224c8a0
+Base: ae09bd2fe92d278c6efbd5c12d28b1df41295a03
+Head: 3b822a29901250358d45aa23602a9357012fa508
 
 ## Changed files
-- M studio/generic_project.py
-- M tests/test_browser_validation_contract.py
+- M .github/workflows/production-os-actions-worker.yml
 
 ## Affected areas
-- studio
-- tests
+- .github
 
 ## Related test candidates
 - No direct filename-based test match detected.

@@ -22,16 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T12:54:23Z
+Generated: 2026-09-27T13:08:54Z
 
 ### Git
 - Branch: `main`
-- Head: `33ea95995460`
-- Commit date: 2026-09-27T14:54:03+02:00
-- Commit: fix: bind browser validation to local previews
+- Head: `3b822a299012`
+- Commit date: 2026-09-27T15:08:38+02:00
+- Commit: fix: remove operator token from Actions bootstrap
 - Tracked files: 830
 
 ### Recently changed files
+- `.github/workflows/production-os-actions-worker.yml`
 - `studio/generic_project.py`
 - `tests/test_browser_validation_contract.py`
 - `studio/production_os_worker.py`

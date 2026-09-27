@@ -1,38 +1,20 @@
 {
   "budget": {
-    "confidence": "medium",
+    "confidence": "high",
     "expand_to": 12,
-    "max_files": 6,
+    "max_files": 3,
     "requested_max_files": 12,
-    "score_margin": 0,
-    "tier": "bounded",
+    "score_margin": 4,
+    "tier": "narrow",
     "top_score": 33
   },
   "cache": {
-    "fingerprint": "eb041e08a5c8ac5e74f647edcc0302be473b2697d89bc54925623abdc3330a82",
+    "fingerprint": "5e63bd8fd335664fbe3bd2d97359c712abf0e858522f336eadc03f37a8397056",
     "hit": false
   },
   "candidate_count": 88,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "studio/multi_engine_orchestrator.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 33,
-      "symbols": [
-        "_detect",
-        "_remaining",
-        "_run_stage",
-        "run_project"
-      ]
-    },
     {
       "learning_score": 0,
       "matched_terms": [
@@ -111,59 +93,6 @@
         "test_missing_local_apk_is_reexported_and_rebound",
         "test_requires_android_export_checkpoint",
         "validator"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine",
-        "game"
-      ],
-      "path": "tests/test_godot_runtime_journey_stage.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 29,
-      "symbols": [
-        "FakeGitHub",
-        "GodotRuntimeJourneyStageTests",
-        "installer",
-        "runner",
-        "test_all_journeys_advance_only_to_visual_qa",
-        "test_partial_success_stays_on_journey_stage",
-        "test_requires_device_validated_checkpoint"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine",
-        "game"
-      ],
-      "path": "tests/test_orchestrator.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 29,
-      "symbols": [
-        "GitHubRunnerTests",
-        "OrchestratorTests",
-        "missing_report",
-        "payload_for",
-        "request",
-        "test_adaptation_without_baseline_has_no_promotable_work_order",
-        "test_adapter_reports_complete_only_after_machine_completion",
-        "test_asset_forge_batch_receipt_marks_regenerated_quality",
-        "test_asset_forge_failure_receipt_marks_low_quality",
-        "test_full_pipeline_reaches_finished",
-        "test_multi_asset_request_uses_transactional_asset_forge_batch",
-        "test_non_main_is_rejected_before_generation",
-        "test_premium_visual_request_prefetches_asset_forge_before_preview",
-        "test_research_failure_prevents_synthesis",
-        "test_scheduler_rewind_can_revisit_release_build_boundedly",
-        "test_stage_return_code_two_is_human_action_not_failure",
-        "test_successful_stage_must_advance",
-        "test_unregistered_stage_research_then_synthesis"
       ]
     }
   ],

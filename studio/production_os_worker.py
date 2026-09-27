@@ -27,6 +27,13 @@ BASE_WORKER_CAPABILITIES = [
     "software-development",
 ]
 
+SPECIALIST_CAPABILITIES = {
+    "code": "code-implementation",
+    "debug": "test-debug",
+    "review": "code-review",
+    "browser": "browser-ui-validation",
+}
+
 
 def _asset_forge_operational_status(environ=None) -> dict | None:
     executable = shutil.which("asset-forge")
@@ -59,7 +66,22 @@ def _asset_forge_operational_status(environ=None) -> dict | None:
 
 def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]:
     del home  # Kept for backwards-compatible callers/tests.
+    env = os.environ if environ is None else environ
     capabilities = list(BASE_WORKER_CAPABILITIES)
+    specialties = {
+        item.strip().lower()
+        for item in str(env.get("PRODUCTION_OS_WORKER_SPECIALTIES") or "").split(",")
+        if item.strip()
+    }
+    unknown = specialties.difference(SPECIALIST_CAPABILITIES)
+    if unknown:
+        raise ProductionOSWorkerError(
+            "Unknown worker specialties: " + ", ".join(sorted(unknown))
+        )
+    capabilities.extend(
+        SPECIALIST_CAPABILITIES[name]
+        for name in sorted(specialties)
+    )
     status = _asset_forge_operational_status(environ)
     if not isinstance(status, dict):
         return capabilities
@@ -73,7 +95,7 @@ def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]:
         capabilities.append("visual-asset-production")
     if visual.get("threeDGlb") is True:
         capabilities.append("visual-asset-3d-production")
-    return capabilities
+    return sorted(set(capabilities))
 
 
 class ProductionOSWorkerError(RuntimeError):

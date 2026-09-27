@@ -202,6 +202,7 @@ studio/
   capacity_runtime.py
   capacity_scheduler.py
   capacity_status.py
+  ci_diagnostics.py
   ci_provider.py
   ci_runner.py
   completion.py
@@ -270,6 +271,7 @@ studio/
   github_goal_store.py
   github_memory_store.py
   github_phase_cost_baseline_store.py
+  github_pr_gate.py
   github_provider_health_store.py
   github_provider_metrics_store.py
   github_quick_gate_cache_store.py
@@ -516,6 +518,7 @@ tests/
   test_capacity_scheduler.py
   test_checkout_credentials_policy.py
   test_ci_adaptation.py
+  test_ci_diagnostics.py
   test_ci_runner_admission.py
   test_ci.py
   test_codex_adapter.py
@@ -9956,6 +9959,9 @@ merged = pr.get("merged") is True or pr.get("merged_at") is not None
 state = pr.get("state")
 ⋮----
 merge_sha = pr.get("merge_commit_sha")
+⋮----
+gate = evaluate_pr_gate(github, commit_sha)
+status = {
 ````
 
 ## File: studio/capability_registry.py
@@ -10014,6 +10020,9 @@ merged=pr.get("merged") is True or pr.get("merged_at") is not None
 state=pr.get("state")
 ⋮----
 merge_sha=pr.get("merge_commit_sha")
+⋮----
+gate=evaluate_pr_gate(github,commit_sha)
+status={
 ````
 
 ## File: studio/capability_runtime.py
@@ -10649,6 +10658,102 @@ mode = "pooled-free"
 ⋮----
 mode = "metered"
 row = {
+````
+
+## File: studio/ci_diagnostics.py
+````python
+"""Bounded GitHub Actions failure diagnostics for autonomous repair."""
+⋮----
+_FAILURES = {"failure", "timed_out", "cancelled", "action_required", "startup_failure"}
+_ERROR_MARKERS = (
+⋮----
+class _NoRedirect(urllib.request.HTTPRedirectHandler)
+⋮----
+def redirect_request(self, req, fp, code, msg, headers, newurl)
+⋮----
+def _clean_repo(repository: str) -> str
+⋮----
+value = str(repository or "").strip()
+parts = value.split("/")
+⋮----
+def _clean_sha(sha: str) -> str
+⋮----
+value = str(sha or "").strip().lower()
+⋮----
+def _failed_step(job: dict) -> dict | None
+⋮----
+steps = job.get("steps")
+⋮----
+def _log_excerpt(raw: str, *, max_chars: int = 8000) -> str
+⋮----
+lines = str(raw or "").splitlines()
+⋮----
+candidates = [
+⋮----
+selected = lines[-80:]
+⋮----
+start = max(0, candidates[0] - 8)
+end = min(len(lines), candidates[-1] + 14)
+selected = lines[start:end]
+cleaned = []
+⋮----
+line = re.sub(r"^\d{4}-\d\d-\d\dT\S+Z\s+", "", line)
+⋮----
+line = line[:1200]
+⋮----
+value = "\n".join(cleaned).strip()
+⋮----
+repo = _clean_repo(repository)
+⋮----
+opener = urllib.request.build_opener(_NoRedirect).open
+⋮----
+endpoint = (
+request = urllib.request.Request(
+⋮----
+response = opener(request, timeout)
+⋮----
+location = exc.headers.get("Location")
+⋮----
+status = int(getattr(response, "status", 200))
+⋮----
+location = response.headers.get("Location")
+⋮----
+raw = response.read(2_000_001)
+⋮----
+target = urlsplit(str(location or ""))
+⋮----
+redirected = urllib.request.Request(
+⋮----
+"""Return one compact failed GitHub Actions diagnostic for a commit."""
+⋮----
+sha = _clean_sha(commit_sha)
+⋮----
+api = API("https://api.github.com", token)
+query = urlencode({"head_sha": sha, "per_page": 50})
+⋮----
+payload = api.call(
+⋮----
+runs = payload.get("workflow_runs") if isinstance(payload, dict) else None
+⋮----
+failed_runs = [
+⋮----
+run = failed_runs[0]
+run_id = run.get("id")
+⋮----
+jobs_payload = api.call(
+jobs = jobs_payload.get("jobs") if isinstance(jobs_payload, dict) else None
+⋮----
+failed_job = next(
+⋮----
+step = _failed_step(failed_job)
+job_id = failed_job.get("id")
+excerpt = ""
+⋮----
+fetch = log_fetcher or _fetch_job_log
+⋮----
+excerpt = _log_excerpt(fetch(repo, job_id, token))
+⋮----
+html_url = str(run.get("html_url") or "").strip()
 ````
 
 ## File: studio/ci_provider.py
@@ -15107,6 +15212,39 @@ def persist_local(github, path: Path)
 data = load_local(path) if path.is_file() else {}
 ````
 
+## File: studio/github_pr_gate.py
+````python
+"""Fail-closed readiness evaluation for an exact GitHub pull-request head."""
+⋮----
+_FAILURES = {"failure", "cancelled", "timed_out", "action_required", "startup_failure"}
+_RUNNING = {"queued", "in_progress", "pending", "requested", "waiting"}
+⋮----
+def evaluate(github, commit_sha: str) -> dict
+⋮----
+runs_payload = github.get("/actions/runs?head_sha=" + commit_sha + "&per_page=100")
+runs = (
+statuses_payload = github.get("/commits/" + commit_sha + "/status")
+statuses = (
+⋮----
+failures = []
+pending = []
+⋮----
+name = str(run.get("name") or "workflow")
+status = str(run.get("status") or "").lower()
+conclusion = str(run.get("conclusion") or "").lower()
+⋮----
+name = str(item.get("context") or "status")
+state = str(item.get("state") or "").lower()
+⋮----
+state = "failed"
+⋮----
+state = "pending"
+⋮----
+state = "ready"
+⋮----
+state = "unknown"
+````
+
 ## File: studio/github_provider_health_store.py
 ````python
 """Persist provider circuit-breaker state on the trusted memory branch."""
@@ -15484,6 +15622,42 @@ quality = receipt.get("quality_summary")
 dedup_summary = receipt.get("dedup_summary")
 ⋮----
 visual_assets = {
+⋮----
+summary_evidence = (
+validation = summary.get("validation")
+⋮----
+validation = summary_evidence.get("validation")
+⋮----
+validation = None
+⋮----
+result_summary = (
+⋮----
+result_summary = str(result_summary).strip()[:4000] or None
+⋮----
+raw_commits = (
+⋮----
+raw_commits = [raw_commits]
+commit_shas = []
+⋮----
+value = (
+⋮----
+raw_changed_files = (
+changed_files = []
+⋮----
+value = str(item or "").strip()
+⋮----
+pull_request = (
+⋮----
+pull_request = None
+⋮----
+ci = summary.get("ci")
+⋮----
+ci = summary_evidence.get("ci")
+⋮----
+ci = {
+ci = {key: value for key, value in ci.items() if value}
+⋮----
+ci = None
 ⋮----
 envelope = {
 ⋮----
@@ -20141,6 +20315,25 @@ def _is_visual_handoff(handoff: dict[str, Any]) -> bool
 text = " ".join(
 patterns = (
 ⋮----
+def _retry_guidance(handoff: dict[str, Any]) -> str
+⋮----
+context = handoff.get("retry_context")
+⋮----
+parts = [" Previous autonomous attempt failed; use this verified failure context before changing code."]
+summary = str(context.get("summary") or "").strip()
+⋮----
+validation = context.get("validation")
+⋮----
+status = str(validation.get("status") or "").strip()
+tests = validation.get("tests")
+test_names = (
+⋮----
+ci = context.get("ci")
+⋮----
+route = " / ".join(
+conclusion = str(ci.get("conclusion") or ci.get("status") or "").strip()
+excerpt = str(ci.get("log_excerpt") or "").strip()
+⋮----
 def _asset_forge_guidance(handoff: dict[str, Any]) -> str
 ⋮----
 candidates = handoff.get("reuse_candidates", [])
@@ -20167,7 +20360,7 @@ workflow_id = str(payload.get("workflow_id") or "").strip()
 workflow_task_id = str(payload.get("workflow_task_id") or "").strip()
 job_key = str(job.get("key") or "").strip()
 ⋮----
-brief = (_brief(task, final_goal) + _asset_forge_guidance(handoff))[:24000]
+brief = (
 request = {
 tool_contracts = handoff.get("tool_contracts")
 ⋮----
@@ -20202,6 +20395,18 @@ projects = payload.get("projects")
 projects = []
 projects = [
 ⋮----
+evidence = envelope.get("evidence")
+⋮----
+evidence = {}
+⋮----
+commits = evidence.get("commit_shas")
+⋮----
+sha = str(commits[-1] or "").strip()
+⋮----
+token = str(env.get("STUDIO_GITHUB_TOKEN") or "").strip()
+⋮----
+diagnostic = collect_failed_ci(repository, sha, token)
+⋮----
 def _result_payload(result: dict[str, Any]) -> dict[str, Any]
 ⋮----
 usage = result.get("usage")
@@ -20210,6 +20415,16 @@ evidence = result.get("evidence")
 status = str(result.get("status") or "failed")
 next_stage = result.get("evidence", {}).get("next_stage") if isinstance(
 reason = status if not next_stage else f"{status}: {next_stage}"
+⋮----
+_RETRYABLE_RUNNER_ERROR_TOKENS = (
+⋮----
+def _retryable_runner_error(exc: Exception) -> bool
+⋮----
+message = str(exc).lower()
+⋮----
+def _summary_requests_retry(summary: dict[str, Any]) -> bool
+⋮----
+evidence = summary.get("evidence")
 ⋮----
 """Claim and execute at most one Production-OS job."""
 ⋮----
@@ -20251,6 +20466,10 @@ request_path = project_out / "production-os-request.json"
 ⋮----
 heartbeat_interval = float(heartbeat_interval_seconds)
 ⋮----
+retry_attempts = int(runner_retry_attempts)
+⋮----
+retry_backoff = float(runner_retry_backoff_seconds)
+⋮----
 stop_heartbeat = threading.Event()
 heartbeat_errors: list[str] = []
 ⋮----
@@ -20259,8 +20478,11 @@ def keep_job_alive()
 heartbeat_thread = threading.Thread(
 ⋮----
 started = float(clock())
+runner_attempt = 0
 ⋮----
 summary = run_project(
+⋮----
+delay = retry_backoff * (2 ** (runner_attempt - 1))
 ⋮----
 duration = max(0.0, float(clock()) - started)
 ⋮----
@@ -20273,6 +20495,8 @@ result_path = project_out / "production-os-result.json"
 envelope = json.loads(result_path.read_text(encoding="utf-8"))
 ⋮----
 envelope = write_production_os_result(
+⋮----
+envelope = _attach_failed_ci_diagnostic(envelope, request)
 ⋮----
 status = "completed"
 ⋮----
@@ -26878,7 +27102,7 @@ REVIEW={
 ⋮----
 class GitHub
 ⋮----
-def __init__(self,pr): self.pr=pr
+def __init__(self,pr,runs=None,statuses=None)
 def get(self,path)
 ⋮----
 def pr(state="open",merged=False)
@@ -26886,6 +27110,12 @@ def pr(state="open",merged=False)
 class CapabilityRegistryReviewTests(unittest.TestCase)
 ⋮----
 def test_open_exact_pr_remains_pending(self)
+⋮----
+def test_open_registry_pr_reports_ready_when_checks_pass(self)
+⋮----
+result=inspect(
+⋮----
+def test_open_registry_pr_reports_failed_when_check_fails(self)
 ⋮----
 def test_merged_exact_pr_reports_merge_without_activation(self)
 ⋮----
@@ -26928,7 +27158,7 @@ REVIEW={
 ⋮----
 class GitHub
 ⋮----
-def __init__(self,pr): self.pr=pr
+def __init__(self,pr,runs=None,statuses=None)
 def get(self,path)
 ⋮----
 def pr(state="open",merged=False)
@@ -26936,6 +27166,12 @@ def pr(state="open",merged=False)
 class CapabilityReviewTests(unittest.TestCase)
 ⋮----
 def test_open_exact_pr_remains_pending(self)
+⋮----
+def test_open_exact_pr_reports_ready_when_all_checks_pass(self)
+⋮----
+result=inspect(
+⋮----
+def test_open_exact_pr_reports_failed_when_check_fails(self)
 ⋮----
 def test_merged_exact_pr_reports_merge_commit_without_promoting(self)
 ⋮----
@@ -27302,6 +27538,28 @@ queue_report = json.loads((out / 'queue.json').read_text())
 project = queue_report['projects'][0]
 ⋮----
 evolution = json.loads((out / 'future/evolution-request.json').read_text())
+````
+
+## File: tests/test_ci_diagnostics.py
+````python
+class FakeAPI
+⋮----
+def __init__(self, responses)
+⋮----
+def call(self, method, path, timeout_seconds=30)
+⋮----
+def test_collect_failed_ci_selects_failed_run_job_step_and_log_excerpt()
+⋮----
+api = FakeAPI([
+⋮----
+diagnostic = collect_failed_ci(
+⋮----
+def test_collect_failed_ci_returns_none_when_commit_has_no_failed_run()
+⋮----
+def test_log_excerpt_is_bounded_around_error_signal()
+⋮----
+raw = "\n".join(
+excerpt = _log_excerpt(raw, max_chars=1200)
 ````
 
 ## File: tests/test_ci_runner_admission.py
@@ -31637,13 +31895,17 @@ out = Path(td)
 envelope = write_production_os_result(out, request, summary)
 persisted = json.loads(
 ⋮----
+def test_result_envelope_preserves_delivery_evidence_for_production_os(self)
+⋮----
+envelope = write_production_os_result(
+⋮----
+evidence = envelope["evidence"]
+⋮----
 def test_result_envelope_includes_visual_asset_quality(self)
 ⋮----
 visual = envelope["evidence"]["visual_assets"]
 ⋮----
 def test_no_result_envelope_without_correlation(self)
-⋮----
-envelope = write_production_os_result(
 ````
 
 ## File: tests/test_production_os_worker_cli.py
@@ -31786,6 +32048,12 @@ def opener(request, timeout)
 ⋮----
 job = client.claim(
 ⋮----
+def test_build_studio_request_includes_retry_ci_context_in_brief(self)
+⋮----
+job = sample_job()
+⋮----
+request = build_studio_request(job)
+⋮----
 def test_run_once_acknowledges_pause_without_claiming(self)
 ⋮----
 client = _FakeClient(sample_job())
@@ -31823,6 +32091,24 @@ cancel_event = kwargs["cancel_event"]
 final = client.calls[-1]
 ⋮----
 def test_run_once_reports_runner_exception_and_clears_active_job(self)
+⋮----
+def test_failed_envelope_is_enriched_with_ci_diagnostic_when_sha_exists(self)
+⋮----
+envelope = {
+request = {"target_repo": "dbrckk/example"}
+diagnostic = {
+⋮----
+result = _attach_failed_ci_diagnostic(
+⋮----
+def test_failed_envelope_ci_enrichment_is_optional_without_token(self)
+⋮----
+def test_run_once_retries_transient_runner_error_then_completes(self)
+⋮----
+attempts = {"count": 0}
+⋮----
+def test_run_once_retries_explicit_retry_summary_then_completes(self)
+⋮----
+def test_run_once_does_not_retry_non_transient_runner_error(self)
 ⋮----
 def test_capacity_snapshot_prefers_authenticated_omniroute(self)
 ⋮----

@@ -1,6 +1,18 @@
 {
   "files": [
     {
+      "path": "studio/production_os_worker.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 650
+    },
+    {
       "path": "tests/test_production_os_worker_runtime.py",
       "reasons": [
         "changed",
@@ -10,10 +22,10 @@
         "selected-test",
         "symbol-indexed"
       ],
-      "score": 610
+      "score": 640
     },
     {
-      "path": "studio/production_os_worker.py",
+      "path": "studio/github_runner.py",
       "reasons": [
         "changed",
         "changed-source",
@@ -25,18 +37,19 @@
       "score": 600
     },
     {
-      "path": "studio/github_runner.py",
+      "path": "studio/capability_registry_review.py",
       "reasons": [
         "changed",
         "changed-source",
         "dependency-neighbor",
         "impact",
+        "reverse-dependency-neighbor",
         "symbol-indexed"
       ],
-      "score": 480
+      "score": 490
     },
     {
-      "path": "tests/test_production_os_local_e2e.py",
+      "path": "tests/test_capability_registry_review.py",
       "reasons": [
         "changed",
         "changed-source",
@@ -45,7 +58,84 @@
         "selected-test",
         "symbol-indexed"
       ],
-      "score": 455
+      "score": 490
+    },
+    {
+      "path": "tests/test_capability_review.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 490
+    },
+    {
+      "path": "studio/capability_review.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 440
+    },
+    {
+      "path": "tests/test_production_os_result_contract.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 435
+    },
+    {
+      "path": "tests/test_ci_diagnostics.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 430
+    },
+    {
+      "path": "studio/ci_diagnostics.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "symbol-indexed"
+      ],
+      "score": 390
+    },
+    {
+      "path": "studio/github_pr_gate.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "symbol-indexed"
+      ],
+      "score": 355
+    },
+    {
+      "path": "studio/core.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 275
     },
     {
       "path": "tests/test_orchestrator.py",
@@ -68,6 +158,16 @@
       "score": 255
     },
     {
+      "path": "tests/test_production_os_local_e2e.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 235
+    },
+    {
       "path": "tests/test_production_os_worker.py",
       "reasons": [
         "impact",
@@ -88,14 +188,12 @@
       "score": 225
     },
     {
-      "path": "tests/test_production_os_result_contract.py",
+      "path": "tests/test_ci.py",
       "reasons": [
-        "impact",
-        "reverse-dependency-neighbor",
         "selected-test",
         "symbol-indexed"
       ],
-      "score": 210
+      "score": 200
     },
     {
       "path": "tests/test_github_runner_usage.py",
@@ -108,7 +206,16 @@
       "score": 200
     },
     {
-      "path": "studio/core.py",
+      "path": "studio/fault_injection_smoke.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "symbol-indexed"
+      ],
+      "score": 150
+    },
+    {
+      "path": "tests/test_studio.py",
       "reasons": [
         "dependency-neighbor"
       ],
@@ -123,6 +230,43 @@
       "score": 130
     },
     {
+      "path": "tests/test_unified_routing_score.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 100
+    },
+    {
+      "path": "tests/test_capability_registry.py",
+      "reasons": [
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 90
+    },
+    {
+      "path": "tests/test_diagnostics.py",
+      "reasons": [
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 85
+    },
+    {
+      "path": "studio/capability_adaptation_state.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 75
+    },
+    {
+      "path": "studio/capability_registry.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 75
+    },
+    {
       "path": "studio/capability_registry_promotion_persist.py",
       "reasons": [
         "dependency-neighbor"
@@ -130,14 +274,14 @@
       "score": 50
     },
     {
-      "path": "studio/capability_registry_review.py",
+      "path": "studio/ci_provider.py",
       "reasons": [
         "dependency-neighbor"
       ],
       "score": 50
     },
     {
-      "path": "studio/capability_review.py",
+      "path": "studio/execution_checkpoint.py",
       "reasons": [
         "dependency-neighbor"
       ],
@@ -152,111 +296,6 @@
     },
     {
       "path": "studio/github_agent_performance_store.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/github_artifact_cas_audit_store.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/github_artifact_cas_stats_store.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/github_contextual_strategy_efficiency_store.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/github_execution_checkpoint_store.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/github_full_gate_cache_store.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/github_goal_store.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/github_memory_store.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/github_phase_cost_baseline_store.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/github_provider_health_store.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/github_provider_metrics_store.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/github_quick_gate_cache_store.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/github_routing_history_store.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/github_strategy_efficiency_store.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/github_verification_cost_store.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/goal_engine.py",
       "reasons": [
         "dependency-neighbor"
       ],

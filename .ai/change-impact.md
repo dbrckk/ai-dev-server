@@ -1,12 +1,19 @@
 # Change impact
 
-Base: 1ceb762e97a3e5f5b60e806fdbc992d2e16100bf
-Head: 73e59db54ad912071c7ab8fd218caa682b588028
+Base: 6e49267047d39c48af946fc6f987baee35712c74
+Head: 096844f4020823cdaef3543fd94562d35c025c11
 
 ## Changed files
+- M studio/capability_registry_review.py
+- M studio/capability_review.py
+- A studio/ci_diagnostics.py
+- A studio/github_pr_gate.py
 - M studio/github_runner.py
 - M studio/production_os_worker.py
-- M tests/test_production_os_local_e2e.py
+- M tests/test_capability_registry_review.py
+- M tests/test_capability_review.py
+- A tests/test_ci_diagnostics.py
+- M tests/test_production_os_result_contract.py
 - M tests/test_production_os_worker_runtime.py
 
 ## Affected areas
@@ -14,6 +21,9 @@ Head: 73e59db54ad912071c7ab8fd218caa682b588028
 - tests
 
 ## Related test candidates
+- tests/test_capability_registry_review.py
+- tests/test_capability_review.py
+- tests/test_ci_diagnostics.py
 - tests/test_production_os_worker.py
 
 ## Agent guidance

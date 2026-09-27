@@ -128,6 +128,7 @@ test_capacity_scheduler_work_conserving.py
 test_capacity_scheduler.py
 test_checkout_credentials_policy.py
 test_ci_adaptation.py
+test_ci_diagnostics.py
 test_ci_runner_admission.py
 test_ci.py
 test_codex_adapter.py
@@ -3149,7 +3150,7 @@ REVIEW={
 ⋮----
 class GitHub
 ⋮----
-def __init__(self,pr): self.pr=pr
+def __init__(self,pr,runs=None,statuses=None)
 def get(self,path)
 ⋮----
 def pr(state="open",merged=False)
@@ -3157,6 +3158,12 @@ def pr(state="open",merged=False)
 class CapabilityRegistryReviewTests(unittest.TestCase)
 ⋮----
 def test_open_exact_pr_remains_pending(self)
+⋮----
+def test_open_registry_pr_reports_ready_when_checks_pass(self)
+⋮----
+result=inspect(
+⋮----
+def test_open_registry_pr_reports_failed_when_check_fails(self)
 ⋮----
 def test_merged_exact_pr_reports_merge_without_activation(self)
 ⋮----
@@ -3199,7 +3206,7 @@ REVIEW={
 ⋮----
 class GitHub
 ⋮----
-def __init__(self,pr): self.pr=pr
+def __init__(self,pr,runs=None,statuses=None)
 def get(self,path)
 ⋮----
 def pr(state="open",merged=False)
@@ -3207,6 +3214,12 @@ def pr(state="open",merged=False)
 class CapabilityReviewTests(unittest.TestCase)
 ⋮----
 def test_open_exact_pr_remains_pending(self)
+⋮----
+def test_open_exact_pr_reports_ready_when_all_checks_pass(self)
+⋮----
+result=inspect(
+⋮----
+def test_open_exact_pr_reports_failed_when_check_fails(self)
 ⋮----
 def test_merged_exact_pr_reports_merge_commit_without_promoting(self)
 ⋮----
@@ -3573,6 +3586,28 @@ queue_report = json.loads((out / 'queue.json').read_text())
 project = queue_report['projects'][0]
 ⋮----
 evolution = json.loads((out / 'future/evolution-request.json').read_text())
+```
+
+## File: test_ci_diagnostics.py
+```python
+class FakeAPI
+⋮----
+def __init__(self, responses)
+⋮----
+def call(self, method, path, timeout_seconds=30)
+⋮----
+def test_collect_failed_ci_selects_failed_run_job_step_and_log_excerpt()
+⋮----
+api = FakeAPI([
+⋮----
+diagnostic = collect_failed_ci(
+⋮----
+def test_collect_failed_ci_returns_none_when_commit_has_no_failed_run()
+⋮----
+def test_log_excerpt_is_bounded_around_error_signal()
+⋮----
+raw = "\n".join(
+excerpt = _log_excerpt(raw, max_chars=1200)
 ```
 
 ## File: test_ci_runner_admission.py
@@ -7908,13 +7943,17 @@ out = Path(td)
 envelope = write_production_os_result(out, request, summary)
 persisted = json.loads(
 ⋮----
+def test_result_envelope_preserves_delivery_evidence_for_production_os(self)
+⋮----
+envelope = write_production_os_result(
+⋮----
+evidence = envelope["evidence"]
+⋮----
 def test_result_envelope_includes_visual_asset_quality(self)
 ⋮----
 visual = envelope["evidence"]["visual_assets"]
 ⋮----
 def test_no_result_envelope_without_correlation(self)
-⋮----
-envelope = write_production_os_result(
 ```
 
 ## File: test_production_os_worker_cli.py
@@ -8057,6 +8096,12 @@ def opener(request, timeout)
 ⋮----
 job = client.claim(
 ⋮----
+def test_build_studio_request_includes_retry_ci_context_in_brief(self)
+⋮----
+job = sample_job()
+⋮----
+request = build_studio_request(job)
+⋮----
 def test_run_once_acknowledges_pause_without_claiming(self)
 ⋮----
 client = _FakeClient(sample_job())
@@ -8094,6 +8139,24 @@ cancel_event = kwargs["cancel_event"]
 final = client.calls[-1]
 ⋮----
 def test_run_once_reports_runner_exception_and_clears_active_job(self)
+⋮----
+def test_failed_envelope_is_enriched_with_ci_diagnostic_when_sha_exists(self)
+⋮----
+envelope = {
+request = {"target_repo": "dbrckk/example"}
+diagnostic = {
+⋮----
+result = _attach_failed_ci_diagnostic(
+⋮----
+def test_failed_envelope_ci_enrichment_is_optional_without_token(self)
+⋮----
+def test_run_once_retries_transient_runner_error_then_completes(self)
+⋮----
+attempts = {"count": 0}
+⋮----
+def test_run_once_retries_explicit_retry_summary_then_completes(self)
+⋮----
+def test_run_once_does_not_retry_non_transient_runner_error(self)
 ⋮----
 def test_capacity_snapshot_prefers_authenticated_omniroute(self)
 ⋮----

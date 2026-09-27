@@ -22,23 +22,30 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-24T15:03:21Z
+Generated: 2026-09-27T07:48:19Z
 
 ### Git
 - Branch: `main`
-- Head: `73e59db54ad9`
-- Commit date: 2026-09-24T17:03:09+02:00
-- Commit: feat: honor Production-OS worker control state
-- Tracked files: 824
+- Head: `096844f40208`
+- Commit date: 2026-09-27T09:48:08+02:00
+- Commit: feat: close autonomous retry and CI diagnostic loop
+- Tracked files: 827
 
 ### Recently changed files
+- `studio/capability_registry_review.py`
+- `studio/capability_review.py`
+- `studio/ci_diagnostics.py`
+- `studio/github_pr_gate.py`
 - `studio/github_runner.py`
 - `studio/production_os_worker.py`
-- `tests/test_production_os_local_e2e.py`
+- `tests/test_capability_registry_review.py`
+- `tests/test_capability_review.py`
+- `tests/test_ci_diagnostics.py`
+- `tests/test_production_os_result_contract.py`
 - `tests/test_production_os_worker_runtime.py`
+- `tests/test_production_os_local_e2e.py`
 - `control/production-os-worker-kick.json`
 - `tests/test_production_os_actions_worker_workflow.py`
-- `.github/workflows/production-os-actions-worker.yml`
 
 ### Project signals
 - No common build descriptor detected

@@ -474,6 +474,95 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertIn("RuntimeError", failed["result"]["evidence"]["error_type"])
         self.assertEqual(client.calls[5][2], ())
 
+    def test_run_once_retries_transient_runner_error_then_completes(self):
+        client = _FakeClient(sample_job())
+        attempts = {"count": 0}
+
+        def runner(request_path, out, **kwargs):
+            attempts["count"] += 1
+            if attempts["count"] == 1:
+                raise RuntimeError("provider temporarily unavailable")
+            return {
+                "status": "complete",
+                "finished": True,
+                "next_stage": None,
+                "usage": {"total_tokens": 7},
+            }
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client,
+                worker_id="ai-dev-1",
+                output_root=Path(td),
+                run_project=runner,
+                clock=lambda: 10.0,
+                runner_retry_backoff_seconds=0,
+            )
+
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(attempts["count"], 2)
+        self.assertIn("complete", [call[0] for call in client.calls])
+        self.assertNotIn("fail", [call[0] for call in client.calls])
+
+
+    def test_run_once_retries_explicit_retry_summary_then_completes(self):
+        client = _FakeClient(sample_job())
+        attempts = {"count": 0}
+
+        def runner(request_path, out, **kwargs):
+            attempts["count"] += 1
+            if attempts["count"] == 1:
+                return {
+                    "status": "blocked",
+                    "finished": False,
+                    "next_stage": "retry",
+                    "usage": {"total_tokens": 3},
+                }
+            return {
+                "status": "complete",
+                "finished": True,
+                "next_stage": None,
+                "usage": {"total_tokens": 9},
+            }
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client,
+                worker_id="ai-dev-1",
+                output_root=Path(td),
+                run_project=runner,
+                clock=lambda: 20.0,
+                runner_retry_backoff_seconds=0,
+            )
+
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(attempts["count"], 2)
+        self.assertNotIn("fail", [call[0] for call in client.calls])
+
+
+    def test_run_once_does_not_retry_non_transient_runner_error(self):
+        client = _FakeClient(sample_job())
+        attempts = {"count": 0}
+
+        def runner(request_path, out, **kwargs):
+            attempts["count"] += 1
+            raise RuntimeError("invalid project configuration")
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client,
+                worker_id="ai-dev-1",
+                output_root=Path(td),
+                run_project=runner,
+                clock=lambda: 30.0,
+                runner_retry_backoff_seconds=0,
+            )
+
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(attempts["count"], 1)
+        self.assertIn("fail", [call[0] for call in client.calls])
+
+
     def test_capacity_snapshot_prefers_authenticated_omniroute(self):
         from production_os_worker import production_capacity_snapshot
 

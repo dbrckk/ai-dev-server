@@ -68,7 +68,7 @@ class ProductionOSWorkerCLITests(unittest.TestCase):
                     "register",
                     "ai-dev-1",
                     ("android", "node", "python", "repo-analysis", "software-development", "visual-asset-production"),
-                    "operator-secret",
+                    None,
                 )
             ],
         )

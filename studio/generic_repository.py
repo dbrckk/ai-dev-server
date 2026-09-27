@@ -71,6 +71,51 @@ class GenericRepository:
             raise StudioError("No editable text source could be restored")
         return source,{"source_sha":source,"files":count,"bytes":total}
 
+    def ensure_pull_request(self, *, title: str, body: str = "") -> dict:
+        metadata = self.github.get("")
+        default = metadata.get("default_branch") if isinstance(metadata, dict) else None
+        if not isinstance(default, str) or not default:
+            raise StudioError("Generic repository default branch missing")
+
+        pulls = self.github.get("/pulls?state=open&per_page=100")
+        if not isinstance(pulls, list):
+            raise StudioError("Generic pull request listing unavailable")
+        for pr in pulls:
+            if not isinstance(pr, dict):
+                continue
+            head = pr.get("head") if isinstance(pr.get("head"), dict) else {}
+            base = pr.get("base") if isinstance(pr.get("base"), dict) else {}
+            if head.get("ref") == self.branch and base.get("ref") == default:
+                return {
+                    "number":pr.get("number"),
+                    "state":pr.get("state") or "open",
+                    "url":pr.get("html_url"),
+                    "head":self.branch,
+                    "base":default,
+                    "reused":True,
+                }
+
+        created = self.github.call(
+            "POST",
+            self.github.repo + "/pulls",
+            {
+                "title":str(title or "Autonomous managed project")[:240],
+                "head":self.branch,
+                "base":default,
+                "body":str(body or "")[:12000],
+            },
+        )
+        if not isinstance(created, dict) or created.get("number") is None:
+            raise StudioError("Generic pull request creation failed")
+        return {
+            "number":created.get("number"),
+            "state":created.get("state") or "open",
+            "url":created.get("html_url"),
+            "head":self.branch,
+            "base":default,
+            "reused":False,
+        }
+
     def publish(self,base_sha:str,root:Path,message:str)->str:
         base_tree=self.github.get("/git/commits/"+base_sha).get("tree",{}).get("sha")
         if not isinstance(base_tree,str):

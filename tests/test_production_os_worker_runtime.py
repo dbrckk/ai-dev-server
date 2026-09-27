@@ -160,11 +160,7 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
 
 
     def test_browser_specialty_requires_operational_playwright(self):
-        completed = type(
-            "Completed",
-            (),
-            {"returncode": 0, "stdout": "production-os-mobile\n"},
-        )()
+        completed = type("Completed", (), {"returncode": 0})()
         with patch("production_os_worker.subprocess.run", return_value=completed):
             caps = worker_capabilities({
                 "PRODUCTION_OS_WORKER_SPECIALTIES": "browser",
@@ -191,7 +187,11 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
                 return "/sdk/emulator/emulator"
             return None
 
-        completed = type("Completed", (), {"returncode": 0})()
+        completed = type(
+            "Completed",
+            (),
+            {"returncode": 0, "stdout": "production-os-mobile\n"},
+        )()
         with patch(
             "production_os_worker.shutil.which",
             side_effect=which,

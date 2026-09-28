@@ -11,6 +11,8 @@ from production_os_worker import (
     build_studio_request,
     completion_payload,
     failure_payload,
+    production_capacity_snapshot,
+    production_model_candidates,
 )
 
 
@@ -52,6 +54,78 @@ class ProductionOSWorkerTests(unittest.TestCase):
         self.assertEqual(request["agent_preference"], "codex")
         self.assertTrue(request["id"].startswith("pos-"))
         self.assertLessEqual(len(request["id"]), 48)
+
+    def test_model_catalog_is_credential_free_and_role_aware(self):
+        from provider_router import ProviderSpec
+
+        providers = (
+            ProviderSpec(
+                "local",
+                "http://127.0.0.1:11434/v1",
+                "super-secret-key",
+                "general",
+                code_model="coder",
+                priority=90,
+                unmetered=True,
+            ),
+        )
+
+        catalog = production_model_candidates(providers=providers)
+
+        by_model = {row["model"]:row for row in catalog}
+        self.assertEqual(
+            by_model["coder"]["capabilities"],
+            ["code-implementation", "test-debug"],
+        )
+        self.assertEqual(
+            by_model["general"]["capabilities"],
+            ["code-review", "software-development"],
+        )
+        self.assertTrue(by_model["coder"]["free"])
+        rendered = json.dumps(catalog)
+        self.assertNotIn("super-secret-key", rendered)
+        self.assertNotIn("11434", rendered)
+
+    def test_capacity_snapshot_can_publish_catalog_without_omniroute(self):
+        catalog = [{
+            "provider":"local",
+            "model":"coder",
+            "capabilities":["code-implementation"],
+            "free":True,
+            "priority":90.0,
+        }]
+
+        snapshot = production_capacity_snapshot(
+            {},
+            model_candidates_provider=lambda _env: catalog,
+        )
+
+        self.assertEqual(snapshot, {"model_candidates":catalog})
+
+    def test_capacity_snapshot_combines_quota_and_model_catalog(self):
+        class Snapshot:
+            authenticated_usage = True
+            steady_recurring_tokens = 1000
+            used_this_month = 100
+            remaining_tokens = 900
+            catalog_updated_at = "2026-09-28"
+            catalog_source = "test"
+
+        catalog = [{
+            "provider":"omniroute",
+            "model":"auto",
+            "capabilities":["code-implementation"],
+            "free":True,
+            "priority":98.0,
+        }]
+        snapshot = production_capacity_snapshot(
+            {"OMNIROUTE_URL":"http://127.0.0.1:20128"},
+            fetch_summary=lambda *_args, **_kwargs: Snapshot(),
+            model_candidates_provider=lambda _env: catalog,
+        )
+
+        self.assertEqual(snapshot["remaining_tokens"], 900)
+        self.assertEqual(snapshot["model_candidates"], catalog)
 
     def test_visual_reuse_adds_asset_forge_guidance(self):
         job = self.job()

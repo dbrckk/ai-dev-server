@@ -1,5 +1,6 @@
 import json
 import os
+import tempfile
 from pathlib import Path
 import sys
 import unittest
@@ -14,6 +15,129 @@ from provider_router import candidates_for, load_providers, budget_eligible, Pro
 
 
 class ProviderRouterTests(unittest.TestCase):
+    def test_production_os_route_hint_reorders_existing_eligible_providers(self):
+        providers = (
+            ProviderSpec(
+                "local",
+                "http://127.0.0.1:11434/v1",
+                "",
+                "local-model",
+                unmetered=True,
+            ),
+            ProviderSpec(
+                "cloudflare",
+                "https://example.invalid/v1",
+                "key",
+                "qwen-code",
+                free_preferred=True,
+            ),
+        )
+        route = {
+            "schema_version":"production-os/model-route/v1",
+            "provider":"cloudflare",
+            "model":"qwen-code",
+            "fallbacks":[
+                {"provider":"local","model":"local-model"},
+            ],
+        }
+
+        with patch.dict(
+            os.environ,
+            {"STUDIO_PRODUCTION_OS_MODEL_ROUTE":json.dumps(route)},
+            clear=True,
+        ):
+            ordered = candidates_for(
+                "product",
+                providers=providers,
+            )
+
+        self.assertEqual(
+            [provider.name for provider in ordered],
+            ["cloudflare", "local"],
+        )
+
+    def test_production_os_route_cannot_resurrect_ineligible_provider(self):
+        providers = (
+            ProviderSpec(
+                "healthy",
+                "http://127.0.0.1:11434/v1",
+                "",
+                "healthy-model",
+                unmetered=True,
+            ),
+            ProviderSpec(
+                "blocked",
+                "https://blocked.invalid/v1",
+                "key",
+                "blocked-model",
+            ),
+        )
+        route = {
+            "schema_version":"production-os/model-route/v1",
+            "provider":"blocked",
+            "model":"blocked-model",
+            "fallbacks":[
+                {"provider":"healthy","model":"healthy-model"},
+            ],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            liveness = Path(directory) / "liveness.json"
+            liveness.write_text("{}", encoding="utf-8")
+            env = {
+                "STUDIO_PRODUCTION_OS_MODEL_ROUTE":json.dumps(route),
+                "STUDIO_WORKER_LIVENESS_PATH":str(liveness),
+                "STUDIO_PROVIDER_HEALTH_PATH":str(
+                    Path(directory) / "health.json"
+                ),
+                "STUDIO_PROVIDER_METRICS_PATH":str(
+                    Path(directory) / "metrics.json"
+                ),
+            }
+            with patch.dict(os.environ, env, clear=True), patch(
+                "provider_router.provider_eligible",
+                side_effect=lambda _path, name: name != "blocked",
+            ), patch(
+                "provider_router.summarize_runtime_reliability",
+                return_value={},
+            ), patch(
+                "provider_router.unified_provider_score",
+                return_value={"score":1.0, "components":{}},
+            ):
+                ordered = candidates_for(
+                    "product",
+                    providers=providers,
+                )
+
+        self.assertEqual(
+            [provider.name for provider in ordered],
+            ["healthy"],
+        )
+
+    def test_malformed_external_route_hint_does_not_break_local_routing(self):
+        providers = (
+            ProviderSpec(
+                "local",
+                "http://127.0.0.1:11434/v1",
+                "",
+                "local-model",
+                unmetered=True,
+            ),
+        )
+        with patch.dict(
+            os.environ,
+            {"STUDIO_PRODUCTION_OS_MODEL_ROUTE":"{invalid"},
+            clear=True,
+        ):
+            ordered = candidates_for(
+                "product",
+                providers=providers,
+            )
+
+        self.assertEqual(
+            [provider.name for provider in ordered],
+            ["local"],
+        )
+
     def test_discovered_local_capacity_becomes_provider_specs(self):
         discovered = [{
             "name": "ollama",

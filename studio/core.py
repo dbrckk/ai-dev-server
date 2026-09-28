@@ -41,7 +41,10 @@ def canonical(value):
 def model_route_check(value):
     if not isinstance(value, dict):
         raise StudioError('Invalid model_route')
-    allowed = {'schema_version', 'provider', 'model', 'fallbacks'}
+    allowed = {
+        'schema_version', 'provider', 'model', 'fallbacks',
+        'ranking', 'rejected',
+    }
     if (
         set(value) - allowed
         or value.get('schema_version') != 'production-os/model-route/v1'

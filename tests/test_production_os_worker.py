@@ -1,4 +1,5 @@
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -6,11 +7,12 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from core import request_check
+from core import StudioError, request_check
 from production_os_worker import (
     build_studio_request,
     completion_payload,
     failure_payload,
+    _production_os_model_route,
 )
 
 
@@ -52,6 +54,83 @@ class ProductionOSWorkerTests(unittest.TestCase):
         self.assertEqual(request["agent_preference"], "codex")
         self.assertTrue(request["id"].startswith("pos-"))
         self.assertLessEqual(len(request["id"]), 48)
+
+    def test_build_studio_request_sanitizes_production_os_model_route(self):
+        job = self.job()
+        job["payload"]["handoff"]["model_route"] = {
+            "schema_version":"production-os/model-route/v1",
+            "provider":"cloudflare",
+            "model":"qwen-code",
+            "fallbacks":[
+                {"provider":"ollama","model":"qwen-local"},
+            ],
+            "ranking":[
+                {
+                    "provider":"cloudflare",
+                    "model":"qwen-code",
+                    "score":42,
+                },
+            ],
+            "rejected":[
+                {
+                    "provider":"paid",
+                    "model":"expensive",
+                    "reason":"provider quota is exhausted",
+                },
+            ],
+        }
+
+        request = build_studio_request(job)
+        checked = request_check(request)
+
+        self.assertEqual(
+            checked["model_route"],
+            {
+                "schema_version":"production-os/model-route/v1",
+                "provider":"cloudflare",
+                "model":"qwen-code",
+                "fallbacks":[
+                    {"provider":"ollama","model":"qwen-local"},
+                ],
+            },
+        )
+        self.assertNotIn("ranking", checked["model_route"])
+        self.assertNotIn("rejected", checked["model_route"])
+
+    def test_build_studio_request_rejects_secret_bearing_route_fields(self):
+        job = self.job()
+        job["payload"]["handoff"]["model_route"] = {
+            "schema_version":"production-os/model-route/v1",
+            "provider":"cloudflare",
+            "model":"qwen-code",
+            "fallbacks":[],
+            "api_key":"secret",
+        }
+
+        with self.assertRaises(StudioError):
+            build_studio_request(job)
+
+    def test_model_route_environment_is_scoped_and_restored(self):
+        route = {
+            "schema_version":"production-os/model-route/v1",
+            "provider":"cloudflare",
+            "model":"qwen-code",
+            "fallbacks":[],
+        }
+        os.environ["STUDIO_PRODUCTION_OS_MODEL_ROUTE"] = "previous"
+        try:
+            with _production_os_model_route(route):
+                current = json.loads(
+                    os.environ["STUDIO_PRODUCTION_OS_MODEL_ROUTE"]
+                )
+                self.assertEqual(current["provider"], "cloudflare")
+                self.assertEqual(current["model"], "qwen-code")
+            self.assertEqual(
+                os.environ["STUDIO_PRODUCTION_OS_MODEL_ROUTE"],
+                "previous",
+            )
+        finally:
+            os.environ.pop("STUDIO_PRODUCTION_OS_MODEL_ROUTE", None)
 
     def test_visual_reuse_adds_asset_forge_guidance(self):
         job = self.job()

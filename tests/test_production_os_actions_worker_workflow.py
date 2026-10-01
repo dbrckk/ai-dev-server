@@ -43,3 +43,17 @@ def test_actions_worker_is_single_flight_and_bounded():
     assert "cancel-in-progress: false" in WORKFLOW
     assert "timeout-minutes: 90" in WORKFLOW
     assert "Process one Production-OS job" in WORKFLOW
+
+
+
+def test_actions_worker_gates_expensive_setup_on_control_plane_readiness():
+    readiness = WORKFLOW.index("Verify Production-OS readiness")
+    agent_install = WORKFLOW.index("Install autonomous coding agent")
+    mobile_setup = WORKFLOW.index("Prepare native mobile validation runtime")
+    assert readiness < agent_install < mobile_setup
+    assert "/readyz" in WORKFLOW
+    assert "--connect-timeout 10" in WORKFLOW
+    assert "--max-time 20" in WORKFLOW
+    assert "for attempt in 1 2 3" in WORKFLOW
+    assert 'payload.get("status") != "ready"' in WORKFLOW
+    assert 'payload.get("database") != "reachable"' in WORKFLOW

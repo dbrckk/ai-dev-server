@@ -36,45 +36,29 @@ jobs:
       PYTHONPATH: studio
 
     steps:
-      - name: Checkout AI Dev Server
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          persist-credentials: false
-
-      - name: Set up Python
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
-        with:
-          python-version: '3.12'
-
-      - name: Validate worker configuration
+      - name: Validate Production-OS connection
         shell: bash
         run: |
           set -euo pipefail
-          missing=()
-          for name in PRODUCTION_OS_WORKER_TOKEN STUDIO_GITHUB_TOKEN STUDIO_API_KEY; do
-            if [ -z "${!name:-}" ]; then
-              missing+=("$name")
-            fi
-          done
-          if (( ${#missing[@]} )); then
-            printf 'Missing required GitHub Actions secrets: %s\n' "${missing[*]}"
+          if [ -z "${PRODUCTION_OS_WORKER_TOKEN:-}" ]; then
+            echo "Missing required GitHub Actions secret: PRODUCTION_OS_WORKER_TOKEN"
             exit 2
           fi
-          python - <<'PY'
+          python3 - <<'PY'
           from urllib.parse import urlsplit
           import os
           value=os.environ["PRODUCTION_OS_URL"].strip()
           parsed=urlsplit(value)
           if parsed.scheme != "https" or not parsed.netloc:
               raise SystemExit("PRODUCTION_OS_URL must be HTTPS")
-          print("Production-OS Actions worker configuration: ready")
+          print("Production-OS connection configuration: ready")
           PY
 
       - name: Wait for Production-OS readiness
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PY'
+          python3 - <<'PY'
           import json
           import os
           import time
@@ -118,7 +102,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PY'
+          python3 - <<'PY'
           import json
           import os
           import urllib.error
@@ -174,6 +158,35 @@ jobs:
               handle.write(f"probe_status={probe_status}\n")
           print(f"Production-OS queue probe: {probe_status}")
           PY
+
+      - name: Checkout AI Dev Server
+        if: steps.queue_probe.outputs.has_work != 'false'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        if: steps.queue_probe.outputs.has_work != 'false'
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+
+      - name: Validate execution credentials
+        if: steps.queue_probe.outputs.has_work != 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=()
+          for name in STUDIO_GITHUB_TOKEN STUDIO_API_KEY; do
+            if [ -z "${!name:-}" ]; then
+              missing+=("$name")
+            fi
+          done
+          if (( ${#missing[@]} )); then
+            printf 'Missing required execution secrets: %s\n' "${missing[*]}"
+            exit 2
+          fi
+          echo "Production-OS execution credentials: ready"
 
       - name: Install autonomous coding agent
         if: steps.queue_probe.outputs.has_work != 'false'

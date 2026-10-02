@@ -52,6 +52,8 @@ def test_actions_worker_skips_heavy_setup_only_on_confirmed_empty_queue():
     assert probe < install < base < android
     assert 'base + "/v1/jobs/availability"' in WORKFLOW
     assert '"mobile-ui-validation"' in WORKFLOW
+    assert '"visual-asset-production"' in WORKFLOW
+    assert '"visual-asset-3d-production"' in WORKFLOW
     assert "has_work = True" in WORKFLOW
     assert 'has_work = bool(body.get("available"))' in WORKFLOW
     assert 'probe_status = "fallback"' in WORKFLOW

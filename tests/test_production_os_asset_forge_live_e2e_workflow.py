@@ -46,6 +46,8 @@ def test_live_e2e_validates_remote_bundle_before_integration():
 
 def test_live_e2e_preserves_production_os_correlation_and_remote_evidence():
     assert "Materialize Production OS live visual handoff" in WORKFLOW
+    assert '"report_schema": "asset-forge/production-report/v1"' in WORKFLOW
+    assert '"command": "asset-forge fulfill"' in WORKFLOW
     assert '"productionOsCorrelation": studio["production_os"]' in WORKFLOW
     assert '"assetForgeRemoteRunId": int(os.environ["ASSET_FORGE_RUN_ID"])' in WORKFLOW
     assert '"assetForgeSha": os.environ["ASSET_FORGE_SHA"]' in WORKFLOW

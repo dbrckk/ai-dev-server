@@ -234,11 +234,6 @@ class ProductionOSWorkerCLITests(unittest.TestCase):
 
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
-
 class ProductionOSWorkerStatusFileTests(unittest.TestCase):
     def test_once_writes_machine_readable_idle_status(self):
         with tempfile.TemporaryDirectory() as td:
@@ -295,3 +290,7 @@ class ProductionOSWorkerStatusFileTests(unittest.TestCase):
             payload = json.loads(status_file.read_text(encoding="utf-8"))
             self.assertEqual(payload["status"], "completed")
             self.assertEqual(payload["key"], "job-1")
+
+
+if __name__ == "__main__":
+    unittest.main()

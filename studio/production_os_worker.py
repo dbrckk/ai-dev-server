@@ -1344,6 +1344,11 @@ def main(
         default=10.0,
         help="Seconds to wait between idle polls in continuous mode",
     )
+    parser.add_argument(
+        "--status-file",
+        default=None,
+        help="Write the latest worker cycle result as JSON",
+    )
     args = parser.parse_args(argv)
 
     env = os.environ if environ is None else environ
@@ -1399,6 +1404,21 @@ def main(
             )
             if not isinstance(result, dict):
                 raise RuntimeError("Production-OS worker returned invalid result")
+            if args.status_file:
+                status_path = Path(args.status_file)
+                status_path.parent.mkdir(parents=True, exist_ok=True)
+                atomic_write_text(
+                    status_path,
+                    json.dumps(
+                        {
+                            "schema_version":"ai-dev-server/production-os-worker-status/v1",
+                            **result,
+                        },
+                        ensure_ascii=False,
+                        sort_keys=True,
+                    ) + "\n",
+                    encoding="utf-8",
+                )
             completed_cycles += 1
             if result.get("status") == "idle":
                 if not args.continuous:

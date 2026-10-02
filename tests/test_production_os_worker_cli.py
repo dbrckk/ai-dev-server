@@ -1,3 +1,5 @@
+import json
+import tempfile
 import unittest
 from pathlib import Path
 import sys
@@ -230,6 +232,64 @@ class ProductionOSWorkerCLITests(unittest.TestCase):
         self.assertEqual(runs[0]["capacity"], {"remaining_tokens": 1})
         self.assertEqual(len(capacities), 1)
 
+
+
+class ProductionOSWorkerStatusFileTests(unittest.TestCase):
+    def test_once_writes_machine_readable_idle_status(self):
+        with tempfile.TemporaryDirectory() as td:
+            status_file = Path(td) / "status" / "worker.json"
+            rc = main(
+                [
+                    "--worker-id", "ai-dev-1",
+                    "--once",
+                    "--status-file", str(status_file),
+                ],
+                environ={
+                    "PRODUCTION_OS_URL": "http://127.0.0.1:8787",
+                    "PRODUCTION_OS_WORKER_TOKEN": "worker-secret",
+                },
+                client_factory=lambda base_url, token: _Client(base_url, token),
+                run_once_fn=lambda *args, **kwargs: {
+                    "status":"idle",
+                    "worker_id":"ai-dev-1",
+                },
+                capabilities_provider=lambda env: ["software-development"],
+            )
+
+            self.assertEqual(rc, 0)
+            payload = json.loads(status_file.read_text(encoding="utf-8"))
+            self.assertEqual(
+                payload["schema_version"],
+                "ai-dev-server/production-os-worker-status/v1",
+            )
+            self.assertEqual(payload["status"], "idle")
+            self.assertEqual(payload["worker_id"], "ai-dev-1")
+
+    def test_status_file_records_completed_cycle(self):
+        with tempfile.TemporaryDirectory() as td:
+            status_file = Path(td) / "worker.json"
+            rc = main(
+                [
+                    "--once",
+                    "--status-file", str(status_file),
+                ],
+                environ={
+                    "PRODUCTION_OS_URL": "http://127.0.0.1:8787",
+                    "PRODUCTION_OS_WORKER_TOKEN": "worker-secret",
+                },
+                client_factory=lambda base_url, token: _Client(base_url, token),
+                run_once_fn=lambda *args, **kwargs: {
+                    "status":"completed",
+                    "worker_id":"ai-dev-server-1",
+                    "key":"job-1",
+                },
+                capabilities_provider=lambda env: ["software-development"],
+            )
+
+            self.assertEqual(rc, 0)
+            payload = json.loads(status_file.read_text(encoding="utf-8"))
+            self.assertEqual(payload["status"], "completed")
+            self.assertEqual(payload["key"], "job-1")
 
 
 if __name__ == "__main__":

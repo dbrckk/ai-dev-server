@@ -92,3 +92,11 @@ def test_actions_worker_skips_base_pass_for_mobile_only_work():
 def test_actions_worker_does_not_prepare_android_for_base_only_claim_race():
     assert 'mobile_available = int(mobile_work.get("mobile_jobs") or 0) > 0' in WORKFLOW
     assert "steps.queue_probe.outputs.mobile_available == 'true'" in WORKFLOW
+
+
+
+def test_actions_worker_availability_probe_fails_closed():
+    assert "Production-OS availability probe failed: HTTP" in WORKFLOW
+    assert "Production-OS availability probe returned invalid JSON" in WORKFLOW
+    assert "except urllib.error.HTTPError as exc:" in WORKFLOW
+    assert "raise SystemExit(" in WORKFLOW

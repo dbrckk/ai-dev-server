@@ -113,10 +113,74 @@ jobs:
               time.sleep(5)
           PY
 
+      - name: Probe compatible Production-OS work
+        id: queue_probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+
+          base = os.environ["PRODUCTION_OS_URL"].rstrip("/")
+          token = os.environ["PRODUCTION_OS_WORKER_TOKEN"]
+          payload = {
+              "worker_id": os.environ["PRODUCTION_OS_WORKER_ID"],
+              "capabilities": [
+                  "android",
+                  "node",
+                  "python",
+                  "repo-analysis",
+                  "software-development",
+                  "mobile-ui-validation",
+                  "visual-asset-production",
+                  "visual-asset-3d-production",
+              ],
+          }
+          request = urllib.request.Request(
+              base + "/v1/jobs/availability",
+              method="POST",
+              data=json.dumps(payload, separators=(",", ":")).encode("utf-8"),
+              headers={
+                  "Authorization": "Bearer " + token,
+                  "Content-Type": "application/json",
+                  "Accept": "application/json",
+              },
+          )
+          has_work = True
+          probe_status = "fallback"
+          try:
+              with urllib.request.urlopen(request, timeout=5) as response:
+                  body = json.loads(response.read().decode("utf-8"))
+                  if int(getattr(response, "status", 200)) == 200:
+                      has_work = bool(body.get("available"))
+                      probe_status = "available" if has_work else "idle"
+          except (
+              urllib.error.HTTPError,
+              urllib.error.URLError,
+              TimeoutError,
+              json.JSONDecodeError,
+              OSError,
+          ):
+              # Backward-compatible fail-open behavior: older control planes
+              # or transient probe failures keep the previous full worker path.
+              has_work = True
+              probe_status = "fallback"
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              handle.write(f"has_work={'true' if has_work else 'false'}\n")
+              handle.write(f"probe_status={probe_status}\n")
+          print(f"Production-OS queue probe: {probe_status}")
+          PY
+
       - name: Install autonomous coding agent
+        if: steps.queue_probe.outputs.has_work != 'false'
         run: npm install -g opencode-ai
 
       - name: Process one base-capability Production-OS job
+        if: steps.queue_probe.outputs.has_work != 'false'
         id: base_job
         env:
           PRODUCTION_OS_WORKER_SPECIALTIES: ''
@@ -210,6 +274,7 @@ jobs:
             echo "Control plane: $PRODUCTION_OS_URL"
             echo "Worker id: $PRODUCTION_OS_WORKER_ID"
             echo "Polling mode: scheduled every 5 minutes + manual dispatch"
+            echo "Queue preflight: ${{ steps.queue_probe.outputs.probe_status || 'not-run' }}"
             echo "Base-pass status: ${{ steps.base_job.outputs.status || 'not-run' }}"
             echo "Android fallback used: ${{ steps.base_job.outputs.mobile_fallback || 'false' }}"
           } >> "$GITHUB_STEP_SUMMARY"

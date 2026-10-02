@@ -44,6 +44,24 @@ def test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback(
     assert "scripts/bootstrap-android-ci.sh" in WORKFLOW
 
 
+def test_actions_worker_skips_heavy_setup_only_on_confirmed_empty_queue():
+    probe = WORKFLOW.index("Probe compatible Production-OS work")
+    install = WORKFLOW.index("Install autonomous coding agent")
+    base = WORKFLOW.index("Process one base-capability Production-OS job")
+    android = WORKFLOW.index("Prepare native mobile validation runtime")
+    assert probe < install < base < android
+    assert 'base + "/v1/jobs/availability"' in WORKFLOW
+    assert '"mobile-ui-validation"' in WORKFLOW
+    assert '"visual-asset-production"' in WORKFLOW
+    assert '"visual-asset-3d-production"' in WORKFLOW
+    assert "has_work = True" in WORKFLOW
+    assert 'has_work = bool(body.get("available"))' in WORKFLOW
+    assert 'probe_status = "fallback"' in WORKFLOW
+    assert "Backward-compatible fail-open behavior" in WORKFLOW
+    assert "if: steps.queue_probe.outputs.has_work != 'false'" in WORKFLOW
+    assert "Queue preflight:" in WORKFLOW
+
+
 def test_actions_worker_checks_backend_readiness_before_heavy_setup():
     readiness = WORKFLOW.index("Wait for Production-OS readiness")
     install = WORKFLOW.index("Install autonomous coding agent")

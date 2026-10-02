@@ -22,27 +22,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-09-27T15:16:56Z
+Generated: 2026-10-02T05:56:06Z
 
 ### Git
 - Branch: `main`
-- Head: `694936b972f7`
-- Commit date: 2026-09-27T17:16:28+02:00
-- Commit: fix: start rollback generations from fresh branches
+- Head: `faafe4a692f4`
+- Commit date: 2026-10-02T07:55:35+02:00
+- Commit: perf(actions): add backend readiness and Android fast path
 - Tracked files: 831
 
 ### Recently changed files
-- `studio/production_os_worker.py`
-- `tests/test_production_os_worker_runtime.py`
 - `.github/workflows/production-os-actions-worker.yml`
+- `studio/production_os_worker.py`
 - `tests/test_production_os_actions_worker_workflow.py`
+- `tests/test_production_os_worker_cli.py`
+- `tests/test_production_os_worker_runtime.py`
 - `studio/core.py`
 - `studio/generic_policy.py`
 - `studio/generic_project.py`
 - `studio/github_runner.py`
 - `tests/test_mobile_validation_contract.py`
 - `tests/test_production_os_result_contract.py`
-- `tests/test_browser_validation_contract.py`
 
 ### Project signals
 - No common build descriptor detected

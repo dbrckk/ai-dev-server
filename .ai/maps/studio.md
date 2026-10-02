@@ -15751,6 +15751,8 @@ completed_cycles = 0
 ⋮----
 capacity = capacity_provider(env)
 result = run_once_fn(
+⋮----
+status_path = Path(args.status_file)
 ````
 
 ## File: project_budget.py

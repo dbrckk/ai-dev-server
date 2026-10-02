@@ -7992,7 +7992,13 @@ def test_actions_worker_polls_production_os_on_schedule()
 ⋮----
 def test_actions_worker_uses_existing_secure_credentials()
 ⋮----
-def test_actions_worker_enables_real_mobile_specialist_runtime()
+def test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback()
+⋮----
+def test_actions_worker_checks_backend_readiness_before_heavy_setup()
+⋮----
+readiness = WORKFLOW.index("Wait for Production-OS readiness")
+install = WORKFLOW.index("Install autonomous coding agent")
+android = WORKFLOW.index("Prepare native mobile validation runtime")
 ⋮----
 def test_actions_worker_is_single_flight_and_bounded()
 ```
@@ -8136,6 +8142,18 @@ def capacity_provider(env)
 value = {"remaining_tokens": len(capacities) + 1}
 ⋮----
 def sleeper(seconds)
+⋮----
+class ProductionOSWorkerStatusFileTests(unittest.TestCase)
+⋮----
+def test_once_writes_machine_readable_idle_status(self)
+⋮----
+status_file = Path(td) / "status" / "worker.json"
+⋮----
+payload = json.loads(status_file.read_text(encoding="utf-8"))
+⋮----
+def test_status_file_records_completed_cycle(self)
+⋮----
+status_file = Path(td) / "worker.json"
 ```
 
 ## File: test_production_os_worker_preflight.py

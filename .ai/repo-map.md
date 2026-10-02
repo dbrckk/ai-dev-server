@@ -1866,6 +1866,7 @@ jobs:
       PRODUCTION_OS_WORKER_TOKEN: ${{ secrets.PRODUCTION_OS_WORKER_TOKEN }}
       PRODUCTION_OS_WORKER_ID: github-actions-worker
       PRODUCTION_OS_WORKER_SPECIALTIES: mobile
+      PRODUCTION_OS_STATUS_FILE: studio-output/production-os-actions/worker-status.json
       STUDIO_GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
       STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
       STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
@@ -1910,10 +1911,82 @@ jobs:
           print("Production-OS Actions worker configuration: ready")
           PY
 
+      - name: Wait for Production-OS readiness
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import time
+          import urllib.error
+          import urllib.request
+
+          base = os.environ["PRODUCTION_OS_URL"].rstrip("/")
+          url = base + "/readyz"
+          attempts = 12
+          for attempt in range(1, attempts + 1):
+              try:
+                  request = urllib.request.Request(
+                      url,
+                      headers={"Accept": "application/json"},
+                  )
+                  with urllib.request.urlopen(request, timeout=5) as response:
+                      payload = json.loads(response.read().decode("utf-8"))
+                      if (
+                          int(getattr(response, "status", 200)) == 200
+                          and payload.get("status") == "ready"
+                      ):
+                          print("Production-OS readiness: ready")
+                          break
+              except (
+                  urllib.error.HTTPError,
+                  urllib.error.URLError,
+                  TimeoutError,
+                  json.JSONDecodeError,
+                  OSError,
+              ):
+                  pass
+              if attempt == attempts:
+                  raise SystemExit(
+                      "Production-OS readiness failed after bounded retries"
+                  )
+              time.sleep(5)
+          PY
+
       - name: Install autonomous coding agent
         run: npm install -g opencode-ai
 
+      - name: Process one base-capability Production-OS job
+        id: base_job
+        env:
+          PRODUCTION_OS_WORKER_SPECIALTIES: ''
+          STUDIO_CI_PROVIDER: github
+        shell: bash
+        run: |
+          set -euo pipefail
+          python studio/production_os_worker.py \
+            --worker-id "$PRODUCTION_OS_WORKER_ID" \
+            --output-root studio-output/production-os-actions \
+            --status-file "$PRODUCTION_OS_STATUS_FILE" \
+            --once
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path(os.environ["PRODUCTION_OS_STATUS_FILE"])
+          payload = json.loads(path.read_text(encoding="utf-8"))
+          status = str(payload.get("status") or "unknown")
+          mobile_fallback = "true" if status == "idle" else "false"
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              handle.write(f"status={status}\n")
+              handle.write(f"mobile_fallback={mobile_fallback}\n")
+          print(f"Base-capability worker result: {status}")
+          PY
+
       - name: Prepare native mobile validation runtime
+        if: steps.base_job.outputs.mobile_fallback == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -1947,13 +2020,15 @@ jobs:
           test -w /dev/kvm
           emulator -accel-check
 
-      - name: Process one Production-OS job
+      - name: Process one mobile-capable Production-OS job
+        if: steps.base_job.outputs.mobile_fallback == 'true'
         env:
           STUDIO_CI_PROVIDER: github
         run: |
           python studio/production_os_worker.py \
             --worker-id "$PRODUCTION_OS_WORKER_ID" \
             --output-root studio-output/production-os-actions \
+            --status-file "$PRODUCTION_OS_STATUS_FILE" \
             --once
 
       - name: Retain worker evidence
@@ -1976,6 +2051,8 @@ jobs:
             echo "Control plane: $PRODUCTION_OS_URL"
             echo "Worker id: $PRODUCTION_OS_WORKER_ID"
             echo "Polling mode: scheduled every 5 minutes + manual dispatch"
+            echo "Base-pass status: ${{ steps.base_job.outputs.status || 'not-run' }}"
+            echo "Android fallback used: ${{ steps.base_job.outputs.mobile_fallback || 'false' }}"
           } >> "$GITHUB_STEP_SUMMARY"
 ````
 
@@ -20819,6 +20896,8 @@ completed_cycles = 0
 ⋮----
 capacity = capacity_provider(env)
 result = run_once_fn(
+⋮----
+status_path = Path(args.status_file)
 ````
 
 ## File: studio/project_budget.py
@@ -32234,7 +32313,13 @@ def test_actions_worker_polls_production_os_on_schedule()
 ⋮----
 def test_actions_worker_uses_existing_secure_credentials()
 ⋮----
-def test_actions_worker_enables_real_mobile_specialist_runtime()
+def test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback()
+⋮----
+def test_actions_worker_checks_backend_readiness_before_heavy_setup()
+⋮----
+readiness = WORKFLOW.index("Wait for Production-OS readiness")
+install = WORKFLOW.index("Install autonomous coding agent")
+android = WORKFLOW.index("Prepare native mobile validation runtime")
 ⋮----
 def test_actions_worker_is_single_flight_and_bounded()
 ````
@@ -32378,6 +32463,18 @@ def capacity_provider(env)
 value = {"remaining_tokens": len(capacities) + 1}
 ⋮----
 def sleeper(seconds)
+⋮----
+class ProductionOSWorkerStatusFileTests(unittest.TestCase)
+⋮----
+def test_once_writes_machine_readable_idle_status(self)
+⋮----
+status_file = Path(td) / "status" / "worker.json"
+⋮----
+payload = json.loads(status_file.read_text(encoding="utf-8"))
+⋮----
+def test_status_file_records_completed_cycle(self)
+⋮----
+status_file = Path(td) / "worker.json"
 ````
 
 ## File: tests/test_production_os_worker_preflight.py

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "55d1dc8bbfcdbba6930925a452fb01d36b809814",
-  "head": "694936b972f76a1a384ed405036536e4ac4d41ed",
+  "base": "694936b972f76a1a384ed405036536e4ac4d41ed",
+  "head": "faafe4a692f4befff99574dfb3acabd8c1f0e1f8",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -18,14 +18,14 @@
       "status": "M"
     },
     {
-      "path": "tests/test_production_os_worker_runtime.py",
+      "path": "tests/test_production_os_worker_cli.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
     "studio/production_os_worker.py",
     "tests/test_production_os_actions_worker_workflow.py",
-    "tests/test_production_os_worker_runtime.py"
+    "tests/test_production_os_worker_cli.py"
   ],
   "impacted_files": [
     "studio/production_os_worker.py",
@@ -356,16 +356,22 @@
       "line": 23
     },
     {
-      "name": "test_actions_worker_enables_real_mobile_specialist_runtime",
+      "name": "test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback",
       "kind": "function",
       "file": "tests/test_production_os_actions_worker_workflow.py",
       "line": 31
     },
     {
+      "name": "test_actions_worker_checks_backend_readiness_before_heavy_setup",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 47
+    },
+    {
       "name": "test_actions_worker_is_single_flight_and_bounded",
       "kind": "function",
       "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 41
+      "line": 58
     },
     {
       "name": "_ControlPlane",
@@ -509,97 +515,115 @@
       "name": "_Client",
       "kind": "class",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 10
+      "line": 12
     },
     {
       "name": "__init__",
       "kind": "function",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 11
+      "line": 13
     },
     {
       "name": "register",
       "kind": "function",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 16
+      "line": 18
     },
     {
       "name": "ProductionOSWorkerCLITests",
       "kind": "class",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 22
+      "line": 24
     },
     {
       "name": "test_main_registers_worker_and_runs_once",
       "kind": "function",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 23
+      "line": 25
     },
     {
       "name": "factory",
       "kind": "function",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 27
+      "line": 29
     },
     {
       "name": "run_once_fn",
       "kind": "function",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 32
+      "line": 34
     },
     {
       "name": "test_main_runs_bounded_cycles_until_queue_is_idle",
       "kind": "function",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 82
+      "line": 84
     },
     {
       "name": "factory",
       "kind": "function",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 91
+      "line": 93
     },
     {
       "name": "run_once_fn",
       "kind": "function",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 96
+      "line": 98
     },
     {
       "name": "test_main_requires_worker_token_but_not_operator_token",
       "kind": "function",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 119
+      "line": 121
     },
     {
       "name": "test_main_forwards_capacity_snapshot_to_worker_cycle",
       "kind": "function",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 162
+      "line": 164
     },
     {
       "name": "test_continuous_mode_polls_idle_queue_and_refreshes_capacity",
       "kind": "function",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 194
+      "line": 196
     },
     {
       "name": "capacity_provider",
       "kind": "function",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 198
+      "line": 200
     },
     {
       "name": "run_once_fn",
       "kind": "function",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 203
+      "line": 205
     },
     {
       "name": "sleeper",
       "kind": "function",
       "file": "tests/test_production_os_worker_cli.py",
-      "line": 207
+      "line": 209
+    },
+    {
+      "name": "ProductionOSWorkerStatusFileTests",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 237
+    },
+    {
+      "name": "test_once_writes_machine_readable_idle_status",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 238
+    },
+    {
+      "name": "test_status_file_records_completed_cycle",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_cli.py",
+      "line": 268
     },
     {
       "name": "sample_job",

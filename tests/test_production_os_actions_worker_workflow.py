@@ -44,11 +44,12 @@ def test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback(
     assert "scripts/bootstrap-android-ci.sh" in WORKFLOW
 
 
-def test_actions_worker_checks_backend_readiness_before_heavy_setup():
+def test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup():
     readiness = WORKFLOW.index("Wait for Production-OS readiness")
+    probe = WORKFLOW.index("Probe compatible Production-OS work")
     install = WORKFLOW.index("Install autonomous coding agent")
     android = WORKFLOW.index("Prepare native mobile validation runtime")
-    assert readiness < install < android
+    assert readiness < probe < install < android
     assert 'url = base + "/readyz"' in WORKFLOW
     assert "attempts = 12" in WORKFLOW
     assert "timeout=5" in WORKFLOW
@@ -61,3 +62,33 @@ def test_actions_worker_is_single_flight_and_bounded():
     assert "timeout-minutes: 90" in WORKFLOW
     assert "Process one base-capability Production-OS job" in WORKFLOW
     assert "Process one mobile-capable Production-OS job" in WORKFLOW
+
+
+
+def test_actions_worker_exits_heavy_path_when_no_compatible_work_exists():
+    assert 'base + "/v1/jobs/availability"' in WORKFLOW
+    assert '"mobile-ui-validation"' in WORKFLOW
+    assert "base_available" in WORKFLOW
+    assert "mobile_available" in WORKFLOW
+    assert "any_available" in WORKFLOW
+    assert "if: steps.queue_probe.outputs.any_available == 'true'" in WORKFLOW
+    install = WORKFLOW.split("- name: Install autonomous coding agent", 1)[1]
+    assert "if: steps.queue_probe.outputs.any_available == 'true'" in install[:300]
+
+
+def test_actions_worker_skips_base_pass_for_mobile_only_work():
+    base_step = WORKFLOW.split(
+        "- name: Process one base-capability Production-OS job", 1
+    )[1].split("- name: Prepare native mobile validation runtime", 1)[0]
+    assert "if: steps.queue_probe.outputs.base_available == 'true'" in base_step
+    mobile_condition = (
+        "steps.queue_probe.outputs.mobile_only == 'true' || "
+        "(steps.queue_probe.outputs.mobile_available == 'true' && "
+        "steps.base_job.outputs.mobile_fallback == 'true')"
+    )
+    assert WORKFLOW.count(mobile_condition) == 2
+
+
+def test_actions_worker_does_not_prepare_android_for_base_only_claim_race():
+    assert 'mobile_available = int(mobile_work.get("mobile_jobs") or 0) > 0' in WORKFLOW
+    assert "steps.queue_probe.outputs.mobile_available == 'true'" in WORKFLOW

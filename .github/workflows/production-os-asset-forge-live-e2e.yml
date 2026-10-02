@@ -92,8 +92,8 @@ jobs:
                       "tool_contracts": {
                           "asset_forge": {
                               "request_schema": "asset-forge/production-request/v1",
-                              "report_schema": "asset-forge/remote-batch-result/v1",
-                              "command": "asset-forge remote batch",
+                              "report_schema": "asset-forge/production-report/v1",
+                              "command": "asset-forge fulfill",
                               "required_capability": "visual-asset-production"
                           }
                       }
@@ -101,7 +101,10 @@ jobs:
               }
           }
           request = request_check(build_studio_request(job))
-          assert request["tool_contracts"]["asset_forge"]["required_capability"] == "visual-asset-production"
+          contract = request["tool_contracts"]["asset_forge"]
+          assert contract["command"] == "asset-forge fulfill"
+          assert contract["report_schema"] == "asset-forge/production-report/v1"
+          assert contract["required_capability"] == "visual-asset-production"
           Path("build/live-e2e/studio-request.json").write_text(
               json.dumps(request, indent=2, sort_keys=True) + "\n",
               encoding="utf-8",

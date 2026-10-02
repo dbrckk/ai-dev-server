@@ -6,37 +6,55 @@ WORKFLOW = Path(
 ).read_text(encoding="utf-8")
 
 
-def test_live_e2e_supports_current_free_asset_forge_backends():
-    assert "CLOUDFLARE_API_TOKEN" in WORKFLOW
-    assert "CLOUDFLARE_ACCOUNT_ID" in WORKFLOW
-    assert "KAGGLE_API_TOKEN" in WORKFLOW
-    assert "KAGGLE_USERNAME" in WORKFLOW
-    assert 'echo "backend=cloudflare"' in WORKFLOW
-    assert 'echo "backend=kaggle-qwen"' in WORKFLOW
-    assert 'echo "backend=pollinations"' in WORKFLOW
-    assert 'echo "backend=imagen-codex"' in WORKFLOW
+def test_live_e2e_delegates_generation_to_asset_forge_repository():
+    assert "GH_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}" in WORKFLOW
+    assert "ASSET_FORGE_REPO: dbrckk/asset-forge" in WORKFLOW
+    assert "gh workflow run production-os-batch.yml" in WORKFLOW
+    assert '--repo "$ASSET_FORGE_REPO"' in WORKFLOW
+    assert "-f backend=auto" in WORKFLOW
+    assert "gh run watch" in WORKFLOW
+    assert "gh run download" in WORKFLOW
 
 
-def test_live_e2e_never_reports_green_without_real_generation_backend():
-    assert "if: steps.credential.outputs.configured != 'true'" in WORKFLOW
-    assert "github.event_name == 'workflow_dispatch'" not in WORKFLOW
-    assert "No real Asset Forge image-generation backend is configured." in WORKFLOW
-    assert "Live E2E requires Cloudflare, Kaggle, Pollinations, or imagen-codex credentials." in WORKFLOW
+def test_live_e2e_does_not_duplicate_asset_forge_provider_secrets():
+    assert "secrets.CLOUDFLARE_API_TOKEN" not in WORKFLOW
+    assert "secrets.CLOUDFLARE_ACCOUNT_ID" not in WORKFLOW
+    assert "secrets.KAGGLE_API_TOKEN" not in WORKFLOW
+    assert "secrets.KAGGLE_USERNAME" not in WORKFLOW
+    assert "secrets.POLLINATIONS_API_KEY" not in WORKFLOW
+    assert "secrets.CODEX_ACCESS_TOKEN" not in WORKFLOW
+    assert "secrets.CHATGPT_ACCESS_TOKEN" not in WORKFLOW
 
 
-def test_live_e2e_uses_current_asset_forge_and_generation_dependencies():
+def test_live_e2e_requires_exact_asset_forge_sha():
     assert "Checkout current Asset Forge" in WORKFLOW
     assert "repository: dbrckk/asset-forge" in WORKFLOW
-    assert "ref: 7cd615b9b42956b9b3d0d44992ac3e45e1764b6b" not in WORKFLOW
-    assert 'python -m pip install "./asset-forge[generation]"' in WORKFLOW
-    assert "python -m pip install -U kaggle" in WORKFLOW
-    assert "npm install --global @pollinations/cli@0.1.15" in WORKFLOW
+    assert 'local_sha="$(git -C asset-forge rev-parse HEAD)"' in WORKFLOW
+    assert 'remote_sha="$(gh run view "$run_id"' in WORKFLOW
+    assert 'if [ "$local_sha" != "$remote_sha" ]; then' in WORKFLOW
+    assert "Asset Forge main advanced during dispatch" in WORKFLOW
 
 
-def test_live_e2e_checks_backend_specific_readiness():
-    assert 'backend == "cloudflare"' in WORKFLOW
-    assert 'data["generation"]["cloudflare"]["rasterReady"] is True' in WORKFLOW
-    assert 'backend == "kaggle-qwen"' in WORKFLOW
-    assert 'data["generation"]["kaggleQwen"]["rasterReady"] is True' in WORKFLOW
-    assert 'backend == "pollinations"' in WORKFLOW
-    assert 'backend == "imagen-codex"' in WORKFLOW
+def test_live_e2e_validates_remote_bundle_before_integration():
+    assert "asset-forge/remote-batch-result/v1" in WORKFLOW
+    assert 'assert result["success"] is True' in WORKFLOW
+    assert 'assert result["count"] == 1' in WORKFLOW
+    assert 'assert digest == item["sha256"]' in WORKFLOW
+    assert "live-production-pipeline-icon.png" in WORKFLOW
+    assert "deadline-zero/assets/art/live-production-pipeline-icon.png" in WORKFLOW
+
+
+def test_live_e2e_preserves_production_os_correlation_and_remote_evidence():
+    assert "Materialize Production OS live visual handoff" in WORKFLOW
+    assert '"productionOsCorrelation": studio["production_os"]' in WORKFLOW
+    assert '"assetForgeRemoteRunId": int(os.environ["ASSET_FORGE_RUN_ID"])' in WORKFLOW
+    assert '"assetForgeSha": os.environ["ASSET_FORGE_SHA"]' in WORKFLOW
+    assert '"assetForgeRouting": batch.get("routing_summary")' in WORKFLOW
+    assert '"deadlineZeroCompileAndTests": True' in WORKFLOW
+
+
+def test_live_e2e_is_bounded_and_cross_repo_token_is_mandatory():
+    assert "timeout-minutes: 50" in WORKFLOW
+    assert "STUDIO_GITHUB_TOKEN or CODESPACES_PAT is required" in WORKFLOW
+    assert "Unable to locate dispatched Asset Forge workflow run." in WORKFLOW
+    assert "for attempt in $(seq 1 30)" in WORKFLOW

@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-02T10:48:17Z
+Generated: 2026-10-02T12:32:34Z
 
 ### Git
 - Branch: `main`
-- Head: `6426577b2b67`
-- Commit date: 2026-10-02T12:47:58+02:00
-- Commit: perf(actions): skip heavy worker setup when no compatible work exists
+- Head: `9ec3e5a3d0da`
+- Commit date: 2026-10-02T14:32:22+02:00
+- Commit: fix(actions): surface rejected Production-OS worker credentials early
 - Tracked files: 831
 
 ### Recently changed files
@@ -37,12 +37,6 @@ Generated: 2026-10-02T10:48:17Z
 - `studio/production_os_worker.py`
 - `tests/test_production_os_worker_cli.py`
 - `tests/test_production_os_worker_runtime.py`
-- `studio/core.py`
-- `studio/generic_policy.py`
-- `studio/generic_project.py`
-- `studio/github_runner.py`
-- `tests/test_mobile_validation_contract.py`
-- `tests/test_production_os_result_contract.py`
 
 ### Project signals
 - No common build descriptor detected

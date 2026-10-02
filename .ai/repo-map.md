@@ -1994,6 +1994,12 @@ jobs:
                   with urllib.request.urlopen(request, timeout=10) as response:
                       payload = json.loads(response.read().decode("utf-8"))
               except urllib.error.HTTPError as exc:
+                  if exc.code in {401, 403}:
+                      raise SystemExit(
+                          "Production-OS worker token rejected; synchronize "
+                          "PRODUCTION_OS_WORKER_TOKEN between GitHub Actions "
+                          "and the control plane"
+                      ) from None
                   raise SystemExit(
                       f"Production-OS availability probe failed: HTTP {exc.code}"
                   ) from None
@@ -32411,6 +32417,8 @@ base_step = WORKFLOW.split(
 mobile_condition = (
 ⋮----
 def test_actions_worker_does_not_prepare_android_for_base_only_claim_race()
+⋮----
+def test_actions_worker_reports_rejected_worker_token_without_exposing_it()
 ⋮----
 def test_actions_worker_availability_probe_fails_closed()
 ````

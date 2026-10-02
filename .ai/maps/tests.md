@@ -8015,6 +8015,8 @@ mobile_condition = (
 ⋮----
 def test_actions_worker_does_not_prepare_android_for_base_only_claim_race()
 ⋮----
+def test_actions_worker_reports_rejected_worker_token_without_exposing_it()
+⋮----
 def test_actions_worker_availability_probe_fails_closed()
 ```
 

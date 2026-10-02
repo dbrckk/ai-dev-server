@@ -7994,13 +7994,28 @@ def test_actions_worker_uses_existing_secure_credentials()
 ⋮----
 def test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback()
 ⋮----
-def test_actions_worker_checks_backend_readiness_before_heavy_setup()
+def test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup()
 ⋮----
 readiness = WORKFLOW.index("Wait for Production-OS readiness")
+probe = WORKFLOW.index("Probe compatible Production-OS work")
 install = WORKFLOW.index("Install autonomous coding agent")
 android = WORKFLOW.index("Prepare native mobile validation runtime")
 ⋮----
 def test_actions_worker_is_single_flight_and_bounded()
+⋮----
+def test_actions_worker_exits_heavy_path_when_no_compatible_work_exists()
+⋮----
+install = WORKFLOW.split("- name: Install autonomous coding agent", 1)[1]
+⋮----
+def test_actions_worker_skips_base_pass_for_mobile_only_work()
+⋮----
+base_step = WORKFLOW.split(
+⋮----
+mobile_condition = (
+⋮----
+def test_actions_worker_does_not_prepare_android_for_base_only_claim_race()
+⋮----
+def test_actions_worker_availability_probe_fails_closed()
 ```
 
 ## File: test_production_os_local_e2e.py

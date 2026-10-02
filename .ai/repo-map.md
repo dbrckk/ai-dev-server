@@ -1954,10 +1954,82 @@ jobs:
               time.sleep(5)
           PY
 
+      - name: Probe compatible Production-OS work
+        id: queue_probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+
+          base = os.environ["PRODUCTION_OS_URL"].rstrip("/")
+          token = os.environ["PRODUCTION_OS_WORKER_TOKEN"].strip()
+          worker_id = os.environ["PRODUCTION_OS_WORKER_ID"].strip()
+          base_capabilities = [
+              "android",
+              "node",
+              "python",
+              "repo-analysis",
+              "software-development",
+          ]
+
+          def probe(capabilities):
+              request = urllib.request.Request(
+                  base + "/v1/jobs/availability",
+                  method="POST",
+                  data=json.dumps({
+                      "worker_id": worker_id,
+                      "capabilities": capabilities,
+                  }).encode("utf-8"),
+                  headers={
+                      "Authorization": "Bearer " + token,
+                      "Content-Type": "application/json",
+                      "Accept": "application/json",
+                  },
+              )
+              try:
+                  with urllib.request.urlopen(request, timeout=10) as response:
+                      payload = json.loads(response.read().decode("utf-8"))
+              except urllib.error.HTTPError as exc:
+                  raise SystemExit(
+                      f"Production-OS availability probe failed: HTTP {exc.code}"
+                  ) from None
+              if not isinstance(payload, dict):
+                  raise SystemExit("Production-OS availability probe returned invalid JSON")
+              return payload
+
+          base_work = probe(base_capabilities)
+          mobile_work = probe(base_capabilities + ["mobile-ui-validation"])
+          base_available = bool(base_work.get("available"))
+          any_available = base_available or bool(mobile_work.get("available"))
+          mobile_available = int(mobile_work.get("mobile_jobs") or 0) > 0
+          mobile_only = mobile_available and not base_available
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              handle.write(f"base_available={'true' if base_available else 'false'}\n")
+              handle.write(f"any_available={'true' if any_available else 'false'}\n")
+              handle.write(f"mobile_available={'true' if mobile_available else 'false'}\n")
+              handle.write(f"mobile_only={'true' if mobile_only else 'false'}\n")
+              handle.write(
+                  f"compatible_jobs={int(mobile_work.get('compatible_jobs') or 0)}\n"
+              )
+
+          print(
+              "Production-OS queue preflight: "
+              f"base={base_available} any={any_available} "
+              f"mobile={mobile_available} mobile_only={mobile_only}"
+          )
+          PY
+
       - name: Install autonomous coding agent
+        if: steps.queue_probe.outputs.any_available == 'true'
         run: npm install -g opencode-ai
 
       - name: Process one base-capability Production-OS job
+        if: steps.queue_probe.outputs.base_available == 'true'
         id: base_job
         env:
           PRODUCTION_OS_WORKER_SPECIALTIES: ''
@@ -1986,7 +2058,7 @@ jobs:
           PY
 
       - name: Prepare native mobile validation runtime
-        if: steps.base_job.outputs.mobile_fallback == 'true'
+        if: steps.queue_probe.outputs.mobile_only == 'true' || (steps.queue_probe.outputs.mobile_available == 'true' && steps.base_job.outputs.mobile_fallback == 'true')
         shell: bash
         run: |
           set -euo pipefail
@@ -2021,7 +2093,7 @@ jobs:
           emulator -accel-check
 
       - name: Process one mobile-capable Production-OS job
-        if: steps.base_job.outputs.mobile_fallback == 'true'
+        if: steps.queue_probe.outputs.mobile_only == 'true' || (steps.queue_probe.outputs.mobile_available == 'true' && steps.base_job.outputs.mobile_fallback == 'true')
         env:
           STUDIO_CI_PROVIDER: github
         run: |
@@ -2051,8 +2123,12 @@ jobs:
             echo "Control plane: $PRODUCTION_OS_URL"
             echo "Worker id: $PRODUCTION_OS_WORKER_ID"
             echo "Polling mode: scheduled every 5 minutes + manual dispatch"
+            echo "Compatible work at preflight: ${{ steps.queue_probe.outputs.any_available || 'unknown' }}"
+            echo "Compatible jobs observed: ${{ steps.queue_probe.outputs.compatible_jobs || '0' }}"
+            echo "Mobile work at preflight: ${{ steps.queue_probe.outputs.mobile_available || 'false' }}"
+            echo "Mobile-only preflight: ${{ steps.queue_probe.outputs.mobile_only || 'false' }}"
             echo "Base-pass status: ${{ steps.base_job.outputs.status || 'not-run' }}"
-            echo "Android fallback used: ${{ steps.base_job.outputs.mobile_fallback || 'false' }}"
+            echo "Android fallback used: ${{ steps.base_job.outputs.mobile_fallback || steps.queue_probe.outputs.mobile_only || 'false' }}"
           } >> "$GITHUB_STEP_SUMMARY"
 ````
 
@@ -32315,13 +32391,28 @@ def test_actions_worker_uses_existing_secure_credentials()
 ⋮----
 def test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback()
 ⋮----
-def test_actions_worker_checks_backend_readiness_before_heavy_setup()
+def test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup()
 ⋮----
 readiness = WORKFLOW.index("Wait for Production-OS readiness")
+probe = WORKFLOW.index("Probe compatible Production-OS work")
 install = WORKFLOW.index("Install autonomous coding agent")
 android = WORKFLOW.index("Prepare native mobile validation runtime")
 ⋮----
 def test_actions_worker_is_single_flight_and_bounded()
+⋮----
+def test_actions_worker_exits_heavy_path_when_no_compatible_work_exists()
+⋮----
+install = WORKFLOW.split("- name: Install autonomous coding agent", 1)[1]
+⋮----
+def test_actions_worker_skips_base_pass_for_mobile_only_work()
+⋮----
+base_step = WORKFLOW.split(
+⋮----
+mobile_condition = (
+⋮----
+def test_actions_worker_does_not_prepare_android_for_base_only_claim_race()
+⋮----
+def test_actions_worker_availability_probe_fails_closed()
 ````
 
 ## File: tests/test_production_os_local_e2e.py

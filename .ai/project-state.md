@@ -22,19 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-02T05:56:06Z
+Generated: 2026-10-02T10:48:17Z
 
 ### Git
 - Branch: `main`
-- Head: `faafe4a692f4`
-- Commit date: 2026-10-02T07:55:35+02:00
-- Commit: perf(actions): add backend readiness and Android fast path
+- Head: `6426577b2b67`
+- Commit date: 2026-10-02T12:47:58+02:00
+- Commit: perf(actions): skip heavy worker setup when no compatible work exists
 - Tracked files: 831
 
 ### Recently changed files
 - `.github/workflows/production-os-actions-worker.yml`
-- `studio/production_os_worker.py`
 - `tests/test_production_os_actions_worker_workflow.py`
+- `studio/production_os_worker.py`
 - `tests/test_production_os_worker_cli.py`
 - `tests/test_production_os_worker_runtime.py`
 - `studio/core.py`

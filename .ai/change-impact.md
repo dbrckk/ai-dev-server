@@ -1,21 +1,18 @@
 # Change impact
 
-Base: a712ca9c923d5ea9cd6b79aa491e500d59939aae
-Head: faafe4a692f4befff99574dfb3acabd8c1f0e1f8
+Base: 7dff1e0760ec24c12188b475968bf4e2a4b6f32a
+Head: 6426577b2b67bad2687a5d8b74e6a01050b4991c
 
 ## Changed files
 - M .github/workflows/production-os-actions-worker.yml
-- M studio/production_os_worker.py
 - M tests/test_production_os_actions_worker_workflow.py
-- M tests/test_production_os_worker_cli.py
 
 ## Affected areas
 - .github
-- studio
 - tests
 
 ## Related test candidates
-- tests/test_production_os_worker.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

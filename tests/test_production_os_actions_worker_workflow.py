@@ -95,6 +95,13 @@ def test_actions_worker_does_not_prepare_android_for_base_only_claim_race():
 
 
 
+def test_actions_worker_reports_rejected_worker_token_without_exposing_it():
+    assert "if exc.code in {401, 403}:" in WORKFLOW
+    assert "Production-OS worker token rejected" in WORKFLOW
+    assert "synchronize " in WORKFLOW
+    assert "PRODUCTION_OS_WORKER_TOKEN between GitHub Actions" in WORKFLOW
+
+
 def test_actions_worker_availability_probe_fails_closed():
     assert "Production-OS availability probe failed: HTTP" in WORKFLOW
     assert "Production-OS availability probe returned invalid JSON" in WORKFLOW

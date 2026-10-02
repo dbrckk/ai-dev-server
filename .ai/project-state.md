@@ -22,16 +22,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-02T12:32:34Z
+Generated: 2026-10-02T17:31:38Z
 
 ### Git
 - Branch: `main`
-- Head: `9ec3e5a3d0da`
-- Commit date: 2026-10-02T14:32:22+02:00
-- Commit: fix(actions): surface rejected Production-OS worker credentials early
+- Head: `4cd04e5b9b95`
+- Commit date: 2026-10-02T19:31:27+02:00
+- Commit: fix(e2e): validate current Asset Forge in live pipeline
 - Tracked files: 831
 
 ### Recently changed files
+- `.github/workflows/production-os-asset-forge-live-e2e.yml`
 - `.github/workflows/production-os-actions-worker.yml`
 - `tests/test_production_os_actions_worker_workflow.py`
 - `studio/production_os_worker.py`

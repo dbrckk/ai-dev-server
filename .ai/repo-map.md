@@ -2354,11 +2354,10 @@ jobs:
       - name: Checkout AI Dev Server
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
-      - name: Checkout pinned Asset Forge
+      - name: Checkout current Asset Forge
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: dbrckk/asset-forge
-          ref: 7cd615b9b42956b9b3d0d44992ac3e45e1764b6b
           path: asset-forge
 
       - name: Checkout Deadline Zero
@@ -2403,6 +2402,13 @@ jobs:
             echo "configured=false" >> "$GITHUB_OUTPUT"
             echo "::notice::No live image credential is configured; live E2E skipped."
           fi
+
+      - name: Require a live backend for manual E2E
+        if: github.event_name == 'workflow_dispatch' && steps.credential.outputs.configured != 'true'
+        shell: bash
+        run: |
+          echo "::error::Manual live E2E requires a configured real image-generation backend."
+          exit 2
 
       - name: Install live visual toolchain
         if: steps.credential.outputs.configured == 'true'

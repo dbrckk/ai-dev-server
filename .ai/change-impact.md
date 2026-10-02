@@ -1,15 +1,13 @@
 # Change impact
 
-Base: b11f9dadb5234305ade893bdc4df8187d386ba40
-Head: 9ec3e5a3d0dad2d31712b51e1bf06527946a0c52
+Base: 9705a1ce320baca52232a0f702f9efbfca298847
+Head: 4cd04e5b9b951b7db9c948c5adbc86ddf7e9c5d2
 
 ## Changed files
-- M .github/workflows/production-os-actions-worker.yml
-- M tests/test_production_os_actions_worker_workflow.py
+- M .github/workflows/production-os-asset-forge-live-e2e.yml
 
 ## Affected areas
 - .github
-- tests
 
 ## Related test candidates
 - No direct filename-based test match detected.

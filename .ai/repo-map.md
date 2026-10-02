@@ -662,6 +662,7 @@ tests/
   test_privacy_stage.py
   test_privacy.py
   test_production_os_actions_worker_workflow.py
+  test_production_os_asset_forge_live_e2e_workflow.py
   test_production_os_local_e2e.py
   test_production_os_result_contract.py
   test_production_os_worker_cli.py
@@ -2347,6 +2348,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
       POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
       CODEX_ACCESS_TOKEN: ${{ secrets.CODEX_ACCESS_TOKEN }}
       CHATGPT_ACCESS_TOKEN: ${{ secrets.CHATGPT_ACCESS_TOKEN }}
@@ -2385,8 +2390,21 @@ jobs:
 
       - name: Select live generation backend
         id: credential
+        shell: bash
         run: |
-          if [ -n "$POLLINATIONS_API_KEY" ]; then
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+            echo "backend=cloudflare" >> "$GITHUB_OUTPUT"
+            echo "format=png" >> "$GITHUB_OUTPUT"
+            echo "asset_type=pixel-art" >> "$GITHUB_OUTPUT"
+            echo "artifact=live-production-pipeline-icon.png" >> "$GITHUB_OUTPUT"
+          elif [ -n "$KAGGLE_API_TOKEN" ] && [ -n "$KAGGLE_USERNAME" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+            echo "backend=kaggle-qwen" >> "$GITHUB_OUTPUT"
+            echo "format=png" >> "$GITHUB_OUTPUT"
+            echo "asset_type=pixel-art" >> "$GITHUB_OUTPUT"
+            echo "artifact=live-production-pipeline-icon.png" >> "$GITHUB_OUTPUT"
+          elif [ -n "$POLLINATIONS_API_KEY" ]; then
             echo "configured=true" >> "$GITHUB_OUTPUT"
             echo "backend=pollinations" >> "$GITHUB_OUTPUT"
             echo "format=svg" >> "$GITHUB_OUTPUT"
@@ -2400,25 +2418,39 @@ jobs:
             echo "artifact=live-production-pipeline-icon.png" >> "$GITHUB_OUTPUT"
           else
             echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::No live image credential is configured; live E2E skipped."
+            echo "::error::No real Asset Forge image-generation backend is configured."
           fi
 
-      - name: Require a live backend for manual E2E
-        if: github.event_name == 'workflow_dispatch' && steps.credential.outputs.configured != 'true'
+      - name: Require a live backend
+        if: steps.credential.outputs.configured != 'true'
         shell: bash
         run: |
-          echo "::error::Manual live E2E requires a configured real image-generation backend."
+          echo "::error::Live E2E requires Cloudflare, Kaggle, Pollinations, or imagen-codex credentials."
           exit 2
 
       - name: Install live visual toolchain
         if: steps.credential.outputs.configured == 'true'
+        shell: bash
         run: |
-          python -m pip install --no-deps ./asset-forge
-          if [ "${{ steps.credential.outputs.backend }}" = "pollinations" ]; then
-            npm install --global @pollinations/cli@0.1.15
-          else
-            bash scripts/install-imagen-codex.sh
-          fi
+          set -euo pipefail
+          python -m pip install "./asset-forge[generation]"
+          case "${{ steps.credential.outputs.backend }}" in
+            cloudflare)
+              ;;
+            kaggle-qwen)
+              python -m pip install -U kaggle
+              ;;
+            pollinations)
+              npm install --global @pollinations/cli@0.1.15
+              ;;
+            imagen-codex)
+              bash scripts/install-imagen-codex.sh
+              ;;
+            *)
+              echo "::error::Unsupported live backend"
+              exit 2
+              ;;
+          esac
 
       - name: Verify live Asset Forge readiness
         if: steps.credential.outputs.configured == 'true'
@@ -2430,12 +2462,20 @@ jobs:
           import json, os
           data=json.load(open("build-operational-status.json"))
           backend=os.environ["BACKEND"]
-          if backend == "pollinations":
+          if backend == "cloudflare":
+              assert data["capabilities"]["rasterPng"] is True, data
+              assert data["generation"]["cloudflare"]["rasterReady"] is True, data
+          elif backend == "kaggle-qwen":
+              assert data["capabilities"]["rasterPng"] is True, data
+              assert data["generation"]["kaggleQwen"]["rasterReady"] is True, data
+          elif backend == "pollinations":
               assert data["capabilities"]["vectorSvg"] is True, data
               assert data["generation"]["pollinations"]["authenticated"] is True, data
-          else:
+          elif backend == "imagen-codex":
               assert data["capabilities"]["rasterPng"] is True, data
               assert data["generation"]["imagenCodex"]["authenticated"] is True, data
+          else:
+              raise AssertionError(f"unsupported backend: {backend}")
           PY
 
       - name: Materialize Production OS live visual handoff
@@ -32427,6 +32467,19 @@ def test_actions_worker_does_not_prepare_android_for_base_only_claim_race()
 def test_actions_worker_reports_rejected_worker_token_without_exposing_it()
 ⋮----
 def test_actions_worker_availability_probe_fails_closed()
+````
+
+## File: tests/test_production_os_asset_forge_live_e2e_workflow.py
+````python
+WORKFLOW = Path(
+⋮----
+def test_live_e2e_supports_current_free_asset_forge_backends()
+⋮----
+def test_live_e2e_never_reports_green_without_real_generation_backend()
+⋮----
+def test_live_e2e_uses_current_asset_forge_and_generation_dependencies()
+⋮----
+def test_live_e2e_checks_backend_specific_readiness()
 ````
 
 ## File: tests/test_production_os_local_e2e.py

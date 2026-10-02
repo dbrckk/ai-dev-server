@@ -22,22 +22,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-02T17:31:38Z
+Generated: 2026-10-02T17:47:39Z
 
 ### Git
 - Branch: `main`
-- Head: `4cd04e5b9b95`
-- Commit date: 2026-10-02T19:31:27+02:00
-- Commit: fix(e2e): validate current Asset Forge in live pipeline
-- Tracked files: 831
+- Head: `809235e45c0b`
+- Commit date: 2026-10-02T19:47:28+02:00
+- Commit: fix(e2e): use real free Asset Forge backends
+- Tracked files: 832
 
 ### Recently changed files
 - `.github/workflows/production-os-asset-forge-live-e2e.yml`
+- `tests/test_production_os_asset_forge_live_e2e_workflow.py`
 - `.github/workflows/production-os-actions-worker.yml`
 - `tests/test_production_os_actions_worker_workflow.py`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_worker_cli.py`
-- `tests/test_production_os_worker_runtime.py`
 
 ### Project signals
 - No common build descriptor detected

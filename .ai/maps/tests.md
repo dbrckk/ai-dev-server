@@ -272,6 +272,7 @@ test_preemption_controller.py
 test_privacy_stage.py
 test_privacy.py
 test_production_os_actions_worker_workflow.py
+test_production_os_asset_forge_live_e2e_workflow.py
 test_production_os_local_e2e.py
 test_production_os_result_contract.py
 test_production_os_worker_cli.py
@@ -8018,6 +8019,19 @@ def test_actions_worker_does_not_prepare_android_for_base_only_claim_race()
 def test_actions_worker_reports_rejected_worker_token_without_exposing_it()
 ⋮----
 def test_actions_worker_availability_probe_fails_closed()
+```
+
+## File: test_production_os_asset_forge_live_e2e_workflow.py
+```python
+WORKFLOW = Path(
+⋮----
+def test_live_e2e_supports_current_free_asset_forge_backends()
+⋮----
+def test_live_e2e_never_reports_green_without_real_generation_backend()
+⋮----
+def test_live_e2e_uses_current_asset_forge_and_generation_dependencies()
+⋮----
+def test_live_e2e_checks_backend_specific_readiness()
 ```
 
 ## File: test_production_os_local_e2e.py

@@ -400,16 +400,117 @@ class ProductionOSClient:
         )
 
 
+def production_model_candidates(
+    environ=None,
+    *,
+    providers=None,
+) -> list[dict[str, Any]]:
+    """Expose a credential-free provider/model inventory to Production OS."""
+    if providers is None:
+        from provider_router import load_providers
+        providers = load_providers(prefer_free=True)
+
+    merged: dict[tuple[str, str], dict[str, Any]] = {}
+    role_capabilities = (
+        ("implementation", "code-implementation"),
+        ("tests", "test-debug"),
+        ("review", "code-review"),
+    )
+    for provider in tuple(providers or ()):
+        name = str(getattr(provider, "name", "") or "").strip()
+        if not name:
+            continue
+        for role, capability in role_capabilities:
+            try:
+                model = str(provider.model_for(role, False) or "").strip()
+            except Exception:
+                continue
+            if not model:
+                continue
+            key = (name, model)
+            row = merged.setdefault(
+                key,
+                {
+                    "provider":name,
+                    "model":model,
+                    "capabilities":[],
+                    "free":bool(
+                        getattr(provider, "unmetered", False)
+                        or int(
+                            getattr(
+                                provider,
+                                "monthly_token_quota",
+                                0,
+                            )
+                            or 0
+                        ) > 0
+                        or getattr(provider, "free_preferred", False)
+                    ),
+                    "priority":float(
+                        getattr(provider, "priority", 0) or 0
+                    ),
+                },
+            )
+            if capability not in row["capabilities"]:
+                row["capabilities"].append(capability)
+        # Keep the generic model visible even when a provider has distinct
+        # role-specific models.
+        generic = str(getattr(provider, "model", "") or "").strip()
+        if generic:
+            key = (name, generic)
+            row = merged.setdefault(
+                key,
+                {
+                    "provider":name,
+                    "model":generic,
+                    "capabilities":[],
+                    "free":bool(
+                        getattr(provider, "unmetered", False)
+                        or int(
+                            getattr(
+                                provider,
+                                "monthly_token_quota",
+                                0,
+                            )
+                            or 0
+                        ) > 0
+                        or getattr(provider, "free_preferred", False)
+                    ),
+                    "priority":float(
+                        getattr(provider, "priority", 0) or 0
+                    ),
+                },
+            )
+            if "software-development" not in row["capabilities"]:
+                row["capabilities"].append("software-development")
+
+    return [
+        {
+            **merged[key],
+            "capabilities":sorted(merged[key]["capabilities"]),
+        }
+        for key in sorted(merged)
+    ]
+
+
 def production_capacity_snapshot(
     environ=None,
     *,
     fetch_summary=None,
+    model_candidates_provider=production_model_candidates,
 ) -> dict | None:
     """Return a safe global token-capacity snapshot for Production-OS."""
     env = os.environ if environ is None else environ
+    model_candidates = list(
+        model_candidates_provider(env) or []
+    )
     base_url = str(env.get("OMNIROUTE_URL") or "").strip()
     if not base_url:
-        return None
+        return (
+            {"model_candidates":model_candidates}
+            if model_candidates
+            else None
+        )
     if fetch_summary is None:
         from omniroute_capacity import fetch_summary as fetch_summary
 
@@ -429,6 +530,7 @@ def production_capacity_snapshot(
             "remaining_tokens": None,
             "catalog_updated_at": None,
             "catalog_source": None,
+            "model_candidates":model_candidates,
         }
 
     authenticated = bool(snapshot.authenticated_usage)
@@ -436,11 +538,7 @@ def production_capacity_snapshot(
         "source": "omniroute",
         "status": "ok" if authenticated else "unavailable",
         "authenticated_usage": authenticated,
-        "steady_recurring_tokens": (
-            int(snapshot.steady_recurring_tokens)
-            if authenticated
-            else int(snapshot.steady_recurring_tokens)
-        ),
+        "steady_recurring_tokens": int(snapshot.steady_recurring_tokens),
         "used_this_month": (
             int(snapshot.used_this_month)
             if snapshot.used_this_month is not None
@@ -453,6 +551,7 @@ def production_capacity_snapshot(
         ),
         "catalog_updated_at": snapshot.catalog_updated_at,
         "catalog_source": snapshot.catalog_source,
+        "model_candidates":model_candidates,
     }
 
 

@@ -90,3 +90,26 @@ Production-OS
 ```
 
 Verify that the target repository actually contains the expected commit or PR and that Production-OS records the same workflow/task correlation and token usage.
+
+
+## Worker model catalog
+
+Each worker capacity heartbeat can include a credential-free
+`model_candidates` inventory derived from the providers that AI Dev Server can
+actually load.
+
+Each candidate contains only:
+
+- provider name;
+- model name;
+- supported Production OS capabilities;
+- free/unmetered preference;
+- routing priority.
+
+Provider base URLs, API keys, key environment names, and other credentials are
+never published.
+
+The catalog is sent even when OmniRoute quota telemetry is unavailable, so a
+worker with only local/free providers can still advertise useful model
+capacity. Production OS treats the catalog as advisory: a later local health or
+circuit-breaker decision in AI Dev Server remains authoritative.

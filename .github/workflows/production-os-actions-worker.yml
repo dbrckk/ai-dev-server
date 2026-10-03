@@ -235,6 +235,8 @@ jobs:
               handle.write(f"status={status}\n")
               handle.write(f"mobile_fallback={mobile_fallback}\n")
           print(f"Base-capability worker result: {status}")
+          if status == "failed":
+              raise SystemExit("Production-OS base-capability job failed")
           PY
 
       - name: Prepare native mobile validation runtime

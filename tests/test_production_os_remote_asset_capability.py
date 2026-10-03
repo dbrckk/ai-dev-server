@@ -89,6 +89,7 @@ def test_remote_asset_forge_probe_drops_studio_pythonpath():
         return Completed()
 
     with (
+        patch("production_os_worker._asset_forge_operational_status", return_value=None),
         patch("production_os_worker.shutil.which", return_value="/usr/bin/production-os"),
         patch("production_os_worker.subprocess.run", side_effect=fake_run),
     ):

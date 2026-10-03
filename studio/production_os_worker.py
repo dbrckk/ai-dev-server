@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import os
 import re
 import shutil
@@ -1020,6 +1021,35 @@ def run_once(
         import time
         clock = time.monotonic
 
+    try:
+        heartbeat_interval = float(heartbeat_interval_seconds)
+    except (TypeError, ValueError) as exc:
+        raise ProductionOSWorkerError(
+            "heartbeat interval must be positive"
+        ) from exc
+    if not math.isfinite(heartbeat_interval) or heartbeat_interval <= 0:
+        raise ProductionOSWorkerError("heartbeat interval must be positive")
+    try:
+        retry_attempts = int(runner_retry_attempts)
+    except (TypeError, ValueError) as exc:
+        raise ProductionOSWorkerError(
+            "runner retry attempts must be between 0 and 10"
+        ) from exc
+    if retry_attempts < 0 or retry_attempts > 10:
+        raise ProductionOSWorkerError(
+            "runner retry attempts must be between 0 and 10"
+        )
+    try:
+        retry_backoff = float(runner_retry_backoff_seconds)
+    except (TypeError, ValueError) as exc:
+        raise ProductionOSWorkerError(
+            "runner retry backoff must be between 0 and 60 seconds"
+        ) from exc
+    if not math.isfinite(retry_backoff) or retry_backoff < 0 or retry_backoff > 60:
+        raise ProductionOSWorkerError(
+            "runner retry backoff must be between 0 and 60 seconds"
+        )
+
     capabilities = list(capabilities or worker_capabilities())
     if capacity is None:
         preflight = client.heartbeat(worker_id, active_job_keys=())
@@ -1094,51 +1124,53 @@ def run_once(
         )
     observe_job_control(response)
 
-    request = build_studio_request(job)
-    root = Path(output_root)
-    handoff = dict((job.get("payload") or {}).get("handoff") or {})
-    _write_project_capacity_plan(root, request, handoff, capacity)
-    project_out = root / request["id"]
-    project_out.mkdir(parents=True, exist_ok=True)
-    request_path = project_out / "production-os-request.json"
-    request_path.write_text(
-        json.dumps(
-            request,
-            ensure_ascii=False,
-            sort_keys=True,
-            indent=2,
-        ) + "\n",
-        encoding="utf-8",
-    )
+    def report_local_failure(exc, stage, request=None, duration=0.0):
+        # Report only the exception type: messages may contain credentials.
+        envelope = {
+            "status": stage,
+            "succeeded": False,
+            "usage": {},
+            "evidence": {
+                "pipeline_status": stage,
+                "next_stage": "retry",
+                "finished": False,
+                "error_type": type(exc).__name__,
+            },
+        }
+        client.fail(failure_payload(
+            key, worker_id, envelope,
+            duration_seconds=duration, capabilities=capabilities,
+        ))
+        kwargs = {"active_job_keys": ()}
+        if capacity is not None:
+            kwargs["capacity"] = capacity
+        client.heartbeat(worker_id, **kwargs)
+        return {
+            "status": "failed", "worker_id": worker_id, "key": key,
+            "project_id": request["id"] if request else None, "usage": {},
+        }
 
+    request = None
     try:
-        heartbeat_interval = float(heartbeat_interval_seconds)
-    except (TypeError, ValueError) as exc:
-        raise ProductionOSWorkerError(
-            "heartbeat interval must be positive"
-        ) from exc
-    if heartbeat_interval <= 0:
-        raise ProductionOSWorkerError("heartbeat interval must be positive")
-    try:
-        retry_attempts = int(runner_retry_attempts)
-    except (TypeError, ValueError) as exc:
-        raise ProductionOSWorkerError(
-            "runner retry attempts must be between 0 and 10"
-        ) from exc
-    if retry_attempts < 0 or retry_attempts > 10:
-        raise ProductionOSWorkerError(
-            "runner retry attempts must be between 0 and 10"
+        request = build_studio_request(job)
+        root = Path(output_root)
+        handoff = dict((job.get("payload") or {}).get("handoff") or {})
+        _write_project_capacity_plan(root, request, handoff, capacity)
+        project_out = root / request["id"]
+        project_out.mkdir(parents=True, exist_ok=True)
+        request_path = project_out / "production-os-request.json"
+        request_path.write_text(
+            json.dumps(
+                request,
+                ensure_ascii=False,
+                sort_keys=True,
+                indent=2,
+            ) + "\n",
+            encoding="utf-8",
         )
-    try:
-        retry_backoff = float(runner_retry_backoff_seconds)
-    except (TypeError, ValueError) as exc:
-        raise ProductionOSWorkerError(
-            "runner retry backoff must be between 0 and 60 seconds"
-        ) from exc
-    if retry_backoff < 0 or retry_backoff > 60:
-        raise ProductionOSWorkerError(
-            "runner retry backoff must be between 0 and 60 seconds"
-        )
+
+    except Exception as exc:
+        return report_local_failure(exc, "setup_error", request)
 
     stop_heartbeat = threading.Event()
     heartbeat_errors: list[str] = []
@@ -1283,28 +1315,45 @@ def run_once(
             "usage":{},
         }
 
-    result_path = project_out / "production-os-result.json"
-    if result_path.is_file():
-        try:
-            envelope = json.loads(result_path.read_text(encoding="utf-8"))
-        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+    try:
+        result_path = project_out / "production-os-result.json"
+        if result_path.is_file():
+            try:
+                envelope = json.loads(result_path.read_text(encoding="utf-8"))
+            except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+                raise ProductionOSWorkerError(
+                    "Production-OS result envelope is unreadable"
+                ) from exc
+        else:
+            from github_runner import write_production_os_result
+            envelope = write_production_os_result(
+                project_out,
+                request,
+                summary,
+            )
+
+        if not isinstance(envelope, dict):
             raise ProductionOSWorkerError(
-                "Production-OS result envelope is unreadable"
-            ) from exc
-    else:
-        from github_runner import write_production_os_result
-        envelope = write_production_os_result(
-            project_out,
-            request,
-            summary,
-        )
+                "AI Dev Server did not produce a correlated result"
+            )
 
-    if not isinstance(envelope, dict):
-        raise ProductionOSWorkerError(
-            "AI Dev Server did not produce a correlated result"
-        )
+        expected = {
+            "schema_version": "ai-dev-server/production-os-result/v1",
+            "workflow_id": request["production_os"]["workflow_id"],
+            "workflow_task_id": request["production_os"]["workflow_task_id"],
+            "project_id": request["id"],
+            "target_repo": request["target_repo"],
+        }
+        if any(envelope.get(field) != value for field, value in expected.items()):
+            raise ProductionOSWorkerError("result does not match the claimed job")
+        if not isinstance(envelope.get("succeeded"), bool):
+            raise ProductionOSWorkerError("result succeeded must be boolean")
+        if not isinstance(envelope.get("usage"), dict) or not isinstance(envelope.get("evidence"), dict):
+            raise ProductionOSWorkerError("result usage and evidence must be objects")
+        envelope = _attach_failed_ci_diagnostic(envelope, request)
 
-    envelope = _attach_failed_ci_diagnostic(envelope, request)
+    except Exception as exc:
+        return report_local_failure(exc, "result_error", request, duration)
 
     if envelope.get("succeeded") is True:
         client.complete(
@@ -1420,7 +1469,7 @@ def main(
         poll_interval = float(args.poll_interval)
     except (TypeError, ValueError) as exc:
         raise RuntimeError("--poll-interval must be positive") from exc
-    if poll_interval <= 0:
+    if not math.isfinite(poll_interval) or poll_interval <= 0:
         raise RuntimeError("--poll-interval must be positive")
     if sleeper is None:
         import time
@@ -1434,6 +1483,7 @@ def main(
         operator_token,
     )
     completed_cycles = 0
+    failed = False
     try:
         while args.continuous or completed_cycles < cycles:
             capacity = capacity_provider(env)
@@ -1462,13 +1512,14 @@ def main(
                     encoding="utf-8",
                 )
             completed_cycles += 1
-            if result.get("status") == "idle":
+            failed = failed or result.get("status") == "failed"
+            if result.get("status") in {"idle", "paused", "draining"}:
                 if not args.continuous:
                     break
                 sleeper(poll_interval)
     except KeyboardInterrupt:
         return 0
-    return 0
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "updated_at": "2026-10-03",
+  "task": "Make Production-OS worker operational and resilient",
+  "base_commit": "836a1d5bdf9b7cffa2983de1cbcb36e2cc07f913",
+  "branch": "fix/worker-job-lifecycle",
+  "completed": [
+    "Report setup/result failures and clear active heartbeat",
+    "Validate result correlation and shape",
+    "Reject invalid timing before claim",
+    "Nonzero bounded failure exit; sleep paused/draining polls",
+    "Real worker-only authenticated server E2E",
+    "Dedicated integration CI and corrected probe/workflow regressions"
+  ],
+  "validation": {
+    "worker_tests": "99 passed, 15 subtests passed",
+    "server_integration": "2 passed against qualified 7e0d47a isolated install",
+    "full_unittest": "1700 tests passed",
+    "compileall": "passed",
+    "ci_policy": "passed after using separate integration workflow"
+  },
+  "live_findings": {
+    "run_id": 37154316563,
+    "status": "idle, no eligible jobs",
+    "remote_asset_forge": "dispatch authorization unavailable; visual capability omitted"
+  },
+  "pending": [
+    "Publish PR and inspect CI",
+    "Confirm Render workspace to inspect service/queue",
+    "Complete a live Codex job and verify target repository artifact"
+  ]
+}

@@ -139,7 +139,7 @@ def _remote_asset_forge_operational(environ=None) -> bool:
     env.pop("PYTHONPATH", None)
     try:
         completed = subprocess.run(
-            [executable, "asset-forge-batch", "--help"],
+            [executable, "asset-forge-batch", "--probe"],
             stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,

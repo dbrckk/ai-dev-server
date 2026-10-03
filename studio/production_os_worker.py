@@ -128,6 +128,30 @@ def _asset_forge_operational_status(environ=None) -> dict | None:
     return payload if isinstance(payload, dict) else None
 
 
+def _remote_asset_forge_operational(environ=None) -> bool:
+    env = dict(os.environ)
+    if environ is not None:
+        env.update({str(key): str(value) for key, value in environ.items()})
+    token = str(env.get("GITHUB_TOKEN") or "").strip()
+    executable = shutil.which("production-os", path=env.get("PATH"))
+    if not token or not executable:
+        return False
+    try:
+        completed = subprocess.run(
+            [executable, "asset-forge-batch", "--help"],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=10,
+            check=False,
+            env=env,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return completed.returncode == 0
+
+
 def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]:
     del home  # Kept for backwards-compatible callers/tests.
     env = os.environ if environ is None else environ
@@ -152,15 +176,18 @@ def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]:
     if "mobile" in specialties and _mobile_validation_operational(environ):
         capabilities.append(SPECIALIST_CAPABILITIES["mobile"])
     status = _asset_forge_operational_status(environ)
-    if not isinstance(status, dict):
-        return capabilities
-    visual = status.get("capabilities")
-    if not isinstance(visual, dict):
-        return capabilities
-    if any(
+    visual = (
+        status.get("capabilities")
+        if isinstance(status, dict)
+        and isinstance(status.get("capabilities"), dict)
+        else {}
+    )
+    local_visual_ready = any(
         visual.get(name) is True
         for name in ("rasterPng", "rasterWebp", "vectorSvg", "threeDGlb")
-    ):
+    )
+    remote_visual_ready = _remote_asset_forge_operational(environ)
+    if local_visual_ready or remote_visual_ready:
         capabilities.append("visual-asset-production")
     if visual.get("threeDGlb") is True:
         capabilities.append("visual-asset-3d-production")
@@ -684,6 +711,20 @@ def _asset_forge_guidance(handoff: dict[str, Any]) -> str:
         and not _is_visual_handoff(handoff)
     ):
         return ""
+    if _remote_asset_forge_operational():
+        return (
+            " Use dbrckk/asset-forge for visual asset production through the "
+            "Production-OS remote bridge. Do not require local Cloudflare, Kaggle "
+            "or Pollinations credentials. Build an asset-forge batch spec with "
+            "production-request/v1 requests and repository-relative target_path "
+            "values, then run production-os asset-forge-batch --spec <spec.json> "
+            "--mode github --backend auto --target-worktree <repository-root> "
+            "--result-file <result.json>. The command must finish successfully, "
+            "download and verify the correlated Asset Forge workflow artifact, "
+            "deliver the generated files into the worktree, and produce a successful "
+            "result before visual work is considered complete. Verify the integrated "
+            "assets in the target project afterwards."
+        )
     return (
         " Use dbrckk/asset-forge for visual asset production. "
         "Represent asset work with the asset-forge/production-request/v1 contract. "

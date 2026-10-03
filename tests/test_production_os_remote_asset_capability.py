@@ -74,3 +74,33 @@ def test_visual_handoff_uses_remote_batch_guidance_when_available():
     assert "--mode github" in request["brief"]
     assert "--target-worktree" in request["brief"]
     assert "Do not require local Cloudflare" in request["brief"]
+
+
+def test_remote_asset_forge_probe_drops_studio_pythonpath():
+    seen = {}
+
+    def fake_run(command, **kwargs):
+        seen["command"] = command
+        seen["env"] = dict(kwargs["env"])
+
+        class Completed:
+            returncode = 0
+
+        return Completed()
+
+    with (
+        patch("production_os_worker.shutil.which", return_value="/usr/bin/production-os"),
+        patch("production_os_worker.subprocess.run", side_effect=fake_run),
+    ):
+        capabilities = worker_capabilities(
+            {
+                "PRODUCTION_OS_WORKER_SPECIALTIES": "",
+                "GITHUB_TOKEN": "token",
+                "PYTHONPATH": "studio",
+                "PATH": "/usr/bin",
+            }
+        )
+
+    assert "PYTHONPATH" not in seen["env"]
+    assert seen["command"][-2:] == ["asset-forge-batch", "--help"]
+    assert "visual-asset-production" in capabilities

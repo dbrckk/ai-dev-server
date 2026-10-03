@@ -324,6 +324,71 @@ def load_providers(*, prefer_free: bool = True) -> tuple[ProviderSpec, ...]:
     return tuple(sorted(deduped.values(), key=sort_key))
 
 
+def _production_os_route_hint() -> tuple[tuple[str, str], ...]:
+    raw = os.environ.get("STUDIO_PRODUCTION_OS_MODEL_ROUTE", "").strip()
+    if not raw:
+        return ()
+    try:
+        payload = json.loads(raw)
+    except (TypeError, json.JSONDecodeError):
+        return ()
+    if (
+        not isinstance(payload, dict)
+        or payload.get("schema_version") != "production-os/model-route/v1"
+    ):
+        return ()
+    rows = [{
+        "provider":payload.get("provider"),
+        "model":payload.get("model"),
+    }]
+    fallbacks = payload.get("fallbacks")
+    if isinstance(fallbacks, list):
+        rows.extend(fallbacks[:8])
+    hints = []
+    seen = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        provider = str(row.get("provider") or "").strip()
+        model = str(row.get("model") or "").strip()
+        key = (provider, model)
+        if provider and model and key not in seen:
+            hints.append(key)
+            seen.add(key)
+    return tuple(hints)
+
+
+def _apply_production_os_route_hint(
+    providers: Iterable[ProviderSpec],
+    *,
+    role: str,
+    screenshots: bool,
+) -> tuple[ProviderSpec, ...]:
+    ordered = tuple(providers)
+    hints = _production_os_route_hint()
+    if not hints or not ordered:
+        return ordered
+    by_key = {
+        (spec.name, spec.model_for(role, screenshots)):spec
+        for spec in ordered
+    }
+    selected = []
+    selected_ids = set()
+    for key in hints:
+        spec = by_key.get(key)
+        if spec is None or id(spec) in selected_ids:
+            continue
+        selected.append(spec)
+        selected_ids.add(id(spec))
+    if not selected:
+        return ordered
+    selected.extend(
+        spec for spec in ordered
+        if id(spec) not in selected_ids
+    )
+    return tuple(selected)
+
+
 def candidates_for(
     role: str,
     *,
@@ -339,12 +404,20 @@ def candidates_for(
     ]
     reliability_path = os.environ.get("STUDIO_WORKER_LIVENESS_PATH", "").strip()
     if not reliability_path:
-        return eligible
+        return _apply_production_os_route_hint(
+            eligible,
+            role=role,
+            screenshots=screenshots,
+        )
     try:
         with open(reliability_path, "r", encoding="utf-8") as handle:
             liveness = json.load(handle)
     except (OSError, UnicodeError, json.JSONDecodeError):
-        return eligible
+        return _apply_production_os_route_hint(
+            eligible,
+            role=role,
+            screenshots=screenshots,
+        )
     reliability = summarize_runtime_reliability(liveness)
     health_path = Path(os.environ.get("STUDIO_PROVIDER_HEALTH_PATH", "provider-health.json"))
     metrics_path = Path(os.environ.get("STUDIO_PROVIDER_METRICS_PATH", "provider-metrics.json"))
@@ -377,6 +450,11 @@ def candidates_for(
         scored.append((spec, result))
     scored.sort(key=lambda item: (-float(item[1]["score"]), item[0].name))
     ordered = tuple(item[0] for item in scored)
+    ordered = _apply_production_os_route_hint(
+        ordered,
+        role=role,
+        screenshots=screenshots,
+    )
     audit_path = os.environ.get("STUDIO_ROUTING_AUDIT_PATH", "").strip()
     if audit_path:
         append_routing_audit(Path(audit_path), {

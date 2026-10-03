@@ -14,10 +14,12 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
+from contextlib import contextmanager
 from urllib.parse import urlsplit
 
 from atomic_file import write_text as atomic_write_text
 from file_lock import exclusive
+from core import model_route_check
 
 
 BASE_WORKER_CAPABILITIES = [
@@ -736,6 +738,28 @@ def _asset_forge_guidance(handoff: dict[str, Any]) -> str:
     )
 
 
+@contextmanager
+def _production_os_model_route(route):
+    previous = os.environ.get("STUDIO_PRODUCTION_OS_MODEL_ROUTE")
+    try:
+        if route is None:
+            os.environ.pop("STUDIO_PRODUCTION_OS_MODEL_ROUTE", None)
+        else:
+            normalized = model_route_check(route)
+            os.environ["STUDIO_PRODUCTION_OS_MODEL_ROUTE"] = json.dumps(
+                normalized,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+        yield
+    finally:
+        if previous is None:
+            os.environ.pop("STUDIO_PRODUCTION_OS_MODEL_ROUTE", None)
+        else:
+            os.environ["STUDIO_PRODUCTION_OS_MODEL_ROUTE"] = previous
+
+
 def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
     """Convert one claimed Production-OS job to the trusted Studio request."""
     if not isinstance(job, dict):
@@ -784,6 +808,9 @@ def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
     )
     if repository_branch_id is not None:
         request["repository_branch_id"] = repository_branch_id
+    model_route = handoff.get("model_route")
+    if model_route is not None:
+        request["model_route"] = model_route_check(model_route)
     tool_contracts = handoff.get("tool_contracts")
     if isinstance(tool_contracts, dict) and tool_contracts:
         request["tool_contracts"] = dict(tool_contracts)
@@ -1176,12 +1203,15 @@ def run_once(
         while True:
             runner_attempt += 1
             try:
-                summary = run_project(
-                    request_path,
-                    project_out,
-                    baseline_sha=baseline_sha,
-                    cancel_event=cancel_event,
-                )
+                with _production_os_model_route(
+                    request.get("model_route")
+                ):
+                    summary = run_project(
+                        request_path,
+                        project_out,
+                        baseline_sha=baseline_sha,
+                        cancel_event=cancel_event,
+                    )
             except Exception as exc:
                 if cancel_event.is_set():
                     raise

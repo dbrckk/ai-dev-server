@@ -38,11 +38,65 @@ class StudioError(Exception):
 def canonical(value):
     return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(',', ':'))
 
+def model_route_check(value):
+    if not isinstance(value, dict):
+        raise StudioError('Invalid model_route')
+    allowed = {
+        'schema_version', 'provider', 'model', 'fallbacks',
+        'ranking', 'rejected',
+    }
+    if (
+        set(value) - allowed
+        or value.get('schema_version') != 'production-os/model-route/v1'
+    ):
+        raise StudioError('Invalid model_route')
+    provider = value.get('provider')
+    model = value.get('model')
+    token = re.compile(r'[A-Za-z0-9][A-Za-z0-9._:/+@-]{0,199}')
+    if (
+        not isinstance(provider, str)
+        or not token.fullmatch(provider)
+        or not isinstance(model, str)
+        or not token.fullmatch(model)
+    ):
+        raise StudioError('Invalid model_route')
+    fallbacks = value.get('fallbacks', [])
+    if not isinstance(fallbacks, list) or len(fallbacks) > 8:
+        raise StudioError('Invalid model_route')
+    normalized = []
+    seen = {(provider, model)}
+    for item in fallbacks:
+        if not isinstance(item, dict) or set(item) != {'provider', 'model'}:
+            raise StudioError('Invalid model_route')
+        fallback_provider = item.get('provider')
+        fallback_model = item.get('model')
+        if (
+            not isinstance(fallback_provider, str)
+            or not token.fullmatch(fallback_provider)
+            or not isinstance(fallback_model, str)
+            or not token.fullmatch(fallback_model)
+        ):
+            raise StudioError('Invalid model_route')
+        key = (fallback_provider, fallback_model)
+        if key in seen:
+            continue
+        seen.add(key)
+        normalized.append({
+            'provider': fallback_provider,
+            'model': fallback_model,
+        })
+    return {
+        'schema_version': 'production-os/model-route/v1',
+        'provider': provider,
+        'model': model,
+        'fallbacks': normalized,
+    }
+
 def request_check(data):
     if not isinstance(data, dict):
         raise StudioError('Request must be an object')
     required = {'id', 'target_repo', 'app_name', 'brief', 'enabled'}
-    if set(data) - (required | {'max_rounds', 'max_calls', 'max_cycles', 'priority', 'play_publish', 'max_project_model_calls', 'max_project_repair_calls', 'max_api_cost_usd', 'production_os', 'agent_preference', 'tool_contracts', 'repository_branch_id'}) or not required <= set(data):
+    if set(data) - (required | {'max_rounds', 'max_calls', 'max_cycles', 'priority', 'play_publish', 'max_project_model_calls', 'max_project_repair_calls', 'max_api_cost_usd', 'production_os', 'agent_preference', 'tool_contracts', 'repository_branch_id', 'model_route'}) or not required <= set(data):
         raise StudioError('Invalid request fields')
     if not isinstance(data['enabled'], bool):
         raise StudioError('enabled must be boolean')
@@ -114,6 +168,8 @@ def request_check(data):
             'workflow_id': workflow_id,
             'workflow_task_id': workflow_task_id,
         }
+    if 'model_route' in data:
+        data['model_route'] = model_route_check(data['model_route'])
     if 'tool_contracts' in data:
         contracts = data['tool_contracts']
         if not isinstance(contracts, dict) or set(contracts) - {'asset_forge', 'browser_validation', 'mobile_validation'}:

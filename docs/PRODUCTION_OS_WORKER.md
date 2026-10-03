@@ -90,3 +90,25 @@ Production-OS
 ```
 
 Verify that the target repository actually contains the expected commit or PR and that Production-OS records the same workflow/task correlation and token usage.
+
+
+## Production-OS model routing
+
+When Production OS supplies a validated `production-os/model-route/v1`
+handoff, the worker carries only the primary provider/model and bounded
+fallbacks into the Studio request. Routing telemetry such as ranking details is
+not propagated into execution, and unknown fields are rejected.
+
+During the job, the route is exposed only through the scoped
+`STUDIO_PRODUCTION_OS_MODEL_ROUTE` environment variable and is restored after
+the project runner returns.
+
+The local AI Dev Server provider router applies this as an ordering hint to
+providers that are already eligible. The hint cannot bypass provider
+availability, circuit breakers, role/model availability, or the worker's local
+provider configuration. If the hinted primary is unavailable, the next eligible
+hinted fallback is preferred; if none match, normal local routing order is
+preserved.
+
+Provider credentials remain local to AI Dev Server and are never supplied by
+Production OS.

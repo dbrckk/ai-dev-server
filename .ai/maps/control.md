@@ -110,8 +110,8 @@ request.json
 ```json
 {
   "requested_by": "production-os",
-  "reason": "manual worker kick after Codespaces fallback setup",
-  "sequence": 1
+  "reason": "validate remote Asset Forge visual capability against queued work",
+  "sequence": 2
 }
 ```
 

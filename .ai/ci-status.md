@@ -1,14 +1,18 @@
 # CI status
 
-Summary: 1 success / 0 failure / 7 active
+Summary: 2 success / 1 failure / 4 active
 
-- Production OS Asset Forge Live E2E: in_progress / pending (809235e4)
-- CI: in_progress / pending (809235e4)
-- Multi-Engine E2E Benchmark: queued / pending (809235e4)
-- Validate AI Dev Server: in_progress / pending (809235e4)
-- Fault Injection Gate: in_progress / pending (809235e4)
-- Resilience Soak: in_progress / pending (809235e4)
-- Mobile Studio Real Build: in_progress / pending (809235e4)
-- Multi-Engine E2E Benchmark: completed / success (b5510c93)
+- Mobile Studio Real Build: pending / pending (631a888a)
+- Resilience Soak: completed / success (631a888a)
+- Production-OS Actions Worker: completed / failure (631a888a)
+- Validate AI Dev Server: in_progress / pending (631a888a)
+- CI: in_progress / pending (631a888a)
+- Fault Injection Gate: completed / success (631a888a)
+- Multi-Engine E2E Benchmark: pending / pending (631a888a)
+- Fault Injection Gate: completed / cancelled (8dc88cd3)
+
+## Latest failed run structure
+- Job: worker
+  - Failed step: Install Production-OS remote tools
 
 > Generated summary only; inspect GitHub Actions for full logs when needed.

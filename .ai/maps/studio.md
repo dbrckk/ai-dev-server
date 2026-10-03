@@ -15415,6 +15415,11 @@ executable = shutil.which("asset-forge")
 ⋮----
 payload = json.loads(completed.stdout)
 ⋮----
+def _remote_asset_forge_operational(environ=None) -> bool
+⋮----
+token = str(env.get("GITHUB_TOKEN") or "").strip()
+executable = shutil.which("production-os", path=env.get("PATH"))
+⋮----
 def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]
 ⋮----
 del home  # Kept for backwards-compatible callers/tests.
@@ -15424,8 +15429,9 @@ specialties = {
 unknown = specialties.difference(SPECIALIST_CAPABILITIES)
 ⋮----
 status = _asset_forge_operational_status(environ)
-⋮----
-visual = status.get("capabilities")
+visual = (
+local_visual_ready = any(
+remote_visual_ready = _remote_asset_forge_operational(environ)
 ⋮----
 class ProductionOSWorkerError(RuntimeError)
 ⋮----

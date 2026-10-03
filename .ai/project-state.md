@@ -22,22 +22,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-02T17:47:39Z
+Generated: 2026-10-03T10:30:09Z
 
 ### Git
 - Branch: `main`
-- Head: `809235e45c0b`
-- Commit date: 2026-10-02T19:47:28+02:00
-- Commit: fix(e2e): use real free Asset Forge backends
-- Tracked files: 832
+- Head: `631a888ae758`
+- Commit date: 2026-10-03T12:29:20+02:00
+- Commit: chore(worker): validate Production-OS queued work
+- Tracked files: 833
 
 ### Recently changed files
+- `control/production-os-worker-kick.json`
+- `.github/workflows/production-os-actions-worker.yml`
+- `studio/production_os_worker.py`
+- `tests/test_production_os_actions_worker_workflow.py`
+- `tests/test_production_os_remote_asset_capability.py`
 - `.github/workflows/production-os-asset-forge-live-e2e.yml`
 - `tests/test_production_os_asset_forge_live_e2e_workflow.py`
-- `.github/workflows/production-os-actions-worker.yml`
-- `tests/test_production_os_actions_worker_workflow.py`
-- `studio/production_os_worker.py`
-- `tests/test_production_os_worker_cli.py`
 
 ### Project signals
 - No common build descriptor detected

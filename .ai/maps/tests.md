@@ -274,6 +274,7 @@ test_privacy.py
 test_production_os_actions_worker_workflow.py
 test_production_os_asset_forge_live_e2e_workflow.py
 test_production_os_local_e2e.py
+test_production_os_remote_asset_capability.py
 test_production_os_result_contract.py
 test_production_os_worker_cli.py
 test_production_os_worker_preflight.py
@@ -8019,6 +8020,15 @@ def test_actions_worker_does_not_prepare_android_for_base_only_claim_race()
 def test_actions_worker_reports_rejected_worker_token_without_exposing_it()
 ⋮----
 def test_actions_worker_availability_probe_fails_closed()
+⋮----
+def test_actions_worker_bootstraps_remote_asset_forge_before_preflight()
+⋮----
+checkout = WORKFLOW.index("Checkout Production-OS tools")
+install = WORKFLOW.index("Install Production-OS remote tools")
+⋮----
+def test_actions_worker_preflight_uses_runtime_capability_detection()
+⋮----
+probe = WORKFLOW.split("- name: Probe compatible Production-OS work", 1)[1]
 ```
 
 ## File: test_production_os_asset_forge_live_e2e_workflow.py
@@ -8089,6 +8099,21 @@ paths = [call["path"] for call in control_plane.calls]
 register = control_plane.calls[0]
 ⋮----
 complete = next(
+```
+
+## File: test_production_os_remote_asset_capability.py
+```python
+def _job()
+⋮----
+def test_remote_asset_forge_adds_visual_capability_only_when_operational()
+⋮----
+capabilities = worker_capabilities(
+⋮----
+def test_remote_asset_forge_is_not_advertised_when_unavailable()
+⋮----
+def test_visual_handoff_uses_remote_batch_guidance_when_available()
+⋮----
+request = build_studio_request(_job())
 ```
 
 ## File: test_production_os_result_contract.py

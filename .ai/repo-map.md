@@ -664,6 +664,7 @@ tests/
   test_production_os_actions_worker_workflow.py
   test_production_os_asset_forge_live_e2e_workflow.py
   test_production_os_local_e2e.py
+  test_production_os_remote_asset_capability.py
   test_production_os_result_contract.py
   test_production_os_worker_cli.py
   test_production_os_worker_preflight.py
@@ -1869,6 +1870,7 @@ jobs:
       PRODUCTION_OS_WORKER_SPECIALTIES: mobile
       PRODUCTION_OS_STATUS_FILE: studio-output/production-os-actions/worker-status.json
       STUDIO_GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
+      GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
       STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
       STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
       STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
@@ -1883,10 +1885,23 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Checkout Production-OS tools
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: dbrckk/Production-OS
+          ref: b8be27a65200629553200f912b0caa9112ff8f4c
+          path: production-os-tools
+          persist-credentials: false
+
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
+
+      - name: Install Production-OS remote tools
+        run: |
+          python -m pip install ./production-os-tools
+          production-os asset-forge-batch --help >/dev/null
 
       - name: Validate worker configuration
         shell: bash
@@ -1969,13 +1984,11 @@ jobs:
           base = os.environ["PRODUCTION_OS_URL"].rstrip("/")
           token = os.environ["PRODUCTION_OS_WORKER_TOKEN"].strip()
           worker_id = os.environ["PRODUCTION_OS_WORKER_ID"].strip()
-          base_capabilities = [
-              "android",
-              "node",
-              "python",
-              "repo-analysis",
-              "software-development",
-          ]
+          from production_os_worker import worker_capabilities
+
+          base_env = dict(os.environ)
+          base_env["PRODUCTION_OS_WORKER_SPECIALTIES"] = ""
+          base_capabilities = worker_capabilities(base_env)
 
           def probe(capabilities):
               request = urllib.request.Request(
@@ -2027,7 +2040,8 @@ jobs:
           print(
               "Production-OS queue preflight: "
               f"base={base_available} any={any_available} "
-              f"mobile={mobile_available} mobile_only={mobile_only}"
+              f"mobile={mobile_available} mobile_only={mobile_only} "
+              f"capabilities={','.join(base_capabilities)}"
           )
           PY
 
@@ -3118,8 +3132,8 @@ initial_prompt: |
 ````json
 {
   "requested_by": "production-os",
-  "reason": "manual worker kick after Codespaces fallback setup",
-  "sequence": 1
+  "reason": "validate remote Asset Forge visual capability against queued work",
+  "sequence": 2
 }
 ````
 
@@ -20688,6 +20702,11 @@ executable = shutil.which("asset-forge")
 ⋮----
 payload = json.loads(completed.stdout)
 ⋮----
+def _remote_asset_forge_operational(environ=None) -> bool
+⋮----
+token = str(env.get("GITHUB_TOKEN") or "").strip()
+executable = shutil.which("production-os", path=env.get("PATH"))
+⋮----
 def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]
 ⋮----
 del home  # Kept for backwards-compatible callers/tests.
@@ -20697,8 +20716,9 @@ specialties = {
 unknown = specialties.difference(SPECIALIST_CAPABILITIES)
 ⋮----
 status = _asset_forge_operational_status(environ)
-⋮----
-visual = status.get("capabilities")
+visual = (
+local_visual_ready = any(
+remote_visual_ready = _remote_asset_forge_operational(environ)
 ⋮----
 class ProductionOSWorkerError(RuntimeError)
 ⋮----
@@ -32467,6 +32487,15 @@ def test_actions_worker_does_not_prepare_android_for_base_only_claim_race()
 def test_actions_worker_reports_rejected_worker_token_without_exposing_it()
 ⋮----
 def test_actions_worker_availability_probe_fails_closed()
+⋮----
+def test_actions_worker_bootstraps_remote_asset_forge_before_preflight()
+⋮----
+checkout = WORKFLOW.index("Checkout Production-OS tools")
+install = WORKFLOW.index("Install Production-OS remote tools")
+⋮----
+def test_actions_worker_preflight_uses_runtime_capability_detection()
+⋮----
+probe = WORKFLOW.split("- name: Probe compatible Production-OS work", 1)[1]
 ````
 
 ## File: tests/test_production_os_asset_forge_live_e2e_workflow.py
@@ -32537,6 +32566,21 @@ paths = [call["path"] for call in control_plane.calls]
 register = control_plane.calls[0]
 ⋮----
 complete = next(
+````
+
+## File: tests/test_production_os_remote_asset_capability.py
+````python
+def _job()
+⋮----
+def test_remote_asset_forge_adds_visual_capability_only_when_operational()
+⋮----
+capabilities = worker_capabilities(
+⋮----
+def test_remote_asset_forge_is_not_advertised_when_unavailable()
+⋮----
+def test_visual_handoff_uses_remote_batch_guidance_when_available()
+⋮----
+request = build_studio_request(_job())
 ````
 
 ## File: tests/test_production_os_result_contract.py

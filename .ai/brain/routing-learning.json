@@ -2,25 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "feat: harden Production-OS Codex worker for continuous operation",
-      "terms": [
-        "codex",
-        "continuous",
-        "feat",
-        "harden",
-        "operation",
-        "production-os",
-        "worker"
-      ],
-      "tests": [],
-      "useful": [
-        "studio/production_os_worker.py",
-        "tests/test_production_os_worker_cli.py",
-        "tests/test_production_os_worker_runtime.py"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "test: add Production-OS worker local end-to-end acceptance",
       "terms": [
         "acceptance",
@@ -1164,6 +1145,24 @@
       "useful": [
         "tests/test_production_os_asset_forge_live_e2e_workflow.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "chore(worker): validate Production-OS queued work",
+      "terms": [
+        "chore",
+        "production-os",
+        "queued",
+        "validate",
+        "work",
+        "worker"
+      ],
+      "tests": [],
+      "useful": [
+        "studio/production_os_worker.py",
+        "tests/test_production_os_actions_worker_workflow.py",
+        "tests/test_production_os_remote_asset_capability.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1392,6 +1391,11 @@
     "character": {
       "studio/asset_forge_bridge.py": 4,
       "tests/test_asset_forge_bridge.py": 4
+    },
+    "chore": {
+      "studio/production_os_worker.py": 4,
+      "tests/test_production_os_actions_worker_workflow.py": 4,
+      "tests/test_production_os_remote_asset_capability.py": 4
     },
     "ci": {
       "scripts/preflight-production-os-worker.py": 4,
@@ -2031,14 +2035,15 @@
       "studio/generic_project.py": 4,
       "studio/github_runner.py": 8,
       "studio/omniroute_capacity.py": 4,
-      "studio/production_os_worker.py": 12,
+      "studio/production_os_worker.py": 16,
       "tests/test_agent_router.py": 4,
       "tests/test_capacity_scheduler_omniroute.py": 4,
       "tests/test_codex_adapter.py": 4,
       "tests/test_github_runner_usage.py": 4,
       "tests/test_omniroute_capacity.py": 4,
-      "tests/test_production_os_actions_worker_workflow.py": 4,
+      "tests/test_production_os_actions_worker_workflow.py": 8,
       "tests/test_production_os_local_e2e.py": 8,
+      "tests/test_production_os_remote_asset_capability.py": 4,
       "tests/test_production_os_result_contract.py": 4,
       "tests/test_production_os_worker.py": 4,
       "tests/test_production_os_worker_cli.py": 8,
@@ -2083,6 +2088,11 @@
       "tests/test_orchestrator.py": 8,
       "tests/test_production_os_result_contract.py": 8,
       "tests/test_production_os_worker.py": 4
+    },
+    "queued": {
+      "studio/production_os_worker.py": 4,
+      "tests/test_production_os_actions_worker_workflow.py": 4,
+      "tests/test_production_os_remote_asset_capability.py": 4
     },
     "readiness": {
       "scripts/preflight-production-os-worker.py": 4,
@@ -2393,6 +2403,11 @@
     "valid": {
       "studio/production_os_worker.py": 4
     },
+    "validate": {
+      "studio/production_os_worker.py": 4,
+      "tests/test_production_os_actions_worker_workflow.py": 4,
+      "tests/test_production_os_remote_asset_capability.py": 4
+    },
     "validation": {
       "studio/core.py": 8,
       "studio/generic_policy.py": 8,
@@ -2449,16 +2464,19 @@
       "studio/generic_project.py": 4,
       "studio/generic_repository.py": 4,
       "studio/github_runner.py": 4,
+      "studio/production_os_worker.py": 4,
       "tests/test_generic_repository_pull_request.py": 4,
-      "tests/test_production_os_actions_worker_workflow.py": 4
+      "tests/test_production_os_actions_worker_workflow.py": 8,
+      "tests/test_production_os_remote_asset_capability.py": 4
     },
     "worker": {
       "scripts/preflight-production-os-worker.py": 4,
       "studio/github_runner.py": 4,
-      "studio/production_os_worker.py": 24,
+      "studio/production_os_worker.py": 28,
       "tests/test_asset_forge_installer.py": 4,
-      "tests/test_production_os_actions_worker_workflow.py": 8,
+      "tests/test_production_os_actions_worker_workflow.py": 12,
       "tests/test_production_os_local_e2e.py": 12,
+      "tests/test_production_os_remote_asset_capability.py": 4,
       "tests/test_production_os_result_contract.py": 4,
       "tests/test_production_os_worker.py": 8,
       "tests/test_production_os_worker_cli.py": 4,

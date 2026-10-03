@@ -110,8 +110,8 @@ request.json
 ```json
 {
   "requested_by": "production-os",
-  "reason": "validate current Production-OS revision resolver and merged provider fallbacks",
-  "sequence": 6
+  "reason": "validate fail-closed remote Asset Forge dispatch capability after #239",
+  "sequence": 7
 }
 ```
 

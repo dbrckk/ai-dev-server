@@ -22,22 +22,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T18:39:21Z
+Generated: 2026-10-03T18:59:20Z
 
 ### Git
 - Branch: `main`
-- Head: `1e1cb6a9294d`
-- Commit date: 2026-10-03T20:38:46+02:00
-- Commit: fix(e2e): keep live Asset Forge generation in its owning repo (#238)
+- Head: `feaf013e0b30`
+- Commit date: 2026-10-03T20:58:13+02:00
+- Commit: chore(worker): validate remote Asset Forge dispatch probe
 - Tracked files: 831
 
 ### Recently changed files
-- `.github/workflows/production-os-asset-forge-live-e2e.yml`
-- `docs/PRODUCTION_OS_WORKER.md`
-- `tests/test_production_os_asset_forge_live_e2e_workflow.py`
 - `control/production-os-worker-kick.json`
 - `.github/workflows/production-os-actions-worker.yml`
+- `docs/PRODUCTION_OS_WORKER.md`
+- `studio/production_os_worker.py`
 - `tests/test_production_os_actions_worker_workflow.py`
+- `tests/test_production_os_remote_asset_capability.py`
+- `.github/workflows/production-os-asset-forge-live-e2e.yml`
+- `tests/test_production_os_asset_forge_live_e2e_workflow.py`
 
 ### Project signals
 - No common build descriptor detected

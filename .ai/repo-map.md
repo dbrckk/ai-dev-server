@@ -1949,6 +1949,11 @@ jobs:
         run: |
           env -u PYTHONPATH python -m pip install ./production-os-tools
           env -u PYTHONPATH production-os asset-forge-batch --help >/dev/null
+          if env -u PYTHONPATH production-os asset-forge-batch --probe; then
+            echo "Remote Asset Forge dispatch: ready"
+          else
+            echo "::warning::Remote Asset Forge dispatch is unavailable; visual capability will remain disabled."
+          fi
 
       - name: Validate worker configuration
         shell: bash
@@ -2859,8 +2864,8 @@ initial_prompt: |
 ````json
 {
   "requested_by": "production-os",
-  "reason": "validate current Production-OS revision resolver and merged provider fallbacks",
-  "sequence": 6
+  "reason": "validate fail-closed remote Asset Forge dispatch capability after #239",
+  "sequence": 7
 }
 ````
 
@@ -32236,6 +32241,8 @@ def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath()
 def test_actions_worker_has_resilient_model_provider_fallbacks()
 ⋮----
 def test_actions_worker_fails_ci_when_production_result_failed()
+⋮----
+def test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work()
 ````
 
 ## File: tests/test_production_os_local_e2e.py
@@ -32318,6 +32325,10 @@ def fake_run(command, **kwargs)
 class Completed
 ⋮----
 returncode = 0
+⋮----
+def test_remote_asset_forge_probe_failure_removes_visual_capability()
+⋮----
+returncode = 1
 ````
 
 ## File: tests/test_production_os_result_contract.py

@@ -8041,6 +8041,8 @@ def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath()
 def test_actions_worker_has_resilient_model_provider_fallbacks()
 ⋮----
 def test_actions_worker_fails_ci_when_production_result_failed()
+⋮----
+def test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work()
 ```
 
 ## File: test_production_os_local_e2e.py
@@ -8123,6 +8125,10 @@ def fake_run(command, **kwargs)
 class Completed
 ⋮----
 returncode = 0
+⋮----
+def test_remote_asset_forge_probe_failure_removes_visual_capability()
+⋮----
+returncode = 1
 ```
 
 ## File: test_production_os_result_contract.py

@@ -2,28 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "test: cover direct visual task asset-forge routing",
-      "terms": [
-        "asset-forge",
-        "cover",
-        "direct",
-        "routing",
-        "task",
-        "test",
-        "visual"
-      ],
-      "tests": [],
-      "useful": [
-        "scripts/preflight-production-os-worker.py",
-        "studio/production_os_worker.py",
-        "tests/test_production_os_worker.py",
-        "tests/test_production_os_worker_cli.py",
-        "tests/test_production_os_worker_preflight.py",
-        "tests/test_production_os_worker_runtime.py"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "test: cover 3d worker capability readiness",
       "terms": [
         "3d",
@@ -1163,6 +1141,26 @@
       "useful": [
         "tests/test_production_os_asset_forge_live_e2e_workflow.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "chore(worker): validate remote Asset Forge dispatch probe",
+      "terms": [
+        "asset",
+        "chore",
+        "dispatch",
+        "forge",
+        "probe",
+        "remote",
+        "validate",
+        "worker"
+      ],
+      "tests": [],
+      "useful": [
+        "studio/production_os_worker.py",
+        "tests/test_production_os_actions_worker_workflow.py",
+        "tests/test_production_os_remote_asset_capability.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1265,13 +1263,15 @@
       "studio/asset_forge_bridge.py": 16,
       "studio/github_runner.py": 20,
       "studio/orchestrator.py": 4,
-      "studio/production_os_worker.py": 20,
+      "studio/production_os_worker.py": 24,
       "tests/test_asset_forge_bridge.py": 16,
       "tests/test_asset_forge_installer.py": 16,
       "tests/test_imagen_codex_installer.py": 4,
       "tests/test_orchestrator.py": 4,
+      "tests/test_production_os_actions_worker_workflow.py": 4,
       "tests/test_production_os_asset_forge_live_e2e_workflow.py": 8,
       "tests/test_production_os_local_e2e.py": 4,
+      "tests/test_production_os_remote_asset_capability.py": 4,
       "tests/test_production_os_worker.py": 12,
       "tests/test_production_os_worker_cli.py": 8,
       "tests/test_production_os_worker_preflight.py": 4,
@@ -1411,9 +1411,9 @@
       "tests/test_asset_forge_bridge.py": 4
     },
     "chore": {
-      "studio/production_os_worker.py": 8,
-      "tests/test_production_os_actions_worker_workflow.py": 16,
-      "tests/test_production_os_remote_asset_capability.py": 8
+      "studio/production_os_worker.py": 12,
+      "tests/test_production_os_actions_worker_workflow.py": 20,
+      "tests/test_production_os_remote_asset_capability.py": 12
     },
     "ci": {
       "scripts/preflight-production-os-worker.py": 4,
@@ -1626,7 +1626,10 @@
       "tests/test_production_os_worker_runtime.py": 4
     },
     "dispatch": {
-      "tests/test_orchestrator.py": 4
+      "studio/production_os_worker.py": 4,
+      "tests/test_orchestrator.py": 4,
+      "tests/test_production_os_actions_worker_workflow.py": 4,
+      "tests/test_production_os_remote_asset_capability.py": 4
     },
     "docs": {
       "studio/production_os_worker.py": 4,
@@ -1757,11 +1760,13 @@
     },
     "forge": {
       "scripts/preflight-production-os-worker.py": 4,
-      "studio/production_os_worker.py": 16,
+      "studio/production_os_worker.py": 20,
       "tests/test_asset_forge_installer.py": 16,
       "tests/test_imagen_codex_installer.py": 4,
+      "tests/test_production_os_actions_worker_workflow.py": 4,
       "tests/test_production_os_asset_forge_live_e2e_workflow.py": 8,
       "tests/test_production_os_local_e2e.py": 4,
+      "tests/test_production_os_remote_asset_capability.py": 4,
       "tests/test_production_os_worker.py": 12,
       "tests/test_production_os_worker_cli.py": 4,
       "tests/test_production_os_worker_preflight.py": 4,
@@ -2049,7 +2054,9 @@
       "tests/test_asset_forge_bridge.py": 4
     },
     "probe": {
-      "studio/production_os_worker.py": 4,
+      "studio/production_os_worker.py": 8,
+      "tests/test_production_os_actions_worker_workflow.py": 4,
+      "tests/test_production_os_remote_asset_capability.py": 4,
       "tests/test_production_os_worker_runtime.py": 4
     },
     "production": {
@@ -2162,6 +2169,11 @@
       "scripts/preflight-production-os-worker.py": 4,
       "studio/production_os_worker.py": 4,
       "tests/test_production_os_worker.py": 4
+    },
+    "remote": {
+      "studio/production_os_worker.py": 4,
+      "tests/test_production_os_actions_worker_workflow.py": 4,
+      "tests/test_production_os_remote_asset_capability.py": 4
     },
     "repin": {
       "tests/test_asset_forge_installer.py": 4,
@@ -2457,9 +2469,9 @@
       "studio/production_os_worker.py": 4
     },
     "validate": {
-      "studio/production_os_worker.py": 4,
-      "tests/test_production_os_actions_worker_workflow.py": 8,
-      "tests/test_production_os_remote_asset_capability.py": 4
+      "studio/production_os_worker.py": 8,
+      "tests/test_production_os_actions_worker_workflow.py": 12,
+      "tests/test_production_os_remote_asset_capability.py": 8
     },
     "validation": {
       "studio/core.py": 8,
@@ -2527,11 +2539,11 @@
     "worker": {
       "scripts/preflight-production-os-worker.py": 4,
       "studio/github_runner.py": 4,
-      "studio/production_os_worker.py": 32,
+      "studio/production_os_worker.py": 36,
       "tests/test_asset_forge_installer.py": 4,
-      "tests/test_production_os_actions_worker_workflow.py": 32,
+      "tests/test_production_os_actions_worker_workflow.py": 36,
       "tests/test_production_os_local_e2e.py": 12,
-      "tests/test_production_os_remote_asset_capability.py": 8,
+      "tests/test_production_os_remote_asset_capability.py": 12,
       "tests/test_production_os_result_contract.py": 4,
       "tests/test_production_os_worker.py": 8,
       "tests/test_production_os_worker_cli.py": 4,

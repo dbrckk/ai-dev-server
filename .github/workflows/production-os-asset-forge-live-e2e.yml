@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/production-os-asset-forge-live-e2e.yml'
+      - 'tests/test_production_os_asset_forge_live_e2e_workflow.py'
   workflow_dispatch:
 
 permissions:
@@ -17,38 +18,33 @@ concurrency:
 jobs:
   live-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 50
     env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
-      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-      POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
-      CODEX_ACCESS_TOKEN: ${{ secrets.CODEX_ACCESS_TOKEN }}
-      CHATGPT_ACCESS_TOKEN: ${{ secrets.CHATGPT_ACCESS_TOKEN }}
+      ASSET_FORGE_REPO: dbrckk/asset-forge
+      GH_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
     steps:
       - name: Checkout AI Dev Server
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
 
       - name: Checkout current Asset Forge
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: dbrckk/asset-forge
           path: asset-forge
+          persist-credentials: false
 
       - name: Checkout Deadline Zero
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: dbrckk/deadline-zero
           path: deadline-zero
+          persist-credentials: false
 
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
-
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: '22'
 
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
         with:
@@ -59,98 +55,17 @@ jobs:
         with:
           gradle-version: '8.11.1'
 
-      - name: Select live generation backend
-        id: credential
-        shell: bash
-        run: |
-          if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            echo "configured=true" >> "$GITHUB_OUTPUT"
-            echo "backend=cloudflare" >> "$GITHUB_OUTPUT"
-            echo "format=png" >> "$GITHUB_OUTPUT"
-            echo "asset_type=pixel-art" >> "$GITHUB_OUTPUT"
-            echo "artifact=live-production-pipeline-icon.png" >> "$GITHUB_OUTPUT"
-          elif [ -n "$KAGGLE_API_TOKEN" ] && [ -n "$KAGGLE_USERNAME" ]; then
-            echo "configured=true" >> "$GITHUB_OUTPUT"
-            echo "backend=kaggle-qwen" >> "$GITHUB_OUTPUT"
-            echo "format=png" >> "$GITHUB_OUTPUT"
-            echo "asset_type=pixel-art" >> "$GITHUB_OUTPUT"
-            echo "artifact=live-production-pipeline-icon.png" >> "$GITHUB_OUTPUT"
-          elif [ -n "$POLLINATIONS_API_KEY" ]; then
-            echo "configured=true" >> "$GITHUB_OUTPUT"
-            echo "backend=pollinations" >> "$GITHUB_OUTPUT"
-            echo "format=svg" >> "$GITHUB_OUTPUT"
-            echo "asset_type=icon" >> "$GITHUB_OUTPUT"
-            echo "artifact=live-production-pipeline-icon.svg" >> "$GITHUB_OUTPUT"
-          elif [ -n "$CODEX_ACCESS_TOKEN" ] || [ -n "$CHATGPT_ACCESS_TOKEN" ]; then
-            echo "configured=true" >> "$GITHUB_OUTPUT"
-            echo "backend=imagen-codex" >> "$GITHUB_OUTPUT"
-            echo "format=png" >> "$GITHUB_OUTPUT"
-            echo "asset_type=pixel-art" >> "$GITHUB_OUTPUT"
-            echo "artifact=live-production-pipeline-icon.png" >> "$GITHUB_OUTPUT"
-          else
-            echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "::error::No real Asset Forge image-generation backend is configured."
-          fi
-
-      - name: Require a live backend
-        if: steps.credential.outputs.configured != 'true'
-        shell: bash
-        run: |
-          echo "::error::Live E2E requires Cloudflare, Kaggle, Pollinations, or imagen-codex credentials."
-          exit 2
-
-      - name: Install live visual toolchain
-        if: steps.credential.outputs.configured == 'true'
+      - name: Validate cross-repository dispatch access
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install "./asset-forge[generation]"
-          case "${{ steps.credential.outputs.backend }}" in
-            cloudflare)
-              ;;
-            kaggle-qwen)
-              python -m pip install -U kaggle
-              ;;
-            pollinations)
-              npm install --global @pollinations/cli@0.1.15
-              ;;
-            imagen-codex)
-              bash scripts/install-imagen-codex.sh
-              ;;
-            *)
-              echo "::error::Unsupported live backend"
-              exit 2
-              ;;
-          esac
-
-      - name: Verify live Asset Forge readiness
-        if: steps.credential.outputs.configured == 'true'
-        env:
-          BACKEND: ${{ steps.credential.outputs.backend }}
-        run: |
-          asset-forge operational-status > build-operational-status.json
-          python - <<'PY'
-          import json, os
-          data=json.load(open("build-operational-status.json"))
-          backend=os.environ["BACKEND"]
-          if backend == "cloudflare":
-              assert data["capabilities"]["rasterPng"] is True, data
-              assert data["generation"]["cloudflare"]["rasterReady"] is True, data
-          elif backend == "kaggle-qwen":
-              assert data["capabilities"]["rasterPng"] is True, data
-              assert data["generation"]["kaggleQwen"]["rasterReady"] is True, data
-          elif backend == "pollinations":
-              assert data["capabilities"]["vectorSvg"] is True, data
-              assert data["generation"]["pollinations"]["authenticated"] is True, data
-          elif backend == "imagen-codex":
-              assert data["capabilities"]["rasterPng"] is True, data
-              assert data["generation"]["imagenCodex"]["authenticated"] is True, data
-          else:
-              raise AssertionError(f"unsupported backend: {backend}")
-          PY
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::STUDIO_GITHUB_TOKEN or CODESPACES_PAT is required for Asset Forge dispatch."
+            exit 2
+          fi
+          gh api "repos/$ASSET_FORGE_REPO" --jq '.full_name' | grep -Fx "$ASSET_FORGE_REPO"
 
       - name: Materialize Production OS live visual handoff
-        if: steps.credential.outputs.configured == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -185,24 +100,23 @@ jobs:
                   }
               }
           }
-          request=request_check(build_studio_request(job))
-          assert request["tool_contracts"]["asset_forge"]["command"] == "asset-forge fulfill"
+          request = request_check(build_studio_request(job))
+          contract = request["tool_contracts"]["asset_forge"]
+          assert contract["command"] == "asset-forge fulfill"
+          assert contract["report_schema"] == "asset-forge/production-report/v1"
+          assert contract["required_capability"] == "visual-asset-production"
           Path("build/live-e2e/studio-request.json").write_text(
               json.dumps(request, indent=2, sort_keys=True) + "\n",
               encoding="utf-8",
           )
           PY
 
-      - name: Create generated-source Asset Forge request
-        if: steps.credential.outputs.configured == 'true'
+      - name: Create remote Asset Forge batch
         shell: bash
-        env:
-          ASSET_TYPE: ${{ steps.credential.outputs.asset_type }}
-          TARGET_FORMAT: ${{ steps.credential.outputs.format }}
         run: |
           set -euo pipefail
           python - <<'PY'
-          import json, os
+          import json
           from pathlib import Path
 
           request = {
@@ -210,110 +124,185 @@ jobs:
               "requestId": "deadline-zero-live-secondary-icon",
               "instruction": "Create a premium dark sci-fi game UI icon for Deadline Zero representing an autonomous production pipeline: one strong geometric forge/core symbol, high contrast silhouette, subtle industrial cyberpunk character, no text, no letters, no watermark, no mockup background.",
               "manifest": {
+                  "schema": "asset-forge/manifest/v1",
                   "id": "live-production-pipeline-icon",
                   "project": "deadline-zero",
-                  "type": os.environ["ASSET_TYPE"],
+                  "type": "sprite",
                   "importance": "secondary",
                   "source": {"mode": "generated"},
                   "license": {
                       "id": "project-owned",
                       "commercialUse": True,
                       "derivatives": True,
-                      "attributionRequired": False
+                      "attributionRequired": False,
                   },
                   "target": {
                       "engine": "libgdx",
-                      "format": os.environ["TARGET_FORMAT"],
-                      "maxBytes": 1048576
+                      "format": "png",
+                      "maxBytes": 4194304,
                   },
-                  "constraints": {}
+                  "constraints": {
+                      "frameWidth": 96,
+                      "frameHeight": 96,
+                      "expectedFrames": 1,
+                  },
               },
-              "delivery": {
-                  "engine": "libgdx",
-                  "outputDir": "build/live-e2e/fulfilled"
-              }
           }
-          Path("build/live-e2e/production-request.json").write_text(
-              json.dumps(request, indent=2, sort_keys=True) + "\n",
+          spec = {
+              "items": [{
+                  "id": "live-production-pipeline-icon",
+                  "request": request,
+                  "target_path": "assets/art/live-production-pipeline-icon.png",
+              }]
+          }
+          Path("build/live-e2e/batch-spec.json").write_text(
+              json.dumps(spec, indent=2, sort_keys=True) + "\n",
               encoding="utf-8",
           )
           PY
 
-      - name: Generate, process and validate live asset
-        if: steps.credential.outputs.configured == 'true'
-        env:
-          BACKEND: ${{ steps.credential.outputs.backend }}
-          ARTIFACT: ${{ steps.credential.outputs.artifact }}
+      - name: Dispatch Asset Forge production
+        id: asset_forge
+        shell: bash
         run: |
-          asset-forge fulfill \
-            build/live-e2e/production-request.json \
-            --output-dir build/live-e2e/fulfilled \
-            --backend "$BACKEND"
-          asset-forge validate-production-report \
-            build/live-e2e/fulfilled/production-report.json
-          test -s "build/live-e2e/fulfilled/$ARTIFACT"
+          set -euo pipefail
+          correlation="production-os-live-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          spec_json="$(python -c 'import json; print(json.dumps(json.load(open("build/live-e2e/batch-spec.json")), separators=(",", ":")))' )"
+
+          gh workflow run production-os-batch.yml             --repo "$ASSET_FORGE_REPO"             --ref main             -f correlation_id="$correlation"             -f spec_json="$spec_json"             -f backend=auto
+
+          run_id=""
+          for attempt in $(seq 1 30); do
+            run_id="$(
+              gh run list                 --repo "$ASSET_FORGE_REPO"                 --workflow production-os-batch.yml                 --event workflow_dispatch                 --limit 20                 --json databaseId,displayTitle                 --jq ".[] | select(.displayTitle == \"Asset Forge batch $correlation\") | .databaseId"               | head -n 1
+            )"
+            if [ -n "$run_id" ]; then
+              break
+            fi
+            sleep 2
+          done
+          if [ -z "$run_id" ]; then
+            echo "::error::Unable to locate dispatched Asset Forge workflow run."
+            exit 2
+          fi
+
+          local_sha="$(git -C asset-forge rev-parse HEAD)"
+          remote_sha="$(gh run view "$run_id" --repo "$ASSET_FORGE_REPO" --json headSha --jq '.headSha')"
+          if [ "$local_sha" != "$remote_sha" ]; then
+            echo "::error::Asset Forge main advanced during dispatch; rerun to keep E2E evidence exact."
+            echo "local=$local_sha remote=$remote_sha"
+            exit 2
+          fi
+
+          echo "correlation=$correlation" >> "$GITHUB_OUTPUT"
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          echo "asset_forge_sha=$remote_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for remote Asset Forge production
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh run watch "${{ steps.asset_forge.outputs.run_id }}"             --repo "$ASSET_FORGE_REPO"             --exit-status             --interval 10
+
+      - name: Download validated Asset Forge bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/live-e2e/remote
+          gh run download "${{ steps.asset_forge.outputs.run_id }}"             --repo "$ASSET_FORGE_REPO"             --name "asset-forge-batch-${{ steps.asset_forge.outputs.correlation }}"             --dir build/live-e2e/remote
+
+      - name: Verify remote bundle and materialize asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/live-e2e/fulfilled
+          python - <<'PY'
+          import hashlib
+          import json
+          import shutil
+          from pathlib import Path
+
+          root = Path("build/live-e2e/remote").resolve()
+          result_path = root / "batch-result.json"
+          assert result_path.is_file(), result_path
+          result = json.loads(result_path.read_text(encoding="utf-8"))
+          assert result["schema_version"] == "asset-forge/remote-batch-result/v1", result
+          assert result["success"] is True, result
+          assert result["count"] == 1, result
+          assert result["execution_order"] == ["live-production-pipeline-icon"], result
+
+          item = result["items"][0]
+          assert item["id"] == "live-production-pipeline-icon", item
+          artifact = (root / item["artifact"]).resolve()
+          assert artifact.is_relative_to(root), artifact
+          assert artifact.is_file() and artifact.stat().st_size > 0, artifact
+          digest = hashlib.sha256(artifact.read_bytes()).hexdigest()
+          assert digest == item["sha256"], (digest, item["sha256"])
+
+          destination = Path("build/live-e2e/fulfilled/live-production-pipeline-icon.png")
+          shutil.copyfile(artifact, destination)
+          (Path("build/live-e2e") / "remote-batch-result.json").write_text(
+              json.dumps(result, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
 
       - name: Inject live asset into Deadline Zero workspace
-        if: steps.credential.outputs.configured == 'true'
-        env:
-          ARTIFACT: ${{ steps.credential.outputs.artifact }}
         run: |
-          install -D \
-            "build/live-e2e/fulfilled/$ARTIFACT" \
-            "deadline-zero/assets/art/$ARTIFACT"
-          test -s "deadline-zero/assets/art/$ARTIFACT"
+          install -D             build/live-e2e/fulfilled/live-production-pipeline-icon.png             deadline-zero/assets/art/live-production-pipeline-icon.png
+          test -s deadline-zero/assets/art/live-production-pipeline-icon.png
 
       - name: Validate Deadline Zero art contracts
-        if: steps.credential.outputs.configured == 'true'
         working-directory: deadline-zero
         run: |
           python3 tools/validate_final_sprite_layout.py
           python3 tools/sprites/validate_actor_production_contracts.py
 
       - name: Compile and test Deadline Zero with live asset
-        if: steps.credential.outputs.configured == 'true'
         working-directory: deadline-zero
         run: gradle :core:compileJava :core:test :desktop:compileJava
 
       - name: Record live E2E evidence
-        if: steps.credential.outputs.configured == 'true'
+        env:
+          ASSET_FORGE_RUN_ID: ${{ steps.asset_forge.outputs.run_id }}
+          ASSET_FORGE_SHA: ${{ steps.asset_forge.outputs.asset_forge_sha }}
+          ASSET_FORGE_CORRELATION: ${{ steps.asset_forge.outputs.correlation }}
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
           import hashlib
           import json
+          import os
           from pathlib import Path
-          root=Path("build/live-e2e")
-          fulfilled=root/"fulfilled"
-          assets=[
-              p for p in fulfilled.iterdir()
-              if p.name.startswith("live-production-pipeline-icon.")
-          ]
-          assert len(assets) == 1, assets
-          asset=assets[0]
-          report=json.loads((root/"fulfilled"/"production-report.json").read_text())
-          studio=json.loads((root/"studio-request.json").read_text())
-          evidence={
-              "schema":"ai-dev-server/asset-forge-live-e2e/v1",
-              "productionOsCorrelation":studio["production_os"],
-              "targetRepo":studio["target_repo"],
-              "toolContract":studio["tool_contracts"]["asset_forge"],
-              "assetForgeReportSuccess":report.get("success") is True,
-              "liveGeneration":True,
-              "artifact":str(asset),
-              "artifactSha256":hashlib.sha256(asset.read_bytes()).hexdigest(),
-              "deadlineZeroCompileAndTests":True
+
+          root = Path("build/live-e2e")
+          asset = root / "fulfilled" / "live-production-pipeline-icon.png"
+          batch = json.loads((root / "remote-batch-result.json").read_text())
+          studio = json.loads((root / "studio-request.json").read_text())
+          evidence = {
+              "schema": "ai-dev-server/asset-forge-live-e2e/v2",
+              "productionOsCorrelation": studio["production_os"],
+              "targetRepo": studio["target_repo"],
+              "toolContract": studio["tool_contracts"]["asset_forge"],
+              "assetForgeRemoteRunId": int(os.environ["ASSET_FORGE_RUN_ID"]),
+              "assetForgeSha": os.environ["ASSET_FORGE_SHA"],
+              "assetForgeCorrelation": os.environ["ASSET_FORGE_CORRELATION"],
+              "assetForgeBatchSuccess": batch.get("success") is True,
+              "assetForgeRouting": batch.get("routing_summary"),
+              "liveGeneration": True,
+              "artifact": str(asset),
+              "artifactSha256": hashlib.sha256(asset.read_bytes()).hexdigest(),
+              "deadlineZeroCompileAndTests": True,
           }
-          assert evidence["assetForgeReportSuccess"]
-          (root/"e2e-evidence.json").write_text(
-              json.dumps(evidence,indent=2,sort_keys=True)+"\n",
-              encoding="utf-8"
+          assert evidence["assetForgeBatchSuccess"]
+          (root / "e2e-evidence.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
           )
           PY
 
       - name: Upload live E2E evidence
-        if: steps.credential.outputs.configured == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: production-os-asset-forge-live-deadline-zero-e2e

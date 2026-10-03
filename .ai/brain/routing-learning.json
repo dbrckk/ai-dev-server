@@ -2,23 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "test: add Production-OS worker local end-to-end acceptance",
-      "terms": [
-        "acceptance",
-        "add",
-        "end-to-end",
-        "local",
-        "production-os",
-        "test",
-        "worker"
-      ],
-      "tests": [],
-      "useful": [
-        "tests/test_production_os_local_e2e.py"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "fix: retain Codex terminal usage event in bounded output",
       "terms": [
         "bounded",
@@ -1163,6 +1146,25 @@
         "tests/test_production_os_actions_worker_workflow.py",
         "tests/test_production_os_remote_asset_capability.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "chore(worker): retest queued visual Production-OS work",
+      "terms": [
+        "chore",
+        "production-os",
+        "queued",
+        "retest",
+        "visual",
+        "work",
+        "worker"
+      ],
+      "tests": [],
+      "useful": [
+        "studio/production_os_worker.py",
+        "tests/test_production_os_actions_worker_workflow.py",
+        "tests/test_production_os_remote_asset_capability.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1393,9 +1395,9 @@
       "tests/test_asset_forge_bridge.py": 4
     },
     "chore": {
-      "studio/production_os_worker.py": 4,
-      "tests/test_production_os_actions_worker_workflow.py": 4,
-      "tests/test_production_os_remote_asset_capability.py": 4
+      "studio/production_os_worker.py": 8,
+      "tests/test_production_os_actions_worker_workflow.py": 8,
+      "tests/test_production_os_remote_asset_capability.py": 8
     },
     "ci": {
       "scripts/preflight-production-os-worker.py": 4,
@@ -2035,15 +2037,15 @@
       "studio/generic_project.py": 4,
       "studio/github_runner.py": 8,
       "studio/omniroute_capacity.py": 4,
-      "studio/production_os_worker.py": 16,
+      "studio/production_os_worker.py": 20,
       "tests/test_agent_router.py": 4,
       "tests/test_capacity_scheduler_omniroute.py": 4,
       "tests/test_codex_adapter.py": 4,
       "tests/test_github_runner_usage.py": 4,
       "tests/test_omniroute_capacity.py": 4,
-      "tests/test_production_os_actions_worker_workflow.py": 8,
+      "tests/test_production_os_actions_worker_workflow.py": 12,
       "tests/test_production_os_local_e2e.py": 8,
-      "tests/test_production_os_remote_asset_capability.py": 4,
+      "tests/test_production_os_remote_asset_capability.py": 8,
       "tests/test_production_os_result_contract.py": 4,
       "tests/test_production_os_worker.py": 4,
       "tests/test_production_os_worker_cli.py": 8,
@@ -2090,9 +2092,9 @@
       "tests/test_production_os_worker.py": 4
     },
     "queued": {
-      "studio/production_os_worker.py": 4,
-      "tests/test_production_os_actions_worker_workflow.py": 4,
-      "tests/test_production_os_remote_asset_capability.py": 4
+      "studio/production_os_worker.py": 8,
+      "tests/test_production_os_actions_worker_workflow.py": 8,
+      "tests/test_production_os_remote_asset_capability.py": 8
     },
     "readiness": {
       "scripts/preflight-production-os-worker.py": 4,
@@ -2148,6 +2150,11 @@
     "retain": {
       "studio/agents/adapters.py": 4,
       "tests/test_codex_output_retention.py": 4
+    },
+    "retest": {
+      "studio/production_os_worker.py": 4,
+      "tests/test_production_os_actions_worker_workflow.py": 4,
+      "tests/test_production_os_remote_asset_capability.py": 4
     },
     "retry": {
       "studio/capability_registry_review.py": 4,
@@ -2442,12 +2449,14 @@
       "studio/fleet_dashboard.py": 4,
       "studio/github_runner.py": 8,
       "studio/orchestrator.py": 4,
-      "studio/production_os_worker.py": 20,
+      "studio/production_os_worker.py": 24,
       "tests/test_asset_forge_bridge.py": 12,
       "tests/test_asset_forge_installer.py": 4,
       "tests/test_fleet_dashboard.py": 4,
       "tests/test_orchestrator.py": 8,
+      "tests/test_production_os_actions_worker_workflow.py": 4,
       "tests/test_production_os_local_e2e.py": 4,
+      "tests/test_production_os_remote_asset_capability.py": 4,
       "tests/test_production_os_result_contract.py": 4,
       "tests/test_production_os_worker.py": 20,
       "tests/test_production_os_worker_cli.py": 8,
@@ -2464,19 +2473,19 @@
       "studio/generic_project.py": 4,
       "studio/generic_repository.py": 4,
       "studio/github_runner.py": 4,
-      "studio/production_os_worker.py": 4,
+      "studio/production_os_worker.py": 8,
       "tests/test_generic_repository_pull_request.py": 4,
-      "tests/test_production_os_actions_worker_workflow.py": 8,
-      "tests/test_production_os_remote_asset_capability.py": 4
+      "tests/test_production_os_actions_worker_workflow.py": 12,
+      "tests/test_production_os_remote_asset_capability.py": 8
     },
     "worker": {
       "scripts/preflight-production-os-worker.py": 4,
       "studio/github_runner.py": 4,
-      "studio/production_os_worker.py": 28,
+      "studio/production_os_worker.py": 32,
       "tests/test_asset_forge_installer.py": 4,
-      "tests/test_production_os_actions_worker_workflow.py": 12,
+      "tests/test_production_os_actions_worker_workflow.py": 16,
       "tests/test_production_os_local_e2e.py": 12,
-      "tests/test_production_os_remote_asset_capability.py": 4,
+      "tests/test_production_os_remote_asset_capability.py": 8,
       "tests/test_production_os_result_contract.py": 4,
       "tests/test_production_os_worker.py": 8,
       "tests/test_production_os_worker_cli.py": 4,

@@ -110,8 +110,8 @@ request.json
 ```json
 {
   "requested_by": "production-os",
-  "reason": "validate remote Asset Forge visual capability against queued work",
-  "sequence": 2
+  "reason": "validate isolated remote Asset Forge worker against queued visual work",
+  "sequence": 3
 }
 ```
 

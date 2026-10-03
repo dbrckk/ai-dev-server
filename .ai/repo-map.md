@@ -1900,8 +1900,8 @@ jobs:
 
       - name: Install Production-OS remote tools
         run: |
-          python -m pip install ./production-os-tools
-          production-os asset-forge-batch --help >/dev/null
+          env -u PYTHONPATH python -m pip install ./production-os-tools
+          env -u PYTHONPATH production-os asset-forge-batch --help >/dev/null
 
       - name: Validate worker configuration
         shell: bash
@@ -3132,8 +3132,8 @@ initial_prompt: |
 ````json
 {
   "requested_by": "production-os",
-  "reason": "validate remote Asset Forge visual capability against queued work",
-  "sequence": 2
+  "reason": "validate isolated remote Asset Forge worker against queued visual work",
+  "sequence": 3
 }
 ````
 
@@ -32496,6 +32496,8 @@ install = WORKFLOW.index("Install Production-OS remote tools")
 def test_actions_worker_preflight_uses_runtime_capability_detection()
 ⋮----
 probe = WORKFLOW.split("- name: Probe compatible Production-OS work", 1)[1]
+⋮----
+def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath()
 ````
 
 ## File: tests/test_production_os_asset_forge_live_e2e_workflow.py
@@ -32581,6 +32583,16 @@ def test_remote_asset_forge_is_not_advertised_when_unavailable()
 def test_visual_handoff_uses_remote_batch_guidance_when_available()
 ⋮----
 request = build_studio_request(_job())
+⋮----
+def test_remote_asset_forge_probe_drops_studio_pythonpath()
+⋮----
+seen = {}
+⋮----
+def fake_run(command, **kwargs)
+⋮----
+class Completed
+⋮----
+returncode = 0
 ````
 
 ## File: tests/test_production_os_result_contract.py

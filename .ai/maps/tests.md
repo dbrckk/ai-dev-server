@@ -8029,6 +8029,8 @@ install = WORKFLOW.index("Install Production-OS remote tools")
 def test_actions_worker_preflight_uses_runtime_capability_detection()
 ⋮----
 probe = WORKFLOW.split("- name: Probe compatible Production-OS work", 1)[1]
+⋮----
+def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath()
 ```
 
 ## File: test_production_os_asset_forge_live_e2e_workflow.py
@@ -8114,6 +8116,16 @@ def test_remote_asset_forge_is_not_advertised_when_unavailable()
 def test_visual_handoff_uses_remote_batch_guidance_when_available()
 ⋮----
 request = build_studio_request(_job())
+⋮----
+def test_remote_asset_forge_probe_drops_studio_pythonpath()
+⋮----
+seen = {}
+⋮----
+def fake_run(command, **kwargs)
+⋮----
+class Completed
+⋮----
+returncode = 0
 ```
 
 ## File: test_production_os_result_contract.py

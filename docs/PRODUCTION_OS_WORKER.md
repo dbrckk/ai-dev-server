@@ -49,6 +49,12 @@ asset-forge operational-status
 
 The worker advertises `visual-asset-production` only when Asset Forge and an authenticated generation backend are actually ready. Generated 3D additionally advertises `visual-asset-3d-production` only when the server-side API-key path is available. Visual Production-OS handoffs are translated into the `asset-forge/production-request/v1` contract and executed end to end with `asset-forge fulfill <request.json>`.
 
+### Live visual E2E ownership
+
+The canonical real-generation acceptance test is owned by `dbrckk/asset-forge` in `.github/workflows/production-os-ai-dev-server-live-e2e.yml`. Asset Forge owns the provider credentials, checks out the current AI Dev Server and Deadline Zero revisions, materializes the Production-OS handoff through this repository, generates and validates a real asset, injects it into Deadline Zero, and compiles/tests the target.
+
+Do not dispatch Asset Forge Actions from this repository with `STUDIO_GITHUB_TOKEN` or `CODESPACES_PAT`. Those tokens are not required to have cross-repository Actions write permission. Keeping the live E2E in Asset Forge limits provider secrets and workflow-dispatch privileges to the repository that owns generation.
+
 Start the persistent worker with:
 
 ```bash

@@ -1916,7 +1916,7 @@ jobs:
           for run in payload.get("workflow_runs", []):
               if run.get("conclusion") != "success":
                   continue
-              if run.get("event") != "push":
+              if run.get("event") not in {"push", "workflow_dispatch"}:
                   continue
               if run.get("head_branch") != "main":
                   continue
@@ -3187,8 +3187,8 @@ initial_prompt: |
 ````json
 {
   "requested_by": "production-os",
-  "reason": "retest Production-OS Jumpy queue with merged provider fallbacks",
-  "sequence": 5
+  "reason": "validate current Production-OS revision resolver and merged provider fallbacks",
+  "sequence": 6
 }
 ````
 
@@ -32549,7 +32549,7 @@ resolve = WORKFLOW.index("Resolve qualified Production-OS revision")
 checkout = WORKFLOW.index("Checkout Production-OS tools")
 install = WORKFLOW.index("Install Production-OS remote tools")
 ⋮----
-def test_actions_worker_resolves_only_qualified_production_os_main_pushes()
+def test_actions_worker_resolves_only_qualified_production_os_main_runs()
 ⋮----
 resolver = WORKFLOW.split(
 ⋮----

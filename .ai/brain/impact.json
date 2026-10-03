@@ -1,17 +1,140 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "dcffb03a218ed232754a3e680f6acceacf8c4514",
-  "head": "a899f20160559a328f27eba8140cda9bdf7f436d",
+  "base": "a899f20160559a328f27eba8140cda9bdf7f436d",
+  "head": "89a7d4a4e6e9d23e831dba7c5f962e9d72750a16",
   "index_mode": "incremental",
   "changed_files": [
     {
+      "path": ".github/workflows/production-os-actions-worker.yml",
+      "status": "M"
+    },
+    {
       "path": "control/production-os-worker-kick.json",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_production_os_actions_worker_workflow.py",
       "status": "M"
     }
   ],
-  "changed_source_files": [],
-  "impacted_files": [],
-  "impacted_symbols": [],
-  "selected_tests": []
+  "changed_source_files": [
+    "tests/test_production_os_actions_worker_workflow.py"
+  ],
+  "impacted_files": [
+    "tests/test_production_os_actions_worker_workflow.py"
+  ],
+  "impacted_symbols": [
+    {
+      "name": "test_actions_worker_has_no_codespace_dependency",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 9
+    },
+    {
+      "name": "test_actions_worker_polls_production_os_on_schedule",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 15
+    },
+    {
+      "name": "test_actions_worker_uses_existing_secure_credentials",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 23
+    },
+    {
+      "name": "test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 31
+    },
+    {
+      "name": "test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 47
+    },
+    {
+      "name": "test_actions_worker_is_single_flight_and_bounded",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 59
+    },
+    {
+      "name": "test_actions_worker_exits_heavy_path_when_no_compatible_work_exists",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 68
+    },
+    {
+      "name": "test_actions_worker_skips_base_pass_for_mobile_only_work",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 79
+    },
+    {
+      "name": "test_actions_worker_does_not_prepare_android_for_base_only_claim_race",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 92
+    },
+    {
+      "name": "test_actions_worker_reports_rejected_worker_token_without_exposing_it",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 98
+    },
+    {
+      "name": "test_actions_worker_availability_probe_fails_closed",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 105
+    },
+    {
+      "name": "test_actions_worker_bootstraps_remote_asset_forge_before_preflight",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 112
+    },
+    {
+      "name": "test_actions_worker_resolves_only_qualified_production_os_main_runs",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 125
+    },
+    {
+      "name": "test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 141
+    },
+    {
+      "name": "test_actions_worker_preflight_uses_runtime_capability_detection",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 152
+    },
+    {
+      "name": "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 160
+    },
+    {
+      "name": "test_actions_worker_has_resilient_model_provider_fallbacks",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 165
+    },
+    {
+      "name": "test_actions_worker_fails_ci_when_production_result_failed",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 176
+    }
+  ],
+  "selected_tests": [
+    "tests/test_production_os_actions_worker_workflow.py"
+  ]
 }

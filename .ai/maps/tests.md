@@ -8027,7 +8027,7 @@ resolve = WORKFLOW.index("Resolve qualified Production-OS revision")
 checkout = WORKFLOW.index("Checkout Production-OS tools")
 install = WORKFLOW.index("Install Production-OS remote tools")
 ⋮----
-def test_actions_worker_resolves_only_qualified_production_os_main_pushes()
+def test_actions_worker_resolves_only_qualified_production_os_main_runs()
 ⋮----
 resolver = WORKFLOW.split(
 ⋮----

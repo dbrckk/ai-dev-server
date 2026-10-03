@@ -110,8 +110,8 @@ request.json
 ```json
 {
   "requested_by": "production-os",
-  "reason": "retest Production-OS Jumpy queue with merged provider fallbacks",
-  "sequence": 5
+  "reason": "validate current Production-OS revision resolver and merged provider fallbacks",
+  "sequence": 6
 }
 ```
 

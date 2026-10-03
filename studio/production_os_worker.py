@@ -136,6 +136,7 @@ def _remote_asset_forge_operational(environ=None) -> bool:
     executable = shutil.which("production-os", path=env.get("PATH"))
     if not token or not executable:
         return False
+    env.pop("PYTHONPATH", None)
     try:
         completed = subprocess.run(
             [executable, "asset-forge-batch", "--help"],
@@ -717,7 +718,7 @@ def _asset_forge_guidance(handoff: dict[str, Any]) -> str:
             "Production-OS remote bridge. Do not require local Cloudflare, Kaggle "
             "or Pollinations credentials. Build an asset-forge batch spec with "
             "production-request/v1 requests and repository-relative target_path "
-            "values, then run production-os asset-forge-batch --spec <spec.json> "
+            "values, then run env -u PYTHONPATH production-os asset-forge-batch --spec <spec.json> "
             "--mode github --backend auto --target-worktree <repository-root> "
             "--result-file <result.json>. The command must finish successfully, "
             "download and verify the correlated Asset Forge workflow artifact, "

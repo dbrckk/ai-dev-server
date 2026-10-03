@@ -127,3 +127,8 @@ def test_actions_worker_preflight_uses_runtime_capability_detection():
     assert 'base_env["PRODUCTION_OS_WORKER_SPECIALTIES"] = ""' in probe
     assert "base_capabilities = worker_capabilities(base_env)" in probe
     assert '"visual-asset-production"' not in probe.split("def probe", 1)[0]
+
+
+def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath():
+    assert "env -u PYTHONPATH python -m pip install ./production-os-tools" in WORKFLOW
+    assert "env -u PYTHONPATH production-os asset-forge-batch --help" in WORKFLOW

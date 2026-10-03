@@ -108,6 +108,11 @@ jobs:
         run: |
           env -u PYTHONPATH python -m pip install ./production-os-tools
           env -u PYTHONPATH production-os asset-forge-batch --help >/dev/null
+          if env -u PYTHONPATH production-os asset-forge-batch --probe; then
+            echo "Remote Asset Forge dispatch: ready"
+          else
+            echo "::warning::Remote Asset Forge dispatch is unavailable; visual capability will remain disabled."
+          fi
 
       - name: Validate worker configuration
         shell: bash

@@ -60,3 +60,9 @@ def test_live_e2e_is_bounded_and_cross_repo_token_is_mandatory():
     assert "STUDIO_GITHUB_TOKEN or CODESPACES_PAT is required" in WORKFLOW
     assert "Unable to locate dispatched Asset Forge workflow run." in WORKFLOW
     assert "for attempt in $(seq 1 30)" in WORKFLOW
+
+def test_live_e2e_keeps_cross_repo_credentials_out_of_checkout_state():
+    assert "permissions:\n  contents: read" in WORKFLOW
+    assert WORKFLOW.count("persist-credentials: false") == 3
+    assert "actions: write" not in WORKFLOW
+

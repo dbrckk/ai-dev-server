@@ -107,3 +107,23 @@ def test_actions_worker_availability_probe_fails_closed():
     assert "Production-OS availability probe returned invalid JSON" in WORKFLOW
     assert "except urllib.error.HTTPError as exc:" in WORKFLOW
     assert "raise SystemExit(" in WORKFLOW
+
+
+def test_actions_worker_bootstraps_remote_asset_forge_before_preflight():
+    checkout = WORKFLOW.index("Checkout Production-OS tools")
+    install = WORKFLOW.index("Install Production-OS remote tools")
+    probe = WORKFLOW.index("Probe compatible Production-OS work")
+    assert checkout < install < probe
+    assert "repository: dbrckk/Production-OS" in WORKFLOW
+    assert "b8be27a65200629553200f912b0caa9112ff8f4c" in WORKFLOW
+    assert "python -m pip install ./production-os-tools" in WORKFLOW
+    assert "production-os asset-forge-batch --help" in WORKFLOW
+    assert "GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}" in WORKFLOW
+
+
+def test_actions_worker_preflight_uses_runtime_capability_detection():
+    probe = WORKFLOW.split("- name: Probe compatible Production-OS work", 1)[1]
+    assert "from production_os_worker import worker_capabilities" in probe
+    assert 'base_env["PRODUCTION_OS_WORKER_SPECIALTIES"] = ""' in probe
+    assert "base_capabilities = worker_capabilities(base_env)" in probe
+    assert '"visual-asset-production"' not in probe.split("def probe", 1)[0]

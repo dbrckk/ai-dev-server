@@ -159,3 +159,19 @@ def test_actions_worker_preflight_uses_runtime_capability_detection():
 def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath():
     assert "env -u PYTHONPATH python -m pip install ./production-os-tools" in WORKFLOW
     assert "env -u PYTHONPATH production-os asset-forge-batch --help" in WORKFLOW
+
+
+def test_actions_worker_has_resilient_model_provider_fallbacks():
+    assert "STUDIO_PROVIDERS_JSON: ${{ vars.STUDIO_PROVIDERS_JSON }}" in WORKFLOW
+    assert 'normalized_base="${STUDIO_API_BASE%/}"' in WORKFLOW
+    assert '[ -z "${STUDIO_PROVIDERS_JSON:-}" ]' in WORKFLOW
+    assert '[ "$normalized_base" = "https://integrate.api.nvidia.com/v1" ]' in WORKFLOW
+    assert "nvidia-lightning-fallback" in WORKFLOW
+    assert "nvidia/nemotron-3.5-lightning-30b-a3b" in WORKFLOW
+    assert "poolside-laguna-fallback" in WORKFLOW
+    assert "poolside/laguna-xs-2.1" in WORKFLOW
+
+
+def test_actions_worker_fails_ci_when_production_result_failed():
+    assert 'if status == "failed":' in WORKFLOW
+    assert 'Production-OS base-capability job failed' in WORKFLOW

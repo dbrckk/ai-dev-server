@@ -137,6 +137,17 @@ def test_actions_worker_resolves_only_qualified_production_os_main_pushes():
     assert "b8be27a65200629553200f912b0caa9112ff8f4c" not in WORKFLOW
 
 
+def test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token():
+    resolver = WORKFLOW.split(
+        "- name: Resolve qualified Production-OS revision", 1
+    )[1].split("- name: Checkout Production-OS tools", 1)[0]
+    assert 'token = os.environ.get("GITHUB_TOKEN", "").strip()' in resolver
+    assert 'headers["Authorization"] = f"Bearer {token}"' in resolver
+    assert "urllib.request.Request(url, headers=headers)" in resolver
+    assert 'print(token)' not in resolver
+    assert 'printf' not in resolver.split("PY", 1)[0]
+
+
 def test_actions_worker_preflight_uses_runtime_capability_detection():
     probe = WORKFLOW.split("- name: Probe compatible Production-OS work", 1)[1]
     assert "from production_os_worker import worker_capabilities" in probe

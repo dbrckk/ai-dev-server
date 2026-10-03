@@ -122,14 +122,15 @@ def test_actions_worker_bootstraps_remote_asset_forge_before_preflight():
     assert "GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}" in WORKFLOW
 
 
-def test_actions_worker_resolves_only_qualified_production_os_main_pushes():
+def test_actions_worker_resolves_only_qualified_production_os_main_runs():
     resolver = WORKFLOW.split(
         "- name: Resolve qualified Production-OS revision", 1
     )[1].split("- name: Checkout Production-OS tools", 1)[0]
     assert "actions/workflows/" in resolver
     assert "ci.yml/runs?branch=main&status=success&per_page=20" in resolver
     assert 'run.get("conclusion") != "success"' in resolver
-    assert 'run.get("event") != "push"' in resolver
+    assert 'run.get("event") not in {"push", "workflow_dispatch"}' in resolver
+    assert '"pull_request"' not in resolver
     assert 'run.get("head_branch") != "main"' in resolver
     assert 'repository != "dbrckk/Production-OS"' in resolver
     assert "No qualified Production-OS main revision found" in resolver

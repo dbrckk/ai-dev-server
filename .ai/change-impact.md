@@ -1,14 +1,16 @@
 # Change impact
 
-Base: 12513f345f6c496e75523aff912243bf44a42f10
-Head: 3cbd541e266e58550a79e1246204b5427a1abcee
+Base: b2f4bc31dcdd158f5d4d44a03e5d38a95b1be3db
+Head: 1e1cb6a9294d478efb0f09d76e3864c4bf5986eb
 
 ## Changed files
-- M .github/workflows/production-os-asset-forge-live-e2e.yml
-- M tests/test_production_os_asset_forge_live_e2e_workflow.py
+- D .github/workflows/production-os-asset-forge-live-e2e.yml
+- M docs/PRODUCTION_OS_WORKER.md
+- D tests/test_production_os_asset_forge_live_e2e_workflow.py
 
 ## Affected areas
 - .github
+- docs
 - tests
 
 ## Related test candidates

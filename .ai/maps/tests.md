@@ -272,7 +272,6 @@ test_preemption_controller.py
 test_privacy_stage.py
 test_privacy.py
 test_production_os_actions_worker_workflow.py
-test_production_os_asset_forge_live_e2e_workflow.py
 test_production_os_local_e2e.py
 test_production_os_remote_asset_capability.py
 test_production_os_result_contract.py
@@ -8042,25 +8041,6 @@ def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath()
 def test_actions_worker_has_resilient_model_provider_fallbacks()
 ⋮----
 def test_actions_worker_fails_ci_when_production_result_failed()
-```
-
-## File: test_production_os_asset_forge_live_e2e_workflow.py
-```python
-WORKFLOW = Path(
-⋮----
-def test_live_e2e_delegates_generation_to_asset_forge_repository()
-⋮----
-def test_live_e2e_does_not_duplicate_asset_forge_provider_secrets()
-⋮----
-def test_live_e2e_requires_exact_asset_forge_sha()
-⋮----
-def test_live_e2e_validates_remote_bundle_before_integration()
-⋮----
-def test_live_e2e_preserves_production_os_correlation_and_remote_evidence()
-⋮----
-def test_live_e2e_is_bounded_and_cross_repo_token_is_mandatory()
-⋮----
-def test_live_e2e_keeps_cross_repo_credentials_out_of_checkout_state()
 ```
 
 ## File: test_production_os_local_e2e.py

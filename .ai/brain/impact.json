@@ -1,140 +1,70 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "a899f20160559a328f27eba8140cda9bdf7f436d",
-  "head": "89a7d4a4e6e9d23e831dba7c5f962e9d72750a16",
+  "base": "89a7d4a4e6e9d23e831dba7c5f962e9d72750a16",
+  "head": "3cbd541e266e58550a79e1246204b5427a1abcee",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": ".github/workflows/production-os-actions-worker.yml",
+      "path": ".github/workflows/production-os-asset-forge-live-e2e.yml",
       "status": "M"
     },
     {
-      "path": "control/production-os-worker-kick.json",
-      "status": "M"
-    },
-    {
-      "path": "tests/test_production_os_actions_worker_workflow.py",
+      "path": "tests/test_production_os_asset_forge_live_e2e_workflow.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "tests/test_production_os_actions_worker_workflow.py"
+    "tests/test_production_os_asset_forge_live_e2e_workflow.py"
   ],
   "impacted_files": [
-    "tests/test_production_os_actions_worker_workflow.py"
+    "tests/test_production_os_asset_forge_live_e2e_workflow.py"
   ],
   "impacted_symbols": [
     {
-      "name": "test_actions_worker_has_no_codespace_dependency",
+      "name": "test_live_e2e_delegates_generation_to_asset_forge_repository",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "file": "tests/test_production_os_asset_forge_live_e2e_workflow.py",
       "line": 9
     },
     {
-      "name": "test_actions_worker_polls_production_os_on_schedule",
+      "name": "test_live_e2e_does_not_duplicate_asset_forge_provider_secrets",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 15
+      "file": "tests/test_production_os_asset_forge_live_e2e_workflow.py",
+      "line": 19
     },
     {
-      "name": "test_actions_worker_uses_existing_secure_credentials",
+      "name": "test_live_e2e_requires_exact_asset_forge_sha",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 23
+      "file": "tests/test_production_os_asset_forge_live_e2e_workflow.py",
+      "line": 29
     },
     {
-      "name": "test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback",
+      "name": "test_live_e2e_validates_remote_bundle_before_integration",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 31
+      "file": "tests/test_production_os_asset_forge_live_e2e_workflow.py",
+      "line": 38
     },
     {
-      "name": "test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup",
+      "name": "test_live_e2e_preserves_production_os_correlation_and_remote_evidence",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "file": "tests/test_production_os_asset_forge_live_e2e_workflow.py",
       "line": 47
     },
     {
-      "name": "test_actions_worker_is_single_flight_and_bounded",
+      "name": "test_live_e2e_is_bounded_and_cross_repo_token_is_mandatory",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 59
+      "file": "tests/test_production_os_asset_forge_live_e2e_workflow.py",
+      "line": 58
     },
     {
-      "name": "test_actions_worker_exits_heavy_path_when_no_compatible_work_exists",
+      "name": "test_live_e2e_keeps_cross_repo_credentials_out_of_checkout_state",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 68
-    },
-    {
-      "name": "test_actions_worker_skips_base_pass_for_mobile_only_work",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 79
-    },
-    {
-      "name": "test_actions_worker_does_not_prepare_android_for_base_only_claim_race",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 92
-    },
-    {
-      "name": "test_actions_worker_reports_rejected_worker_token_without_exposing_it",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 98
-    },
-    {
-      "name": "test_actions_worker_availability_probe_fails_closed",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 105
-    },
-    {
-      "name": "test_actions_worker_bootstraps_remote_asset_forge_before_preflight",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 112
-    },
-    {
-      "name": "test_actions_worker_resolves_only_qualified_production_os_main_runs",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 125
-    },
-    {
-      "name": "test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 141
-    },
-    {
-      "name": "test_actions_worker_preflight_uses_runtime_capability_detection",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 152
-    },
-    {
-      "name": "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 160
-    },
-    {
-      "name": "test_actions_worker_has_resilient_model_provider_fallbacks",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 165
-    },
-    {
-      "name": "test_actions_worker_fails_ci_when_production_result_failed",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 176
+      "file": "tests/test_production_os_asset_forge_live_e2e_workflow.py",
+      "line": 64
     }
   ],
   "selected_tests": [
-    "tests/test_production_os_actions_worker_workflow.py"
+    "tests/test_production_os_asset_forge_live_e2e_workflow.py"
   ]
 }

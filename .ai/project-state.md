@@ -22,16 +22,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T17:52:52Z
+Generated: 2026-10-03T17:58:21Z
 
 ### Git
 - Branch: `main`
-- Head: `89a7d4a4e6e9`
-- Commit date: 2026-10-03T19:52:18+02:00
-- Commit: chore(worker): validate current Production-OS worker chain
+- Head: `3cbd541e266e`
+- Commit date: 2026-10-03T19:58:11+02:00
+- Commit: fix(e2e): delegate live generation to Asset Forge (#230)
 - Tracked files: 833
 
 ### Recently changed files
+- `.github/workflows/production-os-asset-forge-live-e2e.yml`
+- `tests/test_production_os_asset_forge_live_e2e_workflow.py`
 - `control/production-os-worker-kick.json`
 - `.github/workflows/production-os-actions-worker.yml`
 - `tests/test_production_os_actions_worker_workflow.py`

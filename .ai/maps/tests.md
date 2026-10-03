@@ -8048,13 +8048,19 @@ def test_actions_worker_fails_ci_when_production_result_failed()
 ```python
 WORKFLOW = Path(
 ⋮----
-def test_live_e2e_supports_current_free_asset_forge_backends()
+def test_live_e2e_delegates_generation_to_asset_forge_repository()
 ⋮----
-def test_live_e2e_never_reports_green_without_real_generation_backend()
+def test_live_e2e_does_not_duplicate_asset_forge_provider_secrets()
 ⋮----
-def test_live_e2e_uses_current_asset_forge_and_generation_dependencies()
+def test_live_e2e_requires_exact_asset_forge_sha()
 ⋮----
-def test_live_e2e_checks_backend_specific_readiness()
+def test_live_e2e_validates_remote_bundle_before_integration()
+⋮----
+def test_live_e2e_preserves_production_os_correlation_and_remote_evidence()
+⋮----
+def test_live_e2e_is_bounded_and_cross_repo_token_is_mandatory()
+⋮----
+def test_live_e2e_keeps_cross_repo_credentials_out_of_checkout_state()
 ```
 
 ## File: test_production_os_local_e2e.py

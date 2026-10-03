@@ -1,13 +1,15 @@
 # Change impact
 
-Base: 906df45f85633c24b73409bd9efff2c14985b8f7
-Head: 89a7d4a4e6e9d23e831dba7c5f962e9d72750a16
+Base: 12513f345f6c496e75523aff912243bf44a42f10
+Head: 3cbd541e266e58550a79e1246204b5427a1abcee
 
 ## Changed files
-- M control/production-os-worker-kick.json
+- M .github/workflows/production-os-asset-forge-live-e2e.yml
+- M tests/test_production_os_asset_forge_live_e2e_workflow.py
 
 ## Affected areas
-- control
+- .github
+- tests
 
 ## Related test candidates
 - No direct filename-based test match detected.

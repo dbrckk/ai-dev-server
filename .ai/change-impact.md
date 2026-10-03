@@ -1,7 +1,7 @@
 # Change impact
 
-Base: e425315953780d96157736e3d51572e56c015e87
-Head: dcffb03a218ed232754a3e680f6acceacf8c4514
+Base: 045e46eb1ed3c2b8908f97f402681f7978ef1c23
+Head: a899f20160559a328f27eba8140cda9bdf7f436d
 
 ## Changed files
 - M control/production-os-worker-kick.json

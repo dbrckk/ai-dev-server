@@ -3187,8 +3187,8 @@ initial_prompt: |
 ````json
 {
   "requested_by": "production-os",
-  "reason": "validate provider fallback fix against Production-OS queue after PR #233",
-  "sequence": 4
+  "reason": "retest Production-OS Jumpy queue with merged provider fallbacks",
+  "sequence": 5
 }
 ````
 

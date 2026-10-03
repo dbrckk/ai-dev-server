@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T17:46:04Z
+Generated: 2026-10-03T17:47:12Z
 
 ### Git
 - Branch: `main`
-- Head: `dcffb03a218e`
-- Commit date: 2026-10-03T19:45:42+02:00
-- Commit: chore(worker): retest Production-OS queue after provider fallback fix
+- Head: `a899f2016055`
+- Commit date: 2026-10-03T19:46:47+02:00
+- Commit: chore(worker): retrigger Production-OS worker after fallback merge (#236)
 - Tracked files: 833
 
 ### Recently changed files

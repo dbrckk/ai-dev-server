@@ -102,5 +102,28 @@ def test_remote_asset_forge_probe_drops_studio_pythonpath():
         )
 
     assert "PYTHONPATH" not in seen["env"]
-    assert seen["command"][-2:] == ["asset-forge-batch", "--help"]
+    assert seen["command"][-2:] == ["asset-forge-batch", "--probe"]
     assert "visual-asset-production" in capabilities
+
+
+def test_remote_asset_forge_probe_failure_removes_visual_capability():
+    def fake_run(command, **kwargs):
+        class Completed:
+            returncode = 1
+
+        return Completed()
+
+    with (
+        patch("production_os_worker._asset_forge_operational_status", return_value=None),
+        patch("production_os_worker.shutil.which", return_value="/usr/bin/production-os"),
+        patch("production_os_worker.subprocess.run", side_effect=fake_run),
+    ):
+        capabilities = worker_capabilities(
+            {
+                "PRODUCTION_OS_WORKER_SPECIALTIES": "",
+                "GITHUB_TOKEN": "token",
+                "PATH": "/usr/bin",
+            }
+        )
+
+    assert "visual-asset-production" not in capabilities

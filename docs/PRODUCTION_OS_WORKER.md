@@ -51,9 +51,17 @@ The worker advertises `visual-asset-production` only when Asset Forge and an aut
 
 ### Live visual E2E ownership
 
-The canonical real-generation acceptance test is owned by `dbrckk/asset-forge` in `.github/workflows/production-os-ai-dev-server-live-e2e.yml`. Asset Forge owns the provider credentials, checks out the current AI Dev Server and Deadline Zero revisions, materializes the Production-OS handoff through this repository, generates and validates a real asset, injects it into Deadline Zero, and compiles/tests the target.
+The canonical real-generation acceptance test is owned by `dbrckk/asset-forge` in `.github/workflows/production-os-ai-dev-server-live-e2e.yml`. Asset Forge owns the provider credentials, checks out the current AI Dev Server and Deadline Zero revisions, materializes the Production-OS handoff through this repository, generates and validates a real asset, injects it into Deadline Zero, and compiles/tests the target. Provider credentials therefore remain inside Asset Forge.
 
-Do not dispatch Asset Forge Actions from this repository with `STUDIO_GITHUB_TOKEN` or `CODESPACES_PAT`. Those tokens are not required to have cross-repository Actions write permission. Keeping the live E2E in Asset Forge limits provider secrets and workflow-dispatch privileges to the repository that owns generation.
+For the runtime remote bridge (`production-os asset-forge-batch --mode github`), `STUDIO_GITHUB_TOKEN` or the `CODESPACES_PAT` fallback must be able to access `dbrckk/asset-forge` and dispatch GitHub Actions workflows there. For a fine-grained PAT, grant the target repository **Actions: Read and write** and the minimum repository metadata/content access required by GitHub. Do not add Cloudflare, Kaggle, or Pollinations credentials to AI Dev Server.
+
+Remote visual readiness is fail-closed and can be checked without creating a workflow run:
+
+```bash
+env -u PYTHONPATH production-os asset-forge-batch --probe
+```
+
+The probe returns success only when cross-repository workflow dispatch is authorized. If it fails, the worker remains available for non-visual work but does not advertise `visual-asset-production`, so visual jobs remain queued instead of consuming an execution attempt.
 
 Start the persistent worker with:
 

@@ -110,15 +110,31 @@ def test_actions_worker_availability_probe_fails_closed():
 
 
 def test_actions_worker_bootstraps_remote_asset_forge_before_preflight():
+    resolve = WORKFLOW.index("Resolve qualified Production-OS revision")
     checkout = WORKFLOW.index("Checkout Production-OS tools")
     install = WORKFLOW.index("Install Production-OS remote tools")
     probe = WORKFLOW.index("Probe compatible Production-OS work")
-    assert checkout < install < probe
+    assert resolve < checkout < install < probe
     assert "repository: dbrckk/Production-OS" in WORKFLOW
-    assert "b8be27a65200629553200f912b0caa9112ff8f4c" in WORKFLOW
+    assert "ref: ${{ steps.production_os_revision.outputs.sha }}" in WORKFLOW
     assert "python -m pip install ./production-os-tools" in WORKFLOW
     assert "production-os asset-forge-batch --help" in WORKFLOW
     assert "GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}" in WORKFLOW
+
+
+def test_actions_worker_resolves_only_qualified_production_os_main_pushes():
+    resolver = WORKFLOW.split(
+        "- name: Resolve qualified Production-OS revision", 1
+    )[1].split("- name: Checkout Production-OS tools", 1)[0]
+    assert "actions/workflows/" in resolver
+    assert "ci.yml/runs?branch=main&status=success&per_page=20" in resolver
+    assert 'run.get("conclusion") != "success"' in resolver
+    assert 'run.get("event") != "push"' in resolver
+    assert 'run.get("head_branch") != "main"' in resolver
+    assert 'repository != "dbrckk/Production-OS"' in resolver
+    assert "No qualified Production-OS main revision found" in resolver
+    assert "timeout=20" in resolver
+    assert "b8be27a65200629553200f912b0caa9112ff8f4c" not in WORKFLOW
 
 
 def test_actions_worker_preflight_uses_runtime_capability_detection():

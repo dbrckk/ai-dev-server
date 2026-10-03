@@ -8038,6 +8038,10 @@ def test_actions_worker_preflight_uses_runtime_capability_detection()
 probe = WORKFLOW.split("- name: Probe compatible Production-OS work", 1)[1]
 ⋮----
 def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath()
+⋮----
+def test_actions_worker_has_resilient_model_provider_fallbacks()
+⋮----
+def test_actions_worker_fails_ci_when_production_result_failed()
 ```
 
 ## File: test_production_os_asset_forge_live_e2e_workflow.py

@@ -22,21 +22,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T15:58:38Z
+Generated: 2026-10-03T17:46:04Z
 
 ### Git
 - Branch: `main`
-- Head: `7c49ba22417f`
-- Commit date: 2026-10-03T17:58:28+02:00
-- Commit: fix(worker): authenticate Production-OS revision lookup (#235)
+- Head: `dcffb03a218e`
+- Commit date: 2026-10-03T19:45:42+02:00
+- Commit: chore(worker): retest Production-OS queue after provider fallback fix
 - Tracked files: 833
 
 ### Recently changed files
+- `control/production-os-worker-kick.json`
 - `.github/workflows/production-os-actions-worker.yml`
 - `tests/test_production_os_actions_worker_workflow.py`
-- `control/production-os-worker-kick.json`
-- `studio/production_os_worker.py`
-- `tests/test_production_os_remote_asset_capability.py`
 
 ### Project signals
 - No common build descriptor detected

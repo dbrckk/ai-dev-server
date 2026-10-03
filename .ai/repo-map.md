@@ -1875,6 +1875,7 @@ jobs:
       STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
       STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
       STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
+      STUDIO_PROVIDERS_JSON: ${{ vars.STUDIO_PROVIDERS_JSON }}
       STUDIO_VISION_MODEL: ${{ vars.STUDIO_VISION_MODEL }}
       STUDIO_PERSIST_REMOTE: '1'
       PYTHONPATH: studio
@@ -1964,6 +1965,10 @@ jobs:
           if (( ${#missing[@]} )); then
             printf 'Missing required GitHub Actions secrets: %s\n' "${missing[*]}"
             exit 2
+          fi
+          normalized_base="${STUDIO_API_BASE%/}"
+          if [ -z "${STUDIO_PROVIDERS_JSON:-}" ] && [ "$normalized_base" = "https://integrate.api.nvidia.com/v1" ]; then
+            echo 'STUDIO_PROVIDERS_JSON=[{"name":"nvidia-lightning-fallback","base":"https://integrate.api.nvidia.com/v1","key_env":"STUDIO_API_KEY","model":"nvidia/nemotron-3.5-lightning-30b-a3b","code_model":"nvidia/nemotron-3.5-lightning-30b-a3b","priority":90,"free_preferred":true},{"name":"poolside-laguna-fallback","base":"https://integrate.api.nvidia.com/v1","key_env":"STUDIO_API_KEY","model":"poolside/laguna-xs-2.1","code_model":"poolside/laguna-xs-2.1","priority":80,"free_preferred":true}]' >> "$GITHUB_ENV"
           fi
           python - <<'PY'
           from urllib.parse import urlsplit
@@ -2124,6 +2129,8 @@ jobs:
               handle.write(f"status={status}\n")
               handle.write(f"mobile_fallback={mobile_fallback}\n")
           print(f"Base-capability worker result: {status}")
+          if status == "failed":
+              raise SystemExit("Production-OS base-capability job failed")
           PY
 
       - name: Prepare native mobile validation runtime
@@ -3180,8 +3187,8 @@ initial_prompt: |
 ````json
 {
   "requested_by": "production-os",
-  "reason": "validate isolated remote Asset Forge worker against queued visual work",
-  "sequence": 3
+  "reason": "validate provider fallback fix against Production-OS queue after PR #233",
+  "sequence": 4
 }
 ````
 
@@ -32553,6 +32560,10 @@ def test_actions_worker_preflight_uses_runtime_capability_detection()
 probe = WORKFLOW.split("- name: Probe compatible Production-OS work", 1)[1]
 ⋮----
 def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath()
+⋮----
+def test_actions_worker_has_resilient_model_provider_fallbacks()
+⋮----
+def test_actions_worker_fails_ci_when_production_result_failed()
 ````
 
 ## File: tests/test_production_os_asset_forge_live_e2e_workflow.py

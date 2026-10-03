@@ -73,7 +73,7 @@ jobs:
           for run in payload.get("workflow_runs", []):
               if run.get("conclusion") != "success":
                   continue
-              if run.get("event") != "push":
+              if run.get("event") not in {"push", "workflow_dispatch"}:
                   continue
               if run.get("head_branch") != "main":
                   continue

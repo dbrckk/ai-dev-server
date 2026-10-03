@@ -135,7 +135,10 @@ def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath():
 
 
 def test_actions_worker_has_resilient_model_provider_fallbacks():
-    assert "STUDIO_PROVIDERS_JSON:" in WORKFLOW
+    assert "STUDIO_PROVIDERS_JSON: ${{ vars.STUDIO_PROVIDERS_JSON }}" in WORKFLOW
+    assert 'normalized_base="${STUDIO_API_BASE%/}"' in WORKFLOW
+    assert '[ -z "${STUDIO_PROVIDERS_JSON:-}" ]' in WORKFLOW
+    assert '[ "$normalized_base" = "https://integrate.api.nvidia.com/v1" ]' in WORKFLOW
     assert "nvidia-lightning-fallback" in WORKFLOW
     assert "nvidia/nemotron-3.5-lightning-30b-a3b" in WORKFLOW
     assert "poolside-laguna-fallback" in WORKFLOW

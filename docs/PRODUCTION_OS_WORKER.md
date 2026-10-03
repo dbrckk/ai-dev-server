@@ -7,7 +7,6 @@ The AI Dev Server can run as a long-lived Production-OS worker and dispatch codi
 ```bash
 export PRODUCTION_OS_URL="https://your-production-os.example"
 export PRODUCTION_OS_WORKER_TOKEN="..."
-export PRODUCTION_OS_OPERATOR_TOKEN="..."
 ```
 
 Optional OmniRoute capacity routing:
@@ -73,6 +72,13 @@ The worker registers itself, polls for jobs, acknowledges claimed jobs, emits pe
 
 ## Authentication
 
+The worker token is sufficient for registration through `/v1/workers/session`.
+The configured worker ID must match that token's principal name on Production-OS
+(for the Actions worker, `github-actions-worker`). `PRODUCTION_OS_OPERATOR_TOKEN`
+is optional and enables legacy operator registration; do not grant operator access
+just to run a worker.
+
+
 If OmniRoute has authenticated free capacity, Codex is routed through the isolated OmniRoute provider configuration.
 
 Otherwise the worker falls back to the normal Codex invocation, which requires the Codex CLI environment to already be authenticated. No paid provider is enabled automatically.
@@ -104,3 +110,24 @@ Production-OS
 ```
 
 Verify that the target repository actually contains the expected commit or PR and that Production-OS records the same workflow/task correlation and token usage.
+
+## Failure recovery and automated verification
+
+Local request/output preparation failures and unreadable or mismatched result
+files are reported through `/v1/jobs/fail`, followed by an inactive heartbeat.
+The worker checks the schema, workflow, task, project and repository correlation
+before reporting completion. Transport errors while reporting completion remain
+errors; the worker does not send a contradictory failure when completion may
+already have reached the server.
+
+A bounded invocation (`--once` or `--cycles`) returns exit code 1 if any job fails,
+while preserving the status JSON artifact. Continuous workers wait between idle,
+paused and draining polls. Invalid heartbeat/retry timing is rejected before a
+job is claimed.
+
+`.github/workflows/production-os-worker-integration.yml` runs all selected worker
+tests, including pytest function tests, plus authenticated HTTP integration with
+the pinned qualified Production-OS revision. The integration runner executes a
+deterministic Python artifact and verifies both completion and result-file failure.
+This proves the bridge and server contract; it does not replace the live Codex
+acceptance test above.

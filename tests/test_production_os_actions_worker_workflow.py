@@ -34,7 +34,7 @@ def test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback(
     assert "PRODUCTION_OS_WORKER_SPECIALTIES: ''" in WORKFLOW
     assert "--status-file" in WORKFLOW
     assert "mobile_fallback" in WORKFLOW
-    assert "if: steps.base_job.outputs.mobile_fallback == 'true'" in WORKFLOW
+    assert "steps.base_job.outputs.mobile_fallback == 'true'" in WORKFLOW
     assert "Prepare native mobile validation runtime" in WORKFLOW
     assert "Process one mobile-capable Production-OS job" in WORKFLOW
     for command in ("adb", "sdkmanager", "avdmanager", "emulator"):

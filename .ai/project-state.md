@@ -22,23 +22,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T11:20:38Z
+Generated: 2026-10-03T15:04:34Z
 
 ### Git
 - Branch: `main`
-- Head: `cf251236cd2d`
-- Commit date: 2026-10-03T13:20:17+02:00
-- Commit: chore(worker): retest queued visual Production-OS work
+- Head: `1912ce8283ba`
+- Commit date: 2026-10-03T17:04:20+02:00
+- Commit: fix(worker): use latest qualified Production-OS revision (#234)
 - Tracked files: 833
 
 ### Recently changed files
-- `control/production-os-worker-kick.json`
 - `.github/workflows/production-os-actions-worker.yml`
-- `studio/production_os_worker.py`
 - `tests/test_production_os_actions_worker_workflow.py`
+- `control/production-os-worker-kick.json`
+- `studio/production_os_worker.py`
 - `tests/test_production_os_remote_asset_capability.py`
-- `.github/workflows/production-os-asset-forge-live-e2e.yml`
-- `tests/test_production_os_asset_forge_live_e2e_workflow.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -8023,8 +8023,13 @@ def test_actions_worker_availability_probe_fails_closed()
 ⋮----
 def test_actions_worker_bootstraps_remote_asset_forge_before_preflight()
 ⋮----
+resolve = WORKFLOW.index("Resolve qualified Production-OS revision")
 checkout = WORKFLOW.index("Checkout Production-OS tools")
 install = WORKFLOW.index("Install Production-OS remote tools")
+⋮----
+def test_actions_worker_resolves_only_qualified_production_os_main_pushes()
+⋮----
+resolver = WORKFLOW.split(
 ⋮----
 def test_actions_worker_preflight_uses_runtime_capability_detection()
 ⋮----

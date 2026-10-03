@@ -22,13 +22,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T15:04:34Z
+Generated: 2026-10-03T15:58:38Z
 
 ### Git
 - Branch: `main`
-- Head: `1912ce8283ba`
-- Commit date: 2026-10-03T17:04:20+02:00
-- Commit: fix(worker): use latest qualified Production-OS revision (#234)
+- Head: `7c49ba22417f`
+- Commit date: 2026-10-03T17:58:28+02:00
+- Commit: fix(worker): authenticate Production-OS revision lookup (#235)
 - Tracked files: 833
 
 ### Recently changed files

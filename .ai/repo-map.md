@@ -1893,20 +1893,22 @@ jobs:
           revision="$(
             env -u PYTHONPATH python3 - <<'PY'
           import json
+          import os
           import urllib.request
 
           url = (
               "https://api.github.com/repos/dbrckk/Production-OS/actions/workflows/"
               "ci.yml/runs?branch=main&status=success&per_page=20"
           )
-          request = urllib.request.Request(
-              url,
-              headers={
-                  "Accept": "application/vnd.github+json",
-                  "User-Agent": "production-os-actions-worker",
-                  "X-GitHub-Api-Version": "2022-11-28",
-              },
-          )
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "User-Agent": "production-os-actions-worker",
+              "X-GitHub-Api-Version": "2022-11-28",
+          }
+          token = os.environ.get("GITHUB_TOKEN", "").strip()
+          if token:
+              headers["Authorization"] = f"Bearer {token}"
+          request = urllib.request.Request(url, headers=headers)
           with urllib.request.urlopen(request, timeout=20) as response:
               payload = json.load(response)
 
@@ -32543,6 +32545,8 @@ install = WORKFLOW.index("Install Production-OS remote tools")
 def test_actions_worker_resolves_only_qualified_production_os_main_pushes()
 ⋮----
 resolver = WORKFLOW.split(
+⋮----
+def test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token()
 ⋮----
 def test_actions_worker_preflight_uses_runtime_capability_detection()
 ⋮----

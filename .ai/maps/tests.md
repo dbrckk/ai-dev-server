@@ -8031,6 +8031,8 @@ def test_actions_worker_resolves_only_qualified_production_os_main_pushes()
 ⋮----
 resolver = WORKFLOW.split(
 ⋮----
+def test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token()
+⋮----
 def test_actions_worker_preflight_uses_runtime_capability_detection()
 ⋮----
 probe = WORKFLOW.split("- name: Probe compatible Production-OS work", 1)[1]

@@ -140,3 +140,8 @@ def test_actions_worker_has_resilient_model_provider_fallbacks():
     assert "nvidia/nemotron-3.5-lightning-30b-a3b" in WORKFLOW
     assert "poolside-laguna-fallback" in WORKFLOW
     assert "poolside/laguna-xs-2.1" in WORKFLOW
+
+
+def test_actions_worker_fails_ci_when_production_result_failed():
+    assert 'if status == "failed":' in WORKFLOW
+    assert 'Production-OS base-capability job failed' in WORKFLOW

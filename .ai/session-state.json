@@ -2,8 +2,8 @@
   "version": 1,
   "updated_at": "2026-10-04",
   "task": "Make Production-OS worker operational and resilient",
-  "base_commit": "836a1d5bdf9b7cffa2983de1cbcb36e2cc07f913",
-  "branch": "fix/worker-godot-structured-output",
+  "base_commit": "be38b74caaad860fcfe0beda5c29fc1331f479e0",
+  "branch": "fix/worker-persistence-diagnostics",
   "completed": [
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",
@@ -73,18 +73,17 @@
     ]
   },
   "pending": [
-    "User input pending: whether an objective exists and whether operator secret is already configured or dashboard access is available",
-    "Resume terminal objectives through existing operator controls; worker role cannot enqueue/retry exhausted tasks",
-    "Investigate original StudioError from a resumed real run and verify resulting repository artifact",
-    "Resolve Asset Forge Actions dispatch authorization"
+    "Publish bounded component/reason diagnostics and run the next real worker attempt using NVIDIA JSON mode",
+    "Fix the exact remote persistence failure without publishing raw API or provider messages",
+    "Verify a successful real coding task and repository artifact",
+    "Remote Asset Forge dispatch authorization unavailable for visual capability"
   ],
   "merged_pr": {
     "number": 240,
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Reconcile the fresh single-flight Actions session before any availability check",
-    "Read bounded failed workflow/task diagnostics without printing briefs or raw errors"
+    "Diagnostic classification and bounded real worker rerun after PR #246 structured-output fix"
   ],
   "merged_changes": [
     {
@@ -124,9 +123,10 @@
     "request_reproduction": "Both artifact requests validate after explicit skill_learning support"
   },
   "next_steps": [
-    "Verify NVIDIA JSON mode live and merge structured-output fix",
-    "Verify final real worker outcome and next eligible jobs",
-    "Resolve remote Asset Forge authorization"
+    "Publish bounded component/reason diagnostics and run the next real worker attempt using NVIDIA JSON mode",
+    "Fix the exact remote persistence failure without publishing raw API or provider messages",
+    "Verify a successful real coding task and repository artifact",
+    "Remote Asset Forge dispatch authorization unavailable for visual capability"
   ],
   "merged_live_diagnostics_pr": 243,
   "live_provider_diagnostics": {
@@ -144,10 +144,13 @@
   "live_worker_execution": {
     "run_id": 37184922962,
     "job_id": 111384748321,
-    "commit": "71fb09cf0b50026c73e3a60b24e1612cd11acc45",
-    "status": "real job in progress",
+    "artifact_id": 11296642683,
+    "status": "failed after a real Jumpy checkpoint; Production-OS result reported runner_error",
     "checkpoint_branch": "dbrckk/Jumpy:studio/pos-2f6aad6c63a76f159a44fd99",
-    "observed": "Product and design completed; implementation blocked on invalid structured model output; autonomous cycle still running"
+    "observed": "Godot source generation reached checkpoint but model structured output was invalid in the old runner; remote state persistence subsequently failed",
+    "evidence_code": "remote_state_persistence_failed",
+    "state_branch_autonomy_last_commit": "2026-10-04T07:17:15Z",
+    "state_branch_project_memory_last_commit": "2026-09-16T18:17:55Z"
   },
   "legacy_recovery": {
     "pr": 245,
@@ -162,5 +165,12 @@
         "workflow_id": "1147aaa7a36840c2a823f542a2bac209"
       }
     ]
+  },
+  "live_provider_structured_diagnostics": {
+    "run_id": 37185440546,
+    "primary": "JSON ready",
+    "fallback_1": "invalid_response",
+    "fallback_2": "JSON ready",
+    "operator": "ready"
   }
 }

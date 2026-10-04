@@ -3,6 +3,8 @@
 Status: active
 
 ## Working
+- PR #246 makes the primary and third NVIDIA providers return structured JSON in live diagnostics 37185440546; the second fallback still returned invalid JSON.
+- Real worker run 37184922962 claimed a recovered Jumpy task and checkpointed a branch, proving queue registration, claim, and source execution. Its final result was runner_error because remote state persistence failed; autonomy state committed at 07:17:15 UTC, while the project-memory branch did not advance.
 - Both original legacy goals relaunched through idempotent dashboard API; real worker run 37184922962 claimed work and checkpointed product/design to Jumpy.
 - Live diagnostics 37184194436: all three configured model endpoints responded; existing operator access verified after control-plane startup.
 - Production-OS optional skill_learning contracts now pass the Studio validator; reproduced historical artifact 11276785062 now validates.
@@ -14,11 +16,13 @@ Status: active
 - Dedicated worker CI covers pytest function tests and real authenticated Production-OS HTTP integration.
 
 ## Broken / blockers
+- The real worker task has not completed successfully. The remote persistence failure needs a precise safe component/reason diagnosis; a bounded rerun with diagnostics is prepared.
 - Live run 37182952933: worker session ready, 1 online worker, 4 failed jobs, 2 failed workflows, no queued candidates. Both implementation tasks exhausted 2/2 attempts with StudioError.
 - Its remote Asset Forge dispatch probe failed, so visual capabilities remained disabled.
 - Render service verified healthy on merged server fix #250. Direct database connector inspection is unavailable.
 
 ## Current priority
+- Publish the persistence diagnosis, run the worker with the structured JSON fix, repair the failing store, and verify a successful real task and saved artifact.
 - Real source generation returned invalid structured JSON. Enable NVIDIA JSON response mode and validate structured inference in live diagnostics before the next execution.
 - The selected failed workflows are legacy jobs without current managed-project association. Recover them through the normal dashboard launch API using stable request IDs, preserving their original final goals and exhausted attempts.
 - Safely resume only the two explicitly selected failed managed objectives through existing operator instruction controls, then verify real worker execution.

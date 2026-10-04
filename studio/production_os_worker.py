@@ -1003,6 +1003,32 @@ def _failure_diagnostics(exc: Exception) -> dict[str, Any]:
         elif " persistence failed:" in message:
             code = "remote_state_persistence_failed"
     result = {"error_type": type(exc).__name__, "error_code": code}
+    components = ("autonomous state", "project memory", "agent performance", "provider health",
+                  "provider metrics", "routing history", "verification cost", "phase cost baseline",
+                  "strategy efficiency", "contextual strategy efficiency", "quick gate cache",
+                  "full gate cache", "artifact CAS stats", "artifact CAS audit", "execution checkpoint")
+    for component in components:
+        if message.startswith("Remote " + component + " "):
+            result["error_component"] = component.lower().replace(" ", "_")
+            break
+    # These are fixed local validator messages, never free-form remote bodies.
+    reasons = ("local autonomous state unavailable", "remote autonomous state incomplete",
+               "state blob invalid", "state blob too large", "state blob unreadable",
+               "state tree invalid", "state branch lookup invalid", "state branch lookup ambiguous",
+               "state branch head invalid", "state base tree invalid", "state tree creation failed",
+               "state commit creation failed", "default branch invalid", "default branch head invalid",
+               "memory branch lookup invalid", "memory branch lookup ambiguous", "memory branch ambiguous",
+               "memory branch head invalid", "memory branch parent invalid", "memory base tree invalid",
+               "memory tree invalid", "memory blob invalid", "memory blob too large",
+               "memory blob unreadable", "memory state missing or ambiguous", "memory tree creation failed",
+               "memory commit creation failed", "agent performance invalid", "agent performance entry invalid",
+               "agent performance fields invalid", "agent performance counts invalid",
+               "agent performance duration invalid", "agent performance too large",
+               "agent performance unreadable")
+    for reason in reasons:
+        if message.endswith(": " + reason):
+            result["error_reason"] = reason.replace(" ", "_")
+            break
     status = re.search(r"\bHTTP(?: status)? ([1-5][0-9]{2})\b", message)
     if status:
         result["error_http_status"] = int(status.group(1))

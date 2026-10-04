@@ -35,6 +35,40 @@ from production_os_resume_objectives import OperatorClient, resume
 
 @unittest.skipIf(ControlPlane is None, 'Production-OS installed by dedicated integration CI')
 class RealServerWorkerTests(unittest.TestCase):
+    def test_legacy_recovery_launch_is_idempotent_and_leaves_attempts_unchanged(self):
+        with tempfile.TemporaryDirectory() as td:
+            auth = TokenAuthorizer([{'name': 'test-operator', 'role': 'operator',
+                                     'sha256': token_digest('operator-token')}])
+            control = ControlPlane(str(Path(td) / 'state.sqlite'), authorizer=auth)
+            goal = 'Verify the original repository and report real evidence'
+            workflow = control.workflows.create(name='legacy', repository='dbrckk/integration-fixture',
+                tasks=[WorkflowTaskSpec('implementation', 'Implement original goal', {
+                    'handoff': {'repository': 'dbrckk/integration-fixture', 'task': goal, 'final_goal': goal}},
+                    max_attempts=2)])
+            for _ in range(2):
+                control.workflows.dispatch_ready(workflow['id'])
+                control.workflows.record_result(workflow['id'], 'implementation', succeeded=False)
+            server = ThreadingHTTPServer(('127.0.0.1', 0), make_handler(control))
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            try:
+                client = OperatorClient(f'http://127.0.0.1:{server.server_port}', 'operator-token')
+                result = resume(client, [workflow['id']], apply=True)
+                self.assertEqual(result['objectives'][0]['status'], 'relaunched')
+                duplicate = client.launch(workflow['id'], 'dbrckk/integration-fixture', goal)
+                self.assertEqual(duplicate['project']['project_id'], result['objectives'][0]['project_id'])
+                self.assertEqual(resume(client, [workflow['id']], apply=True)['objectives'][0]['status'], 'already_managed')
+                projects = control.managed_projects.list()
+                self.assertEqual(len(projects), 1)
+                self.assertEqual(projects[0]['final_goal'], goal)
+                original = control.workflows.get(workflow['id'])
+                self.assertEqual(original['tasks'][0]['attempts'], 2)
+                self.assertEqual(original['status'], 'failed')
+            finally:
+                server.shutdown()
+                server.server_close()
+                thread.join(timeout=2)
+
     def test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation(self):
         with tempfile.TemporaryDirectory() as td:
             auth = TokenAuthorizer([{'name': 'test-operator', 'role': 'operator',

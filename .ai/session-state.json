@@ -3,7 +3,7 @@
   "updated_at": "2026-10-04",
   "task": "Make Production-OS worker operational and resilient",
   "base_commit": "836a1d5bdf9b7cffa2983de1cbcb36e2cc07f913",
-  "branch": "fix/worker-resume-interrupted-objectives",
+  "branch": "fix/worker-recover-legacy-objectives",
   "completed": [
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",
@@ -28,7 +28,8 @@
     "restart_preflight": "3 real-server integration tests passed, including actual Actions Python preflight recovery of an acknowledged job",
     "new_selected_tests": "53 server tests; 60 worker tests + 15 subtests; 3 real-server integration tests; 4 JavaScript pairing scenarios passed",
     "diagnostics_selected": "87 passed, 22 subtests",
-    "diagnostics_integration": "3 passed with actual optional skill_learning contract and request_check"
+    "diagnostics_integration": "3 passed with actual optional skill_learning contract and request_check",
+    "operator_recovery": "5 authenticated integrations passed, including idempotent legacy launch with original attempts unchanged"
   },
   "live_findings": {
     "run_id": 37182952933,
@@ -123,8 +124,8 @@
     "request_reproduction": "Both artifact requests validate after explicit skill_learning support"
   },
   "next_steps": [
-    "Merge tested operator recovery restricted to explicit failed workflow IDs",
-    "Verify actual worker execution on resumed objective",
+    "Merge explicit legacy objective recovery and inspect live launch result",
+    "Trigger worker and verify real execution",
     "Resolve remote Asset Forge authorization"
   ],
   "merged_live_diagnostics_pr": 243,
@@ -134,5 +135,10 @@
     "all_three_providers": "ready",
     "operator_access": "ready",
     "initial_operator_failure": "First probe overlapped Render startup; bounded warm repeat succeeded"
+  },
+  "operator_recovery": {
+    "pr": 244,
+    "run": 37184541567,
+    "result": "Both historical workflows are not current managed project generations; no mutation performed"
   }
 }

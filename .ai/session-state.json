@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "updated_at": "2026-10-03",
+  "updated_at": "2026-10-04",
   "task": "Make Production-OS worker operational and resilient",
   "base_commit": "836a1d5bdf9b7cffa2983de1cbcb36e2cc07f913",
-  "branch": "fix/worker-job-lifecycle",
+  "branch": "fix/worker-queue-diagnostics",
   "completed": [
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",
@@ -17,16 +17,34 @@
     "server_integration": "2 passed against qualified 7e0d47a isolated install",
     "full_unittest": "1700 tests passed",
     "compileall": "passed",
-    "ci_policy": "passed after using separate integration workflow"
+    "ci_policy": "passed after using separate integration workflow",
+    "github_pr_checks": "all 11 successful before merging",
+    "github_postmerge": "worker, integration, python-tests and validate successful",
+    "queue_probe_workflow": "32 selected tests passed, plus 15 subtests"
   },
   "live_findings": {
-    "run_id": 37154316563,
-    "status": "idle, no eligible jobs",
-    "remote_asset_forge": "dispatch authorization unavailable; visual capability omitted"
+    "run_id": 37181156718,
+    "job_id": 111373859470,
+    "commit": "66399f4cc66592cc3755446ed88e9f0290bd4efc",
+    "status": "success, configuration ready, server ready, no compatible base/mobile jobs; agent execution skipped",
+    "remote_asset_forge": "dispatch unavailable; visual capability omitted",
+    "render_workspace": "tea-cv094daj1k6c738ej66g",
+    "render_service": "srv-dancka740ujc73bgdddg",
+    "render_deployment": "dep-db0uihnf3r2c73berho0",
+    "server_commit": "4f547bed6c97c7c2a024400af0c604ae854da75d",
+    "health": "healthz and readyz HTTP 200, database reachable",
+    "database_inspection": "Render query connector blocked by empty external IP allowlist; no network policy changed"
   },
   "pending": [
-    "Publish PR and inspect CI",
-    "Confirm Render workspace to inspect service/queue",
-    "Complete a live Codex job and verify target repository artifact"
+    "Obtain queue/operator visibility via existing deployment credentials or dashboard; worker token cannot enqueue jobs",
+    "Complete a real compatible coding job and verify target repository artifact",
+    "Resolve Asset Forge cross-repository Actions dispatch permission"
+  ],
+  "merged_pr": {
+    "number": 240,
+    "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
+  },
+  "current_work": [
+    "Print authenticated queue diagnosis in base/mobile availability probes; compatible with older servers"
   ]
 }

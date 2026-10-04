@@ -130,9 +130,8 @@ request.json
 ## File: production-os-worker-kick.json
 ```json
 {
-  "requested_by": "production-os",
-  "reason": "recover interrupted sessions and inspect the two failed workflows after #242",
-  "sequence": 10
+  "sequence": 11,
+  "reason": "Process real work after skill_learning compatibility fix and operator-authorized legacy objective recovery"
 }
 ```
 

@@ -1,22 +1,16 @@
 # Change impact
 
-Base: f8b61c85c74acdb17d8e3ae93e8197f699cb68e5
-Head: 26d6f0f8a54ab2c5c32110b9e3f97a40ef2df80f
+Base: 2a06f2525a611824f8bdd5e9897de522b50d320b
+Head: 71fb09cf0b50026c73e3a60b24e1612cd11acc45
 
 ## Changed files
-- M control/production-os-resume.json
-- M integration_tests/test_production_os_server_integration.py
-- M studio/production_os_resume_objectives.py
-- M tests/test_production_os_resume_objectives.py
+- M control/production-os-worker-kick.json
 
 ## Affected areas
 - control
-- integration_tests
-- studio
-- tests
 
 ## Related test candidates
-- tests/test_production_os_resume_objectives.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

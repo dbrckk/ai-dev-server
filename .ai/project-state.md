@@ -37,16 +37,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T07:07:59Z
+Generated: 2026-10-04T07:09:28Z
 
 ### Git
 - Branch: `main`
-- Head: `26d6f0f8a54a`
-- Commit date: 2026-10-04T09:07:43+02:00
-- Commit: fix(worker): recover explicitly selected legacy objectives idempotently (#245)
+- Head: `71fb09cf0b50`
+- Commit date: 2026-10-04T09:09:06+02:00
+- Commit: chore(worker): process recovered objectives after runtime fixes
 - Tracked files: 848
 
 ### Recently changed files
+- `control/production-os-worker-kick.json`
 - `control/production-os-resume.json`
 - `integration_tests/test_production_os_server_integration.py`
 - `studio/production_os_resume_objectives.py`
@@ -65,7 +66,6 @@ Generated: 2026-10-04T07:07:59Z
 - `tests/test_production_os_live_diagnostics.py`
 - `tests/test_production_os_worker_recovery.py`
 - `tests/test_request_contract.py`
-- `control/production-os-worker-kick.json`
 
 ### Project signals
 - No common build descriptor detected

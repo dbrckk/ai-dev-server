@@ -238,6 +238,14 @@ jobs:
 
           base_work = probe(base_capabilities)
           mobile_work = probe(base_capabilities + ["mobile-ui-validation"])
+          for label, payload in (("base", base_work), ("mobile", mobile_work)):
+              diagnostics = payload.get("queue_diagnostics")
+              if not isinstance(diagnostics, dict):
+                  diagnostics = {"reason": "server_diagnostics_unavailable"}
+              print(
+                  f"Production-OS {label} queue diagnosis: "
+                  + json.dumps(diagnostics, sort_keys=True)
+              )
           base_available = bool(base_work.get("available"))
           any_available = base_available or bool(mobile_work.get("available"))
           mobile_available = int(mobile_work.get("mobile_jobs") or 0) > 0

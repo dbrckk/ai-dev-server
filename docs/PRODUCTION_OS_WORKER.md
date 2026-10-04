@@ -131,3 +131,14 @@ the pinned qualified Production-OS revision. The integration runner executes a
 deterministic Python artifact and verifies both completion and result-file failure.
 This proves the bridge and server contract; it does not replace the live Codex
 acceptance test above.
+
+## Diagnosing an idle Actions worker
+
+The queue preflight prints separate base/mobile `queue_diagnostics` from the
+server. `queue_empty` means no queued candidate is assigned to this worker or
+unassigned within the bounded scan. `missing_capabilities` includes the required
+capabilities this worker cannot provide. `no_actionable_jobs` reports filtered
+cancelled or stale generations. `worker_paused` and `worker_draining` reflect an
+operator control state and do not scan or claim the queue. Older servers report
+`server_diagnostics_unavailable`; an idle run alone does not establish an empty
+queue. These diagnostics never claim a job or expose repository briefs.

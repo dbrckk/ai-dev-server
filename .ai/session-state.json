@@ -1,9 +1,9 @@
 {
   "version": 1,
   "updated_at": "2026-10-04",
-  "task": "Make Production-OS worker operational and resilient",
-  "base_commit": "e7d800b2ef20d834f2135910271ea218c1e0e187",
-  "branch": "fix/godot-truncated-retry",
+  "task": "Continue Production-OS worker through active checkpoints; verify full production chain",
+  "base_commit": "131f06b304b5a762e57cec1fa8dfb03aa8006e09",
+  "branch": "fix/worker-continue-active",
   "completed": [
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",
@@ -30,7 +30,8 @@
     "diagnostics_selected": "87 passed, 22 subtests",
     "diagnostics_integration": "3 passed with actual optional skill_learning contract and request_check",
     "operator_recovery": "5 authenticated integrations passed, including idempotent legacy launch with original attempts unchanged",
-    "provider_health_persistence": "41 selected tests and 19 subtests passed; compileall and diff check clean"
+    "provider_health_persistence": "41 selected tests and 19 subtests passed; compileall and diff check clean",
+    "active_continuation": "red-green regression; 1721 unit tests and 6 real HTTP integrations passed"
   },
   "live_findings": {
     "run_id": 37182952933,
@@ -71,7 +72,9 @@
         "error_type": "StudioError",
         "pipeline_status": "runner_error"
       }
-    ]
+    ],
+    "latest_run_id": 37225933341,
+    "latest_queue": "1 visual asset job queued; missing visual-asset-production capability"
   },
   "pending": [
     "Verify current worker result and subsequent persistence-fixed worker run",
@@ -83,7 +86,8 @@
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Stabilize Godot model protocol retries while the persistence-fixed real worker run waits for the prior run"
+    "Worker continuation fix tested locally; prepare PR and verify CI",
+    "Visual asset job remains queued until Asset Forge dispatch capability is available"
   ],
   "merged_changes": [
     {
@@ -123,9 +127,9 @@
     "request_reproduction": "Both artifact requests validate after explicit skill_learning support"
   },
   "next_steps": [
-    "Verify CI and merge provider-health persistence fix",
-    "Verify live worker produces a successful real coding result and durable state",
-    "Remote Asset Forge dispatch authorization unavailable for visual capability"
+    "Merge worker continuation fix after CI",
+    "Run a real coding task to verified completion and check durable artifact",
+    "Restore Asset Forge dispatch authorization or supply a verified local visual backend, then run the queued visual job"
   ],
   "merged_live_diagnostics_pr": 243,
   "live_provider_diagnostics": {

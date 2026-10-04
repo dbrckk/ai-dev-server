@@ -1068,6 +1068,7 @@ def run_once(
     capabilities: list[str] | None = None,
     runner_retry_attempts: int = 2,
     runner_retry_backoff_seconds: float = 1.0,
+    max_continuations: int = 3,
 ) -> dict:
     """Claim and execute at most one Production-OS job."""
     if run_project is None:
@@ -1104,6 +1105,8 @@ def run_once(
         raise ProductionOSWorkerError(
             "runner retry backoff must be between 0 and 60 seconds"
         )
+    if isinstance(max_continuations, bool) or not isinstance(max_continuations, int) or not 0 <= max_continuations <= 10:
+        raise ProductionOSWorkerError("max continuations must be between 0 and 10")
 
     capabilities = list(capabilities or worker_capabilities())
     if capacity is None:
@@ -1259,6 +1262,7 @@ def run_once(
 
     started = float(clock())
     runner_attempt = 0
+    continuations = 0
     try:
         while True:
             runner_attempt += 1
@@ -1280,6 +1284,24 @@ def run_once(
                 delay = retry_backoff * (2 ** (runner_attempt - 1))
                 if delay > 0 and cancel_event.wait(delay):
                     raise
+                continue
+            if (
+                isinstance(summary, dict)
+                and summary.get("status") == "active"
+                and summary.get("finished") is not True
+                and not cancel_event.is_set()
+            ):
+                if continuations >= max_continuations:
+                    summary = {
+                        **summary,
+                        "status": "continuation_limit",
+                        "next_stage": "retry",
+                        "finished": False,
+                    }
+                    from github_runner import write_production_os_result
+                    write_production_os_result(project_out, request, summary)
+                    break
+                continuations += 1
                 continue
             if (
                 runner_attempt <= retry_attempts

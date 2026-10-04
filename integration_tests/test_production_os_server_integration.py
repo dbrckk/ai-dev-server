@@ -106,7 +106,10 @@ class RealServerWorkerTests(unittest.TestCase):
     def test_actions_preflight_recovers_interrupted_job_before_idle_check(self):
         self._exercise('completed', abandon=True)
 
-    def _exercise(self, expected, abandon=False):
+    def test_active_checkpoint_completes_same_real_workflow(self):
+        self._exercise('completed', active_before_complete=True)
+
+    def _exercise(self, expected, abandon=False, active_before_complete=False):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             auth = TokenAuthorizer([{
@@ -169,11 +172,14 @@ class RealServerWorkerTests(unittest.TestCase):
                     executed.append(proc.stdout.strip())
                     if expected == 'failed':
                         (project_out / 'production-os-result.json').write_text('{')
+                    if active_before_complete and len(executed) == 1:
+                        return {'status': 'active', 'finished': False,
+                                'next_stage': 'preview', 'usage': {}}
                     return {'status': 'complete', 'finished': True, 'usage': {}}
                 result = run_once(client, worker_id='github-actions-worker',
                                   output_root=root / 'output', run_project=runner,
                                   capabilities=['python'], heartbeat_interval_seconds=0.05)
-                self.assertEqual(executed, ['verified'])
+                self.assertEqual(executed, ['verified'] * (2 if active_before_complete else 1))
                 self.assertEqual(result['status'], expected)
                 current = control.workflows.get(workflow['id'])
                 self.assertEqual(current['status'], 'succeeded' if expected == 'completed' else 'failed')
@@ -181,7 +187,7 @@ class RealServerWorkerTests(unittest.TestCase):
                 self.assertEqual(run_once(client, worker_id='github-actions-worker',
                                           output_root=root / 'output', run_project=runner,
                                           capabilities=['python'])['status'], 'idle')
-                self.assertEqual(executed, ['verified'])
+                self.assertEqual(executed, ['verified'] * (2 if active_before_complete else 1))
             finally:
                 server.shutdown()
                 server.server_close()

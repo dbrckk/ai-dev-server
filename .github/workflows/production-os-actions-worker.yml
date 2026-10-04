@@ -28,6 +28,7 @@ jobs:
       PRODUCTION_OS_STATUS_FILE: studio-output/production-os-actions/worker-status.json
       STUDIO_GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
       GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
+      ASSET_FORGE_GITHUB_TOKEN: ${{ secrets.ASSET_FORGE_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
       STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
       STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
       STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
@@ -110,6 +111,9 @@ jobs:
           env -u PYTHONPATH production-os asset-forge-batch --help >/dev/null
           if env -u PYTHONPATH production-os asset-forge-batch --probe; then
             echo "Remote Asset Forge dispatch: ready"
+          elif env -u PYTHONPATH ASSET_FORGE_GITHUB_TOKEN= production-os asset-forge-batch --probe; then
+            echo "ASSET_FORGE_GITHUB_TOKEN=" >> "$GITHUB_ENV"
+            echo "Remote Asset Forge dispatch: ready with repository token"
           else
             echo "::warning::Remote Asset Forge dispatch is unavailable; visual capability will remain disabled."
           fi

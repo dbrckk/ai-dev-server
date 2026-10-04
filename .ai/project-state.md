@@ -28,27 +28,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T05:53:27Z
+Generated: 2026-10-04T06:20:15Z
 
 ### Git
 - Branch: `main`
-- Head: `66399f4cc665`
-- Commit date: 2026-10-04T07:52:50+02:00
-- Commit: chore(worker): verify merged lifecycle recovery against live server
+- Head: `48464c0aa9d8`
+- Commit date: 2026-10-04T08:19:42+02:00
+- Commit: chore(worker): diagnose live queue inventory after availability fixes
 - Tracked files: 839
 
 ### Recently changed files
 - `control/production-os-worker-kick.json`
-- `.github/workflows/production-os-worker-integration.yml`
+- `.github/workflows/production-os-actions-worker.yml`
 - `docs/PRODUCTION_OS_WORKER.md`
+- `.github/workflows/production-os-worker-integration.yml`
 - `integration_tests/test_production_os_server_integration.py`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_actions_worker_workflow.py`
 - `tests/test_production_os_remote_asset_capability.py`
 - `tests/test_production_os_worker_recovery.py`
-- `.github/workflows/production-os-actions-worker.yml`
-- `.github/workflows/production-os-asset-forge-live-e2e.yml`
-- `tests/test_production_os_asset_forge_live_e2e_workflow.py`
 
 ### Project signals
 - No common build descriptor detected

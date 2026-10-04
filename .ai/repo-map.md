@@ -2045,6 +2045,7 @@ jobs:
           token = os.environ["PRODUCTION_OS_WORKER_TOKEN"].strip()
           worker_id = os.environ["PRODUCTION_OS_WORKER_ID"].strip()
           from production_os_worker import worker_capabilities
+          from production_os_worker import _NoRedirect
 
           base_env = dict(os.environ)
           base_env["PRODUCTION_OS_WORKER_SPECIALTIES"] = ""
@@ -2081,8 +2082,33 @@ jobs:
                   raise SystemExit("Production-OS availability probe returned invalid JSON")
               return payload
 
+          # Counts establish whether work exists at all, without exposing briefs.
+          try:
+              request = urllib.request.Request(
+                  base + "/v1/stats",
+                  headers={"Authorization": "Bearer " + token, "Accept": "application/json"},
+              )
+              opener = urllib.request.build_opener(_NoRedirect())
+              with opener.open(request, timeout=10) as response:
+                  stats = json.loads(response.read(1000000).decode("utf-8"))
+              print("Production-OS queue inventory: " + json.dumps({
+                  "jobs": stats.get("jobs", {}),
+                  "workflows": stats.get("workflows", {}),
+                  "online_workers": stats.get("online_workers", 0),
+              }, sort_keys=True))
+          except (OSError, ValueError, RuntimeError) as exc:
+              print("Production-OS queue inventory unavailable: " + type(exc).__name__)
+
           base_work = probe(base_capabilities)
           mobile_work = probe(base_capabilities + ["mobile-ui-validation"])
+          for label, payload in (("base", base_work), ("mobile", mobile_work)):
+              diagnostics = payload.get("queue_diagnostics")
+              if not isinstance(diagnostics, dict):
+                  diagnostics = {"reason": "server_diagnostics_unavailable"}
+              print(
+                  f"Production-OS {label} queue diagnosis: "
+                  + json.dumps(diagnostics, sort_keys=True)
+              )
           base_available = bool(base_work.get("available"))
           any_available = base_available or bool(mobile_work.get("available"))
           mobile_available = int(mobile_work.get("mobile_jobs") or 0) > 0
@@ -2931,8 +2957,8 @@ initial_prompt: |
 ````json
 {
   "requested_by": "production-os",
-  "reason": "verify merged worker lifecycle fix #240 against the live Production-OS service",
-  "sequence": 8
+  "reason": "diagnose the live queue and workflow inventory after #241 and Production-OS #251",
+  "sequence": 9
 }
 ````
 

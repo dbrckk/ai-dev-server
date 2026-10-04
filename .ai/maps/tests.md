@@ -8229,6 +8229,14 @@ result = resume(client, ['a' * 32], apply=True)
 def test_active_successful_and_changed_workflows_are_never_resumed(self)
 ⋮----
 def test_invalid_and_duplicate_allowlists_fail_before_access(self)
+⋮----
+def test_legacy_goal_launch_preserves_original_instruction_and_reuses_request_id(self)
+⋮----
+launches = []
+⋮----
+def launch(self, workflow_id, repository, final_goal)
+⋮----
+def test_managed_history_cannot_be_relaunched_as_legacy(self)
 ```
 
 ## File: test_production_os_worker_cli.py

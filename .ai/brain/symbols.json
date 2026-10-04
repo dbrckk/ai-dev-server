@@ -11,43 +11,50 @@
       "file": "integration_tests/test_production_os_server_integration.py",
       "language": "python",
       "kind": "function",
-      "name": "test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation",
+      "name": "test_legacy_recovery_launch_is_idempotent_and_leaves_attempts_unchanged",
       "line": 38
     },
     {
       "file": "integration_tests/test_production_os_server_integration.py",
       "language": "python",
       "kind": "function",
-      "name": "test_worker_only_session_executes_and_reports_real_workflow",
-      "line": 66
-    },
-    {
-      "file": "integration_tests/test_production_os_server_integration.py",
-      "language": "python",
-      "kind": "function",
-      "name": "test_unreadable_result_is_reported_to_real_server",
-      "line": 69
-    },
-    {
-      "file": "integration_tests/test_production_os_server_integration.py",
-      "language": "python",
-      "kind": "function",
-      "name": "test_actions_preflight_recovers_interrupted_job_before_idle_check",
+      "name": "test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation",
       "line": 72
     },
     {
       "file": "integration_tests/test_production_os_server_integration.py",
       "language": "python",
       "kind": "function",
+      "name": "test_worker_only_session_executes_and_reports_real_workflow",
+      "line": 100
+    },
+    {
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_unreadable_result_is_reported_to_real_server",
+      "line": 103
+    },
+    {
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_actions_preflight_recovers_interrupted_job_before_idle_check",
+      "line": 106
+    },
+    {
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "language": "python",
+      "kind": "function",
       "name": "_exercise",
-      "line": 75
+      "line": 109
     },
     {
       "file": "integration_tests/test_production_os_server_integration.py",
       "language": "python",
       "kind": "function",
       "name": "runner",
-      "line": 128
+      "line": 162
     },
     {
       "file": "scripts/preflight-production-os-worker.py",
@@ -9286,15 +9293,36 @@
       "file": "studio/production_os_resume_objectives.py",
       "language": "python",
       "kind": "function",
+      "name": "launch",
+      "line": 28
+    },
+    {
+      "file": "studio/production_os_resume_objectives.py",
+      "language": "python",
+      "kind": "function",
+      "name": "submit",
+      "line": 34
+    },
+    {
+      "file": "studio/production_os_resume_objectives.py",
+      "language": "python",
+      "kind": "function",
+      "name": "recover_legacy",
+      "line": 44
+    },
+    {
+      "file": "studio/production_os_resume_objectives.py",
+      "language": "python",
+      "kind": "function",
       "name": "resume",
-      "line": 35
+      "line": 79
     },
     {
       "file": "studio/production_os_resume_objectives.py",
       "language": "python",
       "kind": "function",
       "name": "main",
-      "line": 68
+      "line": 112
     },
     {
       "file": "studio/production_os_worker.py",
@@ -26073,28 +26101,77 @@
       "language": "python",
       "kind": "function",
       "name": "continue_project",
-      "line": 16
+      "line": 20
     },
     {
       "file": "tests/test_production_os_resume_objectives.py",
       "language": "python",
       "kind": "function",
       "name": "test_dry_run_does_not_mutate_and_apply_submits_only_once",
-      "line": 22
+      "line": 26
     },
     {
       "file": "tests/test_production_os_resume_objectives.py",
       "language": "python",
       "kind": "function",
       "name": "test_active_successful_and_changed_workflows_are_never_resumed",
-      "line": 31
+      "line": 35
     },
     {
       "file": "tests/test_production_os_resume_objectives.py",
       "language": "python",
       "kind": "function",
       "name": "test_invalid_and_duplicate_allowlists_fail_before_access",
-      "line": 40
+      "line": 44
+    },
+    {
+      "file": "tests/test_production_os_resume_objectives.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_legacy_goal_launch_preserves_original_instruction_and_reuses_request_id",
+      "line": 49
+    },
+    {
+      "file": "tests/test_production_os_resume_objectives.py",
+      "language": "python",
+      "kind": "class",
+      "name": "Client",
+      "line": 51
+    },
+    {
+      "file": "tests/test_production_os_resume_objectives.py",
+      "language": "python",
+      "kind": "function",
+      "name": "get",
+      "line": 52
+    },
+    {
+      "file": "tests/test_production_os_resume_objectives.py",
+      "language": "python",
+      "kind": "function",
+      "name": "launch",
+      "line": 57
+    },
+    {
+      "file": "tests/test_production_os_resume_objectives.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_managed_history_cannot_be_relaunched_as_legacy",
+      "line": 66
+    },
+    {
+      "file": "tests/test_production_os_resume_objectives.py",
+      "language": "python",
+      "kind": "class",
+      "name": "Client",
+      "line": 67
+    },
+    {
+      "file": "tests/test_production_os_resume_objectives.py",
+      "language": "python",
+      "kind": "function",
+      "name": "get",
+      "line": 68
     },
     {
       "file": "tests/test_production_os_worker.py",

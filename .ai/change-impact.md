@@ -1,18 +1,15 @@
 # Change impact
 
-Base: 5ec99c312a31ace69152dd78d0661a043a5ca797
-Head: d152967f83b4bbf723cb464d67a3a81e7cc97b65
+Base: f8b61c85c74acdb17d8e3ae93e8197f699cb68e5
+Head: 26d6f0f8a54ab2c5c32110b9e3f97a40ef2df80f
 
 ## Changed files
-- A .github/workflows/production-os-objective-recovery.yml
-- M .github/workflows/production-os-worker-integration.yml
-- A control/production-os-resume.json
+- M control/production-os-resume.json
 - M integration_tests/test_production_os_server_integration.py
-- A studio/production_os_resume_objectives.py
-- A tests/test_production_os_resume_objectives.py
+- M studio/production_os_resume_objectives.py
+- M tests/test_production_os_resume_objectives.py
 
 ## Affected areas
-- .github
 - control
 - integration_tests
 - studio

@@ -56,16 +56,29 @@ ControlPlane = None
 @unittest.skipIf(ControlPlane is None, 'Production-OS installed by dedicated integration CI')
 class RealServerWorkerTests(unittest.TestCase)
 ⋮----
-def test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation(self)
+def test_legacy_recovery_launch_is_idempotent_and_leaves_attempts_unchanged(self)
 ⋮----
 auth = TokenAuthorizer([{'name': 'test-operator', 'role': 'operator',
 control = ControlPlane(str(Path(td) / 'state.sqlite'), authorizer=auth)
-project = control.managed_projects.create(repository='dbrckk/integration-fixture',
+goal = 'Verify the original repository and report real evidence'
+workflow = control.workflows.create(name='legacy', repository='dbrckk/integration-fixture',
 ⋮----
 server = ThreadingHTTPServer(('127.0.0.1', 0), make_handler(control))
 thread = threading.Thread(target=server.serve_forever, daemon=True)
 ⋮----
 client = OperatorClient(f'http://127.0.0.1:{server.server_port}', 'operator-token')
+result = resume(client, [workflow['id']], apply=True)
+⋮----
+duplicate = client.launch(workflow['id'], 'dbrckk/integration-fixture', goal)
+⋮----
+projects = control.managed_projects.list()
+⋮----
+original = control.workflows.get(workflow['id'])
+⋮----
+def test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation(self)
+⋮----
+project = control.managed_projects.create(repository='dbrckk/integration-fixture',
+⋮----
 result = resume(client, [project['workflow_id']], apply=True)
 ⋮----
 updated = control.managed_projects.get(project['project_id'])

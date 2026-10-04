@@ -3096,7 +3096,7 @@ initial_prompt: |
 ## File: control/production-os-resume.json
 ````json
 {
-  "sequence": 1,
+  "sequence": 2,
   "failed_workflow_ids": [
     "85cfbd6570e24f2bb41297f76cd5d948",
     "65ea248fa5f840eeaa6041ef18728e13"
@@ -3192,16 +3192,29 @@ ControlPlane = None
 @unittest.skipIf(ControlPlane is None, 'Production-OS installed by dedicated integration CI')
 class RealServerWorkerTests(unittest.TestCase)
 ⋮----
-def test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation(self)
+def test_legacy_recovery_launch_is_idempotent_and_leaves_attempts_unchanged(self)
 ⋮----
 auth = TokenAuthorizer([{'name': 'test-operator', 'role': 'operator',
 control = ControlPlane(str(Path(td) / 'state.sqlite'), authorizer=auth)
-project = control.managed_projects.create(repository='dbrckk/integration-fixture',
+goal = 'Verify the original repository and report real evidence'
+workflow = control.workflows.create(name='legacy', repository='dbrckk/integration-fixture',
 ⋮----
 server = ThreadingHTTPServer(('127.0.0.1', 0), make_handler(control))
 thread = threading.Thread(target=server.serve_forever, daemon=True)
 ⋮----
 client = OperatorClient(f'http://127.0.0.1:{server.server_port}', 'operator-token')
+result = resume(client, [workflow['id']], apply=True)
+⋮----
+duplicate = client.launch(workflow['id'], 'dbrckk/integration-fixture', goal)
+⋮----
+projects = control.managed_projects.list()
+⋮----
+original = control.workflows.get(workflow['id'])
+⋮----
+def test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation(self)
+⋮----
+project = control.managed_projects.create(repository='dbrckk/integration-fixture',
+⋮----
 result = resume(client, [project['workflow_id']], apply=True)
 ⋮----
 updated = control.managed_projects.get(project['project_id'])
@@ -20767,8 +20780,30 @@ def get(self, path)
 ⋮----
 def continue_project(self, project_id)
 ⋮----
+def launch(self, workflow_id, repository, final_goal)
+⋮----
+def submit(self, path, payload)
+⋮----
 request = urllib.request.Request(
 # One submission only: an uncertain mutation response must never be retried here.
+⋮----
+def recover_legacy(client, workflow_id, projects, *, apply)
+⋮----
+record = {"workflow_id": workflow_id, "status": "not_current"}
+# A previous generation of a managed objective must not become a new project.
+⋮----
+workflow = client.get("/v1/workflows/" + workflow_id).get("workflow", {})
+⋮----
+tasks = workflow.get("tasks") or []
+⋮----
+payload = tasks[0].get("payload") or {}
+handoff = payload.get("handoff") or {}
+⋮----
+repository = workflow.get("repository")
+final_goal = handoff.get("final_goal") or handoff.get("task")
+⋮----
+response = client.launch(workflow_id, repository, final_goal)
+project = response.get("project", {})
 ⋮----
 def resume(client, workflow_ids, *, apply=False)
 ⋮----
@@ -32849,6 +32884,14 @@ result = resume(client, ['a' * 32], apply=True)
 def test_active_successful_and_changed_workflows_are_never_resumed(self)
 ⋮----
 def test_invalid_and_duplicate_allowlists_fail_before_access(self)
+⋮----
+def test_legacy_goal_launch_preserves_original_instruction_and_reuses_request_id(self)
+⋮----
+launches = []
+⋮----
+def launch(self, workflow_id, repository, final_goal)
+⋮----
+def test_managed_history_cannot_be_relaunched_as_legacy(self)
 ````
 
 ## File: tests/test_production_os_worker_cli.py

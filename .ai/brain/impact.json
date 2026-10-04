@@ -1,21 +1,13 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "39954a16f762513070ce209072499d357a5a7fee",
-  "head": "d152967f83b4bbf723cb464d67a3a81e7cc97b65",
+  "base": "d152967f83b4bbf723cb464d67a3a81e7cc97b65",
+  "head": "26d6f0f8a54ab2c5c32110b9e3f97a40ef2df80f",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": ".github/workflows/production-os-objective-recovery.yml",
-      "status": "A"
-    },
-    {
-      "path": ".github/workflows/production-os-worker-integration.yml",
-      "status": "M"
-    },
-    {
       "path": "control/production-os-resume.json",
-      "status": "A"
+      "status": "M"
     },
     {
       "path": "integration_tests/test_production_os_server_integration.py",
@@ -23,11 +15,11 @@
     },
     {
       "path": "studio/production_os_resume_objectives.py",
-      "status": "A"
+      "status": "M"
     },
     {
       "path": "tests/test_production_os_resume_objectives.py",
-      "status": "A"
+      "status": "M"
     }
   ],
   "changed_source_files": [
@@ -48,40 +40,46 @@
       "line": 37
     },
     {
-      "name": "test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation",
+      "name": "test_legacy_recovery_launch_is_idempotent_and_leaves_attempts_unchanged",
       "kind": "function",
       "file": "integration_tests/test_production_os_server_integration.py",
       "line": 38
     },
     {
-      "name": "test_worker_only_session_executes_and_reports_real_workflow",
-      "kind": "function",
-      "file": "integration_tests/test_production_os_server_integration.py",
-      "line": 66
-    },
-    {
-      "name": "test_unreadable_result_is_reported_to_real_server",
-      "kind": "function",
-      "file": "integration_tests/test_production_os_server_integration.py",
-      "line": 69
-    },
-    {
-      "name": "test_actions_preflight_recovers_interrupted_job_before_idle_check",
+      "name": "test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation",
       "kind": "function",
       "file": "integration_tests/test_production_os_server_integration.py",
       "line": 72
     },
     {
+      "name": "test_worker_only_session_executes_and_reports_real_workflow",
+      "kind": "function",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 100
+    },
+    {
+      "name": "test_unreadable_result_is_reported_to_real_server",
+      "kind": "function",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 103
+    },
+    {
+      "name": "test_actions_preflight_recovers_interrupted_job_before_idle_check",
+      "kind": "function",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 106
+    },
+    {
       "name": "_exercise",
       "kind": "function",
       "file": "integration_tests/test_production_os_server_integration.py",
-      "line": 75
+      "line": 109
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "integration_tests/test_production_os_server_integration.py",
-      "line": 128
+      "line": 162
     },
     {
       "name": "OperatorClient",
@@ -102,16 +100,34 @@
       "line": 25
     },
     {
+      "name": "launch",
+      "kind": "function",
+      "file": "studio/production_os_resume_objectives.py",
+      "line": 28
+    },
+    {
+      "name": "submit",
+      "kind": "function",
+      "file": "studio/production_os_resume_objectives.py",
+      "line": 34
+    },
+    {
+      "name": "recover_legacy",
+      "kind": "function",
+      "file": "studio/production_os_resume_objectives.py",
+      "line": 44
+    },
+    {
       "name": "resume",
       "kind": "function",
       "file": "studio/production_os_resume_objectives.py",
-      "line": 35
+      "line": 79
     },
     {
       "name": "main",
       "kind": "function",
       "file": "studio/production_os_resume_objectives.py",
-      "line": 68
+      "line": 112
     },
     {
       "name": "ResumeObjectivesTests",
@@ -147,25 +163,67 @@
       "name": "continue_project",
       "kind": "function",
       "file": "tests/test_production_os_resume_objectives.py",
-      "line": 16
+      "line": 20
     },
     {
       "name": "test_dry_run_does_not_mutate_and_apply_submits_only_once",
       "kind": "function",
       "file": "tests/test_production_os_resume_objectives.py",
-      "line": 22
+      "line": 26
     },
     {
       "name": "test_active_successful_and_changed_workflows_are_never_resumed",
       "kind": "function",
       "file": "tests/test_production_os_resume_objectives.py",
-      "line": 31
+      "line": 35
     },
     {
       "name": "test_invalid_and_duplicate_allowlists_fail_before_access",
       "kind": "function",
       "file": "tests/test_production_os_resume_objectives.py",
-      "line": 40
+      "line": 44
+    },
+    {
+      "name": "test_legacy_goal_launch_preserves_original_instruction_and_reuses_request_id",
+      "kind": "function",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 49
+    },
+    {
+      "name": "Client",
+      "kind": "class",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 51
+    },
+    {
+      "name": "get",
+      "kind": "function",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 52
+    },
+    {
+      "name": "launch",
+      "kind": "function",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 57
+    },
+    {
+      "name": "test_managed_history_cannot_be_relaunched_as_legacy",
+      "kind": "function",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 66
+    },
+    {
+      "name": "Client",
+      "kind": "class",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 67
+    },
+    {
+      "name": "get",
+      "kind": "function",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 68
     }
   ],
   "selected_tests": [

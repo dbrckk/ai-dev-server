@@ -9,7 +9,7 @@
       "source": {
         "file": "integration_tests/test_production_os_server_integration.py",
         "start": 37,
-        "end": 154
+        "end": 188
       },
       "symbol_dependencies": [
         {
@@ -41,7 +41,7 @@
           "definitions": [
             {
               "file": "integration_tests/test_production_os_server_integration.py",
-              "line": 75,
+              "line": 109,
               "kind": "function",
               "language": "python"
             }
@@ -121,6 +121,18 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "register",
           "definitions": [
             {
@@ -149,7 +161,7 @@
           "definitions": [
             {
               "file": "studio/production_os_resume_objectives.py",
-              "line": 35,
+              "line": 79,
               "kind": "function",
               "language": "python"
             }
@@ -185,7 +197,7 @@
           "definitions": [
             {
               "file": "integration_tests/test_production_os_server_integration.py",
-              "line": 128,
+              "line": 162,
               "kind": "function",
               "language": "python"
             }
@@ -197,7 +209,7 @@
           "definitions": [
             {
               "file": "integration_tests/test_production_os_server_integration.py",
-              "line": 72,
+              "line": 106,
               "kind": "function",
               "language": "python"
             }
@@ -205,7 +217,7 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation",
+          "symbol": "test_legacy_recovery_launch_is_idempotent_and_leaves_attempts_unchanged",
           "definitions": [
             {
               "file": "integration_tests/test_production_os_server_integration.py",
@@ -217,11 +229,23 @@
           "relation": "same_file"
         },
         {
+          "symbol": "test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation",
+          "definitions": [
+            {
+              "file": "integration_tests/test_production_os_server_integration.py",
+              "line": 72,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
           "symbol": "test_unreadable_result_is_reported_to_real_server",
           "definitions": [
             {
               "file": "integration_tests/test_production_os_server_integration.py",
-              "line": 69,
+              "line": 103,
               "kind": "function",
               "language": "python"
             }
@@ -233,7 +257,7 @@
           "definitions": [
             {
               "file": "integration_tests/test_production_os_server_integration.py",
-              "line": 66,
+              "line": 100,
               "kind": "function",
               "language": "python"
             }
@@ -253,13 +277,83 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 20
+      "dependency_count": 22
+    },
+    "test_legacy_recovery_launch_is_idempotent_and_leaves_attempts_unchanged": {
+      "source": {
+        "file": "integration_tests/test_production_os_server_integration.py",
+        "start": 38,
+        "end": 70
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "OperatorClient",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 21,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 928,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "resume",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
     },
     "test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation": {
       "source": {
         "file": "integration_tests/test_production_os_server_integration.py",
-        "start": 38,
-        "end": 64
+        "start": 72,
+        "end": 98
       },
       "symbol_dependencies": [
         {
@@ -303,7 +397,7 @@
           "definitions": [
             {
               "file": "studio/production_os_resume_objectives.py",
-              "line": 35,
+              "line": 79,
               "kind": "function",
               "language": "python"
             }
@@ -316,8 +410,8 @@
     "test_worker_only_session_executes_and_reports_real_workflow": {
       "source": {
         "file": "integration_tests/test_production_os_server_integration.py",
-        "start": 66,
-        "end": 67
+        "start": 100,
+        "end": 101
       },
       "symbol_dependencies": [
         {
@@ -325,7 +419,7 @@
           "definitions": [
             {
               "file": "integration_tests/test_production_os_server_integration.py",
-              "line": 75,
+              "line": 109,
               "kind": "function",
               "language": "python"
             }
@@ -338,8 +432,8 @@
     "test_unreadable_result_is_reported_to_real_server": {
       "source": {
         "file": "integration_tests/test_production_os_server_integration.py",
-        "start": 69,
-        "end": 70
+        "start": 103,
+        "end": 104
       },
       "symbol_dependencies": [
         {
@@ -347,7 +441,7 @@
           "definitions": [
             {
               "file": "integration_tests/test_production_os_server_integration.py",
-              "line": 75,
+              "line": 109,
               "kind": "function",
               "language": "python"
             }
@@ -360,8 +454,8 @@
     "test_actions_preflight_recovers_interrupted_job_before_idle_check": {
       "source": {
         "file": "integration_tests/test_production_os_server_integration.py",
-        "start": 72,
-        "end": 73
+        "start": 106,
+        "end": 107
       },
       "symbol_dependencies": [
         {
@@ -369,7 +463,7 @@
           "definitions": [
             {
               "file": "integration_tests/test_production_os_server_integration.py",
-              "line": 75,
+              "line": 109,
               "kind": "function",
               "language": "python"
             }
@@ -382,8 +476,8 @@
     "_exercise": {
       "source": {
         "file": "integration_tests/test_production_os_server_integration.py",
-        "start": 75,
-        "end": 154
+        "start": 109,
+        "end": 188
       },
       "symbol_dependencies": [
         {
@@ -523,7 +617,7 @@
           "definitions": [
             {
               "file": "integration_tests/test_production_os_server_integration.py",
-              "line": 128,
+              "line": 162,
               "kind": "function",
               "language": "python"
             }
@@ -548,8 +642,8 @@
     "runner": {
       "source": {
         "file": "integration_tests/test_production_os_server_integration.py",
-        "start": 128,
-        "end": 248
+        "start": 162,
+        "end": 282
       },
       "symbol_dependencies": [
         {
@@ -619,7 +713,7 @@
       "source": {
         "file": "studio/production_os_resume_objectives.py",
         "start": 21,
-        "end": 32
+        "end": 41
       },
       "symbol_dependencies": [
         {
@@ -693,9 +787,33 @@
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "submit",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 6
+      "dependency_count": 8
     },
     "get": {
       "source": {
@@ -723,7 +841,51 @@
       "source": {
         "file": "studio/production_os_resume_objectives.py",
         "start": 25,
+        "end": 26
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "submit",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "launch": {
+      "source": {
+        "file": "studio/production_os_resume_objectives.py",
+        "start": 28,
         "end": 32
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "submit",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "submit": {
+      "source": {
+        "file": "studio/production_os_resume_objectives.py",
+        "start": 34,
+        "end": 41
       },
       "symbol_dependencies": [
         {
@@ -753,11 +915,57 @@
       ],
       "dependency_count": 2
     },
+    "recover_legacy": {
+      "source": {
+        "file": "studio/production_os_resume_objectives.py",
+        "start": 44,
+        "end": 76
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 904,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
     "resume": {
       "source": {
         "file": "studio/production_os_resume_objectives.py",
-        "start": 35,
-        "end": 65
+        "start": 79,
+        "end": 109
       },
       "symbol_dependencies": [
         {
@@ -783,15 +991,27 @@
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "recover_legacy",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 2
+      "dependency_count": 3
     },
     "main": {
       "source": {
         "file": "studio/production_os_resume_objectives.py",
-        "start": 68,
-        "end": 188
+        "start": 112,
+        "end": 232
       },
       "symbol_dependencies": [
         {
@@ -835,7 +1055,7 @@
           "definitions": [
             {
               "file": "studio/production_os_resume_objectives.py",
-              "line": 35,
+              "line": 79,
               "kind": "function",
               "language": "python"
             }
@@ -849,7 +1069,7 @@
       "source": {
         "file": "tests/test_production_os_resume_objectives.py",
         "start": 5,
-        "end": 43
+        "end": 72
       },
       "symbol_dependencies": [
         {
@@ -858,6 +1078,18 @@
             {
               "file": "tests/test_production_os_resume_objectives.py",
               "line": 10,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 51,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 67,
               "kind": "class",
               "language": "python"
             }
@@ -881,7 +1113,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_resume_objectives.py",
-              "line": 16,
+              "line": 20,
               "kind": "function",
               "language": "python"
             }
@@ -894,6 +1126,30 @@
             {
               "file": "tests/test_production_os_resume_objectives.py",
               "line": 14,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 57,
               "kind": "function",
               "language": "python"
             }
@@ -905,7 +1161,7 @@
           "definitions": [
             {
               "file": "studio/production_os_resume_objectives.py",
-              "line": 35,
+              "line": 79,
               "kind": "function",
               "language": "python"
             }
@@ -917,7 +1173,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_resume_objectives.py",
-              "line": 31,
+              "line": 35,
               "kind": "function",
               "language": "python"
             }
@@ -929,7 +1185,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_resume_objectives.py",
-              "line": 22,
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
@@ -941,7 +1197,31 @@
           "definitions": [
             {
               "file": "tests/test_production_os_resume_objectives.py",
-              "line": 40,
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_legacy_goal_launch_preserves_original_instruction_and_reuses_request_id",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_managed_history_cannot_be_relaunched_as_legacy",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 66,
               "kind": "function",
               "language": "python"
             }
@@ -949,13 +1229,13 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 8
+      "dependency_count": 11
     },
     "client": {
       "source": {
         "file": "tests/test_production_os_resume_objectives.py",
         "start": 6,
-        "end": 20
+        "end": 24
       },
       "symbol_dependencies": [
         {
@@ -964,6 +1244,18 @@
             {
               "file": "tests/test_production_os_resume_objectives.py",
               "line": 10,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 51,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 67,
               "kind": "class",
               "language": "python"
             }
@@ -975,7 +1267,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_resume_objectives.py",
-              "line": 16,
+              "line": 20,
               "kind": "function",
               "language": "python"
             }
@@ -988,6 +1280,18 @@
             {
               "file": "tests/test_production_os_resume_objectives.py",
               "line": 14,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 68,
               "kind": "function",
               "language": "python"
             }
@@ -1021,7 +1325,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_resume_objectives.py",
-              "line": 16,
+              "line": 20,
               "kind": "function",
               "language": "python"
             }
@@ -1036,6 +1340,30 @@
               "line": 14,
               "kind": "function",
               "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
             }
           ],
           "relation": "same_file"
@@ -1045,7 +1373,7 @@
           "definitions": [
             {
               "file": "studio/production_os_resume_objectives.py",
-              "line": 35,
+              "line": 79,
               "kind": "function",
               "language": "python"
             }
@@ -1057,7 +1385,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_resume_objectives.py",
-              "line": 31,
+              "line": 35,
               "kind": "function",
               "language": "python"
             }
@@ -1069,7 +1397,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_resume_objectives.py",
-              "line": 22,
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
@@ -1081,7 +1409,31 @@
           "definitions": [
             {
               "file": "tests/test_production_os_resume_objectives.py",
-              "line": 40,
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_legacy_goal_launch_preserves_original_instruction_and_reuses_request_id",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_managed_history_cannot_be_relaunched_as_legacy",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 66,
               "kind": "function",
               "language": "python"
             }
@@ -1089,7 +1441,7 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 7
+      "dependency_count": 10
     },
     "__init__": {
       "source": {
@@ -1104,6 +1456,18 @@
             {
               "file": "tests/test_production_os_resume_objectives.py",
               "line": 10,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 51,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 67,
               "kind": "class",
               "language": "python"
             }
@@ -1127,7 +1491,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_resume_objectives.py",
-              "line": 16,
+              "line": 20,
               "kind": "function",
               "language": "python"
             }
@@ -1142,6 +1506,30 @@
               "line": 14,
               "kind": "function",
               "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
             }
           ],
           "relation": "same_file"
@@ -1151,7 +1539,7 @@
           "definitions": [
             {
               "file": "studio/production_os_resume_objectives.py",
-              "line": 35,
+              "line": 79,
               "kind": "function",
               "language": "python"
             }
@@ -1163,7 +1551,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_resume_objectives.py",
-              "line": 31,
+              "line": 35,
               "kind": "function",
               "language": "python"
             }
@@ -1175,7 +1563,7 @@
           "definitions": [
             {
               "file": "tests/test_production_os_resume_objectives.py",
-              "line": 22,
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
@@ -1187,7 +1575,31 @@
           "definitions": [
             {
               "file": "tests/test_production_os_resume_objectives.py",
-              "line": 40,
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_legacy_goal_launch_preserves_original_instruction_and_reuses_request_id",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_managed_history_cannot_be_relaunched_as_legacy",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 66,
               "kind": "function",
               "language": "python"
             }
@@ -1195,13 +1607,13 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 8
+      "dependency_count": 11
     },
     "test_dry_run_does_not_mutate_and_apply_submits_only_once": {
       "source": {
         "file": "tests/test_production_os_resume_objectives.py",
-        "start": 22,
-        "end": 29
+        "start": 26,
+        "end": 33
       },
       "symbol_dependencies": [
         {
@@ -1221,7 +1633,7 @@
           "definitions": [
             {
               "file": "studio/production_os_resume_objectives.py",
-              "line": 35,
+              "line": 79,
               "kind": "function",
               "language": "python"
             }
@@ -1234,8 +1646,8 @@
     "test_active_successful_and_changed_workflows_are_never_resumed": {
       "source": {
         "file": "tests/test_production_os_resume_objectives.py",
-        "start": 31,
-        "end": 38
+        "start": 35,
+        "end": 42
       },
       "symbol_dependencies": [
         {
@@ -1255,7 +1667,7 @@
           "definitions": [
             {
               "file": "studio/production_os_resume_objectives.py",
-              "line": 35,
+              "line": 79,
               "kind": "function",
               "language": "python"
             }
@@ -1268,8 +1680,8 @@
     "test_invalid_and_duplicate_allowlists_fail_before_access": {
       "source": {
         "file": "tests/test_production_os_resume_objectives.py",
-        "start": 40,
-        "end": 43
+        "start": 44,
+        "end": 47
       },
       "symbol_dependencies": [
         {
@@ -1277,7 +1689,7 @@
           "definitions": [
             {
               "file": "studio/production_os_resume_objectives.py",
-              "line": 35,
+              "line": 79,
               "kind": "function",
               "language": "python"
             }
@@ -1286,6 +1698,170 @@
         }
       ],
       "dependency_count": 1
+    },
+    "test_legacy_goal_launch_preserves_original_instruction_and_reuses_request_id": {
+      "source": {
+        "file": "tests/test_production_os_resume_objectives.py",
+        "start": 49,
+        "end": 64
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Client",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 51,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 67,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "resume",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_managed_history_cannot_be_relaunched_as_legacy": {
+      "source": {
+        "file": "tests/test_production_os_resume_objectives.py",
+        "start": 66,
+        "end": 72
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Client",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 51,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 67,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 52,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_resume_objectives.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "resume",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
     }
   }
 }

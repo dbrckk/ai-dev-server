@@ -15442,8 +15442,30 @@ def get(self, path)
 ⋮----
 def continue_project(self, project_id)
 ⋮----
+def launch(self, workflow_id, repository, final_goal)
+⋮----
+def submit(self, path, payload)
+⋮----
 request = urllib.request.Request(
 # One submission only: an uncertain mutation response must never be retried here.
+⋮----
+def recover_legacy(client, workflow_id, projects, *, apply)
+⋮----
+record = {"workflow_id": workflow_id, "status": "not_current"}
+# A previous generation of a managed objective must not become a new project.
+⋮----
+workflow = client.get("/v1/workflows/" + workflow_id).get("workflow", {})
+⋮----
+tasks = workflow.get("tasks") or []
+⋮----
+payload = tasks[0].get("payload") or {}
+handoff = payload.get("handoff") or {}
+⋮----
+repository = workflow.get("repository")
+final_goal = handoff.get("final_goal") or handoff.get("task")
+⋮----
+response = client.launch(workflow_id, repository, final_goal)
+project = response.get("project", {})
 ⋮----
 def resume(client, workflow_ids, *, apply=False)
 ⋮----

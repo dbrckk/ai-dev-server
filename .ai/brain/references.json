@@ -22,7 +22,7 @@
       ],
       "occurrence_count": 1
     },
-    "test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation": {
+    "test_legacy_recovery_launch_is_idempotent_and_leaves_attempts_unchanged": {
       "definition": {
         "file": "integration_tests/test_production_os_server_integration.py",
         "line": 38,
@@ -33,47 +33,13 @@
         {
           "file": "integration_tests/test_production_os_server_integration.py",
           "line": 38,
-          "preview": "def test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation(self):",
+          "preview": "def test_legacy_recovery_launch_is_idempotent_and_leaves_attempts_unchanged(self):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_worker_only_session_executes_and_reports_real_workflow": {
-      "definition": {
-        "file": "integration_tests/test_production_os_server_integration.py",
-        "line": 66,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 66,
-          "preview": "def test_worker_only_session_executes_and_reports_real_workflow(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_unreadable_result_is_reported_to_real_server": {
-      "definition": {
-        "file": "integration_tests/test_production_os_server_integration.py",
-        "line": 69,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 69,
-          "preview": "def test_unreadable_result_is_reported_to_real_server(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_actions_preflight_recovers_interrupted_job_before_idle_check": {
+    "test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation": {
       "definition": {
         "file": "integration_tests/test_production_os_server_integration.py",
         "line": 72,
@@ -84,6 +50,57 @@
         {
           "file": "integration_tests/test_production_os_server_integration.py",
           "line": 72,
+          "preview": "def test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_worker_only_session_executes_and_reports_real_workflow": {
+      "definition": {
+        "file": "integration_tests/test_production_os_server_integration.py",
+        "line": 100,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 100,
+          "preview": "def test_worker_only_session_executes_and_reports_real_workflow(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_unreadable_result_is_reported_to_real_server": {
+      "definition": {
+        "file": "integration_tests/test_production_os_server_integration.py",
+        "line": 103,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 103,
+          "preview": "def test_unreadable_result_is_reported_to_real_server(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_actions_preflight_recovers_interrupted_job_before_idle_check": {
+      "definition": {
+        "file": "integration_tests/test_production_os_server_integration.py",
+        "line": 106,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 106,
           "preview": "def test_actions_preflight_recovers_interrupted_job_before_idle_check(self):",
           "definition_candidate": true
         }
@@ -93,32 +110,32 @@
     "_exercise": {
       "definition": {
         "file": "integration_tests/test_production_os_server_integration.py",
-        "line": 75,
+        "line": 109,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 67,
+          "line": 101,
           "preview": "self._exercise('completed')",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 70,
+          "line": 104,
           "preview": "self._exercise('failed')",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 73,
+          "line": 107,
           "preview": "self._exercise('completed', abandon=True)",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 75,
+          "line": 109,
           "preview": "def _exercise(self, expected, abandon=False):",
           "definition_candidate": true
         },
@@ -140,7 +157,7 @@
     "runner": {
       "definition": {
         "file": "integration_tests/test_production_os_server_integration.py",
-        "line": 128,
+        "line": 162,
         "kind": "function",
         "language": "python"
       },
@@ -153,19 +170,19 @@
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 128,
+          "line": 162,
           "preview": "def runner(request_path, project_out, **kwargs):",
           "definition_candidate": true
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 140,
+          "line": 174,
           "preview": "output_root=root / 'output', run_project=runner,",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 148,
+          "line": 182,
           "preview": "output_root=root / 'output', run_project=runner,",
           "definition_candidate": false
         },
@@ -884,7 +901,13 @@
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 52,
+          "line": 55,
+          "preview": "client = OperatorClient(f'http://127.0.0.1:{server.server_port}', 'operator-token')",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 86,
           "preview": "client = OperatorClient(f'http://127.0.0.1:{server.server_port}', 'operator-token')",
           "definition_candidate": false
         },
@@ -896,12 +919,12 @@
         },
         {
           "file": "studio/production_os_resume_objectives.py",
-          "line": 78,
+          "line": 122,
           "preview": "result = resume(OperatorClient(os.environ[\"PRODUCTION_OS_URL\"], token),",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 4
+      "occurrence_count": 5
     },
     "get": {
       "definition": {
@@ -919,31 +942,37 @@
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 47,
+          "line": 64,
+          "preview": "original = control.workflows.get(workflow['id'])",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 81,
           "preview": "self.assertEqual(control.managed_projects.get(project['project_id'])['status'], 'NEEDS_ATTENTION')",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 55,
+          "line": 89,
           "preview": "updated = control.managed_projects.get(project['project_id'])",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 60,
+          "line": 94,
           "preview": "self.assertEqual(control.managed_projects.get(project['project_id'])['generation'], 2)",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 125,
+          "line": 159,
           "preview": "self.assertEqual(control.queue.get(abandoned['key'])['status'], 'queued')",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 144,
+          "line": 178,
           "preview": "current = control.workflows.get(workflow['id'])",
           "definition_candidate": false
         },
@@ -1624,12 +1653,6 @@
           "line": 80,
           "preview": "dep_policy = decision.get(\"dependency_policy\") or {}",
           "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_contract.py",
-          "line": 81,
-          "preview": "constraints = decision.get(\"constraints\") or {}",
-          "definition_candidate": false
         }
       ],
       "occurrence_count": 120
@@ -1650,23 +1673,350 @@
         },
         {
           "file": "studio/production_os_resume_objectives.py",
-          "line": 60,
+          "line": 104,
           "preview": "response = client.continue_project(project_id)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_resume_objectives.py",
-          "line": 16,
+          "line": 20,
           "preview": "def continue_project(self, pid):",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 3
     },
+    "launch": {
+      "definition": {
+        "file": "studio/production_os_resume_objectives.py",
+        "line": 28,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 58,
+          "preview": "duplicate = client.launch(workflow['id'], 'dbrckk/integration-fixture', goal)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 114,
+          "preview": "launch = run_command([adb, '-s', serial, 'shell', 'monkey', '-p', pkg, '-c',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 116,
+          "preview": "logs.append({'command': ['adb', 'shell', 'monkey'], 'exit_code': launch.returncode,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 117,
+          "preview": "'output': launch.stdout[-4000:]})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 118,
+          "preview": "if launch.returncode:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_device_qa.py",
+          "line": 5,
+          "preview": "This gate proves install/launch/no-crash/screenshot only. It never claims scripted",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_device_qa.py",
+          "line": 121,
+          "preview": "launch = _run([adb,'-s',serial,'shell','monkey','-p',pkg,'-c','android.intent.category.LAUNCHER','1'],timeout=60)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_device_qa.py",
+          "line": 122,
+          "preview": "logs.append({'command':['adb','shell','monkey'],'exit_code':launch.returncode,'output':launch.stdout[-4000:]})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_device_qa.py",
+          "line": 123,
+          "preview": "if launch.returncode:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_device_stage.py",
+          "line": 63,
+          "preview": "state['completion']={'finished':False,'next_stage':'godot_device_qa','reason':'Install/launch/runtime smoke evidence incomplete.'}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_device_stage.py",
+          "line": 74,
+          "preview": "'reason':'Android install/launch/no-crash smoke passed; scripted journeys and visual acceptance remain required.'}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 176,
+          "preview": "launch=runner([adb,'-s',serial,'shell','monkey','-p',package,'-c','android.intent.category.LAUNCHER','1'],timeout=60)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 177,
+          "preview": "if launch.returncode: raise StudioError('Godot visual QA launch failed')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_qa.py",
+          "line": 98,
+          "preview": "launch = _launch(adb, serial, pkg)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_qa.py",
+          "line": 101,
+          "preview": "steps[-1].update({'launch_exit': launch.returncode, 'crash_count': len(crash_lines)})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_qa.py",
+          "line": 102,
+          "preview": "if launch.returncode or crash_lines:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_qa.py",
+          "line": 129,
+          "preview": "launch = _launch(adb, serial, pkg)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_qa.py",
+          "line": 134,
+          "preview": "stable = launch.returncode == 0 and finger.returncode == 0 and not crashes",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_qa.py",
+          "line": 138,
+          "preview": "'launch_exit': launch.returncode,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/notification_qa.py",
+          "line": 183,
+          "preview": "launch = _launch(adb, serial, pkg)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/notification_qa.py",
+          "line": 191,
+          "preview": "'launch_exit': launch.returncode, 'resume_exit': resume.returncode,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/notification_qa.py",
+          "line": 195,
+          "preview": "if launch.returncode or resume.returncode or crash_lines:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/performance_qa.py",
+          "line": 110,
+          "preview": "launch = run_command([adb, '-s', serial, 'shell', 'monkey', '-p', pkg, '-c',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/performance_qa.py",
+          "line": 112,
+          "preview": "if launch.returncode:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/platform_view_qa.py",
+          "line": 85,
+          "preview": "launch = run_command([adb, '-s', serial, 'shell', 'monkey', '-p', pkg, '-c', 'android.intent.category.LAUNCHER', '1'], timeout=60)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/platform_view_qa.py",
+          "line": 86,
+          "preview": "if launch.returncode:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_resume_objectives.py",
+          "line": 28,
+          "preview": "def launch(self, workflow_id, repository, final_goal):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/production_os_resume_objectives.py",
+          "line": 29,
+          "preview": "return self.submit(\"/v1/dashboard/launch\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_resume_objectives.py",
+          "line": 71,
+          "preview": "response = client.launch(workflow_id, repository, final_goal)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 48,
+          "preview": "\"b=p.chromium.launch(headless=True); \"",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_full_gate_cache.py",
+          "line": 25,
+          "preview": "\"id\": \"launch\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_full_gate_cache.py",
+          "line": 41,
+          "preview": "\"id\": \"launch\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_full_gate_cache.py",
+          "line": 51,
+          "preview": "\"id\": \"launch\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_full_gate_cache.py",
+          "line": 63,
+          "preview": "\"id\": \"launch\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_full_gate_cache.py",
+          "line": 77,
+          "preview": "\"id\": \"launch\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 57,
+          "preview": "def launch(self, workflow_id, repository, final_goal):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 71,
+          "preview": "raise AssertionError('Must not inspect or launch a managed history entry')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 17,
+          "preview": "\"id\": \"launch\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_repair.py",
+          "line": 17,
+          "preview": "\"id\": \"launch\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_agent.py",
+          "line": 50,
+          "preview": "\"id\": \"launch\",",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 40
+    },
+    "submit": {
+      "definition": {
+        "file": "studio/production_os_resume_objectives.py",
+        "line": 34,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/core.py",
+          "line": 360,
+          "preview": "# A pending inference is polled; never submit a second paid POST.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 161,
+          "preview": "play_work=str(Path(work).with_name(Path(work).name+'-play-submit'))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_resume_objectives.py",
+          "line": 26,
+          "preview": "return self.submit(\"/v1/managed-projects/\" + project_id + \"/instructions\", {\"instruction\": INSTRUCTION})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_resume_objectives.py",
+          "line": 29,
+          "preview": "return self.submit(\"/v1/dashboard/launch\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_resume_objectives.py",
+          "line": 34,
+          "preview": "def submit(self, path, payload):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/repo_maintenance.py",
+          "line": 88,
+          "preview": "futures = {pool.submit(_fetch, repo, token): repo for repo in unique}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repo_version_probe.py",
+          "line": 71,
+          "preview": "futures={pool.submit(_fetch,repo,token):repo for repo in unique}",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 7
+    },
+    "recover_legacy": {
+      "definition": {
+        "file": "studio/production_os_resume_objectives.py",
+        "line": 44,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/production_os_resume_objectives.py",
+          "line": 44,
+          "preview": "def recover_legacy(client, workflow_id, projects, *, apply):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/production_os_resume_objectives.py",
+          "line": 89,
+          "preview": "outcomes.append(recover_legacy(client, workflow_id, projects, apply=apply))",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
     "resume": {
       "definition": {
         "file": "studio/production_os_resume_objectives.py",
-        "line": 35,
+        "line": 79,
         "kind": "function",
         "language": "python"
       },
@@ -1679,13 +2029,25 @@
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 53,
+          "line": 56,
+          "preview": "result = resume(client, [workflow['id']], apply=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 60,
+          "preview": "self.assertEqual(resume(client, [workflow['id']], apply=True)['objectives'][0]['status'], 'already_managed')",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 87,
           "preview": "result = resume(client, [project['workflow_id']], apply=True)",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 59,
+          "line": 93,
           "preview": "resume(client, [project['workflow_id']], apply=True)",
           "definition_candidate": false
         },
@@ -1727,13 +2089,13 @@
         },
         {
           "file": "studio/production_os_resume_objectives.py",
-          "line": 35,
+          "line": 79,
           "preview": "def resume(client, workflow_ids, *, apply=False):",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_resume_objectives.py",
-          "line": 78,
+          "line": 122,
           "preview": "result = resume(OperatorClient(os.environ[\"PRODUCTION_OS_URL\"], token),",
           "definition_candidate": false
         },
@@ -1751,41 +2113,59 @@
         },
         {
           "file": "tests/test_production_os_resume_objectives.py",
-          "line": 24,
+          "line": 28,
           "preview": "self.assertEqual(resume(client, ['a' * 32])['objectives'][0]['status'], 'eligible')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_resume_objectives.py",
-          "line": 26,
+          "line": 30,
           "preview": "result = resume(client, ['a' * 32], apply=True)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_resume_objectives.py",
-          "line": 28,
+          "line": 32,
           "preview": "resume(client, ['a' * 32], apply=True)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_resume_objectives.py",
-          "line": 37,
+          "line": 41,
           "preview": "resume(client, ['a' * 32], apply=True)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_resume_objectives.py",
-          "line": 43,
+          "line": 47,
           "preview": "resume(None, ids, apply=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 61,
+          "preview": "self.assertEqual(resume(Client(), ['a' * 32])['objectives'][0]['status'], 'legacy_eligible')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 63,
+          "preview": "self.assertEqual(resume(Client(), ['a' * 32], apply=True)['objectives'][0]['status'], 'relaunched')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 72,
+          "preview": "self.assertEqual(resume(Client(), ['a' * 32], apply=True)['objectives'][0]['status'], 'not_current')",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 18
+      "occurrence_count": 23
     },
     "main": {
       "definition": {
         "file": "studio/production_os_resume_objectives.py",
-        "line": 68,
+        "line": 112,
         "kind": "function",
         "language": "python"
       },
@@ -2540,67 +2920,91 @@
       "occurrences": [
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 52,
+          "line": 55,
           "preview": "client = OperatorClient(f'http://127.0.0.1:{server.server_port}', 'operator-token')",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 53,
+          "line": 56,
+          "preview": "result = resume(client, [workflow['id']], apply=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 58,
+          "preview": "duplicate = client.launch(workflow['id'], 'dbrckk/integration-fixture', goal)",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 60,
+          "preview": "self.assertEqual(resume(client, [workflow['id']], apply=True)['objectives'][0]['status'], 'already_managed')",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 86,
+          "preview": "client = OperatorClient(f'http://127.0.0.1:{server.server_port}', 'operator-token')",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 87,
           "preview": "result = resume(client, [project['workflow_id']], apply=True)",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 59,
+          "line": 93,
           "preview": "resume(client, [project['workflow_id']], apply=True)",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 102,
+          "line": 136,
           "preview": "client = ProductionOSClient(f'http://127.0.0.1:{server.server_port}',",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 105,
+          "line": 139,
           "preview": "client.register('github-actions-worker', ['python'])",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 107,
+          "line": 141,
           "preview": "abandoned = client.claim('github-actions-worker', ['python'])",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 108,
+          "line": 142,
           "preview": "client.ack(abandoned['key'], 'github-actions-worker')",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 109,
+          "line": 143,
           "preview": "self.assertFalse(client._post('/v1/jobs/availability', {",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 118,
+          "line": 152,
           "preview": "'PRODUCTION_OS_URL': client.base_url,",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 139,
+          "line": 173,
           "preview": "result = run_once(client, worker_id='github-actions-worker',",
           "definition_candidate": false
         },
         {
           "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 147,
+          "line": 181,
           "preview": "self.assertEqual(run_once(client, worker_id='github-actions-worker',",
           "definition_candidate": false
         },
@@ -2672,25 +3076,49 @@
         },
         {
           "file": "studio/production_os_resume_objectives.py",
-          "line": 35,
+          "line": 44,
+          "preview": "def recover_legacy(client, workflow_id, projects, *, apply):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_resume_objectives.py",
+          "line": 49,
+          "preview": "workflow = client.get(\"/v1/workflows/\" + workflow_id).get(\"workflow\", {})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_resume_objectives.py",
+          "line": 71,
+          "preview": "response = client.launch(workflow_id, repository, final_goal)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_resume_objectives.py",
+          "line": 79,
           "preview": "def resume(client, workflow_ids, *, apply=False):",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_resume_objectives.py",
-          "line": 40,
+          "line": 84,
           "preview": "projects = client.get(\"/v1/managed-projects\").get(\"projects\", [])",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_resume_objectives.py",
-          "line": 51,
+          "line": 89,
+          "preview": "outcomes.append(recover_legacy(client, workflow_id, projects, apply=apply))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_resume_objectives.py",
+          "line": 95,
           "preview": "current = client.get(\"/v1/managed-projects/\" + project_id).get(\"project\", {})",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_resume_objectives.py",
-          "line": 60,
+          "line": 104,
           "preview": "response = client.continue_project(project_id)",
           "definition_candidate": false
         },
@@ -2870,61 +3298,61 @@
         },
         {
           "file": "tests/test_production_os_resume_objectives.py",
-          "line": 23,
+          "line": 27,
           "preview": "client = self.client()",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_resume_objectives.py",
-          "line": 24,
-          "preview": "self.assertEqual(resume(client, ['a' * 32])['objectives'][0]['status'], 'eligible')",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_resume_objectives.py",
-          "line": 25,
-          "preview": "self.assertEqual(client.submissions, [])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_resume_objectives.py",
-          "line": 26,
-          "preview": "result = resume(client, ['a' * 32], apply=True)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_resume_objectives.py",
           "line": 28,
-          "preview": "resume(client, ['a' * 32], apply=True)",
+          "preview": "self.assertEqual(resume(client, ['a' * 32])['objectives'][0]['status'], 'eligible')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_resume_objectives.py",
           "line": 29,
-          "preview": "self.assertEqual(client.submissions, ['b' * 32])",
+          "preview": "self.assertEqual(client.submissions, [])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_resume_objectives.py",
-          "line": 35,
-          "preview": "client = self.client()",
+          "line": 30,
+          "preview": "result = resume(client, ['a' * 32], apply=True)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_resume_objectives.py",
-          "line": 36,
-          "preview": "client.project.update(change)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_resume_objectives.py",
-          "line": 37,
+          "line": 32,
           "preview": "resume(client, ['a' * 32], apply=True)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_resume_objectives.py",
-          "line": 38,
+          "line": 33,
+          "preview": "self.assertEqual(client.submissions, ['b' * 32])",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 39,
+          "preview": "client = self.client()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 40,
+          "preview": "client.project.update(change)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 41,
+          "preview": "resume(client, ['a' * 32], apply=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 42,
           "preview": "self.assertEqual(client.submissions, [])",
           "definition_candidate": false
         },
@@ -3209,54 +3637,6 @@
           "line": 541,
           "preview": "self.assertEqual(client.calls[1][4], \"paused\")",
           "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 544,
-          "preview": "client = _FakeClient(None)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 547,
-          "preview": "client,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 562,
-          "preview": "self.assertEqual(client.calls[0][0], \"heartbeat\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 563,
-          "preview": "self.assertEqual(client.calls[1][0], \"claim\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 564,
-          "preview": "self.assertIn(\"visual-asset-production\", client.calls[1][2])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 567,
-          "preview": "client = _FakeClient(sample_job())",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 593,
-          "preview": "client,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 602,
-          "preview": "[call[0] for call in client.calls],",
-          "definition_candidate": false
         }
       ],
       "occurrence_count": 120
@@ -3277,8 +3657,38 @@
         },
         {
           "file": "tests/test_production_os_resume_objectives.py",
-          "line": 20,
+          "line": 24,
           "preview": "return Client()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 51,
+          "preview": "class Client:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 61,
+          "preview": "self.assertEqual(resume(Client(), ['a' * 32])['objectives'][0]['status'], 'legacy_eligible')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 63,
+          "preview": "self.assertEqual(resume(Client(), ['a' * 32], apply=True)['objectives'][0]['status'], 'relaunched')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 67,
+          "preview": "class Client:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 72,
+          "preview": "self.assertEqual(resume(Client(), ['a' * 32], apply=True)['objectives'][0]['status'], 'not_current')",
           "definition_candidate": false
         },
         {
@@ -3294,7 +3704,7 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 4
+      "occurrence_count": 9
     },
     "__init__": {
       "definition": {
@@ -3790,14 +4200,14 @@
     "test_dry_run_does_not_mutate_and_apply_submits_only_once": {
       "definition": {
         "file": "tests/test_production_os_resume_objectives.py",
-        "line": 22,
+        "line": 26,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_production_os_resume_objectives.py",
-          "line": 22,
+          "line": 26,
           "preview": "def test_dry_run_does_not_mutate_and_apply_submits_only_once(self):",
           "definition_candidate": true
         }
@@ -3807,14 +4217,14 @@
     "test_active_successful_and_changed_workflows_are_never_resumed": {
       "definition": {
         "file": "tests/test_production_os_resume_objectives.py",
-        "line": 31,
+        "line": 35,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_production_os_resume_objectives.py",
-          "line": 31,
+          "line": 35,
           "preview": "def test_active_successful_and_changed_workflows_are_never_resumed(self):",
           "definition_candidate": true
         }
@@ -3824,15 +4234,49 @@
     "test_invalid_and_duplicate_allowlists_fail_before_access": {
       "definition": {
         "file": "tests/test_production_os_resume_objectives.py",
-        "line": 40,
+        "line": 44,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_production_os_resume_objectives.py",
-          "line": 40,
+          "line": 44,
           "preview": "def test_invalid_and_duplicate_allowlists_fail_before_access(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_legacy_goal_launch_preserves_original_instruction_and_reuses_request_id": {
+      "definition": {
+        "file": "tests/test_production_os_resume_objectives.py",
+        "line": 49,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 49,
+          "preview": "def test_legacy_goal_launch_preserves_original_instruction_and_reuses_request_id(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_managed_history_cannot_be_relaunched_as_legacy": {
+      "definition": {
+        "file": "tests/test_production_os_resume_objectives.py",
+        "line": 66,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 66,
+          "preview": "def test_managed_history_cannot_be_relaunched_as_legacy(self):",
           "definition_candidate": true
         }
       ],

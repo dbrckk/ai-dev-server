@@ -1,13 +1,13 @@
 # Change impact
 
-Base: 2d421a1422df5cdf800accc784de9eae967b2a48
-Head: f06f6b648e40781961d5f99745ed4a4dcc5f4459
+Base: e8f3e753b5e5da2ac4fb1787b6aeaab2c5fb55d0
+Head: 2f818a1e66caf2dc120f81661bc01f5ce636953c
 
 ## Changed files
-- M .github/workflows/production-os-actions-worker.yml
+- M control/production-os-worker-kick.json
 
 ## Affected areas
-- .github
+- control
 
 ## Related test candidates
 - No direct filename-based test match detected.

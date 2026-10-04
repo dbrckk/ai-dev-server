@@ -53,23 +53,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T20:33:15Z
+Generated: 2026-10-04T20:35:18Z
 
 ### Git
 - Branch: `main`
-- Head: `f06f6b648e40`
-- Commit date: 2026-10-04T22:33:04+02:00
-- Commit: fix(worker): probe Asset Forge with dispatch token fallback (#251)
+- Head: `2f818a1e66ca`
+- Commit date: 2026-10-04T22:35:01+02:00
+- Commit: chore(worker): verify Asset Forge production dispatch
 - Tracked files: 849
 
 ### Recently changed files
+- `control/production-os-worker-kick.json`
 - `.github/workflows/production-os-actions-worker.yml`
 - `integration_tests/test_production_os_server_integration.py`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_worker_runtime.py`
 - `studio/godot_model.py`
 - `tests/test_godot_model.py`
-- `control/production-os-worker-kick.json`
 - `studio/github_provider_health_store.py`
 - `tests/test_github_provider_health_store.py`
 - `tests/test_production_os_worker_recovery.py`

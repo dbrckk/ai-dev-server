@@ -130,8 +130,8 @@ request.json
 ## File: production-os-worker-kick.json
 ```json
 {
-  "sequence": 13,
-  "reason": "Verify remote provider-health persistence with live structured inference"
+  "sequence": 14,
+  "reason": "Verify qualified Asset Forge dispatch credentials and process queued visual production"
 }
 ```
 

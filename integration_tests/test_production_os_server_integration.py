@@ -29,6 +29,7 @@ except ModuleNotFoundError as exc:
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
 from production_os_worker import ProductionOSClient, run_once
+from core import request_check
 
 
 @unittest.skipIf(ControlPlane is None, 'Production-OS installed by dedicated integration CI')
@@ -56,6 +57,10 @@ class RealServerWorkerTests(unittest.TestCase):
                     'required_capabilities': ['python'],
                     'handoff': {'repository': 'dbrckk/integration-fixture',
                                 'token_budget': 5000,
+                                'tool_contracts': {'skill_learning': {
+                                    'schema': 'production-os/learned-skill/v1',
+                                    'result_field': 'learned_skill',
+                                    'max_procedure_steps': 12, 'optional': True}},
                                 'task': 'Run Python verification of the generated artifact'},
                 })],
             )
@@ -92,6 +97,8 @@ class RealServerWorkerTests(unittest.TestCase):
 
                 executed = []
                 def runner(request_path, project_out, **kwargs):
+                    request = request_check(json.loads(request_path.read_text()))
+                    self.assertTrue(request['tool_contracts']['skill_learning']['optional'])
                     artifact = project_out / 'verify.py'
                     artifact.write_text('assert sum([1, 2, 3]) == 6\nprint("verified")\n')
                     proc = subprocess.run([sys.executable, str(artifact)], check=True,

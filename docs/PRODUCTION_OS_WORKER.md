@@ -93,6 +93,26 @@ studio-output/production-os/<project-id>/
 
 including the correlated request and `production-os-result.json` envelope.
 
+The worker accepts Production-OS's optional `skill_learning` contract. It preserves
+that metadata without making skill publication a condition for completing work.
+Runner failures retain a fixed error code and optional HTTP status in their local
+result and server evidence; raw exception messages are never published.
+
+The CLI forwards `GITHUB_SHA` to the autonomous runner as its pinned baseline.
+Outside Actions, use `--baseline-sha <full-commit-sha>` when the project needs
+capability research or promotion.
+
+## Live provider diagnostics
+
+Run the `Production-OS Live Diagnostics` workflow manually, or increment
+`control/production-os-diagnostics-kick.json` on main. It checks up to three
+configured providers with small, bounded inference requests, using the same
+fallback defaults as the worker. It also checks an existing
+`PRODUCTION_OS_OPERATOR_TOKEN` secret with a read-only operator endpoint.
+It does not claim jobs, retry objectives, modify repositories, print credentials,
+or print generated responses. This check is separate from the scheduled worker
+and runs only when explicitly triggered.
+
 ## Operational acceptance test
 
 A production deployment is considered usable only after one real job completes this path:

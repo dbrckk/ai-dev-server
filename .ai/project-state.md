@@ -3,21 +3,27 @@
 Status: active
 
 ## Working
+- Production-OS optional skill_learning contracts now pass the Studio validator; reproduced historical artifact 11276785062 now validates.
+- Worker forwards its pinned Git baseline and preserves fixed runner error codes/HTTP status without raw messages.
+- A separate trusted-main live diagnostic workflow checks bounded inference and existing operator access.
 - Worker setup/result failures are reported to Production-OS rather than leaving acknowledged jobs active.
 - Correlated result validation prevents completing a different workflow/task/project/repository.
 - Bounded invocations signal failed work with exit code 1; paused/draining continuous workers back off.
 - Dedicated worker CI covers pytest function tests and real authenticated Production-OS HTTP integration.
 
 ## Broken / blockers
-- Live inventory run 37182485300: 4 failed jobs, 2 failed workflows, no queued candidates. Original task failures need inspection.
+- Live run 37182952933: worker session ready, 1 online worker, 4 failed jobs, 2 failed workflows, no queued candidates. Both implementation tasks exhausted 2/2 attempts with StudioError.
 - Its remote Asset Forge dispatch probe failed, so visual capabilities remained disabled.
 - Render service verified healthy on merged server fix #250. Direct database connector inspection is unavailable.
 
 ## Current priority
-- Diagnostics #241/#251 are deployed. Reconcile Actions sessions before availability to recover interrupted acknowledgements, inspect failed workflows, then verify a real job.
+- Verify shared provider fallbacks with live diagnostics, then resume exhausted objectives through authorized operator controls.
+- Diagnostics #241/#251 and startup recovery #242 are deployed. Resume exhausted objectives through existing operator controls, investigate StudioError during a real run and verify its artifact.
 - Investigate live queue eligibility and remote Asset Forge dispatch permissions without exposing secrets.
 
 ## Validation
+- New regression suite: 87 tests and 22 subtests passed; both historical requests validate.
+- Three authenticated server integrations pass with the actual skill_learning contract and Studio request validation.
 - Selected worker suite: 99 tests passed, including recovery regressions.
 - Real Production-OS server integration: 2 tests passed, also against qualified revision 7e0d47a in an isolated installed environment.
 - Full unit suite: 1700 tests passed; compilation and existing CI trust policy passed.

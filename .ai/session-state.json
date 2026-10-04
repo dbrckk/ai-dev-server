@@ -3,7 +3,7 @@
   "updated_at": "2026-10-04",
   "task": "Make Production-OS worker operational and resilient",
   "base_commit": "836a1d5bdf9b7cffa2983de1cbcb36e2cc07f913",
-  "branch": "fix/worker-recover-legacy-objectives",
+  "branch": "fix/worker-godot-structured-output",
   "completed": [
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",
@@ -124,8 +124,8 @@
     "request_reproduction": "Both artifact requests validate after explicit skill_learning support"
   },
   "next_steps": [
-    "Merge explicit legacy objective recovery and inspect live launch result",
-    "Trigger worker and verify real execution",
+    "Verify NVIDIA JSON mode live and merge structured-output fix",
+    "Verify final real worker outcome and next eligible jobs",
     "Resolve remote Asset Forge authorization"
   ],
   "merged_live_diagnostics_pr": 243,
@@ -140,5 +140,27 @@
     "pr": 244,
     "run": 37184541567,
     "result": "Both historical workflows are not current managed project generations; no mutation performed"
+  },
+  "live_worker_execution": {
+    "run_id": 37184922962,
+    "job_id": 111384748321,
+    "commit": "71fb09cf0b50026c73e3a60b24e1612cd11acc45",
+    "status": "real job in progress",
+    "checkpoint_branch": "dbrckk/Jumpy:studio/pos-2f6aad6c63a76f159a44fd99",
+    "observed": "Product and design completed; implementation blocked on invalid structured model output; autonomous cycle still running"
+  },
+  "legacy_recovery": {
+    "pr": 245,
+    "run_id": 37184853066,
+    "objectives": [
+      {
+        "project_id": "d69379cb75d0b1e1836cc5bcb7bb6258",
+        "workflow_id": "a025e4396717412398e7f64b90131a08"
+      },
+      {
+        "project_id": "5b6d8735c0703cebd027d3ae8b6814c4",
+        "workflow_id": "1147aaa7a36840c2a823f542a2bac209"
+      }
+    ]
   }
 }

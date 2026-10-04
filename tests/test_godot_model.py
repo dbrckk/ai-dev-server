@@ -50,6 +50,12 @@ def product_value():
 
 
 class GodotModelTests(unittest.TestCase):
+    def test_nvidia_source_generation_requests_json_mode(self):
+        subject = model([completion({'files': [{'path': 'scripts/main.gd', 'content': 'extends Node\n'}]})])
+        subject.api.base = 'https://integrate.api.nvidia.com/v1'
+        subject.ask('implementation', 'improve game')
+        self.assertEqual(subject.api.calls[0][2]['response_format'], {'type': 'json_object'})
+
     def test_product_uses_godot_planning_contract_not_flutter_execution_claims(self):
         subject = model([completion(product_value())])
         result = subject.ask('product', 'plan game')

@@ -20,17 +20,23 @@ def diagnose(*, api_factory=API, providers=None, environ=None):
                 continue
             record = {"provider_index": index, "role": role, "status": "unavailable"}
             try:
+                params = {
+                    "model": model, "messages": [{"role": "user", "content": 'Return only JSON {"ready":true}.'}],
+                    "max_tokens": 128, "temperature": 0,
+                }
+                if provider.base.rstrip('/') == 'https://integrate.api.nvidia.com/v1':
+                    params['response_format'] = {'type': 'json_object'}
                 response = api_factory(provider.base, provider.key).call(
-                    "POST", "/chat/completions", {
-                        "model": model, "messages": [{"role": "user", "content": "Reply with OK."}],
-                        "max_tokens": 128, "temperature": 0,
-                    }, timeout_seconds=30)
+                    "POST", "/chat/completions", params, timeout_seconds=30)
                 choices = response.get("choices") if isinstance(response, dict) else None
                 message = choices[0].get("message") if isinstance(choices, list) and choices and isinstance(choices[0], dict) else None
                 content = message.get("content") if isinstance(message, dict) else None
-                record["status"] = "ready" if isinstance(content, str) and content.strip() else "invalid_response"
+                parsed = json.loads(content) if isinstance(content, str) else None
+                record["status"] = "ready" if isinstance(parsed, dict) and parsed.get('ready') is True else "invalid_response"
             except APIError as exc:
                 record["http_status"] = int(exc.status)
+            except json.JSONDecodeError:
+                record["status"] = "invalid_response"
             except Exception:
                 # Remote bodies, exception messages and completions may echo credentials.
                 pass

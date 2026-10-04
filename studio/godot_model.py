@@ -176,6 +176,8 @@ class GodotModel(Model):
                     {'role': 'user', 'content': context},
                 ],
             }
+            if api.base == 'https://integrate.api.nvidia.com/v1':
+                params['response_format'] = {'type': 'json_object'}
             if api.base == 'https://integrate.api.nvidia.com/v1' and selected_model.startswith('nvidia/nemotron-3-'):
                 params.update(chat_template_kwargs={'enable_thinking': True}, reasoning_budget=2048)
             print('Model role: ' + role + '; provider: ' + provider.name + '; model: ' + selected_model, flush=True)

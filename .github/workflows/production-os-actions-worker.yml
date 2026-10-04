@@ -200,6 +200,7 @@ jobs:
           token = os.environ["PRODUCTION_OS_WORKER_TOKEN"].strip()
           worker_id = os.environ["PRODUCTION_OS_WORKER_ID"].strip()
           from production_os_worker import worker_capabilities
+          from production_os_worker import _NoRedirect
 
           base_env = dict(os.environ)
           base_env["PRODUCTION_OS_WORKER_SPECIALTIES"] = ""
@@ -235,6 +236,23 @@ jobs:
               if not isinstance(payload, dict):
                   raise SystemExit("Production-OS availability probe returned invalid JSON")
               return payload
+
+          # Counts establish whether work exists at all, without exposing briefs.
+          try:
+              request = urllib.request.Request(
+                  base + "/v1/stats",
+                  headers={"Authorization": "Bearer " + token, "Accept": "application/json"},
+              )
+              opener = urllib.request.build_opener(_NoRedirect())
+              with opener.open(request, timeout=10) as response:
+                  stats = json.loads(response.read(1000000).decode("utf-8"))
+              print("Production-OS queue inventory: " + json.dumps({
+                  "jobs": stats.get("jobs", {}),
+                  "workflows": stats.get("workflows", {}),
+                  "online_workers": stats.get("online_workers", 0),
+              }, sort_keys=True))
+          except (OSError, ValueError, RuntimeError) as exc:
+              print("Production-OS queue inventory unavailable: " + type(exc).__name__)
 
           base_work = probe(base_capabilities)
           mobile_work = probe(base_capabilities + ["mobile-ui-validation"])

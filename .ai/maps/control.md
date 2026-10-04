@@ -130,8 +130,8 @@ request.json
 ## File: production-os-worker-kick.json
 ```json
 {
-  "sequence": 12,
-  "reason": "Run next bounded attempt with validated structured NVIDIA output and precise persistence diagnostics"
+  "sequence": 13,
+  "reason": "Verify remote provider-health persistence with live structured inference"
 }
 ```
 

@@ -1,22 +1,18 @@
 # Change impact
 
-Base: be38b74caaad860fcfe0beda5c29fc1331f479e0
-Head: 7f593c52fc9813af1948869ad26f19e45eaf8d4e
+Base: e7d800b2ef20d834f2135910271ea218c1e0e187
+Head: 672ee28dfa9179b20fa8046bcca3220dd6abf66c
 
 ## Changed files
-- M .github/workflows/production-os-actions-worker.yml
-- M control/production-os-worker-kick.json
-- M studio/production_os_worker.py
-- M tests/test_production_os_worker_recovery.py
+- M studio/godot_model.py
+- M tests/test_godot_model.py
 
 ## Affected areas
-- .github
-- control
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_production_os_worker.py
+- tests/test_godot_model.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

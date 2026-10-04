@@ -10409,11 +10409,19 @@ class ProviderHealthStoreError(RuntimeError)
 def _validate(data)
 ⋮----
 clean = {}
+required = {"successes", "failures", "consecutive_failures", "opened_until"}
+optional = {"latency_ms_ema", "last_observed_at", "recent_outcomes"}
 ⋮----
 successes = row["successes"]
 failures = row["failures"]
 consecutive = row["consecutive_failures"]
 opened_until = row["opened_until"]
+⋮----
+latency = row.get("latency_ms_ema")
+⋮----
+observed_at = row.get("last_observed_at", 0.0)
+⋮----
+outcomes = row.get("recent_outcomes", [])
 ⋮----
 def _ref(github)
 ⋮----

@@ -50,31 +50,28 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T11:06:38Z
+Generated: 2026-10-04T14:08:19Z
 
 ### Git
 - Branch: `main`
-- Head: `7f593c52fc98`
-- Commit date: 2026-10-04T13:06:22+02:00
-- Commit: fix(worker): identify remote persistence failure during real execution (#247)
-- Tracked files: 848
+- Head: `672ee28dfa91`
+- Commit date: 2026-10-04T13:35:06+02:00
+- Commit: fix(godot): shrink truncated patch retries (#249)
+- Tracked files: 849
 
 ### Recently changed files
-- `.github/workflows/production-os-actions-worker.yml`
+- `studio/godot_model.py`
+- `tests/test_godot_model.py`
 - `control/production-os-worker-kick.json`
+- `studio/github_provider_health_store.py`
 - `studio/production_os_worker.py`
+- `tests/test_github_provider_health_store.py`
 - `tests/test_production_os_worker_recovery.py`
+- `.github/workflows/production-os-actions-worker.yml`
 - `.github/workflows/production-os-worker-integration.yml`
 - `control/production-os-diagnostics-kick.json`
-- `studio/godot_model.py`
 - `studio/production_os_live_diagnostics.py`
-- `tests/test_godot_model.py`
 - `tests/test_production_os_live_diagnostics.py`
-- `control/production-os-resume.json`
-- `integration_tests/test_production_os_server_integration.py`
-- `studio/production_os_resume_objectives.py`
-- `tests/test_production_os_resume_objectives.py`
-- `.github/workflows/production-os-objective-recovery.yml`
 
 ### Project signals
 - No common build descriptor detected

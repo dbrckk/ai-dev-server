@@ -790,10 +790,11 @@
         "tests/test_generic_capability_persist.py",
         "tests/test_github_goal_store.py",
         "tests/test_github_memory_store.py",
+        "tests/test_godot_model.py",
         "tests/test_godot_preview.py",
         "tests/test_godot_repository_probe.py"
       ],
-      "in_degree": 36,
+      "in_degree": 37,
       "out_degree": 2,
       "path": "tests/test_journeys.py"
     },
@@ -1300,6 +1301,30 @@
       "path": "studio/production_os_worker.py"
     },
     {
+      "dependencies": [
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "studio/capacity_scheduler.py",
+        "studio/core.py",
+        "studio/fault_injection_smoke.py",
+        "studio/generic_model.py",
+        "studio/generic_project.py",
+        "studio/github_provider_health_store.py",
+        "studio/godot_model.py",
+        "studio/provider_router.py",
+        "studio/unified_routing_score.py",
+        "tests/test_github_provider_health_store.py",
+        "tests/test_provider_health.py",
+        "tests/test_provider_scoped_health.py",
+        "tests/test_provider_verified_feedback.py"
+      ],
+      "in_degree": 13,
+      "out_degree": 2,
+      "path": "studio/provider_health.py"
+    },
+    {
       "dependencies": [],
       "dependents": [
         "studio/core.py",
@@ -1343,29 +1368,6 @@
       "in_degree": 13,
       "out_degree": 1,
       "path": "studio/replacement_ci_policy.py"
-    },
-    {
-      "dependencies": [
-        "studio/core.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "studio/capacity_scheduler.py",
-        "studio/core.py",
-        "studio/fault_injection_smoke.py",
-        "studio/generic_model.py",
-        "studio/generic_project.py",
-        "studio/github_provider_health_store.py",
-        "studio/godot_model.py",
-        "studio/provider_router.py",
-        "studio/unified_routing_score.py",
-        "tests/test_provider_health.py",
-        "tests/test_provider_scoped_health.py",
-        "tests/test_provider_verified_feedback.py"
-      ],
-      "in_degree": 12,
-      "out_degree": 2,
-      "path": "studio/provider_health.py"
     },
     {
       "dependencies": [
@@ -2018,8 +2020,8 @@
       "path": "studio/evolution_persist.py"
     }
   ],
-  "edge_count": 1828,
+  "edge_count": 1831,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 622,
+  "node_count": 623,
   "schema_version": 1
 }

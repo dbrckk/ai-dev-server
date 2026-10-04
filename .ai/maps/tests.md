@@ -191,6 +191,7 @@ test_github_artifact_cas_stats_store.py
 test_github_full_gate_cache_store.py
 test_github_goal_store.py
 test_github_memory_store.py
+test_github_provider_health_store.py
 test_github_quick_gate_cache_store.py
 test_github_runner_persistent.py
 test_github_runner_usage.py
@@ -5462,6 +5463,30 @@ gh=FakeGitHub(); save(gh,populated())
 p=Path(td)/"memory.json"
 ```
 
+## File: test_github_provider_health_store.py
+```python
+"""The remote store must accept the health records written during real inference."""
+⋮----
+class ProviderHealthPersistenceTests(unittest.TestCase)
+⋮----
+def test_real_inference_record_can_be_persisted_without_losing_routing_history(self)
+⋮----
+path = Path(td) / "provider-health.json"
+⋮----
+persisted = store.persist_local(object(), path)
+⋮----
+row = persisted["nvidia/model"]
+⋮----
+def test_legacy_remote_row_gains_safe_defaults(self)
+⋮----
+legacy = {"model": {"successes": 2, "failures": 1,
+row = store._validate(legacy)["model"]
+⋮----
+def test_unexpected_or_invalid_observations_are_rejected(self)
+⋮----
+row = {"successes": 1, "failures": 0, "consecutive_failures": 0,
+```
+
 ## File: test_github_quick_gate_cache_store.py
 ```python
 class GitHubQuickGateCacheStoreTests(unittest.TestCase)
@@ -5960,6 +5985,12 @@ def test_test_role_rejects_non_test_path_then_repairs_once(self)
 ⋮----
 subject = model([
 result = subject.ask('tests', 'write regression')
+⋮----
+def test_truncated_patch_retry_requests_a_smaller_complete_change(self)
+⋮----
+truncated = {'choices':[{'finish_reason':'length','message':{'content':'{"files":['}}]}
+⋮----
+retry = subject.api.calls[1][2]['messages'][1]['content']
 ⋮----
 def test_structured_godot_call_falls_back_to_secondary_provider(self)
 ⋮----
@@ -8352,6 +8383,8 @@ class WorkerRecoveryTests(unittest.TestCase)
 def test_persistence_diagnosis_identifies_component_without_publishing_messages(self)
 ⋮----
 result = _failure_diagnostics(RuntimeError('Remote autonomous state persistence failed: local autonomous state unavailable'))
+⋮----
+result = _failure_diagnostics(RuntimeError('Remote provider health persistence failed: provider health fields invalid'))
 ⋮----
 result = _failure_diagnostics(RuntimeError('Remote provider metrics persistence failed: credential-private-response'))
 ⋮----

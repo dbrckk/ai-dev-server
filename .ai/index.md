@@ -10,8 +10,8 @@ Primary context files:
 Large repository detected. Prefer the relevant segmented map before .ai/repo-map.md.
 
 ## Segmented maps
+- .ai/maps/tests.md (317 source/config files)
 - .ai/maps/studio.md (317 source/config files)
-- .ai/maps/tests.md (316 source/config files)
 - .ai/maps/scripts.md (30 source/config files)
 - .ai/maps/control.md (11 source/config files)
 - .ai/maps/projects.md (1 source/config files)

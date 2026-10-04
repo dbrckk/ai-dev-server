@@ -23,13 +23,57 @@ class OperatorClient(API):
         return self.call("GET", path, timeout_seconds=30)
 
     def continue_project(self, project_id):
+        return self.submit("/v1/managed-projects/" + project_id + "/instructions", {"instruction": INSTRUCTION})
+
+    def launch(self, workflow_id, repository, final_goal):
+        return self.submit("/v1/dashboard/launch", {
+            "repository": repository, "instruction": final_goal,
+            "request_id": "worker-recovery-" + workflow_id,
+        })
+
+    def submit(self, path, payload):
         request = urllib.request.Request(
-            self.base + "/v1/managed-projects/" + project_id + "/instructions",
-            method="POST", data=canonical({"instruction": INSTRUCTION}).encode("utf-8"),
+            self.base + path,
+            method="POST", data=canonical(payload).encode("utf-8"),
             headers={"Authorization": "Bearer " + self.key, "Content-Type": "application/json",
                      "Accept": "application/json"})
         # One submission only: an uncertain mutation response must never be retried here.
         return self._response(request, timeout_seconds=30)
+
+
+def recover_legacy(client, workflow_id, projects, *, apply):
+    record = {"workflow_id": workflow_id, "status": "not_current"}
+    # A previous generation of a managed objective must not become a new project.
+    if any(run.get("workflow_id") == workflow_id for project in projects for run in project.get("runs", [])):
+        return record
+    workflow = client.get("/v1/workflows/" + workflow_id).get("workflow", {})
+    if workflow.get("status") != "failed":
+        return record
+    tasks = workflow.get("tasks") or []
+    if len(tasks) != 1 or tasks[0].get("status") != "failed":
+        record["status"] = "unsupported_legacy_workflow"
+        return record
+    payload = tasks[0].get("payload") or {}
+    handoff = payload.get("handoff") or {}
+    if payload.get("managed_project_id") or handoff.get("managed_project_id"):
+        return record
+    repository = workflow.get("repository")
+    final_goal = handoff.get("final_goal") or handoff.get("task")
+    if (not isinstance(repository, str) or not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository)
+            or not isinstance(final_goal, str) or not 1 <= len(final_goal.strip()) <= 24000):
+        record["status"] = "legacy_goal_missing"
+        return record
+    if any(p.get("repository") == repository and p.get("final_goal") == final_goal for p in projects):
+        record["status"] = "already_managed"
+        return record
+    record["status"] = "legacy_eligible"
+    if apply:
+        response = client.launch(workflow_id, repository, final_goal)
+        project = response.get("project", {})
+        record.update(status="relaunched", project_id=project.get("project_id"),
+                      new_workflow_id=project.get("current_workflow_id"))
+        projects.append(project)
+    return record
 
 
 def resume(client, workflow_ids, *, apply=False):
@@ -42,7 +86,7 @@ def resume(client, workflow_ids, *, apply=False):
     for workflow_id in workflow_ids:
         matches = [p for p in projects if p.get("current_workflow_id") == workflow_id]
         if len(matches) != 1:
-            outcomes.append({"workflow_id": workflow_id, "status": "not_current"})
+            outcomes.append(recover_legacy(client, workflow_id, projects, apply=apply))
             continue
         project_id = str(matches[0].get("project_id") or "")
         if not re.fullmatch(r"[a-f0-9]{32}", project_id):

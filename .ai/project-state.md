@@ -18,6 +18,7 @@ Status: active
 - Render service verified healthy on merged server fix #250. Direct database connector inspection is unavailable.
 
 ## Current priority
+- The selected failed workflows are legacy jobs without current managed-project association. Recover them through the normal dashboard launch API using stable request IDs, preserving their original final goals and exhausted attempts.
 - Safely resume only the two explicitly selected failed managed objectives through existing operator instruction controls, then verify real worker execution.
 - Verify shared provider fallbacks with live diagnostics, then resume exhausted objectives through authorized operator controls.
 - Diagnostics #241/#251 and startup recovery #242 are deployed. Resume exhausted objectives through existing operator controls, investigate StudioError during a real run and verify its artifact.

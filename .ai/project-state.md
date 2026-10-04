@@ -9,12 +9,12 @@ Status: active
 - Dedicated worker CI covers pytest function tests and real authenticated Production-OS HTTP integration.
 
 ## Broken / blockers
-- Latest live worker run 37181156718 authenticated but found no compatible base/mobile jobs; real agent execution is still unverified.
+- Live inventory run 37182485300: 4 failed jobs, 2 failed workflows, no queued candidates. Original task failures need inspection.
 - Its remote Asset Forge dispatch probe failed, so visual capabilities remained disabled.
 - Render service verified healthy on merged server fix #250. Direct database connector inspection is unavailable.
 
 ## Current priority
-- Worker #240 is merged. Deploy explicit queue diagnostics to identify the live blocker, then verify a real job and repository artifact.
+- Diagnostics #241/#251 are deployed. Reconcile Actions sessions before availability to recover interrupted acknowledgements, inspect failed workflows, then verify a real job.
 - Investigate live queue eligibility and remote Asset Forge dispatch permissions without exposing secrets.
 
 ## Validation

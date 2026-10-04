@@ -3,14 +3,18 @@
   "updated_at": "2026-10-04",
   "task": "Make Production-OS worker operational and resilient",
   "base_commit": "836a1d5bdf9b7cffa2983de1cbcb36e2cc07f913",
-  "branch": "fix/worker-session-preflight",
+  "branch": "fix/worker-live-provider-diagnostics",
   "completed": [
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",
     "Reject invalid timing before claim",
     "Nonzero bounded failure exit; sleep paused/draining polls",
     "Real worker-only authenticated server E2E",
-    "Dedicated integration CI and corrected probe/workflow regressions"
+    "Dedicated integration CI and corrected probe/workflow regressions",
+    "Accept and strictly validate optional Production-OS skill_learning contract",
+    "Pass pinned Git baseline into autonomous runner",
+    "Preserve bounded runner diagnostic codes and HTTP status",
+    "Add trusted-main one-shot live inference/operator-readiness diagnostics"
   ],
   "validation": {
     "worker_tests": "99 passed, 15 subtests passed",
@@ -21,18 +25,21 @@
     "github_pr_checks": "all 11 successful before merging",
     "github_postmerge": "worker, integration, python-tests and validate successful",
     "queue_probe_workflow": "32 selected tests passed, plus 15 subtests",
-    "restart_preflight": "3 real-server integration tests passed, including actual Actions Python preflight recovery of an acknowledged job"
+    "restart_preflight": "3 real-server integration tests passed, including actual Actions Python preflight recovery of an acknowledged job",
+    "new_selected_tests": "53 server tests; 60 worker tests + 15 subtests; 3 real-server integration tests; 4 JavaScript pairing scenarios passed",
+    "diagnostics_selected": "87 passed, 22 subtests",
+    "diagnostics_integration": "3 passed with actual optional skill_learning contract and request_check"
   },
   "live_findings": {
-    "run_id": 37182485300,
-    "job_id": 111373859470,
-    "commit": "66399f4cc66592cc3755446ed88e9f0290bd4efc",
-    "status": "success, configuration ready, server ready, no compatible base/mobile jobs; agent execution skipped",
+    "run_id": 37182952933,
+    "job_id": 111379017007,
+    "commit": "26dd12fcd4644f665f4ff421a8f8e7a9e7d99ec0",
+    "status": "success: worker session registered, no interrupted jobs to recover, no eligible queued job",
     "remote_asset_forge": "dispatch unavailable; visual capability omitted",
     "render_workspace": "tea-cv094daj1k6c738ej66g",
     "render_service": "srv-dancka740ujc73bgdddg",
-    "render_deployment": "dep-db0uihnf3r2c73berho0",
-    "server_commit": "4f547bed6c97c7c2a024400af0c604ae854da75d",
+    "render_deployment": "dep-db0uuerm8hqs73dfi5lg",
+    "server_commit": "de6ba0fa48319bc54cc5e4fde4cc2bf966e186bd",
     "health": "healthz and readyz HTTP 200, database reachable",
     "database_inspection": "Render query connector blocked by empty external IP allowlist; no network policy changed",
     "inventory": {
@@ -42,15 +49,33 @@
       "workflows": {
         "failed": 2
       },
-      "online_workers": 0
+      "online_workers": 1
     },
-    "queue_reason": "queue_empty for both base and mobile"
+    "queue_reason": "queue_empty for both base and mobile",
+    "terminal_tasks": [
+      {
+        "workflow_id": "85cfbd6570e24f2bb41297f76cd5d948",
+        "task_id": "implementation",
+        "attempts": 2,
+        "max_attempts": 2,
+        "error_type": "StudioError",
+        "pipeline_status": "runner_error"
+      },
+      {
+        "workflow_id": "65ea248fa5f840eeaa6041ef18728e13",
+        "task_id": "implementation",
+        "attempts": 2,
+        "max_attempts": 2,
+        "error_type": "StudioError",
+        "pipeline_status": "runner_error"
+      }
+    ]
   },
   "pending": [
-    "Deploy and rerun failed workflow diagnostics",
-    "Correct the original terminal job failures and resume via authorized operator controls",
-    "Validate real agent execution and repository artifact",
-    "Resolve Asset Forge dispatch authorization"
+    "User input pending: whether an objective exists and whether operator secret is already configured or dashboard access is available",
+    "Resume terminal objectives through existing operator controls; worker role cannot enqueue/retry exhausted tasks",
+    "Investigate original StudioError from a resumed real run and verify resulting repository artifact",
+    "Resolve Asset Forge Actions dispatch authorization"
   ],
   "merged_pr": {
     "number": 240,
@@ -59,5 +84,48 @@
   "current_work": [
     "Reconcile the fresh single-flight Actions session before any availability check",
     "Read bounded failed workflow/task diagnostics without printing briefs or raw errors"
+  ],
+  "merged_changes": [
+    {
+      "repo": "Production-OS",
+      "pr": 247,
+      "purpose": "Atomic pairing"
+    },
+    {
+      "repo": "Production-OS",
+      "pr": 248,
+      "purpose": "Bounded pairing exchange"
+    },
+    {
+      "repo": "Production-OS",
+      "pr": 251,
+      "purpose": "Aggregate queue eligibility diagnosis"
+    },
+    {
+      "repo": "ai-dev-server",
+      "pr": 241,
+      "purpose": "Queue diagnosis and read-only inventory"
+    },
+    {
+      "repo": "ai-dev-server",
+      "pr": 242,
+      "purpose": "Reconcile interrupted sessions before preflight; failed-task diagnosis"
+    }
+  ],
+  "historical_failure_evidence": {
+    "run_id": 37119334053,
+    "artifact_id": 11272991273,
+    "repo": "dbrckk/Jumpy",
+    "provider_failure": "All configured providers failed; last HTTP status 410",
+    "contract_run_id": 37129277149,
+    "contract_artifact_id": 11276785062,
+    "contract_failure": "Invalid tool_contracts because Production-OS adds optional skill_learning",
+    "request_reproduction": "Both artifact requests validate after explicit skill_learning support"
+  },
+  "next_steps": [
+    "Merge after CI and run live provider diagnostics",
+    "Resume exhausted managed objectives only if existing operator access is ready",
+    "Verify real agent execution and resulting artifacts",
+    "Resolve remote Asset Forge Actions permissions"
   ]
 }

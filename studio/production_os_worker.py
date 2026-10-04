@@ -984,6 +984,31 @@ def _retryable_runner_error(exc: Exception) -> bool:
     return any(token in message for token in _RETRYABLE_RUNNER_ERROR_TOKENS)
 
 
+def _failure_diagnostics(exc: Exception) -> dict[str, Any]:
+    """Classify trusted failure prefixes without publishing exception messages."""
+    message = str(exc)
+    codes = {
+        "All configured providers failed": "provider_failed",
+        "All configured providers are unavailable": "provider_unavailable",
+        "Project engine detection failed": "engine_detection_failed",
+        "Invalid tool_contracts": "tool_contract_invalid",
+        "Invalid skill learning tool contract": "skill_learning_contract_invalid",
+        "Capability research requires a pinned baseline SHA": "baseline_required",
+        "Remote autonomous persistence requires GITHUB_REPOSITORY": "control_repository_missing",
+    }
+    code = next((value for prefix, value in codes.items() if message.startswith(prefix)), "runner_error")
+    if message.startswith("Remote "):
+        if " restore failed:" in message:
+            code = "remote_state_restore_failed"
+        elif " persistence failed:" in message:
+            code = "remote_state_persistence_failed"
+    result = {"error_type": type(exc).__name__, "error_code": code}
+    status = re.search(r"\bHTTP(?: status)? ([1-5][0-9]{2})\b", message)
+    if status:
+        result["error_http_status"] = int(status.group(1))
+    return result
+
+
 def _summary_requests_retry(summary: dict[str, Any]) -> bool:
     if not isinstance(summary, dict):
         return False
@@ -1134,7 +1159,7 @@ def run_once(
                 "pipeline_status": stage,
                 "next_stage": "retry",
                 "finished": False,
-                "error_type": type(exc).__name__,
+                **_failure_diagnostics(exc),
             },
         }
         client.fail(failure_payload(
@@ -1268,9 +1293,15 @@ def run_once(
                 "pipeline_status": "runner_error",
                 "next_stage": "retry",
                 "finished": False,
-                "error_type": type(exc).__name__,
+                **_failure_diagnostics(exc),
             },
         }
+        # Preserve bounded diagnostics even when failure delivery is interrupted.
+        try:
+            atomic_write_text(project_out / "production-os-result.json", json.dumps(envelope) + "\n",
+                              encoding="utf-8")
+        except OSError:
+            pass
         client.fail(
             failure_payload(
                 key,
@@ -1294,6 +1325,7 @@ def run_once(
             "key": key,
             "project_id": request["id"],
             "usage": {},
+            "error": _failure_diagnostics(exc),
         }
 
     stop_heartbeat.set()
@@ -1409,6 +1441,8 @@ def main(
         description="Execute one Production-OS job through AI Dev Server"
     )
     parser.add_argument("--worker-id", default="ai-dev-server-1")
+    parser.add_argument("--baseline-sha", default=None,
+                        help="Pinned AI Dev Server revision (defaults to GITHUB_SHA)")
     parser.add_argument(
         "--output-root",
         default="studio-output/production-os",
@@ -1443,6 +1477,11 @@ def main(
     args = parser.parse_args(argv)
 
     env = os.environ if environ is None else environ
+    baseline_sha = str(args.baseline_sha or env.get("GITHUB_SHA") or "").strip().lower() or None
+    if baseline_sha is not None and (
+        len(baseline_sha) != 40 or any(c not in "0123456789abcdef" for c in baseline_sha)
+    ):
+        raise RuntimeError("Worker baseline must be a full commit SHA")
     base_url = str(env.get("PRODUCTION_OS_URL") or "").strip()
     worker_token = str(
         env.get("PRODUCTION_OS_WORKER_TOKEN") or ""
@@ -1493,6 +1532,7 @@ def main(
                 output_root=Path(args.output_root),
                 capacity=capacity,
                 capabilities=capabilities,
+                baseline_sha=baseline_sha,
             )
             if not isinstance(result, dict):
                 raise RuntimeError("Production-OS worker returned invalid result")

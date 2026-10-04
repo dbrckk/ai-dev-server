@@ -116,9 +116,22 @@ def request_check(data):
         }
     if 'tool_contracts' in data:
         contracts = data['tool_contracts']
-        if not isinstance(contracts, dict) or set(contracts) - {'asset_forge', 'browser_validation', 'mobile_validation'}:
+        if not isinstance(contracts, dict) or set(contracts) - {'asset_forge', 'browser_validation', 'mobile_validation', 'skill_learning'}:
             raise StudioError('Invalid tool_contracts')
         normalized = {}
+        skill_learning = contracts.get('skill_learning')
+        if skill_learning is not None:
+            if (
+                not isinstance(skill_learning, dict)
+                or set(skill_learning) != {'schema', 'result_field', 'max_procedure_steps', 'optional'}
+                or skill_learning.get('schema') != 'production-os/learned-skill/v1'
+                or skill_learning.get('result_field') != 'learned_skill'
+                or skill_learning.get('optional') is not True
+                or type(skill_learning.get('max_procedure_steps')) is not int
+                or not 1 <= skill_learning['max_procedure_steps'] <= 12
+            ):
+                raise StudioError('Invalid skill learning tool contract')
+            normalized['skill_learning'] = dict(skill_learning)
         asset_forge = contracts.get('asset_forge')
         if asset_forge is not None:
             if (

@@ -128,10 +128,7 @@ jobs:
             printf 'Missing required GitHub Actions secrets: %s\n' "${missing[*]}"
             exit 2
           fi
-          normalized_base="${STUDIO_API_BASE%/}"
-          if [ -z "${STUDIO_PROVIDERS_JSON:-}" ] && [ "$normalized_base" = "https://integrate.api.nvidia.com/v1" ]; then
-            echo 'STUDIO_PROVIDERS_JSON=[{"name":"nvidia-lightning-fallback","base":"https://integrate.api.nvidia.com/v1","key_env":"STUDIO_API_KEY","model":"nvidia/nemotron-3.5-lightning-30b-a3b","code_model":"nvidia/nemotron-3.5-lightning-30b-a3b","priority":90,"free_preferred":true},{"name":"poolside-laguna-fallback","base":"https://integrate.api.nvidia.com/v1","key_env":"STUDIO_API_KEY","model":"poolside/laguna-xs-2.1","code_model":"poolside/laguna-xs-2.1","priority":80,"free_preferred":true}]' >> "$GITHUB_ENV"
-          fi
+          python studio/production_os_provider_config.py
           python - <<'PY'
           from urllib.parse import urlsplit
           import os
@@ -291,6 +288,8 @@ jobs:
                           "pipeline_status": evidence.get("pipeline_status"),
                           "next_stage": evidence.get("next_stage"),
                           "error_type": evidence.get("error_type"),
+                          "error_code": evidence.get("error_code"),
+                          "error_http_status": evidence.get("error_http_status"),
                           "worker_status": result.get("ai_dev_server_status"),
                       }, sort_keys=True))
           except (OSError, ValueError, RuntimeError, KeyError, TypeError) as exc:

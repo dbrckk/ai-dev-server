@@ -164,13 +164,7 @@ def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath():
 
 def test_actions_worker_has_resilient_model_provider_fallbacks():
     assert "STUDIO_PROVIDERS_JSON: ${{ vars.STUDIO_PROVIDERS_JSON }}" in WORKFLOW
-    assert 'normalized_base="${STUDIO_API_BASE%/}"' in WORKFLOW
-    assert '[ -z "${STUDIO_PROVIDERS_JSON:-}" ]' in WORKFLOW
-    assert '[ "$normalized_base" = "https://integrate.api.nvidia.com/v1" ]' in WORKFLOW
-    assert "nvidia-lightning-fallback" in WORKFLOW
-    assert "nvidia/nemotron-3.5-lightning-30b-a3b" in WORKFLOW
-    assert "poolside-laguna-fallback" in WORKFLOW
-    assert "poolside/laguna-xs-2.1" in WORKFLOW
+    assert "python studio/production_os_provider_config.py" in WORKFLOW
 
 
 def test_actions_worker_fails_ci_when_production_result_failed():
@@ -181,4 +175,3 @@ def test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_w
     assert "production-os asset-forge-batch --probe" in WORKFLOW
     assert "Remote Asset Forge dispatch is unavailable; visual capability will remain disabled." in WORKFLOW
     assert "if env -u PYTHONPATH production-os asset-forge-batch --probe; then" in WORKFLOW
-

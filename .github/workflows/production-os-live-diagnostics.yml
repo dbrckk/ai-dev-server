@@ -1,0 +1,38 @@
+name: Production-OS Live Diagnostics
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['control/production-os-diagnostics-kick.json']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-os-live-diagnostics
+  cancel-in-progress: false
+
+jobs:
+  diagnostics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout trusted diagnostics
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Check live inference and existing operator access
+        env:
+          PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
+          PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
+          STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
+          STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
+          STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
+          STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
+          STUDIO_PROVIDERS_JSON: ${{ vars.STUDIO_PROVIDERS_JSON }}
+        run: python studio/production_os_live_diagnostics.py

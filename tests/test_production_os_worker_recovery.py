@@ -12,6 +12,32 @@ from production_os_worker import ProductionOSWorkerError, main, run_once
 
 
 class WorkerRecoveryTests(unittest.TestCase):
+    def test_runner_diagnostics_keep_http_status_and_never_publish_message(self):
+        client = _FakeClient(sample_job())
+        secret = 'sensitive-provider-response'
+        def runner(*args, **kwargs):
+            raise RuntimeError('All configured providers failed; last HTTP status 410 ' + secret)
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(client, worker_id='w', output_root=Path(td),
+                              run_project=runner, capabilities=['python'], runner_retry_attempts=0)
+            envelope = json.loads(next(Path(td).rglob('production-os-result.json')).read_text())
+            self.assertEqual(envelope['evidence']['error_code'], 'provider_failed')
+            self.assertEqual(envelope['evidence']['error_http_status'], 410)
+            self.assertEqual(result['error']['error_http_status'], 410)
+            self.assertNotIn(secret, json.dumps([client.calls, result, envelope]))
+
+    def test_cli_passes_pinned_baseline_and_rejects_invalid_revision_before_registration(self):
+        env = {'PRODUCTION_OS_URL': 'http://localhost:8787', 'PRODUCTION_OS_WORKER_TOKEN': 'test',
+               'GITHUB_SHA': 'a' * 40}
+        calls = []
+        main(['--once'], environ=env, client_factory=_Client,
+             run_once_fn=lambda *a, **kw: calls.append(kw) or {'status': 'idle'},
+             capacity_provider=lambda env: {}, capabilities_provider=lambda env: ['python'])
+        self.assertEqual(calls[0]['baseline_sha'], 'a' * 40)
+        with self.assertRaisesRegex(RuntimeError, 'full commit SHA'):
+            main(['--once', '--baseline-sha', 'bad'], environ=env,
+                 client_factory=lambda *a: self.fail('must not register'))
+
     def test_local_setup_failure_reports_failure_and_releases_active_slot(self):
         job = sample_job()
         del job['payload']['handoff']

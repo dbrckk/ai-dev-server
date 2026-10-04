@@ -3,6 +3,7 @@
 Status: active
 
 ## Working
+- A real worker run reached a committed Godot checkpoint but returned `active` with `next_stage=preview`. The worker now continues that same claimed job through bounded runner invocations and only completes the Production-OS task when the Studio result is finished. Exhaustion reports `continuation_limit` explicitly.
 - A live Godot checkpoint at 2026-10-04 11:21 UTC showed an implementation response cut at the output token limit. On that precise protocol error, the model retry now asks for a complete, smaller two-file patch so a subsequent round can continue without repeating the oversized response.
 - The live persistence failure can be reproduced locally: `provider_health.record_success` writes seven aggregate fields, while `github_provider_health_store` accepted only four. The remote store now validates all seven, supplies defaults for older rows, and retains latency and recent outcome data.
 - PR #246 makes the primary and third NVIDIA providers return structured JSON in live diagnostics 37185440546; the second fallback still returned invalid JSON.
@@ -18,6 +19,7 @@ Status: active
 - Dedicated worker CI covers pytest function tests and real authenticated Production-OS HTTP integration.
 
 ## Broken / blockers
+- At 2026-10-04 18:50 UTC, the live queue had one visual asset job requiring `visual-asset-production`; the Actions worker did not advertise that capability because the remote Asset Forge dispatch probe was unavailable. A real completed coding production and visual asset delivery still need live verification.
 - Worker rerun 37197591265 is queued behind scheduled run 37197484353; a successful completed job and repository artifact still need live verification.
 - The real worker task has not completed successfully. The remote persistence failure needs a precise safe component/reason diagnosis; a bounded rerun with diagnostics is prepared.
 - Live run 37182952933: worker session ready, 1 online worker, 4 failed jobs, 2 failed workflows, no queued candidates. Both implementation tasks exhausted 2/2 attempts with StudioError.
@@ -36,6 +38,7 @@ Status: active
 - Investigate live queue eligibility and remote Asset Forge dispatch permissions without exposing secrets.
 
 ## Validation
+- Active-checkpoint regression: failed before the worker fix and passed after; 1721 unit tests and 6 authenticated Production-OS HTTP integrations passed locally.
 - Godot model, preview, and persistent runner checks: 18 selected tests passed; the truncation regression failed before the change and passed after.
 - Provider-health persistence and worker recovery selected checks: 41 tests and 19 subtests passed locally.
 - New regression suite: 87 tests and 22 subtests passed; both historical requests validate.

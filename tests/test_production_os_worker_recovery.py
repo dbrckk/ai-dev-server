@@ -8,10 +8,18 @@ from unittest.mock import patch
 
 from test_production_os_worker_runtime import _FakeClient, sample_job
 from test_production_os_worker_cli import _Client
-from production_os_worker import ProductionOSWorkerError, main, run_once
+from production_os_worker import ProductionOSWorkerError, _failure_diagnostics, main, run_once
 
 
 class WorkerRecoveryTests(unittest.TestCase):
+    def test_persistence_diagnosis_identifies_component_without_publishing_messages(self):
+        result = _failure_diagnostics(RuntimeError('Remote autonomous state persistence failed: local autonomous state unavailable'))
+        self.assertEqual(result['error_component'], 'autonomous_state')
+        self.assertEqual(result['error_reason'], 'local_autonomous_state_unavailable')
+        result = _failure_diagnostics(RuntimeError('Remote provider metrics persistence failed: credential-private-response'))
+        self.assertEqual(result['error_component'], 'provider_metrics')
+        self.assertNotIn('error_reason', result)
+        self.assertNotIn('credential-private-response', json.dumps(result))
     def test_runner_diagnostics_keep_http_status_and_never_publish_message(self):
         client = _FakeClient(sample_job())
         secret = 'sensitive-provider-response'

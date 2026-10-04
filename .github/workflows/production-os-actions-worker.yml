@@ -290,6 +290,8 @@ jobs:
                           "error_type": evidence.get("error_type"),
                           "error_code": evidence.get("error_code"),
                           "error_http_status": evidence.get("error_http_status"),
+                          "error_component": evidence.get("error_component"),
+                          "error_reason": evidence.get("error_reason"),
                           "worker_status": result.get("ai_dev_server_status"),
                       }, sort_keys=True))
           except (OSError, ValueError, RuntimeError, KeyError, TypeError) as exc:

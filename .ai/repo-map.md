@@ -55,6 +55,7 @@ The content is organized as follows:
     multi-engine-benchmark.yml
     production-os-actions-worker.yml
     production-os-asset-forge-e2e.yml
+    production-os-live-diagnostics.yml
     production-os-worker-integration.yml
     provider-preview.yml
     remote-control.yml
@@ -71,6 +72,7 @@ control/
     example.json
     jumpy.json
   ci.json
+  production-os-diagnostics-kick.json
   production-os-worker-kick.json
   promoted_capabilities.json
   provider-probe.json
@@ -360,6 +362,8 @@ studio/
   preemption_controller.py
   privacy_audit.py
   privacy_stage.py
+  production_os_live_diagnostics.py
+  production_os_provider_config.py
   production_os_worker.py
   project_budget.py
   project_context.py
@@ -664,6 +668,7 @@ tests/
   test_privacy_stage.py
   test_privacy.py
   test_production_os_actions_worker_workflow.py
+  test_production_os_live_diagnostics.py
   test_production_os_local_e2e.py
   test_production_os_remote_asset_capability.py
   test_production_os_result_contract.py
@@ -1973,10 +1978,7 @@ jobs:
             printf 'Missing required GitHub Actions secrets: %s\n' "${missing[*]}"
             exit 2
           fi
-          normalized_base="${STUDIO_API_BASE%/}"
-          if [ -z "${STUDIO_PROVIDERS_JSON:-}" ] && [ "$normalized_base" = "https://integrate.api.nvidia.com/v1" ]; then
-            echo 'STUDIO_PROVIDERS_JSON=[{"name":"nvidia-lightning-fallback","base":"https://integrate.api.nvidia.com/v1","key_env":"STUDIO_API_KEY","model":"nvidia/nemotron-3.5-lightning-30b-a3b","code_model":"nvidia/nemotron-3.5-lightning-30b-a3b","priority":90,"free_preferred":true},{"name":"poolside-laguna-fallback","base":"https://integrate.api.nvidia.com/v1","key_env":"STUDIO_API_KEY","model":"poolside/laguna-xs-2.1","code_model":"poolside/laguna-xs-2.1","priority":80,"free_preferred":true}]' >> "$GITHUB_ENV"
-          fi
+          python studio/production_os_provider_config.py
           python - <<'PY'
           from urllib.parse import urlsplit
           import os
@@ -2136,6 +2138,8 @@ jobs:
                           "pipeline_status": evidence.get("pipeline_status"),
                           "next_stage": evidence.get("next_stage"),
                           "error_type": evidence.get("error_type"),
+                          "error_code": evidence.get("error_code"),
+                          "error_http_status": evidence.get("error_http_status"),
                           "worker_status": result.get("ai_dev_server_status"),
                       }, sort_keys=True))
           except (OSError, ValueError, RuntimeError, KeyError, TypeError) as exc:
@@ -2469,6 +2473,48 @@ jobs:
           retention-days: 14
 ````
 
+## File: .github/workflows/production-os-live-diagnostics.yml
+````yaml
+name: Production-OS Live Diagnostics
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['control/production-os-diagnostics-kick.json']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-os-live-diagnostics
+  cancel-in-progress: false
+
+jobs:
+  diagnostics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout trusted diagnostics
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Check live inference and existing operator access
+        env:
+          PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
+          PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
+          STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
+          STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
+          STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
+          STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
+          STUDIO_PROVIDERS_JSON: ${{ vars.STUDIO_PROVIDERS_JSON }}
+        run: python studio/production_os_live_diagnostics.py
+````
+
 ## File: .github/workflows/production-os-worker-integration.yml
 ````yaml
 name: Production-OS worker integration
@@ -2517,8 +2563,10 @@ jobs:
         run: >-
           python -m pytest -q
           tests/test_mobile_validation_contract.py
+          tests/test_request_contract.py
           tests/test_production_os_actions_worker_workflow.py
           tests/test_production_os_local_e2e.py
+          tests/test_production_os_live_diagnostics.py
           tests/test_production_os_remote_asset_capability.py
           tests/test_production_os_worker.py
           tests/test_production_os_worker_cli.py
@@ -2995,6 +3043,14 @@ initial_prompt: |
 {"provider":"github"}
 ````
 
+## File: control/production-os-diagnostics-kick.json
+````json
+{
+  "sequence": 1,
+  "reason": "Verify live inference after historical HTTP 410 and check existing operator access"
+}
+````
+
 ## File: control/production-os-worker-kick.json
 ````json
 {
@@ -3112,6 +3168,8 @@ outputs = root / 'github-output'
 ⋮----
 executed = []
 def runner(request_path, project_out, **kwargs)
+⋮----
+request = request_check(json.loads(request_path.read_text()))
 ⋮----
 artifact = project_out / 'verify.py'
 ⋮----
@@ -11333,6 +11391,8 @@ workflow_task_id = production_os.get('workflow_task_id')
 contracts = data['tool_contracts']
 ⋮----
 normalized = {}
+skill_learning = contracts.get('skill_learning')
+⋮----
 asset_forge = contracts.get('asset_forge')
 ⋮----
 browser_validation = contracts.get('browser_validation')
@@ -20592,6 +20652,45 @@ state = advance(Path(args.request), Path(args.work), Path(args.out))
 evidence = state.get('release_evidence', {}).get('privacy_policy')
 ````
 
+## File: studio/production_os_live_diagnostics.py
+````python
+"""Bounded live inference and operator-access checks; no queue or repository writes."""
+⋮----
+def diagnose(*, api_factory=API, providers=None, environ=None)
+⋮----
+env = os.environ if environ is None else environ
+⋮----
+providers = load_providers() if providers is None else providers
+result = {"schema_version": 1, "providers": [], "operator_access": "not_configured"}
+# Same model selection for product and implementation as the real worker.
+⋮----
+model = provider.model_for(role)
+⋮----
+record = {"provider_index": index, "role": role, "status": "unavailable"}
+⋮----
+response = api_factory(provider.base, provider.key).call(
+choices = response.get("choices") if isinstance(response, dict) else None
+message = choices[0].get("message") if isinstance(choices, list) and choices and isinstance(choices[0], dict) else None
+content = message.get("content") if isinstance(message, dict) else None
+⋮----
+# Remote bodies, exception messages and completions may echo credentials.
+⋮----
+operator = str(env.get("PRODUCTION_OS_OPERATOR_TOKEN") or "").strip()
+⋮----
+def main()
+⋮----
+result = diagnose()
+⋮----
+result = {"schema_version": 1, "inference_ready": False, "configuration": "invalid"}
+````
+
+## File: studio/production_os_provider_config.py
+````python
+"""Shared provider defaults for the Actions worker and its live diagnostics."""
+⋮----
+def configure(environ)
+````
+
 ## File: studio/production_os_worker.py
 ````python
 """Production-OS worker bridge helpers for AI Dev Server."""
@@ -20860,6 +20959,19 @@ def _retryable_runner_error(exc: Exception) -> bool
 ⋮----
 message = str(exc).lower()
 ⋮----
+def _failure_diagnostics(exc: Exception) -> dict[str, Any]
+⋮----
+"""Classify trusted failure prefixes without publishing exception messages."""
+message = str(exc)
+codes = {
+code = next((value for prefix, value in codes.items() if message.startswith(prefix)), "runner_error")
+⋮----
+code = "remote_state_restore_failed"
+⋮----
+code = "remote_state_persistence_failed"
+result = {"error_type": type(exc).__name__, "error_code": code}
+status = re.search(r"\bHTTP(?: status)? ([1-5][0-9]{2})\b", message)
+⋮----
 def _summary_requests_retry(summary: dict[str, Any]) -> bool
 ⋮----
 evidence = summary.get("evidence")
@@ -20935,6 +21047,8 @@ duration = max(0.0, float(clock()) - started)
 ⋮----
 kwargs = {
 ⋮----
+# Preserve bounded diagnostics even when failure delivery is interrupted.
+⋮----
 result_path = project_out / "production-os-result.json"
 ⋮----
 envelope = json.loads(result_path.read_text(encoding="utf-8"))
@@ -20952,6 +21066,8 @@ status = "failed"
 parser = argparse.ArgumentParser(
 ⋮----
 args = parser.parse_args(argv)
+⋮----
+baseline_sha = str(args.baseline_sha or env.get("GITHUB_SHA") or "").strip().lower() or None
 ⋮----
 base_url = str(env.get("PRODUCTION_OS_URL") or "").strip()
 worker_token = str(
@@ -32444,6 +32560,42 @@ def test_actions_worker_fails_ci_when_production_result_failed()
 def test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work()
 ````
 
+## File: tests/test_production_os_live_diagnostics.py
+````python
+class LiveDiagnosticsTests(unittest.TestCase)
+⋮----
+def test_provider_fallback_recovers_gone_model_and_output_excludes_secrets(self)
+⋮----
+calls = []
+providers = [ProviderSpec('gone', 'https://provider.example/v1', 'credential', 'old'),
+class FakeAPI
+⋮----
+def __init__(self, base, key)
+def call(self, method, path, data=None, **kwargs)
+result = diagnose(api_factory=FakeAPI, providers=providers, environ={})
+⋮----
+def test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready(self)
+⋮----
+provider = ProviderSpec('p', 'https://provider.example/v1', 'key', 'product', code_model='code')
+⋮----
+def __init__(self, *args)
+def call(self, method, path, data, **kwargs)
+result = diagnose(api_factory=FakeAPI, providers=[provider], environ={})
+⋮----
+def test_operator_probe_is_read_only_and_no_token_is_reported(self)
+⋮----
+def call(self, *args, **kwargs)
+result = diagnose(api_factory=FakeAPI, providers=[], environ={
+⋮----
+def test_defaults_preserve_explicit_configuration_and_other_providers(self)
+⋮----
+env = {'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1/'}
+⋮----
+models = [p['model'] for p in json.loads(env['STUDIO_PROVIDERS_JSON'])]
+⋮----
+before = dict(env)
+````
+
 ## File: tests/test_production_os_local_e2e.py
 ````python
 class _ControlPlane
@@ -32673,17 +32825,28 @@ def test_non_positive_poll_interval_fails(self)
 ⋮----
 class WorkerRecoveryTests(unittest.TestCase)
 ⋮----
+def test_runner_diagnostics_keep_http_status_and_never_publish_message(self)
+⋮----
+client = _FakeClient(sample_job())
+secret = 'sensitive-provider-response'
+def runner(*args, **kwargs)
+⋮----
+result = run_once(client, worker_id='w', output_root=Path(td),
+envelope = json.loads(next(Path(td).rglob('production-os-result.json')).read_text())
+⋮----
+def test_cli_passes_pinned_baseline_and_rejects_invalid_revision_before_registration(self)
+⋮----
+env = {'PRODUCTION_OS_URL': 'http://localhost:8787', 'PRODUCTION_OS_WORKER_TOKEN': 'test',
+calls = []
+⋮----
 def test_local_setup_failure_reports_failure_and_releases_active_slot(self)
 ⋮----
 job = sample_job()
 ⋮----
 client = _FakeClient(job)
 ⋮----
-result = run_once(client, worker_id='w', output_root=Path(td),
-⋮----
 def test_corrupt_or_uncorrelated_results_never_complete_job(self)
 ⋮----
-client = _FakeClient(sample_job())
 def runner(request_path, project_out, **kwargs)
 ⋮----
 request = json.loads(request_path.read_text())
@@ -34179,6 +34342,13 @@ def test_rejects_excessive_project_budget(self)
 BASE={
 ⋮----
 class RequestContractTests(unittest.TestCase)
+⋮----
+def test_optional_production_os_skill_learning_contract_is_preserved(self)
+⋮----
+contract = {'schema': 'production-os/learned-skill/v1', 'result_field': 'learned_skill',
+value = copy.deepcopy(BASE)
+⋮----
+def test_skill_learning_contract_does_not_accept_mandatory_or_arbitrary_contracts(self)
 ⋮----
 def test_legacy_request_does_not_gain_play_publish_field(self)
 ⋮----

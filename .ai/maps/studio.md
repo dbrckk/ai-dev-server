@@ -286,6 +286,8 @@ preemption_apply.py
 preemption_controller.py
 privacy_audit.py
 privacy_stage.py
+production_os_live_diagnostics.py
+production_os_provider_config.py
 production_os_worker.py
 project_budget.py
 project_context.py
@@ -6127,6 +6129,8 @@ workflow_task_id = production_os.get('workflow_task_id')
 contracts = data['tool_contracts']
 ⋮----
 normalized = {}
+skill_learning = contracts.get('skill_learning')
+⋮----
 asset_forge = contracts.get('asset_forge')
 ⋮----
 browser_validation = contracts.get('browser_validation')
@@ -15386,6 +15390,45 @@ state = advance(Path(args.request), Path(args.work), Path(args.out))
 evidence = state.get('release_evidence', {}).get('privacy_policy')
 ````
 
+## File: production_os_live_diagnostics.py
+````python
+"""Bounded live inference and operator-access checks; no queue or repository writes."""
+⋮----
+def diagnose(*, api_factory=API, providers=None, environ=None)
+⋮----
+env = os.environ if environ is None else environ
+⋮----
+providers = load_providers() if providers is None else providers
+result = {"schema_version": 1, "providers": [], "operator_access": "not_configured"}
+# Same model selection for product and implementation as the real worker.
+⋮----
+model = provider.model_for(role)
+⋮----
+record = {"provider_index": index, "role": role, "status": "unavailable"}
+⋮----
+response = api_factory(provider.base, provider.key).call(
+choices = response.get("choices") if isinstance(response, dict) else None
+message = choices[0].get("message") if isinstance(choices, list) and choices and isinstance(choices[0], dict) else None
+content = message.get("content") if isinstance(message, dict) else None
+⋮----
+# Remote bodies, exception messages and completions may echo credentials.
+⋮----
+operator = str(env.get("PRODUCTION_OS_OPERATOR_TOKEN") or "").strip()
+⋮----
+def main()
+⋮----
+result = diagnose()
+⋮----
+result = {"schema_version": 1, "inference_ready": False, "configuration": "invalid"}
+````
+
+## File: production_os_provider_config.py
+````python
+"""Shared provider defaults for the Actions worker and its live diagnostics."""
+⋮----
+def configure(environ)
+````
+
 ## File: production_os_worker.py
 ````python
 """Production-OS worker bridge helpers for AI Dev Server."""
@@ -15654,6 +15697,19 @@ def _retryable_runner_error(exc: Exception) -> bool
 ⋮----
 message = str(exc).lower()
 ⋮----
+def _failure_diagnostics(exc: Exception) -> dict[str, Any]
+⋮----
+"""Classify trusted failure prefixes without publishing exception messages."""
+message = str(exc)
+codes = {
+code = next((value for prefix, value in codes.items() if message.startswith(prefix)), "runner_error")
+⋮----
+code = "remote_state_restore_failed"
+⋮----
+code = "remote_state_persistence_failed"
+result = {"error_type": type(exc).__name__, "error_code": code}
+status = re.search(r"\bHTTP(?: status)? ([1-5][0-9]{2})\b", message)
+⋮----
 def _summary_requests_retry(summary: dict[str, Any]) -> bool
 ⋮----
 evidence = summary.get("evidence")
@@ -15729,6 +15785,8 @@ duration = max(0.0, float(clock()) - started)
 ⋮----
 kwargs = {
 ⋮----
+# Preserve bounded diagnostics even when failure delivery is interrupted.
+⋮----
 result_path = project_out / "production-os-result.json"
 ⋮----
 envelope = json.loads(result_path.read_text(encoding="utf-8"))
@@ -15746,6 +15804,8 @@ status = "failed"
 parser = argparse.ArgumentParser(
 ⋮----
 args = parser.parse_args(argv)
+⋮----
+baseline_sha = str(args.baseline_sha or env.get("GITHUB_SHA") or "").strip().lower() or None
 ⋮----
 base_url = str(env.get("PRODUCTION_OS_URL") or "").strip()
 worker_token = str(

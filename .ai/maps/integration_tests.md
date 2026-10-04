@@ -86,6 +86,8 @@ outputs = root / 'github-output'
 executed = []
 def runner(request_path, project_out, **kwargs)
 ⋮----
+request = request_check(json.loads(request_path.read_text()))
+⋮----
 artifact = project_out / 'verify.py'
 ⋮----
 proc = subprocess.run([sys.executable, str(artifact)], check=True,

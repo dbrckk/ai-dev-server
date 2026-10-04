@@ -44,6 +44,7 @@ mobile-requests/
   example.json
   jumpy.json
 ci.json
+production-os-diagnostics-kick.json
 production-os-worker-kick.json
 promoted_capabilities.json
 provider-probe.json
@@ -104,6 +105,14 @@ request.json
 ## File: ci.json
 ```json
 {"provider":"github"}
+```
+
+## File: production-os-diagnostics-kick.json
+```json
+{
+  "sequence": 1,
+  "reason": "Verify live inference after historical HTTP 410 and check existing operator access"
+}
 ```
 
 ## File: production-os-worker-kick.json

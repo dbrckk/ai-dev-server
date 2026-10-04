@@ -272,6 +272,7 @@ test_preemption_controller.py
 test_privacy_stage.py
 test_privacy.py
 test_production_os_actions_worker_workflow.py
+test_production_os_live_diagnostics.py
 test_production_os_local_e2e.py
 test_production_os_remote_asset_capability.py
 test_production_os_result_contract.py
@@ -8046,6 +8047,42 @@ def test_actions_worker_fails_ci_when_production_result_failed()
 def test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work()
 ```
 
+## File: test_production_os_live_diagnostics.py
+```python
+class LiveDiagnosticsTests(unittest.TestCase)
+⋮----
+def test_provider_fallback_recovers_gone_model_and_output_excludes_secrets(self)
+⋮----
+calls = []
+providers = [ProviderSpec('gone', 'https://provider.example/v1', 'credential', 'old'),
+class FakeAPI
+⋮----
+def __init__(self, base, key)
+def call(self, method, path, data=None, **kwargs)
+result = diagnose(api_factory=FakeAPI, providers=providers, environ={})
+⋮----
+def test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready(self)
+⋮----
+provider = ProviderSpec('p', 'https://provider.example/v1', 'key', 'product', code_model='code')
+⋮----
+def __init__(self, *args)
+def call(self, method, path, data, **kwargs)
+result = diagnose(api_factory=FakeAPI, providers=[provider], environ={})
+⋮----
+def test_operator_probe_is_read_only_and_no_token_is_reported(self)
+⋮----
+def call(self, *args, **kwargs)
+result = diagnose(api_factory=FakeAPI, providers=[], environ={
+⋮----
+def test_defaults_preserve_explicit_configuration_and_other_providers(self)
+⋮----
+env = {'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1/'}
+⋮----
+models = [p['model'] for p in json.loads(env['STUDIO_PROVIDERS_JSON'])]
+⋮----
+before = dict(env)
+```
+
 ## File: test_production_os_local_e2e.py
 ```python
 class _ControlPlane
@@ -8275,17 +8312,28 @@ def test_non_positive_poll_interval_fails(self)
 ⋮----
 class WorkerRecoveryTests(unittest.TestCase)
 ⋮----
+def test_runner_diagnostics_keep_http_status_and_never_publish_message(self)
+⋮----
+client = _FakeClient(sample_job())
+secret = 'sensitive-provider-response'
+def runner(*args, **kwargs)
+⋮----
+result = run_once(client, worker_id='w', output_root=Path(td),
+envelope = json.loads(next(Path(td).rglob('production-os-result.json')).read_text())
+⋮----
+def test_cli_passes_pinned_baseline_and_rejects_invalid_revision_before_registration(self)
+⋮----
+env = {'PRODUCTION_OS_URL': 'http://localhost:8787', 'PRODUCTION_OS_WORKER_TOKEN': 'test',
+calls = []
+⋮----
 def test_local_setup_failure_reports_failure_and_releases_active_slot(self)
 ⋮----
 job = sample_job()
 ⋮----
 client = _FakeClient(job)
 ⋮----
-result = run_once(client, worker_id='w', output_root=Path(td),
-⋮----
 def test_corrupt_or_uncorrelated_results_never_complete_job(self)
 ⋮----
-client = _FakeClient(sample_job())
 def runner(request_path, project_out, **kwargs)
 ⋮----
 request = json.loads(request_path.read_text())
@@ -9781,6 +9829,13 @@ def test_rejects_excessive_project_budget(self)
 BASE={
 ⋮----
 class RequestContractTests(unittest.TestCase)
+⋮----
+def test_optional_production_os_skill_learning_contract_is_preserved(self)
+⋮----
+contract = {'schema': 'production-os/learned-skill/v1', 'result_field': 'learned_skill',
+value = copy.deepcopy(BASE)
+⋮----
+def test_skill_learning_contract_does_not_accept_mandatory_or_arbitrary_contracts(self)
 ⋮----
 def test_legacy_request_does_not_gain_play_publish_field(self)
 ⋮----

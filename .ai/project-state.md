@@ -34,20 +34,31 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T06:29:48Z
+Generated: 2026-10-04T06:52:46Z
 
 ### Git
 - Branch: `main`
-- Head: `26dd12fcd464`
-- Commit date: 2026-10-04T08:29:16+02:00
-- Commit: chore(worker): validate startup reconciliation and terminal task diagnosis
-- Tracked files: 839
+- Head: `6caaeebdc3bc`
+- Commit date: 2026-10-04T08:52:29+02:00
+- Commit: fix(worker): accept Production-OS skill learning and diagnose live inference (#243)
+- Tracked files: 844
 
 ### Recently changed files
-- `control/production-os-worker-kick.json`
 - `.github/workflows/production-os-actions-worker.yml`
+- `.github/workflows/production-os-live-diagnostics.yml`
+- `.github/workflows/production-os-worker-integration.yml`
+- `control/production-os-diagnostics-kick.json`
 - `docs/PRODUCTION_OS_WORKER.md`
 - `integration_tests/test_production_os_server_integration.py`
+- `studio/core.py`
+- `studio/production_os_live_diagnostics.py`
+- `studio/production_os_provider_config.py`
+- `studio/production_os_worker.py`
+- `tests/test_production_os_actions_worker_workflow.py`
+- `tests/test_production_os_live_diagnostics.py`
+- `tests/test_production_os_worker_recovery.py`
+- `tests/test_request_contract.py`
+- `control/production-os-worker-kick.json`
 
 ### Project signals
 - No common build descriptor detected

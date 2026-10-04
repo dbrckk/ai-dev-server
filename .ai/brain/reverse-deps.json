@@ -2,13 +2,14 @@
   "files": {
     "integration_tests/test_production_os_server_integration.py": {
       "dependencies": [
+        "studio/core.py",
         "studio/production_os_worker.py",
         "tests/test_production_os_worker_runtime.py",
         "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 3
+      "out_degree": 4
     },
     "scripts/preflight-production-os-worker.py": {
       "dependencies": [
@@ -1425,6 +1426,7 @@
         "tests/test_unified_routing_score.py"
       ],
       "dependents": [
+        "integration_tests/test_production_os_server_integration.py",
         "studio/adaptive_phase_policy.py",
         "studio/adaptive_role_allocator.py",
         "studio/agents/codex.py",
@@ -1545,6 +1547,8 @@
         "studio/portfolio_scan.py",
         "studio/post_preview.py",
         "studio/privacy_stage.py",
+        "studio/production_os_live_diagnostics.py",
+        "studio/production_os_provider_config.py",
         "studio/production_os_worker.py",
         "studio/project_budget.py",
         "studio/project_engine.py",
@@ -1590,7 +1594,6 @@
         "tests/test_durable_state.py",
         "tests/test_engine_entry.py",
         "tests/test_evolution_rollback.py",
-        "tests/test_evolution_synthesis.py",
         "tests/test_generic_model_capacity.py",
         "tests/test_github_full_gate_cache_store.py",
         "tests/test_godot_android_export.py",
@@ -1621,6 +1624,7 @@
         "tests/test_patch_safety_rebuild.py",
         "tests/test_play_publisher.py",
         "tests/test_play_stage.py",
+        "tests/test_production_os_live_diagnostics.py",
         "tests/test_production_os_result_contract.py",
         "tests/test_production_os_worker.py",
         "tests/test_project_context.py",
@@ -1636,7 +1640,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 210,
+      "in_degree": 213,
       "out_degree": 18
     },
     "studio/cost_drift.py": {
@@ -3770,6 +3774,31 @@
       "in_degree": 1,
       "out_degree": 4
     },
+    "studio/production_os_live_diagnostics.py": {
+      "dependencies": [
+        "studio/core.py",
+        "studio/production_os_provider_config.py",
+        "studio/provider_router.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "tests/test_production_os_live_diagnostics.py"
+      ],
+      "in_degree": 1,
+      "out_degree": 4
+    },
+    "studio/production_os_provider_config.py": {
+      "dependencies": [
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "studio/production_os_live_diagnostics.py",
+        "tests/test_production_os_live_diagnostics.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 2
+    },
     "studio/production_os_worker.py": {
       "dependencies": [
         "studio/atomic_file.py",
@@ -4005,13 +4034,15 @@
         "studio/generic_model.py",
         "studio/generic_project.py",
         "studio/godot_model.py",
+        "studio/production_os_live_diagnostics.py",
         "studio/readiness.py",
         "tests/test_fleet_capacity.py",
         "tests/test_generic_model_capacity.py",
         "tests/test_godot_model.py",
+        "tests/test_production_os_live_diagnostics.py",
         "tests/test_provider_router.py"
       ],
-      "in_degree": 13,
+      "in_degree": 15,
       "out_degree": 9
     },
     "studio/provider_runtime_reliability.py": {
@@ -4057,15 +4088,14 @@
     "studio/readiness.py": {
       "dependencies": [
         "studio/provider_router.py",
-        "studio/queue.py",
-        "tests/test_unified_routing_score.py"
+        "studio/queue.py"
       ],
       "dependents": [
         "studio/v1_gate.py",
         "tests/test_readiness.py"
       ],
       "in_degree": 2,
-      "out_degree": 3
+      "out_degree": 2
     },
     "studio/recovery_controller.py": {
       "dependencies": [
@@ -4307,15 +4337,13 @@
       "out_degree": 1
     },
     "studio/routing_audit.py": {
-      "dependencies": [
-        "tests/test_unified_routing_score.py"
-      ],
+      "dependencies": [],
       "dependents": [
         "studio/provider_router.py",
         "tests/test_routing_audit.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 0
     },
     "studio/routing_calibration.py": {
       "dependencies": [
@@ -5890,14 +5918,13 @@
     },
     "tests/test_evolution_synthesis.py": {
       "dependencies": [
-        "studio/core.py",
         "studio/evolution_candidate.py",
         "studio/evolution_synthesis.py",
         "studio/stage_registry.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 4
+      "out_degree": 3
     },
     "tests/test_execution_budget.py": {
       "dependencies": [
@@ -6878,6 +6905,17 @@
       "in_degree": 0,
       "out_degree": 1
     },
+    "tests/test_production_os_live_diagnostics.py": {
+      "dependencies": [
+        "studio/core.py",
+        "studio/production_os_live_diagnostics.py",
+        "studio/production_os_provider_config.py",
+        "studio/provider_router.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 4
+    },
     "tests/test_production_os_local_e2e.py": {
       "dependencies": [
         "studio/production_os_worker.py",
@@ -7662,6 +7700,8 @@
         "studio/model_portfolio_audit.py",
         "studio/omniroute_capacity.py",
         "studio/orchestrator.py",
+        "studio/production_os_live_diagnostics.py",
+        "studio/production_os_provider_config.py",
         "studio/production_os_worker.py",
         "studio/promoted_capabilities.py",
         "studio/provider_cost.py",
@@ -7671,9 +7711,7 @@
         "studio/provider_probe.py",
         "studio/provider_router.py",
         "studio/provider_runtime_reliability.py",
-        "studio/queue.py",
-        "studio/readiness.py",
-        "studio/routing_audit.py"
+        "studio/queue.py"
       ],
       "in_degree": 64,
       "out_degree": 1

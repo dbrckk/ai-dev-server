@@ -36,22 +36,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T06:52:46Z
+Generated: 2026-10-04T07:01:47Z
 
 ### Git
 - Branch: `main`
-- Head: `6caaeebdc3bc`
-- Commit date: 2026-10-04T08:52:29+02:00
-- Commit: fix(worker): accept Production-OS skill learning and diagnose live inference (#243)
-- Tracked files: 844
+- Head: `d152967f83b4`
+- Commit date: 2026-10-04T09:01:23+02:00
+- Commit: fix(worker): safely resume selected failed managed objectives (#244)
+- Tracked files: 848
 
 ### Recently changed files
+- `.github/workflows/production-os-objective-recovery.yml`
+- `.github/workflows/production-os-worker-integration.yml`
+- `control/production-os-resume.json`
+- `integration_tests/test_production_os_server_integration.py`
+- `studio/production_os_resume_objectives.py`
+- `tests/test_production_os_resume_objectives.py`
+- `control/production-os-diagnostics-kick.json`
 - `.github/workflows/production-os-actions-worker.yml`
 - `.github/workflows/production-os-live-diagnostics.yml`
-- `.github/workflows/production-os-worker-integration.yml`
-- `control/production-os-diagnostics-kick.json`
 - `docs/PRODUCTION_OS_WORKER.md`
-- `integration_tests/test_production_os_server_integration.py`
 - `studio/core.py`
 - `studio/production_os_live_diagnostics.py`
 - `studio/production_os_provider_config.py`

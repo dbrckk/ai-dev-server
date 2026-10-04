@@ -56,6 +56,7 @@ The content is organized as follows:
     production-os-actions-worker.yml
     production-os-asset-forge-e2e.yml
     production-os-live-diagnostics.yml
+    production-os-objective-recovery.yml
     production-os-worker-integration.yml
     provider-preview.yml
     remote-control.yml
@@ -73,6 +74,7 @@ control/
     jumpy.json
   ci.json
   production-os-diagnostics-kick.json
+  production-os-resume.json
   production-os-worker-kick.json
   promoted_capabilities.json
   provider-probe.json
@@ -364,6 +366,7 @@ studio/
   privacy_stage.py
   production_os_live_diagnostics.py
   production_os_provider_config.py
+  production_os_resume_objectives.py
   production_os_worker.py
   project_budget.py
   project_context.py
@@ -672,6 +675,7 @@ tests/
   test_production_os_local_e2e.py
   test_production_os_remote_asset_capability.py
   test_production_os_result_contract.py
+  test_production_os_resume_objectives.py
   test_production_os_worker_cli.py
   test_production_os_worker_preflight.py
   test_production_os_worker_recovery.py
@@ -2515,6 +2519,43 @@ jobs:
         run: python studio/production_os_live_diagnostics.py
 ````
 
+## File: .github/workflows/production-os-objective-recovery.yml
+````yaml
+name: Production-OS Objective Recovery
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['control/production-os-resume.json']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-os-objective-recovery
+  cancel-in-progress: false
+
+jobs:
+  resume:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout trusted recovery
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Continue selected failed managed objectives
+        env:
+          PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
+          PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
+        run: python studio/production_os_resume_objectives.py control/production-os-resume.json --apply
+````
+
 ## File: .github/workflows/production-os-worker-integration.yml
 ````yaml
 name: Production-OS worker integration
@@ -2567,6 +2608,7 @@ jobs:
           tests/test_production_os_actions_worker_workflow.py
           tests/test_production_os_local_e2e.py
           tests/test_production_os_live_diagnostics.py
+          tests/test_production_os_resume_objectives.py
           tests/test_production_os_remote_asset_capability.py
           tests/test_production_os_worker.py
           tests/test_production_os_worker_cli.py
@@ -3051,6 +3093,17 @@ initial_prompt: |
 }
 ````
 
+## File: control/production-os-resume.json
+````json
+{
+  "sequence": 1,
+  "failed_workflow_ids": [
+    "85cfbd6570e24f2bb41297f76cd5d948",
+    "65ea248fa5f840eeaa6041ef18728e13"
+  ]
+}
+````
+
 ## File: control/production-os-worker-kick.json
 ````json
 {
@@ -3139,6 +3192,20 @@ ControlPlane = None
 @unittest.skipIf(ControlPlane is None, 'Production-OS installed by dedicated integration CI')
 class RealServerWorkerTests(unittest.TestCase)
 ⋮----
+def test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation(self)
+⋮----
+auth = TokenAuthorizer([{'name': 'test-operator', 'role': 'operator',
+control = ControlPlane(str(Path(td) / 'state.sqlite'), authorizer=auth)
+project = control.managed_projects.create(repository='dbrckk/integration-fixture',
+⋮----
+server = ThreadingHTTPServer(('127.0.0.1', 0), make_handler(control))
+thread = threading.Thread(target=server.serve_forever, daemon=True)
+⋮----
+client = OperatorClient(f'http://127.0.0.1:{server.server_port}', 'operator-token')
+result = resume(client, [project['workflow_id']], apply=True)
+⋮----
+updated = control.managed_projects.get(project['project_id'])
+⋮----
 def test_worker_only_session_executes_and_reports_real_workflow(self)
 ⋮----
 def test_unreadable_result_is_reported_to_real_server(self)
@@ -3152,9 +3219,6 @@ auth = TokenAuthorizer([{
 control = ControlPlane(str(root / 'state.sqlite'), authorizer=auth)
 workflow = control.workflows.create(
 jobs = control.workflows.dispatch_ready(workflow['id'])
-⋮----
-server = ThreadingHTTPServer(('127.0.0.1', 0), make_handler(control))
-thread = threading.Thread(target=server.serve_forever, daemon=True)
 ⋮----
 client = ProductionOSClient(f'http://127.0.0.1:{server.server_port}',
 # No operator token: validates real /v1/workers/session permissions.
@@ -20691,6 +20755,50 @@ result = {"schema_version": 1, "inference_ready": False, "configuration": "inval
 def configure(environ)
 ````
 
+## File: studio/production_os_resume_objectives.py
+````python
+"""Resume explicitly selected failed managed objectives through operator controls."""
+⋮----
+INSTRUCTION = (
+⋮----
+class OperatorClient(API)
+⋮----
+def get(self, path)
+⋮----
+def continue_project(self, project_id)
+⋮----
+request = urllib.request.Request(
+# One submission only: an uncertain mutation response must never be retried here.
+⋮----
+def resume(client, workflow_ids, *, apply=False)
+⋮----
+projects = client.get("/v1/managed-projects").get("projects", [])
+outcomes = []
+⋮----
+matches = [p for p in projects if p.get("current_workflow_id") == workflow_id]
+⋮----
+project_id = str(matches[0].get("project_id") or "")
+⋮----
+# Re-read immediately before mutation to avoid resuming stale list entries.
+current = client.get("/v1/managed-projects/" + project_id).get("project", {})
+workflow = current.get("current_workflow") or {}
+record = {"workflow_id": workflow_id, "project_id": project_id, "status": "skipped"}
+⋮----
+response = client.continue_project(project_id)
+updated = response.get("project", {})
+⋮----
+def main(argv=None)
+⋮----
+parser = argparse.ArgumentParser()
+⋮----
+args = parser.parse_args(argv)
+⋮----
+control = json.loads(args.control.read_text())
+token = os.environ.get("PRODUCTION_OS_OPERATOR_TOKEN", "").strip()
+⋮----
+result = resume(OperatorClient(os.environ["PRODUCTION_OS_URL"], token),
+````
+
 ## File: studio/production_os_worker.py
 ````python
 """Production-OS worker bridge helpers for AI Dev Server."""
@@ -32717,6 +32825,30 @@ def test_result_envelope_includes_visual_asset_quality(self)
 visual = envelope["evidence"]["visual_assets"]
 ⋮----
 def test_no_result_envelope_without_correlation(self)
+````
+
+## File: tests/test_production_os_resume_objectives.py
+````python
+class ResumeObjectivesTests(unittest.TestCase)
+⋮----
+def client(self)
+⋮----
+project = {'project_id': project_id, 'current_workflow_id': workflow_id,
+class Client
+⋮----
+def __init__(self)
+def get(self, path)
+def continue_project(self, pid)
+⋮----
+def test_dry_run_does_not_mutate_and_apply_submits_only_once(self)
+⋮----
+client = self.client()
+⋮----
+result = resume(client, ['a' * 32], apply=True)
+⋮----
+def test_active_successful_and_changed_workflows_are_never_resumed(self)
+⋮----
+def test_invalid_and_duplicate_allowlists_fail_before_access(self)
 ````
 
 ## File: tests/test_production_os_worker_cli.py

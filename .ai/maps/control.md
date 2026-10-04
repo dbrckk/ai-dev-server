@@ -45,6 +45,7 @@ mobile-requests/
   jumpy.json
 ci.json
 production-os-diagnostics-kick.json
+production-os-resume.json
 production-os-worker-kick.json
 promoted_capabilities.json
 provider-probe.json
@@ -112,6 +113,17 @@ request.json
 {
   "sequence": 2,
   "reason": "Recheck operator access after control-plane startup overlapped first live probe"
+}
+```
+
+## File: production-os-resume.json
+```json
+{
+  "sequence": 1,
+  "failed_workflow_ids": [
+    "85cfbd6570e24f2bb41297f76cd5d948",
+    "65ea248fa5f840eeaa6041ef18728e13"
+  ]
 }
 ```
 

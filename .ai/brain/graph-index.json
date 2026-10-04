@@ -23,7 +23,6 @@
         "studio/routing_history.py",
         "studio/stage_registry.py",
         "tests/test_journeys.py",
-        "tests/test_production_os_worker_runtime.py",
         "tests/test_studio.py",
         "tests/test_unified_routing_score.py"
       ],
@@ -151,6 +150,7 @@
         "studio/privacy_stage.py",
         "studio/production_os_live_diagnostics.py",
         "studio/production_os_provider_config.py",
+        "studio/production_os_resume_objectives.py",
         "studio/production_os_worker.py",
         "studio/project_budget.py",
         "studio/project_engine.py",
@@ -242,8 +242,8 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 213,
-      "out_degree": 18,
+      "in_degree": 214,
+      "out_degree": 17,
       "path": "studio/core.py"
     },
     {
@@ -1252,32 +1252,6 @@
     {
       "dependencies": [
         "studio/atomic_file.py",
-        "studio/ci_diagnostics.py",
-        "studio/core.py",
-        "studio/file_lock.py",
-        "studio/github_runner.py",
-        "studio/omniroute_capacity.py",
-        "studio/stage_registry.py",
-        "tests/test_production_os_worker_runtime.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "integration_tests/test_production_os_server_integration.py",
-        "tests/test_mobile_validation_contract.py",
-        "tests/test_production_os_local_e2e.py",
-        "tests/test_production_os_remote_asset_capability.py",
-        "tests/test_production_os_worker.py",
-        "tests/test_production_os_worker_cli.py",
-        "tests/test_production_os_worker_recovery.py",
-        "tests/test_production_os_worker_runtime.py"
-      ],
-      "in_degree": 8,
-      "out_degree": 9,
-      "path": "studio/production_os_worker.py"
-    },
-    {
-      "dependencies": [
-        "studio/atomic_file.py",
         "studio/core.py",
         "studio/file_lock.py",
         "tests/test_unified_routing_score.py"
@@ -1299,6 +1273,31 @@
       "in_degree": 12,
       "out_degree": 4,
       "path": "studio/capacity_ledger.py"
+    },
+    {
+      "dependencies": [
+        "studio/atomic_file.py",
+        "studio/ci_diagnostics.py",
+        "studio/core.py",
+        "studio/file_lock.py",
+        "studio/github_runner.py",
+        "studio/omniroute_capacity.py",
+        "studio/stage_registry.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "integration_tests/test_production_os_server_integration.py",
+        "tests/test_mobile_validation_contract.py",
+        "tests/test_production_os_local_e2e.py",
+        "tests/test_production_os_remote_asset_capability.py",
+        "tests/test_production_os_worker.py",
+        "tests/test_production_os_worker_cli.py",
+        "tests/test_production_os_worker_recovery.py",
+        "tests/test_production_os_worker_runtime.py"
+      ],
+      "in_degree": 8,
+      "out_degree": 8,
+      "path": "studio/production_os_worker.py"
     },
     {
       "dependencies": [],
@@ -1726,24 +1725,6 @@
     },
     {
       "dependencies": [
-        "studio/production_os_worker.py"
-      ],
-      "dependents": [
-        "integration_tests/test_production_os_server_integration.py",
-        "studio/core.py",
-        "studio/play_publisher.py",
-        "studio/production_os_worker.py",
-        "studio/store_package.py",
-        "tests/test_production_os_local_e2e.py",
-        "tests/test_production_os_worker_cli.py",
-        "tests/test_production_os_worker_recovery.py"
-      ],
-      "in_degree": 8,
-      "out_degree": 1,
-      "path": "tests/test_production_os_worker_runtime.py"
-    },
-    {
-      "dependencies": [
         "studio/atomic_file.py",
         "studio/file_lock.py"
       ],
@@ -1902,23 +1883,6 @@
     },
     {
       "dependencies": [
-        "tests/test_production_os_worker_runtime.py"
-      ],
-      "dependents": [
-        "studio/artwork_capability.py",
-        "studio/godot_store_metadata_qa.py",
-        "studio/store_stage.py",
-        "tests/test_artwork_capability.py",
-        "tests/test_artwork_stage.py",
-        "tests/test_godot_store_metadata_qa.py",
-        "tests/test_store.py"
-      ],
-      "in_degree": 7,
-      "out_degree": 1,
-      "path": "studio/store_package.py"
-    },
-    {
-      "dependencies": [
         "studio/atomic_file.py",
         "tests/test_studio.py"
       ],
@@ -2018,10 +1982,44 @@
       "in_degree": 6,
       "out_degree": 2,
       "path": "studio/project_engine.py"
+    },
+    {
+      "dependencies": [
+        "studio/capability_registry.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "studio/autonomous_project.py",
+        "studio/capability_promotion.py",
+        "studio/capability_registry_promotion_persist.py",
+        "studio/generic_capability_persist.py",
+        "tests/test_asset_artwork_promotion.py",
+        "tests/test_promoted_capabilities.py"
+      ],
+      "in_degree": 6,
+      "out_degree": 2,
+      "path": "studio/promoted_capabilities.py"
+    },
+    {
+      "dependencies": [
+        "studio/core.py",
+        "studio/stage_registry.py",
+        "tests/test_studio.py"
+      ],
+      "dependents": [
+        "studio/evolution_automerge.py",
+        "studio/evolution_pending.py",
+        "tests/test_evolution_automerge.py",
+        "tests/test_evolution_pending.py",
+        "tests/test_evolution_persist.py"
+      ],
+      "in_degree": 5,
+      "out_degree": 3,
+      "path": "studio/evolution_persist.py"
     }
   ],
-  "edge_count": 1832,
+  "edge_count": 1828,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 620,
+  "node_count": 622,
   "schema_version": 1
 }

@@ -56,6 +56,20 @@ ControlPlane = None
 @unittest.skipIf(ControlPlane is None, 'Production-OS installed by dedicated integration CI')
 class RealServerWorkerTests(unittest.TestCase)
 ⋮----
+def test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation(self)
+⋮----
+auth = TokenAuthorizer([{'name': 'test-operator', 'role': 'operator',
+control = ControlPlane(str(Path(td) / 'state.sqlite'), authorizer=auth)
+project = control.managed_projects.create(repository='dbrckk/integration-fixture',
+⋮----
+server = ThreadingHTTPServer(('127.0.0.1', 0), make_handler(control))
+thread = threading.Thread(target=server.serve_forever, daemon=True)
+⋮----
+client = OperatorClient(f'http://127.0.0.1:{server.server_port}', 'operator-token')
+result = resume(client, [project['workflow_id']], apply=True)
+⋮----
+updated = control.managed_projects.get(project['project_id'])
+⋮----
 def test_worker_only_session_executes_and_reports_real_workflow(self)
 ⋮----
 def test_unreadable_result_is_reported_to_real_server(self)
@@ -69,9 +83,6 @@ auth = TokenAuthorizer([{
 control = ControlPlane(str(root / 'state.sqlite'), authorizer=auth)
 workflow = control.workflows.create(
 jobs = control.workflows.dispatch_ready(workflow['id'])
-⋮----
-server = ThreadingHTTPServer(('127.0.0.1', 0), make_handler(control))
-thread = threading.Thread(target=server.serve_forever, daemon=True)
 ⋮----
 client = ProductionOSClient(f'http://127.0.0.1:{server.server_port}',
 # No operator token: validates real /v1/workers/session permissions.

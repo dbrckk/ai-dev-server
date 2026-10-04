@@ -288,6 +288,7 @@ privacy_audit.py
 privacy_stage.py
 production_os_live_diagnostics.py
 production_os_provider_config.py
+production_os_resume_objectives.py
 production_os_worker.py
 project_budget.py
 project_context.py
@@ -15427,6 +15428,50 @@ result = {"schema_version": 1, "inference_ready": False, "configuration": "inval
 """Shared provider defaults for the Actions worker and its live diagnostics."""
 ⋮----
 def configure(environ)
+````
+
+## File: production_os_resume_objectives.py
+````python
+"""Resume explicitly selected failed managed objectives through operator controls."""
+⋮----
+INSTRUCTION = (
+⋮----
+class OperatorClient(API)
+⋮----
+def get(self, path)
+⋮----
+def continue_project(self, project_id)
+⋮----
+request = urllib.request.Request(
+# One submission only: an uncertain mutation response must never be retried here.
+⋮----
+def resume(client, workflow_ids, *, apply=False)
+⋮----
+projects = client.get("/v1/managed-projects").get("projects", [])
+outcomes = []
+⋮----
+matches = [p for p in projects if p.get("current_workflow_id") == workflow_id]
+⋮----
+project_id = str(matches[0].get("project_id") or "")
+⋮----
+# Re-read immediately before mutation to avoid resuming stale list entries.
+current = client.get("/v1/managed-projects/" + project_id).get("project", {})
+workflow = current.get("current_workflow") or {}
+record = {"workflow_id": workflow_id, "project_id": project_id, "status": "skipped"}
+⋮----
+response = client.continue_project(project_id)
+updated = response.get("project", {})
+⋮----
+def main(argv=None)
+⋮----
+parser = argparse.ArgumentParser()
+⋮----
+args = parser.parse_args(argv)
+⋮----
+control = json.loads(args.control.read_text())
+token = os.environ.get("PRODUCTION_OS_OPERATOR_TOKEN", "").strip()
+⋮----
+result = resume(OperatorClient(os.environ["PRODUCTION_OS_URL"], token),
 ````
 
 ## File: production_os_worker.py

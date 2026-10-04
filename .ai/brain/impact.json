@@ -1,17 +1,175 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "6caaeebdc3bcae8ae9f31fe413ff75270201b19b",
-  "head": "39954a16f762513070ce209072499d357a5a7fee",
+  "base": "39954a16f762513070ce209072499d357a5a7fee",
+  "head": "d152967f83b4bbf723cb464d67a3a81e7cc97b65",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "control/production-os-diagnostics-kick.json",
+      "path": ".github/workflows/production-os-objective-recovery.yml",
+      "status": "A"
+    },
+    {
+      "path": ".github/workflows/production-os-worker-integration.yml",
       "status": "M"
+    },
+    {
+      "path": "control/production-os-resume.json",
+      "status": "A"
+    },
+    {
+      "path": "integration_tests/test_production_os_server_integration.py",
+      "status": "M"
+    },
+    {
+      "path": "studio/production_os_resume_objectives.py",
+      "status": "A"
+    },
+    {
+      "path": "tests/test_production_os_resume_objectives.py",
+      "status": "A"
     }
   ],
-  "changed_source_files": [],
-  "impacted_files": [],
-  "impacted_symbols": [],
-  "selected_tests": []
+  "changed_source_files": [
+    "integration_tests/test_production_os_server_integration.py",
+    "studio/production_os_resume_objectives.py",
+    "tests/test_production_os_resume_objectives.py"
+  ],
+  "impacted_files": [
+    "integration_tests/test_production_os_server_integration.py",
+    "studio/production_os_resume_objectives.py",
+    "tests/test_production_os_resume_objectives.py"
+  ],
+  "impacted_symbols": [
+    {
+      "name": "RealServerWorkerTests",
+      "kind": "class",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 37
+    },
+    {
+      "name": "test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation",
+      "kind": "function",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 38
+    },
+    {
+      "name": "test_worker_only_session_executes_and_reports_real_workflow",
+      "kind": "function",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 66
+    },
+    {
+      "name": "test_unreadable_result_is_reported_to_real_server",
+      "kind": "function",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 69
+    },
+    {
+      "name": "test_actions_preflight_recovers_interrupted_job_before_idle_check",
+      "kind": "function",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 72
+    },
+    {
+      "name": "_exercise",
+      "kind": "function",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 75
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 128
+    },
+    {
+      "name": "OperatorClient",
+      "kind": "class",
+      "file": "studio/production_os_resume_objectives.py",
+      "line": 21
+    },
+    {
+      "name": "get",
+      "kind": "function",
+      "file": "studio/production_os_resume_objectives.py",
+      "line": 22
+    },
+    {
+      "name": "continue_project",
+      "kind": "function",
+      "file": "studio/production_os_resume_objectives.py",
+      "line": 25
+    },
+    {
+      "name": "resume",
+      "kind": "function",
+      "file": "studio/production_os_resume_objectives.py",
+      "line": 35
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/production_os_resume_objectives.py",
+      "line": 68
+    },
+    {
+      "name": "ResumeObjectivesTests",
+      "kind": "class",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 5
+    },
+    {
+      "name": "client",
+      "kind": "function",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 6
+    },
+    {
+      "name": "Client",
+      "kind": "class",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 10
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 11
+    },
+    {
+      "name": "get",
+      "kind": "function",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 14
+    },
+    {
+      "name": "continue_project",
+      "kind": "function",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 16
+    },
+    {
+      "name": "test_dry_run_does_not_mutate_and_apply_submits_only_once",
+      "kind": "function",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 22
+    },
+    {
+      "name": "test_active_successful_and_changed_workflows_are_never_resumed",
+      "kind": "function",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 31
+    },
+    {
+      "name": "test_invalid_and_duplicate_allowlists_fail_before_access",
+      "kind": "function",
+      "file": "tests/test_production_os_resume_objectives.py",
+      "line": 40
+    }
+  ],
+  "selected_tests": [
+    "integration_tests/test_production_os_server_integration.py",
+    "tests/test_production_os_resume_objectives.py"
+  ]
 }

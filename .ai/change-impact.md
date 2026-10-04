@@ -1,16 +1,25 @@
 # Change impact
 
-Base: 661f17a7afb58558cc209b1c592f2c10699b0458
-Head: 39954a16f762513070ce209072499d357a5a7fee
+Base: 5ec99c312a31ace69152dd78d0661a043a5ca797
+Head: d152967f83b4bbf723cb464d67a3a81e7cc97b65
 
 ## Changed files
-- M control/production-os-diagnostics-kick.json
+- A .github/workflows/production-os-objective-recovery.yml
+- M .github/workflows/production-os-worker-integration.yml
+- A control/production-os-resume.json
+- M integration_tests/test_production_os_server_integration.py
+- A studio/production_os_resume_objectives.py
+- A tests/test_production_os_resume_objectives.py
 
 ## Affected areas
+- .github
 - control
+- integration_tests
+- studio
+- tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_production_os_resume_objectives.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

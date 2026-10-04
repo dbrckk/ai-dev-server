@@ -1,29 +1,87 @@
 {
   "files": [
     {
-      "path": "control/production-os-diagnostics-kick.json",
-      "reasons": [
-        "changed",
-        "recent-project-state"
-      ],
-      "score": 160
-    },
-    {
-      "path": "control/production-os-worker-kick.json",
-      "reasons": [
-        "recent-project-state"
-      ],
-      "score": 60
-    },
-    {
       "path": "integration_tests/test_production_os_server_integration.py",
       "reasons": [
-        "recent-project-state"
+        "changed",
+        "changed-source",
+        "impact",
+        "recent-project-state",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
       ],
-      "score": 60
+      "score": 525
+    },
+    {
+      "path": "tests/test_production_os_resume_objectives.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 440
+    },
+    {
+      "path": "studio/production_os_resume_objectives.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "symbol-indexed"
+      ],
+      "score": 395
     },
     {
       "path": "studio/core.py",
+      "reasons": [
+        "dependency-neighbor",
+        "recent-project-state"
+      ],
+      "score": 110
+    },
+    {
+      "path": "studio/production_os_worker.py",
+      "reasons": [
+        "dependency-neighbor",
+        "recent-project-state"
+      ],
+      "score": 110
+    },
+    {
+      "path": ".github/workflows/production-os-objective-recovery.yml",
+      "reasons": [
+        "changed"
+      ],
+      "score": 100
+    },
+    {
+      "path": ".github/workflows/production-os-worker-integration.yml",
+      "reasons": [
+        "changed"
+      ],
+      "score": 100
+    },
+    {
+      "path": "control/production-os-resume.json",
+      "reasons": [
+        "changed"
+      ],
+      "score": 100
+    },
+    {
+      "path": "control/production-os-diagnostics-kick.json",
+      "reasons": [
+        "recent-project-state"
+      ],
+      "score": 60
+    },
+    {
+      "path": "control/production-os-worker-kick.json",
       "reasons": [
         "recent-project-state"
       ],
@@ -38,13 +96,6 @@
     },
     {
       "path": "studio/production_os_provider_config.py",
-      "reasons": [
-        "recent-project-state"
-      ],
-      "score": 60
-    },
-    {
-      "path": "studio/production_os_worker.py",
       "reasons": [
         "recent-project-state"
       ],
@@ -77,6 +128,13 @@
         "recent-project-state"
       ],
       "score": 60
+    },
+    {
+      "path": "tests/test_studio.py",
+      "reasons": [
+        "dependency-neighbor"
+      ],
+      "score": 25
     }
   ],
   "generated_by": "dbrckk/repo-brain-v6",

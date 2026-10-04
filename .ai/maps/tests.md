@@ -276,6 +276,7 @@ test_production_os_live_diagnostics.py
 test_production_os_local_e2e.py
 test_production_os_remote_asset_capability.py
 test_production_os_result_contract.py
+test_production_os_resume_objectives.py
 test_production_os_worker_cli.py
 test_production_os_worker_preflight.py
 test_production_os_worker_recovery.py
@@ -8204,6 +8205,30 @@ def test_result_envelope_includes_visual_asset_quality(self)
 visual = envelope["evidence"]["visual_assets"]
 ⋮----
 def test_no_result_envelope_without_correlation(self)
+```
+
+## File: test_production_os_resume_objectives.py
+```python
+class ResumeObjectivesTests(unittest.TestCase)
+⋮----
+def client(self)
+⋮----
+project = {'project_id': project_id, 'current_workflow_id': workflow_id,
+class Client
+⋮----
+def __init__(self)
+def get(self, path)
+def continue_project(self, pid)
+⋮----
+def test_dry_run_does_not_mutate_and_apply_submits_only_once(self)
+⋮----
+client = self.client()
+⋮----
+result = resume(client, ['a' * 32], apply=True)
+⋮----
+def test_active_successful_and_changed_workflows_are_never_resumed(self)
+⋮----
+def test_invalid_and_duplicate_allowlists_fail_before_access(self)
 ```
 
 ## File: test_production_os_worker_cli.py

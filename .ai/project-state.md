@@ -53,16 +53,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T20:12:13Z
+Generated: 2026-10-04T20:33:15Z
 
 ### Git
 - Branch: `main`
-- Head: `2690cd06960a`
-- Commit date: 2026-10-04T22:11:59+02:00
-- Commit: fix(worker): continue active production checkpoints (#250)
+- Head: `f06f6b648e40`
+- Commit date: 2026-10-04T22:33:04+02:00
+- Commit: fix(worker): probe Asset Forge with dispatch token fallback (#251)
 - Tracked files: 849
 
 ### Recently changed files
+- `.github/workflows/production-os-actions-worker.yml`
 - `integration_tests/test_production_os_server_integration.py`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_worker_runtime.py`
@@ -72,11 +73,6 @@ Generated: 2026-10-04T20:12:13Z
 - `studio/github_provider_health_store.py`
 - `tests/test_github_provider_health_store.py`
 - `tests/test_production_os_worker_recovery.py`
-- `.github/workflows/production-os-actions-worker.yml`
-- `.github/workflows/production-os-worker-integration.yml`
-- `control/production-os-diagnostics-kick.json`
-- `studio/production_os_live_diagnostics.py`
-- `tests/test_production_os_live_diagnostics.py`
 
 ### Project signals
 - No common build descriptor detected

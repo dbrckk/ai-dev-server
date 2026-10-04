@@ -1,20 +1,16 @@
 # Change impact
 
-Base: 131f06b304b5a762e57cec1fa8dfb03aa8006e09
-Head: 2690cd06960a3d2812cc78a2866e9bdb0e03559b
+Base: 2d421a1422df5cdf800accc784de9eae967b2a48
+Head: f06f6b648e40781961d5f99745ed4a4dcc5f4459
 
 ## Changed files
-- M integration_tests/test_production_os_server_integration.py
-- M studio/production_os_worker.py
-- M tests/test_production_os_worker_runtime.py
+- M .github/workflows/production-os-actions-worker.yml
 
 ## Affected areas
-- integration_tests
-- studio
-- tests
+- .github
 
 ## Related test candidates
-- tests/test_production_os_worker.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

@@ -77,7 +77,14 @@ class GodotModel(Model):
                 error = str(exc)
             if attempt or self.calls >= self.limit:
                 raise StudioError('Structured response rejected: ' + error) from None
-            context += '\nYour previous response violated this schema rule: ' + error + '. Return corrected complete JSON only.'
+            if error == 'Model response truncated' and role in ('implementation', 'tests'):
+                context += (
+                    '\nYour previous response hit the output limit. Return complete JSON with at most two files '
+                    'and at most 20,000 characters of combined file content. Include full contents for each '
+                    'file; prioritize the smallest self-contained change. Further files can follow in later rounds.'
+                )
+            else:
+                context += '\nYour previous response violated this schema rule: ' + error + '. Return corrected complete JSON only.'
         raise StudioError('Protocol repair exhausted')
 
     def _ask_godot(self, role: str, context: str) -> dict:

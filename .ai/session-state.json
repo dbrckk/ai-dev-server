@@ -2,8 +2,8 @@
   "version": 1,
   "updated_at": "2026-10-04",
   "task": "Make Production-OS worker operational and resilient",
-  "base_commit": "8cb0abfa",
-  "branch": "fix/provider-health-persistence",
+  "base_commit": "e7d800b2ef20d834f2135910271ea218c1e0e187",
+  "branch": "fix/godot-truncated-retry",
   "completed": [
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",
@@ -74,8 +74,8 @@
     ]
   },
   "pending": [
-    "Verify CI and merge provider-health persistence fix",
-    "Verify live worker produces a successful real coding result and durable state",
+    "Verify current worker result and subsequent persistence-fixed worker run",
+    "Verify remote memory branch advances and a real task completes",
     "Remote Asset Forge dispatch authorization unavailable for visual capability"
   ],
   "merged_pr": {
@@ -83,7 +83,7 @@
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Fix provider-health remote persistence contract and kick one bounded real worker attempt"
+    "Stabilize Godot model protocol retries while the persistence-fixed real worker run waits for the prior run"
   ],
   "merged_changes": [
     {
@@ -185,5 +185,11 @@
     ],
     "remote_store_before": "exactly four core fields only",
     "fix": "validate and preserve all seven fields, default older remote rows"
+  },
+  "godot_truncation": {
+    "live_branch": "dbrckk/Jumpy:studio/pos-3bcaf854534b397531bc741e",
+    "observed": "cycle 2 blocked on Model response truncated; a later cycle resumed and reached code review",
+    "fix": "ask for a complete bounded two-file patch only on truncated output retry",
+    "validation": "18 selected tests passed; regression failed before fix"
   }
 }

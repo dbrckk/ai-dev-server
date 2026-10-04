@@ -94,6 +94,20 @@ class GodotModelTests(unittest.TestCase):
         self.assertEqual(result['files'][0]['path'], 'tests/main_test.gd')
         self.assertEqual(subject.calls, 2)
 
+    def test_truncated_patch_retry_requests_a_smaller_complete_change(self):
+        truncated = {'choices':[{'finish_reason':'length','message':{'content':'{"files":['}}]}
+        subject = model([
+            truncated,
+            completion({'files':[{'path':'scripts/main.gd','content':'extends Node\n'}]}),
+        ])
+        result = subject.ask('implementation', 'improve game')
+        self.assertEqual(result['files'][0]['path'], 'scripts/main.gd')
+        self.assertEqual(subject.calls, 2)
+        retry = subject.api.calls[1][2]['messages'][1]['content']
+        self.assertIn('at most two files', retry)
+        self.assertIn('20,000 characters', retry)
+        self.assertIn('complete JSON', retry)
+
     def test_structured_godot_call_falls_back_to_secondary_provider(self):
         subject = model([StudioError('API unavailable or timed out')])
         fallback_api = FakeAPI([completion(product_value())])

@@ -3,6 +3,7 @@
 Status: active
 
 ## Working
+- A live Godot checkpoint at 2026-10-04 11:21 UTC showed an implementation response cut at the output token limit. On that precise protocol error, the model retry now asks for a complete, smaller two-file patch so a subsequent round can continue without repeating the oversized response.
 - The live persistence failure can be reproduced locally: `provider_health.record_success` writes seven aggregate fields, while `github_provider_health_store` accepted only four. The remote store now validates all seven, supplies defaults for older rows, and retains latency and recent outcome data.
 - PR #246 makes the primary and third NVIDIA providers return structured JSON in live diagnostics 37185440546; the second fallback still returned invalid JSON.
 - Real worker run 37184922962 claimed a recovered Jumpy task and checkpointed a branch, proving queue registration, claim, and source execution. Its final result was runner_error because remote state persistence failed; autonomy state committed at 07:17:15 UTC, while the project-memory branch did not advance.
@@ -24,6 +25,7 @@ Status: active
 - Render service verified healthy on merged server fix #250. Direct database connector inspection is unavailable.
 
 ## Current priority
+- Verify the currently running worker exits cleanly, then observe the queued persistence-fixed run. Keep the bounded Godot truncation repair in future worker runs.
 - Merge the provider-health persistence fix with a new bounded kick, then verify both the remote memory branch and Production-OS job result.
 - Publish the persistence diagnosis, run the worker with the structured JSON fix, repair the failing store, and verify a successful real task and saved artifact.
 - Real source generation returned invalid structured JSON. Enable NVIDIA JSON response mode and validate structured inference in live diagnostics before the next execution.
@@ -34,6 +36,7 @@ Status: active
 - Investigate live queue eligibility and remote Asset Forge dispatch permissions without exposing secrets.
 
 ## Validation
+- Godot model, preview, and persistent runner checks: 18 selected tests passed; the truncation regression failed before the change and passed after.
 - Provider-health persistence and worker recovery selected checks: 41 tests and 19 subtests passed locally.
 - New regression suite: 87 tests and 22 subtests passed; both historical requests validate.
 - Three authenticated server integrations pass with the actual skill_learning contract and Studio request validation.

@@ -3,21 +3,27 @@
 Status: active
 
 ## Working
-- Central AI repo-map generation is configured through dbrckk/repo-standards.
-- Repository agent instructions are present.
+- Worker setup/result failures are reported to Production-OS rather than leaving acknowledged jobs active.
+- Correlated result validation prevents completing a different workflow/task/project/repository.
+- Bounded invocations signal failed work with exit code 1; paused/draining continuous workers back off.
+- Dedicated worker CI covers pytest function tests and real authenticated Production-OS HTTP integration.
 
 ## Broken / blockers
-- None documented here yet.
+- Latest inspected Actions worker run 37154316563 connected successfully but found no eligible job; this does not prove live agent execution.
+- Its remote Asset Forge dispatch probe failed, so visual capabilities remained disabled.
+- Render service inspection awaits the user's workspace choice required by the connector.
 
 ## Current priority
-- Keep the repository standards integration healthy and use compact AI context before broad scans.
+- Merge and run the worker lifecycle changes, then verify a real queued job through Codex and confirm the corresponding repository artifact.
+- Investigate live queue eligibility and remote Asset Forge dispatch permissions without exposing secrets.
 
 ## Validation
-- Standards workflow: pending verification after this migration.
-- Tests/build: use the repository's existing validation commands.
+- Selected worker suite: 99 tests passed, including recovery regressions.
+- Real Production-OS server integration: 2 tests passed, also against qualified revision 7e0d47a in an isolated installed environment.
+- Full unit suite: 1700 tests passed; compilation and existing CI trust policy passed.
 
 ## Last verified
-- 2026-09-18
+- 2026-10-03
 
 <!-- AUTO:START -->
 ## Automatic repository state

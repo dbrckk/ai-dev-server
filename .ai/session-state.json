@@ -3,7 +3,7 @@
   "updated_at": "2026-10-04",
   "task": "Make Production-OS worker operational and resilient",
   "base_commit": "836a1d5bdf9b7cffa2983de1cbcb36e2cc07f913",
-  "branch": "fix/worker-live-provider-diagnostics",
+  "branch": "fix/worker-resume-interrupted-objectives",
   "completed": [
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",
@@ -19,7 +19,7 @@
   "validation": {
     "worker_tests": "99 passed, 15 subtests passed",
     "server_integration": "2 passed against qualified 7e0d47a isolated install",
-    "full_unittest": "1700 tests passed",
+    "full_unittest": "1708 tests passed",
     "compileall": "passed",
     "ci_policy": "passed after using separate integration workflow",
     "github_pr_checks": "all 11 successful before merging",
@@ -123,9 +123,16 @@
     "request_reproduction": "Both artifact requests validate after explicit skill_learning support"
   },
   "next_steps": [
-    "Merge after CI and run live provider diagnostics",
-    "Resume exhausted managed objectives only if existing operator access is ready",
-    "Verify real agent execution and resulting artifacts",
-    "Resolve remote Asset Forge Actions permissions"
-  ]
+    "Merge tested operator recovery restricted to explicit failed workflow IDs",
+    "Verify actual worker execution on resumed objective",
+    "Resolve remote Asset Forge authorization"
+  ],
+  "merged_live_diagnostics_pr": 243,
+  "live_provider_diagnostics": {
+    "run_id": 37184194436,
+    "status": "success",
+    "all_three_providers": "ready",
+    "operator_access": "ready",
+    "initial_operator_failure": "First probe overlapped Render startup; bounded warm repeat succeeded"
+  }
 }

@@ -3,6 +3,7 @@
 Status: active
 
 ## Working
+- Live diagnostics 37184194436: all three configured model endpoints responded; existing operator access verified after control-plane startup.
 - Production-OS optional skill_learning contracts now pass the Studio validator; reproduced historical artifact 11276785062 now validates.
 - Worker forwards its pinned Git baseline and preserves fixed runner error codes/HTTP status without raw messages.
 - A separate trusted-main live diagnostic workflow checks bounded inference and existing operator access.
@@ -17,6 +18,7 @@ Status: active
 - Render service verified healthy on merged server fix #250. Direct database connector inspection is unavailable.
 
 ## Current priority
+- Safely resume only the two explicitly selected failed managed objectives through existing operator instruction controls, then verify real worker execution.
 - Verify shared provider fallbacks with live diagnostics, then resume exhausted objectives through authorized operator controls.
 - Diagnostics #241/#251 and startup recovery #242 are deployed. Resume exhausted objectives through existing operator controls, investigate StudioError during a real run and verify its artifact.
 - Investigate live queue eligibility and remote Asset Forge dispatch permissions without exposing secrets.
@@ -34,20 +36,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T06:54:53Z
+Generated: 2026-10-04T06:52:46Z
 
 ### Git
 - Branch: `main`
-- Head: `39954a16f762`
-- Commit date: 2026-10-04T08:54:38+02:00
-- Commit: chore(worker): recheck live operator access after control-plane startup
+- Head: `6caaeebdc3bc`
+- Commit date: 2026-10-04T08:52:29+02:00
+- Commit: fix(worker): accept Production-OS skill learning and diagnose live inference (#243)
 - Tracked files: 844
 
 ### Recently changed files
-- `control/production-os-diagnostics-kick.json`
 - `.github/workflows/production-os-actions-worker.yml`
 - `.github/workflows/production-os-live-diagnostics.yml`
 - `.github/workflows/production-os-worker-integration.yml`
+- `control/production-os-diagnostics-kick.json`
 - `docs/PRODUCTION_OS_WORKER.md`
 - `integration_tests/test_production_os_server_integration.py`
 - `studio/core.py`

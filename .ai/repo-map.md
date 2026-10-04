@@ -2144,6 +2144,8 @@ jobs:
                           "error_type": evidence.get("error_type"),
                           "error_code": evidence.get("error_code"),
                           "error_http_status": evidence.get("error_http_status"),
+                          "error_component": evidence.get("error_component"),
+                          "error_reason": evidence.get("error_reason"),
                           "worker_status": result.get("ai_dev_server_status"),
                       }, sort_keys=True))
           except (OSError, ValueError, RuntimeError, KeyError, TypeError) as exc:
@@ -3108,8 +3110,8 @@ initial_prompt: |
 ## File: control/production-os-worker-kick.json
 ````json
 {
-  "sequence": 11,
-  "reason": "Process real work after skill_learning compatibility fix and operator-authorized legacy objective recovery"
+  "sequence": 12,
+  "reason": "Run next bounded attempt with validated structured NVIDIA output and precise persistence diagnostics"
 }
 ````
 
@@ -21116,6 +21118,11 @@ code = "remote_state_restore_failed"
 ⋮----
 code = "remote_state_persistence_failed"
 result = {"error_type": type(exc).__name__, "error_code": code}
+components = ("autonomous state", "project memory", "agent performance", "provider health",
+⋮----
+# These are fixed local validator messages, never free-form remote bodies.
+reasons = ("local autonomous state unavailable", "remote autonomous state incomplete",
+⋮----
 status = re.search(r"\bHTTP(?: status)? ([1-5][0-9]{2})\b", message)
 ⋮----
 def _summary_requests_retry(summary: dict[str, Any]) -> bool
@@ -33006,6 +33013,12 @@ def test_non_positive_poll_interval_fails(self)
 """Regression coverage for acknowledged jobs and worker process outcomes."""
 ⋮----
 class WorkerRecoveryTests(unittest.TestCase)
+⋮----
+def test_persistence_diagnosis_identifies_component_without_publishing_messages(self)
+⋮----
+result = _failure_diagnostics(RuntimeError('Remote autonomous state persistence failed: local autonomous state unavailable'))
+⋮----
+result = _failure_diagnostics(RuntimeError('Remote provider metrics persistence failed: credential-private-response'))
 ⋮----
 def test_runner_diagnostics_keep_http_status_and_never_publish_message(self)
 ⋮----

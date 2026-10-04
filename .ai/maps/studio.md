@@ -15778,6 +15778,11 @@ code = "remote_state_restore_failed"
 ⋮----
 code = "remote_state_persistence_failed"
 result = {"error_type": type(exc).__name__, "error_code": code}
+components = ("autonomous state", "project memory", "agent performance", "provider health",
+⋮----
+# These are fixed local validator messages, never free-form remote bodies.
+reasons = ("local autonomous state unavailable", "remote autonomous state incomplete",
+⋮----
 status = re.search(r"\bHTTP(?: status)? ([1-5][0-9]{2})\b", message)
 ⋮----
 def _summary_requests_retry(summary: dict[str, Any]) -> bool

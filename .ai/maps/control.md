@@ -130,8 +130,8 @@ request.json
 ## File: production-os-worker-kick.json
 ```json
 {
-  "sequence": 11,
-  "reason": "Process real work after skill_learning compatibility fix and operator-authorized legacy objective recovery"
+  "sequence": 12,
+  "reason": "Run next bounded attempt with validated structured NVIDIA output and precise persistence diagnostics"
 }
 ```
 

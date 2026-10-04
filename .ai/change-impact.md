@@ -1,15 +1,13 @@
 # Change impact
 
-Base: b8c26b1b4c53a655f5227912d42cc3953210ea5e
-Head: d37438d368f134a026c63b6626d9bebc2bcb155b
+Base: be38b74caaad860fcfe0beda5c29fc1331f479e0
+Head: 7f593c52fc9813af1948869ad26f19e45eaf8d4e
 
 ## Changed files
-- M .github/workflows/production-os-worker-integration.yml
-- M control/production-os-diagnostics-kick.json
-- M studio/godot_model.py
-- M studio/production_os_live_diagnostics.py
-- M tests/test_godot_model.py
-- M tests/test_production_os_live_diagnostics.py
+- M .github/workflows/production-os-actions-worker.yml
+- M control/production-os-worker-kick.json
+- M studio/production_os_worker.py
+- M tests/test_production_os_worker_recovery.py
 
 ## Affected areas
 - .github
@@ -18,8 +16,7 @@ Head: d37438d368f134a026c63b6626d9bebc2bcb155b
 - tests
 
 ## Related test candidates
-- tests/test_godot_model.py
-- tests/test_production_os_live_diagnostics.py
+- tests/test_production_os_worker.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

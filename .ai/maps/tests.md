@@ -8349,6 +8349,12 @@ def test_non_positive_poll_interval_fails(self)
 ⋮----
 class WorkerRecoveryTests(unittest.TestCase)
 ⋮----
+def test_persistence_diagnosis_identifies_component_without_publishing_messages(self)
+⋮----
+result = _failure_diagnostics(RuntimeError('Remote autonomous state persistence failed: local autonomous state unavailable'))
+⋮----
+result = _failure_diagnostics(RuntimeError('Remote provider metrics persistence failed: credential-private-response'))
+⋮----
 def test_runner_diagnostics_keep_http_status_and_never_publish_message(self)
 ⋮----
 client = _FakeClient(sample_job())

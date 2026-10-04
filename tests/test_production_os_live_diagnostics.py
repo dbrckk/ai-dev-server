@@ -20,7 +20,7 @@ class LiveDiagnosticsTests(unittest.TestCase):
                 calls.append((method, path, data, kwargs))
                 if data and data['model'] == 'old':
                     raise APIError(410)
-                return {'choices': [{'message': {'content': 'credential remote text'}}]}
+                return {'choices': [{'message': {'content': '{"ready":true,"private":"credential remote text"}'}}]}
         result = diagnose(api_factory=FakeAPI, providers=providers, environ={})
         self.assertTrue(result['inference_ready'])
         self.assertEqual(result['providers'][0]['http_status'], 410)
@@ -36,7 +36,7 @@ class LiveDiagnosticsTests(unittest.TestCase):
             def call(self, method, path, data, **kwargs):
                 if data['model'] == 'code':
                     raise StudioError('sensitive exception')
-                return {'choices': [{'message': {'content': 'OK'}}]}
+                return {'choices': [{'message': {'content': '{"ready":true}'}}]}
         result = diagnose(api_factory=FakeAPI, providers=[provider], environ={})
         self.assertFalse(result['inference_ready'])
         self.assertNotIn('sensitive', json.dumps(result))

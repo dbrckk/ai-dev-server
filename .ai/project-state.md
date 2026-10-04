@@ -3,6 +3,7 @@
 Status: active
 
 ## Working
+- Both original legacy goals relaunched through idempotent dashboard API; real worker run 37184922962 claimed work and checkpointed product/design to Jumpy.
 - Live diagnostics 37184194436: all three configured model endpoints responded; existing operator access verified after control-plane startup.
 - Production-OS optional skill_learning contracts now pass the Studio validator; reproduced historical artifact 11276785062 now validates.
 - Worker forwards its pinned Git baseline and preserves fixed runner error codes/HTTP status without raw messages.
@@ -18,6 +19,7 @@ Status: active
 - Render service verified healthy on merged server fix #250. Direct database connector inspection is unavailable.
 
 ## Current priority
+- Real source generation returned invalid structured JSON. Enable NVIDIA JSON response mode and validate structured inference in live diagnostics before the next execution.
 - The selected failed workflows are legacy jobs without current managed-project association. Recover them through the normal dashboard launch API using stable request IDs, preserving their original final goals and exhausted attempts.
 - Safely resume only the two explicitly selected failed managed objectives through existing operator instruction controls, then verify real worker execution.
 - Verify shared provider fallbacks with live diagnostics, then resume exhausted objectives through authorized operator controls.
@@ -37,17 +39,16 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T07:09:28Z
+Generated: 2026-10-04T07:07:59Z
 
 ### Git
 - Branch: `main`
-- Head: `71fb09cf0b50`
-- Commit date: 2026-10-04T09:09:06+02:00
-- Commit: chore(worker): process recovered objectives after runtime fixes
+- Head: `26d6f0f8a54a`
+- Commit date: 2026-10-04T09:07:43+02:00
+- Commit: fix(worker): recover explicitly selected legacy objectives idempotently (#245)
 - Tracked files: 848
 
 ### Recently changed files
-- `control/production-os-worker-kick.json`
 - `control/production-os-resume.json`
 - `integration_tests/test_production_os_server_integration.py`
 - `studio/production_os_resume_objectives.py`
@@ -66,6 +67,7 @@ Generated: 2026-10-04T07:09:28Z
 - `tests/test_production_os_live_diagnostics.py`
 - `tests/test_production_os_worker_recovery.py`
 - `tests/test_request_contract.py`
+- `control/production-os-worker-kick.json`
 
 ### Project signals
 - No common build descriptor detected

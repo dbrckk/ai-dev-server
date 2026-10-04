@@ -30,10 +30,39 @@ except ModuleNotFoundError as exc:
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
 from production_os_worker import ProductionOSClient, run_once
 from core import request_check
+from production_os_resume_objectives import OperatorClient, resume
 
 
 @unittest.skipIf(ControlPlane is None, 'Production-OS installed by dedicated integration CI')
 class RealServerWorkerTests(unittest.TestCase):
+    def test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation(self):
+        with tempfile.TemporaryDirectory() as td:
+            auth = TokenAuthorizer([{'name': 'test-operator', 'role': 'operator',
+                                     'sha256': token_digest('operator-token')}])
+            control = ControlPlane(str(Path(td) / 'state.sqlite'), authorizer=auth)
+            project = control.managed_projects.create(repository='dbrckk/integration-fixture',
+                final_goal='Verify the existing repository and report real evidence', token_budget=5000)
+            for _ in range(3):
+                control.workflows.record_result(project['workflow_id'], 'implementation', succeeded=False)
+            self.assertEqual(control.managed_projects.get(project['project_id'])['status'], 'NEEDS_ATTENTION')
+            server = ThreadingHTTPServer(('127.0.0.1', 0), make_handler(control))
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            try:
+                client = OperatorClient(f'http://127.0.0.1:{server.server_port}', 'operator-token')
+                result = resume(client, [project['workflow_id']], apply=True)
+                self.assertEqual(result['objectives'][0]['status'], 'resumed')
+                updated = control.managed_projects.get(project['project_id'])
+                self.assertEqual(updated['generation'], 2)
+                self.assertEqual(updated['final_goal'], project['final_goal'])
+                self.assertEqual(updated['status'], 'ACTIVE')
+                resume(client, [project['workflow_id']], apply=True)
+                self.assertEqual(control.managed_projects.get(project['project_id'])['generation'], 2)
+            finally:
+                server.shutdown()
+                server.server_close()
+                thread.join(timeout=2)
+
     def test_worker_only_session_executes_and_reports_real_workflow(self):
         self._exercise('completed')
 

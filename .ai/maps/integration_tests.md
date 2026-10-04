@@ -60,7 +60,9 @@ def test_worker_only_session_executes_and_reports_real_workflow(self)
 ⋮----
 def test_unreadable_result_is_reported_to_real_server(self)
 ⋮----
-def _exercise(self, expected)
+def test_actions_preflight_recovers_interrupted_job_before_idle_check(self)
+⋮----
+def _exercise(self, expected, abandon=False)
 ⋮----
 root = Path(td)
 auth = TokenAuthorizer([{
@@ -73,6 +75,13 @@ thread = threading.Thread(target=server.serve_forever, daemon=True)
 ⋮----
 client = ProductionOSClient(f'http://127.0.0.1:{server.server_port}',
 # No operator token: validates real /v1/workers/session permissions.
+⋮----
+abandoned = client.claim('github-actions-worker', ['python'])
+⋮----
+workflow_source = (Path(__file__).resolve().parents[1] /
+block = workflow_source.split('- name: Probe compatible Production-OS work', 1)[1]
+block = block.split("python - <<'PY'\n", 1)[1].split('\n          PY', 1)[0]
+outputs = root / 'github-output'
 ⋮----
 executed = []
 def runner(request_path, project_out, **kwargs)

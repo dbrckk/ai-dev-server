@@ -2045,11 +2045,17 @@ jobs:
           token = os.environ["PRODUCTION_OS_WORKER_TOKEN"].strip()
           worker_id = os.environ["PRODUCTION_OS_WORKER_ID"].strip()
           from production_os_worker import worker_capabilities
-          from production_os_worker import _NoRedirect
+          from production_os_worker import _NoRedirect, ProductionOSClient
 
           base_env = dict(os.environ)
           base_env["PRODUCTION_OS_WORKER_SPECIALTIES"] = ""
           base_capabilities = worker_capabilities(base_env)
+
+          # A fresh single-flight Actions process has no in-memory active jobs.
+          # Reconcile its prior interrupted session before checking for queued work.
+          session = ProductionOSClient(base, token).register(worker_id, base_capabilities)
+          recovered = (session or {}).get("recovered_jobs", [])
+          print(f"Production-OS worker session: ready recovered_jobs={len(recovered)}")
 
           def probe(capabilities):
               request = urllib.request.Request(
@@ -2098,6 +2104,42 @@ jobs:
               }, sort_keys=True))
           except (OSError, ValueError, RuntimeError) as exc:
               print("Production-OS queue inventory unavailable: " + type(exc).__name__)
+
+          # Inspect only terminal task diagnostics, never repository briefs.
+          try:
+              request = urllib.request.Request(
+                  base + "/v1/workflows",
+                  headers={"Authorization": "Bearer " + token, "Accept": "application/json"},
+              )
+              opener = urllib.request.build_opener(_NoRedirect())
+              with opener.open(request, timeout=10) as response:
+                  workflows = json.loads(response.read(1000000).decode("utf-8")).get("workflows", [])
+              for workflow in [w for w in workflows if w.get("status") == "failed"][:5]:
+                  workflow_id = str(workflow["id"])
+                  from urllib.parse import quote
+                  request = urllib.request.Request(
+                      base + "/v1/workflows/" + quote(workflow_id, safe=""),
+                      headers={"Authorization": "Bearer " + token, "Accept": "application/json"},
+                  )
+                  with opener.open(request, timeout=10) as response:
+                      detail = json.loads(response.read(1000000).decode("utf-8")).get("workflow", {})
+                  for task in detail.get("tasks", []):
+                      if task.get("status") != "failed":
+                          continue
+                      result = task.get("result") or {}
+                      evidence = result.get("evidence") or {}
+                      print("Production-OS failed task diagnosis: " + json.dumps({
+                          "workflow_id": workflow_id,
+                          "task_id": task.get("task_id"),
+                          "attempts": task.get("attempts"),
+                          "max_attempts": task.get("max_attempts"),
+                          "pipeline_status": evidence.get("pipeline_status"),
+                          "next_stage": evidence.get("next_stage"),
+                          "error_type": evidence.get("error_type"),
+                          "worker_status": result.get("ai_dev_server_status"),
+                      }, sort_keys=True))
+          except (OSError, ValueError, RuntimeError, KeyError, TypeError) as exc:
+              print("Production-OS failed task diagnosis unavailable: " + type(exc).__name__)
 
           base_work = probe(base_capabilities)
           mobile_work = probe(base_capabilities + ["mobile-ui-validation"])
@@ -2957,8 +2999,8 @@ initial_prompt: |
 ````json
 {
   "requested_by": "production-os",
-  "reason": "diagnose the live queue and workflow inventory after #241 and Production-OS #251",
-  "sequence": 9
+  "reason": "recover interrupted sessions and inspect the two failed workflows after #242",
+  "sequence": 10
 }
 ````
 
@@ -3045,7 +3087,9 @@ def test_worker_only_session_executes_and_reports_real_workflow(self)
 ⋮----
 def test_unreadable_result_is_reported_to_real_server(self)
 ⋮----
-def _exercise(self, expected)
+def test_actions_preflight_recovers_interrupted_job_before_idle_check(self)
+⋮----
+def _exercise(self, expected, abandon=False)
 ⋮----
 root = Path(td)
 auth = TokenAuthorizer([{
@@ -3058,6 +3102,13 @@ thread = threading.Thread(target=server.serve_forever, daemon=True)
 ⋮----
 client = ProductionOSClient(f'http://127.0.0.1:{server.server_port}',
 # No operator token: validates real /v1/workers/session permissions.
+⋮----
+abandoned = client.claim('github-actions-worker', ['python'])
+⋮----
+workflow_source = (Path(__file__).resolve().parents[1] /
+block = workflow_source.split('- name: Probe compatible Production-OS work', 1)[1]
+block = block.split("python - <<'PY'\n", 1)[1].split('\n          PY', 1)[0]
+outputs = root / 'github-output'
 ⋮----
 executed = []
 def runner(request_path, project_out, **kwargs)

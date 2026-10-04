@@ -110,8 +110,8 @@ request.json
 ```json
 {
   "requested_by": "production-os",
-  "reason": "diagnose the live queue and workflow inventory after #241 and Production-OS #251",
-  "sequence": 9
+  "reason": "recover interrupted sessions and inspect the two failed workflows after #242",
+  "sequence": 10
 }
 ```
 

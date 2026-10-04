@@ -28,25 +28,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T06:20:15Z
+Generated: 2026-10-04T06:29:48Z
 
 ### Git
 - Branch: `main`
-- Head: `48464c0aa9d8`
-- Commit date: 2026-10-04T08:19:42+02:00
-- Commit: chore(worker): diagnose live queue inventory after availability fixes
+- Head: `26dd12fcd464`
+- Commit date: 2026-10-04T08:29:16+02:00
+- Commit: chore(worker): validate startup reconciliation and terminal task diagnosis
 - Tracked files: 839
 
 ### Recently changed files
 - `control/production-os-worker-kick.json`
 - `.github/workflows/production-os-actions-worker.yml`
 - `docs/PRODUCTION_OS_WORKER.md`
-- `.github/workflows/production-os-worker-integration.yml`
 - `integration_tests/test_production_os_server_integration.py`
-- `studio/production_os_worker.py`
-- `tests/test_production_os_actions_worker_workflow.py`
-- `tests/test_production_os_remote_asset_capability.py`
-- `tests/test_production_os_worker_recovery.py`
 
 ### Project signals
 - No common build descriptor detected

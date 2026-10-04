@@ -3,9 +3,10 @@ from __future__ import annotations
 
 import base64
 import json
+import math
 from pathlib import Path
 
-from provider_health import load as load_local
+from provider_health import REGIME_WINDOW, load as load_local
 
 STATE_BRANCH = "studio-project-memory"
 STATE_PATH = ".studio-memory/provider-health.json"
@@ -21,10 +22,12 @@ def _validate(data):
     if not isinstance(data, dict) or len(data) > MAX_ROWS:
         raise ProviderHealthStoreError("provider health invalid")
     clean = {}
+    required = {"successes", "failures", "consecutive_failures", "opened_until"}
+    optional = {"latency_ms_ema", "last_observed_at", "recent_outcomes"}
     for name, row in data.items():
         if not isinstance(name, str) or not name.strip() or not isinstance(row, dict):
             raise ProviderHealthStoreError("provider health entry invalid")
-        if set(row) != {"successes", "failures", "consecutive_failures", "opened_until"}:
+        if not required.issubset(row) or not set(row).issubset(required | optional):
             raise ProviderHealthStoreError("provider health fields invalid")
         successes = row["successes"]
         failures = row["failures"]
@@ -34,13 +37,26 @@ def _validate(data):
             raise ProviderHealthStoreError("provider health counters invalid")
         if successes < 0 or failures < 0 or consecutive < 0 or consecutive > failures:
             raise ProviderHealthStoreError("provider health counters invalid")
-        if not isinstance(opened_until, (int, float)) or isinstance(opened_until, bool) or opened_until < 0:
+        if not isinstance(opened_until, (int, float)) or isinstance(opened_until, bool) or not math.isfinite(opened_until) or opened_until < 0:
             raise ProviderHealthStoreError("provider health cooldown invalid")
+        latency = row.get("latency_ms_ema")
+        if latency is not None and (not isinstance(latency, (int, float)) or isinstance(latency, bool)
+                                    or not math.isfinite(latency) or latency < 0):
+            raise ProviderHealthStoreError("provider health latency invalid")
+        observed_at = row.get("last_observed_at", 0.0)
+        if not isinstance(observed_at, (int, float)) or isinstance(observed_at, bool) or not math.isfinite(observed_at) or observed_at < 0:
+            raise ProviderHealthStoreError("provider health timestamp invalid")
+        outcomes = row.get("recent_outcomes", [])
+        if not isinstance(outcomes, list) or len(outcomes) > REGIME_WINDOW or any(type(item) is not int or item not in (0, 1) for item in outcomes):
+            raise ProviderHealthStoreError("provider health outcomes invalid")
         clean[name] = {
             "successes": successes,
             "failures": failures,
             "consecutive_failures": consecutive,
             "opened_until": float(opened_until),
+            "latency_ms_ema": None if latency is None else float(latency),
+            "last_observed_at": float(observed_at),
+            "recent_outcomes": list(outcomes),
         }
     return clean
 

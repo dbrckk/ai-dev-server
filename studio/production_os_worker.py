@@ -1024,7 +1024,11 @@ def _failure_diagnostics(exc: Exception) -> dict[str, Any]:
                "memory commit creation failed", "agent performance invalid", "agent performance entry invalid",
                "agent performance fields invalid", "agent performance counts invalid",
                "agent performance duration invalid", "agent performance too large",
-               "agent performance unreadable")
+               "agent performance unreadable", "provider health invalid", "provider health entry invalid",
+               "provider health fields invalid", "provider health counters invalid",
+               "provider health cooldown invalid", "provider health latency invalid",
+               "provider health timestamp invalid", "provider health outcomes invalid",
+               "provider health too large", "provider health unreadable")
     for reason in reasons:
         if message.endswith(": " + reason):
             result["error_reason"] = reason.replace(" ", "_")

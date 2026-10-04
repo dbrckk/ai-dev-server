@@ -110,8 +110,8 @@ request.json
 ```json
 {
   "requested_by": "production-os",
-  "reason": "validate fail-closed remote Asset Forge dispatch capability after #239",
-  "sequence": 7
+  "reason": "verify merged worker lifecycle fix #240 against the live Production-OS service",
+  "sequence": 8
 }
 ```
 

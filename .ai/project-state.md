@@ -28,16 +28,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T05:50:38Z
+Generated: 2026-10-04T05:53:27Z
 
 ### Git
 - Branch: `main`
-- Head: `31d76cfef7e9`
-- Commit date: 2026-10-04T07:50:26+02:00
-- Commit: fix(worker): report local job failures and validate result correlation (#240)
-- Tracked files: 835
+- Head: `66399f4cc665`
+- Commit date: 2026-10-04T07:52:50+02:00
+- Commit: chore(worker): verify merged lifecycle recovery against live server
+- Tracked files: 839
 
 ### Recently changed files
+- `control/production-os-worker-kick.json`
 - `.github/workflows/production-os-worker-integration.yml`
 - `docs/PRODUCTION_OS_WORKER.md`
 - `integration_tests/test_production_os_server_integration.py`
@@ -45,7 +46,6 @@ Generated: 2026-10-04T05:50:38Z
 - `tests/test_production_os_actions_worker_workflow.py`
 - `tests/test_production_os_remote_asset_capability.py`
 - `tests/test_production_os_worker_recovery.py`
-- `control/production-os-worker-kick.json`
 - `.github/workflows/production-os-actions-worker.yml`
 - `.github/workflows/production-os-asset-forge-live-e2e.yml`
 - `tests/test_production_os_asset_forge_live_e2e_workflow.py`

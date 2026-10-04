@@ -2,26 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "ci: add Production OS Asset Forge Deadline Zero E2E",
-      "terms": [
-        "add",
-        "asset",
-        "ci",
-        "deadline",
-        "e2e",
-        "forge",
-        "os",
-        "production",
-        "zero"
-      ],
-      "tests": [],
-      "useful": [
-        "studio/production_os_worker.py",
-        "tests/test_production_os_worker.py"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "ci: pin E2E Asset Forge revision",
       "terms": [
         "asset",
@@ -1159,6 +1139,27 @@
         "tests/test_godot_model.py",
         "tests/test_production_os_worker_recovery.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "Continue Production-OS worker through active checkpoints; verify full production chain",
+      "terms": [
+        "active",
+        "chain",
+        "checkpoints",
+        "full",
+        "production",
+        "production-os",
+        "through",
+        "verify",
+        "worker"
+      ],
+      "tests": [],
+      "useful": [
+        "integration_tests/test_production_os_server_integration.py",
+        "studio/production_os_worker.py",
+        "tests/test_production_os_worker_runtime.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1197,6 +1198,11 @@
       "studio/production_os_worker.py": 4,
       "tests/test_production_os_actions_worker_workflow.py": 12,
       "tests/test_production_os_worker_cli.py": 4
+    },
+    "active": {
+      "integration_tests/test_production_os_server_integration.py": 4,
+      "studio/production_os_worker.py": 4,
+      "tests/test_production_os_worker_runtime.py": 4
     },
     "add": {
       "scripts/preflight-production-os-worker.py": 4,
@@ -1402,11 +1408,19 @@
       "tests/test_production_os_worker.py": 4
     },
     "chain": {
-      "tests/test_production_os_actions_worker_workflow.py": 4
+      "integration_tests/test_production_os_server_integration.py": 4,
+      "studio/production_os_worker.py": 4,
+      "tests/test_production_os_actions_worker_workflow.py": 4,
+      "tests/test_production_os_worker_runtime.py": 4
     },
     "character": {
       "studio/asset_forge_bridge.py": 4,
       "tests/test_asset_forge_bridge.py": 4
+    },
+    "checkpoints": {
+      "integration_tests/test_production_os_server_integration.py": 4,
+      "studio/production_os_worker.py": 4,
+      "tests/test_production_os_worker_runtime.py": 4
     },
     "chore": {
       "studio/production_os_worker.py": 12,
@@ -1784,6 +1798,11 @@
       "tests/test_production_os_worker.py": 4,
       "tests/test_production_os_worker_runtime.py": 8
     },
+    "full": {
+      "integration_tests/test_production_os_server_integration.py": 4,
+      "studio/production_os_worker.py": 4,
+      "tests/test_production_os_worker_runtime.py": 4
+    },
     "generated": {
       "studio/github_runner.py": 4
     },
@@ -2094,18 +2113,19 @@
       "tests/test_production_os_worker_runtime.py": 4
     },
     "production": {
+      "integration_tests/test_production_os_server_integration.py": 4,
       "scripts/preflight-production-os-worker.py": 4,
       "studio/github_runner.py": 12,
-      "studio/production_os_worker.py": 8,
+      "studio/production_os_worker.py": 12,
       "tests/test_production_os_local_e2e.py": 4,
       "tests/test_production_os_result_contract.py": 4,
       "tests/test_production_os_worker.py": 4,
       "tests/test_production_os_worker_cli.py": 4,
       "tests/test_production_os_worker_preflight.py": 4,
-      "tests/test_production_os_worker_runtime.py": 4
+      "tests/test_production_os_worker_runtime.py": 8
     },
     "production-os": {
-      "integration_tests/test_production_os_server_integration.py": 20,
+      "integration_tests/test_production_os_server_integration.py": 24,
       "scripts/preflight-production-os-worker.py": 4,
       "studio/agents/codex.py": 4,
       "studio/agents/orchestrator.py": 4,
@@ -2119,7 +2139,7 @@
       "studio/production_os_live_diagnostics.py": 8,
       "studio/production_os_provider_config.py": 4,
       "studio/production_os_resume_objectives.py": 8,
-      "studio/production_os_worker.py": 36,
+      "studio/production_os_worker.py": 40,
       "tests/test_agent_router.py": 4,
       "tests/test_capacity_scheduler_omniroute.py": 4,
       "tests/test_codex_adapter.py": 4,
@@ -2137,7 +2157,7 @@
       "tests/test_production_os_worker_cli.py": 8,
       "tests/test_production_os_worker_preflight.py": 4,
       "tests/test_production_os_worker_recovery.py": 16,
-      "tests/test_production_os_worker_runtime.py": 12,
+      "tests/test_production_os_worker_runtime.py": 16,
       "tests/test_request_contract.py": 4
     },
     "profile": {
@@ -2485,11 +2505,12 @@
       "tests/test_production_os_result_contract.py": 4
     },
     "through": {
-      "studio/production_os_worker.py": 4,
+      "integration_tests/test_production_os_server_integration.py": 4,
+      "studio/production_os_worker.py": 8,
       "tests/test_production_os_result_contract.py": 4,
       "tests/test_production_os_worker.py": 4,
       "tests/test_production_os_worker_cli.py": 4,
-      "tests/test_production_os_worker_runtime.py": 4
+      "tests/test_production_os_worker_runtime.py": 8
     },
     "tool": {
       "studio/core.py": 4
@@ -2549,17 +2570,18 @@
       "tests/test_production_os_worker_runtime.py": 4
     },
     "verify": {
+      "integration_tests/test_production_os_server_integration.py": 4,
       "scripts/preflight-production-os-worker.py": 4,
       "studio/asset_forge_bridge.py": 12,
       "studio/generic_project.py": 4,
       "studio/orchestrator.py": 8,
-      "studio/production_os_worker.py": 8,
+      "studio/production_os_worker.py": 12,
       "tests/test_asset_forge_bridge.py": 8,
       "tests/test_browser_validation_contract.py": 4,
       "tests/test_orchestrator.py": 4,
       "tests/test_production_os_worker_cli.py": 8,
       "tests/test_production_os_worker_preflight.py": 4,
-      "tests/test_production_os_worker_runtime.py": 8
+      "tests/test_production_os_worker_runtime.py": 12
     },
     "version": {
       "studio/github_runner.py": 4,
@@ -2601,7 +2623,7 @@
       "tests/test_production_os_remote_asset_capability.py": 8
     },
     "worker": {
-      "integration_tests/test_production_os_server_integration.py": 20,
+      "integration_tests/test_production_os_server_integration.py": 24,
       "scripts/preflight-production-os-worker.py": 4,
       "studio/core.py": 4,
       "studio/github_provider_health_store.py": 4,
@@ -2624,7 +2646,7 @@
       "tests/test_production_os_worker_cli.py": 4,
       "tests/test_production_os_worker_preflight.py": 4,
       "tests/test_production_os_worker_recovery.py": 16,
-      "tests/test_production_os_worker_runtime.py": 16,
+      "tests/test_production_os_worker_runtime.py": 20,
       "tests/test_request_contract.py": 4
     },
     "workers": {

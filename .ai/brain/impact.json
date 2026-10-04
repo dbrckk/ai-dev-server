@@ -1,20 +1,12 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "7f593c52fc9813af1948869ad26f19e45eaf8d4e",
-  "head": "672ee28dfa9179b20fa8046bcca3220dd6abf66c",
+  "base": "672ee28dfa9179b20fa8046bcca3220dd6abf66c",
+  "head": "2690cd06960a3d2812cc78a2866e9bdb0e03559b",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "control/production-os-worker-kick.json",
-      "status": "M"
-    },
-    {
-      "path": "studio/github_provider_health_store.py",
-      "status": "M"
-    },
-    {
-      "path": "studio/godot_model.py",
+      "path": "integration_tests/test_production_os_server_integration.py",
       "status": "M"
     },
     {
@@ -22,35 +14,18 @@
       "status": "M"
     },
     {
-      "path": "tests/test_github_provider_health_store.py",
-      "status": "A"
-    },
-    {
-      "path": "tests/test_godot_model.py",
-      "status": "M"
-    },
-    {
-      "path": "tests/test_production_os_worker_recovery.py",
+      "path": "tests/test_production_os_worker_runtime.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "studio/github_provider_health_store.py",
-    "studio/godot_model.py",
+    "integration_tests/test_production_os_server_integration.py",
     "studio/production_os_worker.py",
-    "tests/test_github_provider_health_store.py",
-    "tests/test_godot_model.py",
-    "tests/test_production_os_worker_recovery.py"
+    "tests/test_production_os_worker_runtime.py"
   ],
   "impacted_files": [
     "integration_tests/test_production_os_server_integration.py",
-    "studio/github_provider_health_store.py",
-    "studio/github_runner.py",
-    "studio/godot_model.py",
-    "studio/godot_preview.py",
     "studio/production_os_worker.py",
-    "tests/test_github_provider_health_store.py",
-    "tests/test_godot_model.py",
     "tests/test_mobile_validation_contract.py",
     "tests/test_production_os_local_e2e.py",
     "tests/test_production_os_remote_asset_capability.py",
@@ -97,190 +72,22 @@
       "line": 106
     },
     {
-      "name": "_exercise",
+      "name": "test_active_checkpoint_completes_same_real_workflow",
       "kind": "function",
       "file": "integration_tests/test_production_os_server_integration.py",
       "line": 109
     },
     {
+      "name": "_exercise",
+      "kind": "function",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 112
+    },
+    {
       "name": "runner",
       "kind": "function",
       "file": "integration_tests/test_production_os_server_integration.py",
-      "line": 162
-    },
-    {
-      "name": "ProviderHealthStoreError",
-      "kind": "class",
-      "file": "studio/github_provider_health_store.py",
-      "line": 17
-    },
-    {
-      "name": "_validate",
-      "kind": "function",
-      "file": "studio/github_provider_health_store.py",
-      "line": 21
-    },
-    {
-      "name": "_ref",
-      "kind": "function",
-      "file": "studio/github_provider_health_store.py",
-      "line": 64
-    },
-    {
-      "name": "load",
-      "kind": "function",
-      "file": "studio/github_provider_health_store.py",
-      "line": 74
-    },
-    {
-      "name": "save",
-      "kind": "function",
-      "file": "studio/github_provider_health_store.py",
-      "line": 103
-    },
-    {
-      "name": "restore_local",
-      "kind": "function",
-      "file": "studio/github_provider_health_store.py",
-      "line": 156
-    },
-    {
-      "name": "persist_local",
-      "kind": "function",
-      "file": "studio/github_provider_health_store.py",
-      "line": 164
-    },
-    {
-      "name": "_prepare_capability_promotion_handoff",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 56
-    },
-    {
-      "name": "_usage_count",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 96
-    },
-    {
-      "name": "collect_agent_usage",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 105
-    },
-    {
-      "name": "write_production_os_result",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 170
-    },
-    {
-      "name": "_stop_bounded_process",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 556
-    },
-    {
-      "name": "bounded_run",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 592
-    },
-    {
-      "name": "_update_improvements",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 620
-    },
-    {
-      "name": "run",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 638
-    },
-    {
-      "name": "effective_runner",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 648
-    },
-    {
-      "name": "run_once",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 940
-    },
-    {
-      "name": "improvement_project_cycle",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 965
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 1090
-    },
-    {
-      "name": "GodotModel",
-      "kind": "class",
-      "file": "studio/godot_model.py",
-      "line": 59
-    },
-    {
-      "name": "ask",
-      "kind": "function",
-      "file": "studio/godot_model.py",
-      "line": 60
-    },
-    {
-      "name": "_ask_godot",
-      "kind": "function",
-      "file": "studio/godot_model.py",
-      "line": 90
-    },
-    {
-      "name": "_safe_apply",
-      "kind": "function",
-      "file": "studio/godot_preview.py",
-      "line": 42
-    },
-    {
-      "name": "_context",
-      "kind": "function",
-      "file": "studio/godot_preview.py",
-      "line": 67
-    },
-    {
-      "name": "_exact_branch_ref",
-      "kind": "function",
-      "file": "studio/godot_preview.py",
-      "line": 89
-    },
-    {
-      "name": "_restore",
-      "kind": "function",
-      "file": "studio/godot_preview.py",
-      "line": 99
-    },
-    {
-      "name": "_publish",
-      "kind": "function",
-      "file": "studio/godot_preview.py",
-      "line": 138
-    },
-    {
-      "name": "execute",
-      "kind": "function",
-      "file": "studio/godot_preview.py",
-      "line": 178
-    },
-    {
-      "name": "checkpoint",
-      "kind": "function",
-      "file": "studio/godot_preview.py",
-      "line": 227
+      "line": 165
     },
     {
       "name": "_browser_validation_operational",
@@ -508,145 +315,25 @@
       "name": "observe_job_control",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 1156
+      "line": 1159
     },
     {
       "name": "report_local_failure",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 1182
+      "line": 1185
     },
     {
       "name": "keep_job_alive",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 1233
+      "line": 1236
     },
     {
       "name": "main",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 1460
-    },
-    {
-      "name": "ProviderHealthPersistenceTests",
-      "kind": "class",
-      "file": "tests/test_github_provider_health_store.py",
-      "line": 13
-    },
-    {
-      "name": "test_real_inference_record_can_be_persisted_without_losing_routing_history",
-      "kind": "function",
-      "file": "tests/test_github_provider_health_store.py",
-      "line": 14
-    },
-    {
-      "name": "test_legacy_remote_row_gains_safe_defaults",
-      "kind": "function",
-      "file": "tests/test_github_provider_health_store.py",
-      "line": 29
-    },
-    {
-      "name": "test_unexpected_or_invalid_observations_are_rejected",
-      "kind": "function",
-      "file": "tests/test_github_provider_health_store.py",
-      "line": 37
-    },
-    {
-      "name": "FakeAPI",
-      "kind": "class",
-      "file": "tests/test_godot_model.py",
-      "line": 14
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 16
-    },
-    {
-      "name": "call",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 17
-    },
-    {
-      "name": "completion",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 24
-    },
-    {
-      "name": "model",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 28
-    },
-    {
-      "name": "product_value",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 47
-    },
-    {
-      "name": "GodotModelTests",
-      "kind": "class",
-      "file": "tests/test_godot_model.py",
-      "line": 52
-    },
-    {
-      "name": "test_nvidia_source_generation_requests_json_mode",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 53
-    },
-    {
-      "name": "test_product_uses_godot_planning_contract_not_flutter_execution_claims",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 59
-    },
-    {
-      "name": "test_product_prompt_requires_literal_json_step_objects",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 69
-    },
-    {
-      "name": "test_implementation_uses_godot_prompt_and_scope",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 78
-    },
-    {
-      "name": "test_test_role_rejects_non_test_path_then_repairs_once",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 88
-    },
-    {
-      "name": "test_truncated_patch_retry_requests_a_smaller_complete_change",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 97
-    },
-    {
-      "name": "test_structured_godot_call_falls_back_to_secondary_provider",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 111
-    },
-    {
-      "name": "test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 123
-    },
-    {
-      "name": "test_budget_is_shared_and_fail_closed",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 137
+      "line": 1482
     },
     {
       "name": "request",
@@ -1369,7 +1056,7 @@
       "line": 569
     },
     {
-      "name": "test_run_once_reports_failed_pipeline_to_control_plane",
+      "name": "test_active_checkpoint_continues_same_claim_until_complete",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
       "line": 609
@@ -1378,175 +1065,197 @@
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 612
+      "line": 614
     },
     {
-      "name": "test_run_once_refreshes_heartbeat_during_long_runner_execution",
+      "name": "test_active_checkpoint_limit_fails_with_explicit_reason",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 640
-    },
-    {
-      "name": "heartbeat",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 646
+      "line": 638
     },
     {
       "name": "runner",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 642
+    },
+    {
+      "name": "test_run_once_reports_failed_pipeline_to_control_plane",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
       "line": 659
     },
     {
-      "name": "test_run_once_cooperatively_cancels_only_target_job",
+      "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 687
+      "line": 662
+    },
+    {
+      "name": "test_run_once_refreshes_heartbeat_during_long_runner_execution",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 690
     },
     {
       "name": "heartbeat",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 691
+      "line": 696
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 725
+      "line": 709
+    },
+    {
+      "name": "test_run_once_cooperatively_cancels_only_target_job",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 737
+    },
+    {
+      "name": "heartbeat",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 741
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 775
     },
     {
       "name": "test_run_once_reports_runner_exception_and_clears_active_job",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 751
+      "line": 801
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 754
+      "line": 804
     },
     {
       "name": "test_failed_envelope_is_enriched_with_ci_diagnostic_when_sha_exists",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 777
+      "line": 827
     },
     {
       "name": "test_failed_envelope_ci_enrichment_is_optional_without_token",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 816
+      "line": 866
     },
     {
       "name": "test_run_once_retries_transient_runner_error_then_completes",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 832
+      "line": 882
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 836
+      "line": 886
     },
     {
       "name": "test_run_once_retries_explicit_retry_summary_then_completes",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 863
+      "line": 913
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 867
+      "line": 917
     },
     {
       "name": "test_run_once_does_not_retry_non_transient_runner_error",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 898
+      "line": 948
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 902
+      "line": 952
     },
     {
       "name": "test_capacity_snapshot_prefers_authenticated_omniroute",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 921
+      "line": 971
     },
     {
       "name": "Snapshot",
       "kind": "class",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 924
+      "line": 974
     },
     {
       "name": "fetch",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 934
+      "line": 984
     },
     {
       "name": "test_capacity_snapshot_fails_closed_without_authenticated_usage",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 955
+      "line": 1005
     },
     {
       "name": "Snapshot",
       "kind": "class",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 958
+      "line": 1008
     },
     {
       "name": "test_client_heartbeat_posts_capacity_snapshot",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 977
+      "line": 1027
     },
     {
       "name": "opener",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 980
+      "line": 1030
     },
     {
       "name": "test_run_once_writes_project_token_envelope_before_execution",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1018
+      "line": 1068
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1027
+      "line": 1077
     },
     {
       "name": "test_project_token_envelope_is_capped_by_live_global_remaining_capacity",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1061
+      "line": 1111
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1070
+      "line": 1120
     }
   ],
   "selected_tests": [
     "integration_tests/test_production_os_server_integration.py",
-    "tests/test_github_provider_health_store.py",
-    "tests/test_godot_model.py",
     "tests/test_mobile_validation_contract.py",
     "tests/test_production_os_local_e2e.py",
     "tests/test_production_os_remote_asset_capability.py",
@@ -1554,8 +1263,6 @@
     "tests/test_production_os_worker_cli.py",
     "tests/test_production_os_worker_preflight.py",
     "tests/test_production_os_worker_recovery.py",
-    "tests/test_production_os_worker_runtime.py",
-    "tests/test_provider_health.py",
-    "tests/test_store.py"
+    "tests/test_production_os_worker_runtime.py"
   ]
 }

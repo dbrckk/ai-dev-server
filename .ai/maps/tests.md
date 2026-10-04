@@ -8563,6 +8563,18 @@ request = json.loads(Path(request_path).read_text(encoding="utf-8"))
 ⋮----
 completed = client.calls[4][1]
 ⋮----
+def test_active_checkpoint_continues_same_claim_until_complete(self)
+⋮----
+stages = iter(("design", "preview", None))
+⋮----
+stage = next(stages)
+⋮----
+def test_active_checkpoint_limit_fails_with_explicit_reason(self)
+⋮----
+def runner(*args, **kwargs)
+⋮----
+failures = [payload for name, payload, *_ in client.calls if name == "fail"]
+⋮----
 def test_run_once_reports_failed_pipeline_to_control_plane(self)
 ⋮----
 failed = client.calls[4][1]

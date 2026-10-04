@@ -3228,7 +3228,9 @@ def test_unreadable_result_is_reported_to_real_server(self)
 ⋮----
 def test_actions_preflight_recovers_interrupted_job_before_idle_check(self)
 ⋮----
-def _exercise(self, expected, abandon=False)
+def test_active_checkpoint_completes_same_real_workflow(self)
+⋮----
+def _exercise(self, expected, abandon=False, active_before_complete=False)
 ⋮----
 root = Path(td)
 auth = TokenAuthorizer([{
@@ -21200,10 +21202,13 @@ heartbeat_thread = threading.Thread(
 ⋮----
 started = float(clock())
 runner_attempt = 0
+continuations = 0
 ⋮----
 summary = run_project(
 ⋮----
 delay = retry_backoff * (2 ** (runner_attempt - 1))
+⋮----
+summary = {
 ⋮----
 duration = max(0.0, float(clock()) - started)
 ⋮----
@@ -33235,6 +33240,18 @@ def runner(request_path, out, **kwargs)
 request = json.loads(Path(request_path).read_text(encoding="utf-8"))
 ⋮----
 completed = client.calls[4][1]
+⋮----
+def test_active_checkpoint_continues_same_claim_until_complete(self)
+⋮----
+stages = iter(("design", "preview", None))
+⋮----
+stage = next(stages)
+⋮----
+def test_active_checkpoint_limit_fails_with_explicit_reason(self)
+⋮----
+def runner(*args, **kwargs)
+⋮----
+failures = [payload for name, payload, *_ in client.calls if name == "fail"]
 ⋮----
 def test_run_once_reports_failed_pipeline_to_control_plane(self)
 ⋮----

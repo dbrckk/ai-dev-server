@@ -1,18 +1,20 @@
 # Change impact
 
-Base: e7d800b2ef20d834f2135910271ea218c1e0e187
-Head: 672ee28dfa9179b20fa8046bcca3220dd6abf66c
+Base: 131f06b304b5a762e57cec1fa8dfb03aa8006e09
+Head: 2690cd06960a3d2812cc78a2866e9bdb0e03559b
 
 ## Changed files
-- M studio/godot_model.py
-- M tests/test_godot_model.py
+- M integration_tests/test_production_os_server_integration.py
+- M studio/production_os_worker.py
+- M tests/test_production_os_worker_runtime.py
 
 ## Affected areas
+- integration_tests
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_godot_model.py
+- tests/test_production_os_worker.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

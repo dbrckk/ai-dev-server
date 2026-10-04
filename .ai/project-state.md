@@ -53,21 +53,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T14:08:19Z
+Generated: 2026-10-04T20:12:13Z
 
 ### Git
 - Branch: `main`
-- Head: `672ee28dfa91`
-- Commit date: 2026-10-04T13:35:06+02:00
-- Commit: fix(godot): shrink truncated patch retries (#249)
+- Head: `2690cd06960a`
+- Commit date: 2026-10-04T22:11:59+02:00
+- Commit: fix(worker): continue active production checkpoints (#250)
 - Tracked files: 849
 
 ### Recently changed files
+- `integration_tests/test_production_os_server_integration.py`
+- `studio/production_os_worker.py`
+- `tests/test_production_os_worker_runtime.py`
 - `studio/godot_model.py`
 - `tests/test_godot_model.py`
 - `control/production-os-worker-kick.json`
 - `studio/github_provider_health_store.py`
-- `studio/production_os_worker.py`
 - `tests/test_github_provider_health_store.py`
 - `tests/test_production_os_worker_recovery.py`
 - `.github/workflows/production-os-actions-worker.yml`

@@ -89,7 +89,9 @@ def test_unreadable_result_is_reported_to_real_server(self)
 ⋮----
 def test_actions_preflight_recovers_interrupted_job_before_idle_check(self)
 ⋮----
-def _exercise(self, expected, abandon=False)
+def test_active_checkpoint_completes_same_real_workflow(self)
+⋮----
+def _exercise(self, expected, abandon=False, active_before_complete=False)
 ⋮----
 root = Path(td)
 auth = TokenAuthorizer([{

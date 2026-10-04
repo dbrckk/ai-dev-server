@@ -15859,10 +15859,13 @@ heartbeat_thread = threading.Thread(
 ⋮----
 started = float(clock())
 runner_attempt = 0
+continuations = 0
 ⋮----
 summary = run_project(
 ⋮----
 delay = retry_backoff * (2 ** (runner_attempt - 1))
+⋮----
+summary = {
 ⋮----
 duration = max(0.0, float(clock()) - started)
 ⋮----

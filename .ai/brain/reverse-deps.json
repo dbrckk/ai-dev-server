@@ -4614,6 +4614,7 @@
         "tests/test_orchestrator.py",
         "tests/test_performance_qa.py",
         "tests/test_platform_view_qa.py",
+        "tests/test_production_os_worker_runtime.py",
         "tests/test_release_repair.py",
         "tests/test_repair_queue.py",
         "tests/test_repair_strategy.py",
@@ -4621,7 +4622,7 @@
         "tests/test_task_scheduler.py",
         "tests/test_workflow_checkpoint.py"
       ],
-      "in_degree": 58,
+      "in_degree": 59,
       "out_degree": 0
     },
     "studio/stagnation_controller.py": {
@@ -7000,13 +7001,14 @@
     },
     "tests/test_production_os_worker_runtime.py": {
       "dependencies": [
-        "studio/production_os_worker.py"
+        "studio/production_os_worker.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
         "tests/test_production_os_worker_recovery.py"
       ],
       "in_degree": 1,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_project_budget.py": {
       "dependencies": [

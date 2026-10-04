@@ -148,3 +148,18 @@ worker token. This separates a worker-specific empty candidate window from
 unfinished work assigned elsewhere or workflows which have not queued tasks.
 Inventory inspection is read-only and diagnostic failures do not override the
 mandatory authenticated availability check.
+
+## Actions restart recovery
+
+Each new Actions process opens its worker-only session before testing queue
+availability. The single-flight workflow reports no active jobs at startup,
+allowing the server to recover the same worker's interrupted claimed/acknowledged
+jobs. Registration happens even when the candidate queue appears empty; otherwise
+the preflight would skip the process needed to recover those jobs. Operator pause
+and draining states still prevent claiming work.
+
+The preflight also reads at most five failed workflows and prints only task IDs,
+attempt counters, pipeline status/stage and exception type. It omits request
+briefs, repository metadata, raw exceptions and tokens. Terminal failed tasks
+are not automatically retried by this diagnostic; retry/continue remains an
+operator action with the existing attempt limits.

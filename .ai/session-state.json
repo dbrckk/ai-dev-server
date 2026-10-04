@@ -3,7 +3,7 @@
   "updated_at": "2026-10-04",
   "task": "Make Production-OS worker operational and resilient",
   "base_commit": "836a1d5bdf9b7cffa2983de1cbcb36e2cc07f913",
-  "branch": "fix/worker-queue-diagnostics",
+  "branch": "fix/worker-session-preflight",
   "completed": [
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",
@@ -20,10 +20,11 @@
     "ci_policy": "passed after using separate integration workflow",
     "github_pr_checks": "all 11 successful before merging",
     "github_postmerge": "worker, integration, python-tests and validate successful",
-    "queue_probe_workflow": "32 selected tests passed, plus 15 subtests"
+    "queue_probe_workflow": "32 selected tests passed, plus 15 subtests",
+    "restart_preflight": "3 real-server integration tests passed, including actual Actions Python preflight recovery of an acknowledged job"
   },
   "live_findings": {
-    "run_id": 37181156718,
+    "run_id": 37182485300,
     "job_id": 111373859470,
     "commit": "66399f4cc66592cc3755446ed88e9f0290bd4efc",
     "status": "success, configuration ready, server ready, no compatible base/mobile jobs; agent execution skipped",
@@ -33,18 +34,30 @@
     "render_deployment": "dep-db0uihnf3r2c73berho0",
     "server_commit": "4f547bed6c97c7c2a024400af0c604ae854da75d",
     "health": "healthz and readyz HTTP 200, database reachable",
-    "database_inspection": "Render query connector blocked by empty external IP allowlist; no network policy changed"
+    "database_inspection": "Render query connector blocked by empty external IP allowlist; no network policy changed",
+    "inventory": {
+      "jobs": {
+        "failed": 4
+      },
+      "workflows": {
+        "failed": 2
+      },
+      "online_workers": 0
+    },
+    "queue_reason": "queue_empty for both base and mobile"
   },
   "pending": [
-    "Obtain queue/operator visibility via existing deployment credentials or dashboard; worker token cannot enqueue jobs",
-    "Complete a real compatible coding job and verify target repository artifact",
-    "Resolve Asset Forge cross-repository Actions dispatch permission"
+    "Deploy and rerun failed workflow diagnostics",
+    "Correct the original terminal job failures and resume via authorized operator controls",
+    "Validate real agent execution and repository artifact",
+    "Resolve Asset Forge dispatch authorization"
   ],
   "merged_pr": {
     "number": 240,
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Print authenticated queue diagnosis in base/mobile availability probes; compatible with older servers"
+    "Reconcile the fresh single-flight Actions session before any availability check",
+    "Read bounded failed workflow/task diagnostics without printing briefs or raw errors"
   ]
 }

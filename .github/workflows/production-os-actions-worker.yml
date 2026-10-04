@@ -200,11 +200,17 @@ jobs:
           token = os.environ["PRODUCTION_OS_WORKER_TOKEN"].strip()
           worker_id = os.environ["PRODUCTION_OS_WORKER_ID"].strip()
           from production_os_worker import worker_capabilities
-          from production_os_worker import _NoRedirect
+          from production_os_worker import _NoRedirect, ProductionOSClient
 
           base_env = dict(os.environ)
           base_env["PRODUCTION_OS_WORKER_SPECIALTIES"] = ""
           base_capabilities = worker_capabilities(base_env)
+
+          # A fresh single-flight Actions process has no in-memory active jobs.
+          # Reconcile its prior interrupted session before checking for queued work.
+          session = ProductionOSClient(base, token).register(worker_id, base_capabilities)
+          recovered = (session or {}).get("recovered_jobs", [])
+          print(f"Production-OS worker session: ready recovered_jobs={len(recovered)}")
 
           def probe(capabilities):
               request = urllib.request.Request(
@@ -253,6 +259,42 @@ jobs:
               }, sort_keys=True))
           except (OSError, ValueError, RuntimeError) as exc:
               print("Production-OS queue inventory unavailable: " + type(exc).__name__)
+
+          # Inspect only terminal task diagnostics, never repository briefs.
+          try:
+              request = urllib.request.Request(
+                  base + "/v1/workflows",
+                  headers={"Authorization": "Bearer " + token, "Accept": "application/json"},
+              )
+              opener = urllib.request.build_opener(_NoRedirect())
+              with opener.open(request, timeout=10) as response:
+                  workflows = json.loads(response.read(1000000).decode("utf-8")).get("workflows", [])
+              for workflow in [w for w in workflows if w.get("status") == "failed"][:5]:
+                  workflow_id = str(workflow["id"])
+                  from urllib.parse import quote
+                  request = urllib.request.Request(
+                      base + "/v1/workflows/" + quote(workflow_id, safe=""),
+                      headers={"Authorization": "Bearer " + token, "Accept": "application/json"},
+                  )
+                  with opener.open(request, timeout=10) as response:
+                      detail = json.loads(response.read(1000000).decode("utf-8")).get("workflow", {})
+                  for task in detail.get("tasks", []):
+                      if task.get("status") != "failed":
+                          continue
+                      result = task.get("result") or {}
+                      evidence = result.get("evidence") or {}
+                      print("Production-OS failed task diagnosis: " + json.dumps({
+                          "workflow_id": workflow_id,
+                          "task_id": task.get("task_id"),
+                          "attempts": task.get("attempts"),
+                          "max_attempts": task.get("max_attempts"),
+                          "pipeline_status": evidence.get("pipeline_status"),
+                          "next_stage": evidence.get("next_stage"),
+                          "error_type": evidence.get("error_type"),
+                          "worker_status": result.get("ai_dev_server_status"),
+                      }, sort_keys=True))
+          except (OSError, ValueError, RuntimeError, KeyError, TypeError) as exc:
+              print("Production-OS failed task diagnosis unavailable: " + type(exc).__name__)
 
           base_work = probe(base_capabilities)
           mobile_work = probe(base_capabilities + ["mobile-ui-validation"])

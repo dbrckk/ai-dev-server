@@ -277,6 +277,7 @@ test_production_os_remote_asset_capability.py
 test_production_os_result_contract.py
 test_production_os_worker_cli.py
 test_production_os_worker_preflight.py
+test_production_os_worker_recovery.py
 test_production_os_worker_runtime.py
 test_production_os_worker.py
 test_project_budget.py
@@ -8266,6 +8267,46 @@ def test_loopback_http_is_allowed(self)
 def test_partial_omniroute_configuration_fails(self)
 ⋮----
 def test_non_positive_poll_interval_fails(self)
+```
+
+## File: test_production_os_worker_recovery.py
+```python
+"""Regression coverage for acknowledged jobs and worker process outcomes."""
+⋮----
+class WorkerRecoveryTests(unittest.TestCase)
+⋮----
+def test_local_setup_failure_reports_failure_and_releases_active_slot(self)
+⋮----
+job = sample_job()
+⋮----
+client = _FakeClient(job)
+⋮----
+result = run_once(client, worker_id='w', output_root=Path(td),
+⋮----
+def test_corrupt_or_uncorrelated_results_never_complete_job(self)
+⋮----
+client = _FakeClient(sample_job())
+def runner(request_path, project_out, **kwargs)
+⋮----
+request = json.loads(request_path.read_text())
+result = {
+⋮----
+def test_invalid_timing_configuration_does_not_claim_job(self)
+⋮----
+def test_uncertain_completion_delivery_does_not_report_opposite_outcome(self)
+⋮----
+def _main(self, args, run_once_fn, **kwargs)
+⋮----
+def test_bounded_failure_returns_nonzero_and_preserves_status_artifact(self)
+⋮----
+status = Path(td) / 'status.json'
+⋮----
+outcomes = iter([{'status': 'failed'}, {'status': 'completed'}])
+⋮----
+def test_paused_and_draining_continuous_workers_sleep_between_polls(self)
+⋮----
+waits = []
+def sleep(seconds)
 ```
 
 ## File: test_production_os_worker_runtime.py

@@ -5,23 +5,846 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
+    "RealServerWorkerTests": {
+      "definition": {
+        "file": "integration_tests/test_production_os_server_integration.py",
+        "line": 31,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 31,
+          "preview": "class RealServerWorkerTests(unittest.TestCase):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_worker_only_session_executes_and_reports_real_workflow": {
+      "definition": {
+        "file": "integration_tests/test_production_os_server_integration.py",
+        "line": 32,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 32,
+          "preview": "def test_worker_only_session_executes_and_reports_real_workflow(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_unreadable_result_is_reported_to_real_server": {
+      "definition": {
+        "file": "integration_tests/test_production_os_server_integration.py",
+        "line": 35,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 35,
+          "preview": "def test_unreadable_result_is_reported_to_real_server(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "_exercise": {
+      "definition": {
+        "file": "integration_tests/test_production_os_server_integration.py",
+        "line": 38,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 33,
+          "preview": "self._exercise('completed')",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 36,
+          "preview": "self._exercise('failed')",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 38,
+          "preview": "def _exercise(self, expected):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/performance_qa.py",
+          "line": 67,
+          "preview": "def _exercise(adb: str, serial: str, pkg: str) -> list[dict]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/performance_qa.py",
+          "line": 116,
+          "preview": "logs.extend(_exercise(adb, serial, pkg))",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 5
+    },
+    "runner": {
+      "definition": {
+        "file": "integration_tests/test_production_os_server_integration.py",
+        "line": 66,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 4,
+          "preview": "The runner executes a deterministic Python artifact; no live LLM is involved.",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 66,
+          "preview": "def runner(request_path, project_out, **kwargs):",
+          "definition_candidate": true
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 76,
+          "preview": "output_root=root / 'output', run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 84,
+          "preview": "output_root=root / 'output', run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/android_signing.py",
+          "line": 112,
+          "preview": "runner=subprocess.run,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/android_signing.py",
+          "line": 144,
+          "preview": "result = runner(sign, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=180)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/android_signing.py",
+          "line": 150,
+          "preview": "verify = runner(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/android_signing.py",
+          "line": 159,
+          "preview": "cert = runner(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/autonomous_project.py",
+          "line": 173,
+          "preview": "runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/autonomous_project.py",
+          "line": 271,
+          "preview": "request_path, project_out, work, runner, deadline, clock, baseline_sha",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 79,
+          "preview": "def _run_registered_stages(project, project_out, work, report, deadline, runner, clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 82,
+          "preview": "project['file'], project_out, work, report, deadline, runner, clock,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 88,
+          "preview": "def _run_project_for_queue(project, project_out, work, runner, deadline, clock, baseline_sha):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 90,
+          "preview": "return run_project(project['file'], project_out, work, runner, deadline, clock, baseline_sha)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 93,
+          "preview": "project['file'], project_out, work, runner, deadline, clock, baseline_sha,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 109,
+          "preview": "runner=bounded_run, clock=time.monotonic):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 156,
+          "preview": "result = _run_project_for_queue(project, project_out, work, runner, deadline, clock, baseline_sha)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/engine_entry.py",
+          "line": 1,
+          "preview": "\"\"\"Trusted preview dispatcher preserving the mature Flutter runner unchanged.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_pending.py",
+          "line": 1,
+          "preview": "\"\"\"Recover a durable content-bound GitHub evolution across runner restarts.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_supervisor_apply.py",
+          "line": 42,
+          "preview": "runner=bounded_run,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_supervisor_apply.py",
+          "line": 95,
+          "preview": "runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_sandbox.py",
+          "line": 1,
+          "preview": "\"\"\"Bounded generic command runner with explicit network and secret isolation.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 641,
+          "preview": "runner=bounded_run,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 651,
+          "preview": "if runner is bounded_run:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 653,
+          "preview": "return runner(args, timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 981,
+          "preview": "# checkpointed before the runner exits.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_android_export.py",
+          "line": 96,
+          "preview": "def export_debug_apk(project_root: Path, binary: Path, templates: Path, runner=subprocess.run, timeout=900, artifact_path: Path | None=None) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_android_export.py",
+          "line": 117,
+          "preview": "try: result = runner(command, env=_host_env(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_play_stage.py",
+          "line": 98,
+          "preview": "\"Set STUDIO_PLAY_COMMIT_APPROVED=1 in the trusted runner to authorize the Play edit commit.\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 3,
+          "preview": "The runner checkpoints only to studio/<request-id>. It never updates the target default",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_release_artifact.py",
+          "line": 90,
+          "preview": "runner=subprocess.run,timeout=1200)->dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_release_artifact.py",
+          "line": 105,
+          "preview": "try: result=runner(command,env=_host_env(),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_runtime.py",
+          "line": 142,
+          "preview": "def validate(project_root: Path, binary: Path, runner=subprocess.run, timeout=600) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_runtime.py",
+          "line": 151,
+          "preview": "result = runner(command, env=_host_env(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_runtime_journeys.py",
+          "line": 163,
+          "preview": "def run_journeys(project_root: Path, binary: Path, journeys: list[dict], runner=subprocess.run, timeout=600) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_runtime_journeys.py",
+          "line": 176,
+          "preview": "result=runner(command,env=_host_env(),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 3,
+          "preview": "A temporary project copy is instrumented with a trusted scene runner. The debug APK",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 155,
+          "preview": "exporter=export_debug_apk, runner=_run, sleeper=time.sleep) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 166,
+          "preview": "devices=runner([adb,'devices'],timeout=30)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 171,
+          "preview": "runner([adb,'-s',serial,'shell','settings','put','global','airplane_mode_on','1'],timeout=30)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 172,
+          "preview": "runner([adb,'-s',serial,'shell','am','broadcast','-a','android.intent.action.AIRPLANE_MODE','--ez','state','true'],timeout=30)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 173,
+          "preview": "install_result=runner([adb,'-s',serial,'install','-r','-t',str(apk)],timeout=180)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 175,
+          "preview": "runner([adb,'-s',serial,'logcat','-c'],timeout=30)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 176,
+          "preview": "launch=runner([adb,'-s',serial,'shell','monkey','-p',package,'-c','android.intent.category.LAUNCHER','1'],timeout=60)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_visual_qa.py",
+          "line": 179,
+          "preview": "logs=runner([adb,'-s',serial,'logcat','-d','-v','brief'],timeout=60)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/improvement_executor.py",
+          "line": 38,
+          "preview": "raise ImprovementExecutionError(\"project cycle runner invalid\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 20,
+          "preview": "def _detect(request_path,project_out,runner,deadline,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 23,
+          "preview": "result=runner([sys.executable,'studio/engine_detect.py',request_path,'--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 35,
+          "preview": "def _run_stage(script,request_path,project_out,work,runner,deadline,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 38,
+          "preview": "return runner([sys.executable,script,request_path,'--work',work,'--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 41,
+          "preview": "def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 43,
+          "preview": "engine=_detect(request_path,project_out,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 46,
+          "preview": "return run_flutter_project(request_path,project_out,work,runner,deadline,clock,baseline_sha)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 73,
+          "preview": "result=_run_stage(script,request_path,project_out,stage_work,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 90,
+          "preview": "result=_run_stage('studio/godot_release_stage.py',request_path,project_out,release_work,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 105,
+          "preview": "result=_run_stage('studio/godot_release_artifact_stage.py',request_path,project_out,artifact_work,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 123,
+          "preview": "result=_run_stage('studio/godot_store_metadata_stage.py',request_path,project_out,metadata_work,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 134,
+          "preview": "result=_run_stage('studio/godot_privacy_security_stage.py',request_path,project_out,privacy_work,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 145,
+          "preview": "result=_run_stage('studio/godot_final_review_stage.py',request_path,project_out,final_work,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 162,
+          "preview": "result=_run_stage('studio/godot_play_stage.py',request_path,project_out,play_work,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 144,
+          "preview": "def _asset_forge_prefetch(request_path,project_out,runner,deadline,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 205,
+          "preview": "completed=runner(command,timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 235,
+          "preview": "completed=runner(route['command'],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 287,
+          "preview": "def _run_adaptation_pending(project_out,deadline,runner,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 293,
+          "preview": "result=runner([sys.executable,'studio/evolution_pending.py',str(order),'--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 304,
+          "preview": "def _run_adaptation_research(project_out,deadline,runner,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 309,
+          "preview": "result=runner([sys.executable,'studio/evolution_research.py',str(order),'--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 318,
+          "preview": "def _run_adaptation_synthesis(project_out,deadline,runner,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 323,
+          "preview": "result=runner([sys.executable,'studio/evolution_synthesis.py',str(order),str(research),'--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 332,
+          "preview": "def _run_adaptation_benchmark(project_out,deadline,runner,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 337,
+          "preview": "result=runner([sys.executable,'studio/evolution_isolated_runner.py',str(order),str(candidate),'--repo-root','.','--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 348,
+          "preview": "def _run_adaptation_promotion(project_out,deadline,runner,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 353,
+          "preview": "result=runner([sys.executable,'studio/evolution_promotion.py',str(paths[0]),str(paths[1]),str(paths[2]),str(paths[3]),'--repo-root','.','--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 361,
+          "preview": "def _run_adaptation_persistence(project_out,deadline,runner,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 367,
+          "preview": "result=runner([sys.executable,'studio/evolution_persist.py',str(applied),'--repo-root','.','--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 375,
+          "preview": "def _run_adaptation_automerge(project_out,deadline,runner,clock):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 386,
+          "preview": "result=runner(args,timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 402,
+          "preview": "def run_registered_stages(request_path,project_out,work,report,deadline,runner,clock=time.monotonic,baseline_sha=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 414,
+          "preview": "pending_status=_run_adaptation_pending(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 416,
+          "preview": "automerge_status=_run_adaptation_automerge(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 420,
+          "preview": "research_status=_run_adaptation_research(project_out,deadline,runner,clock); synthesis_status='not_ready'; benchmark_status='not_ready'; promotion_status='not_ready'; persistence_s",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 421,
+          "preview": "if research_status=='complete': synthesis_status=_run_adaptation_synthesis(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 422,
+          "preview": "if synthesis_status=='validated': benchmark_status=_run_adaptation_benchmark(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 423,
+          "preview": "if benchmark_status=='approved': promotion_status=_run_adaptation_promotion(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 424,
+          "preview": "if promotion_status=='promoted': persistence_status=_run_adaptation_persistence(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 425,
+          "preview": "if persistence_status=='persisted': automerge_status=_run_adaptation_automerge(project_out,deadline,runner,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 438,
+          "preview": "result=runner(_stage_command(name,stage,request_path,work,project_out),timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 449,
+          "preview": "def run_project(request_path,project_out,work,runner,deadline,clock=time.monotonic,baseline_sha=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 451,
+          "preview": "asset_prefetch=_asset_forge_prefetch(request_path,project_out,runner,deadline,clock)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 459,
+          "preview": "preview=runner([sys.executable,'studio/run.py',request_path,'--work',work,'--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 469,
+          "preview": "release=runner([sys.executable,'studio/post_preview.py',request_path,'--work',work,'--out',str(project_out)],timeout=remaining)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 474,
+          "preview": "return run_registered_stages(request_path,project_out,work,report,deadline,runner,clock,baseline_sha)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/play_stage.py",
+          "line": 150,
+          "preview": "'Set STUDIO_PLAY_COMMIT_APPROVED=1 in the trusted runner to authorize the Play edit commit.',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1036,
+          "preview": "\"runner retry attempts must be between 0 and 10\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1040,
+          "preview": "\"runner retry attempts must be between 0 and 10\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1046,
+          "preview": "\"runner retry backoff must be between 0 and 60 seconds\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1050,
+          "preview": "\"runner retry backoff must be between 0 and 60 seconds\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/release_stage_engine.py",
+          "line": 238,
+          "preview": "\"detail\": \"Provide or verify external evidence that cannot be safely fabricated by the autonomous runner.\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/runtime_journeys.py",
+          "line": 81,
+          "preview": "runner=subprocess.run, timeout: int = 1200) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/runtime_journeys.py",
+          "line": 98,
+          "preview": "result = runner(args, cwd=root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_android_signing.py",
+          "line": 75,
+          "preview": "def runner(cmd, **kwargs):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_android_signing.py",
+          "line": 93,
+          "preview": "runner=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_autonomous_project.py",
+          "line": 105,
+          "preview": "runner=lambda *a, **k: None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_autonomous_project.py",
+          "line": 149,
+          "preview": "runner=lambda *a, **k: None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_autonomous_project.py",
+          "line": 175,
+          "preview": "runner=lambda *a, **k: None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_autonomous_project.py",
+          "line": 222,
+          "preview": "runner=lambda *a, **k: None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capacity_scheduler_work_conserving.py",
+          "line": 57,
+          "preview": "{\"id\": \"runner\", \"requested_tokens\": 1000, \"priority\": 10},",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capacity_scheduler_work_conserving.py",
+          "line": 62,
+          "preview": "self.assertEqual(by_id[\"runner\"][\"token_envelope\"], 900)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 78,
+          "preview": "def runner(args, timeout):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 87,
+          "preview": "self.assertEqual(run_queue(queue, out, runner), 1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 99,
+          "preview": "def runner(args, timeout):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 105,
+          "preview": "self.assertEqual(run_queue(queue, out, runner), 0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 121,
+          "preview": "def runner(args, timeout):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 128,
+          "preview": "self.assertEqual(run_queue(queue, out, runner), 1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 159,
+          "preview": "self.assertEqual(run_queue(queue, out, runner=lambda *a, **k: None), 0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 186,
+          "preview": "def runner(args, timeout):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 191,
+          "preview": "self.assertEqual(run_queue(queue, out, runner), 1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 201,
+          "preview": "def runner(*args, **kwargs):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 203,
+          "preview": "self.assertEqual(run_queue(queue, out, runner), 1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci_adaptation.py",
+          "line": 57,
+          "preview": "def runner(args, timeout):",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 120
+    },
     "_browser_validation_operational": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 40,
+        "line": 41,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 40,
+          "line": 41,
           "preview": "def _browser_validation_operational(environ=None) -> bool:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 175,
+          "line": 176,
           "preview": "if \"browser\" in specialties and _browser_validation_operational(environ):",
           "definition_candidate": false
         }
@@ -31,20 +854,20 @@
     "_mobile_validation_operational": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 69,
+        "line": 70,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 69,
+          "line": 70,
           "preview": "def _mobile_validation_operational(environ=None) -> bool:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 177,
+          "line": 178,
           "preview": "if \"mobile\" in specialties and _mobile_validation_operational(environ):",
           "definition_candidate": false
         }
@@ -54,20 +877,20 @@
     "_asset_forge_operational_status": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 102,
+        "line": 103,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 102,
+          "line": 103,
           "preview": "def _asset_forge_operational_status(environ=None) -> dict | None:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 179,
+          "line": 180,
           "preview": "status = _asset_forge_operational_status(environ)",
           "definition_candidate": false
         },
@@ -85,36 +908,42 @@
         },
         {
           "file": "tests/test_production_os_remote_asset_capability.py",
-          "line": 117,
+          "line": 92,
+          "preview": "patch(\"production_os_worker._asset_forge_operational_status\", return_value=None),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_remote_asset_capability.py",
+          "line": 118,
           "preview": "patch(\"production_os_worker._asset_forge_operational_status\", return_value=None),",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 5
+      "occurrence_count": 6
     },
     "_remote_asset_forge_operational": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 131,
+        "line": 132,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 131,
+          "line": 132,
           "preview": "def _remote_asset_forge_operational(environ=None) -> bool:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 190,
+          "line": 191,
           "preview": "remote_visual_ready = _remote_asset_forge_operational(environ)",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 715,
+          "line": 716,
           "preview": "if _remote_asset_forge_operational():",
           "definition_candidate": false
         },
@@ -142,26 +971,26 @@
     "worker_capabilities": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 156,
+        "line": 157,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 156,
+          "line": 157,
           "preview": "def worker_capabilities(environ=None, *, home: Path | None = None) -> list[str]:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1023,
+          "line": 1053,
           "preview": "capabilities = list(capabilities or worker_capabilities())",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1356,
+          "line": 1405,
           "preview": "capabilities_provider=worker_capabilities,",
           "definition_candidate": false
         },
@@ -215,13 +1044,13 @@
         },
         {
           "file": "tests/test_production_os_remote_asset_capability.py",
-          "line": 95,
+          "line": 96,
           "preview": "capabilities = worker_capabilities(",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_remote_asset_capability.py",
-          "line": 121,
+          "line": 122,
           "preview": "capabilities = worker_capabilities(",
           "definition_candidate": false
         },
@@ -273,141 +1102,183 @@
     "ProductionOSWorkerError": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 198,
+        "line": 199,
         "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 167,
+          "line": 168,
           "preview": "raise ProductionOSWorkerError(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 198,
+          "line": 199,
           "preview": "class ProductionOSWorkerError(RuntimeError):",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 204,
+          "line": 205,
           "preview": "raise ProductionOSWorkerError(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 239,
+          "line": 240,
           "preview": "raise ProductionOSWorkerError(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 244,
+          "line": 245,
           "preview": "raise ProductionOSWorkerError(\"Production-OS worker token is required\")",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 248,
+          "line": 249,
           "preview": "raise ProductionOSWorkerError(\"timeout must be positive\") from exc",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 250,
+          "line": 251,
           "preview": "raise ProductionOSWorkerError(\"timeout must be positive\")",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 287,
+          "line": 288,
           "preview": "raise ProductionOSWorkerError(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 296,
+          "line": 297,
           "preview": "raise ProductionOSWorkerError(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 301,
+          "line": 302,
           "preview": "raise ProductionOSWorkerError(\"Production-OS response too large\")",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 307,
+          "line": 308,
           "preview": "raise ProductionOSWorkerError(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 311,
+          "line": 312,
           "preview": "raise ProductionOSWorkerError(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 328,
+          "line": 329,
           "preview": "raise ProductionOSWorkerError(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1067,
-          "preview": "raise ProductionOSWorkerError(\"claimed job has no key\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1117,
+          "line": 1027,
           "preview": "raise ProductionOSWorkerError(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1121,
+          "line": 1031,
           "preview": "raise ProductionOSWorkerError(\"heartbeat interval must be positive\")",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1125,
+          "line": 1035,
           "preview": "raise ProductionOSWorkerError(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1129,
+          "line": 1039,
           "preview": "raise ProductionOSWorkerError(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1135,
+          "line": 1045,
           "preview": "raise ProductionOSWorkerError(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1139,
+          "line": 1049,
           "preview": "raise ProductionOSWorkerError(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1291,
+          "line": 1097,
+          "preview": "raise ProductionOSWorkerError(\"claimed job has no key\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1324,
           "preview": "raise ProductionOSWorkerError(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1303,
+          "line": 1336,
           "preview": "raise ProductionOSWorkerError(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1348,
+          "preview": "raise ProductionOSWorkerError(\"result does not match the claimed job\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1350,
+          "preview": "raise ProductionOSWorkerError(\"result succeeded must be boolean\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1352,
+          "preview": "raise ProductionOSWorkerError(\"result usage and evidence must be objects\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 11,
+          "preview": "from production_os_worker import ProductionOSWorkerError, main, run_once",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 60,
+          "preview": "with self.assertRaises(ProductionOSWorkerError):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 68,
+          "preview": "client, 'complete', side_effect=ProductionOSWorkerError('delivery unavailable')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 70,
+          "preview": "with self.assertRaises(ProductionOSWorkerError):",
           "definition_candidate": false
         },
         {
@@ -429,12 +1300,12 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 25
+      "occurrence_count": 32
     },
     "_NoRedirect": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 202,
+        "line": 203,
         "kind": "class",
         "language": "python"
       },
@@ -453,13 +1324,13 @@
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 202,
+          "line": 203,
           "preview": "class _NoRedirect(urllib.request.HTTPRedirectHandler):",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 210,
+          "line": 211,
           "preview": "return urllib.request.build_opener(_NoRedirect).open(",
           "definition_candidate": false
         }
@@ -469,7 +1340,7 @@
     "redirect_request": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 203,
+        "line": 204,
         "kind": "function",
         "language": "python"
       },
@@ -500,7 +1371,7 @@
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 203,
+          "line": 204,
           "preview": "def redirect_request(self, req, fp, code, msg, headers, newurl):",
           "definition_candidate": true
         }
@@ -510,20 +1381,20 @@
     "_default_opener": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 209,
+        "line": 210,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 209,
+          "line": 210,
           "preview": "def _default_opener(request, timeout):",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 223,
+          "line": 224,
           "preview": "opener=_default_opener,",
           "definition_candidate": false
         }
@@ -533,26 +1404,38 @@
     "ProductionOSClient": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 216,
+        "line": 217,
         "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 27,
+          "preview": "from production_os_worker import ProductionOSClient, run_once",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 61,
+          "preview": "client = ProductionOSClient(f'http://127.0.0.1:{server.server_port}',",
+          "definition_candidate": false
+        },
+        {
           "file": "studio/production_os_worker.py",
-          "line": 216,
+          "line": 217,
           "preview": "class ProductionOSClient:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1003,
+          "line": 1004,
           "preview": "client: ProductionOSClient,",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1353,
+          "line": 1402,
           "preview": "client_factory=ProductionOSClient,",
           "definition_candidate": false
         },
@@ -605,12 +1488,12 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 11
+      "occurrence_count": 13
     },
     "__init__": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 217,
+        "line": 218,
         "kind": "function",
         "language": "python"
       },
@@ -701,7 +1584,7 @@
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 217,
+          "line": 218,
           "preview": "def __init__(",
           "definition_candidate": true
         },
@@ -1077,56 +1960,56 @@
     "_post": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 257,
+        "line": 258,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 257,
+          "line": 258,
           "preview": "def _post(",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 317,
+          "line": 318,
           "preview": "payload = self._post(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 334,
+          "line": 335,
           "preview": "return self._post(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 340,
+          "line": 341,
           "preview": "return self._post(\"/v1/jobs/complete\", payload)",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 343,
+          "line": 344,
           "preview": "return self._post(\"/v1/jobs/fail\", payload)",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 353,
+          "line": 354,
           "preview": "return self._post(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 362,
+          "line": 363,
           "preview": "return self._post(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 397,
+          "line": 398,
           "preview": "return self._post(",
           "definition_candidate": false
         }
@@ -1136,7 +2019,7 @@
     "claim": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 316,
+        "line": 317,
         "kind": "function",
         "language": "python"
       },
@@ -1203,25 +2086,25 @@
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 316,
+          "line": 317,
           "preview": "def claim(self, worker_id: str, capabilities: list[str]) -> dict | None:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 318,
+          "line": 319,
           "preview": "\"/v1/jobs/claim\",",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 329,
+          "line": 330,
           "preview": "\"Production-OS claim response missing job\"",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1061,
+          "line": 1091,
           "preview": "job = client.claim(worker_id, capabilities)",
           "definition_candidate": false
         },
@@ -1460,6 +2343,12 @@
           "definition_candidate": false
         },
         {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 25,
+          "preview": "['heartbeat', 'claim', 'ack', 'heartbeat', 'fail', 'heartbeat'])",
+          "definition_candidate": false
+        },
+        {
           "file": "tests/test_production_os_worker_runtime.py",
           "line": 48,
           "preview": "def claim(self, worker_id, capabilities):",
@@ -1628,31 +2517,31 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 81
+      "occurrence_count": 82
     },
     "ack": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 333,
+        "line": 334,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 333,
+          "line": 334,
           "preview": "def ack(self, key: str, worker_id: str) -> dict | None:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 335,
+          "line": 336,
           "preview": "\"/v1/jobs/ack\",",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1068,
+          "line": 1098,
           "preview": "client.ack(key, worker_id)",
           "definition_candidate": false
         },
@@ -1666,6 +2555,12 @@
           "file": "tests/test_production_os_local_e2e.py",
           "line": 223,
           "preview": "\"/v1/jobs/ack\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 25,
+          "preview": "['heartbeat', 'claim', 'ack', 'heartbeat', 'fail', 'heartbeat'])",
           "definition_candidate": false
         },
         {
@@ -1699,16 +2594,22 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 10
+      "occurrence_count": 11
     },
     "complete": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 339,
+        "line": 340,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 74,
+          "preview": "return {'status': 'complete', 'finished': True, 'usage': {}}",
+          "definition_candidate": false
+        },
         {
           "file": "studio/adaptive_phase_policy.py",
           "line": 70,
@@ -2131,25 +3032,25 @@
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 339,
+          "line": 340,
           "preview": "def complete(self, payload: dict) -> dict | None:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 340,
+          "line": 341,
           "preview": "return self._post(\"/v1/jobs/complete\", payload)",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 726,
+          "line": 727,
           "preview": "\"result before visual work is considered complete. Verify the integrated \"",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1310,
+          "line": 1359,
           "preview": "client.complete(",
           "definition_candidate": false
         },
@@ -2422,12 +3323,6 @@
           "line": 26,
           "preview": "self.assertEqual(finalize(s)[\"status\"],\"complete\")",
           "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 37,
-          "preview": "self.assertEqual(state[\"status\"], \"complete\")",
-          "definition_candidate": false
         }
       ],
       "occurrence_count": 120
@@ -2435,7 +3330,7 @@
     "fail": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 342,
+        "line": 343,
         "kind": "function",
         "language": "python"
       },
@@ -2538,25 +3433,31 @@
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 342,
+          "line": 343,
           "preview": "def fail(self, payload: dict) -> dict | None:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 343,
+          "line": 344,
           "preview": "return self._post(\"/v1/jobs/fail\", payload)",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1242,
+          "line": 1140,
+          "preview": "client.fail(failure_payload(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1274,
           "preview": "client.fail(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1321,
+          "line": 1370,
           "preview": "client.fail(",
           "definition_candidate": false
         },
@@ -2681,6 +3582,24 @@
           "definition_candidate": false
         },
         {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 21,
+          "preview": "run_project=lambda *a, **kw: self.fail('must not run'),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 25,
+          "preview": "['heartbeat', 'claim', 'ack', 'heartbeat', 'fail', 'heartbeat'])",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 74,
+          "preview": "self.assertNotIn('fail', [c[0] for c in client.calls])",
+          "definition_candidate": false
+        },
+        {
           "file": "tests/test_production_os_worker_runtime.py",
           "line": 58,
           "preview": "def fail(self, payload):",
@@ -2753,16 +3672,22 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 52
+      "occurrence_count": 56
     },
     "register": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 345,
+        "line": 346,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 64,
+          "preview": "client.register('github-actions-worker', ['python'])",
+          "definition_candidate": false
+        },
         {
           "file": "studio/autonomous_project.py",
           "line": 9,
@@ -2807,19 +3732,19 @@
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 345,
+          "line": 346,
           "preview": "def register(",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 354,
+          "line": 355,
           "preview": "\"/v1/workers/register\",",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1431,
+          "line": 1480,
           "preview": "client.register(",
           "definition_candidate": false
         },
@@ -3076,12 +4001,12 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 52
+      "occurrence_count": 53
     },
     "heartbeat": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 372,
+        "line": 373,
         "kind": "function",
         "language": "python"
       },
@@ -3136,115 +4061,121 @@
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 372,
+          "line": 373,
           "preview": "def heartbeat(",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 398,
+          "line": 399,
           "preview": "\"/v1/workers/heartbeat\",",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1025,
-          "preview": "preflight = client.heartbeat(worker_id, active_job_keys=())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1027,
-          "preview": "preflight = client.heartbeat(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1044,
-          "preview": "client.heartbeat(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1050,
-          "preview": "client.heartbeat(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1088,
-          "preview": "response = client.heartbeat(worker_id, active_job_keys=(key,))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1090,
-          "preview": "response = client.heartbeat(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1118,
+          "line": 1028,
           "preview": "\"heartbeat interval must be positive\"",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1121,
+          "line": 1031,
           "preview": "raise ProductionOSWorkerError(\"heartbeat interval must be positive\")",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1150,
-          "preview": "response = client.heartbeat(",
+          "line": 1055,
+          "preview": "preflight = client.heartbeat(worker_id, active_job_keys=())",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1155,
-          "preview": "response = client.heartbeat(",
+          "line": 1057,
+          "preview": "preflight = client.heartbeat(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1168,
-          "preview": "name=f\"production-os-heartbeat-{request['id']}\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1218,
-          "preview": "client.heartbeat(worker_id, **kwargs)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1252,
-          "preview": "client.heartbeat(worker_id, active_job_keys=())",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1254,
+          "line": 1074,
           "preview": "client.heartbeat(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1277,
+          "line": 1080,
+          "preview": "client.heartbeat(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1118,
+          "preview": "response = client.heartbeat(worker_id, active_job_keys=(key,))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1120,
+          "preview": "response = client.heartbeat(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1147,
           "preview": "client.heartbeat(worker_id, **kwargs)",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1333,
+          "line": 1182,
+          "preview": "response = client.heartbeat(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1187,
+          "preview": "response = client.heartbeat(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1200,
+          "preview": "name=f\"production-os-heartbeat-{request['id']}\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1250,
+          "preview": "client.heartbeat(worker_id, **kwargs)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1284,
           "preview": "client.heartbeat(worker_id, active_job_keys=())",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1335,
+          "line": 1286,
+          "preview": "client.heartbeat(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1309,
+          "preview": "client.heartbeat(worker_id, **kwargs)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1382,
+          "preview": "client.heartbeat(worker_id, active_job_keys=())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1384,
           "preview": "client.heartbeat(",
           "definition_candidate": false
         },
@@ -3354,6 +4285,12 @@
           "file": "tests/test_production_os_local_e2e.py",
           "line": 226,
           "preview": "\"/v1/workers/heartbeat\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 25,
+          "preview": "['heartbeat', 'claim', 'ack', 'heartbeat', 'fail', 'heartbeat'])",
           "definition_candidate": false
         },
         {
@@ -3513,25 +4450,25 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 71
+      "occurrence_count": 73
     },
     "production_capacity_snapshot": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 403,
+        "line": 404,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 403,
+          "line": 404,
           "preview": "def production_capacity_snapshot(",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1355,
+          "line": 1404,
           "preview": "capacity_provider=production_capacity_snapshot,",
           "definition_candidate": false
         },
@@ -3565,7 +4502,7 @@
     "_project_id": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 459,
+        "line": 460,
         "kind": "function",
         "language": "python"
       },
@@ -3590,13 +4527,13 @@
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 459,
+          "line": 460,
           "preview": "def _project_id(job_key: str) -> str:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 771,
+          "line": 772,
           "preview": "\"id\": _project_id(job_key),",
           "definition_candidate": false
         }
@@ -3606,20 +4543,20 @@
     "_repository_branch_id": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 464,
+        "line": 465,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 464,
+          "line": 465,
           "preview": "def _repository_branch_id(",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 781,
+          "line": 782,
           "preview": "repository_branch_id = _repository_branch_id(",
           "definition_candidate": false
         }
@@ -3629,20 +4566,20 @@
     "_app_name": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 492,
+        "line": 493,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 492,
+          "line": 493,
           "preview": "def _app_name(repository: str) -> str:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 773,
+          "line": 774,
           "preview": "\"app_name\": _app_name(repository),",
           "definition_candidate": false
         }
@@ -3652,20 +4589,20 @@
     "_brief": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 502,
+        "line": 503,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 502,
+          "line": 503,
           "preview": "def _brief(task: str, final_goal: str) -> str:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 765,
+          "line": 766,
           "preview": "_brief(task, final_goal)",
           "definition_candidate": false
         }
@@ -3675,20 +4612,20 @@
     "_is_visual_handoff": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 515,
+        "line": 516,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 515,
+          "line": 516,
           "preview": "def _is_visual_handoff(handoff: dict[str, Any]) -> bool:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 712,
+          "line": 713,
           "preview": "and not _is_visual_handoff(handoff)",
           "definition_candidate": false
         }
@@ -3698,20 +4635,20 @@
     "_retry_guidance": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 556,
+        "line": 557,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 556,
+          "line": 557,
           "preview": "def _retry_guidance(handoff: dict[str, Any]) -> str:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 767,
+          "line": 768,
           "preview": "+ _retry_guidance(handoff)",
           "definition_candidate": false
         }
@@ -3721,20 +4658,20 @@
     "_upstream_guidance": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 608,
+        "line": 609,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 608,
+          "line": 609,
           "preview": "def _upstream_guidance(handoff: dict[str, Any]) -> str:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 766,
+          "line": 767,
           "preview": "+ _upstream_guidance(handoff)",
           "definition_candidate": false
         }
@@ -3744,20 +4681,20 @@
     "_asset_forge_guidance": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 681,
+        "line": 682,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 681,
+          "line": 682,
           "preview": "def _asset_forge_guidance(handoff: dict[str, Any]) -> str:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 768,
+          "line": 769,
           "preview": "+ _asset_forge_guidance(handoff)",
           "definition_candidate": false
         }
@@ -3767,20 +4704,20 @@
     "build_studio_request": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 739,
+        "line": 740,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 739,
+          "line": 740,
           "preview": "def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1097,
+          "line": 1155,
           "preview": "request = build_studio_request(job)",
           "definition_candidate": false
         },
@@ -3922,20 +4859,20 @@
     "_write_project_capacity_plan": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 796,
+        "line": 797,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 796,
+          "line": 797,
           "preview": "def _write_project_capacity_plan(",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1100,
+          "line": 1158,
           "preview": "_write_project_capacity_plan(root, request, handoff, capacity)",
           "definition_candidate": false
         }
@@ -3945,20 +4882,20 @@
     "_attach_failed_ci_diagnostic": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 869,
+        "line": 870,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 869,
+          "line": 870,
           "preview": "def _attach_failed_ci_diagnostic(",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1307,
+          "line": 1353,
           "preview": "envelope = _attach_failed_ci_diagnostic(envelope, request)",
           "definition_candidate": false
         },
@@ -3986,26 +4923,26 @@
     "_result_payload": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 913,
+        "line": 914,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 913,
+          "line": 914,
           "preview": "def _result_payload(result: dict[str, Any]) -> dict[str, Any]:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 936,
+          "line": 937,
           "preview": "\"result\": _result_payload(result),",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 959,
+          "line": 960,
           "preview": "\"result\": _result_payload(result),",
           "definition_candidate": false
         }
@@ -4015,20 +4952,20 @@
     "completion_payload": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 923,
+        "line": 924,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 923,
+          "line": 924,
           "preview": "def completion_payload(",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1311,
+          "line": 1360,
           "preview": "completion_payload(",
           "definition_candidate": false
         },
@@ -4050,26 +4987,32 @@
     "failure_payload": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 940,
+        "line": 941,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 940,
+          "line": 941,
           "preview": "def failure_payload(",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1243,
+          "line": 1140,
+          "preview": "client.fail(failure_payload(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1275,
           "preview": "failure_payload(",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1322,
+          "line": 1371,
           "preview": "failure_payload(",
           "definition_candidate": false
         },
@@ -4086,25 +5029,25 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 5
+      "occurrence_count": 6
     },
     "_retryable_runner_error": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 979,
+        "line": 980,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 979,
+          "line": 980,
           "preview": "def _retryable_runner_error(exc: Exception) -> bool:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1190,
+          "line": 1222,
           "preview": "or not _retryable_runner_error(exc)",
           "definition_candidate": false
         }
@@ -4114,20 +5057,20 @@
     "_summary_requests_retry": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 986,
+        "line": 987,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 986,
+          "line": 987,
           "preview": "def _summary_requests_retry(summary: dict[str, Any]) -> bool:",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1199,
+          "line": 1231,
           "preview": "and _summary_requests_retry(summary)",
           "definition_candidate": false
         }
@@ -4137,11 +5080,29 @@
     "run_once": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 1002,
+        "line": 1003,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 27,
+          "preview": "from production_os_worker import ProductionOSClient, run_once",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 75,
+          "preview": "result = run_once(client, worker_id='github-actions-worker',",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 83,
+          "preview": "self.assertEqual(run_once(client, worker_id='github-actions-worker',",
+          "definition_candidate": false
+        },
         {
           "file": "studio/autonomous_project.py",
           "line": 182,
@@ -4186,13 +5147,13 @@
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1002,
+          "line": 1003,
           "preview": "def run_once(",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1354,
+          "line": 1403,
           "preview": "run_once_fn=run_once,",
           "definition_candidate": false
         },
@@ -4275,6 +5236,36 @@
           "definition_candidate": false
         },
         {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 11,
+          "preview": "from production_os_worker import ProductionOSWorkerError, main, run_once",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 20,
+          "preview": "result = run_once(client, worker_id='w', output_root=Path(td),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 46,
+          "preview": "result = run_once(client, worker_id='w', output_root=Path(td),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 61,
+          "preview": "run_once(client, worker_id='w', output_root=Path('unused'),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 71,
+          "preview": "run_once(client, worker_id='w', output_root=Path(td),",
+          "definition_candidate": false
+        },
+        {
           "file": "tests/test_production_os_worker_runtime.py",
           "line": 17,
           "preview": "run_once,",
@@ -4353,32 +5344,61 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 35
+      "occurrence_count": 43
     },
     "observe_job_control": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 1071,
+        "line": 1101,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 1071,
+          "line": 1101,
           "preview": "def observe_job_control(response):",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1095,
+          "line": 1125,
           "preview": "observe_job_control(response)",
           "definition_candidate": false
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1160,
+          "line": 1192,
           "preview": "observe_job_control(response)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
+    "report_local_failure": {
+      "definition": {
+        "file": "studio/production_os_worker.py",
+        "line": 1127,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1127,
+          "preview": "def report_local_failure(exc, stage, request=None, duration=0.0):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1173,
+          "preview": "return report_local_failure(exc, \"setup_error\", request)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1356,
+          "preview": "return report_local_failure(exc, \"result_error\", request, duration)",
           "definition_candidate": false
         }
       ],
@@ -4387,20 +5407,20 @@
     "keep_job_alive": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 1146,
+        "line": 1178,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/production_os_worker.py",
-          "line": 1146,
+          "line": 1178,
           "preview": "def keep_job_alive():",
           "definition_candidate": true
         },
         {
           "file": "studio/production_os_worker.py",
-          "line": 1167,
+          "line": 1199,
           "preview": "target=keep_job_alive,",
           "definition_candidate": false
         }
@@ -4410,7 +5430,7 @@
     "main": {
       "definition": {
         "file": "studio/production_os_worker.py",
-        "line": 1349,
+        "line": 1398,
         "kind": "function",
         "language": "python"
       },
@@ -5616,19 +6636,19 @@
         },
         {
           "file": "tests/test_production_os_remote_asset_capability.py",
-          "line": 93,
+          "line": 94,
           "preview": "patch(\"production_os_worker.subprocess.run\", side_effect=fake_run),",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_remote_asset_capability.py",
-          "line": 110,
+          "line": 111,
           "preview": "def fake_run(command, **kwargs):",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_remote_asset_capability.py",
-          "line": 119,
+          "line": 120,
           "preview": "patch(\"production_os_worker.subprocess.run\", side_effect=fake_run),",
           "definition_candidate": false
         }
@@ -5663,13 +6683,13 @@
         },
         {
           "file": "tests/test_production_os_remote_asset_capability.py",
-          "line": 111,
+          "line": 112,
           "preview": "class Completed:",
           "definition_candidate": false
         },
         {
           "file": "tests/test_production_os_remote_asset_capability.py",
-          "line": 114,
+          "line": 115,
           "preview": "return Completed()",
           "definition_candidate": false
         },
@@ -5697,15 +6717,169 @@
     "test_remote_asset_forge_probe_failure_removes_visual_capability": {
       "definition": {
         "file": "tests/test_production_os_remote_asset_capability.py",
-        "line": 109,
+        "line": 110,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_production_os_remote_asset_capability.py",
-          "line": 109,
+          "line": 110,
           "preview": "def test_remote_asset_forge_probe_failure_removes_visual_capability():",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "WorkerRecoveryTests": {
+      "definition": {
+        "file": "tests/test_production_os_worker_recovery.py",
+        "line": 14,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 14,
+          "preview": "class WorkerRecoveryTests(unittest.TestCase):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_local_setup_failure_reports_failure_and_releases_active_slot": {
+      "definition": {
+        "file": "tests/test_production_os_worker_recovery.py",
+        "line": 15,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 15,
+          "preview": "def test_local_setup_failure_reports_failure_and_releases_active_slot(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_corrupt_or_uncorrelated_results_never_complete_job": {
+      "definition": {
+        "file": "tests/test_production_os_worker_recovery.py",
+        "line": 29,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 29,
+          "preview": "def test_corrupt_or_uncorrelated_results_never_complete_job(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_invalid_timing_configuration_does_not_claim_job": {
+      "definition": {
+        "file": "tests/test_production_os_worker_recovery.py",
+        "line": 53,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 53,
+          "preview": "def test_invalid_timing_configuration_does_not_claim_job(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_uncertain_completion_delivery_does_not_report_opposite_outcome": {
+      "definition": {
+        "file": "tests/test_production_os_worker_recovery.py",
+        "line": 65,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 65,
+          "preview": "def test_uncertain_completion_delivery_does_not_report_opposite_outcome(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "_main": {
+      "definition": {
+        "file": "tests/test_production_os_worker_recovery.py",
+        "line": 76,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 76,
+          "preview": "def _main(self, args, run_once_fn, **kwargs):",
+          "definition_candidate": true
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 86,
+          "preview": "self.assertEqual(self._main(['--once', '--status-file', str(status)],",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 90,
+          "preview": "self.assertEqual(self._main(['--cycles', '2'], lambda *a, **kw: next(outcomes)), 1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 99,
+          "preview": "self.assertEqual(self._main(['--continuous', '--poll-interval', '2'],",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "test_bounded_failure_returns_nonzero_and_preserves_status_artifact": {
+      "definition": {
+        "file": "tests/test_production_os_worker_recovery.py",
+        "line": 83,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 83,
+          "preview": "def test_bounded_failure_returns_nonzero_and_preserves_status_artifact(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_paused_and_draining_continuous_workers_sleep_between_polls": {
+      "definition": {
+        "file": "tests/test_production_os_worker_recovery.py",
+        "line": 92,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 92,
+          "preview": "def test_paused_and_draining_continuous_workers_sleep_between_polls(self):",
           "definition_candidate": true
         }
       ],

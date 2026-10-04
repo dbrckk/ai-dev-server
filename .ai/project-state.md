@@ -28,22 +28,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-03T18:59:20Z
+Generated: 2026-10-04T05:50:38Z
 
 ### Git
 - Branch: `main`
-- Head: `feaf013e0b30`
-- Commit date: 2026-10-03T20:58:13+02:00
-- Commit: chore(worker): validate remote Asset Forge dispatch probe
-- Tracked files: 831
+- Head: `31d76cfef7e9`
+- Commit date: 2026-10-04T07:50:26+02:00
+- Commit: fix(worker): report local job failures and validate result correlation (#240)
+- Tracked files: 835
 
 ### Recently changed files
-- `control/production-os-worker-kick.json`
-- `.github/workflows/production-os-actions-worker.yml`
+- `.github/workflows/production-os-worker-integration.yml`
 - `docs/PRODUCTION_OS_WORKER.md`
+- `integration_tests/test_production_os_server_integration.py`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_actions_worker_workflow.py`
 - `tests/test_production_os_remote_asset_capability.py`
+- `tests/test_production_os_worker_recovery.py`
+- `control/production-os-worker-kick.json`
+- `.github/workflows/production-os-actions-worker.yml`
 - `.github/workflows/production-os-asset-forge-live-e2e.yml`
 - `tests/test_production_os_asset_forge_live_e2e_workflow.py`
 

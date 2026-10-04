@@ -1,21 +1,21 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "1e1cb6a9294d478efb0f09d76e3864c4bf5986eb",
-  "head": "feaf013e0b3059370bf814a73a852c049cf1d7ad",
+  "base": "feaf013e0b3059370bf814a73a852c049cf1d7ad",
+  "head": "31d76cfef7e953eeea4806ec7300b4feefefb149",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": ".github/workflows/production-os-actions-worker.yml",
-      "status": "M"
-    },
-    {
-      "path": "control/production-os-worker-kick.json",
-      "status": "M"
+      "path": ".github/workflows/production-os-worker-integration.yml",
+      "status": "A"
     },
     {
       "path": "docs/PRODUCTION_OS_WORKER.md",
       "status": "M"
+    },
+    {
+      "path": "integration_tests/test_production_os_server_integration.py",
+      "status": "A"
     },
     {
       "path": "studio/production_os_worker.py",
@@ -28,14 +28,21 @@
     {
       "path": "tests/test_production_os_remote_asset_capability.py",
       "status": "M"
+    },
+    {
+      "path": "tests/test_production_os_worker_recovery.py",
+      "status": "A"
     }
   ],
   "changed_source_files": [
+    "integration_tests/test_production_os_server_integration.py",
     "studio/production_os_worker.py",
     "tests/test_production_os_actions_worker_workflow.py",
-    "tests/test_production_os_remote_asset_capability.py"
+    "tests/test_production_os_remote_asset_capability.py",
+    "tests/test_production_os_worker_recovery.py"
   ],
   "impacted_files": [
+    "integration_tests/test_production_os_server_integration.py",
     "studio/production_os_worker.py",
     "tests/test_mobile_validation_contract.py",
     "tests/test_production_os_actions_worker_workflow.py",
@@ -43,242 +50,279 @@
     "tests/test_production_os_remote_asset_capability.py",
     "tests/test_production_os_worker.py",
     "tests/test_production_os_worker_cli.py",
+    "tests/test_production_os_worker_recovery.py",
     "tests/test_production_os_worker_runtime.py"
   ],
   "impacted_symbols": [
     {
+      "name": "RealServerWorkerTests",
+      "kind": "class",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 31
+    },
+    {
+      "name": "test_worker_only_session_executes_and_reports_real_workflow",
+      "kind": "function",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 32
+    },
+    {
+      "name": "test_unreadable_result_is_reported_to_real_server",
+      "kind": "function",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 35
+    },
+    {
+      "name": "_exercise",
+      "kind": "function",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 38
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "integration_tests/test_production_os_server_integration.py",
+      "line": 66
+    },
+    {
       "name": "_browser_validation_operational",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 40
+      "line": 41
     },
     {
       "name": "_mobile_validation_operational",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 69
+      "line": 70
     },
     {
       "name": "_asset_forge_operational_status",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 102
+      "line": 103
     },
     {
       "name": "_remote_asset_forge_operational",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 131
+      "line": 132
     },
     {
       "name": "worker_capabilities",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 156
+      "line": 157
     },
     {
       "name": "ProductionOSWorkerError",
       "kind": "class",
       "file": "studio/production_os_worker.py",
-      "line": 198
+      "line": 199
     },
     {
       "name": "_NoRedirect",
       "kind": "class",
       "file": "studio/production_os_worker.py",
-      "line": 202
+      "line": 203
     },
     {
       "name": "redirect_request",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 203
+      "line": 204
     },
     {
       "name": "_default_opener",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 209
+      "line": 210
     },
     {
       "name": "ProductionOSClient",
       "kind": "class",
       "file": "studio/production_os_worker.py",
-      "line": 216
+      "line": 217
     },
     {
       "name": "__init__",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 217
+      "line": 218
     },
     {
       "name": "_post",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 257
+      "line": 258
     },
     {
       "name": "claim",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 316
+      "line": 317
     },
     {
       "name": "ack",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 333
+      "line": 334
     },
     {
       "name": "complete",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 339
+      "line": 340
     },
     {
       "name": "fail",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 342
+      "line": 343
     },
     {
       "name": "register",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 345
+      "line": 346
     },
     {
       "name": "heartbeat",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 372
+      "line": 373
     },
     {
       "name": "production_capacity_snapshot",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 403
+      "line": 404
     },
     {
       "name": "_project_id",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 459
+      "line": 460
     },
     {
       "name": "_repository_branch_id",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 464
+      "line": 465
     },
     {
       "name": "_app_name",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 492
+      "line": 493
     },
     {
       "name": "_brief",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 502
+      "line": 503
     },
     {
       "name": "_is_visual_handoff",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 515
+      "line": 516
     },
     {
       "name": "_retry_guidance",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 556
+      "line": 557
     },
     {
       "name": "_upstream_guidance",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 608
+      "line": 609
     },
     {
       "name": "_asset_forge_guidance",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 681
+      "line": 682
     },
     {
       "name": "build_studio_request",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 739
+      "line": 740
     },
     {
       "name": "_write_project_capacity_plan",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 796
+      "line": 797
     },
     {
       "name": "_attach_failed_ci_diagnostic",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 869
+      "line": 870
     },
     {
       "name": "_result_payload",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 913
+      "line": 914
     },
     {
       "name": "completion_payload",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 923
+      "line": 924
     },
     {
       "name": "failure_payload",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 940
+      "line": 941
     },
     {
       "name": "_retryable_runner_error",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 979
+      "line": 980
     },
     {
       "name": "_summary_requests_retry",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 986
+      "line": 987
     },
     {
       "name": "run_once",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 1002
+      "line": 1003
     },
     {
       "name": "observe_job_control",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 1071
+      "line": 1101
+    },
+    {
+      "name": "report_local_failure",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1127
     },
     {
       "name": "keep_job_alive",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 1146
+      "line": 1178
     },
     {
       "name": "main",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 1349
+      "line": 1398
     },
     {
       "name": "request",
@@ -590,19 +634,19 @@
       "name": "test_remote_asset_forge_probe_failure_removes_visual_capability",
       "kind": "function",
       "file": "tests/test_production_os_remote_asset_capability.py",
-      "line": 109
+      "line": 110
     },
     {
       "name": "fake_run",
       "kind": "function",
       "file": "tests/test_production_os_remote_asset_capability.py",
-      "line": 110
+      "line": 111
     },
     {
       "name": "Completed",
       "kind": "class",
       "file": "tests/test_production_os_remote_asset_capability.py",
-      "line": 111
+      "line": 112
     },
     {
       "name": "ProductionOSWorkerTests",
@@ -777,6 +821,66 @@
       "kind": "function",
       "file": "tests/test_production_os_worker_cli.py",
       "line": 268
+    },
+    {
+      "name": "WorkerRecoveryTests",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_recovery.py",
+      "line": 14
+    },
+    {
+      "name": "test_local_setup_failure_reports_failure_and_releases_active_slot",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_recovery.py",
+      "line": 15
+    },
+    {
+      "name": "test_corrupt_or_uncorrelated_results_never_complete_job",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_recovery.py",
+      "line": 29
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_recovery.py",
+      "line": 34
+    },
+    {
+      "name": "test_invalid_timing_configuration_does_not_claim_job",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_recovery.py",
+      "line": 53
+    },
+    {
+      "name": "test_uncertain_completion_delivery_does_not_report_opposite_outcome",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_recovery.py",
+      "line": 65
+    },
+    {
+      "name": "_main",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_recovery.py",
+      "line": 76
+    },
+    {
+      "name": "test_bounded_failure_returns_nonzero_and_preserves_status_artifact",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_recovery.py",
+      "line": 83
+    },
+    {
+      "name": "test_paused_and_draining_continuous_workers_sleep_between_polls",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_recovery.py",
+      "line": 92
+    },
+    {
+      "name": "sleep",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_recovery.py",
+      "line": 96
     },
     {
       "name": "sample_job",
@@ -1206,6 +1310,7 @@
     }
   ],
   "selected_tests": [
+    "integration_tests/test_production_os_server_integration.py",
     "tests/test_mobile_validation_contract.py",
     "tests/test_production_os_actions_worker_workflow.py",
     "tests/test_production_os_local_e2e.py",
@@ -1213,6 +1318,7 @@
     "tests/test_production_os_worker.py",
     "tests/test_production_os_worker_cli.py",
     "tests/test_production_os_worker_preflight.py",
+    "tests/test_production_os_worker_recovery.py",
     "tests/test_production_os_worker_runtime.py"
   ]
 }

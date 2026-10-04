@@ -2,23 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "test: cover 3d worker capability readiness",
-      "terms": [
-        "3d",
-        "capability",
-        "cover",
-        "readiness",
-        "test",
-        "worker"
-      ],
-      "tests": [],
-      "useful": [
-        "studio/production_os_worker.py",
-        "tests/test_production_os_worker_runtime.py"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "build: install rembg CLI backend for transparent sprites",
       "terms": [
         "backend",
@@ -1161,6 +1144,25 @@
         "tests/test_production_os_actions_worker_workflow.py",
         "tests/test_production_os_remote_asset_capability.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "Make Production-OS worker operational and resilient",
+      "terms": [
+        "make",
+        "operational",
+        "production-os",
+        "resilient",
+        "worker"
+      ],
+      "tests": [],
+      "useful": [
+        "integration_tests/test_production_os_server_integration.py",
+        "studio/production_os_worker.py",
+        "tests/test_production_os_actions_worker_workflow.py",
+        "tests/test_production_os_remote_asset_capability.py",
+        "tests/test_production_os_worker_recovery.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1913,6 +1915,13 @@
       "tests/test_production_os_result_contract.py": 4,
       "tests/test_production_os_worker_runtime.py": 4
     },
+    "make": {
+      "integration_tests/test_production_os_server_integration.py": 4,
+      "studio/production_os_worker.py": 4,
+      "tests/test_production_os_actions_worker_workflow.py": 4,
+      "tests/test_production_os_remote_asset_capability.py": 4,
+      "tests/test_production_os_worker_recovery.py": 4
+    },
     "managed": {
       "studio/core.py": 4,
       "studio/generic_project.py": 8,
@@ -1971,6 +1980,13 @@
       "studio/production_os_worker.py": 4,
       "tests/test_production_os_worker_cli.py": 4,
       "tests/test_production_os_worker_runtime.py": 4
+    },
+    "operational": {
+      "integration_tests/test_production_os_server_integration.py": 4,
+      "studio/production_os_worker.py": 4,
+      "tests/test_production_os_actions_worker_workflow.py": 4,
+      "tests/test_production_os_remote_asset_capability.py": 4,
+      "tests/test_production_os_worker_recovery.py": 4
     },
     "orchestrator": {
       "studio/asset_forge_bridge.py": 4,
@@ -2071,6 +2087,7 @@
       "tests/test_production_os_worker_runtime.py": 4
     },
     "production-os": {
+      "integration_tests/test_production_os_server_integration.py": 4,
       "scripts/preflight-production-os-worker.py": 4,
       "studio/agents/codex.py": 4,
       "studio/agents/orchestrator.py": 4,
@@ -2079,19 +2096,20 @@
       "studio/generic_project.py": 4,
       "studio/github_runner.py": 8,
       "studio/omniroute_capacity.py": 4,
-      "studio/production_os_worker.py": 20,
+      "studio/production_os_worker.py": 24,
       "tests/test_agent_router.py": 4,
       "tests/test_capacity_scheduler_omniroute.py": 4,
       "tests/test_codex_adapter.py": 4,
       "tests/test_github_runner_usage.py": 4,
       "tests/test_omniroute_capacity.py": 4,
-      "tests/test_production_os_actions_worker_workflow.py": 28,
+      "tests/test_production_os_actions_worker_workflow.py": 32,
       "tests/test_production_os_local_e2e.py": 8,
-      "tests/test_production_os_remote_asset_capability.py": 8,
+      "tests/test_production_os_remote_asset_capability.py": 12,
       "tests/test_production_os_result_contract.py": 4,
       "tests/test_production_os_worker.py": 4,
       "tests/test_production_os_worker_cli.py": 8,
       "tests/test_production_os_worker_preflight.py": 4,
+      "tests/test_production_os_worker_recovery.py": 4,
       "tests/test_production_os_worker_runtime.py": 12
     },
     "profile": {
@@ -2199,6 +2217,13 @@
       "studio/production_os_worker.py": 4,
       "tests/test_asset_forge_installer.py": 8,
       "tests/test_production_os_worker.py": 4
+    },
+    "resilient": {
+      "integration_tests/test_production_os_server_integration.py": 4,
+      "studio/production_os_worker.py": 4,
+      "tests/test_production_os_actions_worker_workflow.py": 4,
+      "tests/test_production_os_remote_asset_capability.py": 4,
+      "tests/test_production_os_worker_recovery.py": 4
     },
     "restore": {
       "studio/production_os_worker.py": 4
@@ -2537,17 +2562,19 @@
       "tests/test_production_os_remote_asset_capability.py": 8
     },
     "worker": {
+      "integration_tests/test_production_os_server_integration.py": 4,
       "scripts/preflight-production-os-worker.py": 4,
       "studio/github_runner.py": 4,
-      "studio/production_os_worker.py": 36,
+      "studio/production_os_worker.py": 40,
       "tests/test_asset_forge_installer.py": 4,
-      "tests/test_production_os_actions_worker_workflow.py": 36,
+      "tests/test_production_os_actions_worker_workflow.py": 40,
       "tests/test_production_os_local_e2e.py": 12,
-      "tests/test_production_os_remote_asset_capability.py": 12,
+      "tests/test_production_os_remote_asset_capability.py": 16,
       "tests/test_production_os_result_contract.py": 4,
       "tests/test_production_os_worker.py": 8,
       "tests/test_production_os_worker_cli.py": 4,
       "tests/test_production_os_worker_preflight.py": 4,
+      "tests/test_production_os_worker_recovery.py": 4,
       "tests/test_production_os_worker_runtime.py": 16
     },
     "workers": {

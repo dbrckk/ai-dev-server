@@ -1,16 +1,26 @@
 # Change impact
 
-Base: f53de6b07aeabd0c334c4f17e64c1983c26ce3e8
-Head: feaf013e0b3059370bf814a73a852c049cf1d7ad
+Base: 836a1d5bdf9b7cffa2983de1cbcb36e2cc07f913
+Head: 31d76cfef7e953eeea4806ec7300b4feefefb149
 
 ## Changed files
-- M control/production-os-worker-kick.json
+- A .github/workflows/production-os-worker-integration.yml
+- M docs/PRODUCTION_OS_WORKER.md
+- A integration_tests/test_production_os_server_integration.py
+- M studio/production_os_worker.py
+- M tests/test_production_os_actions_worker_workflow.py
+- M tests/test_production_os_remote_asset_capability.py
+- A tests/test_production_os_worker_recovery.py
 
 ## Affected areas
-- control
+- .github
+- docs
+- integration_tests
+- studio
+- tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_production_os_worker.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

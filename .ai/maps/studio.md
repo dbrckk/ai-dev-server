@@ -15662,6 +15662,12 @@ evidence = summary.get("evidence")
 ⋮----
 clock = time.monotonic
 ⋮----
+heartbeat_interval = float(heartbeat_interval_seconds)
+⋮----
+retry_attempts = int(runner_retry_attempts)
+⋮----
+retry_backoff = float(runner_retry_backoff_seconds)
+⋮----
 capabilities = list(capabilities or worker_capabilities())
 ⋮----
 preflight = client.heartbeat(worker_id, active_job_keys=())
@@ -15688,6 +15694,15 @@ response = client.heartbeat(worker_id, active_job_keys=(key,))
 ⋮----
 response = client.heartbeat(
 ⋮----
+def report_local_failure(exc, stage, request=None, duration=0.0)
+⋮----
+# Report only the exception type: messages may contain credentials.
+envelope = {
+⋮----
+kwargs = {"active_job_keys": ()}
+⋮----
+request = None
+⋮----
 request = build_studio_request(job)
 root = Path(output_root)
 handoff = dict((job.get("payload") or {}).get("handoff") or {})
@@ -15695,12 +15710,6 @@ handoff = dict((job.get("payload") or {}).get("handoff") or {})
 project_out = root / request["id"]
 ⋮----
 request_path = project_out / "production-os-request.json"
-⋮----
-heartbeat_interval = float(heartbeat_interval_seconds)
-⋮----
-retry_attempts = int(runner_retry_attempts)
-⋮----
-retry_backoff = float(runner_retry_backoff_seconds)
 ⋮----
 stop_heartbeat = threading.Event()
 heartbeat_errors: list[str] = []
@@ -15720,13 +15729,13 @@ duration = max(0.0, float(clock()) - started)
 ⋮----
 kwargs = {
 ⋮----
-envelope = {
-⋮----
 result_path = project_out / "production-os-result.json"
 ⋮----
 envelope = json.loads(result_path.read_text(encoding="utf-8"))
 ⋮----
 envelope = write_production_os_result(
+⋮----
+expected = {
 ⋮----
 envelope = _attach_failed_ci_diagnostic(envelope, request)
 ⋮----
@@ -15754,11 +15763,14 @@ client = client_factory(base_url, worker_token)
 capabilities = capabilities_provider(env)
 ⋮----
 completed_cycles = 0
+failed = False
 ⋮----
 capacity = capacity_provider(env)
 result = run_once_fn(
 ⋮----
 status_path = Path(args.status_file)
+⋮----
+failed = failed or result.get("status") == "failed"
 ````
 
 ## File: project_budget.py

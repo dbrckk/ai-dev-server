@@ -55,6 +55,7 @@ The content is organized as follows:
     multi-engine-benchmark.yml
     production-os-actions-worker.yml
     production-os-asset-forge-e2e.yml
+    production-os-worker-integration.yml
     provider-preview.yml
     remote-control.yml
     resilience-soak.yml
@@ -75,6 +76,8 @@ control/
   provider-probe.json
   release.json
   request.json
+integration_tests/
+  test_production_os_server_integration.py
 projects/
   jumpy.json
 scripts/
@@ -666,6 +669,7 @@ tests/
   test_production_os_result_contract.py
   test_production_os_worker_cli.py
   test_production_os_worker_preflight.py
+  test_production_os_worker_recovery.py
   test_production_os_worker_runtime.py
   test_production_os_worker.py
   test_project_budget.py
@@ -2397,6 +2401,69 @@ jobs:
           retention-days: 14
 ````
 
+## File: .github/workflows/production-os-worker-integration.yml
+````yaml
+name: Production-OS worker integration
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: worker-integration-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  production-os-worker:
+    name: Production-OS worker integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout worker
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+
+      - name: Checkout qualified Production-OS server
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: dbrckk/Production-OS
+          ref: 7e0d47a8fd54e7faa3b3947b07259a5e065c3bdb
+          path: .integration/production-os
+          persist-credentials: false
+
+      - name: Install server and worker test dependencies
+        run: python -m pip install ./.integration/production-os pytest
+
+      - name: Verify worker lifecycle and capabilities
+        run: >-
+          python -m pytest -q
+          tests/test_mobile_validation_contract.py
+          tests/test_production_os_actions_worker_workflow.py
+          tests/test_production_os_local_e2e.py
+          tests/test_production_os_remote_asset_capability.py
+          tests/test_production_os_worker.py
+          tests/test_production_os_worker_cli.py
+          tests/test_production_os_worker_preflight.py
+          tests/test_production_os_worker_runtime.py
+          tests/test_production_os_worker_recovery.py
+
+      - name: Verify authenticated real server integration
+        env:
+          REQUIRE_PRODUCTION_OS_INTEGRATION: "1"
+        run: python -m unittest discover -s integration_tests -v
+````
+
 ## File: .github/workflows/provider-preview.yml
 ````yaml
 name: Real Provider Mobile Preview
@@ -2933,6 +3000,49 @@ initial_prompt: |
   "reason": "Reconnect Production-OS persistent worker and restore dashboard production execution",
   "request_id": 35
 }
+````
+
+## File: integration_tests/test_production_os_server_integration.py
+````python
+"""Exercise the worker against Production-OS's real authenticated HTTP API.
+
+The dedicated CI job installs the pinned server and requires these tests.
+The runner executes a deterministic Python artifact; no live LLM is involved.
+"""
+⋮----
+ControlPlane = None
+⋮----
+@unittest.skipIf(ControlPlane is None, 'Production-OS installed by dedicated integration CI')
+class RealServerWorkerTests(unittest.TestCase)
+⋮----
+def test_worker_only_session_executes_and_reports_real_workflow(self)
+⋮----
+def test_unreadable_result_is_reported_to_real_server(self)
+⋮----
+def _exercise(self, expected)
+⋮----
+root = Path(td)
+auth = TokenAuthorizer([{
+control = ControlPlane(str(root / 'state.sqlite'), authorizer=auth)
+workflow = control.workflows.create(
+jobs = control.workflows.dispatch_ready(workflow['id'])
+⋮----
+server = ThreadingHTTPServer(('127.0.0.1', 0), make_handler(control))
+thread = threading.Thread(target=server.serve_forever, daemon=True)
+⋮----
+client = ProductionOSClient(f'http://127.0.0.1:{server.server_port}',
+# No operator token: validates real /v1/workers/session permissions.
+⋮----
+executed = []
+def runner(request_path, project_out, **kwargs)
+⋮----
+artifact = project_out / 'verify.py'
+⋮----
+proc = subprocess.run([sys.executable, str(artifact)], check=True,
+⋮----
+result = run_once(client, worker_id='github-actions-worker',
+⋮----
+current = control.workflows.get(workflow['id'])
 ````
 
 ## File: projects/jumpy.json
@@ -20681,6 +20791,12 @@ evidence = summary.get("evidence")
 ⋮----
 clock = time.monotonic
 ⋮----
+heartbeat_interval = float(heartbeat_interval_seconds)
+⋮----
+retry_attempts = int(runner_retry_attempts)
+⋮----
+retry_backoff = float(runner_retry_backoff_seconds)
+⋮----
 capabilities = list(capabilities or worker_capabilities())
 ⋮----
 preflight = client.heartbeat(worker_id, active_job_keys=())
@@ -20707,6 +20823,15 @@ response = client.heartbeat(worker_id, active_job_keys=(key,))
 ⋮----
 response = client.heartbeat(
 ⋮----
+def report_local_failure(exc, stage, request=None, duration=0.0)
+⋮----
+# Report only the exception type: messages may contain credentials.
+envelope = {
+⋮----
+kwargs = {"active_job_keys": ()}
+⋮----
+request = None
+⋮----
 request = build_studio_request(job)
 root = Path(output_root)
 handoff = dict((job.get("payload") or {}).get("handoff") or {})
@@ -20714,12 +20839,6 @@ handoff = dict((job.get("payload") or {}).get("handoff") or {})
 project_out = root / request["id"]
 ⋮----
 request_path = project_out / "production-os-request.json"
-⋮----
-heartbeat_interval = float(heartbeat_interval_seconds)
-⋮----
-retry_attempts = int(runner_retry_attempts)
-⋮----
-retry_backoff = float(runner_retry_backoff_seconds)
 ⋮----
 stop_heartbeat = threading.Event()
 heartbeat_errors: list[str] = []
@@ -20739,13 +20858,13 @@ duration = max(0.0, float(clock()) - started)
 ⋮----
 kwargs = {
 ⋮----
-envelope = {
-⋮----
 result_path = project_out / "production-os-result.json"
 ⋮----
 envelope = json.loads(result_path.read_text(encoding="utf-8"))
 ⋮----
 envelope = write_production_os_result(
+⋮----
+expected = {
 ⋮----
 envelope = _attach_failed_ci_diagnostic(envelope, request)
 ⋮----
@@ -20773,11 +20892,14 @@ client = client_factory(base_url, worker_token)
 capabilities = capabilities_provider(env)
 ⋮----
 completed_cycles = 0
+failed = False
 ⋮----
 capacity = capacity_provider(env)
 result = run_once_fn(
 ⋮----
 status_path = Path(args.status_file)
+⋮----
+failed = failed or result.get("status") == "failed"
 ````
 
 ## File: studio/project_budget.py
@@ -32466,6 +32588,46 @@ def test_loopback_http_is_allowed(self)
 def test_partial_omniroute_configuration_fails(self)
 ⋮----
 def test_non_positive_poll_interval_fails(self)
+````
+
+## File: tests/test_production_os_worker_recovery.py
+````python
+"""Regression coverage for acknowledged jobs and worker process outcomes."""
+⋮----
+class WorkerRecoveryTests(unittest.TestCase)
+⋮----
+def test_local_setup_failure_reports_failure_and_releases_active_slot(self)
+⋮----
+job = sample_job()
+⋮----
+client = _FakeClient(job)
+⋮----
+result = run_once(client, worker_id='w', output_root=Path(td),
+⋮----
+def test_corrupt_or_uncorrelated_results_never_complete_job(self)
+⋮----
+client = _FakeClient(sample_job())
+def runner(request_path, project_out, **kwargs)
+⋮----
+request = json.loads(request_path.read_text())
+result = {
+⋮----
+def test_invalid_timing_configuration_does_not_claim_job(self)
+⋮----
+def test_uncertain_completion_delivery_does_not_report_opposite_outcome(self)
+⋮----
+def _main(self, args, run_once_fn, **kwargs)
+⋮----
+def test_bounded_failure_returns_nonzero_and_preserves_status_artifact(self)
+⋮----
+status = Path(td) / 'status.json'
+⋮----
+outcomes = iter([{'status': 'failed'}, {'status': 'completed'}])
+⋮----
+def test_paused_and_draining_continuous_workers_sleep_between_polls(self)
+⋮----
+waits = []
+def sleep(seconds)
 ````
 
 ## File: tests/test_production_os_worker_runtime.py

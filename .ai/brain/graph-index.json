@@ -1,5 +1,6 @@
 {
   "areas": [
+    "integration-tests",
     "scripts",
     "studio",
     "tests"
@@ -249,6 +250,7 @@
         "studio/run.py"
       ],
       "dependents": [
+        "integration_tests/test_production_os_server_integration.py",
         "scripts/preflight-production-os-worker.py",
         "studio/adaptive_phase_policy.py",
         "studio/agents/orchestrator.py",
@@ -321,7 +323,6 @@
         "studio/goal_loop.py",
         "studio/godot_android_export.py",
         "studio/godot_android_stage.py",
-        "studio/godot_baseline.py",
         "studio/godot_model.py",
         "studio/godot_visual_qa.py",
         "studio/native_qa.py",
@@ -1246,6 +1247,32 @@
     {
       "dependencies": [
         "studio/atomic_file.py",
+        "studio/ci_diagnostics.py",
+        "studio/core.py",
+        "studio/file_lock.py",
+        "studio/github_runner.py",
+        "studio/omniroute_capacity.py",
+        "studio/stage_registry.py",
+        "tests/test_production_os_worker_runtime.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "integration_tests/test_production_os_server_integration.py",
+        "tests/test_mobile_validation_contract.py",
+        "tests/test_production_os_local_e2e.py",
+        "tests/test_production_os_remote_asset_capability.py",
+        "tests/test_production_os_worker.py",
+        "tests/test_production_os_worker_cli.py",
+        "tests/test_production_os_worker_recovery.py",
+        "tests/test_production_os_worker_runtime.py"
+      ],
+      "in_degree": 8,
+      "out_degree": 9,
+      "path": "studio/production_os_worker.py"
+    },
+    {
+      "dependencies": [
+        "studio/atomic_file.py",
         "studio/core.py",
         "studio/file_lock.py",
         "tests/test_unified_routing_score.py"
@@ -1267,30 +1294,6 @@
       "in_degree": 12,
       "out_degree": 4,
       "path": "studio/capacity_ledger.py"
-    },
-    {
-      "dependencies": [
-        "studio/atomic_file.py",
-        "studio/ci_diagnostics.py",
-        "studio/core.py",
-        "studio/file_lock.py",
-        "studio/github_runner.py",
-        "studio/omniroute_capacity.py",
-        "studio/stage_registry.py",
-        "tests/test_production_os_worker_runtime.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "tests/test_mobile_validation_contract.py",
-        "tests/test_production_os_local_e2e.py",
-        "tests/test_production_os_remote_asset_capability.py",
-        "tests/test_production_os_worker.py",
-        "tests/test_production_os_worker_cli.py",
-        "tests/test_production_os_worker_runtime.py"
-      ],
-      "in_degree": 6,
-      "out_degree": 9,
-      "path": "studio/production_os_worker.py"
     },
     {
       "dependencies": [],
@@ -1718,6 +1721,24 @@
     },
     {
       "dependencies": [
+        "studio/production_os_worker.py"
+      ],
+      "dependents": [
+        "integration_tests/test_production_os_server_integration.py",
+        "studio/core.py",
+        "studio/play_publisher.py",
+        "studio/production_os_worker.py",
+        "studio/store_package.py",
+        "tests/test_production_os_local_e2e.py",
+        "tests/test_production_os_worker_cli.py",
+        "tests/test_production_os_worker_recovery.py"
+      ],
+      "in_degree": 8,
+      "out_degree": 1,
+      "path": "tests/test_production_os_worker_runtime.py"
+    },
+    {
+      "dependencies": [
         "studio/atomic_file.py",
         "studio/file_lock.py"
       ],
@@ -1992,27 +2013,10 @@
       "in_degree": 6,
       "out_degree": 2,
       "path": "studio/project_engine.py"
-    },
-    {
-      "dependencies": [
-        "studio/capability_registry.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "studio/autonomous_project.py",
-        "studio/capability_promotion.py",
-        "studio/capability_registry_promotion_persist.py",
-        "studio/generic_capability_persist.py",
-        "tests/test_asset_artwork_promotion.py",
-        "tests/test_promoted_capabilities.py"
-      ],
-      "in_degree": 6,
-      "out_degree": 2,
-      "path": "studio/promoted_capabilities.py"
     }
   ],
-  "edge_count": 1814,
+  "edge_count": 1822,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 615,
+  "node_count": 617,
   "schema_version": 1
 }

@@ -1,5 +1,15 @@
 {
   "files": {
+    "integration_tests/test_production_os_server_integration.py": {
+      "dependencies": [
+        "studio/production_os_worker.py",
+        "tests/test_production_os_worker_runtime.py",
+        "tests/test_studio.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 3
+    },
     "scripts/preflight-production-os-worker.py": {
       "dependencies": [
         "tests/test_studio.py"
@@ -2774,14 +2784,13 @@
     },
     "studio/godot_baseline.py": {
       "dependencies": [
-        "studio/core.py",
-        "tests/test_studio.py"
+        "studio/core.py"
       ],
       "dependents": [
         "tests/test_godot_baseline.py"
       ],
       "in_degree": 1,
-      "out_degree": 2
+      "out_degree": 1
     },
     "studio/godot_device_qa.py": {
       "dependencies": [
@@ -3774,14 +3783,16 @@
         "tests/test_unified_routing_score.py"
       ],
       "dependents": [
+        "integration_tests/test_production_os_server_integration.py",
         "tests/test_mobile_validation_contract.py",
         "tests/test_production_os_local_e2e.py",
         "tests/test_production_os_remote_asset_capability.py",
         "tests/test_production_os_worker.py",
         "tests/test_production_os_worker_cli.py",
+        "tests/test_production_os_worker_recovery.py",
         "tests/test_production_os_worker_runtime.py"
       ],
-      "in_degree": 6,
+      "in_degree": 8,
       "out_degree": 9
     },
     "studio/project_budget.py": {
@@ -6907,23 +6918,37 @@
         "studio/production_os_worker.py",
         "tests/test_production_os_worker_runtime.py"
       ],
+      "dependents": [
+        "tests/test_production_os_worker_recovery.py"
+      ],
+      "in_degree": 1,
+      "out_degree": 2
+    },
+    "tests/test_production_os_worker_recovery.py": {
+      "dependencies": [
+        "studio/production_os_worker.py",
+        "tests/test_production_os_worker_cli.py",
+        "tests/test_production_os_worker_runtime.py"
+      ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 2
+      "out_degree": 3
     },
     "tests/test_production_os_worker_runtime.py": {
       "dependencies": [
         "studio/production_os_worker.py"
       ],
       "dependents": [
+        "integration_tests/test_production_os_server_integration.py",
         "studio/core.py",
         "studio/play_publisher.py",
         "studio/production_os_worker.py",
         "studio/store_package.py",
         "tests/test_production_os_local_e2e.py",
-        "tests/test_production_os_worker_cli.py"
+        "tests/test_production_os_worker_cli.py",
+        "tests/test_production_os_worker_recovery.py"
       ],
-      "in_degree": 6,
+      "in_degree": 8,
       "out_degree": 1
     },
     "tests/test_project_budget.py": {
@@ -7416,6 +7441,7 @@
         "studio/run.py"
       ],
       "dependents": [
+        "integration_tests/test_production_os_server_integration.py",
         "scripts/preflight-production-os-worker.py",
         "studio/adaptive_phase_policy.py",
         "studio/agents/orchestrator.py",
@@ -7488,7 +7514,6 @@
         "studio/goal_loop.py",
         "studio/godot_android_export.py",
         "studio/godot_android_stage.py",
-        "studio/godot_baseline.py",
         "studio/godot_model.py",
         "studio/godot_visual_qa.py",
         "studio/native_qa.py",

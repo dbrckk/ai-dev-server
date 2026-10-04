@@ -5935,6 +5935,10 @@ def product_value()
 ⋮----
 class GodotModelTests(unittest.TestCase)
 ⋮----
+def test_nvidia_source_generation_requests_json_mode(self)
+⋮----
+subject = model([completion({'files': [{'path': 'scripts/main.gd', 'content': 'extends Node\n'}]})])
+⋮----
 def test_product_uses_godot_planning_contract_not_flutter_execution_claims(self)
 ⋮----
 subject = model([completion(product_value())])

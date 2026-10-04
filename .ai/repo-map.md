@@ -2604,6 +2604,7 @@ jobs:
         run: >-
           python -m pytest -q
           tests/test_mobile_validation_contract.py
+          tests/test_godot_model.py
           tests/test_request_contract.py
           tests/test_production_os_actions_worker_workflow.py
           tests/test_production_os_local_e2e.py
@@ -3088,8 +3089,8 @@ initial_prompt: |
 ## File: control/production-os-diagnostics-kick.json
 ````json
 {
-  "sequence": 2,
-  "reason": "Recheck operator access after control-plane startup overlapped first live probe"
+  "sequence": 3,
+  "reason": "Verify structured JSON inference after live Godot source generation rejected invalid model JSON"
 }
 ````
 
@@ -20744,10 +20745,13 @@ model = provider.model_for(role)
 ⋮----
 record = {"provider_index": index, "role": role, "status": "unavailable"}
 ⋮----
+params = {
+⋮----
 response = api_factory(provider.base, provider.key).call(
 choices = response.get("choices") if isinstance(response, dict) else None
 message = choices[0].get("message") if isinstance(choices, list) and choices and isinstance(choices[0], dict) else None
 content = message.get("content") if isinstance(message, dict) else None
+parsed = json.loads(content) if isinstance(content, str) else None
 ⋮----
 # Remote bodies, exception messages and completions may echo credentials.
 ⋮----
@@ -30588,6 +30592,10 @@ obj = GodotModel.__new__(GodotModel)
 def product_value()
 ⋮----
 class GodotModelTests(unittest.TestCase)
+⋮----
+def test_nvidia_source_generation_requests_json_mode(self)
+⋮----
+subject = model([completion({'files': [{'path': 'scripts/main.gd', 'content': 'extends Node\n'}]})])
 ⋮----
 def test_product_uses_godot_planning_contract_not_flutter_execution_claims(self)
 ⋮----

@@ -39,35 +39,28 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T07:07:59Z
+Generated: 2026-10-04T07:19:56Z
 
 ### Git
 - Branch: `main`
-- Head: `26d6f0f8a54a`
-- Commit date: 2026-10-04T09:07:43+02:00
-- Commit: fix(worker): recover explicitly selected legacy objectives idempotently (#245)
+- Head: `d37438d368f1`
+- Commit date: 2026-10-04T09:19:37+02:00
+- Commit: fix(worker): request structured NVIDIA JSON for Godot source generation (#246)
 - Tracked files: 848
 
 ### Recently changed files
+- `.github/workflows/production-os-worker-integration.yml`
+- `control/production-os-diagnostics-kick.json`
+- `studio/godot_model.py`
+- `studio/production_os_live_diagnostics.py`
+- `tests/test_godot_model.py`
+- `tests/test_production_os_live_diagnostics.py`
+- `control/production-os-worker-kick.json`
 - `control/production-os-resume.json`
 - `integration_tests/test_production_os_server_integration.py`
 - `studio/production_os_resume_objectives.py`
 - `tests/test_production_os_resume_objectives.py`
 - `.github/workflows/production-os-objective-recovery.yml`
-- `.github/workflows/production-os-worker-integration.yml`
-- `control/production-os-diagnostics-kick.json`
-- `.github/workflows/production-os-actions-worker.yml`
-- `.github/workflows/production-os-live-diagnostics.yml`
-- `docs/PRODUCTION_OS_WORKER.md`
-- `studio/core.py`
-- `studio/production_os_live_diagnostics.py`
-- `studio/production_os_provider_config.py`
-- `studio/production_os_worker.py`
-- `tests/test_production_os_actions_worker_workflow.py`
-- `tests/test_production_os_live_diagnostics.py`
-- `tests/test_production_os_worker_recovery.py`
-- `tests/test_request_contract.py`
-- `control/production-os-worker-kick.json`
 
 ### Project signals
 - No common build descriptor detected

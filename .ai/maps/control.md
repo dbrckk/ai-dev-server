@@ -111,8 +111,8 @@ request.json
 ## File: production-os-diagnostics-kick.json
 ```json
 {
-  "sequence": 2,
-  "reason": "Recheck operator access after control-plane startup overlapped first live probe"
+  "sequence": 3,
+  "reason": "Verify structured JSON inference after live Godot source generation rejected invalid model JSON"
 }
 ```
 

@@ -15407,10 +15407,13 @@ model = provider.model_for(role)
 ⋮----
 record = {"provider_index": index, "role": role, "status": "unavailable"}
 ⋮----
+params = {
+⋮----
 response = api_factory(provider.base, provider.key).call(
 choices = response.get("choices") if isinstance(response, dict) else None
 message = choices[0].get("message") if isinstance(choices, list) and choices and isinstance(choices[0], dict) else None
 content = message.get("content") if isinstance(message, dict) else None
+parsed = json.loads(content) if isinstance(content, str) else None
 ⋮----
 # Remote bodies, exception messages and completions may echo credentials.
 ⋮----

@@ -110,8 +110,8 @@ request.json
 ## File: production-os-diagnostics-kick.json
 ```json
 {
-  "sequence": 1,
-  "reason": "Verify live inference after historical HTTP 410 and check existing operator access"
+  "sequence": 2,
+  "reason": "Recheck operator access after control-plane startup overlapped first live probe"
 }
 ```
 

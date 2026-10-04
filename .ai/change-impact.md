@@ -1,35 +1,16 @@
 # Change impact
 
-Base: 0f2db36742f5b7e733c4de463be66e378920ec12
-Head: 6caaeebdc3bcae8ae9f31fe413ff75270201b19b
+Base: 661f17a7afb58558cc209b1c592f2c10699b0458
+Head: 39954a16f762513070ce209072499d357a5a7fee
 
 ## Changed files
-- M .github/workflows/production-os-actions-worker.yml
-- A .github/workflows/production-os-live-diagnostics.yml
-- M .github/workflows/production-os-worker-integration.yml
-- A control/production-os-diagnostics-kick.json
-- M docs/PRODUCTION_OS_WORKER.md
-- M integration_tests/test_production_os_server_integration.py
-- M studio/core.py
-- A studio/production_os_live_diagnostics.py
-- A studio/production_os_provider_config.py
-- M studio/production_os_worker.py
-- M tests/test_production_os_actions_worker_workflow.py
-- A tests/test_production_os_live_diagnostics.py
-- M tests/test_production_os_worker_recovery.py
-- M tests/test_request_contract.py
+- M control/production-os-diagnostics-kick.json
 
 ## Affected areas
-- .github
 - control
-- docs
-- integration_tests
-- studio
-- tests
 
 ## Related test candidates
-- tests/test_production_os_live_diagnostics.py
-- tests/test_production_os_worker.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

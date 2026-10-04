@@ -34,20 +34,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T06:52:46Z
+Generated: 2026-10-04T06:54:53Z
 
 ### Git
 - Branch: `main`
-- Head: `6caaeebdc3bc`
-- Commit date: 2026-10-04T08:52:29+02:00
-- Commit: fix(worker): accept Production-OS skill learning and diagnose live inference (#243)
+- Head: `39954a16f762`
+- Commit date: 2026-10-04T08:54:38+02:00
+- Commit: chore(worker): recheck live operator access after control-plane startup
 - Tracked files: 844
 
 ### Recently changed files
+- `control/production-os-diagnostics-kick.json`
 - `.github/workflows/production-os-actions-worker.yml`
 - `.github/workflows/production-os-live-diagnostics.yml`
 - `.github/workflows/production-os-worker-integration.yml`
-- `control/production-os-diagnostics-kick.json`
 - `docs/PRODUCTION_OS_WORKER.md`
 - `integration_tests/test_production_os_server_integration.py`
 - `studio/core.py`

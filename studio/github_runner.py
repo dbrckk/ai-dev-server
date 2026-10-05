@@ -952,6 +952,8 @@ def run(
     improvement=None
     improvement_run=None
     status=state.get('status')
+    if status=='active' and state.get('transient_capacity_exhausted') is True:
+        status='capacity_exhausted'
     if status=='complete':
         project_state=last_result.get('report') if isinstance(last_result.get('report'),dict) else {}
         improvement=_update_improvements(out,state,project_state)

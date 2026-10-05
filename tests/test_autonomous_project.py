@@ -10,6 +10,7 @@ from studio.autonomous_project import (
     _sync_promoted_capabilities,
 )
 from studio.goal_engine import load as load_goal
+from studio.core import StudioError
 
 
 class AutonomousProjectTests(unittest.TestCase):
@@ -156,6 +157,34 @@ class AutonomousProjectTests(unittest.TestCase):
             self.assertEqual(state["status"], "active")
             self.assertEqual(state["attempt"], 1)
             self.assertIn("failed:preview:API unavailable or timed out", state["failures"])
+
+
+    def test_project_capacity_exhaustion_yields_without_burning_attempt_budget(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            calls = {"n": 0}
+
+            def run_once(*args):
+                calls["n"] += 1
+                raise StudioError(
+                    "All generic-project providers failed: "
+                    "Capacity reservation denied: project_envelope_exhausted"
+                )
+
+            state = run_persistent_project(
+                "request.json",
+                root / "out",
+                str(root / "work"),
+                runner=lambda *a, **k: None,
+                deadline=100,
+                clock=lambda: 0,
+                run_once=run_once,
+                max_cycles=4,
+            )
+            self.assertEqual(calls["n"], 1)
+            self.assertEqual(state["status"], "active")
+            self.assertEqual(state["attempt"], 0)
+            self.assertTrue(state["transient_capacity_exhausted"])
 
     def test_human_action_persists_terminal_state(self):
         with tempfile.TemporaryDirectory() as td:

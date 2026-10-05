@@ -62,6 +62,8 @@ class GodotRuntimeTests(unittest.TestCase):
             binary = godot_runtime.install(base / 'cache', opener=lambda request, timeout: Response(raw))
             command = godot_runtime.docker_command(staged, binary)
             self.assertIn('--network=none', command)
+            self.assertEqual(command[command.index('--user') + 1], f'{os.getuid()}:{os.getgid()}')
+            self.assertIn('HOME=/tmp', command)
             self.assertIn(str(staged.resolve()) + ':/project:rw', command)
             self.assertNotIn(str(source.resolve()) + ':/project:rw', command)
             self.assertIn(str(binary.resolve()) + ':/opt/godot:ro', command)
@@ -75,12 +77,21 @@ class GodotRuntimeTests(unittest.TestCase):
             before = (source / 'scripts/smoke.gd').read_bytes(); captured = {}
             def runner(command, **kwargs):
                 captured['command'] = command
+                staged = Path(command[command.index('-v') + 1].split(':/project:rw')[0])
+                captured['staged_modes'] = (
+                    staged.parent.stat().st_mode & 0o777,
+                    staged.stat().st_mode & 0o777,
+                    (staged / 'scripts').stat().st_mode & 0o777,
+                    (staged / 'scripts/smoke.gd').stat().st_mode & 0o777,
+                )
                 return subprocess.CompletedProcess(command, 0, stdout=b'Godot Engine')
             result = godot_runtime.validate(source, binary, runner=runner)
             self.assertEqual((source / 'scripts/smoke.gd').read_bytes(), before)
             self.assertFalse(any(str(source.resolve()) in arg for arg in captured['command']))
             self.assertEqual(result['source_project'], 'not_mounted')
             self.assertEqual(result['sandbox_project'], 'ephemeral_writable')
+            self.assertTrue(result['source_project_immutable'])
+            self.assertEqual(captured['staged_modes'], (0o755, 0o755, 0o755, 0o644))
 
     def test_symlink_in_source_project_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:

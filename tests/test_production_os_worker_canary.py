@@ -38,6 +38,8 @@ class WorkerCanaryTests(unittest.TestCase):
             {"sequence": 0, "repository": "owner/repo"},
             {"sequence": True, "repository": "owner/repo"},
             {"sequence": 1, "repository": "../repo"},
+            {"sequence": 1, "repository": "owner/.."},
+            {"sequence": 1, "repository": "./repo"},
             {"sequence": 1, "repository": "owner/repo", "extra": 1},
         ):
             with self.subTest(value=value), self.assertRaises(ValueError):

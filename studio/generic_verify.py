@@ -1,12 +1,114 @@
 """Trusted verification command discovery for generic repositories."""
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 import shutil
 import time
 
+from generic_policy import MAX_FILE_BYTES, SECRET_RE, editable
+
 from generic_sandbox import run as run_command
+
+
+STRUCTURAL_TEXT_SUFFIXES = {".md", ".txt", ".rst", ".json"}
+
+
+def verify_structural_text_changes(root: Path, changed_paths: list[str]) -> dict:
+    """Trusted fallback for documentation/data-only changes when no executable verifier exists.
+
+    This does not replace tests for source-code changes. It only proves that a bounded set
+    of policy-editable text artifacts exists, is valid UTF-8, contains no recognized secret
+    material, and (for JSON) remains syntactically valid. Semantic completion is still
+    decided by the independent review phase.
+    """
+    started = time.monotonic()
+    if not isinstance(changed_paths, list) or not changed_paths:
+        return {
+            "status": "not_applicable",
+            "passed": False,
+            "reason": "no changed files",
+            "files": [],
+            "elapsed_seconds": time.monotonic() - started,
+        }
+    normalized = []
+    seen = set()
+    for raw in changed_paths:
+        if not isinstance(raw, str) or raw in seen or not editable(raw):
+            return {
+                "status": "failed",
+                "passed": False,
+                "reason": "changed file rejected by generic policy",
+                "files": normalized,
+                "elapsed_seconds": time.monotonic() - started,
+            }
+        seen.add(raw)
+        path = root / raw
+        suffix = path.suffix.lower()
+        if suffix not in STRUCTURAL_TEXT_SUFFIXES:
+            return {
+                "status": "not_applicable",
+                "passed": False,
+                "reason": "changed files require executable verification",
+                "files": normalized,
+                "elapsed_seconds": time.monotonic() - started,
+            }
+        if not path.is_file() or path.is_symlink():
+            return {
+                "status": "failed",
+                "passed": False,
+                "reason": "changed text file missing or unsafe",
+                "files": normalized,
+                "elapsed_seconds": time.monotonic() - started,
+            }
+        try:
+            raw_bytes = path.read_bytes()
+            if len(raw_bytes) > MAX_FILE_BYTES:
+                raise ValueError("file too large")
+            text = raw_bytes.decode("utf-8")
+        except (OSError, UnicodeError, ValueError):
+            return {
+                "status": "failed",
+                "passed": False,
+                "reason": "changed text file unreadable",
+                "files": normalized,
+                "elapsed_seconds": time.monotonic() - started,
+            }
+        if "\x00" in text or SECRET_RE.search(text):
+            return {
+                "status": "failed",
+                "passed": False,
+                "reason": "changed text file failed content safety checks",
+                "files": normalized,
+                "elapsed_seconds": time.monotonic() - started,
+            }
+        if suffix == ".json":
+            try:
+                json.loads(text)
+            except json.JSONDecodeError:
+                return {
+                    "status": "failed",
+                    "passed": False,
+                    "reason": "changed JSON is invalid",
+                    "files": normalized,
+                    "elapsed_seconds": time.monotonic() - started,
+                }
+        normalized.append({
+            "path": raw,
+            "bytes": len(raw_bytes),
+            "sha256": hashlib.sha256(raw_bytes).hexdigest(),
+        })
+    return {
+        "status": "passed",
+        "passed": True,
+        "reason": "trusted structural text verification",
+        "commands": [],
+        "results": [],
+        "files": normalized,
+        "elapsed_seconds": time.monotonic() - started,
+        "structural_only": True,
+    }
 
 
 def discover(root: Path) -> list[list[str]]:

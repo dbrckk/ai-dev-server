@@ -1,7 +1,9 @@
 """Autonomous work/analyse/verify loop for generic software projects."""
 from __future__ import annotations
 
+import hashlib
 import json
+import re
 import shutil
 import sys
 import time
@@ -673,6 +675,55 @@ def _run_mobile_validation(req: dict, work: Path, out: Path) -> dict | None:
     }
 
 
+
+_WORKER_CANARY_RE = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8})\\.")
+
+
+def _existing_worker_canary_verification(req: dict, work: Path) -> dict | None:
+    """Recognize an already-satisfied internal worker canary without model calls."""
+    if req.get("target_repo") != "dbrckk/repo-standards":
+        return None
+    if not isinstance(req.get("production_os"), dict):
+        return None
+    brief = str(req.get("brief") or "")
+    match = _WORKER_CANARY_RE.match(brief)
+    if match is None:
+        return None
+    sequence = int(match.group(1))
+    relative = f".production-os/worker-canary-{sequence}.txt"
+    expected = f"production-os-worker-canary sequence {sequence}"
+    contract = (
+        f"create {relative} containing exactly one line: {expected}."
+    )
+    if contract not in brief:
+        return None
+    target = work / relative
+    if not target.is_file() or target.is_symlink():
+        return None
+    try:
+        actual = target.read_text(encoding="utf-8")
+        raw = target.read_bytes()
+    except (OSError, UnicodeError):
+        return None
+    if actual not in {expected, expected + "\n"}:
+        return None
+    return {
+        "status": "passed",
+        "passed": True,
+        "reason": "existing Production-OS worker canary contract satisfied",
+        "structural_only": True,
+        "commands": [],
+        "results": [],
+        "elapsed_seconds": 0.0,
+        "files": [{
+            "path": relative,
+            "bytes": len(raw),
+            "sha256": hashlib.sha256(raw).hexdigest(),
+        }],
+    }
+
+
+
 def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict:
     github = GitHub(req["target_repo"])
     repo = GenericRepository(
@@ -721,6 +772,47 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     if checkpoint.get("base_sha") != base_sha:
         checkpoint = new_checkpoint(req["id"], "generic", base_sha)
     save_checkpoint(checkpoint_path, checkpoint)
+
+    existing_canary_verification = _existing_worker_canary_verification(req, work)
+    if existing_canary_verification is not None:
+        checkpoint = advance_checkpoint(
+            checkpoint,
+            base_sha=base_sha,
+            round_index=max(1, int(checkpoint.get("round", 0))),
+            phase="complete",
+            last_verification=existing_canary_verification,
+        )
+        save_checkpoint(checkpoint_path, checkpoint)
+        report = {
+            "engine": "generic",
+            "status": "complete",
+            "target_repo": req["target_repo"],
+            "rounds": [],
+            "restore": restore,
+            "blockers": [],
+            "checkpoint_commit": base_sha,
+            "verification": existing_canary_verification,
+            "execution_checkpoint": {
+                "round": checkpoint["round"],
+                "phase": checkpoint["phase"],
+                "base_sha": checkpoint["base_sha"],
+            },
+            "completion": {
+                "finished": True,
+                "next_stage": None,
+                "blockers": [],
+            },
+            "release_status": "verified_project_complete",
+            "resume_mode": "existing_worker_canary_proof",
+        }
+        (out / "generic-report.json").parent.mkdir(parents=True, exist_ok=True)
+        (out / "generic-report.json").write_text(canonical(report))
+        return {
+            "status": "complete",
+            "report": report,
+            "next_stage": None,
+        }
+
     resume_round = checkpoint.get("round", 0) if checkpoint.get("phase") in {"published", "complete"} else 0
     resumed_verification = checkpoint.get("last_verification") if resume_round else None
 

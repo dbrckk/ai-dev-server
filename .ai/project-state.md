@@ -54,16 +54,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-04T20:35:18Z
+Generated: 2026-10-05T12:51:59Z
 
 ### Git
 - Branch: `main`
-- Head: `2f818a1e66ca`
-- Commit date: 2026-10-04T22:35:01+02:00
-- Commit: chore(worker): verify Asset Forge production dispatch
+- Head: `35d4f03171ae`
+- Commit date: 2026-10-05T14:51:19+02:00
+- Commit: Let the isolated Godot validator write its project cache (#252)
 - Tracked files: 849
 
 ### Recently changed files
+- `studio/godot_runtime.py`
+- `tests/test_godot_runtime.py`
 - `control/production-os-worker-kick.json`
 - `.github/workflows/production-os-actions-worker.yml`
 - `integration_tests/test_production_os_server_integration.py`
@@ -71,9 +73,6 @@ Generated: 2026-10-04T20:35:18Z
 - `tests/test_production_os_worker_runtime.py`
 - `studio/godot_model.py`
 - `tests/test_godot_model.py`
-- `studio/github_provider_health_store.py`
-- `tests/test_github_provider_health_store.py`
-- `tests/test_production_os_worker_recovery.py`
 
 ### Project signals
 - No common build descriptor detected

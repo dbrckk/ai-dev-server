@@ -12372,6 +12372,9 @@ binary_hash = _trusted_binary_hash(binary)
 ⋮----
 sandbox_project = Path(tmp) / 'project'
 ⋮----
+# Match the host UID so generated caches remain removable after Docker
+# exits. Only the disposable copy is mounted; the source stays untouched.
+⋮----
 command = docker_command(sandbox_project, binary)
 ⋮----
 result = runner(command, env=_host_env(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)

@@ -1,16 +1,18 @@
 # Change impact
 
-Base: e8f3e753b5e5da2ac4fb1787b6aeaab2c5fb55d0
-Head: 2f818a1e66caf2dc120f81661bc01f5ce636953c
+Base: 186d93f1db45f9be62afd2509141ad40eeccfc2a
+Head: 35d4f03171aef7e9e6874623ee274912c4da675f
 
 ## Changed files
-- M control/production-os-worker-kick.json
+- M studio/godot_runtime.py
+- M tests/test_godot_runtime.py
 
 ## Affected areas
-- control
+- studio
+- tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_godot_runtime.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

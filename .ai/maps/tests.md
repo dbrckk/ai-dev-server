@@ -6357,6 +6357,9 @@ def test_source_project_is_not_mounted_or_mutated(self)
 base = Path(tmp); source = project(base); binary = godot_runtime.install(base / 'cache', opener=lambda request, timeout: Response(raw))
 before = (source / 'scripts/smoke.gd').read_bytes(); captured = {}
 def runner(command, **kwargs)
+⋮----
+staged = Path(command[command.index('-v') + 1].split(':/project:rw')[0])
+⋮----
 result = godot_runtime.validate(source, binary, runner=runner)
 ⋮----
 def test_symlink_in_source_project_is_rejected(self)

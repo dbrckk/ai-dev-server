@@ -13,9 +13,17 @@ def test_actions_worker_has_no_codespace_dependency():
 
 
 def test_actions_worker_polls_production_os_on_schedule():
-    assert "cron: '*/5 * * * *'" in WORKFLOW
+    for cron in (
+        "*/5 * * * *",
+        "1-59/5 * * * *",
+        "2-59/5 * * * *",
+        "3-59/5 * * * *",
+        "4-59/5 * * * *",
+    ):
+        assert f"cron: '{cron}'" in WORKFLOW
     assert "workflow_dispatch:" in WORKFLOW
     assert "control/production-os-worker-kick.json" in WORKFLOW
+    assert "control/production-os-worker-canary.json" in WORKFLOW
     assert "studio/production_os_worker.py" in WORKFLOW
     assert "--once" in WORKFLOW
 

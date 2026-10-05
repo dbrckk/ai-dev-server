@@ -62,6 +62,8 @@ class GodotRuntimeTests(unittest.TestCase):
             binary = godot_runtime.install(base / 'cache', opener=lambda request, timeout: Response(raw))
             command = godot_runtime.docker_command(staged, binary)
             self.assertIn('--network=none', command)
+            self.assertEqual(command[command.index('--user') + 1], f'{os.getuid()}:{os.getgid()}')
+            self.assertIn('HOME=/tmp', command)
             self.assertIn(str(staged.resolve()) + ':/project:rw', command)
             self.assertNotIn(str(source.resolve()) + ':/project:rw', command)
             self.assertIn(str(binary.resolve()) + ':/opt/godot:ro', command)
@@ -89,7 +91,7 @@ class GodotRuntimeTests(unittest.TestCase):
             self.assertEqual(result['source_project'], 'not_mounted')
             self.assertEqual(result['sandbox_project'], 'ephemeral_writable')
             self.assertTrue(result['source_project_immutable'])
-            self.assertEqual(captured['staged_modes'], (0o755, 0o777, 0o777, 0o666))
+            self.assertEqual(captured['staged_modes'], (0o755, 0o755, 0o755, 0o644))
 
     def test_symlink_in_source_project_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -233,6 +233,36 @@ class ProductionOSWorkerCLITests(unittest.TestCase):
         self.assertEqual(len(capacities), 1)
 
 
+    def test_main_forwards_max_continuations(self):
+        runs = []
+        rc = main(
+            ["--once", "--max-continuations", "9"],
+            environ={
+                "PRODUCTION_OS_URL": "http://127.0.0.1:8787",
+                "PRODUCTION_OS_WORKER_TOKEN": "worker-secret",
+            },
+            client_factory=lambda base_url, token: _Client(base_url, token),
+            run_once_fn=lambda client, **kwargs: (
+                runs.append(kwargs) or {"status": "idle"}
+            ),
+            capabilities_provider=lambda env: ["software-development"],
+        )
+        self.assertEqual(rc, 0)
+        self.assertEqual(runs[0]["max_continuations"], 9)
+
+    def test_main_rejects_invalid_max_continuations(self):
+        with self.assertRaisesRegex(RuntimeError, "--max-continuations"):
+            main(
+                ["--once", "--max-continuations", "11"],
+                environ={
+                    "PRODUCTION_OS_URL": "http://127.0.0.1:8787",
+                    "PRODUCTION_OS_WORKER_TOKEN": "worker-secret",
+                },
+                client_factory=lambda base_url, token: _Client(base_url, token),
+                run_once_fn=lambda *args, **kwargs: {"status": "idle"},
+                capabilities_provider=lambda env: ["software-development"],
+            )
+
 
 class ProductionOSWorkerStatusFileTests(unittest.TestCase):
     def test_once_writes_machine_readable_idle_status(self):

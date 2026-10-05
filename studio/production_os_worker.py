@@ -1526,6 +1526,12 @@ def main(
         default=None,
         help="Write the latest worker cycle result as JSON",
     )
+    parser.add_argument(
+        "--max-continuations",
+        type=int,
+        default=8,
+        help="Maximum autonomous continuation cycles for one claimed job (0-10)",
+    )
     args = parser.parse_args(argv)
 
     env = os.environ if environ is None else environ
@@ -1556,6 +1562,8 @@ def main(
         raise RuntimeError("--cycles must be between 1 and 1000")
     if args.once and args.continuous:
         raise RuntimeError("--once and --continuous are mutually exclusive")
+    if args.max_continuations < 0 or args.max_continuations > 10:
+        raise RuntimeError("--max-continuations must be between 0 and 10")
     try:
         poll_interval = float(args.poll_interval)
     except (TypeError, ValueError) as exc:
@@ -1585,6 +1593,7 @@ def main(
                 capacity=capacity,
                 capabilities=capabilities,
                 baseline_sha=baseline_sha,
+                max_continuations=args.max_continuations,
             )
             if not isinstance(result, dict):
                 raise RuntimeError("Production-OS worker returned invalid result")

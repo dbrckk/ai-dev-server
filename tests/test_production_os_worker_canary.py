@@ -104,8 +104,9 @@ if __name__ == "__main__":
     unittest.main()
 
 
-def test_canary_workflow_does_not_hold_runner_while_waiting_for_worker():
+def test_canary_workflow_verifies_terminal_worker_completion():
     workflow = Path(".github/workflows/production-os-worker-canary.yml").read_text(encoding="utf-8")
-    assert "--wait-seconds 0" in workflow
-    assert "--wait-seconds 4200" not in workflow
+    assert "--wait-seconds 1800" in workflow
+    assert "--poll-seconds 10" in workflow
+    assert "timeout-minutes: 40" in workflow
     assert "cancel-in-progress: true" in workflow

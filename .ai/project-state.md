@@ -19,6 +19,7 @@ Status: active
 - Dedicated worker CI covers pytest function tests and real authenticated Production-OS HTTP integration.
 
 ## Broken / blockers
+- Live worker run 37298981754 exhausted its Godot continuation budget on Jumpy; validation evidence showed the container could not create `.godot` in its disposable project copy, plus a GDScript parse error and missing generated textures on the project branch. The sandbox copy permission repair is prepared; project code/assets still require a separate repair.
 - At 2026-10-04 18:50 UTC, the live queue had one visual asset job requiring `visual-asset-production`; the Actions worker did not advertise that capability because the remote Asset Forge dispatch probe was unavailable. A real completed coding production and visual asset delivery still need live verification.
 - Worker rerun 37197591265 is queued behind scheduled run 37197484353; a successful completed job and repository artifact still need live verification.
 - The real worker task has not completed successfully. The remote persistence failure needs a precise safe component/reason diagnosis; a bounded rerun with diagnostics is prepared.

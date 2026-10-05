@@ -186,3 +186,19 @@ def test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_w
     assert "production-os asset-forge-batch --probe" in WORKFLOW
     assert "Remote Asset Forge dispatch is unavailable; visual capability will remain disabled." in WORKFLOW
     assert "if env -u PYTHONPATH production-os asset-forge-batch --probe; then" in WORKFLOW
+
+
+def test_control_only_pushes_do_not_fan_out_into_unrelated_heavy_ci():
+    for path in (
+        ".github/workflows/ci.yml",
+        ".github/workflows/validate.yml",
+        ".github/workflows/fault-injection.yml",
+        ".github/workflows/resilience-soak.yml",
+        ".github/workflows/studio-smoke.yml",
+        ".github/workflows/multi-engine-benchmark.yml",
+        ".github/workflows/ai-repo-map.yml",
+        ".github/workflows/production-os-worker-integration.yml",
+    ):
+        workflow = Path(path).read_text(encoding="utf-8")
+        assert 'paths-ignore:' in workflow
+        assert '"control/**"' in workflow

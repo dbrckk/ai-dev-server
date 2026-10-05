@@ -12,7 +12,7 @@ from core import StudioError, canonical
 from generic_model import ask
 from generic_policy import validate_patch
 from generic_repository import GenericRepository
-from generic_verify import run as verify
+from generic_verify import run as verify, verify_structural_text_changes
 from generic_verifier_adaptation import save_recipe, synthesize as synthesize_verifier, validate_recipe
 from generic_toolchain import bootstrap_commands, detect as detect_toolchain
 from generic_sandbox import run as run_command
@@ -1923,31 +1923,35 @@ Objective and current plan:
             commands=adaptive_recipe["commands"] if adaptive_recipe else None,
         )
         if verification.get("status") == "no_verifier":
-            adaptive_recipe, verifier_model = synthesize_verifier(
-                work,
-                req["brief"],
-                previous=last_verification,
-            )
-            save_recipe(adaptive_path, adaptive_recipe, verifier_model)
-            adaptive_verify_timeout = bounded_timeout(
-                phase_remaining(
-                    phase_quotas,
-                    phase="verification",
-                    elapsed_seconds=clock() - verification_started,
-                ),
-                minimum=30,
-                maximum=900,
-            )
-            verification = verify(
-                work,
-                timeout_per_command=adaptive_verify_timeout or 30,
-                commands=adaptive_recipe["commands"],
-            )
-            verification["adaptive"] = {
-                "used": True,
-                "reason": adaptive_recipe["reason"],
-                "model": verifier_model,
-            }
+            structural_verification = verify_structural_text_changes(work, changed)
+            if structural_verification.get("status") in {"passed", "failed"}:
+                verification = structural_verification
+            else:
+                adaptive_recipe, verifier_model = synthesize_verifier(
+                    work,
+                    req["brief"],
+                    previous=last_verification,
+                )
+                save_recipe(adaptive_path, adaptive_recipe, verifier_model)
+                adaptive_verify_timeout = bounded_timeout(
+                    phase_remaining(
+                        phase_quotas,
+                        phase="verification",
+                        elapsed_seconds=clock() - verification_started,
+                    ),
+                    minimum=30,
+                    maximum=900,
+                )
+                verification = verify(
+                    work,
+                    timeout_per_command=adaptive_verify_timeout or 30,
+                    commands=adaptive_recipe["commands"],
+                )
+                verification["adaptive"] = {
+                    "used": True,
+                    "reason": adaptive_recipe["reason"],
+                    "model": verifier_model,
+                }
         elif adaptive_recipe:
             verification["adaptive"] = {
                 "used": True,

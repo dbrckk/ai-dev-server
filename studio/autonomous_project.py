@@ -257,6 +257,8 @@ def run_persistent_project(
         atomic_write_text(context_path, json.dumps(items, ensure_ascii=False, sort_keys=True, indent=2) + "\n")
         return items
 
+    cycle_control = {"capacity_exhausted": False}
+
     def execute_cycle(_goal_state):
         previous = os.environ.get("STUDIO_LEARNED_CONTEXT_PATH")
         previous_health = os.environ.get("STUDIO_PROVIDER_HEALTH_PATH")
@@ -267,9 +269,19 @@ def run_persistent_project(
         os.environ["STUDIO_PROVIDER_METRICS_PATH"] = str(provider_metrics_path)
         os.environ["STUDIO_ROUTING_HISTORY_PATH"] = str(routing_history_path)
         try:
-            result = run_once(
-                request_path, project_out, work, runner, deadline, clock, baseline_sha
-            )
+            try:
+                result = run_once(
+                    request_path, project_out, work, runner, deadline, clock, baseline_sha
+                )
+            except Exception as exc:
+                detail = str(exc)
+                if (
+                    type(exc).__name__ == "StudioError"
+                    and "project_envelope_exhausted" in detail
+                ):
+                    cycle_control["capacity_exhausted"] = True
+                    return {"yield_run": True}
+                raise
         finally:
             if previous is None: os.environ.pop("STUDIO_LEARNED_CONTEXT_PATH", None)
             else: os.environ["STUDIO_LEARNED_CONTEXT_PATH"] = previous
@@ -341,6 +353,8 @@ def run_persistent_project(
             "human_action": result.get("human_action"),
             "blocked_reason": result.get("blocked_reason"),
         })
+        if cycle_control["capacity_exhausted"] and result.get("status") == "active":
+            result = {**result, "transient_capacity_exhausted": True}
         emit_telemetry("goal_run_finished", goal_id=goal_id, status=result.get("status"))
         try:
             compact_telemetry(Path(runtime_paths["STUDIO_TELEMETRY_PATH"]))

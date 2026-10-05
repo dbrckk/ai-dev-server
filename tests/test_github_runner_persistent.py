@@ -51,6 +51,24 @@ class GithubRunnerPersistentTests(unittest.TestCase):
                 self.assertFalse(result["finished"])
                 self.assertEqual(result["next_stage"],"godot_play_submission")
 
+
+    def test_transient_capacity_exhaustion_is_reported_without_terminal_goal_block(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); request=self.request(root); out=root/"out"
+            with patch("github_runner.run_persistent_project") as persistent:
+                persistent.return_value={
+                    "status":"active",
+                    "attempt":0,
+                    "transient_capacity_exhausted":True,
+                }
+                result=run(
+                    request,out,runner=lambda *a,**k:None,
+                    clock=lambda:0,budget_seconds=100,baseline_sha="f"*40,
+                )
+                self.assertEqual(result["status"],"capacity_exhausted")
+                self.assertFalse(result["finished"])
+                self.assertIsNone(result["next_stage"])
+
     def test_blocked_state_preserves_reason(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td); request=self.request(root); out=root/"out"

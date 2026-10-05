@@ -133,6 +133,7 @@ def docker_command(sandbox_project: Path, binary: Path) -> list[str]:
     _trusted_binary_hash(binary)
     return ['docker','run','--rm','--init','--cap-drop=ALL','--security-opt=no-new-privileges',
             '--pids-limit=256','--memory=3g','--cpus=2','--network=none',
+            '--user',f'{os.getuid()}:{os.getgid()}','--env','HOME=/tmp',
             '--tmpfs','/tmp:rw,noexec,nosuid,nodev,size=256m',
             '-v',str(sandbox_project)+':/project:rw',
             '-v',str(binary)+':/opt/godot:ro',
@@ -146,11 +147,11 @@ def validate(project_root: Path, binary: Path, runner=subprocess.run, timeout=60
         sandbox_project = Path(tmp) / 'project'
         sandbox_project.mkdir()
         _copy_project(source, sandbox_project)
-        # The pinned container may run as a different non-root UID. Only the
-        # disposable project copy is made writable; the source stays untouched.
+        # Match the host UID so generated caches remain removable after Docker
+        # exits. Only the disposable copy is mounted; the source stays untouched.
         Path(tmp).chmod(0o755)
         for path in (sandbox_project, *sandbox_project.rglob('*')):
-            path.chmod(0o777 if path.is_dir() else 0o666)
+            path.chmod(0o755 if path.is_dir() else 0o644)
         command = docker_command(sandbox_project, binary)
         try:
             result = runner(command, env=_host_env(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)

@@ -676,7 +676,7 @@ def _run_mobile_validation(req: dict, work: Path, out: Path) -> dict | None:
 
 
 
-_WORKER_CANARY_RE = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8})\\.")
+_WORKER_CANARY_RE = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8})\.")
 
 
 def _existing_worker_canary_verification(req: dict, work: Path) -> dict | None:

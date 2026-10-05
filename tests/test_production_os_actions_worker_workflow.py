@@ -126,14 +126,17 @@ def test_actions_worker_resolves_only_qualified_production_os_main_runs():
     resolver = WORKFLOW.split(
         "- name: Resolve qualified Production-OS revision", 1
     )[1].split("- name: Checkout Production-OS tools", 1)[0]
-    assert "actions/workflows/" in resolver
-    assert "ci.yml/runs?branch=main&status=success&per_page=20" in resolver
+    assert "actions/runs" in resolver
+    assert "?branch=main&per_page=100" in resolver
+    assert 'run.get("path") != ".github/workflows/ci.yml"' in resolver
     assert 'run.get("conclusion") != "success"' in resolver
     assert 'run.get("event") not in {"push", "workflow_dispatch"}' in resolver
     assert '"pull_request"' not in resolver
     assert 'run.get("head_branch") != "main"' in resolver
     assert 'repository != "dbrckk/Production-OS"' in resolver
     assert "No qualified Production-OS main revision found" in resolver
+    assert "qualified.sort(reverse=True)" in resolver
+    assert "print(qualified[0][1])" in resolver
     assert "timeout=20" in resolver
     assert "b8be27a65200629553200f912b0caa9112ff8f4c" not in WORKFLOW
 

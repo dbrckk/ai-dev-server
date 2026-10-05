@@ -9,10 +9,6 @@ on:
       - 'control/production-os-worker-canary.json'
   schedule:
     - cron: '*/5 * * * *'
-    - cron: '1-59/5 * * * *'
-    - cron: '2-59/5 * * * *'
-    - cron: '3-59/5 * * * *'
-    - cron: '4-59/5 * * * *'
 
 permissions:
   contents: read
@@ -433,6 +429,7 @@ jobs:
           path: studio-output/production-os-actions/
           if-no-files-found: ignore
           retention-days: 7
+          include-hidden-files: true
 
       - name: Summary
         if: always()
@@ -444,7 +441,7 @@ jobs:
             echo "Codespace dependency: none"
             echo "Control plane: $PRODUCTION_OS_URL"
             echo "Worker id: $PRODUCTION_OS_WORKER_ID"
-            echo "Polling mode: staggered fallback wake every minute + manual dispatch"
+            echo "Polling mode: scheduled every 5 minutes + immediate control-file wake"
             echo "Compatible work at preflight: ${{ steps.queue_probe.outputs.any_available || 'unknown' }}"
             echo "Compatible jobs observed: ${{ steps.queue_probe.outputs.compatible_jobs || '0' }}"
             echo "Mobile work at preflight: ${{ steps.queue_probe.outputs.mobile_available || 'false' }}"

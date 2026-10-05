@@ -54,8 +54,24 @@ class GoalLoopTests(unittest.TestCase):
             state = run_goal(goal_path, registry_path, execute, max_cycles=3)
             self.assertEqual(state["status"], "complete")
             self.assertEqual(calls["n"], 2)
-            self.assertTrue(any(x == "cycle_exception:RuntimeError" for x in state["failures"]))
-            self.assertFalse(any("transient provider failure" in x for x in state["failures"]))
+            self.assertTrue(any(x == "cycle_exception:RuntimeError:transient provider failure" for x in state["failures"]))
+
+    def test_retryable_exception_detail_redacts_common_secrets(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            goal_path, registry_path = self.make_paths(root)
+            calls = {"n": 0}
+
+            def execute(state):
+                calls["n"] += 1
+                if calls["n"] == 1:
+                    raise RuntimeError("provider failed token=supersecret")
+                return {"evidence": {"ok": "proved"}}
+
+            state = run_goal(goal_path, registry_path, execute, max_cycles=3)
+            self.assertEqual(state["status"], "complete")
+            self.assertTrue(any("token=[redacted]" in x for x in state["failures"]))
+            self.assertNotIn("supersecret", str(state))
 
     def test_programming_error_blocks_without_repeating_broken_cycle(self):
         with tempfile.TemporaryDirectory() as td:

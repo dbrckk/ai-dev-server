@@ -1,6 +1,7 @@
 """Persistent bounded autonomous goal loop."""
 from __future__ import annotations
 from pathlib import Path
+import re
 
 try:
     from .capability_registry import has_capability,load as load_registry,register,save as save_registry
@@ -8,6 +9,17 @@ try:
 except ImportError:
     from capability_registry import has_capability,load as load_registry,register,save as save_registry
     from goal_engine import decide,finalize,load as load_goal,record_cycle,resolve_capability,save as save_goal
+
+_SENSITIVE_DETAIL = re.compile(
+    r"(?i)(bearer\s+|token\s*[=:]\s*|api[_-]?key\s*[=:]\s*|secret\s*[=:]\s*)\S+"
+)
+
+
+def _safe_exception_detail(exc):
+    detail = " ".join(str(exc).split())
+    detail = _SENSITIVE_DETAIL.sub(lambda match: match.group(1) + "[redacted]", detail)
+    return detail[:300]
+
 
 def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_cycles=100,context_provider=None,cycle_observer=None,execute_registered_capability=None):
     if not isinstance(max_cycles,int) or isinstance(max_cycles,bool) or not 1<=max_cycles<=1000:
@@ -58,7 +70,9 @@ def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_c
             if isinstance(exc,(AssertionError,AttributeError,NameError,SyntaxError,TypeError)):
                 result={"blocked_reason":"internal_cycle_error:"+kind}
             else:
-                result={"failure":"cycle_exception:"+kind}
+                detail=_safe_exception_detail(exc)
+                suffix=(":"+detail) if detail else ""
+                result={"failure":"cycle_exception:"+kind+suffix}
         if not isinstance(result,dict):
             state=record_cycle(state,failure="cycle returned invalid result")
         elif result.get("yield_run") is True:

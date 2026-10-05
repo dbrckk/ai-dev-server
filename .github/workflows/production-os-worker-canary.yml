@@ -17,7 +17,7 @@ concurrency:
 jobs:
   canary:
     runs-on: ubuntu-24.04
-    timeout-minutes: 75
+    timeout-minutes: 40
     env:
       PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
       PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
@@ -37,4 +37,5 @@ jobs:
         run: >-
           python studio/production_os_worker_canary.py
           control/production-os-worker-canary.json
-          --wait-seconds 0
+          --wait-seconds 1800
+          --poll-seconds 10

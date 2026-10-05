@@ -13,14 +13,14 @@ def test_actions_worker_has_no_codespace_dependency():
 
 
 def test_actions_worker_polls_production_os_on_schedule():
+    assert "cron: '*/5 * * * *'" in WORKFLOW
     for cron in (
-        "*/5 * * * *",
         "1-59/5 * * * *",
         "2-59/5 * * * *",
         "3-59/5 * * * *",
         "4-59/5 * * * *",
     ):
-        assert f"cron: '{cron}'" in WORKFLOW
+        assert f"cron: '{cron}'" not in WORKFLOW
     assert "workflow_dispatch:" in WORKFLOW
     assert "control/production-os-worker-kick.json" in WORKFLOW
     assert "control/production-os-worker-canary.json" in WORKFLOW
@@ -70,6 +70,10 @@ def test_actions_worker_is_single_flight_and_bounded():
     assert "timeout-minutes: 90" in WORKFLOW
     assert "Process one base-capability Production-OS job" in WORKFLOW
     assert "Process one mobile-capable Production-OS job" in WORKFLOW
+
+
+def test_actions_worker_retains_hidden_autonomy_diagnostics():
+    assert "include-hidden-files: true" in WORKFLOW
 
 
 

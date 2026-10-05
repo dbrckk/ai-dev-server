@@ -11,7 +11,7 @@ except ImportError:
     from goal_engine import decide,finalize,load as load_goal,record_cycle,resolve_capability,save as save_goal
 
 _SENSITIVE_DETAIL = re.compile(
-    r"(?i)(bearer\\s+|token\\s*[=:]\\s*|api[_-]?key\\s*[=:]\\s*|secret\\s*[=:]\\s*)\\S+"
+    r"(?i)(bearer\s+|token\s*[=:]\s*|api[_-]?key\s*[=:]\s*|secret\s*[=:]\s*)\S+"
 )
 
 

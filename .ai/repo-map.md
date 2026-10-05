@@ -1915,8 +1915,8 @@ jobs:
           import urllib.request
 
           url = (
-              "https://api.github.com/repos/dbrckk/Production-OS/actions/workflows/"
-              "ci.yml/runs?branch=main&status=success&per_page=20"
+              "https://api.github.com/repos/dbrckk/Production-OS/actions/runs"
+              "?branch=main&per_page=100"
           )
           headers = {
               "Accept": "application/vnd.github+json",
@@ -1930,7 +1930,10 @@ jobs:
           with urllib.request.urlopen(request, timeout=20) as response:
               payload = json.load(response)
 
+          qualified = []
           for run in payload.get("workflow_runs", []):
+              if run.get("path") != ".github/workflows/ci.yml":
+                  continue
               if run.get("conclusion") != "success":
                   continue
               if run.get("event") not in {"push", "workflow_dispatch"}:
@@ -1941,11 +1944,14 @@ jobs:
               if repository != "dbrckk/Production-OS":
                   continue
               sha = str(run.get("head_sha") or "").lower()
+              created_at = str(run.get("created_at") or "")
               if len(sha) == 40 and all(char in "0123456789abcdef" for char in sha):
-                  print(sha)
-                  break
-          else:
+                  qualified.append((created_at, sha))
+
+          if not qualified:
               raise SystemExit("No qualified Production-OS main revision found")
+          qualified.sort(reverse=True)
+          print(qualified[0][1])
           PY
           )"
           printf 'sha=%s\n' "$revision" >> "$GITHUB_OUTPUT"
@@ -3172,8 +3178,8 @@ initial_prompt: |
 ## File: control/production-os-worker-kick.json
 ````json
 {
-  "sequence": 15,
-  "reason": "Verify current Production-OS worker end-to-end after Godot and Asset Forge fixes"
+  "sequence": 16,
+  "reason": "Verify newest-qualified Production-OS tooling, Asset Forge capability, and real queued job execution"
 }
 ````
 

@@ -1,153 +1,146 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "b44e71dc7596da5f8fafc0a5134c352a6ec848d3",
-  "head": "530a237828fea6bb2ce1960eaf64667d43d52c74",
+  "base": "530a237828fea6bb2ce1960eaf64667d43d52c74",
+  "head": "4cffaf44f54e32dec5780d78da9dcf0cd13a3491",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": ".github/workflows/production-os-worker-canary.yml",
-      "status": "A"
+      "path": ".github/workflows/production-os-actions-worker.yml",
+      "status": "M"
     },
     {
-      "path": "control/production-os-worker-canary.json",
-      "status": "A"
+      "path": "control/production-os-worker-kick.json",
+      "status": "M"
     },
     {
-      "path": "studio/production_os_worker_canary.py",
-      "status": "A"
-    },
-    {
-      "path": "tests/test_production_os_worker_canary.py",
-      "status": "A"
+      "path": "tests/test_production_os_actions_worker_workflow.py",
+      "status": "M"
     }
   ],
   "changed_source_files": [
-    "studio/production_os_worker_canary.py",
-    "tests/test_production_os_worker_canary.py"
+    "tests/test_production_os_actions_worker_workflow.py"
   ],
   "impacted_files": [
-    "studio/production_os_worker_canary.py",
-    "tests/test_production_os_worker_canary.py"
+    "tests/test_production_os_actions_worker_workflow.py"
   ],
   "impacted_symbols": [
     {
-      "name": "validate_control",
+      "name": "test_actions_worker_has_no_codespace_dependency",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 18
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 9
     },
     {
-      "name": "canary_instruction",
+      "name": "test_actions_worker_polls_production_os_on_schedule",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 35
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 15
     },
     {
-      "name": "launch_canary",
+      "name": "test_actions_worker_uses_existing_secure_credentials",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 46
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 23
     },
     {
-      "name": "wait_for_workflow",
+      "name": "test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 31
+    },
+    {
+      "name": "test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 47
+    },
+    {
+      "name": "test_actions_worker_is_single_flight_and_bounded",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 59
+    },
+    {
+      "name": "test_actions_worker_exits_heavy_path_when_no_compatible_work_exists",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 68
+    },
+    {
+      "name": "test_actions_worker_skips_base_pass_for_mobile_only_work",
+      "kind": "function",
+      "file": "tests/test_production_os_actions_worker_workflow.py",
       "line": 79
     },
     {
-      "name": "run_canary",
+      "name": "test_actions_worker_does_not_prepare_android_for_base_only_claim_race",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 106
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 92
     },
     {
-      "name": "main",
+      "name": "test_actions_worker_reports_rejected_worker_token_without_exposing_it",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 126
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 98
     },
     {
-      "name": "FakeClient",
-      "kind": "class",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 11
-    },
-    {
-      "name": "__init__",
+      "name": "test_actions_worker_availability_probe_fails_closed",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 12
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 105
     },
     {
-      "name": "submit",
+      "name": "test_actions_worker_bootstraps_remote_asset_forge_before_preflight",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 17
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 112
     },
     {
-      "name": "get",
+      "name": "test_actions_worker_resolves_only_qualified_production_os_main_runs",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 27
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 125
     },
     {
-      "name": "WorkerCanaryTests",
-      "kind": "class",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 33
-    },
-    {
-      "name": "test_control_is_strict",
+      "name": "test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 34
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 144
     },
     {
-      "name": "test_canary_instruction_is_bounded_and_sequence_specific",
+      "name": "test_actions_worker_preflight_uses_runtime_capability_detection",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 48
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 155
     },
     {
-      "name": "test_launch_is_idempotent_and_uses_dashboard_api",
+      "name": "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 54
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 163
     },
     {
-      "name": "test_wait_observes_real_terminal_success",
+      "name": "test_actions_worker_has_resilient_model_provider_fallbacks",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 64
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 168
     },
     {
-      "name": "clock",
+      "name": "test_actions_worker_fails_ci_when_production_result_failed",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 67
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 173
     },
     {
-      "name": "sleep",
+      "name": "test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 69
-    },
-    {
-      "name": "test_terminal_failure_returns_without_retrying_mutation",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 78
-    },
-    {
-      "name": "test_wait_is_bounded",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 91
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "line": 177
     }
   ],
   "selected_tests": [
-    "tests/test_production_os_worker.py",
-    "tests/test_production_os_worker_canary.py"
+    "tests/test_production_os_actions_worker_workflow.py"
   ]
 }

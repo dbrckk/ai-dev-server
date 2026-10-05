@@ -139,8 +139,8 @@ request.json
 ## File: production-os-worker-kick.json
 ```json
 {
-  "sequence": 15,
-  "reason": "Verify current Production-OS worker end-to-end after Godot and Asset Forge fixes"
+  "sequence": 16,
+  "reason": "Verify newest-qualified Production-OS tooling, Asset Forge capability, and real queued job execution"
 }
 ```
 

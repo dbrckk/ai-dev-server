@@ -105,111 +105,6 @@
       },
       "task": "game engine"
     },
-    "094b40ccd978578026c738dc3bf0ec84cb792c64b7cff84daa14f9d53d36bc93": {
-      "route": {
-        "budget": {
-          "confidence": "high",
-          "expand_to": 12,
-          "max_files": 3,
-          "requested_max_files": 12,
-          "score_margin": 4,
-          "tier": "narrow",
-          "top_score": 33
-        },
-        "candidate_count": 89,
-        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
-        "files": [
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "engine",
-              "game"
-            ],
-            "path": "tests/test_asset_forge_bridge.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 33,
-            "symbols": [
-              "test_3d_character_inference_enables_lods_for_primary_assets",
-              "test_3d_environment_inference_uses_environment_profile",
-              "test_asset_reuse_policy_is_primary_unique_secondary_reusable",
-              "test_batch_infers_animation_of_dependency",
-              "test_batch_infers_parent_asset_dependency",
-              "test_batch_preserves_explicit_asset_dependencies",
-              "test_brief_inference_builds_character_dependency_chain",
-              "test_brief_inference_detects_3d_character_without_2d_sprite_chain",
-              "test_brief_inference_detects_3d_environment",
-              "test_builds_production_os_dispatch_contract",
-              "test_engine_is_inferred_from_visual_instruction",
-              "test_explicit_secondary_importance_is_preserved",
-              "test_ignores_plain_code_task",
-              "test_premium_route_defaults_to_primary_importance",
-              "test_primary_3d_environment_requires_collision_readiness",
-              "test_primary_raster_batch_enables_optional_semantic_art_review",
-              "test_primary_raster_batch_uses_stricter_visual_similarity_policy",
-              "test_raster_quality_policy_can_be_overridden_per_task",
-              "test_route_includes_repository_delivery_target",
-              "test_routes_premium_visual_task"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "engine",
-              "game"
-            ],
-            "path": "tests/test_godot_android_stage.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 29,
-            "symbols": [
-              "FakeGitHub",
-              "GodotAndroidStageTests",
-              "exporter",
-              "runtime",
-              "templates",
-              "test_requires_validated_preview_checkpoint",
-              "test_success_advances_only_to_device_qa"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "engine",
-              "game"
-            ],
-            "path": "tests/test_godot_device_stage.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 29,
-            "symbols": [
-              "FakeGitHub",
-              "GodotDeviceStageTests",
-              "exporter",
-              "runtime",
-              "state",
-              "templates",
-              "test_device_cannot_spoof_journey_or_visual_evidence",
-              "test_matching_local_apk_advances_only_to_journey_qa",
-              "test_missing_local_apk_is_reexported_and_rebound",
-              "test_requires_android_export_checkpoint",
-              "validator"
-            ]
-          }
-        ],
-        "generated_by": "dbrckk/repo-brain-v8",
-        "schema_version": 1,
-        "task": "game engine",
-        "terms": [
-          "game",
-          "engine"
-        ]
-      },
-      "task": "game engine"
-    },
     "09a0b5b981734151dc40548870d889e9291f79dec515e92843432ff7e55d0389": {
       "route": {
         "budget": {
@@ -378,69 +273,6 @@
         ]
       },
       "task": "offline progress"
-    },
-    "0a47a0c409c1ab3f817a021e74106cdf293b31cf66dee7e46744441b5efee2ec": {
-      "route": {
-        "budget": {
-          "confidence": "low",
-          "expand_to": 12,
-          "max_files": 6,
-          "requested_max_files": 12,
-          "score_margin": 6,
-          "tier": "broad",
-          "top_score": 9
-        },
-        "candidate_count": 2,
-        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
-        "files": [
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": "tests/test_production_os_actions_worker_workflow.py",
-            "reasons": [
-              "impact",
-              "recently-changed"
-            ],
-            "score": 9,
-            "symbols": [
-              "test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token",
-              "test_actions_worker_availability_probe_fails_closed",
-              "test_actions_worker_bootstraps_remote_asset_forge_before_preflight",
-              "test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup",
-              "test_actions_worker_does_not_prepare_android_for_base_only_claim_race",
-              "test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback",
-              "test_actions_worker_exits_heavy_path_when_no_compatible_work_exists",
-              "test_actions_worker_has_no_codespace_dependency",
-              "test_actions_worker_is_single_flight_and_bounded",
-              "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
-              "test_actions_worker_polls_production_os_on_schedule",
-              "test_actions_worker_preflight_uses_runtime_capability_detection",
-              "test_actions_worker_reports_rejected_worker_token_without_exposing_it",
-              "test_actions_worker_resolves_only_qualified_production_os_main_pushes",
-              "test_actions_worker_skips_base_pass_for_mobile_only_work",
-              "test_actions_worker_uses_existing_secure_credentials"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [],
-            "path": ".github/workflows/production-os-actions-worker.yml",
-            "reasons": [
-              "recently-changed"
-            ],
-            "score": 3,
-            "symbols": []
-          }
-        ],
-        "generated_by": "dbrckk/repo-brain-v8",
-        "schema_version": 1,
-        "task": "income progression",
-        "terms": [
-          "income",
-          "progression"
-        ]
-      },
-      "task": "income progression"
     },
     "0f8fac9feb599416829795c75be62259843b33f7dd5a636635efe486620a9ae8": {
       "route": {
@@ -2970,6 +2802,183 @@
       },
       "task": "privacy consent"
     },
+    "46314f09a19a1d5932c06ec3b723a1d37fdc8ba81dd54db68d890de5db69aa79": {
+      "route": {
+        "budget": {
+          "confidence": "medium",
+          "expand_to": 12,
+          "max_files": 6,
+          "requested_max_files": 12,
+          "score_margin": 5,
+          "tier": "bounded",
+          "top_score": 26
+        },
+        "candidate_count": 28,
+        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
+        "files": [
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "progress"
+            ],
+            "path": "tests/test_production_os_actions_worker_workflow.py",
+            "reasons": [
+              "impact",
+              "recently-changed",
+              "search-index"
+            ],
+            "score": 26,
+            "symbols": [
+              "test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token",
+              "test_actions_worker_availability_probe_fails_closed",
+              "test_actions_worker_bootstraps_remote_asset_forge_before_preflight",
+              "test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup",
+              "test_actions_worker_does_not_prepare_android_for_base_only_claim_race",
+              "test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback",
+              "test_actions_worker_exits_heavy_path_when_no_compatible_work_exists",
+              "test_actions_worker_fails_ci_when_production_result_failed",
+              "test_actions_worker_has_no_codespace_dependency",
+              "test_actions_worker_has_resilient_model_provider_fallbacks",
+              "test_actions_worker_is_single_flight_and_bounded",
+              "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
+              "test_actions_worker_polls_production_os_on_schedule",
+              "test_actions_worker_preflight_uses_runtime_capability_detection",
+              "test_actions_worker_reports_rejected_worker_token_without_exposing_it",
+              "test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work",
+              "test_actions_worker_resolves_only_qualified_production_os_main_runs",
+              "test_actions_worker_skips_base_pass_for_mobile_only_work",
+              "test_actions_worker_uses_existing_secure_credentials"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "progress"
+            ],
+            "path": "studio/worker_heartbeat.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 21,
+            "symbols": [
+              "progress_marker",
+              "renew_if_progressed"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "offline",
+              "progress"
+            ],
+            "path": "tests/test_ci.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 21,
+            "symbols": [
+              "ProviderTests",
+              "QueueRunnerTests",
+              "RecoveryTests",
+              "make_queue",
+              "make_requests",
+              "neutral_capacity_plan",
+              "payload_for",
+              "runner",
+              "setUp",
+              "test_empty_queue_requires_no_credentials",
+              "test_entire_queue_validated_before_generation",
+              "test_exactly_one_owner",
+              "test_invalid_policy_fails_closed",
+              "test_non_main_rejected_before_provider_or_model_access",
+              "test_persistent_mode_uses_goal_wrapper",
+              "test_preview_success_chains_every_stage_to_finished",
+              "test_security_failure_is_not_reported_as_complete",
+              "test_separate_artifacts_and_continue_after_one_preview_failure",
+              "test_timeout_kills_group_and_only_removes_labeled_containers",
+              "test_timeout_preserves_progress_and_defers_remaining_work"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "progress"
+            ],
+            "path": "studio/capacity_efficiency.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 17,
+            "symbols": [
+              "_empty",
+              "_key",
+              "_load_unlocked",
+              "_metrics",
+              "load",
+              "project_multiplier",
+              "record",
+              "routing_bonus",
+              "stagnation_routing_penalty",
+              "summarize"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "progress"
+            ],
+            "path": "studio/capacity_ledger.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 17,
+            "symbols": [
+              "_empty",
+              "_load_unlocked",
+              "_reap",
+              "_save_unlocked",
+              "claim_preemption_lease",
+              "consumed_tokens",
+              "detailed_snapshot",
+              "heartbeat",
+              "load",
+              "preemption_leases",
+              "release",
+              "release_project",
+              "reservations_by_provider",
+              "reserve",
+              "reserved_tokens",
+              "settle",
+              "snapshot",
+              "transfer_project_reservations",
+              "usage_by_project"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "offline"
+            ],
+            "path": "studio/free_capacity_recommendations.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 17,
+            "symbols": [
+              "discover"
+            ]
+          }
+        ],
+        "generated_by": "dbrckk/repo-brain-v8",
+        "schema_version": 1,
+        "task": "offline progress",
+        "terms": [
+          "offline",
+          "progress"
+        ]
+      },
+      "task": "offline progress"
+    },
     "47e22a516b5305b283753248578b4e0df5c4e863332f8a1ce0768d4a8752a133": {
       "route": {
         "budget": {
@@ -3243,97 +3252,6 @@
         ]
       },
       "task": "offline progress"
-    },
-    "4a8a34abe68309c56cc0017216f57311e146f971333d75f01506436eedaf19c1": {
-      "route": {
-        "budget": {
-          "confidence": "high",
-          "expand_to": 12,
-          "max_files": 3,
-          "requested_max_files": 12,
-          "score_margin": 8,
-          "tier": "narrow",
-          "top_score": 39
-        },
-        "candidate_count": 19,
-        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
-        "files": [
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "billing",
-              "purchase"
-            ],
-            "path": "studio/billing_qa.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 39,
-            "symbols": [
-              "_apk_hash",
-              "_pubspec_dependencies",
-              "_source_markers",
-              "validate_billing",
-              "validate_sandbox_evidence"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "billing",
-              "purchase"
-            ],
-            "path": "tests/test_billing_qa.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 31,
-            "symbols": [
-              "BillingQATests",
-              "evidence",
-              "make_app",
-              "test_billing_stage_is_registered",
-              "test_incomplete_purchase_lifecycle_is_rejected",
-              "test_matching_play_sandbox_evidence_passes",
-              "test_without_play_sandbox_evidence_fails_closed",
-              "test_wrong_apk_hash_is_rejected"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "billing",
-              "purchase"
-            ],
-            "path": "tests/test_evolution_candidate.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 29,
-            "symbols": [
-              "EvolutionCandidateTests",
-              "candidate",
-              "research",
-              "test_accepts_only_complete_scoped_candidate",
-              "test_candidate_module_cannot_be_imported_at_collection_time",
-              "test_completion_registry_smoke_and_evolution_judges_are_protected",
-              "test_missing_test_or_benchmark_is_rejected",
-              "test_shell_true_eval_and_secret_are_rejected",
-              "test_skipped_tests_are_rejected",
-              "test_test_count_must_match_benchmark_assertions",
-              "work_order"
-            ]
-          }
-        ],
-        "generated_by": "dbrckk/repo-brain-v8",
-        "schema_version": 1,
-        "task": "purchase billing",
-        "terms": [
-          "purchase",
-          "billing"
-        ]
-      },
-      "task": "purchase billing"
     },
     "4c4233f28e748395b76e1e0e20160a22748fef960ebd786db68d60b1a44c1e5d": {
       "route": {
@@ -3705,6 +3623,97 @@
         ]
       },
       "task": "game engine"
+    },
+    "511eb3ae7d5f0bd78e273b221f1de93b31704da0775c6099363a328f4976f3f4": {
+      "route": {
+        "budget": {
+          "confidence": "high",
+          "expand_to": 12,
+          "max_files": 3,
+          "requested_max_files": 12,
+          "score_margin": 8,
+          "tier": "narrow",
+          "top_score": 39
+        },
+        "candidate_count": 20,
+        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
+        "files": [
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "billing",
+              "purchase"
+            ],
+            "path": "studio/billing_qa.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 39,
+            "symbols": [
+              "_apk_hash",
+              "_pubspec_dependencies",
+              "_source_markers",
+              "validate_billing",
+              "validate_sandbox_evidence"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "billing",
+              "purchase"
+            ],
+            "path": "tests/test_billing_qa.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 31,
+            "symbols": [
+              "BillingQATests",
+              "evidence",
+              "make_app",
+              "test_billing_stage_is_registered",
+              "test_incomplete_purchase_lifecycle_is_rejected",
+              "test_matching_play_sandbox_evidence_passes",
+              "test_without_play_sandbox_evidence_fails_closed",
+              "test_wrong_apk_hash_is_rejected"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "billing",
+              "purchase"
+            ],
+            "path": "tests/test_evolution_candidate.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 29,
+            "symbols": [
+              "EvolutionCandidateTests",
+              "candidate",
+              "research",
+              "test_accepts_only_complete_scoped_candidate",
+              "test_candidate_module_cannot_be_imported_at_collection_time",
+              "test_completion_registry_smoke_and_evolution_judges_are_protected",
+              "test_missing_test_or_benchmark_is_rejected",
+              "test_shell_true_eval_and_secret_are_rejected",
+              "test_skipped_tests_are_rejected",
+              "test_test_count_must_match_benchmark_assertions",
+              "work_order"
+            ]
+          }
+        ],
+        "generated_by": "dbrckk/repo-brain-v8",
+        "schema_version": 1,
+        "task": "purchase billing",
+        "terms": [
+          "purchase",
+          "billing"
+        ]
+      },
+      "task": "purchase billing"
     },
     "51c98544c1429ad5b6c6ea54b792ecf7da7dceb6e6f2e89905f436b87b9a1565": {
       "route": {
@@ -5276,179 +5285,6 @@
         ]
       },
       "task": "purchase billing"
-    },
-    "673b1edb107f2e6a32b5ad89d1fb57fbdf36d6a5355fc5845a8460b7da5d1aa2": {
-      "route": {
-        "budget": {
-          "confidence": "medium",
-          "expand_to": 12,
-          "max_files": 6,
-          "requested_max_files": 12,
-          "score_margin": 5,
-          "tier": "bounded",
-          "top_score": 26
-        },
-        "candidate_count": 27,
-        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
-        "files": [
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "progress"
-            ],
-            "path": "tests/test_production_os_actions_worker_workflow.py",
-            "reasons": [
-              "impact",
-              "recently-changed",
-              "search-index"
-            ],
-            "score": 26,
-            "symbols": [
-              "test_actions_worker_availability_probe_fails_closed",
-              "test_actions_worker_bootstraps_remote_asset_forge_before_preflight",
-              "test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup",
-              "test_actions_worker_does_not_prepare_android_for_base_only_claim_race",
-              "test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback",
-              "test_actions_worker_exits_heavy_path_when_no_compatible_work_exists",
-              "test_actions_worker_has_no_codespace_dependency",
-              "test_actions_worker_is_single_flight_and_bounded",
-              "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
-              "test_actions_worker_polls_production_os_on_schedule",
-              "test_actions_worker_preflight_uses_runtime_capability_detection",
-              "test_actions_worker_reports_rejected_worker_token_without_exposing_it",
-              "test_actions_worker_resolves_only_qualified_production_os_main_pushes",
-              "test_actions_worker_skips_base_pass_for_mobile_only_work",
-              "test_actions_worker_uses_existing_secure_credentials"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "progress"
-            ],
-            "path": "studio/worker_heartbeat.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 21,
-            "symbols": [
-              "progress_marker",
-              "renew_if_progressed"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "offline",
-              "progress"
-            ],
-            "path": "tests/test_ci.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 21,
-            "symbols": [
-              "ProviderTests",
-              "QueueRunnerTests",
-              "RecoveryTests",
-              "make_queue",
-              "make_requests",
-              "neutral_capacity_plan",
-              "payload_for",
-              "runner",
-              "setUp",
-              "test_empty_queue_requires_no_credentials",
-              "test_entire_queue_validated_before_generation",
-              "test_exactly_one_owner",
-              "test_invalid_policy_fails_closed",
-              "test_non_main_rejected_before_provider_or_model_access",
-              "test_persistent_mode_uses_goal_wrapper",
-              "test_preview_success_chains_every_stage_to_finished",
-              "test_security_failure_is_not_reported_as_complete",
-              "test_separate_artifacts_and_continue_after_one_preview_failure",
-              "test_timeout_kills_group_and_only_removes_labeled_containers",
-              "test_timeout_preserves_progress_and_defers_remaining_work"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "progress"
-            ],
-            "path": "studio/capacity_efficiency.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 17,
-            "symbols": [
-              "_empty",
-              "_key",
-              "_load_unlocked",
-              "_metrics",
-              "load",
-              "project_multiplier",
-              "record",
-              "routing_bonus",
-              "stagnation_routing_penalty",
-              "summarize"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "progress"
-            ],
-            "path": "studio/capacity_ledger.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 17,
-            "symbols": [
-              "_empty",
-              "_load_unlocked",
-              "_reap",
-              "_save_unlocked",
-              "claim_preemption_lease",
-              "consumed_tokens",
-              "detailed_snapshot",
-              "heartbeat",
-              "load",
-              "preemption_leases",
-              "release",
-              "release_project",
-              "reservations_by_provider",
-              "reserve",
-              "reserved_tokens",
-              "settle",
-              "snapshot",
-              "transfer_project_reservations",
-              "usage_by_project"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "offline"
-            ],
-            "path": "studio/free_capacity_recommendations.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 17,
-            "symbols": [
-              "discover"
-            ]
-          }
-        ],
-        "generated_by": "dbrckk/repo-brain-v8",
-        "schema_version": 1,
-        "task": "offline progress",
-        "terms": [
-          "offline",
-          "progress"
-        ]
-      },
-      "task": "offline progress"
     },
     "6d24c354588c40d722d4e20a4d5b1025de9af287c1ed8c17ebf05eeeec6ae22b": {
       "route": {
@@ -7660,6 +7496,111 @@
       },
       "task": "income progression"
     },
+    "8f9fd78b30e56d0647074cc739db2bfa6ee429e4ef35042bb1a2460122e9d047": {
+      "route": {
+        "budget": {
+          "confidence": "high",
+          "expand_to": 12,
+          "max_files": 3,
+          "requested_max_files": 12,
+          "score_margin": 4,
+          "tier": "narrow",
+          "top_score": 33
+        },
+        "candidate_count": 91,
+        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
+        "files": [
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "engine",
+              "game"
+            ],
+            "path": "tests/test_asset_forge_bridge.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 33,
+            "symbols": [
+              "test_3d_character_inference_enables_lods_for_primary_assets",
+              "test_3d_environment_inference_uses_environment_profile",
+              "test_asset_reuse_policy_is_primary_unique_secondary_reusable",
+              "test_batch_infers_animation_of_dependency",
+              "test_batch_infers_parent_asset_dependency",
+              "test_batch_preserves_explicit_asset_dependencies",
+              "test_brief_inference_builds_character_dependency_chain",
+              "test_brief_inference_detects_3d_character_without_2d_sprite_chain",
+              "test_brief_inference_detects_3d_environment",
+              "test_builds_production_os_dispatch_contract",
+              "test_engine_is_inferred_from_visual_instruction",
+              "test_explicit_secondary_importance_is_preserved",
+              "test_ignores_plain_code_task",
+              "test_premium_route_defaults_to_primary_importance",
+              "test_primary_3d_environment_requires_collision_readiness",
+              "test_primary_raster_batch_enables_optional_semantic_art_review",
+              "test_primary_raster_batch_uses_stricter_visual_similarity_policy",
+              "test_raster_quality_policy_can_be_overridden_per_task",
+              "test_route_includes_repository_delivery_target",
+              "test_routes_premium_visual_task"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "engine",
+              "game"
+            ],
+            "path": "tests/test_godot_android_stage.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 29,
+            "symbols": [
+              "FakeGitHub",
+              "GodotAndroidStageTests",
+              "exporter",
+              "runtime",
+              "templates",
+              "test_requires_validated_preview_checkpoint",
+              "test_success_advances_only_to_device_qa"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "engine",
+              "game"
+            ],
+            "path": "tests/test_godot_device_stage.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 29,
+            "symbols": [
+              "FakeGitHub",
+              "GodotDeviceStageTests",
+              "exporter",
+              "runtime",
+              "state",
+              "templates",
+              "test_device_cannot_spoof_journey_or_visual_evidence",
+              "test_matching_local_apk_advances_only_to_journey_qa",
+              "test_missing_local_apk_is_reexported_and_rebound",
+              "test_requires_android_export_checkpoint",
+              "validator"
+            ]
+          }
+        ],
+        "generated_by": "dbrckk/repo-brain-v8",
+        "schema_version": 1,
+        "task": "game engine",
+        "terms": [
+          "game",
+          "engine"
+        ]
+      },
+      "task": "game engine"
+    },
     "9116951730b595d9d78df89ed5cc036bdf1cd4418b75506743968b53d0fd4ad7": {
       "route": {
         "budget": {
@@ -7863,139 +7804,6 @@
         ]
       },
       "task": "income progression"
-    },
-    "91991b479dd8b2785ca9122b7245e41649dfb5fe31f7eb7d3c89c4f545deee88": {
-      "route": {
-        "budget": {
-          "confidence": "medium",
-          "expand_to": 12,
-          "max_files": 6,
-          "requested_max_files": 12,
-          "score_margin": 0,
-          "tier": "bounded",
-          "top_score": 27
-        },
-        "candidate_count": 26,
-        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
-        "files": [
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "privacy"
-            ],
-            "path": "studio/godot_privacy_security_qa.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 27,
-            "symbols": [
-              "_sha",
-              "_source_files",
-              "audit"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "privacy"
-            ],
-            "path": "studio/godot_privacy_security_stage.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 27,
-            "symbols": [
-              "execute"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "privacy"
-            ],
-            "path": "studio/privacy_audit.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 27,
-            "symbols": [
-              "_files",
-              "_network_text",
-              "_text",
-              "analyze",
-              "build_data_safety",
-              "build_privacy_package",
-              "dependency_capabilities",
-              "dependency_names",
-              "permissions",
-              "policy_text"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "privacy"
-            ],
-            "path": "studio/privacy_stage.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 27,
-            "symbols": [
-              "advance"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "privacy"
-            ],
-            "path": "tests/test_privacy.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 27,
-            "symbols": [
-              "PrivacyAuditTests",
-              "make_app",
-              "test_analytics_dependency_requires_verified_classification",
-              "test_auth_and_payments_surface_specific_data_classes",
-              "test_internet_capability_fails_closed",
-              "test_local_storage_is_not_misclassified_as_network_collection",
-              "test_offline_app_can_derive_no_external_collection",
-              "test_package_writes_policy_and_data_safety_evidence",
-              "test_push_sdk_is_not_mistaken_for_offline_app",
-              "test_sensitive_permission_fails_closed"
-            ]
-          },
-          {
-            "learning_score": 0,
-            "matched_terms": [
-              "privacy"
-            ],
-            "path": "studio/godot_store_metadata_qa.py",
-            "reasons": [
-              "search-index"
-            ],
-            "score": 21,
-            "symbols": [
-              "_project_text",
-              "_sha",
-              "_validated_screens",
-              "build",
-              "privacy_classification"
-            ]
-          }
-        ],
-        "generated_by": "dbrckk/repo-brain-v8",
-        "schema_version": 1,
-        "task": "privacy consent",
-        "terms": [
-          "privacy",
-          "consent"
-        ]
-      },
-      "task": "privacy consent"
     },
     "91ea25c62bc09dc78b346b1004815fbb89729e7da9ff2b19648a9c594659cad5": {
       "route": {
@@ -11586,6 +11394,82 @@
       },
       "task": "game engine"
     },
+    "cbb08f432fa89509b05b0276b20bd8dafed10d5c06d13b2ac8b24d9d00cf9239": {
+      "route": {
+        "budget": {
+          "confidence": "low",
+          "expand_to": 12,
+          "max_files": 6,
+          "requested_max_files": 12,
+          "score_margin": 6,
+          "tier": "broad",
+          "top_score": 9
+        },
+        "candidate_count": 3,
+        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
+        "files": [
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "tests/test_production_os_actions_worker_workflow.py",
+            "reasons": [
+              "impact",
+              "recently-changed"
+            ],
+            "score": 9,
+            "symbols": [
+              "test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token",
+              "test_actions_worker_availability_probe_fails_closed",
+              "test_actions_worker_bootstraps_remote_asset_forge_before_preflight",
+              "test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup",
+              "test_actions_worker_does_not_prepare_android_for_base_only_claim_race",
+              "test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback",
+              "test_actions_worker_exits_heavy_path_when_no_compatible_work_exists",
+              "test_actions_worker_fails_ci_when_production_result_failed",
+              "test_actions_worker_has_no_codespace_dependency",
+              "test_actions_worker_has_resilient_model_provider_fallbacks",
+              "test_actions_worker_is_single_flight_and_bounded",
+              "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
+              "test_actions_worker_polls_production_os_on_schedule",
+              "test_actions_worker_preflight_uses_runtime_capability_detection",
+              "test_actions_worker_reports_rejected_worker_token_without_exposing_it",
+              "test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work",
+              "test_actions_worker_resolves_only_qualified_production_os_main_runs",
+              "test_actions_worker_skips_base_pass_for_mobile_only_work",
+              "test_actions_worker_uses_existing_secure_credentials"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": ".github/workflows/production-os-actions-worker.yml",
+            "reasons": [
+              "recently-changed"
+            ],
+            "score": 3,
+            "symbols": []
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [],
+            "path": "control/production-os-worker-kick.json",
+            "reasons": [
+              "recently-changed"
+            ],
+            "score": 3,
+            "symbols": []
+          }
+        ],
+        "generated_by": "dbrckk/repo-brain-v8",
+        "schema_version": 1,
+        "task": "income progression",
+        "terms": [
+          "income",
+          "progression"
+        ]
+      },
+      "task": "income progression"
+    },
     "ccbfc1a2f207f6ac8303754b8e740ccd357a5692b1dfbd850cfde98bbb797aab": {
       "route": {
         "budget": {
@@ -11921,6 +11805,139 @@
         ]
       },
       "task": "game engine"
+    },
+    "d75943b7694b5df3e86e1079bb04d4377c1e059bef9be066274e872128c34b62": {
+      "route": {
+        "budget": {
+          "confidence": "medium",
+          "expand_to": 12,
+          "max_files": 6,
+          "requested_max_files": 12,
+          "score_margin": 0,
+          "tier": "bounded",
+          "top_score": 27
+        },
+        "candidate_count": 27,
+        "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
+        "files": [
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "privacy"
+            ],
+            "path": "studio/godot_privacy_security_qa.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 27,
+            "symbols": [
+              "_sha",
+              "_source_files",
+              "audit"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "privacy"
+            ],
+            "path": "studio/godot_privacy_security_stage.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 27,
+            "symbols": [
+              "execute"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "privacy"
+            ],
+            "path": "studio/privacy_audit.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 27,
+            "symbols": [
+              "_files",
+              "_network_text",
+              "_text",
+              "analyze",
+              "build_data_safety",
+              "build_privacy_package",
+              "dependency_capabilities",
+              "dependency_names",
+              "permissions",
+              "policy_text"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "privacy"
+            ],
+            "path": "studio/privacy_stage.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 27,
+            "symbols": [
+              "advance"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "privacy"
+            ],
+            "path": "tests/test_privacy.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 27,
+            "symbols": [
+              "PrivacyAuditTests",
+              "make_app",
+              "test_analytics_dependency_requires_verified_classification",
+              "test_auth_and_payments_surface_specific_data_classes",
+              "test_internet_capability_fails_closed",
+              "test_local_storage_is_not_misclassified_as_network_collection",
+              "test_offline_app_can_derive_no_external_collection",
+              "test_package_writes_policy_and_data_safety_evidence",
+              "test_push_sdk_is_not_mistaken_for_offline_app",
+              "test_sensitive_permission_fails_closed"
+            ]
+          },
+          {
+            "learning_score": 0,
+            "matched_terms": [
+              "privacy"
+            ],
+            "path": "studio/godot_store_metadata_qa.py",
+            "reasons": [
+              "search-index"
+            ],
+            "score": 21,
+            "symbols": [
+              "_project_text",
+              "_sha",
+              "_validated_screens",
+              "build",
+              "privacy_classification"
+            ]
+          }
+        ],
+        "generated_by": "dbrckk/repo-brain-v8",
+        "schema_version": 1,
+        "task": "privacy consent",
+        "terms": [
+          "privacy",
+          "consent"
+        ]
+      },
+      "task": "privacy consent"
     },
     "d7793664f4570fb15032dbdd974c82fb18e8a29fc3ff6040bc8c2f99263a7fa9": {
       "route": {
@@ -15131,11 +15148,6 @@
   },
   "generated_by": "dbrckk/repo-brain-query-cache-v2",
   "order": [
-    "91991b479dd8b2785ca9122b7245e41649dfb5fe31f7eb7d3c89c4f545deee88",
-    "673b1edb107f2e6a32b5ad89d1fb57fbdf36d6a5355fc5845a8460b7da5d1aa2",
-    "094b40ccd978578026c738dc3bf0ec84cb792c64b7cff84daa14f9d53d36bc93",
-    "4a8a34abe68309c56cc0017216f57311e146f971333d75f01506436eedaf19c1",
-    "0a47a0c409c1ab3f817a021e74106cdf293b31cf66dee7e46744441b5efee2ec",
     "75204820a9b62abbc964aaac5c11e0d94744c3be961ee62493b16134539f46db",
     "2bbf1a686aa033418a9d8d14795eca2021e274afc9531a062d9db19f5a4463de",
     "ad24107ace3880d033cb7f9b48de24b0dbfd854808ef813eb26b22f383a51dd5",
@@ -15258,7 +15270,12 @@
     "adbea7de258afc25312d02f14cdb56667f573665e3b7fb106a2b95a2dcfb33a5",
     "a99faffd2a41032c5c35769f53cd1e79d588d50d63b3b4640a293f36c62855c0",
     "d80a94eb63682e1b4ede7886c6ef22d29efbf3063bb83d90e0a8d730bb974f13",
-    "104e801387868053c6feb49de3a0de3e877c57c1bfbdda8e0a3125177d6460fe"
+    "104e801387868053c6feb49de3a0de3e877c57c1bfbdda8e0a3125177d6460fe",
+    "511eb3ae7d5f0bd78e273b221f1de93b31704da0775c6099363a328f4976f3f4",
+    "cbb08f432fa89509b05b0276b20bd8dafed10d5c06d13b2ac8b24d9d00cf9239",
+    "d75943b7694b5df3e86e1079bb04d4377c1e059bef9be066274e872128c34b62",
+    "46314f09a19a1d5932c06ec3b723a1d37fdc8ba81dd54db68d890de5db69aa79",
+    "8f9fd78b30e56d0647074cc739db2bfa6ee429e4ef35042bb1a2460122e9d047"
   ],
   "schema_version": 1
 }

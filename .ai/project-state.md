@@ -54,24 +54,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-05T17:07:50Z
+Generated: 2026-10-05T17:17:41Z
 
 ### Git
 - Branch: `main`
-- Head: `530a237828fe`
-- Commit date: 2026-10-05T19:07:30+02:00
-- Commit: test(worker): add bounded live Production-OS canary (#253)
+- Head: `4cffaf44f54e`
+- Commit date: 2026-10-05T19:16:49+02:00
+- Commit: chore(worker): verify qualified revision and visual job execution
 - Tracked files: 853
 
 ### Recently changed files
+- `control/production-os-worker-kick.json`
+- `.github/workflows/production-os-actions-worker.yml`
+- `tests/test_production_os_actions_worker_workflow.py`
 - `.github/workflows/production-os-worker-canary.yml`
 - `control/production-os-worker-canary.json`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
-- `control/production-os-worker-kick.json`
 - `studio/godot_runtime.py`
 - `tests/test_godot_runtime.py`
-- `.github/workflows/production-os-actions-worker.yml`
 
 ### Project signals
 - No common build descriptor detected

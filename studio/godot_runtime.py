@@ -146,6 +146,11 @@ def validate(project_root: Path, binary: Path, runner=subprocess.run, timeout=60
         sandbox_project = Path(tmp) / 'project'
         sandbox_project.mkdir()
         _copy_project(source, sandbox_project)
+        # The pinned container may run as a different non-root UID. Only the
+        # disposable project copy is made writable; the source stays untouched.
+        Path(tmp).chmod(0o755)
+        for path in (sandbox_project, *sandbox_project.rglob('*')):
+            path.chmod(0o777 if path.is_dir() else 0o666)
         command = docker_command(sandbox_project, binary)
         try:
             result = runner(command, env=_host_env(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)
@@ -155,5 +160,6 @@ def validate(project_root: Path, binary: Path, runner=subprocess.run, timeout=60
         blocked = result.returncode != 0 or any(marker in output for marker in BLOCKING_MARKERS)
         return {'passed': not blocked, 'exit_code': result.returncode, 'output': output,
                 'network': 'none', 'source_project': 'not_mounted', 'sandbox_project': 'ephemeral_writable',
+                'source_project_immutable': True,
                 'binary_sha256': binary_hash, 'archive_sha256': GODOT_ARCHIVE_SHA256,
                 'engine_version': GODOT_VERSION}

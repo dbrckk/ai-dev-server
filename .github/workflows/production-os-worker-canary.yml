@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: production-os-worker-canary
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   canary:
@@ -37,5 +37,4 @@ jobs:
         run: >-
           python studio/production_os_worker_canary.py
           control/production-os-worker-canary.json
-          --wait-seconds 4200
-          --poll-seconds 10
+          --wait-seconds 0

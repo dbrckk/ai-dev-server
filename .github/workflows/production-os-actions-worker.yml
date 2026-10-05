@@ -6,8 +6,13 @@ on:
     branches: [main]
     paths:
       - 'control/production-os-worker-kick.json'
+      - 'control/production-os-worker-canary.json'
   schedule:
     - cron: '*/5 * * * *'
+    - cron: '1-59/5 * * * *'
+    - cron: '2-59/5 * * * *'
+    - cron: '3-59/5 * * * *'
+    - cron: '4-59/5 * * * *'
 
 permissions:
   contents: read
@@ -439,7 +444,7 @@ jobs:
             echo "Codespace dependency: none"
             echo "Control plane: $PRODUCTION_OS_URL"
             echo "Worker id: $PRODUCTION_OS_WORKER_ID"
-            echo "Polling mode: scheduled every 5 minutes + manual dispatch"
+            echo "Polling mode: staggered fallback wake every minute + manual dispatch"
             echo "Compatible work at preflight: ${{ steps.queue_probe.outputs.any_available || 'unknown' }}"
             echo "Compatible jobs observed: ${{ steps.queue_probe.outputs.compatible_jobs || '0' }}"
             echo "Mobile work at preflight: ${{ steps.queue_probe.outputs.mobile_available || 'false' }}"

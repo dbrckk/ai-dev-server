@@ -3,6 +3,8 @@ name: Production-OS worker integration
 on:
   push:
     branches: ["main"]
+    paths-ignore:
+      - "control/**"
   pull_request:
 
 permissions:

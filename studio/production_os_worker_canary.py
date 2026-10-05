@@ -26,6 +26,9 @@ def validate_control(payload):
     repository = payload.get("repository")
     if not isinstance(repository, str) or not _REPOSITORY.fullmatch(repository):
         raise ValueError("canary repository is invalid")
+    owner, name = repository.split("/", 1)
+    if owner in {".", ".."} or name in {".", ".."}:
+        raise ValueError("canary repository is invalid")
     return sequence, repository
 
 

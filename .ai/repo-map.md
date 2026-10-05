@@ -3115,8 +3115,8 @@ initial_prompt: |
 ## File: control/production-os-worker-kick.json
 ````json
 {
-  "sequence": 14,
-  "reason": "Verify qualified Asset Forge dispatch credentials and process queued visual production"
+  "sequence": 15,
+  "reason": "Verify current Production-OS worker end-to-end after Godot and Asset Forge fixes"
 }
 ````
 

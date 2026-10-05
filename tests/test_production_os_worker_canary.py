@@ -108,3 +108,4 @@ def test_canary_workflow_does_not_hold_runner_while_waiting_for_worker():
     workflow = Path(".github/workflows/production-os-worker-canary.yml").read_text(encoding="utf-8")
     assert "--wait-seconds 0" in workflow
     assert "--wait-seconds 4200" not in workflow
+    assert "cancel-in-progress: true" in workflow

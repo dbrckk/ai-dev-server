@@ -57,6 +57,7 @@ The content is organized as follows:
     production-os-asset-forge-e2e.yml
     production-os-live-diagnostics.yml
     production-os-objective-recovery.yml
+    production-os-worker-canary.yml
     production-os-worker-integration.yml
     provider-preview.yml
     remote-control.yml
@@ -75,6 +76,7 @@ control/
   ci.json
   production-os-diagnostics-kick.json
   production-os-resume.json
+  production-os-worker-canary.json
   production-os-worker-kick.json
   promoted_capabilities.json
   provider-probe.json
@@ -367,6 +369,7 @@ studio/
   production_os_live_diagnostics.py
   production_os_provider_config.py
   production_os_resume_objectives.py
+  production_os_worker_canary.py
   production_os_worker.py
   project_budget.py
   project_context.py
@@ -677,6 +680,7 @@ tests/
   test_production_os_remote_asset_capability.py
   test_production_os_result_contract.py
   test_production_os_resume_objectives.py
+  test_production_os_worker_canary.py
   test_production_os_worker_cli.py
   test_production_os_worker_preflight.py
   test_production_os_worker_recovery.py
@@ -2563,6 +2567,51 @@ jobs:
         run: python studio/production_os_resume_objectives.py control/production-os-resume.json --apply
 ````
 
+## File: .github/workflows/production-os-worker-canary.yml
+````yaml
+name: Production-OS Worker Canary
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'control/production-os-worker-canary.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-os-worker-canary
+  cancel-in-progress: false
+
+jobs:
+  canary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
+      PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
+      PYTHONPATH: studio
+    steps:
+      - name: Checkout trusted canary
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+
+      - name: Launch and verify real Production-OS worker canary
+        run: >-
+          python studio/production_os_worker_canary.py
+          control/production-os-worker-canary.json
+          --wait-seconds 4200
+          --poll-seconds 10
+````
+
 ## File: .github/workflows/production-os-worker-integration.yml
 ````yaml
 name: Production-OS worker integration
@@ -3109,6 +3158,14 @@ initial_prompt: |
     "85cfbd6570e24f2bb41297f76cd5d948",
     "65ea248fa5f840eeaa6041ef18728e13"
   ]
+}
+````
+
+## File: control/production-os-worker-canary.json
+````json
+{
+  "sequence": 1,
+  "repository": "dbrckk/repo-standards"
 }
 ````
 
@@ -20857,6 +20914,66 @@ token = os.environ.get("PRODUCTION_OS_OPERATOR_TOKEN", "").strip()
 result = resume(OperatorClient(os.environ["PRODUCTION_OS_URL"], token),
 ````
 
+## File: studio/production_os_worker_canary.py
+````python
+"""Launch and verify a bounded live Production-OS worker canary."""
+⋮----
+_REPOSITORY = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
+_WORKFLOW_ID = re.compile(r"[a-f0-9]{32}")
+_TERMINAL_FAILURES = {"failed", "cancelled", "canceled"}
+⋮----
+def validate_control(payload)
+⋮----
+sequence = payload.get("sequence")
+⋮----
+repository = payload.get("repository")
+⋮----
+def canary_instruction(sequence)
+⋮----
+path = f".production-os/worker-canary-{sequence}.txt"
+content = f"production-os-worker-canary sequence {sequence}"
+⋮----
+def launch_canary(client, control)
+⋮----
+response = client.submit(
+⋮----
+project = response.get("project")
+⋮----
+workflow_id = str(project.get("current_workflow_id") or "")
+project_id = str(project.get("project_id") or "")
+⋮----
+wake = response.get("launch")
+wake = wake.get("worker_wake") if isinstance(wake, dict) else None
+wake_status = str(wake.get("status") or "unknown") if isinstance(wake, dict) else "unknown"
+⋮----
+timeout = float(timeout_seconds)
+poll = float(poll_seconds)
+⋮----
+deadline = float(clock()) + timeout
+last_status = "unknown"
+⋮----
+payload = client.get("/v1/workflows/" + workflow_id)
+workflow = payload.get("workflow") if isinstance(payload, dict) else None
+⋮----
+last_status = str(workflow.get("status") or "unknown").lower()
+⋮----
+result = launch_canary(client, control)
+⋮----
+outcome = wait_for_workflow(
+⋮----
+def main(argv=None)
+⋮----
+parser = argparse.ArgumentParser()
+⋮----
+args = parser.parse_args(argv)
+⋮----
+control = json.loads(args.control.read_text(encoding="utf-8"))
+token = os.environ.get("PRODUCTION_OS_OPERATOR_TOKEN", "").strip()
+base = os.environ.get("PRODUCTION_OS_URL", "").strip()
+⋮----
+result = run_canary(
+````
+
 ## File: studio/production_os_worker.py
 ````python
 """Production-OS worker bridge helpers for AI Dev Server."""
@@ -32960,6 +33077,50 @@ launches = []
 def launch(self, workflow_id, repository, final_goal)
 ⋮----
 def test_managed_history_cannot_be_relaunched_as_legacy(self)
+````
+
+## File: tests/test_production_os_worker_canary.py
+````python
+class FakeClient
+⋮----
+def __init__(self, statuses=("succeeded",))
+⋮----
+def submit(self, path, payload)
+⋮----
+def get(self, path)
+⋮----
+status = self.statuses.pop(0) if len(self.statuses) > 1 else self.statuses[0]
+⋮----
+class WorkerCanaryTests(unittest.TestCase)
+⋮----
+def test_control_is_strict(self)
+⋮----
+def test_canary_instruction_is_bounded_and_sequence_specific(self)
+⋮----
+instruction = canary_instruction(12)
+⋮----
+def test_launch_is_idempotent_and_uses_dashboard_api(self)
+⋮----
+client = FakeClient()
+result = run_canary(client, {"sequence": 4, "repository": "dbrckk/repo-standards"})
+⋮----
+def test_wait_observes_real_terminal_success(self)
+⋮----
+client = FakeClient(("queued", "running", "succeeded"))
+now = [0.0]
+def clock()
+def sleep(seconds)
+result = wait_for_workflow(
+⋮----
+def test_terminal_failure_returns_without_retrying_mutation(self)
+⋮----
+client = FakeClient(("running", "failed"))
+⋮----
+result = run_canary(
+⋮----
+def test_wait_is_bounded(self)
+⋮----
+client = FakeClient(("running",))
 ````
 
 ## File: tests/test_production_os_worker_cli.py

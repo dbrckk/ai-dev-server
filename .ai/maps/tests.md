@@ -278,6 +278,7 @@ test_production_os_local_e2e.py
 test_production_os_remote_asset_capability.py
 test_production_os_result_contract.py
 test_production_os_resume_objectives.py
+test_production_os_worker_canary.py
 test_production_os_worker_cli.py
 test_production_os_worker_preflight.py
 test_production_os_worker_recovery.py
@@ -8275,6 +8276,50 @@ launches = []
 def launch(self, workflow_id, repository, final_goal)
 ⋮----
 def test_managed_history_cannot_be_relaunched_as_legacy(self)
+```
+
+## File: test_production_os_worker_canary.py
+```python
+class FakeClient
+⋮----
+def __init__(self, statuses=("succeeded",))
+⋮----
+def submit(self, path, payload)
+⋮----
+def get(self, path)
+⋮----
+status = self.statuses.pop(0) if len(self.statuses) > 1 else self.statuses[0]
+⋮----
+class WorkerCanaryTests(unittest.TestCase)
+⋮----
+def test_control_is_strict(self)
+⋮----
+def test_canary_instruction_is_bounded_and_sequence_specific(self)
+⋮----
+instruction = canary_instruction(12)
+⋮----
+def test_launch_is_idempotent_and_uses_dashboard_api(self)
+⋮----
+client = FakeClient()
+result = run_canary(client, {"sequence": 4, "repository": "dbrckk/repo-standards"})
+⋮----
+def test_wait_observes_real_terminal_success(self)
+⋮----
+client = FakeClient(("queued", "running", "succeeded"))
+now = [0.0]
+def clock()
+def sleep(seconds)
+result = wait_for_workflow(
+⋮----
+def test_terminal_failure_returns_without_retrying_mutation(self)
+⋮----
+client = FakeClient(("running", "failed"))
+⋮----
+result = run_canary(
+⋮----
+def test_wait_is_bounded(self)
+⋮----
+client = FakeClient(("running",))
 ```
 
 ## File: test_production_os_worker_cli.py

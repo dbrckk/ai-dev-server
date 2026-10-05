@@ -289,6 +289,7 @@ privacy_stage.py
 production_os_live_diagnostics.py
 production_os_provider_config.py
 production_os_resume_objectives.py
+production_os_worker_canary.py
 production_os_worker.py
 project_budget.py
 project_context.py
@@ -15508,6 +15509,66 @@ control = json.loads(args.control.read_text())
 token = os.environ.get("PRODUCTION_OS_OPERATOR_TOKEN", "").strip()
 ⋮----
 result = resume(OperatorClient(os.environ["PRODUCTION_OS_URL"], token),
+````
+
+## File: production_os_worker_canary.py
+````python
+"""Launch and verify a bounded live Production-OS worker canary."""
+⋮----
+_REPOSITORY = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
+_WORKFLOW_ID = re.compile(r"[a-f0-9]{32}")
+_TERMINAL_FAILURES = {"failed", "cancelled", "canceled"}
+⋮----
+def validate_control(payload)
+⋮----
+sequence = payload.get("sequence")
+⋮----
+repository = payload.get("repository")
+⋮----
+def canary_instruction(sequence)
+⋮----
+path = f".production-os/worker-canary-{sequence}.txt"
+content = f"production-os-worker-canary sequence {sequence}"
+⋮----
+def launch_canary(client, control)
+⋮----
+response = client.submit(
+⋮----
+project = response.get("project")
+⋮----
+workflow_id = str(project.get("current_workflow_id") or "")
+project_id = str(project.get("project_id") or "")
+⋮----
+wake = response.get("launch")
+wake = wake.get("worker_wake") if isinstance(wake, dict) else None
+wake_status = str(wake.get("status") or "unknown") if isinstance(wake, dict) else "unknown"
+⋮----
+timeout = float(timeout_seconds)
+poll = float(poll_seconds)
+⋮----
+deadline = float(clock()) + timeout
+last_status = "unknown"
+⋮----
+payload = client.get("/v1/workflows/" + workflow_id)
+workflow = payload.get("workflow") if isinstance(payload, dict) else None
+⋮----
+last_status = str(workflow.get("status") or "unknown").lower()
+⋮----
+result = launch_canary(client, control)
+⋮----
+outcome = wait_for_workflow(
+⋮----
+def main(argv=None)
+⋮----
+parser = argparse.ArgumentParser()
+⋮----
+args = parser.parse_args(argv)
+⋮----
+control = json.loads(args.control.read_text(encoding="utf-8"))
+token = os.environ.get("PRODUCTION_OS_OPERATOR_TOKEN", "").strip()
+base = os.environ.get("PRODUCTION_OS_URL", "").strip()
+⋮----
+result = run_canary(
 ````
 
 ## File: production_os_worker.py

@@ -1,16 +1,22 @@
 # Change impact
 
-Base: 3ff0a2e3ea8b6bfc4c7172bfede8ac0a0cb16bda
-Head: b44e71dc7596da5f8fafc0a5134c352a6ec848d3
+Base: 9bb8065bb98f8eac294dadf2eb0ef9cf7b04946e
+Head: 530a237828fea6bb2ce1960eaf64667d43d52c74
 
 ## Changed files
-- M control/production-os-worker-kick.json
+- A .github/workflows/production-os-worker-canary.yml
+- A control/production-os-worker-canary.json
+- A studio/production_os_worker_canary.py
+- A tests/test_production_os_worker_canary.py
 
 ## Affected areas
+- .github
 - control
+- studio
+- tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_production_os_worker_canary.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

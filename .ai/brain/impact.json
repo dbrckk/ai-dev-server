@@ -1,17 +1,153 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "35d4f03171aef7e9e6874623ee274912c4da675f",
-  "head": "b44e71dc7596da5f8fafc0a5134c352a6ec848d3",
+  "base": "b44e71dc7596da5f8fafc0a5134c352a6ec848d3",
+  "head": "530a237828fea6bb2ce1960eaf64667d43d52c74",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "control/production-os-worker-kick.json",
-      "status": "M"
+      "path": ".github/workflows/production-os-worker-canary.yml",
+      "status": "A"
+    },
+    {
+      "path": "control/production-os-worker-canary.json",
+      "status": "A"
+    },
+    {
+      "path": "studio/production_os_worker_canary.py",
+      "status": "A"
+    },
+    {
+      "path": "tests/test_production_os_worker_canary.py",
+      "status": "A"
     }
   ],
-  "changed_source_files": [],
-  "impacted_files": [],
-  "impacted_symbols": [],
-  "selected_tests": []
+  "changed_source_files": [
+    "studio/production_os_worker_canary.py",
+    "tests/test_production_os_worker_canary.py"
+  ],
+  "impacted_files": [
+    "studio/production_os_worker_canary.py",
+    "tests/test_production_os_worker_canary.py"
+  ],
+  "impacted_symbols": [
+    {
+      "name": "validate_control",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 18
+    },
+    {
+      "name": "canary_instruction",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 35
+    },
+    {
+      "name": "launch_canary",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 46
+    },
+    {
+      "name": "wait_for_workflow",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 79
+    },
+    {
+      "name": "run_canary",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 106
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 126
+    },
+    {
+      "name": "FakeClient",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 11
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 12
+    },
+    {
+      "name": "submit",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 17
+    },
+    {
+      "name": "get",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 27
+    },
+    {
+      "name": "WorkerCanaryTests",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 33
+    },
+    {
+      "name": "test_control_is_strict",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 34
+    },
+    {
+      "name": "test_canary_instruction_is_bounded_and_sequence_specific",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 48
+    },
+    {
+      "name": "test_launch_is_idempotent_and_uses_dashboard_api",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 54
+    },
+    {
+      "name": "test_wait_observes_real_terminal_success",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 64
+    },
+    {
+      "name": "clock",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 67
+    },
+    {
+      "name": "sleep",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 69
+    },
+    {
+      "name": "test_terminal_failure_returns_without_retrying_mutation",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 78
+    },
+    {
+      "name": "test_wait_is_bounded",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 91
+    }
+  ],
+  "selected_tests": [
+    "tests/test_production_os_worker.py",
+    "tests/test_production_os_worker_canary.py"
+  ]
 }

@@ -46,6 +46,7 @@ mobile-requests/
 ci.json
 production-os-diagnostics-kick.json
 production-os-resume.json
+production-os-worker-canary.json
 production-os-worker-kick.json
 promoted_capabilities.json
 provider-probe.json
@@ -124,6 +125,14 @@ request.json
     "85cfbd6570e24f2bb41297f76cd5d948",
     "65ea248fa5f840eeaa6041ef18728e13"
   ]
+}
+```
+
+## File: production-os-worker-canary.json
+```json
+{
+  "sequence": 1,
+  "repository": "dbrckk/repo-standards"
 }
 ```
 

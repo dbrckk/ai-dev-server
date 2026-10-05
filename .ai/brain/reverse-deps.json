@@ -1550,6 +1550,7 @@
         "studio/production_os_provider_config.py",
         "studio/production_os_resume_objectives.py",
         "studio/production_os_worker.py",
+        "studio/production_os_worker_canary.py",
         "studio/project_budget.py",
         "studio/project_engine.py",
         "studio/provider_health.py",
@@ -1640,7 +1641,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 214,
+      "in_degree": 215,
       "out_degree": 17
     },
     "studio/cost_drift.py": {
@@ -3805,9 +3806,10 @@
       ],
       "dependents": [
         "integration_tests/test_production_os_server_integration.py",
+        "studio/production_os_worker_canary.py",
         "tests/test_production_os_resume_objectives.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 1
     },
     "studio/production_os_worker.py": {
@@ -3833,6 +3835,17 @@
       ],
       "in_degree": 8,
       "out_degree": 8
+    },
+    "studio/production_os_worker_canary.py": {
+      "dependencies": [
+        "studio/core.py",
+        "studio/production_os_resume_objectives.py"
+      ],
+      "dependents": [
+        "tests/test_production_os_worker_canary.py"
+      ],
+      "in_degree": 1,
+      "out_degree": 2
     },
     "studio/project_budget.py": {
       "dependencies": [
@@ -6978,6 +6991,14 @@
       "dependents": [],
       "in_degree": 0,
       "out_degree": 2
+    },
+    "tests/test_production_os_worker_canary.py": {
+      "dependencies": [
+        "studio/production_os_worker_canary.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
     },
     "tests/test_production_os_worker_cli.py": {
       "dependencies": [

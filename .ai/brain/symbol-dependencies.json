@@ -4,5 +4,1058 @@
   "scope": "symbols defined in changed source files",
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
-  "symbols": {}
+  "symbols": {
+    "validate_control": {
+      "source": {
+        "file": "studio/production_os_worker_canary.py",
+        "start": 18,
+        "end": 32
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "canary_instruction": {
+      "source": {
+        "file": "studio/production_os_worker_canary.py",
+        "start": 35,
+        "end": 43
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "create",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 928,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "launch_canary": {
+      "source": {
+        "file": "studio/production_os_worker_canary.py",
+        "start": 46,
+        "end": 76
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "canary_instruction",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "submit",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_control",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 18,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "wait_for_workflow": {
+      "source": {
+        "file": "studio/production_os_worker_canary.py",
+        "start": 79,
+        "end": 103
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "run_canary": {
+      "source": {
+        "file": "studio/production_os_worker_canary.py",
+        "start": 106,
+        "end": 123
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "launch_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 46,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "main": {
+      "source": {
+        "file": "studio/production_os_worker_canary.py",
+        "start": 126,
+        "end": 246
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "OperatorClient",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 21,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 106,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "FakeClient": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 11,
+        "end": 30
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "submit",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "__init__": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 12,
+        "end": 132
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "WorkerCanaryTests",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 33,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "canary_instruction",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 27,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 106,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "sleep",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "submit",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_canary_instruction_is_bounded_and_sequence_specific",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_control_is_strict",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_launch_is_idempotent_and_uses_dashboard_api",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 78,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_is_bounded",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 91,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_observes_real_terminal_success",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "validate_control",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 18,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 16
+    },
+    "submit": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 17,
+        "end": 25
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "get": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 27,
+        "end": 30
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "WorkerCanaryTests": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 33,
+        "end": 99
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "canary_instruction",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 106,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "sleep",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_canary_instruction_is_bounded_and_sequence_specific",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_control_is_strict",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_launch_is_idempotent_and_uses_dashboard_api",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 54,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 78,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_is_bounded",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 91,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_observes_real_terminal_success",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 64,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "validate_control",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 18,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 13
+    },
+    "test_control_is_strict": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 34,
+        "end": 46
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "validate_control",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 18,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_canary_instruction_is_bounded_and_sequence_specific": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 48,
+        "end": 52
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "canary_instruction",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 35,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "test_launch_is_idempotent_and_uses_dashboard_api": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 54,
+        "end": 62
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 106,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_wait_observes_real_terminal_success": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 64,
+        "end": 76
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sleep",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "clock": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 67,
+        "end": 187
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 106,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "sleep",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 69,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 78,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_is_bounded",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 91,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "sleep": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 69,
+        "end": 189
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 106,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 78,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_is_bounded",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 91,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "test_terminal_failure_returns_without_retrying_mutation": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 78,
+        "end": 89
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 106,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_wait_is_bounded": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 91,
+        "end": 99
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    }
+  }
 }

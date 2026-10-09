@@ -937,8 +937,31 @@ def run(
             (out/'github-pipeline.json').write_text(canonical(summary))
             return summary
     last_result={}
+
+    def persist_published_round(checkpoint):
+        if remote_github is None:
+            return
+        if (checkpoint.get('project_id') != request['id']
+                or checkpoint.get('phase') not in {'published', 'complete'}):
+            raise StudioError('Remote round checkpoint identity or phase invalid')
+        # The repository commit and sealed local round checkpoint already
+        # exist. Mirror that exact checkpoint before another expensive round.
+        # The goal stays active until its separate evidence gate passes.
+        try:
+            persist_execution_checkpoint_local(
+                remote_github, request['id'],
+                out/'.autonomy/generic-execution-checkpoint.json',
+            )
+        except ExecutionCheckpointStoreError as exc:
+            raise StudioError('Remote published round checkpoint failed: '+str(exc)) from None
+
     def run_once(*args):
-        result=run_multi_engine_project(*args)
+        if remote_github is None:
+            result=run_multi_engine_project(*args)
+        else:
+            result=run_multi_engine_project(
+                *args, checkpoint_observer=persist_published_round,
+            )
         last_result.clear(); last_result.update(result)
         return result
 

@@ -19,6 +19,7 @@ Status: active
 - Dedicated worker CI covers pytest function tests and real authenticated Production-OS HTTP integration.
 
 ## Broken / blockers
+- Live worker canary sequence 16 (worker 37967390363, canary 37967390403) again failed `capacity_exhausted` after the per-call cap fix. Artifact 11634067913 shows 22,309 capacity-ledger tokens charged in a 30,000-token envelope, no changed files and checkpoint phase `planned`. Source inspection found that generic project snapshots could still include 420,000 source bytes per call; the targeted context cap is now proposed in `fix/generic-context-envelope` and awaits CI and a real canary.
 - Live 2026-10-09 worker canary sequence 15 (Actions worker run 37965833843, canary 37965833971) was claimed and executed against the ready Render server but failed with structured `capacity_exhausted`. Artifact 11634035810 shows a 30,000-token project envelope, 20,664 tokens charged in the capacity ledger, no changed files and no commit. The runner completed the service/queue probes successfully. Per-call completion cap is reduced on branch `fix/bounded-generic-completion-envelopes` to avoid allocating up to 16,000 output tokens in one bounded project call; this remains unverified on a real follow-up canary.
 - Live worker run 37298981754 exhausted its Godot continuation budget on Jumpy; validation evidence showed the container could not create `.godot` in its disposable project copy, plus a GDScript parse error and missing generated textures on the project branch. The sandbox copy permission repair is prepared; project code/assets still require a separate repair.
 - At 2026-10-04 18:50 UTC, the live queue had one visual asset job requiring `visual-asset-production`; the Actions worker did not advertise that capability because the remote Asset Forge dispatch probe was unavailable. A real completed coding production and visual asset delivery still need live verification.
@@ -29,6 +30,7 @@ Status: active
 - Render service verified healthy on merged server fix #250. Direct database connector inspection is unavailable.
 
 ## Current priority
+- Validate and merge finite-envelope repository snapshot limits, then run a canary that verifies real source delivery before any further quota increases.
 - Validate the constrained single-call token cap with existing model/capacity tests and complete CI, then run a new real worker canary. Verify output branch and file instead of accepting Actions success alone.
 - Verify the currently running worker exits cleanly, then observe the queued persistence-fixed run. Keep the bounded Godot truncation repair in future worker runs.
 - Merge the provider-health persistence fix with a new bounded kick, then verify both the remote memory branch and Production-OS job result.

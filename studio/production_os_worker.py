@@ -1042,6 +1042,12 @@ def _failure_diagnostics(exc: Exception) -> dict[str, Any]:
 def _summary_requests_retry(summary: dict[str, Any]) -> bool:
     if not isinstance(summary, dict):
         return False
+    # These are terminal resource/continuation limits, not transient runner
+    # failures. Replaying the same exhausted envelope cannot add capacity.
+    if str(summary.get("status") or "").lower() in {
+        "capacity_exhausted", "continuation_limit", "runtime_limit",
+    }:
+        return False
     if str(summary.get("next_stage") or "").lower() == "retry":
         return True
     evidence = summary.get("evidence")
@@ -1068,7 +1074,8 @@ def run_once(
     capabilities: list[str] | None = None,
     runner_retry_attempts: int = 2,
     runner_retry_backoff_seconds: float = 1.0,
-    max_continuations: int = 3,
+    max_continuations: int = 16,
+    max_runtime_seconds: float = 70 * 60,
 ) -> dict:
     """Claim and execute at most one Production-OS job."""
     if run_project is None:
@@ -1105,8 +1112,14 @@ def run_once(
         raise ProductionOSWorkerError(
             "runner retry backoff must be between 0 and 60 seconds"
         )
-    if isinstance(max_continuations, bool) or not isinstance(max_continuations, int) or not 0 <= max_continuations <= 10:
-        raise ProductionOSWorkerError("max continuations must be between 0 and 10")
+    if isinstance(max_continuations, bool) or not isinstance(max_continuations, int) or not 0 <= max_continuations <= 32:
+        raise ProductionOSWorkerError("max continuations must be between 0 and 32")
+    try:
+        runtime_limit = float(max_runtime_seconds)
+    except (TypeError, ValueError) as exc:
+        raise ProductionOSWorkerError("max runtime must be between 60 and 4800 seconds") from exc
+    if not math.isfinite(runtime_limit) or not 60 <= runtime_limit <= 4800:
+        raise ProductionOSWorkerError("max runtime must be between 60 and 4800 seconds")
 
     capabilities = list(capabilities or worker_capabilities())
     if capacity is None:
@@ -1268,12 +1281,25 @@ def run_once(
     continuations = 0
     try:
         while True:
+            # Reserve time for result persistence and the final control-plane
+            # acknowledgment before GitHub Actions terminates the runner.
+            remaining = runtime_limit - (float(clock()) - started)
+            if remaining <= 30:
+                summary = {
+                    "status": "runtime_limit",
+                    "next_stage": "worker_runtime_limit",
+                    "finished": False,
+                }
+                from github_runner import write_production_os_result
+                write_production_os_result(project_out, request, summary)
+                break
             try:
                 summary = run_project(
                     request_path,
                     project_out,
                     baseline_sha=baseline_sha,
                     cancel_event=cancel_event,
+                    budget_seconds=min(85 * 60, remaining - 30),
                 )
             except Exception as exc:
                 if cancel_event.is_set():
@@ -1534,8 +1560,14 @@ def main(
     parser.add_argument(
         "--max-continuations",
         type=int,
-        default=8,
-        help="Maximum autonomous continuation cycles for one claimed job (0-10)",
+        default=16,
+        help="Maximum autonomous continuation cycles for one claimed job (0-32)",
+    )
+    parser.add_argument(
+        "--max-runtime-seconds",
+        type=float,
+        default=70 * 60,
+        help="Bounded wall-clock budget for one claimed job (60-4800 seconds)",
     )
     args = parser.parse_args(argv)
 
@@ -1567,8 +1599,10 @@ def main(
         raise RuntimeError("--cycles must be between 1 and 1000")
     if args.once and args.continuous:
         raise RuntimeError("--once and --continuous are mutually exclusive")
-    if args.max_continuations < 0 or args.max_continuations > 10:
-        raise RuntimeError("--max-continuations must be between 0 and 10")
+    if args.max_continuations < 0 or args.max_continuations > 32:
+        raise RuntimeError("--max-continuations must be between 0 and 32")
+    if not math.isfinite(args.max_runtime_seconds) or not 60 <= args.max_runtime_seconds <= 4800:
+        raise RuntimeError("--max-runtime-seconds must be between 60 and 4800")
     try:
         poll_interval = float(args.poll_interval)
     except (TypeError, ValueError) as exc:
@@ -1599,6 +1633,7 @@ def main(
                 capabilities=capabilities,
                 baseline_sha=baseline_sha,
                 max_continuations=args.max_continuations,
+                max_runtime_seconds=args.max_runtime_seconds,
             )
             if not isinstance(result, dict):
                 raise RuntimeError("Production-OS worker returned invalid result")

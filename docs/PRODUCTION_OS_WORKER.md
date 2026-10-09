@@ -248,6 +248,16 @@ preserve its evidence through the new intermediate remote checkpoint.
 Previously committed GitHub artifacts remain independently durable.
 Intermediate checkpoint persistence failures are treated as errors instead
 of silently executing additional cycles with uncommitted state.
+Generic project model calls now right-size their requested `max_tokens` to
+the available pooled provider quota and, where configured, the remaining
+project token envelope. Admission reserves the estimated prompt plus a
+tokenization safety margin and the actual bounded maximum output. Routine
+work still preserves the critical-call quota reserve and code-generation
+responses retain a minimum useful output budget. If no eligible provider
+has enough tokens to answer safely, the call fails instead of pretending
+that the task is complete; this optimization cannot restore a genuinely
+exhausted API account.
+
 An exhausted token quota is not bypassed. A failed GitHub Actions dispatch
 leaves durable work queued for the scheduled fallback (currently every five
 minutes), and operator pause/drain continues to apply. The immediate wake

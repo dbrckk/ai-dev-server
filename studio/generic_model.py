@@ -55,7 +55,7 @@ from model_portfolio_learning import (
     load as load_model_portfolio_learning,
     diversity_bias as model_portfolio_diversity_bias,
 )
-from capacity_ledger import reserve as reserve_capacity, settle as settle_capacity, release as release_capacity
+from capacity_ledger import reserve as reserve_capacity, settle as settle_capacity, release as release_capacity, load as load_capacity_ledger, reserved_tokens as ledger_reserved_tokens, consumed_tokens as ledger_consumed_tokens
 from capacity_runtime import project_envelope as load_project_envelope
 from capacity_efficiency import (
     summarize as summarize_capacity_efficiency,
@@ -80,6 +80,58 @@ def _decode(response: dict) -> dict:
     return value
 
 
+
+def _bounded_model_token_budget(
+    provider,
+    *,
+    estimated_prompt_tokens: int,
+    max_completion_tokens: int,
+    quota_data: dict,
+    quota_reserve_ratio: float,
+    allow_quota_reserve: bool,
+    project_envelope_tokens: int | None,
+    ledger_data: dict,
+    project_id: str | None,
+) -> tuple[int, int] | None:
+    """Select a real max_tokens limit that fits both pooled and project quotas.
+
+    Budget checks use a conservative prompt margin and never rely on a
+    smaller *estimate* while asking the provider for an unbounded response.
+    Non-critical work cannot borrow critical pooled reserves.
+    """
+    prompt = max(1, int(estimated_prompt_tokens))
+    # Char/4 is approximate; keep a conservative allowance for tokenization.
+    prompt_allowance = prompt + max(128, (prompt + 4) // 5)
+    min_completion = 2048 if max_completion_tokens > 8192 else 1024
+    ceiling = int(max_completion_tokens)
+
+    if provider.monthly_token_quota > 0:
+        admission = provider_quota_admission(
+            quota_data, provider.name, provider.monthly_token_quota,
+            estimated_tokens=1,
+            reserve_ratio=quota_reserve_ratio,
+            allow_reserve=allow_quota_reserve,
+        )
+        available = max(
+            0,
+            int(admission["spendable_tokens"] or 0)
+            - ledger_reserved_tokens(ledger_data, provider=provider.name),
+        )
+        ceiling = min(ceiling, available - prompt_allowance)
+
+    if project_envelope_tokens is not None and project_id is not None:
+        remaining = (
+            max(0, int(project_envelope_tokens))
+            - ledger_consumed_tokens(ledger_data, project_id=project_id)
+            - ledger_reserved_tokens(ledger_data, project_id=project_id)
+        )
+        ceiling = min(ceiling, remaining - prompt_allowance)
+
+    if ceiling < min_completion:
+        return None
+    return ceiling, prompt_allowance + ceiling
+
+
 def ask(
     system: str,
     user: str,
@@ -98,7 +150,6 @@ def ask(
     providers = candidates_for(role, providers=providers)
     max_completion_tokens = 16000 if code else 8192
     estimated_prompt_tokens = max(1, (len(system) + len(user) + 3) // 4)
-    estimated_call_tokens = estimated_prompt_tokens + max_completion_tokens
     try:
         quota_reserve_ratio = float(os.environ.get("STUDIO_PROVIDER_QUOTA_RESERVE_RATIO", "0.03") or 0.03)
     except ValueError:
@@ -192,25 +243,34 @@ def ask(
         max_api_cost_usd=max_api_cost_usd,
         spent_api_cost_usd=spent_api_cost_usd,
     )
-    providers = tuple(
-        provider
-        for provider in providers
-        if (
-            provider.monthly_token_quota <= 0
-            or provider_quota_admission(
-                provider_quota_data,
-                provider.name,
-                provider.monthly_token_quota,
-                estimated_tokens=estimated_call_tokens,
-                reserve_ratio=quota_reserve_ratio,
-                allow_reserve=allow_quota_reserve,
-            )["admitted"]
-        )
+    ledger_data = (
+        load_capacity_ledger(capacity_ledger_path)
+        if capacity_ledger_path is not None and project_id is not None
+        else {"reservations": {}, "consumed": {}}
     )
-    if not providers:
-        raise StudioError(
-            "No provider remains: paid API budget and pooled monthly token quotas are exhausted"
+    call_budgets = {}
+    for provider in providers:
+        budget = _bounded_model_token_budget(
+            provider,
+            estimated_prompt_tokens=estimated_prompt_tokens,
+            max_completion_tokens=max_completion_tokens,
+            quota_data=provider_quota_data,
+            quota_reserve_ratio=quota_reserve_ratio,
+            allow_quota_reserve=allow_quota_reserve,
+            project_envelope_tokens=project_capacity_envelope,
+            ledger_data=ledger_data,
+            project_id=project_id,
         )
+        if budget is not None:
+            call_budgets[provider.name] = budget
+    providers = tuple(provider for provider in providers if provider.name in call_budgets)
+    if not providers:
+        reason = (
+            "project_envelope_exhausted"
+            if project_capacity_envelope is not None
+            else "insufficient pooled token quota or no healthy provider"
+        )
+        raise StudioError("No provider remains: " + reason)
     provider_scores = {}
     for provider in providers:
         base = score_provider(
@@ -387,11 +447,12 @@ def ask(
         if remaining <= 0:
             break
         model = provider.model_for(role)
+        completion_budget, estimated_call_tokens = call_budgets[provider.name]
         api = API(provider.base, provider.key)
         params = {
             "model": model,
             "stream": False,
-            "max_tokens": max_completion_tokens,
+            "max_tokens": completion_budget,
             "messages": [
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},

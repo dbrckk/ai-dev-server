@@ -724,7 +724,21 @@ def _existing_worker_canary_verification(req: dict, work: Path) -> dict | None:
 
 
 
-def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict:
+def _save_published_checkpoint(path: Path, checkpoint: dict, observer=None) -> None:
+    """Publish a round boundary only after the local sealed checkpoint exists.
+
+    Callers must first publish the corresponding repository commit. An observer
+    can then mirror the checkpoint to GitHub-backed autonomous state without
+    waiting for the entire goal cycle to finish.
+    """
+    if checkpoint.get("phase") not in {"published", "complete"}:
+        raise ExecutionCheckpointError("only published rounds may be mirrored")
+    save_checkpoint(path, checkpoint)
+    if observer is not None:
+        observer(dict(checkpoint))
+
+
+def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic, checkpoint_observer=None) -> dict:
     github = GitHub(req["target_repo"])
     repo = GenericRepository(
         github,
@@ -782,7 +796,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             phase="complete",
             last_verification=existing_canary_verification,
         )
-        save_checkpoint(checkpoint_path, checkpoint)
+        _save_published_checkpoint(checkpoint_path, checkpoint, checkpoint_observer)
         report = {
             "engine": "generic",
             "status": "complete",
@@ -2500,7 +2514,7 @@ Objective and current plan:
             phase="complete" if complete else "published",
             last_verification=verification,
         )
-        save_checkpoint(checkpoint_path, checkpoint)
+        _save_published_checkpoint(checkpoint_path, checkpoint, checkpoint_observer)
         state["checkpoint_commit"] = base_sha
         if req.get("production_os"):
             try:

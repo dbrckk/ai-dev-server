@@ -203,6 +203,18 @@ immediately after the goal is written locally. A final flush at the end of
 the native invocation persists terminal status, memory, and related metadata.
 Each intermediate checkpoint can truthfully remain `active` even when it
 already contains final evidence, because terminal finalization happens next.
+
+**Generic projects have a finer-grained boundary:** after every repository
+round is published to its work branch, the sealed
+`generic-execution-checkpoint.json` is mirrored immediately to the
+GitHub-backed autonomy-state branch, even when the entire goal cycle still
+has more rounds to execute. The published SHA, round number, verification
+result and phase are recorded; a mere planned or uncommitted stage must
+never be treated as a published checkpoint. GitHub persistence errors
+halt further rounds. This does not increase model budgets and does not
+turn unsuccessful verification into successful completion. The goal state
+is still flushed at the completed goal-cycle boundary.
+
 The target-repository work branch and the remote autonomy checkpoint are
 **different** stores and must not be confused.
 

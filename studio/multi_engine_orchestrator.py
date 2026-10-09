@@ -38,7 +38,7 @@ def _run_stage(script,request_path,project_out,work,runner,deadline,clock):
     return runner([sys.executable,script,request_path,'--work',work,'--out',str(project_out)],timeout=remaining)
 
 
-def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None):
+def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None,checkpoint_observer=None):
     project_out.mkdir(parents=True,exist_ok=True)
     engine=_detect(request_path,project_out,runner,deadline,clock)
     if engine is None: return {'status':'deferred','report':{},'next_stage':'preview'}
@@ -54,7 +54,10 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
         if portfolio_path.is_file():
             try: portfolio=json.loads(portfolio_path.read_text())
             except (OSError,json.JSONDecodeError): portfolio={}
-        return run_generic_project(req,project_out,Path(work),portfolio=portfolio,max_rounds=6,deadline=deadline,clock=clock)
+        kwargs={"portfolio":portfolio,"max_rounds":6,"deadline":deadline,"clock":clock}
+        if checkpoint_observer is not None:
+            kwargs["checkpoint_observer"]=checkpoint_observer
+        return run_generic_project(req,project_out,Path(work),**kwargs)
     if engine!='godot': raise StudioError('Unsupported project engine')
     try:
         godot_request=request_check(json.loads(Path(request_path).read_text()))

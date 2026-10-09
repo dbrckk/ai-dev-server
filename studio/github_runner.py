@@ -532,6 +532,12 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
             "commit_shas": commit_shas,
             "changed_files": changed_files,
             "pull_request": dict(pull_request) if pull_request is not None else None,
+            "delivery_status": (
+                str(summary.get("delivery_status") or "").strip() or None
+            ),
+            "release_status": (
+                str(summary.get("release_status") or "").strip() or None
+            ),
             "ci": dict(ci) if ci is not None else None,
             "browser_validation": (
                 dict(browser_validation)
@@ -1094,6 +1100,27 @@ def run(
     summary['usage']=collect_agent_usage(project_report)
     if isinstance(project_report.get('pull_request'),dict):
         summary['pull_request']=dict(project_report['pull_request'])
+        pr=summary['pull_request']
+        if pr.get('state')=='unavailable':
+            summary['delivery_status']='review_blocked'
+        elif pr.get('number') is not None:
+            summary['delivery_status']='pull_request_open'
+    if isinstance(project_report.get('release_status'),str):
+        summary['release_status']=project_report['release_status']
+    changed_files=[]
+    for round_evidence in project_report.get('rounds') or []:
+        if not isinstance(round_evidence,dict):
+            continue
+        for path in round_evidence.get('changed_files') or []:
+            if isinstance(path,str) and path and path not in changed_files:
+                changed_files.append(path)
+    if not changed_files and isinstance(project_report.get('verification'),dict):
+        for item in project_report['verification'].get('files') or []:
+            path=item.get('path') if isinstance(item,dict) else None
+            if isinstance(path,str) and path and path not in changed_files:
+                changed_files.append(path)
+    if changed_files:
+        summary['changed_files']=changed_files[:100]
     if isinstance(project_report.get('browser_validation'),dict):
         summary['browser_validation']=dict(project_report['browser_validation'])
     if isinstance(project_report.get('mobile_validation'),dict):

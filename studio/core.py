@@ -709,7 +709,11 @@ class Model:
             # avoiding needless client churn, this keeps dependency injection
             # deterministic for tests and callers. Fallback providers still
             # receive isolated clients with their own credentials/base URL.
-            api = self.api if provider_index == 0 else API(provider.base, provider.key)
+            # Candidate ordering can change after health filtering or scoring:
+            # only reuse the startup primary client for the actual original
+            # primary provider, never for the first *ranked* fallback.
+            # Keeping this client also preserves injected transports in tests.
+            api = self.api if provider is self.providers[0] else API(provider.base, provider.key)
             params = {'model': selected_model, 'stream': False,
                 'max_tokens': 16000 if role in ('implementation', 'security_fix', 'release_fix') else 8192,
                 'messages': messages}
@@ -738,7 +742,12 @@ class Model:
                 if metrics_path is not None:
                     record_provider_latency(metrics_path, provider.name, role, elapsed)
                 if health_path is not None:
-                    record_provider_failure(health_path, provider.name)
+                    # A 429 has already passed the transport retry budget.
+                    # Cool down this provider immediately for later calls.
+                    record_provider_failure(
+                        health_path, provider.name,
+                        **({'threshold': 1} if isinstance(exc, APIError) and exc.status == 429 else {}),
+                    )
                 if history_path is not None:
                     record_routing_event(
                         history_path,

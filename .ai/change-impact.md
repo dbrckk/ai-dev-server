@@ -1,15 +1,13 @@
 # Change impact
 
-Base: a44c9cbad6997a70488cc435f07307e1983713d4
-Head: 5a861dcf680c8530c3cdd02342a0a3419cc6151f
+Base: a632d38f5d7ed611f4c0be6728b2f141f89ebf0e
+Head: e55990d7bf1ab9709046c4e7fe59fdfacd17d98d
 
 ## Changed files
-- M docs/PRODUCTION_OS_WORKER.md
 - M studio/generic_model.py
-- A tests/test_generic_adaptive_quota_budget.py
+- M tests/test_generic_adaptive_quota_budget.py
 
 ## Affected areas
-- docs
 - studio
 - tests
 

@@ -54,22 +54,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T11:56:43Z
+Generated: 2026-10-09T11:59:33Z
 
 ### Git
 - Branch: `main`
-- Head: `5a861dcf680c`
-- Commit date: 2026-10-09T13:56:33+02:00
-- Commit: fix(models): bound generic model output tokens by remaining free and project capacity (#272)
+- Head: `e55990d7bf1a`
+- Commit date: 2026-10-09T13:59:21+02:00
+- Commit: fix(models): distinguish project envelope exhaustion from provider quota exhaustion (#273)
 - Tracked files: 862
 
 ### Recently changed files
-- `docs/PRODUCTION_OS_WORKER.md`
 - `studio/generic_model.py`
 - `tests/test_generic_adaptive_quota_budget.py`
+- `docs/PRODUCTION_OS_WORKER.md`
 - `AGENTS.md`
 - `control/production-os-worker-canary.json`
-- `control/production-os-resume-proof.json`
 
 ### Project signals
 - No common build descriptor detected

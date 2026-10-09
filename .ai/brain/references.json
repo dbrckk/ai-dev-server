@@ -21,7 +21,7 @@
         },
         {
           "file": "studio/generic_model.py",
-          "line": 538,
+          "line": 552,
           "preview": "decoded = _decode(response)",
           "definition_candidate": false
         }
@@ -1210,13 +1210,13 @@
         },
         {
           "file": "studio/generic_model.py",
-          "line": 491,
+          "line": 505,
           "preview": "response = api.call(\"POST\", \"/chat/completions\", params, timeout_seconds=remaining)",
           "definition_candidate": false
         },
         {
           "file": "studio/generic_model.py",
-          "line": 624,
+          "line": 638,
           "preview": "raise StudioError(\"Generic model call quota timed out\") from None",
           "definition_candidate": false
         },
@@ -2166,24 +2166,36 @@
         },
         {
           "file": "tests/test_generic_adaptive_quota_budget.py",
-          "line": 119,
+          "line": 117,
+          "preview": "result, error, calls, _ = self._run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_adaptive_quota_budget.py",
+          "line": 126,
+          "preview": "result, error, calls, _ = self._run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_adaptive_quota_budget.py",
+          "line": 136,
           "preview": "_, denied, calls, _ = self._run(used=8600, role=\"product\")",
           "definition_candidate": false
         },
         {
           "file": "tests/test_generic_adaptive_quota_budget.py",
-          "line": 122,
+          "line": 139,
           "preview": "result, error, calls, _ = self._run(used=8600, role=\"review\")",
           "definition_candidate": false
         },
         {
           "file": "tests/test_generic_adaptive_quota_budget.py",
-          "line": 128,
+          "line": 145,
           "preview": "result, error, calls, _ = self._run(used=7600, code=True, role=\"implementation\")",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 54
+      "occurrence_count": 56
     },
     "test_partially_used_free_quota_uses_smaller_real_max_tokens": {
       "definition": {
@@ -2236,7 +2248,7 @@
       ],
       "occurrence_count": 1
     },
-    "test_noncritical_reserve_is_preserved_but_review_may_use_it": {
+    "test_exhausted_provider_is_not_misreported_as_project_limit": {
       "definition": {
         "file": "tests/test_generic_adaptive_quota_budget.py",
         "line": 116,
@@ -2247,6 +2259,40 @@
         {
           "file": "tests/test_generic_adaptive_quota_budget.py",
           "line": 116,
+          "preview": "def test_exhausted_provider_is_not_misreported_as_project_limit(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_genuinely_exhausted_project_envelope_has_precise_reason": {
+      "definition": {
+        "file": "tests/test_generic_adaptive_quota_budget.py",
+        "line": 125,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_generic_adaptive_quota_budget.py",
+          "line": 125,
+          "preview": "def test_genuinely_exhausted_project_envelope_has_precise_reason(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_noncritical_reserve_is_preserved_but_review_may_use_it": {
+      "definition": {
+        "file": "tests/test_generic_adaptive_quota_budget.py",
+        "line": 133,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_generic_adaptive_quota_budget.py",
+          "line": 133,
           "preview": "def test_noncritical_reserve_is_preserved_but_review_may_use_it(self):",
           "definition_candidate": true
         }
@@ -2256,14 +2302,14 @@
     "test_code_requires_bounded_minimum_and_does_not_fake_completion": {
       "definition": {
         "file": "tests/test_generic_adaptive_quota_budget.py",
-        "line": 127,
+        "line": 144,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_generic_adaptive_quota_budget.py",
-          "line": 127,
+          "line": 144,
           "preview": "def test_code_requires_bounded_minimum_and_does_not_fake_completion(self):",
           "definition_candidate": true
         }

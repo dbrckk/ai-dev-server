@@ -14274,6 +14274,10 @@ budget = _bounded_model_token_budget(
 ⋮----
 providers = tuple(provider for provider in providers if provider.name in call_budgets)
 ⋮----
+# A configured project envelope does not prove it was exhausted.
+# Keep provider-wide quota exhaustion distinct from per-project limits.
+needed = (
+remaining_project = (
 reason = (
 ⋮----
 provider_scores = {}
@@ -30147,6 +30151,10 @@ prompt_estimate = max(1, (
 prompt_margin = max(128, (prompt_estimate + 4) // 5)
 ⋮----
 def test_true_exhaustion_never_invokes_the_provider(self)
+⋮----
+def test_exhausted_provider_is_not_misreported_as_project_limit(self)
+⋮----
+def test_genuinely_exhausted_project_envelope_has_precise_reason(self)
 ⋮----
 def test_noncritical_reserve_is_preserved_but_review_may_use_it(self)
 ⋮----

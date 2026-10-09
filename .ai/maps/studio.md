@@ -8724,6 +8724,10 @@ budget = _bounded_model_token_budget(
 ⋮----
 providers = tuple(provider for provider in providers if provider.name in call_budgets)
 ⋮----
+# A configured project envelope does not prove it was exhausted.
+# Keep provider-wide quota exhaustion distinct from per-project limits.
+needed = (
+remaining_project = (
 reason = (
 ⋮----
 provider_scores = {}

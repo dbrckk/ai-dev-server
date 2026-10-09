@@ -112,8 +112,8 @@ request.json
 ## File: production-os-diagnostics-kick.json
 ```json
 {
-  "sequence": 3,
-  "reason": "Verify structured JSON inference after live Godot source generation rejected invalid model JSON"
+  "sequence": 4,
+  "reason": "Verify current structured model providers while Production-OS generic canary is executing"
 }
 ```
 
@@ -131,7 +131,7 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-  "sequence": 1,
+  "sequence": 8,
   "repository": "dbrckk/repo-standards"
 }
 ```
@@ -139,8 +139,8 @@ request.json
 ## File: production-os-worker-kick.json
 ```json
 {
-  "sequence": 16,
-  "reason": "Verify newest-qualified Production-OS tooling, Asset Forge capability, and real queued job execution"
+  "sequence": 22,
+  "reason": "Verify capacity-free resume and drain final Production-OS queued canary"
 }
 ```
 

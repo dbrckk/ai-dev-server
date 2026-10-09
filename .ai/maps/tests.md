@@ -184,8 +184,10 @@ test_generic_capability_validation_report.py
 test_generic_model_capacity.py
 test_generic_policy.py
 test_generic_repository_pull_request.py
+test_generic_structural_verify.py
 test_generic_toolchain.py
 test_generic_verifier_adaptation.py
+test_generic_worker_canary_resume.py
 test_github_artifact_cas_audit_store.py
 test_github_artifact_cas_stats_store.py
 test_github_full_gate_cache_store.py
@@ -2829,6 +2831,8 @@ state = run_persistent_project(
 ⋮----
 def test_persistent_godot_failure_counts_once_then_yields_for_fresh_workspace(self)
 ⋮----
+def test_project_capacity_exhaustion_yields_without_burning_attempt_budget(self)
+⋮----
 def test_human_action_persists_terminal_state(self)
 ⋮----
 def test_existing_project_registry_syncs_new_promoted_capability(self)
@@ -5259,6 +5263,29 @@ def test_ensure_pull_request_ignores_other_studio_branch()
 result = repository.ensure_pull_request(title="Managed project")
 ```
 
+## File: test_generic_structural_verify.py
+```python
+class GenericStructuralVerifyTests(unittest.TestCase)
+⋮----
+def test_accepts_bounded_text_and_json_changes(self)
+⋮----
+root = Path(td)
+⋮----
+result = verify_structural_text_changes(
+⋮----
+def test_source_code_change_requires_executable_verification(self)
+⋮----
+result = verify_structural_text_changes(root, ["app.py"])
+⋮----
+def test_invalid_json_fails_closed(self)
+⋮----
+result = verify_structural_text_changes(root, ["metadata.json"])
+⋮----
+def test_secret_like_text_fails_closed(self)
+⋮----
+result = verify_structural_text_changes(root, ["note.txt"])
+```
+
 ## File: test_generic_toolchain.py
 ```python
 ROOT=Path(__file__).resolve().parents[1]; STUDIO=ROOT/"studio"
@@ -5293,6 +5320,28 @@ recipe=validate_recipe({"commands":[["python","-m","unittest","discover"]],"reas
 def test_rejects_shell_command_string(self)
 ⋮----
 def test_rejects_install_operation(self)
+```
+
+## File: test_generic_worker_canary_resume.py
+```python
+class ExistingWorkerCanaryVerificationTests(unittest.TestCase)
+⋮----
+def _request(self, sequence=2)
+⋮----
+def test_accepts_exact_existing_canary_with_or_without_final_newline(self)
+⋮----
+root = Path(td)
+target = root / ".production-os" / "worker-canary-2.txt"
+⋮----
+result = _existing_worker_canary_verification(
+⋮----
+def test_rejects_wrong_content(self)
+⋮----
+def test_rejects_non_canary_repository_or_missing_contract(self)
+⋮----
+wrong_repo = self._request()
+⋮----
+incomplete = self._request()
 ```
 
 ## File: test_github_artifact_cas_audit_store.py
@@ -5525,6 +5574,10 @@ def test_human_action_is_not_reported_complete(self)
 ⋮----
 result=run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha="b"*40)
 ⋮----
+def test_transient_capacity_exhaustion_is_reported_without_terminal_goal_block(self)
+⋮----
+result=run(
+⋮----
 def test_blocked_state_preserves_reason(self)
 ⋮----
 result=run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha="c"*40)
@@ -5716,6 +5769,8 @@ state = run_goal(goal_path, registry_path, execute, max_cycles=5)
 def test_worker_exception_is_recorded_and_retried(self)
 ⋮----
 state = run_goal(goal_path, registry_path, execute, max_cycles=3)
+⋮----
+def test_retryable_exception_detail_redacts_common_secrets(self)
 ⋮----
 def test_programming_error_blocks_without_repeating_broken_cycle(self)
 ⋮----
@@ -8046,6 +8101,8 @@ android = WORKFLOW.index("Prepare native mobile validation runtime")
 ⋮----
 def test_actions_worker_is_single_flight_and_bounded()
 ⋮----
+def test_actions_worker_retains_hidden_autonomy_diagnostics()
+⋮----
 def test_actions_worker_exits_heavy_path_when_no_compatible_work_exists()
 ⋮----
 install = WORKFLOW.split("- name: Install autonomous coding agent", 1)[1]
@@ -8085,6 +8142,10 @@ def test_actions_worker_has_resilient_model_provider_fallbacks()
 def test_actions_worker_fails_ci_when_production_result_failed()
 ⋮----
 def test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work()
+⋮----
+def test_control_only_pushes_do_not_fan_out_into_unrelated_heavy_ci()
+⋮----
+workflow = Path(path).read_text(encoding="utf-8")
 ```
 
 ## File: test_production_os_live_diagnostics.py
@@ -8320,6 +8381,10 @@ result = run_canary(
 def test_wait_is_bounded(self)
 ⋮----
 client = FakeClient(("running",))
+⋮----
+def test_canary_workflow_verifies_terminal_worker_completion()
+⋮----
+workflow = Path(".github/workflows/production-os-worker-canary.yml").read_text(encoding="utf-8")
 ```
 
 ## File: test_production_os_worker_cli.py
@@ -8367,6 +8432,14 @@ def capacity_provider(env)
 value = {"remaining_tokens": len(capacities) + 1}
 ⋮----
 def sleeper(seconds)
+⋮----
+def test_main_forwards_max_continuations(self)
+⋮----
+def test_main_forwards_custom_runtime_budget(self)
+⋮----
+def test_main_rejects_invalid_runtime_limit(self)
+⋮----
+def test_main_rejects_invalid_max_continuations(self)
 ⋮----
 class ProductionOSWorkerStatusFileTests(unittest.TestCase)
 ⋮----
@@ -8561,11 +8634,31 @@ def register(self, worker_id, capabilities, operator_token=None)
 ⋮----
 result = worker_main(
 ⋮----
-def test_managed_project_stages_share_branch_but_not_execution_id(self)
+def test_workflow_retry_reuses_durable_autonomous_checkpoint_identity(self)
 ⋮----
 first = sample_job()
 ⋮----
 second = sample_job()
+⋮----
+third = sample_job()
+⋮----
+requests = [build_studio_request(job) for job in (first, second, third)]
+⋮----
+def test_workflow_checkpoint_identity_isolated_between_tasks_and_generations(self)
+⋮----
+another_task = sample_job()
+⋮----
+another_workflow = sample_job()
+⋮----
+another_repo = sample_job()
+⋮----
+ids = {
+⋮----
+def test_workflow_without_attempt_keeps_previous_job_scoped_checkpoint(self)
+⋮----
+def test_invalid_workflow_attempt_never_shares_checkpoint(self)
+⋮----
+def test_managed_project_stages_share_branch_but_not_execution_id(self)
 ⋮----
 first_request = build_studio_request(first)
 second_request = build_studio_request(second)
@@ -8659,6 +8752,14 @@ attempts = {"count": 0}
 ⋮----
 def test_run_once_retries_explicit_retry_summary_then_completes(self)
 ⋮----
+def test_transient_error_after_autonomous_progress_keeps_retry_budget(self)
+⋮----
+attempts = []
+⋮----
+def test_retry_summary_after_autonomous_progress_is_retried(self)
+⋮----
+def test_transient_retry_after_progress_stays_bounded(self)
+⋮----
 def test_run_once_does_not_retry_non_transient_runner_error(self)
 ⋮----
 def test_capacity_snapshot_prefers_authenticated_omniroute(self)
@@ -8695,6 +8796,22 @@ plan = json.loads(
 row = next(
 ⋮----
 def test_project_token_envelope_is_capped_by_live_global_remaining_capacity(self)
+⋮----
+def test_long_autonomous_progress_can_complete_beyond_old_eight_cycle_limit(self)
+⋮----
+budgets = []
+⋮----
+def test_runtime_budget_fences_every_stage_and_reports_checkpoint_limit(self)
+⋮----
+elapsed = [0.0]
+⋮----
+emitted = list(Path(td).rglob("production-os-result.json"))
+⋮----
+envelope = json.loads(emitted[0].read_text(encoding="utf-8"))
+⋮----
+def test_resource_exhaustion_with_retry_hint_does_not_reexecute_without_quota(self)
+⋮----
+def test_invalid_worker_runtime_limit_is_rejected_before_claim(self)
 ```
 
 ## File: test_production_os_worker.py

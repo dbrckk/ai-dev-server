@@ -586,8 +586,10 @@ tests/
   test_generic_model_capacity.py
   test_generic_policy.py
   test_generic_repository_pull_request.py
+  test_generic_structural_verify.py
   test_generic_toolchain.py
   test_generic_verifier_adaptation.py
+  test_generic_worker_canary_resume.py
   test_github_artifact_cas_audit_store.py
   test_github_artifact_cas_stats_store.py
   test_github_full_gate_cache_store.py
@@ -911,6 +913,7 @@ on:
     branches: [main]
     paths-ignore:
       - ".ai/**"
+      - "control/**"
   workflow_dispatch:
 
 permissions:
@@ -1078,6 +1081,8 @@ name: CI
 on:
   push:
     branches: ["main"]
+    paths-ignore:
+      - "control/**"
   pull_request:
 
 permissions:
@@ -1161,6 +1166,8 @@ on:
   pull_request:
   push:
     branches: [main]
+    paths-ignore:
+      - "control/**"
   workflow_dispatch:
 
 concurrency:
@@ -1713,6 +1720,8 @@ on:
   pull_request:
   push:
     branches: [main]
+    paths-ignore:
+      - "control/**"
   schedule:
     - cron: "17 */6 * * *"
   workflow_dispatch:
@@ -1865,6 +1874,7 @@ on:
     branches: [main]
     paths:
       - 'control/production-os-worker-kick.json'
+      - 'control/production-os-worker-canary.json'
   schedule:
     - cron: '*/5 * * * *'
 
@@ -2287,6 +2297,7 @@ jobs:
           path: studio-output/production-os-actions/
           if-no-files-found: ignore
           retention-days: 7
+          include-hidden-files: true
 
       - name: Summary
         if: always()
@@ -2298,7 +2309,7 @@ jobs:
             echo "Codespace dependency: none"
             echo "Control plane: $PRODUCTION_OS_URL"
             echo "Worker id: $PRODUCTION_OS_WORKER_ID"
-            echo "Polling mode: scheduled every 5 minutes + manual dispatch"
+            echo "Polling mode: scheduled every 5 minutes + immediate control-file wake"
             echo "Compatible work at preflight: ${{ steps.queue_probe.outputs.any_available || 'unknown' }}"
             echo "Compatible jobs observed: ${{ steps.queue_probe.outputs.compatible_jobs || '0' }}"
             echo "Mobile work at preflight: ${{ steps.queue_probe.outputs.mobile_available || 'false' }}"
@@ -2589,12 +2600,12 @@ permissions:
 
 concurrency:
   group: production-os-worker-canary
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   canary:
     runs-on: ubuntu-24.04
-    timeout-minutes: 75
+    timeout-minutes: 40
     env:
       PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
       PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
@@ -2614,7 +2625,7 @@ jobs:
         run: >-
           python studio/production_os_worker_canary.py
           control/production-os-worker-canary.json
-          --wait-seconds 4200
+          --wait-seconds 1800
           --poll-seconds 10
 ````
 
@@ -2625,6 +2636,8 @@ name: Production-OS worker integration
 on:
   push:
     branches: ["main"]
+    paths-ignore:
+      - "control/**"
   pull_request:
 
 permissions:
@@ -2880,6 +2893,8 @@ on:
   pull_request:
   push:
     branches: ["main"]
+    paths-ignore:
+      - "control/**"
   workflow_dispatch:
 
 permissions:
@@ -2943,6 +2958,8 @@ on:
   pull_request:
   push:
     branches: [main]
+    paths-ignore:
+      - "control/**"
   workflow_dispatch:
 
 concurrency:
@@ -2993,6 +3010,8 @@ on:
   pull_request:
   push:
     branches: [main]
+    paths-ignore:
+      - "control/**"
   workflow_dispatch:
 
 concurrency:
@@ -3151,8 +3170,8 @@ initial_prompt: |
 ## File: control/production-os-diagnostics-kick.json
 ````json
 {
-  "sequence": 3,
-  "reason": "Verify structured JSON inference after live Godot source generation rejected invalid model JSON"
+  "sequence": 4,
+  "reason": "Verify current structured model providers while Production-OS generic canary is executing"
 }
 ````
 
@@ -3170,7 +3189,7 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-  "sequence": 1,
+  "sequence": 8,
   "repository": "dbrckk/repo-standards"
 }
 ````
@@ -3178,8 +3197,8 @@ initial_prompt: |
 ## File: control/production-os-worker-kick.json
 ````json
 {
-  "sequence": 16,
-  "reason": "Verify newest-qualified Production-OS tooling, Asset Forge capability, and real queued job execution"
+  "sequence": 22,
+  "reason": "Verify capacity-free resume and drain final Production-OS queued canary"
 }
 ````
 
@@ -9833,6 +9852,8 @@ excerpt=profile.get("readme_excerpt")
 ⋮----
 items=items[:20]
 ⋮----
+cycle_control = {"capacity_exhausted": False}
+⋮----
 def execute_cycle(_goal_state)
 ⋮----
 previous = os.environ.get("STUDIO_LEARNED_CONTEXT_PATH")
@@ -9841,6 +9862,8 @@ previous_metrics = os.environ.get("STUDIO_PROVIDER_METRICS_PATH")
 previous_history = os.environ.get("STUDIO_ROUTING_HISTORY_PATH")
 ⋮----
 result = run_once(
+⋮----
+detail = str(exc)
 ⋮----
 translated = translate_orchestrator_result(result)
 report = result.get("report") if isinstance(result, dict) else None
@@ -9855,6 +9878,8 @@ previous_runtime = {name: os.environ.get(name) for name in runtime_paths}
 previous_project_id = os.environ.get("STUDIO_PROJECT_ID")
 ⋮----
 result = run_goal(
+⋮----
+result = {**result, "transient_capacity_exhausted": True}
 ````
 
 ## File: studio/autonomous_research.py
@@ -14399,6 +14424,25 @@ reason = str(
 ⋮----
 reason = "mobile-validation-failed"
 ⋮----
+_WORKER_CANARY_RE = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8})\.")
+⋮----
+def _existing_worker_canary_verification(req: dict, work: Path) -> dict | None
+⋮----
+"""Recognize an already-satisfied internal worker canary without model calls."""
+⋮----
+brief = str(req.get("brief") or "")
+match = _WORKER_CANARY_RE.match(brief)
+⋮----
+sequence = int(match.group(1))
+relative = f".production-os/worker-canary-{sequence}.txt"
+expected = f"production-os-worker-canary sequence {sequence}"
+contract = (
+⋮----
+target = work / relative
+⋮----
+actual = target.read_text(encoding="utf-8")
+raw = target.read_bytes()
+⋮----
 def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict
 ⋮----
 github = GitHub(req["target_repo"])
@@ -14420,6 +14464,12 @@ max_api_cost = req.get("max_api_cost_usd")
 checkpoint = load_checkpoint(checkpoint_path) if checkpoint_path.is_file() else new_checkpoint(req["id"], "generic", base_sha)
 ⋮----
 checkpoint = new_checkpoint(req["id"], "generic", base_sha)
+⋮----
+existing_canary_verification = _existing_worker_canary_verification(req, work)
+⋮----
+checkpoint = advance_checkpoint(
+⋮----
+report = {
 ⋮----
 resume_round = checkpoint.get("round", 0) if checkpoint.get("phase") in {"published", "complete"} else 0
 resumed_verification = checkpoint.get("last_verification") if resume_round else None
@@ -14720,6 +14770,10 @@ verification_started = clock()
 verification_timeout = bounded_timeout(
 verification = verify(
 ⋮----
+structural_verification = verify_structural_text_changes(work, changed)
+⋮----
+verification = structural_verification
+⋮----
 adaptive_verify_timeout = bounded_timeout(
 ⋮----
 verification_elapsed = max(0, int(clock() - verification_started))
@@ -14727,7 +14781,6 @@ verification_history = load_phase_cost_baselines(phase_baseline_path)
 verification_baseline = phase_cost_baseline(verification_history, state["toolchain"], "verification")
 ⋮----
 last_verification = verification
-checkpoint = advance_checkpoint(
 ⋮----
 review_context = {
 review_started = clock()
@@ -15065,6 +15118,29 @@ payload = {"status":"validated_recipe","recipe":recipe,"model":model}
 ````python
 """Trusted verification command discovery for generic repositories."""
 ⋮----
+STRUCTURAL_TEXT_SUFFIXES = {".md", ".txt", ".rst", ".json"}
+⋮----
+def verify_structural_text_changes(root: Path, changed_paths: list[str]) -> dict
+⋮----
+"""Trusted fallback for documentation/data-only changes when no executable verifier exists.
+
+    This does not replace tests for source-code changes. It only proves that a bounded set
+    of policy-editable text artifacts exists, is valid UTF-8, contains no recognized secret
+    material, and (for JSON) remains syntactically valid. Semantic completion is still
+    decided by the independent review phase.
+    """
+started = time.monotonic()
+⋮----
+normalized = []
+seen = set()
+⋮----
+path = root / raw
+suffix = path.suffix.lower()
+⋮----
+raw_bytes = path.read_bytes()
+⋮----
+text = raw_bytes.decode("utf-8")
+⋮----
 def discover(root: Path) -> list[list[str]]
 ⋮----
 commands: list[list[str]] = []
@@ -15080,7 +15156,6 @@ venv_python=root/".studio-venv/bin/python"
 ⋮----
 def run(root: Path, *, timeout_per_command: int = 900, commands: list[list[str]] | None = None) -> dict
 ⋮----
-started = time.monotonic()
 commands = discover(root) if commands is None else commands
 ⋮----
 results = []
@@ -16370,6 +16445,8 @@ improvement=None
 improvement_run=None
 status=state.get('status')
 ⋮----
+status='capacity_exhausted'
+⋮----
 project_state=last_result.get('report') if isinstance(last_result.get('report'),dict) else {}
 improvement=_update_improvements(out,state,project_state)
 ⋮----
@@ -16698,6 +16775,13 @@ proof={"tests_passed":True,"commit_sha":commit_sha,"evidence_sha256":_digest(evi
 ````python
 """Persistent bounded autonomous goal loop."""
 ⋮----
+_SENSITIVE_DETAIL = re.compile(
+⋮----
+def _safe_exception_detail(exc)
+⋮----
+detail = " ".join(str(exc).split())
+detail = _SENSITIVE_DETAIL.sub(lambda match: match.group(1) + "[redacted]", detail)
+⋮----
 def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_cycles=100,context_provider=None,cycle_observer=None,execute_registered_capability=None)
 ⋮----
 goal_path=Path(goal_path); registry_path=Path(registry_path)
@@ -16743,7 +16827,9 @@ kind=type(exc).__name__
 ⋮----
 result={"blocked_reason":"internal_cycle_error:"+kind}
 ⋮----
-result={"failure":"cycle_exception:"+kind}
+detail=_safe_exception_detail(exc)
+suffix=(":"+detail) if detail else ""
+result={"failure":"cycle_exception:"+kind+suffix}
 ⋮----
 state=record_cycle(state,failure="cycle returned invalid result")
 ⋮----
@@ -21077,9 +21163,19 @@ snapshot = fetch_summary(
 ⋮----
 authenticated = bool(snapshot.authenticated_usage)
 ⋮----
-def _project_id(job_key: str) -> str
+"""Use durable task identity when the control plane supplied a workflow attempt.
+
+    Workflow retries enqueue a different job key. Keying autonomous state to
+    that ephemeral key loses the checkpoint saved by the preceding attempt.
+    The workflow/task/repository tuple is stable *only* across retries of
+    the same logical task; distinct tasks and workflow generations stay
+    isolated. Legacy jobs without workflow_attempt keep their former ID.
+    """
 ⋮----
-digest = hashlib.sha256(str(job_key).encode("utf-8")).hexdigest()[:24]
+identity = "\\0".join((repository, workflow_id, workflow_task_id))
+⋮----
+identity = str(job_key)
+digest = hashlib.sha256(identity.encode("utf-8")).hexdigest()[:24]
 ⋮----
 managed_project_id = str(
 ⋮----
@@ -21268,6 +21364,9 @@ status = re.search(r"\bHTTP(?: status)? ([1-5][0-9]{2})\b", message)
 ⋮----
 def _summary_requests_retry(summary: dict[str, Any]) -> bool
 ⋮----
+# These are terminal resource/continuation limits, not transient runner
+# failures. Replaying the same exhausted envelope cannot add capacity.
+⋮----
 evidence = summary.get("evidence")
 ⋮----
 """Claim and execute at most one Production-OS job."""
@@ -21279,6 +21378,8 @@ heartbeat_interval = float(heartbeat_interval_seconds)
 retry_attempts = int(runner_retry_attempts)
 ⋮----
 retry_backoff = float(runner_retry_backoff_seconds)
+⋮----
+runtime_limit = float(max_runtime_seconds)
 ⋮----
 capabilities = list(capabilities or worker_capabilities())
 ⋮----
@@ -21331,14 +21432,21 @@ def keep_job_alive()
 heartbeat_thread = threading.Thread(
 ⋮----
 started = float(clock())
-runner_attempt = 0
+# A successful autonomous continuation is progress, not a failed
+# runner attempt. Track bounded transient retries independently so an
+# interruption late in a multi-stage job still gets its retry budget.
+retry_count = 0
 continuations = 0
+⋮----
+# Reserve time for result persistence and the final control-plane
+# acknowledgment before GitHub Actions terminates the runner.
+remaining = runtime_limit - (float(clock()) - started)
+⋮----
+summary = {
 ⋮----
 summary = run_project(
 ⋮----
-delay = retry_backoff * (2 ** (runner_attempt - 1))
-⋮----
-summary = {
+delay = retry_backoff * (2 ** (retry_count - 1))
 ⋮----
 duration = max(0.0, float(clock()) - started)
 ⋮----
@@ -27636,6 +27744,8 @@ state = run_persistent_project(
 ⋮----
 def test_persistent_godot_failure_counts_once_then_yields_for_fresh_workspace(self)
 ⋮----
+def test_project_capacity_exhaustion_yields_without_burning_attempt_budget(self)
+⋮----
 def test_human_action_persists_terminal_state(self)
 ⋮----
 def test_existing_project_registry_syncs_new_promoted_capability(self)
@@ -30066,6 +30176,29 @@ def test_ensure_pull_request_ignores_other_studio_branch()
 result = repository.ensure_pull_request(title="Managed project")
 ````
 
+## File: tests/test_generic_structural_verify.py
+````python
+class GenericStructuralVerifyTests(unittest.TestCase)
+⋮----
+def test_accepts_bounded_text_and_json_changes(self)
+⋮----
+root = Path(td)
+⋮----
+result = verify_structural_text_changes(
+⋮----
+def test_source_code_change_requires_executable_verification(self)
+⋮----
+result = verify_structural_text_changes(root, ["app.py"])
+⋮----
+def test_invalid_json_fails_closed(self)
+⋮----
+result = verify_structural_text_changes(root, ["metadata.json"])
+⋮----
+def test_secret_like_text_fails_closed(self)
+⋮----
+result = verify_structural_text_changes(root, ["note.txt"])
+````
+
 ## File: tests/test_generic_toolchain.py
 ````python
 ROOT=Path(__file__).resolve().parents[1]; STUDIO=ROOT/"studio"
@@ -30100,6 +30233,28 @@ recipe=validate_recipe({"commands":[["python","-m","unittest","discover"]],"reas
 def test_rejects_shell_command_string(self)
 ⋮----
 def test_rejects_install_operation(self)
+````
+
+## File: tests/test_generic_worker_canary_resume.py
+````python
+class ExistingWorkerCanaryVerificationTests(unittest.TestCase)
+⋮----
+def _request(self, sequence=2)
+⋮----
+def test_accepts_exact_existing_canary_with_or_without_final_newline(self)
+⋮----
+root = Path(td)
+target = root / ".production-os" / "worker-canary-2.txt"
+⋮----
+result = _existing_worker_canary_verification(
+⋮----
+def test_rejects_wrong_content(self)
+⋮----
+def test_rejects_non_canary_repository_or_missing_contract(self)
+⋮----
+wrong_repo = self._request()
+⋮----
+incomplete = self._request()
 ````
 
 ## File: tests/test_github_artifact_cas_audit_store.py
@@ -30332,6 +30487,10 @@ def test_human_action_is_not_reported_complete(self)
 ⋮----
 result=run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha="b"*40)
 ⋮----
+def test_transient_capacity_exhaustion_is_reported_without_terminal_goal_block(self)
+⋮----
+result=run(
+⋮----
 def test_blocked_state_preserves_reason(self)
 ⋮----
 result=run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha="c"*40)
@@ -30523,6 +30682,8 @@ state = run_goal(goal_path, registry_path, execute, max_cycles=5)
 def test_worker_exception_is_recorded_and_retried(self)
 ⋮----
 state = run_goal(goal_path, registry_path, execute, max_cycles=3)
+⋮----
+def test_retryable_exception_detail_redacts_common_secrets(self)
 ⋮----
 def test_programming_error_blocks_without_repeating_broken_cycle(self)
 ⋮----
@@ -32853,6 +33014,8 @@ android = WORKFLOW.index("Prepare native mobile validation runtime")
 ⋮----
 def test_actions_worker_is_single_flight_and_bounded()
 ⋮----
+def test_actions_worker_retains_hidden_autonomy_diagnostics()
+⋮----
 def test_actions_worker_exits_heavy_path_when_no_compatible_work_exists()
 ⋮----
 install = WORKFLOW.split("- name: Install autonomous coding agent", 1)[1]
@@ -32892,6 +33055,10 @@ def test_actions_worker_has_resilient_model_provider_fallbacks()
 def test_actions_worker_fails_ci_when_production_result_failed()
 ⋮----
 def test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work()
+⋮----
+def test_control_only_pushes_do_not_fan_out_into_unrelated_heavy_ci()
+⋮----
+workflow = Path(path).read_text(encoding="utf-8")
 ````
 
 ## File: tests/test_production_os_live_diagnostics.py
@@ -33127,6 +33294,10 @@ result = run_canary(
 def test_wait_is_bounded(self)
 ⋮----
 client = FakeClient(("running",))
+⋮----
+def test_canary_workflow_verifies_terminal_worker_completion()
+⋮----
+workflow = Path(".github/workflows/production-os-worker-canary.yml").read_text(encoding="utf-8")
 ````
 
 ## File: tests/test_production_os_worker_cli.py
@@ -33174,6 +33345,14 @@ def capacity_provider(env)
 value = {"remaining_tokens": len(capacities) + 1}
 ⋮----
 def sleeper(seconds)
+⋮----
+def test_main_forwards_max_continuations(self)
+⋮----
+def test_main_forwards_custom_runtime_budget(self)
+⋮----
+def test_main_rejects_invalid_runtime_limit(self)
+⋮----
+def test_main_rejects_invalid_max_continuations(self)
 ⋮----
 class ProductionOSWorkerStatusFileTests(unittest.TestCase)
 ⋮----
@@ -33368,11 +33547,31 @@ def register(self, worker_id, capabilities, operator_token=None)
 ⋮----
 result = worker_main(
 ⋮----
-def test_managed_project_stages_share_branch_but_not_execution_id(self)
+def test_workflow_retry_reuses_durable_autonomous_checkpoint_identity(self)
 ⋮----
 first = sample_job()
 ⋮----
 second = sample_job()
+⋮----
+third = sample_job()
+⋮----
+requests = [build_studio_request(job) for job in (first, second, third)]
+⋮----
+def test_workflow_checkpoint_identity_isolated_between_tasks_and_generations(self)
+⋮----
+another_task = sample_job()
+⋮----
+another_workflow = sample_job()
+⋮----
+another_repo = sample_job()
+⋮----
+ids = {
+⋮----
+def test_workflow_without_attempt_keeps_previous_job_scoped_checkpoint(self)
+⋮----
+def test_invalid_workflow_attempt_never_shares_checkpoint(self)
+⋮----
+def test_managed_project_stages_share_branch_but_not_execution_id(self)
 ⋮----
 first_request = build_studio_request(first)
 second_request = build_studio_request(second)
@@ -33466,6 +33665,14 @@ attempts = {"count": 0}
 ⋮----
 def test_run_once_retries_explicit_retry_summary_then_completes(self)
 ⋮----
+def test_transient_error_after_autonomous_progress_keeps_retry_budget(self)
+⋮----
+attempts = []
+⋮----
+def test_retry_summary_after_autonomous_progress_is_retried(self)
+⋮----
+def test_transient_retry_after_progress_stays_bounded(self)
+⋮----
 def test_run_once_does_not_retry_non_transient_runner_error(self)
 ⋮----
 def test_capacity_snapshot_prefers_authenticated_omniroute(self)
@@ -33502,6 +33709,22 @@ plan = json.loads(
 row = next(
 ⋮----
 def test_project_token_envelope_is_capped_by_live_global_remaining_capacity(self)
+⋮----
+def test_long_autonomous_progress_can_complete_beyond_old_eight_cycle_limit(self)
+⋮----
+budgets = []
+⋮----
+def test_runtime_budget_fences_every_stage_and_reports_checkpoint_limit(self)
+⋮----
+elapsed = [0.0]
+⋮----
+emitted = list(Path(td).rglob("production-os-result.json"))
+⋮----
+envelope = json.loads(emitted[0].read_text(encoding="utf-8"))
+⋮----
+def test_resource_exhaustion_with_retry_hint_does_not_reexecute_without_quota(self)
+⋮----
+def test_invalid_worker_runtime_limit_is_rejected_before_claim(self)
 ````
 
 ## File: tests/test_production_os_worker.py

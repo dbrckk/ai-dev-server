@@ -1286,6 +1286,7 @@
       "generic_toolchain",
       "generic_verifier_adaptation",
       "generic_verify",
+      "hashlib",
       "json",
       "learning_context",
       "local_capacity_inventory",
@@ -1305,6 +1306,7 @@
       "provider_cost",
       "provider_health",
       "provider_router",
+      "re",
       "routing_history",
       "run",
       "run_cost_controller",
@@ -1361,7 +1363,9 @@
     ],
     "studio/generic_verify.py": [
       "__future__",
+      "generic_policy",
       "generic_sandbox",
+      "hashlib",
       "json",
       "pathlib",
       "shutil",
@@ -1555,7 +1559,8 @@
       "__future__",
       "capability_registry",
       "goal_engine",
-      "pathlib"
+      "pathlib",
+      "re"
     ],
     "studio/godot_android_export.py": [
       "__future__",
@@ -3391,6 +3396,7 @@
       "pathlib",
       "studio.autonomous_project",
       "studio.capability_registry",
+      "studio.core",
       "studio.goal_engine",
       "tempfile",
       "unittest",
@@ -3991,6 +3997,12 @@
       "pathlib",
       "sys"
     ],
+    "tests/test_generic_structural_verify.py": [
+      "pathlib",
+      "studio.generic_verify",
+      "tempfile",
+      "unittest"
+    ],
     "tests/test_generic_toolchain.py": [
       "generic_sandbox",
       "generic_toolchain",
@@ -4007,6 +4019,13 @@
       "tempfile",
       "unittest",
       "unittest.mock"
+    ],
+    "tests/test_generic_worker_canary_resume.py": [
+      "generic_project",
+      "pathlib",
+      "sys",
+      "tempfile",
+      "unittest"
     ],
     "tests/test_github_artifact_cas_audit_store.py": [
       "github_artifact_cas_audit_store",
@@ -4799,6 +4818,7 @@
       "unittest"
     ],
     "tests/test_production_os_worker_canary.py": [
+      "pathlib",
       "production_os_worker_canary",
       "unittest"
     ],

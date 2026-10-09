@@ -4424,6 +4424,8 @@ excerpt=profile.get("readme_excerpt")
 ⋮----
 items=items[:20]
 ⋮----
+cycle_control = {"capacity_exhausted": False}
+⋮----
 def execute_cycle(_goal_state)
 ⋮----
 previous = os.environ.get("STUDIO_LEARNED_CONTEXT_PATH")
@@ -4432,6 +4434,8 @@ previous_metrics = os.environ.get("STUDIO_PROVIDER_METRICS_PATH")
 previous_history = os.environ.get("STUDIO_ROUTING_HISTORY_PATH")
 ⋮----
 result = run_once(
+⋮----
+detail = str(exc)
 ⋮----
 translated = translate_orchestrator_result(result)
 report = result.get("report") if isinstance(result, dict) else None
@@ -4446,6 +4450,8 @@ previous_runtime = {name: os.environ.get(name) for name in runtime_paths}
 previous_project_id = os.environ.get("STUDIO_PROJECT_ID")
 ⋮----
 result = run_goal(
+⋮----
+result = {**result, "transient_capacity_exhausted": True}
 ````
 
 ## File: autonomous_research.py
@@ -8990,6 +8996,25 @@ reason = str(
 ⋮----
 reason = "mobile-validation-failed"
 ⋮----
+_WORKER_CANARY_RE = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8})\.")
+⋮----
+def _existing_worker_canary_verification(req: dict, work: Path) -> dict | None
+⋮----
+"""Recognize an already-satisfied internal worker canary without model calls."""
+⋮----
+brief = str(req.get("brief") or "")
+match = _WORKER_CANARY_RE.match(brief)
+⋮----
+sequence = int(match.group(1))
+relative = f".production-os/worker-canary-{sequence}.txt"
+expected = f"production-os-worker-canary sequence {sequence}"
+contract = (
+⋮----
+target = work / relative
+⋮----
+actual = target.read_text(encoding="utf-8")
+raw = target.read_bytes()
+⋮----
 def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict
 ⋮----
 github = GitHub(req["target_repo"])
@@ -9011,6 +9036,12 @@ max_api_cost = req.get("max_api_cost_usd")
 checkpoint = load_checkpoint(checkpoint_path) if checkpoint_path.is_file() else new_checkpoint(req["id"], "generic", base_sha)
 ⋮----
 checkpoint = new_checkpoint(req["id"], "generic", base_sha)
+⋮----
+existing_canary_verification = _existing_worker_canary_verification(req, work)
+⋮----
+checkpoint = advance_checkpoint(
+⋮----
+report = {
 ⋮----
 resume_round = checkpoint.get("round", 0) if checkpoint.get("phase") in {"published", "complete"} else 0
 resumed_verification = checkpoint.get("last_verification") if resume_round else None
@@ -9311,6 +9342,10 @@ verification_started = clock()
 verification_timeout = bounded_timeout(
 verification = verify(
 ⋮----
+structural_verification = verify_structural_text_changes(work, changed)
+⋮----
+verification = structural_verification
+⋮----
 adaptive_verify_timeout = bounded_timeout(
 ⋮----
 verification_elapsed = max(0, int(clock() - verification_started))
@@ -9318,7 +9353,6 @@ verification_history = load_phase_cost_baselines(phase_baseline_path)
 verification_baseline = phase_cost_baseline(verification_history, state["toolchain"], "verification")
 ⋮----
 last_verification = verification
-checkpoint = advance_checkpoint(
 ⋮----
 review_context = {
 review_started = clock()
@@ -9656,6 +9690,29 @@ payload = {"status":"validated_recipe","recipe":recipe,"model":model}
 ````python
 """Trusted verification command discovery for generic repositories."""
 ⋮----
+STRUCTURAL_TEXT_SUFFIXES = {".md", ".txt", ".rst", ".json"}
+⋮----
+def verify_structural_text_changes(root: Path, changed_paths: list[str]) -> dict
+⋮----
+"""Trusted fallback for documentation/data-only changes when no executable verifier exists.
+
+    This does not replace tests for source-code changes. It only proves that a bounded set
+    of policy-editable text artifacts exists, is valid UTF-8, contains no recognized secret
+    material, and (for JSON) remains syntactically valid. Semantic completion is still
+    decided by the independent review phase.
+    """
+started = time.monotonic()
+⋮----
+normalized = []
+seen = set()
+⋮----
+path = root / raw
+suffix = path.suffix.lower()
+⋮----
+raw_bytes = path.read_bytes()
+⋮----
+text = raw_bytes.decode("utf-8")
+⋮----
 def discover(root: Path) -> list[list[str]]
 ⋮----
 commands: list[list[str]] = []
@@ -9671,7 +9728,6 @@ venv_python=root/".studio-venv/bin/python"
 ⋮----
 def run(root: Path, *, timeout_per_command: int = 900, commands: list[list[str]] | None = None) -> dict
 ⋮----
-started = time.monotonic()
 commands = discover(root) if commands is None else commands
 ⋮----
 results = []
@@ -10961,6 +11017,8 @@ improvement=None
 improvement_run=None
 status=state.get('status')
 ⋮----
+status='capacity_exhausted'
+⋮----
 project_state=last_result.get('report') if isinstance(last_result.get('report'),dict) else {}
 improvement=_update_improvements(out,state,project_state)
 ⋮----
@@ -11289,6 +11347,13 @@ proof={"tests_passed":True,"commit_sha":commit_sha,"evidence_sha256":_digest(evi
 ````python
 """Persistent bounded autonomous goal loop."""
 ⋮----
+_SENSITIVE_DETAIL = re.compile(
+⋮----
+def _safe_exception_detail(exc)
+⋮----
+detail = " ".join(str(exc).split())
+detail = _SENSITIVE_DETAIL.sub(lambda match: match.group(1) + "[redacted]", detail)
+⋮----
 def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_cycles=100,context_provider=None,cycle_observer=None,execute_registered_capability=None)
 ⋮----
 goal_path=Path(goal_path); registry_path=Path(registry_path)
@@ -11334,7 +11399,9 @@ kind=type(exc).__name__
 ⋮----
 result={"blocked_reason":"internal_cycle_error:"+kind}
 ⋮----
-result={"failure":"cycle_exception:"+kind}
+detail=_safe_exception_detail(exc)
+suffix=(":"+detail) if detail else ""
+result={"failure":"cycle_exception:"+kind+suffix}
 ⋮----
 state=record_cycle(state,failure="cycle returned invalid result")
 ⋮----
@@ -15668,9 +15735,19 @@ snapshot = fetch_summary(
 ⋮----
 authenticated = bool(snapshot.authenticated_usage)
 ⋮----
-def _project_id(job_key: str) -> str
+"""Use durable task identity when the control plane supplied a workflow attempt.
+
+    Workflow retries enqueue a different job key. Keying autonomous state to
+    that ephemeral key loses the checkpoint saved by the preceding attempt.
+    The workflow/task/repository tuple is stable *only* across retries of
+    the same logical task; distinct tasks and workflow generations stay
+    isolated. Legacy jobs without workflow_attempt keep their former ID.
+    """
 ⋮----
-digest = hashlib.sha256(str(job_key).encode("utf-8")).hexdigest()[:24]
+identity = "\\0".join((repository, workflow_id, workflow_task_id))
+⋮----
+identity = str(job_key)
+digest = hashlib.sha256(identity.encode("utf-8")).hexdigest()[:24]
 ⋮----
 managed_project_id = str(
 ⋮----
@@ -15859,6 +15936,9 @@ status = re.search(r"\bHTTP(?: status)? ([1-5][0-9]{2})\b", message)
 ⋮----
 def _summary_requests_retry(summary: dict[str, Any]) -> bool
 ⋮----
+# These are terminal resource/continuation limits, not transient runner
+# failures. Replaying the same exhausted envelope cannot add capacity.
+⋮----
 evidence = summary.get("evidence")
 ⋮----
 """Claim and execute at most one Production-OS job."""
@@ -15870,6 +15950,8 @@ heartbeat_interval = float(heartbeat_interval_seconds)
 retry_attempts = int(runner_retry_attempts)
 ⋮----
 retry_backoff = float(runner_retry_backoff_seconds)
+⋮----
+runtime_limit = float(max_runtime_seconds)
 ⋮----
 capabilities = list(capabilities or worker_capabilities())
 ⋮----
@@ -15922,14 +16004,21 @@ def keep_job_alive()
 heartbeat_thread = threading.Thread(
 ⋮----
 started = float(clock())
-runner_attempt = 0
+# A successful autonomous continuation is progress, not a failed
+# runner attempt. Track bounded transient retries independently so an
+# interruption late in a multi-stage job still gets its retry budget.
+retry_count = 0
 continuations = 0
+⋮----
+# Reserve time for result persistence and the final control-plane
+# acknowledgment before GitHub Actions terminates the runner.
+remaining = runtime_limit - (float(clock()) - started)
+⋮----
+summary = {
 ⋮----
 summary = run_project(
 ⋮----
-delay = retry_backoff * (2 ** (runner_attempt - 1))
-⋮----
-summary = {
+delay = retry_backoff * (2 ** (retry_count - 1))
 ⋮----
 duration = max(0.0, float(clock()) - started)
 ⋮----

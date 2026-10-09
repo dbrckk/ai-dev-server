@@ -912,6 +912,7 @@
         "studio/atomic_file.py",
         "studio/capability_registry.py",
         "studio/capability_runtime.py",
+        "studio/core.py",
         "studio/durable_state.py",
         "studio/goal_engine.py",
         "studio/goal_learning.py",
@@ -931,7 +932,7 @@
         "tests/test_human_handoff_status_v3.py"
       ],
       "in_degree": 4,
-      "out_degree": 14
+      "out_degree": 15
     },
     "studio/autonomous_research.py": {
       "dependencies": [
@@ -1451,6 +1452,7 @@
         "studio/artifact_share_policy.py",
         "studio/artwork_stage.py",
         "studio/asset_forge_bridge.py",
+        "studio/autonomous_project.py",
         "studio/billing_qa.py",
         "studio/billing_stage.py",
         "studio/capability_registry_promotion_persist.py",
@@ -1585,6 +1587,7 @@
         "tests/test_artifact_cas_namespace.py",
         "tests/test_artifact_cas_promotion.py",
         "tests/test_asset_forge_bridge.py",
+        "tests/test_autonomous_project.py",
         "tests/test_billing_qa.py",
         "tests/test_browser_validation_contract.py",
         "tests/test_capability_candidate_validator.py",
@@ -1641,7 +1644,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 215,
+      "in_degree": 217,
       "out_degree": 17
     },
     "studio/cost_drift.py": {
@@ -2273,12 +2276,13 @@
         "studio/agents/workspace.py",
         "studio/generic_project.py",
         "studio/generic_repository.py",
+        "studio/generic_verify.py",
         "studio/project_engine.py",
         "tests/test_browser_validation_contract.py",
         "tests/test_generic_policy.py",
         "tests/test_mobile_validation_contract.py"
       ],
-      "in_degree": 7,
+      "in_degree": 8,
       "out_degree": 0
     },
     "studio/generic_project.py": {
@@ -2352,9 +2356,10 @@
         "studio/multi_engine_orchestrator.py",
         "tests/test_browser_validation_contract.py",
         "tests/test_generic_architecture.py",
+        "tests/test_generic_worker_canary_resume.py",
         "tests/test_mobile_validation_contract.py"
       ],
-      "in_degree": 5,
+      "in_degree": 6,
       "out_degree": 63
     },
     "studio/generic_repository.py": {
@@ -2426,15 +2431,17 @@
     },
     "studio/generic_verify.py": {
       "dependencies": [
+        "studio/generic_policy.py",
         "studio/generic_sandbox.py",
         "tests/test_studio.py"
       ],
       "dependents": [
         "studio/generic_project.py",
-        "studio/generic_smoke.py"
+        "studio/generic_smoke.py",
+        "tests/test_generic_structural_verify.py"
       ],
-      "in_degree": 2,
-      "out_degree": 2
+      "in_degree": 3,
+      "out_degree": 3
     },
     "studio/github_agent_performance_store.py": {
       "dependencies": [
@@ -5435,11 +5442,13 @@
       "dependencies": [
         "studio/autonomous_project.py",
         "studio/capability_registry.py",
-        "studio/goal_engine.py"
+        "studio/core.py",
+        "studio/goal_engine.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 3
+      "out_degree": 5
     },
     "tests/test_autonomous_research.py": {
       "dependencies": [
@@ -6136,6 +6145,15 @@
       "in_degree": 0,
       "out_degree": 1
     },
+    "tests/test_generic_structural_verify.py": {
+      "dependencies": [
+        "studio/generic_verify.py",
+        "tests/test_studio.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 2
+    },
     "tests/test_generic_toolchain.py": {
       "dependencies": [
         "studio/generic_sandbox.py",
@@ -6148,6 +6166,14 @@
     "tests/test_generic_verifier_adaptation.py": {
       "dependencies": [
         "studio/generic_verifier_adaptation.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_generic_worker_canary_resume.py": {
+      "dependencies": [
+        "studio/generic_project.py"
       ],
       "dependents": [],
       "in_degree": 0,
@@ -7605,6 +7631,7 @@
         "studio/runtime_health.py",
         "studio/task_context.py",
         "tests/test_architecture_planner.py",
+        "tests/test_autonomous_project.py",
         "tests/test_capacity_scheduler.py",
         "tests/test_durable_state.py",
         "tests/test_evolution_benchmark.py",
@@ -7613,6 +7640,7 @@
         "tests/test_fleet_operations.py",
         "tests/test_fleet_supervisor_apply.py",
         "tests/test_generic_model_capacity.py",
+        "tests/test_generic_structural_verify.py",
         "tests/test_godot_baseline.py",
         "tests/test_godot_runtime.py",
         "tests/test_memory_bridge.py",
@@ -7624,7 +7652,7 @@
         "tests/test_strict_task_claim_store.py",
         "tests/test_task_lease.py"
       ],
-      "in_degree": 102,
+      "in_degree": 104,
       "out_degree": 3
     },
     "tests/test_task_claim_store.py": {

@@ -1,20 +1,20 @@
 # Repo Brain
 
 - Index mode: incremental
-- Files indexed: 638
-- Files reparsed this run: 1
-- Symbols: 4552
-- Internal import edges: 1287
-- Impacted files: 1
-- Selected tests: 1
+- Files indexed: 640
+- Files reparsed this run: 15
+- Symbols: 4594
+- Internal import edges: 1291
+- Impacted files: 32
+- Selected tests: 23
 
 ## Languages
-- python: 635 files
+- python: 637 files
 - gdscript: 3 files
 
 ## Highest-density symbol files
 - tests/test_release_candidate_search.py: 95 symbols
-- tests/test_production_os_worker_runtime.py: 75 symbols
+- tests/test_production_os_worker_runtime.py: 92 symbols
 - tests/test_replacement_ci_policy.py: 62 symbols
 - tests/test_studio.py: 60 symbols
 - tests/test_architecture_reputation_policy_migration.py: 44 symbols
@@ -31,8 +31,8 @@
 - tests/test_architecture_feedback.py: 23 symbols
 - tests/test_architecture_reputation_policy_github_collect.py: 23 symbols
 - tests/test_asset_forge_bridge.py: 23 symbols
+- tests/test_production_os_worker_cli.py: 23 symbols
 - studio/evolution_research.py: 22 symbols
-- studio/architecture_reputation_policy_migration.py: 20 symbols
 
 ## Agent routing
 - Read impact.json first after project/change context.
@@ -43,10 +43,10 @@
 ## ast-grep enrichment
 - ast-grep outline: available
 - AST index mode: incremental
-- AST files reparsed this run: 1
-- outline files retained: 634
-- top-level items retained: 6613
-- direct members retained: 2223
+- AST files reparsed this run: 15
+- outline files retained: 636
+- top-level items retained: 6640
+- direct members retained: 2249
 - symbol shards: 26
 - route named symbols via ast-routing.json, then fetch one ast-symbols/<initial>.json shard
 

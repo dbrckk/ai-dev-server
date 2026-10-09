@@ -473,6 +473,12 @@ class ProductionOSLocalE2ETests(unittest.TestCase):
             self.assertEqual(result["status"], "complete")
             self.assertEqual(executions, ["first", "resumed"])
             self.assertEqual(result["attempt"], 2)
+            # The cycle checkpoint precedes terminal finalization. The native
+            # GitHub runner still flushes the finalized state after return.
+            checkpoint = FakeGitHubGoalLoad(remote, project_id)
+            self.assertEqual(checkpoint["goal"]["status"], "active")
+            self.assertIn("project_completion", checkpoint["goal"]["evidence"])
+            persist_local(remote, project_id, second_out)
             final = FakeGitHubGoalLoad(remote, project_id)
             self.assertEqual(final["goal"]["status"], "complete")
             self.assertEqual(final["goal"]["attempt"], 2)

@@ -941,6 +941,24 @@ def run(
         result=run_multi_engine_project(*args)
         last_result.clear(); last_result.update(result)
         return result
+
+    def persist_verified_cycle(goal_state, result):
+        if remote_github is None:
+            return
+        # The goal loop has already sealed and saved the completed cycle.
+        # Without this flush, an abrupt later runner interruption can discard
+        # several verified cycles even when the GitHub state branch is healthy.
+        try:
+            persist_local(remote_github, request['id'], out)
+            persist_execution_checkpoint_local(
+                remote_github, request['id'],
+                out/'.autonomy/generic-execution-checkpoint.json',
+            )
+        except RemoteStateError as exc:
+            raise StudioError('Remote autonomous cycle checkpoint failed: '+str(exc)) from None
+        except ExecutionCheckpointStoreError as exc:
+            raise StudioError('Remote execution cycle checkpoint failed: '+str(exc)) from None
+
     with tempfile.TemporaryDirectory(prefix='studio-github-') as work:
         state=run_persistent_project(
             str(request_path),out,work,effective_runner,deadline,clock,baseline_sha,
@@ -948,6 +966,7 @@ def run(
             objective='Complete project '+request['id']+' with verified release evidence',
             max_cycles=4,
             run_once=run_once,
+            checkpoint_observer=persist_verified_cycle if remote_github is not None else None,
         )
     improvement=None
     improvement_run=None

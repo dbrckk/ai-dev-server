@@ -3,6 +3,7 @@
 Status: active
 
 ## Working
+- **2026-10-09 canary #20:** Actions worker `37992773915` committed verified canary file `.production-os/worker-canary-20.txt` at `405277e` on `dbrckk/repo-standards` branch `studio/mp-aa8be7dea7e417424da80e41`, then failed with GitHub API HTTP 422 in post-code persistence. `studio-project-memory` history shows project-memory and provider-health writes succeeded; next provider-metrics write apparently failed. Branch `fix/noncritical-telemetry-github-422` makes optional telemetry a clearly reported degraded state, preserving *mandatory* goal/memory/checkpoint guarantees. Existing CI and fresh live qualification pending. Render immediate worker wake remains blocked solely by missing `GITHUB_TOKEN`; diagnostic `37992625227` confirmed operator/inference ready and allowed missing variable name.
 - 2026-10-09: live diagnostic `37989346828` returned `inference_ready=true` but `operator_access=unavailable` with wake configuration undetermined, consistent with cold Render startup within the previous 10 s operator read timeout. A GET-only bounded warmup on `fix/diagnostics-render-readiness-warmup` precedes operator and wake checks. Must pass CI and live diagnostic before merging.
 
 ## Wake diagnostics follow-up (2026-10-09)

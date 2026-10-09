@@ -68,22 +68,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T20:29:47Z
+Generated: 2026-10-09T21:46:39Z
 
 ### Git
 - Branch: `main`
-- Head: `8a02665ed7b0`
-- Commit date: 2026-10-09T22:29:18+02:00
-- Commit: fix(models): request NVIDIA JSON and prefer verified default fallback (#280)
+- Head: `04e4754d6bcd`
+- Commit date: 2026-10-09T23:45:51+02:00
+- Commit: fix(worker): keep verified checkpoints when optional GitHub telemetry is rejected (#284)
 - Tracked files: 863
 
 ### Recently changed files
 - `docs/PRODUCTION_OS_WORKER.md`
-- `studio/generic_model.py`
-- `studio/production_os_provider_config.py`
-- `control/production-os-diagnostics-kick.json`
+- `studio/github_runner.py`
 - `control/production-os-worker-canary.json`
-- `studio/production_os_worker_canary.py`
+- `control/production-os-diagnostics-kick.json`
+- `studio/generic_model.py`
+- `studio/production_os_live_diagnostics.py`
 
 ### Project signals
 - No common build descriptor detected

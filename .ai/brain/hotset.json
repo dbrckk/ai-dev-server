@@ -1,11 +1,22 @@
 {
   "files": [
     {
+      "path": "studio/github_runner.py",
+      "reasons": [
+        "changed",
+        "changed-source",
+        "dependency-neighbor",
+        "impact",
+        "symbol-indexed"
+      ],
+      "score": 515
+    },
+    {
       "path": "studio/core.py",
       "reasons": [
         "dependency-neighbor"
       ],
-      "score": 450
+      "score": 475
     },
     {
       "path": "studio/generic_model.py",
@@ -16,10 +27,10 @@
         "impact",
         "symbol-indexed"
       ],
-      "score": 440
+      "score": 450
     },
     {
-      "path": "studio/production_os_provider_config.py",
+      "path": "studio/production_os_live_diagnostics.py",
       "reasons": [
         "changed",
         "changed-source",
@@ -27,18 +38,16 @@
         "impact",
         "symbol-indexed"
       ],
-      "score": 355
+      "score": 335
     },
     {
-      "path": "studio/production_os_worker_canary.py",
+      "path": "studio/production_os_worker.py",
       "reasons": [
-        "changed",
-        "changed-source",
-        "dependency-neighbor",
         "impact",
+        "reverse-dependency-neighbor",
         "symbol-indexed"
       ],
-      "score": 355
+      "score": 310
     },
     {
       "path": "studio/provider_router.py",
@@ -48,14 +57,14 @@
       "score": 275
     },
     {
-      "path": "tests/test_production_os_live_diagnostics.py",
+      "path": "tests/test_orchestrator.py",
       "reasons": [
         "impact",
         "reverse-dependency-neighbor",
         "selected-test",
         "symbol-indexed"
       ],
-      "score": 265
+      "score": 270
     },
     {
       "path": "tests/test_generic_adaptive_quota_budget.py",
@@ -68,7 +77,7 @@
       "score": 245
     },
     {
-      "path": "tests/test_production_os_worker_canary.py",
+      "path": "tests/test_github_runner_persistent.py",
       "reasons": [
         "impact",
         "reverse-dependency-neighbor",
@@ -76,6 +85,16 @@
         "symbol-indexed"
       ],
       "score": 245
+    },
+    {
+      "path": "tests/test_production_os_live_diagnostics.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 235
     },
     {
       "path": "tests/test_generic_model_capacity.py",
@@ -86,6 +105,16 @@
         "symbol-indexed"
       ],
       "score": 225
+    },
+    {
+      "path": "tests/test_github_runner_round_persistence.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 220
     },
     {
       "path": "tests/test_provider_429_cooldown.py",
@@ -107,6 +136,26 @@
       "score": 215
     },
     {
+      "path": "tests/test_production_os_result_contract.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 215
+    },
+    {
+      "path": "tests/test_github_runner_usage.py",
+      "reasons": [
+        "impact",
+        "reverse-dependency-neighbor",
+        "selected-test",
+        "symbol-indexed"
+      ],
+      "score": 200
+    },
+    {
       "path": "studio/generic_verifier_adaptation.py",
       "reasons": [
         "dependency-neighbor",
@@ -117,22 +166,25 @@
       "score": 160
     },
     {
-      "path": "studio/production_os_live_diagnostics.py",
+      "path": "tests/test_studio.py",
       "reasons": [
-        "dependency-neighbor",
-        "impact",
-        "reverse-dependency-neighbor",
-        "symbol-indexed"
+        "dependency-neighbor"
       ],
-      "score": 140
+      "score": 150
     },
     {
-      "path": "tests/test_production_os_worker.py",
+      "path": "tests/test_unified_routing_score.py",
       "reasons": [
-        "selected-test",
-        "symbol-indexed"
+        "dependency-neighbor"
       ],
-      "score": 120
+      "score": 125
+    },
+    {
+      "path": ".github/workflows/production-os-live-diagnostics.yml",
+      "reasons": [
+        "changed"
+      ],
+      "score": 100
     },
     {
       "path": "control/production-os-diagnostics-kick.json",
@@ -156,18 +208,19 @@
       "score": 100
     },
     {
-      "path": "tests/test_studio.py",
+      "path": "studio/goal_loop.py",
       "reasons": [
         "dependency-neighbor"
       ],
       "score": 100
     },
     {
-      "path": "tests/test_unified_routing_score.py",
+      "path": "tests/test_diagnostics.py",
       "reasons": [
-        "dependency-neighbor"
+        "selected-test",
+        "symbol-indexed"
       ],
-      "score": 100
+      "score": 85
     },
     {
       "path": "studio/provider_health.py",
@@ -177,84 +230,43 @@
       "score": 75
     },
     {
+      "path": "integration_tests/test_production_os_server_integration.py",
+      "reasons": [
+        "reverse-dependency-neighbor"
+      ],
+      "score": 60
+    },
+    {
+      "path": "tests/test_mobile_validation_contract.py",
+      "reasons": [
+        "reverse-dependency-neighbor"
+      ],
+      "score": 60
+    },
+    {
+      "path": "tests/test_production_os_worker_recovery.py",
+      "reasons": [
+        "reverse-dependency-neighbor"
+      ],
+      "score": 60
+    },
+    {
+      "path": "tests/test_production_os_worker_runtime.py",
+      "reasons": [
+        "reverse-dependency-neighbor"
+      ],
+      "score": 60
+    },
+    {
+      "path": "studio/multi_engine_orchestrator.py",
+      "reasons": [
+        "dependency-neighbor",
+        "reverse-dependency-neighbor"
+      ],
+      "score": 55
+    },
+    {
       "path": "studio/adaptive_scoring.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/architecture_change_guard.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/capacity_efficiency.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/capacity_runtime.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/contextual_routing_memory.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/cost_drift.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/execution_checkpoint.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/generic_repository.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/learning_context.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/local_model_reputation.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/local_model_specialization.py",
-      "reasons": [
-        "dependency-neighbor"
-      ],
-      "score": 50
-    },
-    {
-      "path": "studio/model_portfolio_learning.py",
       "reasons": [
         "dependency-neighbor"
       ],

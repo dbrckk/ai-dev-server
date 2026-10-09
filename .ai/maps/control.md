@@ -113,8 +113,8 @@ request.json
 ## File: production-os-diagnostics-kick.json
 ```json
 {
-  "sequence": 6,
-  "reason": "Verify operator access after Production-OS commit 2752685 is live on Render"
+  "sequence": 8,
+  "reason": "GET-only Render warmup + operator wake settings after #283"
 }
 ```
 
@@ -141,7 +141,7 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-  "sequence": 19,
+  "sequence": 20,
   "repository": "dbrckk/repo-standards"
 }
 ```

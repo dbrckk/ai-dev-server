@@ -1,12 +1,11 @@
 # Change impact
 
-Base: 61f335c6f8d88a33f2d6475d0b4be12976e02223
-Head: 8a02665ed7b0cd8926e7d412ec8c27ed1051576c
+Base: 60b434667b06dd3e3b499c4c17c2fe935883714d
+Head: 04e4754d6bcdd0bde2a499fa1bd468c596fb5c90
 
 ## Changed files
 - M docs/PRODUCTION_OS_WORKER.md
-- M studio/generic_model.py
-- M studio/production_os_provider_config.py
+- M studio/github_runner.py
 
 ## Affected areas
 - docs

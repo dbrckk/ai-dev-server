@@ -2547,6 +2547,7 @@ jobs:
         env:
           PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
           PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
+          PRODUCTION_OS_DIAGNOSE_WAKE: '1'
           STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
           STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
           STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
@@ -3235,8 +3236,8 @@ initial_prompt: |
 ## File: control/production-os-diagnostics-kick.json
 ````json
 {
-  "sequence": 6,
-  "reason": "Verify operator access after Production-OS commit 2752685 is live on Render"
+  "sequence": 8,
+  "reason": "GET-only Render warmup + operator wake settings after #283"
 }
 ````
 
@@ -3263,7 +3264,7 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-  "sequence": 19,
+  "sequence": 20,
   "repository": "dbrckk/repo-standards"
 }
 ````
@@ -14183,6 +14184,27 @@ raw = choice["message"]["content"].strip()
 raw = raw.split("\n", 1)[1].rsplit("```", 1)[0]
 value = json.loads(raw)
 ⋮----
+"""Use provider-reported totals without treating missing fields as free.
+
+    OpenAI-compatible gateways may report only total_tokens, and some omit
+    usage entirely. Conservatively retain the admitted reservation estimate
+    when no positive usage count was returned.
+    """
+⋮----
+usage = {}
+⋮----
+def token_count(key)
+⋮----
+prompt = max(token_count("prompt_tokens"), token_count("input_tokens"))
+completion = max(token_count("completion_tokens"), token_count("output_tokens"))
+total = max(token_count("total_tokens"), prompt + completion)
+⋮----
+total = max(1, int(reserved_estimate))
+# A provider's missing breakdown still consumes quota and costs money.
+# Charge unknown tokens at the more expensive configured token rate.
+⋮----
+remainder = total - prompt - completion
+⋮----
 """Select a real max_tokens limit that fits both pooled and project quotas.
 
     Budget checks use a conservative prompt margin and never rely on a
@@ -14369,18 +14391,10 @@ response = api.call("POST", "/chat/completions", params, timeout_seconds=remaini
 elapsed = time.monotonic() - started
 ⋮----
 usage = response.get("usage") if isinstance(response, dict) else None
-actual_tokens = estimated_call_tokens
-⋮----
-actual_tokens = max(
 ⋮----
 call_cost = 0.0
 ⋮----
 call_cost = 0.0 if (provider.unmetered or provider.monthly_token_quota > 0) else estimate_call_cost(
-⋮----
-prompt_tokens = int(usage.get("prompt_tokens", 0) or 0)
-completion_tokens = int(usage.get("completion_tokens", 0) or 0)
-⋮----
-prompt_tokens = completion_tokens = 0
 ⋮----
 decoded = _decode(response)
 ⋮----
@@ -16682,12 +16696,24 @@ backlog=load_improvement_backlog(backlog_path)
 candidate=active['candidate']
 def improvement_project_cycle(_goal_state)
 improvement_run=run_active_improvement(
+telemetry_degraded_from = None
 ⋮----
-# Memory ingestion must happen before autonomous-state persistence so
-# every validated artifact produced during this run is durably
-# checkpointed before the runner exits.
+# Verified autonomous goal, project memory and execution checkpoint
+# are mandatory. Auxiliary model-routing caches and telemetry must
+# never turn an already-published code checkpoint into a false
+# runner failure when GitHub rejects an optional write (HTTP 422).
 ⋮----
 memory=ingest_run(memory,request['id'],out)
+⋮----
+optional_telemetry = (
+⋮----
+# GitHub reports 422 for rejected Git-data writes and
+# concurrent non-fast-forward updates. A bounded telemetry
+# degradation is honest; retrying every write would spam
+# GitHub and burn free Actions time. Validation errors,
+# other HTTP failures and mandatory persistence still fail.
+⋮----
+telemetry_degraded_from = component
 ⋮----
 project_report=(
 ⋮----
@@ -21142,6 +21168,19 @@ evidence = state.get('release_evidence', {}).get('privacy_policy')
 ````python
 """Bounded live inference and operator-access checks; no queue or repository writes."""
 ⋮----
+def _warm_operator_connection(client, *, seconds=120, clock=time.monotonic, sleep=time.sleep)
+⋮----
+"""Bounded read-only Render warmup before probing operator credentials.
+
+    Readiness GETs can be retried after ambiguous timeouts; operator POSTs
+    must never be retried. Only transient gateway/readiness failures qualify.
+    """
+deadline = clock() + seconds
+⋮----
+remaining = deadline - clock()
+⋮----
+result = client.call("GET", "/readyz", timeout_seconds=min(30, remaining))
+⋮----
 def diagnose(*, api_factory=API, providers=None, environ=None)
 ⋮----
 env = os.environ if environ is None else environ
@@ -21165,6 +21204,16 @@ parsed = json.loads(content) if isinstance(content, str) else None
 # Remote bodies, exception messages and completions may echo credentials.
 ⋮----
 operator = str(env.get("PRODUCTION_OS_OPERATOR_TOKEN") or "").strip()
+⋮----
+operator_client = api_factory(env["PRODUCTION_OS_URL"], operator)
+diagnose_wake = str(env.get("PRODUCTION_OS_DIAGNOSE_WAKE") or "") == "1"
+⋮----
+# Operator-authorized GET only. Report allowed setting *names*,
+# never a GitHub credential, token value or remote error body.
+⋮----
+readiness = operator_client.call(
+wake = readiness.get("worker_wake") if isinstance(readiness, dict) else None
+allowed = {
 ⋮----
 def main()
 ⋮----

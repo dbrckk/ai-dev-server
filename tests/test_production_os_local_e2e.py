@@ -348,7 +348,6 @@ class ProductionOSLocalE2ETests(unittest.TestCase):
             return run_once(
                 client, run_project=runner,
                 heartbeat_interval_seconds=60.0,
-                max_continuations=0,
                 **kwargs,
             )
 
@@ -359,6 +358,7 @@ class ProductionOSLocalE2ETests(unittest.TestCase):
                     [
                         "--worker-id", "github-actions-worker",
                         "--once",
+                        "--max-continuations", "0",
                         "--output-root", str(Path(td) / f"runner-{attempt}"),
                     ],
                     environ={

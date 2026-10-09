@@ -265,9 +265,23 @@ def ask(
             call_budgets[provider.name] = budget
     providers = tuple(provider for provider in providers if provider.name in call_budgets)
     if not providers:
+        # A configured project envelope does not prove it was exhausted.
+        # Keep provider-wide quota exhaustion distinct from per-project limits.
+        needed = (
+            estimated_prompt_tokens
+            + max(128, (estimated_prompt_tokens + 4) // 5)
+            + (2048 if code else 1024)
+        )
+        remaining_project = (
+            max(0, project_capacity_envelope)
+            - ledger_consumed_tokens(ledger_data, project_id=project_id)
+            - ledger_reserved_tokens(ledger_data, project_id=project_id)
+            if project_capacity_envelope is not None and project_id is not None
+            else None
+        )
         reason = (
             "project_envelope_exhausted"
-            if project_capacity_envelope is not None
+            if remaining_project is not None and remaining_project < needed
             else "insufficient pooled token quota or no healthy provider"
         )
         raise StudioError("No provider remains: " + reason)

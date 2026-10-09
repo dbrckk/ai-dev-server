@@ -363,6 +363,72 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         )
 
 
+    def test_workflow_retry_reuses_durable_autonomous_checkpoint_identity(self):
+        first = sample_job()
+        first["key"] = "workflow-task-attempt-1"
+        first["payload"]["workflow_attempt"] = 1
+        second = sample_job()
+        second["key"] = "workflow-task-attempt-2"
+        second["payload"]["workflow_attempt"] = 2
+        second["payload"]["handoff"]["retry_context"] = {
+            "summary": "continuation_limit: retry",
+        }
+        third = sample_job()
+        third["key"] = "workflow-task-attempt-3"
+        third["payload"]["workflow_attempt"] = 3
+
+        requests = [build_studio_request(job) for job in (first, second, third)]
+        self.assertEqual(len({request["id"] for request in requests}), 1)
+        self.assertTrue(requests[0]["id"].startswith("pos-"))
+        self.assertNotEqual(requests[0]["brief"], requests[1]["brief"])
+        self.assertEqual(
+            requests[0]["production_os"], requests[1]["production_os"],
+        )
+
+    def test_workflow_checkpoint_identity_isolated_between_tasks_and_generations(self):
+        first = sample_job()
+        first["payload"]["workflow_attempt"] = 1
+        another_task = sample_job()
+        another_task["key"] = "different-task-key"
+        another_task["payload"]["workflow_attempt"] = 1
+        another_task["payload"]["workflow_task_id"] = "review"
+        another_workflow = sample_job()
+        another_workflow["key"] = "different-workflow-key"
+        another_workflow["payload"]["workflow_attempt"] = 1
+        another_workflow["payload"]["workflow_id"] = "a" * 32
+        another_repo = sample_job()
+        another_repo["key"] = "different-repo-key"
+        another_repo["payload"]["workflow_attempt"] = 1
+        another_repo["payload"]["handoff"]["repository"] = "dbrckk/other"
+        another_repo["repository"] = "dbrckk/other"
+
+        ids = {
+            build_studio_request(job)["id"]
+            for job in (first, another_task, another_workflow, another_repo)
+        }
+        self.assertEqual(len(ids), 4)
+
+    def test_workflow_without_attempt_keeps_previous_job_scoped_checkpoint(self):
+        first = sample_job()
+        second = sample_job()
+        second["key"] = "different-key"
+        self.assertNotEqual(
+            build_studio_request(first)["id"], build_studio_request(second)["id"],
+        )
+
+    def test_invalid_workflow_attempt_never_shares_checkpoint(self):
+        for invalid in (0, False, "1", -1, None):
+            with self.subTest(attempt=invalid):
+                first = sample_job()
+                first["payload"]["workflow_attempt"] = invalid
+                second = sample_job()
+                second["key"] = "different-key"
+                second["payload"]["workflow_attempt"] = invalid
+                self.assertNotEqual(
+                    build_studio_request(first)["id"],
+                    build_studio_request(second)["id"],
+                )
+
     def test_managed_project_stages_share_branch_but_not_execution_id(self):
         first = sample_job()
         first["key"] = "job-implementation"

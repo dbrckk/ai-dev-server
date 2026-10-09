@@ -94,7 +94,7 @@ def _reported_usage_tokens(
     when no positive usage count was returned.
     """
     if not isinstance(usage, dict):
-        return 0, 0, max(1, int(reserved_estimate))
+        usage = {}
 
     def token_count(key):
         try:

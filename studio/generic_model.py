@@ -81,6 +81,43 @@ def _decode(response: dict) -> dict:
 
 
 
+def _reported_usage_tokens(
+    usage: dict | None,
+    reserved_estimate: int,
+    *,
+    unknown_to_output: bool = False,
+) -> tuple[int, int, int]:
+    """Use provider-reported totals without treating missing fields as free.
+
+    OpenAI-compatible gateways may report only total_tokens, and some omit
+    usage entirely. Conservatively retain the admitted reservation estimate
+    when no positive usage count was returned.
+    """
+    if not isinstance(usage, dict):
+        usage = {}
+
+    def token_count(key):
+        try:
+            return max(0, int(usage.get(key, 0) or 0))
+        except (TypeError, ValueError, OverflowError):
+            return 0
+
+    prompt = max(token_count("prompt_tokens"), token_count("input_tokens"))
+    completion = max(token_count("completion_tokens"), token_count("output_tokens"))
+    total = max(token_count("total_tokens"), prompt + completion)
+    if not total:
+        total = max(1, int(reserved_estimate))
+    # A provider's missing breakdown still consumes quota and costs money.
+    # Charge unknown tokens at the more expensive configured token rate.
+    if prompt + completion < total:
+        remainder = total - prompt - completion
+        if unknown_to_output:
+            completion += remainder
+        else:
+            prompt += remainder
+    return prompt, completion, total
+
+
 def _bounded_model_token_budget(
     provider,
     *,
@@ -523,16 +560,12 @@ def ask(
             if metrics_path is not None:
                 record_provider_latency(metrics_path, provider.name, role, elapsed)
             usage = response.get("usage") if isinstance(response, dict) else None
-            actual_tokens = estimated_call_tokens
-            if isinstance(usage, dict):
-                try:
-                    actual_tokens = max(
-                        0,
-                        int(usage.get("prompt_tokens", 0) or 0)
-                        + int(usage.get("completion_tokens", 0) or 0),
-                    )
-                except (TypeError, ValueError):
-                    actual_tokens = estimated_call_tokens
+            prompt_tokens, completion_tokens, actual_tokens = _reported_usage_tokens(
+                usage, estimated_call_tokens,
+                unknown_to_output=(
+                    provider.output_cost_per_million > provider.input_cost_per_million
+                ),
+            )
             if reservation is not None:
                 settle_capacity(
                     capacity_ledger_path,
@@ -541,23 +574,18 @@ def ask(
                 )
                 reservation_open = False
             call_cost = 0.0
-            if provider_cost_path is not None and isinstance(usage, dict):
+            if provider_cost_path is not None:
                 try:
                     call_cost = 0.0 if (provider.unmetered or provider.monthly_token_quota > 0) else estimate_call_cost(
-                        prompt_tokens=int(usage.get("prompt_tokens", 0) or 0),
-                        completion_tokens=int(usage.get("completion_tokens", 0) or 0),
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=completion_tokens,
                         input_cost_per_million=provider.input_cost_per_million,
                         output_cost_per_million=provider.output_cost_per_million,
                     )
                 except (TypeError, ValueError):
                     call_cost = 0.0
                 record_provider_cost(provider_cost_path, provider.name, role, call_cost)
-            if quota_path is not None and isinstance(usage, dict):
-                try:
-                    prompt_tokens = int(usage.get("prompt_tokens", 0) or 0)
-                    completion_tokens = int(usage.get("completion_tokens", 0) or 0)
-                except (TypeError, ValueError):
-                    prompt_tokens = completion_tokens = 0
+            if quota_path is not None:
                 if provider.monthly_token_quota > 0:
                     record_provider_monthly_quota(
                         quota_path,

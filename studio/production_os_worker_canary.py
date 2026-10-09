@@ -5,6 +5,7 @@ import os
 import re
 import time
 import urllib.error
+import urllib.request
 from pathlib import Path
 
 from core import APIError, StudioError, canonical
@@ -14,6 +15,43 @@ from production_os_resume_objectives import OperatorClient
 _REPOSITORY = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
 _WORKFLOW_ID = re.compile(r"[a-f0-9]{32}")
 _TERMINAL_FAILURES = {"failed", "cancelled", "canceled"}
+
+
+def dispatch_worker_after_enqueue(*, token, repository, urlopen=urllib.request.urlopen):
+    """Dispatch the restricted same-repository worker after the task is queued.
+
+    GitHub grants this canary workflow only actions:write and contents:read.
+    Never accept a user-provided repository or workflow name for dispatch.
+    The 204 only confirms dispatch acceptance, not worker task completion.
+    """
+    if repository != "dbrckk/ai-dev-server":
+        raise ValueError("Canary workflow repository does not match trusted worker")
+    if not token:
+        raise ValueError("Canary workflow Actions token is missing")
+    request = urllib.request.Request(
+        "https://api.github.com/repos/dbrckk/ai-dev-server/actions/workflows/"
+        "production-os-actions-worker.yml/dispatches",
+        data=json.dumps({"ref": "main"}).encode("utf-8"),
+        method="POST",
+        headers={
+            "Authorization": "Bearer " + token,
+            "Accept": "application/vnd.github+json",
+            "Content-Type": "application/json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "User-Agent": "production-os-worker-canary",
+        },
+    )
+    try:
+        with urlopen(request, timeout=20) as response:
+            if response.status != 204:
+                raise RuntimeError("GitHub Actions worker dispatch returned unexpected status")
+    except urllib.error.HTTPError as exc:
+        raise RuntimeError(
+            f"GitHub Actions worker dispatch rejected: HTTP {exc.code}"
+        ) from None
+    except (urllib.error.URLError, TimeoutError) as exc:
+        raise RuntimeError("GitHub Actions worker dispatch unavailable") from None
+    return "accepted"
 
 
 def validate_control(payload):
@@ -137,8 +175,10 @@ def wait_for_readiness(client, *, timeout_seconds=180.0, poll_seconds=5.0,
 
 
 def run_canary(client, control, *, wait_seconds=0, poll_seconds=10.0,
-               clock=time.monotonic, sleeper=time.sleep):
+               clock=time.monotonic, sleeper=time.sleep, dispatch=None):
     result = launch_canary(client, control)
+    if dispatch is not None:
+        result["actions_worker_wake"] = dispatch()
     if wait_seconds:
         outcome = wait_for_workflow(
             client,
@@ -172,11 +212,18 @@ def main(argv=None):
             raise ValueError("Production-OS URL missing")
         client = OperatorClient(base, token)
         wait_for_readiness(client)
+        dispatch = None
+        if os.environ.get("GITHUB_ACTIONS") == "true":
+            dispatch = lambda: dispatch_worker_after_enqueue(
+                token=os.environ.get("PRODUCTION_OS_CANARY_DISPATCH_TOKEN", "").strip(),
+                repository=os.environ.get("GITHUB_REPOSITORY", ""),
+            )
         result = run_canary(
             client,
             control,
             wait_seconds=args.wait_seconds,
             poll_seconds=args.poll_seconds,
+            dispatch=dispatch,
         )
     except Exception as exc:
         print(canonical({"status": "unavailable", "error_type": type(exc).__name__}))

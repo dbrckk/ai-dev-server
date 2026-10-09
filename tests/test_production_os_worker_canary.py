@@ -3,6 +3,7 @@ import unittest
 
 from production_os_worker_canary import (
     canary_instruction,
+    dispatch_worker_after_enqueue,
     run_canary,
     validate_control,
     wait_for_workflow,
@@ -54,13 +55,21 @@ class WorkerCanaryTests(unittest.TestCase):
 
     def test_launch_is_idempotent_and_uses_dashboard_api(self):
         client = FakeClient()
-        result = run_canary(client, {"sequence": 4, "repository": "dbrckk/repo-standards"})
+        dispatches = []
+        result = run_canary(
+            client, {"sequence": 4, "repository": "dbrckk/repo-standards"},
+            dispatch=lambda: (dispatches.append(len(client.submissions)), "accepted")[1],
+        )
         self.assertTrue(result["succeeded"])
         path, payload = client.submissions[0]
         self.assertEqual(path, "/v1/dashboard/launch")
         self.assertEqual(payload["repository"], "dbrckk/repo-standards")
         self.assertEqual(payload["request_id"], "worker-canary-4")
         self.assertEqual(result["worker_wake"], "dispatched")
+        self.assertEqual(result["actions_worker_wake"], "accepted")
+        self.assertEqual(dispatches, [1])  # no dispatch before successful admission
+        with self.assertRaises(ValueError):
+            dispatch_worker_after_enqueue(token="not-used", repository="untrusted/repo")
 
     def test_wait_observes_real_terminal_success(self):
         client = FakeClient(("queued", "running", "succeeded"))
@@ -110,3 +119,7 @@ def test_canary_workflow_verifies_terminal_worker_completion():
     assert "--poll-seconds 10" in workflow
     assert "timeout-minutes: 40" in workflow
     assert "cancel-in-progress: true" in workflow
+    assert "actions: write" in workflow
+    assert "contents: read" in workflow
+    assert "secrets.GITHUB_TOKEN" in workflow
+    assert "PRODUCTION_OS_CANARY_DISPATCH_TOKEN" in workflow

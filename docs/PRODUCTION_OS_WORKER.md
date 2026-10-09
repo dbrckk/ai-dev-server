@@ -258,6 +258,16 @@ has enough tokens to answer safely, the call fails instead of pretending
 that the task is complete; this optimization cannot restore a genuinely
 exhausted API account.
 
+When Production-OS supplies a finite project envelope, each generic model
+call now requests at most one quarter of that envelope (with a 4096-token
+minimum cap, still bounded by the original role limit and remaining quota).
+For a 30,000-token project, a single completion is capped at 7,500 tokens
+instead of 16,000. This preserves capacity for subsequent coding and
+verification calls, especially if a provider omits usage metadata and the
+ledger conservatively charges the full reserved amount. It does not
+override the total project envelope or the provider's actual quota.
+A successful workflow must still produce verified repository evidence.
+
 After an HTTP 429 rate-limit response has exhausted its bounded transport retries,
 both generic and Flutter model routers immediately open the affected provider's
 temporary health circuit. They can use a separately configured eligible model

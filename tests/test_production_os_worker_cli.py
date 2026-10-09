@@ -249,11 +249,43 @@ class ProductionOSWorkerCLITests(unittest.TestCase):
         )
         self.assertEqual(rc, 0)
         self.assertEqual(runs[0]["max_continuations"], 9)
+        self.assertEqual(runs[0]["max_runtime_seconds"], 70 * 60)
+
+    def test_main_forwards_custom_runtime_budget(self):
+        runs = []
+        rc = main(
+            ["--once", "--max-continuations", "16", "--max-runtime-seconds", "1800"],
+            environ={
+                "PRODUCTION_OS_URL": "http://127.0.0.1:8787",
+                "PRODUCTION_OS_WORKER_TOKEN": "worker-secret",
+            },
+            client_factory=lambda base_url, token: _Client(base_url, token),
+            run_once_fn=lambda client, **kwargs: (
+                runs.append(kwargs) or {"status": "idle"}
+            ),
+            capabilities_provider=lambda env: ["software-development"],
+        )
+        self.assertEqual(rc, 0)
+        self.assertEqual(runs[0]["max_continuations"], 16)
+        self.assertEqual(runs[0]["max_runtime_seconds"], 1800)
+
+    def test_main_rejects_invalid_runtime_limit(self):
+        with self.assertRaisesRegex(RuntimeError, "--max-runtime-seconds"):
+            main(
+                ["--once", "--max-runtime-seconds", "4801"],
+                environ={
+                    "PRODUCTION_OS_URL": "http://127.0.0.1:8787",
+                    "PRODUCTION_OS_WORKER_TOKEN": "worker-secret",
+                },
+                client_factory=lambda base_url, token: _Client(base_url, token),
+                run_once_fn=lambda *args, **kwargs: {"status": "idle"},
+                capabilities_provider=lambda env: ["software-development"],
+            )
 
     def test_main_rejects_invalid_max_continuations(self):
         with self.assertRaisesRegex(RuntimeError, "--max-continuations"):
             main(
-                ["--once", "--max-continuations", "11"],
+                ["--once", "--max-continuations", "33"],
                 environ={
                     "PRODUCTION_OS_URL": "http://127.0.0.1:8787",
                     "PRODUCTION_OS_WORKER_TOKEN": "worker-secret",

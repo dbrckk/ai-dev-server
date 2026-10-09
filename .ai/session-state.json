@@ -1,9 +1,9 @@
 {
   "version": 1,
   "updated_at": "2026-10-09",
-  "task": "Repair GET-only production operator wake diagnostics during Render cold starts.",
-  "base_commit": "7fdc1ba4172c17f05e20961f5c337d910dde6284",
-  "branch": "fix/diagnostics-render-readiness-warmup",
+  "task": "Prevent verified Production-OS commits from being reported as runner failures due only to rejected optional GitHub telemetry writes.",
+  "base_commit": "60b434667b06dd3e3b499c4c17c2fe935883714d",
+  "branch": "fix/noncritical-telemetry-github-422",
   "completed": [
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",
@@ -86,10 +86,10 @@
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Run existing CI and integration on GET-only operator warmup",
-    "Merge after all required CI gates pass",
-    "Run read-only wake diagnosis to surface missing Render setting names",
-    "Configure only non-secret Render wake settings where needed; do not read or invent credentials"
+    "Validate real canary #20 GitHub HTTP 422 boundary and preserve essential remote goal/checkpoint persistence",
+    "Run existing CI and functional integration; no new unit tests",
+    "Merge only after all CI succeeds; verify merged-head CI",
+    "Requalify production worker canary with fresh sequence after merge; worker immediate-wake GITHUB_TOKEN remains a separate Render secret"
   ],
   "merged_changes": [
     {
@@ -211,10 +211,12 @@
     "fix_branch": "fix/generic-context-envelope"
   },
   "latest_canary": {
-    "sequence": 18,
-    "canary_run": 37975993803,
-    "worker_run": 37975993742,
-    "result": "canary TimeoutError after 30s on launch, worker queue_empty after eventual readiness"
+    "sequence": 20,
+    "worker_run": 37992773915,
+    "canary_run": 37992773858,
+    "result": "verified branch commit, then remote optional telemetry HTTP 422; task marked runner_error",
+    "commit": "405277e67993f9db33b4105a4c945d662393dce3",
+    "branch": "studio/mp-aa8be7dea7e417424da80e41"
   },
   "latest_live_diagnostics": {
     "run": 37983251927,

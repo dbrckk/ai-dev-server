@@ -709,7 +709,10 @@ class Model:
             # avoiding needless client churn, this keeps dependency injection
             # deterministic for tests and callers. Fallback providers still
             # receive isolated clients with their own credentials/base URL.
-            api = self.api if provider_index == 0 else API(provider.base, provider.key)
+            # Candidate ordering can change after health filtering, routing
+            # scoring or a cooldown. Reusing self.api for index 0 would send
+            # fallback requests to the original primary provider.
+            api = API(provider.base, provider.key)
             params = {'model': selected_model, 'stream': False,
                 'max_tokens': 16000 if role in ('implementation', 'security_fix', 'release_fix') else 8192,
                 'messages': messages}

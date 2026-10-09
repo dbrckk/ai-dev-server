@@ -1,5 +1,10 @@
 # Production-OS worker
 
+## Diagnosing delayed worker wake without revealing credentials
+
+A successful coding canary with `worker_wake=scheduled_fallback` indicates that the control plane accepted the job but cannot promise an immediate GitHub Actions wake; scheduled polling remains available. The live-diagnostics workflow now performs an optional, authorized **GET-only** `/v1/dashboard/launch-readiness` request after operator authentication and outputs the wake mode plus an allowlisted list of missing **setting names**. It never prints tokens or untrusted error text. The recognized variables are `GITHUB_TOKEN`, `PRODUCTION_OS_ACTIONS_REPOSITORY` and `PRODUCTION_OS_ACTIONS_WORKFLOW`. On Render, the intended non-secret settings are `dbrckk/ai-dev-server` and `production-os-actions-worker.yml`, respectively. GitHub permissions still require a credential provisioned through the service's secret management, not this repository. No scheduling or queue mutation is performed by this diagnostic.
+
+
 ## Canary startup on Render free instances
 
 The `production-os-worker-canary.yml` acceptance workflow now warms the configured Production-OS control plane using a bounded series of **read-only `/readyz` probes** before its one-time authenticated launch. This handles Render cold starts exceeding the operator POST's 30-second request timeout. On a non-transient HTTP failure it fails immediately; if Render never reaches database readiness it stops without creating a project. **The launch POST is never retried after an ambiguous timeout**, avoiding duplicate autonomous work. Real canary #18 (run `37975993803`, 2026-10-09) exposed this: its POST timed out after 30 seconds, while its companion worker later connected and found an empty queue.
@@ -321,7 +326,3 @@ Git-object protocol, restores it on the second session and verifies that
 completed build evidence is not lost or re-executed. This validates the
 cross-session contract in CI but is **not** itself a live, quota-consuming
 two-run Actions test.
-
-## Diagnosing delayed worker wake without revealing credentials
-
-A successful coding canary with `worker_wake=scheduled_fallback` indicates that the control plane accepted the job but cannot promise an immediate GitHub Actions wake; scheduled polling remains available. The live-diagnostics workflow now performs an optional, authorized **GET-only** `/v1/dashboard/launch-readiness` request after operator authentication and outputs the wake mode plus an allowlisted list of missing **setting names**. It never prints tokens or untrusted error text. The recognized variables are `GITHUB_TOKEN`, `PRODUCTION_OS_ACTIONS_REPOSITORY` and `PRODUCTION_OS_ACTIONS_WORKFLOW`. On Render, the intended non-secret settings are `dbrckk/ai-dev-server` and `production-os-actions-worker.yml`, respectively. GitHub permissions still require a credential provisioned through the service's secret management, not this repository. No scheduling or queue mutation is performed by this diagnostic.

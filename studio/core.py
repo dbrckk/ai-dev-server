@@ -738,7 +738,12 @@ class Model:
                 if metrics_path is not None:
                     record_provider_latency(metrics_path, provider.name, role, elapsed)
                 if health_path is not None:
-                    record_provider_failure(health_path, provider.name)
+                    # A 429 has already passed the transport retry budget.
+                    # Cool down this provider immediately for later calls.
+                    record_provider_failure(
+                        health_path, provider.name,
+                        **({'threshold': 1} if isinstance(exc, APIError) and exc.status == 429 else {}),
+                    )
                 if history_path is not None:
                     record_routing_event(
                         history_path,

@@ -14,6 +14,7 @@ import time
 import uuid
 
 from autonomous_project import run_persistent_project
+from goal_loop import DurableCheckpointError
 from capability_adaptation_state import new_state as new_capability_adaptation_state, record_research as record_capability_research, record_synthesis as record_capability_synthesis, record_validation as record_capability_validation, record_candidate_persistence as record_capability_candidate_persistence, record_registry_promotion_persistence as record_capability_registry_promotion_persistence
 from adaptation_research import research_missing_capability
 from repository_research_provider import build_repository_providers
@@ -943,7 +944,7 @@ def run(
             return
         if (checkpoint.get('project_id') != request['id']
                 or checkpoint.get('phase') not in {'published', 'complete'}):
-            raise StudioError('Remote round checkpoint identity or phase invalid')
+            raise DurableCheckpointError('Remote round checkpoint identity or phase invalid')
         # The repository commit and sealed local round checkpoint already
         # exist. Mirror that exact checkpoint before another expensive round.
         # The goal stays active until its separate evidence gate passes.
@@ -952,8 +953,15 @@ def run(
                 remote_github, request['id'],
                 out/'.autonomy/generic-execution-checkpoint.json',
             )
-        except ExecutionCheckpointStoreError as exc:
-            raise StudioError('Remote published round checkpoint failed: '+str(exc)) from None
+        except Exception as exc:
+            # Network/API failures are not necessarily converted into
+            # ExecutionCheckpointStoreError by the GitHub wrapper. Treat all
+            # non-acknowledged durable writes as non-retryable for this run.
+            # Expose only an exception class, not an HTTP/token-bearing body.
+            raise DurableCheckpointError(
+                'Remote execution checkpoint persistence failed: '
+                + type(exc).__name__
+            ) from None
 
     def run_once(*args):
         if remote_github is None:

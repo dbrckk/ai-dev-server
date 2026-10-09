@@ -1,9 +1,9 @@
 {
   "version": 1,
   "updated_at": "2026-10-09",
-  "task": "Fix Production-OS canary cold start after real sequence 18 POST timeout; preserve no-duplicate-launch invariant.",
-  "base_commit": "8023ba24664af065d6b70edcaded9d01dea40a22",
-  "branch": "fix/canary-render-readiness-warmup",
+  "task": "Improve live NVIDIA structured model reliability and fallback efficiency after verified Production-OS canary 19.",
+  "base_commit": "61f335c6f8d88a33f2d6475d0b4be12976e02223",
+  "branch": "fix/nvidia-structured-fallback-routing",
   "completed": [
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",
@@ -86,9 +86,10 @@
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Validate GET-only /readyz warmup before one-time canary POST",
-    "Verify PR CI and merge",
-    "Run sequence 19 live after merge and inspect worker artifact for delivery_status/release_status"
+    "Run existing CI and integration suites for generic_model structured JSON routing and fallback priorities; do not add unit tests",
+    "Verify PR and merge only after successful checks",
+    "Validate live generic inference, not only canary structural proof",
+    "Target GitHub Pull requests:write remains a separate external credential issue"
   ],
   "merged_changes": [
     {
@@ -214,5 +215,15 @@
     "canary_run": 37975993803,
     "worker_run": 37975993742,
     "result": "canary TimeoutError after 30s on launch, worker queue_empty after eventual readiness"
+  },
+  "latest_live_diagnostics": {
+    "run": 37983251927,
+    "inference_ready": true,
+    "operator_access": "ready",
+    "providers": [
+      "ready",
+      "invalid_response",
+      "ready"
+    ]
   }
 }

@@ -28,6 +28,59 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
             result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
         self.assertEqual(result['status'],'complete'); legacy.assert_called_once()
 
+    @patch("multi_engine_orchestrator.run_generic_project")
+    def test_generic_only_forwards_published_round_checkpoint_callback(self, generic):
+        generic.return_value = {
+            "status": "deferred", "report": {}, "next_stage": "generic_continue",
+        }
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            out = root / "out"
+            req = self.request(root)
+            callback_calls = []
+
+            def runner(args, timeout):
+                out.mkdir(parents=True, exist_ok=True)
+                (out / "engine-detection.json").write_text(json.dumps({
+                    "status": "detected", "engine": "generic",
+                }))
+                return subprocess.CompletedProcess(args, 0)
+
+            callback = callback_calls.append
+            response = run_project(
+                str(req), out, str(root / "work"), runner,
+                100, lambda: 0, "a" * 40,
+                checkpoint_observer=callback,
+            )
+            self.assertEqual(response["status"], "deferred")
+            self.assertIs(
+                generic.call_args.kwargs["checkpoint_observer"], callback,
+            )
+            self.assertEqual(callback_calls, [])
+
+    @patch("multi_engine_orchestrator.run_generic_project")
+    def test_generic_without_callback_preserves_original_call(self, generic):
+        generic.return_value = {
+            "status": "deferred", "report": {}, "next_stage": "generic_continue",
+        }
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            out = root / "out"
+            req = self.request(root)
+
+            def runner(args, timeout):
+                out.mkdir(parents=True, exist_ok=True)
+                (out / "engine-detection.json").write_text(json.dumps({
+                    "status": "detected", "engine": "generic",
+                }))
+                return subprocess.CompletedProcess(args, 0)
+
+            run_project(
+                str(req), out, str(root / "work"), runner,
+                100, lambda: 0, "a" * 40,
+            )
+            self.assertNotIn("checkpoint_observer", generic.call_args.kwargs)
+
     def _runner(self,out,fail_stage=None,bad_journey=False,bad_visual=False,release_ready=False,artifact_credentials=True):
         calls=[]
         def runner(args,timeout):

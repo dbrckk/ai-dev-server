@@ -9,10 +9,10 @@ def configure(environ):
         environ["STUDIO_PROVIDERS_JSON"] = json.dumps([
             {"name": "nvidia-lightning-fallback", "base": "https://integrate.api.nvidia.com/v1",
              "key_env": "STUDIO_API_KEY", "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
-             "code_model": "nvidia/nemotron-3.5-lightning-30b-a3b", "priority": 90, "free_preferred": True},
+             "code_model": "nvidia/nemotron-3.5-lightning-30b-a3b", "priority": 70, "free_preferred": True},
             {"name": "poolside-laguna-fallback", "base": "https://integrate.api.nvidia.com/v1",
              "key_env": "STUDIO_API_KEY", "model": "poolside/laguna-xs-2.1",
-             "code_model": "poolside/laguna-xs-2.1", "priority": 80, "free_preferred": True},
+             "code_model": "poolside/laguna-xs-2.1", "priority": 90, "free_preferred": True},
         ], separators=(",", ":"))
         return True
     return False

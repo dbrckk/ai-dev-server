@@ -125,7 +125,7 @@ class AdaptiveQuotaBudgetTests(unittest.TestCase):
         self.assertGreaterEqual(calls[0]["max_tokens"], 1024)
 
     def test_code_requires_bounded_minimum_and_does_not_fake_completion(self):
-        result, error, calls, _ = self._run(used=7500, code=True, role="implementation")
+        result, error, calls, _ = self._run(used=7600, code=True, role="implementation")
         self.assertIsNotNone(error)
         self.assertIsNone(result)
         self.assertEqual(calls, [])

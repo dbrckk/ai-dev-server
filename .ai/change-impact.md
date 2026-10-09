@@ -1,13 +1,17 @@
 # Change impact
 
-Base: 08959dd0422070d6fbec49c359bd36591e507201
-Head: 2e120747e1292bef4ffada6c13da8a3935b33825
+Base: a44c9cbad6997a70488cc435f07307e1983713d4
+Head: 5a861dcf680c8530c3cdd02342a0a3419cc6151f
 
 ## Changed files
-- M AGENTS.md
+- M docs/PRODUCTION_OS_WORKER.md
+- M studio/generic_model.py
+- A tests/test_generic_adaptive_quota_budget.py
 
 ## Affected areas
-- (root)
+- docs
+- studio
+- tests
 
 ## Related test candidates
 - No direct filename-based test match detected.

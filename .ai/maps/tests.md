@@ -174,6 +174,7 @@ test_fleet_operations.py
 test_fleet_supervisor_apply.py
 test_free_capacity_recommendations.py
 test_full_gate_cache.py
+test_generic_adaptive_quota_budget.py
 test_generic_adaptive_review_wiring.py
 test_generic_architecture.py
 test_generic_capability_candidate_persistence.py
@@ -5003,6 +5004,57 @@ second = validation_key(
 def test_native_change_invalidates_key(self)
 ⋮----
 def test_editable_source_change_invalidates_key(self)
+```
+
+## File: test_generic_adaptive_quota_budget.py
+```python
+"""Adaptive generic model token quotas must be enforced on the actual API request."""
+⋮----
+class CaptureAPI
+⋮----
+requests = []
+⋮----
+def __init__(self, base, key)
+⋮----
+def call(self, method, path, params, timeout_seconds=None)
+⋮----
+class AdaptiveQuotaBudgetTests(unittest.TestCase)
+⋮----
+def setUp(self)
+⋮----
+def _quota(self, used)
+⋮----
+def _run(self, *, used=0, quota=10000, code=False, role="product", project_cap=None, reserve=False)
+⋮----
+env = {"STUDIO_PROVIDER_MONTHLY_QUOTA_PATH": str(Path(td) / "quota.json")}
+⋮----
+provider = ProviderSpec(
+⋮----
+reserve_fn = stack.enter_context(patch(
+⋮----
+result = generic_model.ask(
+error = None
+⋮----
+result = None
+error = exc
+⋮----
+def test_partially_used_free_quota_uses_smaller_real_max_tokens(self)
+⋮----
+# 4,000 remaining, 300 reserved for critical work, prompt margin.
+⋮----
+def test_small_project_envelope_reduces_requested_tokens_and_reservation(self)
+⋮----
+prompt_estimate = max(1, (
+prompt_margin = max(128, (prompt_estimate + 4) // 5)
+⋮----
+def test_true_exhaustion_never_invokes_the_provider(self)
+⋮----
+def test_noncritical_reserve_is_preserved_but_review_may_use_it(self)
+⋮----
+# Quota 10,000: remaining 1,400; 300 protected tokens.
+# Normal product output cannot meet the 1,024 minimum; review can.
+⋮----
+def test_code_requires_bounded_minimum_and_does_not_fake_completion(self)
 ```
 
 ## File: test_generic_adaptive_review_wiring.py

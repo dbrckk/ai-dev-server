@@ -8625,13 +8625,31 @@ raw = choice["message"]["content"].strip()
 raw = raw.split("\n", 1)[1].rsplit("```", 1)[0]
 value = json.loads(raw)
 ⋮----
+"""Select a real max_tokens limit that fits both pooled and project quotas.
+
+    Budget checks use a conservative prompt margin and never rely on a
+    smaller *estimate* while asking the provider for an unbounded response.
+    Non-critical work cannot borrow critical pooled reserves.
+    """
+prompt = max(1, int(estimated_prompt_tokens))
+# Char/4 is approximate; keep a conservative allowance for tokenization.
+prompt_allowance = prompt + max(128, (prompt + 4) // 5)
+min_completion = 2048 if max_completion_tokens > 8192 else 1024
+ceiling = int(max_completion_tokens)
+⋮----
+admission = provider_quota_admission(
+available = max(
+ceiling = min(ceiling, available - prompt_allowance)
+⋮----
+remaining = (
+ceiling = min(ceiling, remaining - prompt_allowance)
+⋮----
 providers = load_providers(prefer_free=True)
 ⋮----
 role = role or ("implementation" if code else "product")
 providers = candidates_for(role, providers=providers)
 max_completion_tokens = 16000 if code else 8192
 estimated_prompt_tokens = max(1, (len(system) + len(user) + 3) // 4)
-estimated_call_tokens = estimated_prompt_tokens + max_completion_tokens
 ⋮----
 quota_reserve_ratio = float(os.environ.get("STUDIO_PROVIDER_QUOTA_RESERVE_RATIO", "0.03") or 0.03)
 ⋮----
@@ -8699,7 +8717,14 @@ weights = learned_weights(history, kind="provider", role=role)
 ⋮----
 providers = tuple(provider for provider in providers if provider_eligible(health_path, provider.name))
 providers = budget_eligible(
-providers = tuple(
+ledger_data = (
+call_budgets = {}
+⋮----
+budget = _bounded_model_token_budget(
+⋮----
+providers = tuple(provider for provider in providers if provider.name in call_budgets)
+⋮----
+reason = (
 ⋮----
 provider_scores = {}
 ⋮----
@@ -8748,6 +8773,7 @@ deadline = time.monotonic() + total_timeout
 remaining = deadline - time.monotonic()
 ⋮----
 model = provider.model_for(role)
+⋮----
 api = API(provider.base, provider.key)
 params = {
 ⋮----

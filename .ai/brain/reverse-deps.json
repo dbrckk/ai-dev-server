@@ -2289,9 +2289,10 @@
       "dependents": [
         "studio/generic_project.py",
         "studio/generic_verifier_adaptation.py",
+        "tests/test_generic_adaptive_quota_budget.py",
         "tests/test_generic_model_capacity.py"
       ],
-      "in_degree": 3,
+      "in_degree": 4,
       "out_degree": 21
     },
     "studio/generic_policy.py": {
@@ -4067,9 +4068,10 @@
         "studio/generic_model.py",
         "studio/godot_model.py",
         "tests/test_fleet_capacity.py",
+        "tests/test_generic_adaptive_quota_budget.py",
         "tests/test_provider_monthly_quota.py"
       ],
-      "in_degree": 7,
+      "in_degree": 8,
       "out_degree": 2
     },
     "studio/provider_probe.py": {
@@ -4108,12 +4110,13 @@
         "studio/production_os_live_diagnostics.py",
         "studio/readiness.py",
         "tests/test_fleet_capacity.py",
+        "tests/test_generic_adaptive_quota_budget.py",
         "tests/test_generic_model_capacity.py",
         "tests/test_godot_model.py",
         "tests/test_production_os_live_diagnostics.py",
         "tests/test_provider_router.py"
       ],
-      "in_degree": 15,
+      "in_degree": 16,
       "out_degree": 9
     },
     "studio/provider_runtime_reliability.py": {
@@ -6109,6 +6112,17 @@
       "in_degree": 0,
       "out_degree": 1
     },
+    "tests/test_generic_adaptive_quota_budget.py": {
+      "dependencies": [
+        "studio/generic_model.py",
+        "studio/provider_monthly_quota.py",
+        "studio/provider_router.py",
+        "tests/test_studio.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 4
+    },
     "tests/test_generic_architecture.py": {
       "dependencies": [
         "studio/generic_project.py"
@@ -7718,6 +7732,7 @@
         "tests/test_evolution_isolated_runner.py",
         "tests/test_fleet_operations.py",
         "tests/test_fleet_supervisor_apply.py",
+        "tests/test_generic_adaptive_quota_budget.py",
         "tests/test_generic_model_capacity.py",
         "tests/test_generic_structural_verify.py",
         "tests/test_godot_baseline.py",
@@ -7731,7 +7746,7 @@
         "tests/test_strict_task_claim_store.py",
         "tests/test_task_lease.py"
       ],
-      "in_degree": 103,
+      "in_degree": 104,
       "out_degree": 3
     },
     "tests/test_task_claim_store.py": {

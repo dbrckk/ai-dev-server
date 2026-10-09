@@ -349,6 +349,7 @@
         "tests/test_evolution_isolated_runner.py",
         "tests/test_fleet_operations.py",
         "tests/test_fleet_supervisor_apply.py",
+        "tests/test_generic_adaptive_quota_budget.py",
         "tests/test_generic_model_capacity.py",
         "tests/test_generic_structural_verify.py",
         "tests/test_godot_baseline.py",
@@ -362,7 +363,7 @@
         "tests/test_strict_task_claim_store.py",
         "tests/test_task_lease.py"
       ],
-      "in_degree": 103,
+      "in_degree": 104,
       "out_degree": 3,
       "path": "tests/test_studio.py"
     },
@@ -927,6 +928,40 @@
     },
     {
       "dependencies": [
+        "studio/core.py",
+        "studio/local_capacity.py",
+        "studio/provider_health.py",
+        "studio/provider_metrics.py",
+        "studio/provider_runtime_reliability.py",
+        "studio/routing_audit.py",
+        "studio/unified_routing_score.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "studio/architecture_replacement_synthesis.py",
+        "studio/capacity_status.py",
+        "studio/core.py",
+        "studio/evolution_synthesis.py",
+        "studio/fleet_capacity.py",
+        "studio/generic_model.py",
+        "studio/generic_project.py",
+        "studio/godot_model.py",
+        "studio/production_os_live_diagnostics.py",
+        "studio/readiness.py",
+        "tests/test_fleet_capacity.py",
+        "tests/test_generic_adaptive_quota_budget.py",
+        "tests/test_generic_model_capacity.py",
+        "tests/test_godot_model.py",
+        "tests/test_production_os_live_diagnostics.py",
+        "tests/test_provider_router.py"
+      ],
+      "in_degree": 16,
+      "out_degree": 9,
+      "path": "studio/provider_router.py"
+    },
+    {
+      "dependencies": [
         "studio/agents/adapters.py",
         "studio/agents/codex.py",
         "studio/agents/performance.py",
@@ -961,39 +996,6 @@
     },
     {
       "dependencies": [
-        "studio/core.py",
-        "studio/local_capacity.py",
-        "studio/provider_health.py",
-        "studio/provider_metrics.py",
-        "studio/provider_runtime_reliability.py",
-        "studio/routing_audit.py",
-        "studio/unified_routing_score.py",
-        "tests/test_studio.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "studio/architecture_replacement_synthesis.py",
-        "studio/capacity_status.py",
-        "studio/core.py",
-        "studio/evolution_synthesis.py",
-        "studio/fleet_capacity.py",
-        "studio/generic_model.py",
-        "studio/generic_project.py",
-        "studio/godot_model.py",
-        "studio/production_os_live_diagnostics.py",
-        "studio/readiness.py",
-        "tests/test_fleet_capacity.py",
-        "tests/test_generic_model_capacity.py",
-        "tests/test_godot_model.py",
-        "tests/test_production_os_live_diagnostics.py",
-        "tests/test_provider_router.py"
-      ],
-      "in_degree": 15,
-      "out_degree": 9,
-      "path": "studio/provider_router.py"
-    },
-    {
-      "dependencies": [
         "studio/adaptive_scoring.py",
         "studio/capacity_efficiency.py",
         "studio/capacity_ledger.py",
@@ -1019,9 +1021,10 @@
       "dependents": [
         "studio/generic_project.py",
         "studio/generic_verifier_adaptation.py",
+        "tests/test_generic_adaptive_quota_budget.py",
         "tests/test_generic_model_capacity.py"
       ],
-      "in_degree": 3,
+      "in_degree": 4,
       "out_degree": 21,
       "path": "studio/generic_model.py"
     },
@@ -1636,6 +1639,25 @@
     },
     {
       "dependencies": [
+        "studio/file_lock.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "studio/capacity_status.py",
+        "studio/core.py",
+        "studio/fleet_capacity.py",
+        "studio/generic_model.py",
+        "studio/godot_model.py",
+        "tests/test_fleet_capacity.py",
+        "tests/test_generic_adaptive_quota_budget.py",
+        "tests/test_provider_monthly_quota.py"
+      ],
+      "in_degree": 8,
+      "out_degree": 2,
+      "path": "studio/provider_monthly_quota.py"
+    },
+    {
+      "dependencies": [
         "studio/core.py",
         "studio/file_lock.py"
       ],
@@ -1819,24 +1841,6 @@
       "in_degree": 7,
       "out_degree": 2,
       "path": "studio/architecture_learning.py"
-    },
-    {
-      "dependencies": [
-        "studio/file_lock.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "studio/capacity_status.py",
-        "studio/core.py",
-        "studio/fleet_capacity.py",
-        "studio/generic_model.py",
-        "studio/godot_model.py",
-        "tests/test_fleet_capacity.py",
-        "tests/test_provider_monthly_quota.py"
-      ],
-      "in_degree": 7,
-      "out_degree": 2,
-      "path": "studio/provider_monthly_quota.py"
     },
     {
       "dependencies": [
@@ -2046,8 +2050,8 @@
       "path": "studio/architecture_replacement_persist.py"
     }
   ],
-  "edge_count": 1873,
+  "edge_count": 1878,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 631,
+  "node_count": 632,
   "schema_version": 1
 }

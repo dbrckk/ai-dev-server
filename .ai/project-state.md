@@ -54,21 +54,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T11:22:19Z
+Generated: 2026-10-09T11:56:43Z
 
 ### Git
 - Branch: `main`
-- Head: `2e120747e129`
-- Commit date: 2026-10-09T13:20:24+02:00
-- Commit: docs(agents): adopt pinned 88-rule development standard
-- Tracked files: 861
+- Head: `5a861dcf680c`
+- Commit date: 2026-10-09T13:56:33+02:00
+- Commit: fix(models): bound generic model output tokens by remaining free and project capacity (#272)
+- Tracked files: 862
 
 ### Recently changed files
+- `docs/PRODUCTION_OS_WORKER.md`
+- `studio/generic_model.py`
+- `tests/test_generic_adaptive_quota_budget.py`
 - `AGENTS.md`
 - `control/production-os-worker-canary.json`
 - `control/production-os-resume-proof.json`
-- `tests/test_generic_published_round_checkpoint.py`
-- `tests/test_github_runner_round_persistence.py`
 
 ### Project signals
 - No common build descriptor detected

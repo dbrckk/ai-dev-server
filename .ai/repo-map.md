@@ -579,6 +579,7 @@ tests/
   test_fleet_supervisor_apply.py
   test_free_capacity_recommendations.py
   test_full_gate_cache.py
+  test_generic_adaptive_quota_budget.py
   test_generic_adaptive_review_wiring.py
   test_generic_architecture.py
   test_generic_capability_candidate_persistence.py
@@ -14174,13 +14175,31 @@ raw = choice["message"]["content"].strip()
 raw = raw.split("\n", 1)[1].rsplit("```", 1)[0]
 value = json.loads(raw)
 ⋮----
+"""Select a real max_tokens limit that fits both pooled and project quotas.
+
+    Budget checks use a conservative prompt margin and never rely on a
+    smaller *estimate* while asking the provider for an unbounded response.
+    Non-critical work cannot borrow critical pooled reserves.
+    """
+prompt = max(1, int(estimated_prompt_tokens))
+# Char/4 is approximate; keep a conservative allowance for tokenization.
+prompt_allowance = prompt + max(128, (prompt + 4) // 5)
+min_completion = 2048 if max_completion_tokens > 8192 else 1024
+ceiling = int(max_completion_tokens)
+⋮----
+admission = provider_quota_admission(
+available = max(
+ceiling = min(ceiling, available - prompt_allowance)
+⋮----
+remaining = (
+ceiling = min(ceiling, remaining - prompt_allowance)
+⋮----
 providers = load_providers(prefer_free=True)
 ⋮----
 role = role or ("implementation" if code else "product")
 providers = candidates_for(role, providers=providers)
 max_completion_tokens = 16000 if code else 8192
 estimated_prompt_tokens = max(1, (len(system) + len(user) + 3) // 4)
-estimated_call_tokens = estimated_prompt_tokens + max_completion_tokens
 ⋮----
 quota_reserve_ratio = float(os.environ.get("STUDIO_PROVIDER_QUOTA_RESERVE_RATIO", "0.03") or 0.03)
 ⋮----
@@ -14248,7 +14267,14 @@ weights = learned_weights(history, kind="provider", role=role)
 ⋮----
 providers = tuple(provider for provider in providers if provider_eligible(health_path, provider.name))
 providers = budget_eligible(
-providers = tuple(
+ledger_data = (
+call_budgets = {}
+⋮----
+budget = _bounded_model_token_budget(
+⋮----
+providers = tuple(provider for provider in providers if provider.name in call_budgets)
+⋮----
+reason = (
 ⋮----
 provider_scores = {}
 ⋮----
@@ -14297,6 +14323,7 @@ deadline = time.monotonic() + total_timeout
 remaining = deadline - time.monotonic()
 ⋮----
 model = provider.model_for(role)
+⋮----
 api = API(provider.base, provider.key)
 params = {
 ⋮----
@@ -30076,6 +30103,57 @@ second = validation_key(
 def test_native_change_invalidates_key(self)
 ⋮----
 def test_editable_source_change_invalidates_key(self)
+````
+
+## File: tests/test_generic_adaptive_quota_budget.py
+````python
+"""Adaptive generic model token quotas must be enforced on the actual API request."""
+⋮----
+class CaptureAPI
+⋮----
+requests = []
+⋮----
+def __init__(self, base, key)
+⋮----
+def call(self, method, path, params, timeout_seconds=None)
+⋮----
+class AdaptiveQuotaBudgetTests(unittest.TestCase)
+⋮----
+def setUp(self)
+⋮----
+def _quota(self, used)
+⋮----
+def _run(self, *, used=0, quota=10000, code=False, role="product", project_cap=None, reserve=False)
+⋮----
+env = {"STUDIO_PROVIDER_MONTHLY_QUOTA_PATH": str(Path(td) / "quota.json")}
+⋮----
+provider = ProviderSpec(
+⋮----
+reserve_fn = stack.enter_context(patch(
+⋮----
+result = generic_model.ask(
+error = None
+⋮----
+result = None
+error = exc
+⋮----
+def test_partially_used_free_quota_uses_smaller_real_max_tokens(self)
+⋮----
+# 4,000 remaining, 300 reserved for critical work, prompt margin.
+⋮----
+def test_small_project_envelope_reduces_requested_tokens_and_reservation(self)
+⋮----
+prompt_estimate = max(1, (
+prompt_margin = max(128, (prompt_estimate + 4) // 5)
+⋮----
+def test_true_exhaustion_never_invokes_the_provider(self)
+⋮----
+def test_noncritical_reserve_is_preserved_but_review_may_use_it(self)
+⋮----
+# Quota 10,000: remaining 1,400; 300 protected tokens.
+# Normal product output cannot meet the 1,024 minimum; review can.
+⋮----
+def test_code_requires_bounded_minimum_and_does_not_fake_completion(self)
 ````
 
 ## File: tests/test_generic_adaptive_review_wiring.py

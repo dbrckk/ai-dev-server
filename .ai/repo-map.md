@@ -701,6 +701,7 @@ tests/
   test_project_engine.py
   test_project_memory.py
   test_promoted_capabilities.py
+  test_provider_429_cooldown.py
   test_provider_cost.py
   test_provider_health.py
   test_provider_metrics.py
@@ -11896,7 +11897,11 @@ selected_model = provider.model_for(role, bool(screenshots))
 # avoiding needless client churn, this keeps dependency injection
 # deterministic for tests and callers. Fallback providers still
 # receive isolated clients with their own credentials/base URL.
-api = self.api if provider_index == 0 else API(provider.base, provider.key)
+# Candidate ordering can change after health filtering or scoring:
+# only reuse the startup primary client for the actual original
+# primary provider, never for the first *ranked* fallback.
+# Keeping this client also preserves injected transports in tests.
+api = self.api if provider is self.providers[0] else API(provider.base, provider.key)
 params = {'model': selected_model, 'stream': False,
 ⋮----
 started = time.monotonic()
@@ -11905,6 +11910,9 @@ r = api.call('POST', '/chat/completions', params)
 elapsed = time.monotonic() - started
 ⋮----
 responded = True
+⋮----
+# A 429 has already passed the transport retry budget.
+# Cool down this provider immediately for later calls.
 ⋮----
 last_error = exc
 ⋮----
@@ -14364,6 +14372,12 @@ completion_tokens = int(usage.get("completion_tokens", 0) or 0)
 prompt_tokens = completion_tokens = 0
 ⋮----
 decoded = _decode(response)
+⋮----
+# A provider-supplied 429 has already exhausted API-level
+# retries. Open its transient circuit now rather than
+# spending two more independent model calls to learn it.
+# This is rate limiting, not evidence that monthly quota is
+# permanently exhausted. Other providers remain eligible.
 ⋮----
 last = exc
 ````
@@ -34407,6 +34421,39 @@ def test_missing_provider_implementation_fails_closed(self)
 def test_symlink_provider_implementation_is_rejected(self)
 ⋮----
 outside=root/"outside.py"; outside.write_text("def provide(): return True\n")
+````
+
+## File: tests/test_provider_429_cooldown.py
+````python
+"""A 429 should open the transient provider circuit after HTTP transport retries."""
+⋮----
+class _ProviderAPI
+⋮----
+calls = []
+bad_status = 429
+⋮----
+def __init__(self, base, key)
+⋮----
+def call(self, method, path, params, timeout_seconds=None)
+⋮----
+def _providers()
+⋮----
+class Provider429CooldownTests(unittest.TestCase)
+⋮----
+def setUp(self)
+⋮----
+def test_generic_model_uses_fallback_and_skips_429_provider_next_call(self)
+⋮----
+path = Path(td) / "health.json"
+⋮----
+def test_generic_server_error_preserves_standard_three_failure_threshold(self)
+⋮----
+def test_flutter_model_provider_cooldown_and_independent_fallback(self)
+⋮----
+model = Model(limit=4)
+result = model._ask("product", "Return JSON", ())
+⋮----
+before = _ProviderAPI.calls.count("https://model.invalid/bad")
 ````
 
 ## File: tests/test_provider_cost.py

@@ -1,13 +1,16 @@
 # Change impact
 
-Base: a632d38f5d7ed611f4c0be6728b2f141f89ebf0e
-Head: e55990d7bf1ab9709046c4e7fe59fdfacd17d98d
+Base: 5edf9c3fc2a97a1d519415909b08bce7586e9f3d
+Head: 9bd235397331a09e5d721528143509f994cf4b9e
 
 ## Changed files
+- M docs/PRODUCTION_OS_WORKER.md
+- M studio/core.py
 - M studio/generic_model.py
-- M tests/test_generic_adaptive_quota_budget.py
+- A tests/test_provider_429_cooldown.py
 
 ## Affected areas
+- docs
 - studio
 - tests
 

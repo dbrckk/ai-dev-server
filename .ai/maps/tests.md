@@ -296,6 +296,7 @@ test_project_engine_generic.py
 test_project_engine.py
 test_project_memory.py
 test_promoted_capabilities.py
+test_provider_429_cooldown.py
 test_provider_cost.py
 test_provider_health.py
 test_provider_metrics.py
@@ -9304,6 +9305,39 @@ def test_missing_provider_implementation_fails_closed(self)
 def test_symlink_provider_implementation_is_rejected(self)
 ⋮----
 outside=root/"outside.py"; outside.write_text("def provide(): return True\n")
+```
+
+## File: test_provider_429_cooldown.py
+```python
+"""A 429 should open the transient provider circuit after HTTP transport retries."""
+⋮----
+class _ProviderAPI
+⋮----
+calls = []
+bad_status = 429
+⋮----
+def __init__(self, base, key)
+⋮----
+def call(self, method, path, params, timeout_seconds=None)
+⋮----
+def _providers()
+⋮----
+class Provider429CooldownTests(unittest.TestCase)
+⋮----
+def setUp(self)
+⋮----
+def test_generic_model_uses_fallback_and_skips_429_provider_next_call(self)
+⋮----
+path = Path(td) / "health.json"
+⋮----
+def test_generic_server_error_preserves_standard_three_failure_threshold(self)
+⋮----
+def test_flutter_model_provider_cooldown_and_independent_fallback(self)
+⋮----
+model = Model(limit=4)
+result = model._ask("product", "Return JSON", ())
+⋮----
+before = _ProviderAPI.calls.count("https://model.invalid/bad")
 ```
 
 ## File: test_provider_cost.py

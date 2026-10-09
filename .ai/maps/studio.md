@@ -6346,7 +6346,11 @@ selected_model = provider.model_for(role, bool(screenshots))
 # avoiding needless client churn, this keeps dependency injection
 # deterministic for tests and callers. Fallback providers still
 # receive isolated clients with their own credentials/base URL.
-api = self.api if provider_index == 0 else API(provider.base, provider.key)
+# Candidate ordering can change after health filtering or scoring:
+# only reuse the startup primary client for the actual original
+# primary provider, never for the first *ranked* fallback.
+# Keeping this client also preserves injected transports in tests.
+api = self.api if provider is self.providers[0] else API(provider.base, provider.key)
 params = {'model': selected_model, 'stream': False,
 ⋮----
 started = time.monotonic()
@@ -6355,6 +6359,9 @@ r = api.call('POST', '/chat/completions', params)
 elapsed = time.monotonic() - started
 ⋮----
 responded = True
+⋮----
+# A 429 has already passed the transport retry budget.
+# Cool down this provider immediately for later calls.
 ⋮----
 last_error = exc
 ⋮----
@@ -8814,6 +8821,12 @@ completion_tokens = int(usage.get("completion_tokens", 0) or 0)
 prompt_tokens = completion_tokens = 0
 ⋮----
 decoded = _decode(response)
+⋮----
+# A provider-supplied 429 has already exhausted API-level
+# retries. Open its transient circuit now rather than
+# spending two more independent model calls to learn it.
+# This is rate limiting, not evidence that monthly quota is
+# permanently exhausted. Other providers remain eligible.
 ⋮----
 last = exc
 ````

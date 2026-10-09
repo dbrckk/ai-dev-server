@@ -235,6 +235,7 @@
         "tests/test_production_os_result_contract.py",
         "tests/test_production_os_worker.py",
         "tests/test_project_context.py",
+        "tests/test_provider_429_cooldown.py",
         "tests/test_release.py",
         "tests/test_release_repair.py",
         "tests/test_repository_branch_identity.py",
@@ -247,7 +248,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 219,
+      "in_degree": 220,
       "out_degree": 17,
       "path": "studio/core.py"
     },
@@ -718,6 +719,55 @@
     },
     {
       "dependencies": [
+        "studio/core.py",
+        "studio/journeys.py"
+      ],
+      "dependents": [
+        "studio/architecture_replacement_synthesis.py",
+        "studio/capability_registry_promotion_persist.py",
+        "studio/core.py",
+        "studio/engine_entry.py",
+        "studio/evolution_research.py",
+        "studio/evolution_synthesis.py",
+        "studio/existing_project.py",
+        "studio/generic_capability_synthesis.py",
+        "studio/generic_model.py",
+        "studio/generic_repository.py",
+        "studio/github_agent_performance_store.py",
+        "studio/github_artifact_cas_audit_store.py",
+        "studio/github_artifact_cas_stats_store.py",
+        "studio/github_contextual_strategy_efficiency_store.py",
+        "studio/github_execution_checkpoint_store.py",
+        "studio/github_full_gate_cache_store.py",
+        "studio/github_goal_store.py",
+        "studio/github_memory_store.py",
+        "studio/github_phase_cost_baseline_store.py",
+        "studio/github_provider_health_store.py",
+        "studio/github_provider_metrics_store.py",
+        "studio/github_quick_gate_cache_store.py",
+        "studio/github_routing_history_store.py",
+        "studio/github_strategy_efficiency_store.py",
+        "studio/github_verification_cost_store.py",
+        "studio/godot_model.py",
+        "studio/portfolio_scan.py",
+        "studio/run.py",
+        "tests/test_capability_registry_promotion_persist.py",
+        "tests/test_engine_entry.py",
+        "tests/test_existing_project.py",
+        "tests/test_generic_capability_persist.py",
+        "tests/test_github_goal_store.py",
+        "tests/test_github_memory_store.py",
+        "tests/test_godot_model.py",
+        "tests/test_godot_preview.py",
+        "tests/test_godot_repository_probe.py",
+        "tests/test_provider_429_cooldown.py"
+      ],
+      "in_degree": 38,
+      "out_degree": 2,
+      "path": "tests/test_journeys.py"
+    },
+    {
+      "dependencies": [
         "tests/test_studio.py"
       ],
       "dependents": [
@@ -763,54 +813,6 @@
       "in_degree": 38,
       "out_degree": 1,
       "path": "studio/atomic_file.py"
-    },
-    {
-      "dependencies": [
-        "studio/core.py",
-        "studio/journeys.py"
-      ],
-      "dependents": [
-        "studio/architecture_replacement_synthesis.py",
-        "studio/capability_registry_promotion_persist.py",
-        "studio/core.py",
-        "studio/engine_entry.py",
-        "studio/evolution_research.py",
-        "studio/evolution_synthesis.py",
-        "studio/existing_project.py",
-        "studio/generic_capability_synthesis.py",
-        "studio/generic_model.py",
-        "studio/generic_repository.py",
-        "studio/github_agent_performance_store.py",
-        "studio/github_artifact_cas_audit_store.py",
-        "studio/github_artifact_cas_stats_store.py",
-        "studio/github_contextual_strategy_efficiency_store.py",
-        "studio/github_execution_checkpoint_store.py",
-        "studio/github_full_gate_cache_store.py",
-        "studio/github_goal_store.py",
-        "studio/github_memory_store.py",
-        "studio/github_phase_cost_baseline_store.py",
-        "studio/github_provider_health_store.py",
-        "studio/github_provider_metrics_store.py",
-        "studio/github_quick_gate_cache_store.py",
-        "studio/github_routing_history_store.py",
-        "studio/github_strategy_efficiency_store.py",
-        "studio/github_verification_cost_store.py",
-        "studio/godot_model.py",
-        "studio/portfolio_scan.py",
-        "studio/run.py",
-        "tests/test_capability_registry_promotion_persist.py",
-        "tests/test_engine_entry.py",
-        "tests/test_existing_project.py",
-        "tests/test_generic_capability_persist.py",
-        "tests/test_github_goal_store.py",
-        "tests/test_github_memory_store.py",
-        "tests/test_godot_model.py",
-        "tests/test_godot_preview.py",
-        "tests/test_godot_repository_probe.py"
-      ],
-      "in_degree": 37,
-      "out_degree": 2,
-      "path": "tests/test_journeys.py"
     },
     {
       "dependencies": [
@@ -954,11 +956,47 @@
         "tests/test_generic_model_capacity.py",
         "tests/test_godot_model.py",
         "tests/test_production_os_live_diagnostics.py",
+        "tests/test_provider_429_cooldown.py",
         "tests/test_provider_router.py"
       ],
-      "in_degree": 16,
+      "in_degree": 17,
       "out_degree": 9,
       "path": "studio/provider_router.py"
+    },
+    {
+      "dependencies": [
+        "studio/adaptive_scoring.py",
+        "studio/capacity_efficiency.py",
+        "studio/capacity_ledger.py",
+        "studio/capacity_runtime.py",
+        "studio/contextual_routing_memory.py",
+        "studio/contextual_utility.py",
+        "studio/core.py",
+        "studio/local_model_benchmark.py",
+        "studio/local_model_reputation.py",
+        "studio/local_model_specialization.py",
+        "studio/model_portfolio_learning.py",
+        "studio/provider_cost.py",
+        "studio/provider_health.py",
+        "studio/provider_metrics.py",
+        "studio/provider_monthly_quota.py",
+        "studio/provider_router.py",
+        "studio/routing_history.py",
+        "studio/safe_rewrite_learning.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "studio/generic_project.py",
+        "studio/generic_verifier_adaptation.py",
+        "tests/test_generic_adaptive_quota_budget.py",
+        "tests/test_generic_model_capacity.py",
+        "tests/test_provider_429_cooldown.py"
+      ],
+      "in_degree": 5,
+      "out_degree": 21,
+      "path": "studio/generic_model.py"
     },
     {
       "dependencies": [
@@ -993,40 +1031,6 @@
       "in_degree": 11,
       "out_degree": 14,
       "path": "studio/agents/orchestrator.py"
-    },
-    {
-      "dependencies": [
-        "studio/adaptive_scoring.py",
-        "studio/capacity_efficiency.py",
-        "studio/capacity_ledger.py",
-        "studio/capacity_runtime.py",
-        "studio/contextual_routing_memory.py",
-        "studio/contextual_utility.py",
-        "studio/core.py",
-        "studio/local_model_benchmark.py",
-        "studio/local_model_reputation.py",
-        "studio/local_model_specialization.py",
-        "studio/model_portfolio_learning.py",
-        "studio/provider_cost.py",
-        "studio/provider_health.py",
-        "studio/provider_metrics.py",
-        "studio/provider_monthly_quota.py",
-        "studio/provider_router.py",
-        "studio/routing_history.py",
-        "studio/safe_rewrite_learning.py",
-        "tests/test_journeys.py",
-        "tests/test_studio.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "studio/generic_project.py",
-        "studio/generic_verifier_adaptation.py",
-        "tests/test_generic_adaptive_quota_budget.py",
-        "tests/test_generic_model_capacity.py"
-      ],
-      "in_degree": 4,
-      "out_degree": 21,
-      "path": "studio/generic_model.py"
     },
     {
       "dependencies": [
@@ -1300,6 +1304,31 @@
     },
     {
       "dependencies": [
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "studio/capacity_scheduler.py",
+        "studio/core.py",
+        "studio/fault_injection_smoke.py",
+        "studio/generic_model.py",
+        "studio/generic_project.py",
+        "studio/github_provider_health_store.py",
+        "studio/godot_model.py",
+        "studio/provider_router.py",
+        "studio/unified_routing_score.py",
+        "tests/test_github_provider_health_store.py",
+        "tests/test_provider_429_cooldown.py",
+        "tests/test_provider_health.py",
+        "tests/test_provider_scoped_health.py",
+        "tests/test_provider_verified_feedback.py"
+      ],
+      "in_degree": 14,
+      "out_degree": 2,
+      "path": "studio/provider_health.py"
+    },
+    {
+      "dependencies": [
         "studio/atomic_file.py",
         "studio/core.py",
         "studio/file_lock.py",
@@ -1322,30 +1351,6 @@
       "in_degree": 12,
       "out_degree": 4,
       "path": "studio/capacity_ledger.py"
-    },
-    {
-      "dependencies": [
-        "studio/core.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "studio/capacity_scheduler.py",
-        "studio/core.py",
-        "studio/fault_injection_smoke.py",
-        "studio/generic_model.py",
-        "studio/generic_project.py",
-        "studio/github_provider_health_store.py",
-        "studio/godot_model.py",
-        "studio/provider_router.py",
-        "studio/unified_routing_score.py",
-        "tests/test_github_provider_health_store.py",
-        "tests/test_provider_health.py",
-        "tests/test_provider_scoped_health.py",
-        "tests/test_provider_verified_feedback.py"
-      ],
-      "in_degree": 13,
-      "out_degree": 2,
-      "path": "studio/provider_health.py"
     },
     {
       "dependencies": [],
@@ -2050,8 +2055,8 @@
       "path": "studio/architecture_replacement_persist.py"
     }
   ],
-  "edge_count": 1878,
+  "edge_count": 1885,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 632,
+  "node_count": 633,
   "schema_version": 1
 }

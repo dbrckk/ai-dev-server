@@ -54,19 +54,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T11:59:33Z
+Generated: 2026-10-09T16:03:51Z
 
 ### Git
 - Branch: `main`
-- Head: `e55990d7bf1a`
-- Commit date: 2026-10-09T13:59:21+02:00
-- Commit: fix(models): distinguish project envelope exhaustion from provider quota exhaustion (#273)
-- Tracked files: 862
+- Head: `9bd235397331`
+- Commit date: 2026-10-09T18:03:40+02:00
+- Commit: fix(models): fast-circuit HTTP 429 providers and preserve independent fallback (#274)
+- Tracked files: 863
 
 ### Recently changed files
-- `studio/generic_model.py`
-- `tests/test_generic_adaptive_quota_budget.py`
 - `docs/PRODUCTION_OS_WORKER.md`
+- `studio/core.py`
+- `studio/generic_model.py`
+- `tests/test_provider_429_cooldown.py`
+- `tests/test_generic_adaptive_quota_budget.py`
 - `AGENTS.md`
 - `control/production-os-worker-canary.json`
 

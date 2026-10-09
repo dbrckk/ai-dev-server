@@ -1233,5 +1233,98 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertEqual(result["status"], "completed")
 
 
+    def test_long_autonomous_progress_can_complete_beyond_old_eight_cycle_limit(self):
+        client = _FakeClient(sample_job())
+        budgets = []
+
+        def runner(request_path, out, **kwargs):
+            budgets.append(kwargs["budget_seconds"])
+            if len(budgets) <= 12:
+                return {"status": "active", "finished": False, "next_stage": "implementation"}
+            return {"status": "complete", "finished": True}
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client, worker_id="ai-dev-1", output_root=Path(td),
+                run_project=runner, clock=lambda: 10.0,
+            )
+
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(len(budgets), 13)
+        self.assertTrue(all(0 < budget <= 70 * 60 for budget in budgets))
+        self.assertEqual([c[0] for c in client.calls].count("claim"), 1)
+        self.assertNotIn("fail", [c[0] for c in client.calls])
+
+    def test_runtime_budget_fences_every_stage_and_reports_checkpoint_limit(self):
+        client = _FakeClient(sample_job())
+        elapsed = [0.0]
+        budgets = []
+
+        def runner(request_path, out, **kwargs):
+            budgets.append(kwargs["budget_seconds"])
+            elapsed[0] += 100.0
+            return {"status": "active", "finished": False, "next_stage": "preview"}
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client, worker_id="ai-dev-1", output_root=Path(td),
+                run_project=runner, clock=lambda: elapsed[0],
+                max_runtime_seconds=150,
+            )
+            emitted = list(Path(td).rglob("production-os-result.json"))
+            self.assertEqual(len(emitted), 1)
+            envelope = json.loads(emitted[0].read_text(encoding="utf-8"))
+
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(budgets, [120.0, 20.0])
+        self.assertEqual(envelope["status"], "runtime_limit")
+        self.assertEqual([c[0] for c in client.calls].count("fail"), 1)
+        self.assertEqual([c[0] for c in client.calls].count("complete"), 0)
+
+    def test_resource_exhaustion_with_retry_hint_does_not_reexecute_without_quota(self):
+        client = _FakeClient(sample_job())
+        attempts = []
+
+        def runner(*args, **kwargs):
+            attempts.append(True)
+            return {
+                "status": "capacity_exhausted",
+                "finished": False,
+                "next_stage": "retry",
+            }
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client, worker_id="ai-dev-1", output_root=Path(td),
+                run_project=runner, clock=lambda: 10.0,
+                runner_retry_backoff_seconds=0,
+            )
+
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(len(attempts), 1)
+        self.assertEqual([c[0] for c in client.calls].count("fail"), 1)
+        self.assertIn(
+            "capacity_exhausted",
+            next(payload for name, payload, *_ in client.calls if name == "fail")["reason"],
+        )
+
+    def test_invalid_worker_runtime_limit_is_rejected_before_claim(self):
+        for value in (0, float("nan"), 4801, "invalid"):
+            with self.subTest(value=value):
+                client = _FakeClient(sample_job())
+                with tempfile.TemporaryDirectory() as td:
+                    with self.assertRaisesRegex(
+                        ProductionOSWorkerError, "max runtime",
+                    ):
+                        run_once(
+                            client, worker_id="ai-dev-1",
+                            output_root=Path(td),
+                            run_project=lambda *a, **kw: None,
+                            max_runtime_seconds=value,
+                        )
+                self.assertEqual(client.calls, [])
+
+
+
 if __name__ == "__main__":
     unittest.main()

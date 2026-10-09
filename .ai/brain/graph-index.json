@@ -911,9 +911,10 @@
         "tests/test_improvement_dispatch.py",
         "tests/test_improvement_executor.py",
         "tests/test_persistent_improvement_runner.py",
+        "tests/test_production_os_local_e2e.py",
         "tests/test_promoted_capabilities.py"
       ],
-      "in_degree": 24,
+      "in_degree": 25,
       "out_degree": 1,
       "path": "studio/capability_registry.py"
     },
@@ -1132,6 +1133,32 @@
     {
       "dependencies": [],
       "dependents": [
+        "studio/autonomous_project.py",
+        "studio/continuous_improvement.py",
+        "studio/github_goal_store.py",
+        "studio/github_runner.py",
+        "studio/goal_loop.py",
+        "studio/improvement_executor.py",
+        "studio/project_status.py",
+        "tests/test_autonomous_project.py",
+        "tests/test_continuous_improvement.py",
+        "tests/test_github_goal_store.py",
+        "tests/test_github_runner_persistent.py",
+        "tests/test_goal_capability_runtime.py",
+        "tests/test_goal_engine.py",
+        "tests/test_goal_loop.py",
+        "tests/test_improvement_backlog.py",
+        "tests/test_improvement_executor.py",
+        "tests/test_persistent_improvement_runner.py",
+        "tests/test_production_os_local_e2e.py"
+      ],
+      "in_degree": 18,
+      "out_degree": 0,
+      "path": "studio/goal_engine.py"
+    },
+    {
+      "dependencies": [],
+      "dependents": [
         "studio/adaptation.py",
         "studio/autonomous_project.py",
         "studio/capability_memory.py",
@@ -1206,31 +1233,6 @@
       "in_degree": 17,
       "out_degree": 0,
       "path": "studio/file_lock.py"
-    },
-    {
-      "dependencies": [],
-      "dependents": [
-        "studio/autonomous_project.py",
-        "studio/continuous_improvement.py",
-        "studio/github_goal_store.py",
-        "studio/github_runner.py",
-        "studio/goal_loop.py",
-        "studio/improvement_executor.py",
-        "studio/project_status.py",
-        "tests/test_autonomous_project.py",
-        "tests/test_continuous_improvement.py",
-        "tests/test_github_goal_store.py",
-        "tests/test_github_runner_persistent.py",
-        "tests/test_goal_capability_runtime.py",
-        "tests/test_goal_engine.py",
-        "tests/test_goal_loop.py",
-        "tests/test_improvement_backlog.py",
-        "tests/test_improvement_executor.py",
-        "tests/test_persistent_improvement_runner.py"
-      ],
-      "in_degree": 17,
-      "out_degree": 0,
-      "path": "studio/goal_engine.py"
     },
     {
       "dependencies": [
@@ -1527,6 +1529,26 @@
     },
     {
       "dependencies": [
+        "studio/capability_adaptation_state.py",
+        "studio/capability_registry.py",
+        "studio/capability_synthesis.py",
+        "studio/generic_capability_isolated_validation.py",
+        "studio/goal_engine.py",
+        "studio/improvement_backlog.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py"
+      ],
+      "dependents": [
+        "studio/github_runner.py",
+        "tests/test_github_goal_store.py",
+        "tests/test_production_os_local_e2e.py"
+      ],
+      "in_degree": 3,
+      "out_degree": 8,
+      "path": "studio/github_goal_store.py"
+    },
+    {
+      "dependencies": [
         "studio/agents/registry.py",
         "studio/agents/router.py"
       ],
@@ -1657,25 +1679,6 @@
       "in_degree": 2,
       "out_degree": 8,
       "path": "studio/capability_registry_promotion_persist.py"
-    },
-    {
-      "dependencies": [
-        "studio/capability_adaptation_state.py",
-        "studio/capability_registry.py",
-        "studio/capability_synthesis.py",
-        "studio/generic_capability_isolated_validation.py",
-        "studio/goal_engine.py",
-        "studio/improvement_backlog.py",
-        "tests/test_journeys.py",
-        "tests/test_studio.py"
-      ],
-      "dependents": [
-        "studio/github_runner.py",
-        "tests/test_github_goal_store.py"
-      ],
-      "in_degree": 2,
-      "out_degree": 8,
-      "path": "studio/github_goal_store.py"
     },
     {
       "dependencies": [
@@ -1860,6 +1863,22 @@
     {
       "dependencies": [],
       "dependents": [
+        "studio/github_goal_store.py",
+        "studio/github_runner.py",
+        "studio/improvement_executor.py",
+        "tests/test_github_goal_store.py",
+        "tests/test_improvement_backlog.py",
+        "tests/test_improvement_executor.py",
+        "tests/test_persistent_improvement_runner.py",
+        "tests/test_production_os_local_e2e.py"
+      ],
+      "in_degree": 8,
+      "out_degree": 0,
+      "path": "studio/improvement_backlog.py"
+    },
+    {
+      "dependencies": [],
+      "dependents": [
         "studio/contextual_strategy_efficiency.py",
         "studio/generic_project.py",
         "studio/github_contextual_strategy_efficiency_store.py",
@@ -2008,26 +2027,9 @@
       "in_degree": 6,
       "out_degree": 2,
       "path": "studio/project_engine.py"
-    },
-    {
-      "dependencies": [
-        "studio/capability_registry.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "studio/autonomous_project.py",
-        "studio/capability_promotion.py",
-        "studio/capability_registry_promotion_persist.py",
-        "studio/generic_capability_persist.py",
-        "tests/test_asset_artwork_promotion.py",
-        "tests/test_promoted_capabilities.py"
-      ],
-      "in_degree": 6,
-      "out_degree": 2,
-      "path": "studio/promoted_capabilities.py"
     }
   ],
-  "edge_count": 1843,
+  "edge_count": 1848,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 627,
   "schema_version": 1

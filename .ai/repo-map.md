@@ -3189,7 +3189,7 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-  "sequence": 8,
+  "sequence": 9,
   "repository": "dbrckk/repo-standards"
 }
 ````
@@ -33101,7 +33101,7 @@ before = dict(env)
 ````python
 class _ControlPlane
 ⋮----
-def __init__(self)
+def __init__(self, jobs=None)
 ⋮----
 outer = self
 ⋮----
@@ -33152,6 +33152,46 @@ paths = [call["path"] for call in control_plane.calls]
 register = control_plane.calls[0]
 ⋮----
 complete = next(
+⋮----
+def test_two_separate_worker_sessions_restore_verified_partial_progress(self)
+⋮----
+"""A new workflow queue key must not restart an already checkpointed goal."""
+def task_job(key, attempt)
+⋮----
+remote = FakeGitHub()
+projects = []
+builds = []
+restored_attempts = []
+statuses = []
+jobs = [task_job("session-job-01", 1), task_job("session-job-02", 2)]
+⋮----
+request = json.loads(Path(request_path).read_text(encoding="utf-8"))
+project_out = Path(project_out)
+⋮----
+goal_path = project_out / ".autonomy" / "goal.json"
+⋮----
+state = new_goal(
+state = record_cycle(state, evidence={"build": "sha-build-once"})
+⋮----
+# The second GitHub Actions session starts on a fresh disk.
+⋮----
+state = load_goal(goal_path)
+⋮----
+completed = finalize(
+⋮----
+# Distinct local session roots emulate GitHub's ephemeral runners.
+⋮----
+result = main(
+⋮----
+result_files = list(Path(td).rglob("production-os-result.json"))
+⋮----
+results = [
+⋮----
+final_goal = load_goal(
+⋮----
+remote_final = FakeGitHubGoalLoad(remote, projects[0]["id"])
+⋮----
+paths = [c["path"] for c in plane.calls]
 ````
 
 ## File: tests/test_production_os_remote_asset_capability.py

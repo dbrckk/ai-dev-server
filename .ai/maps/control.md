@@ -131,7 +131,7 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-  "sequence": 8,
+  "sequence": 9,
   "repository": "dbrckk/repo-standards"
 }
 ```

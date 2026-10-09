@@ -1,18 +1,18 @@
 # Change impact
 
-Base: 0ee2cfa8fd587baf43de98dc525c1cd94ddaba96
-Head: 90a43464778b5279bab79cccc115a332f4fb2c1f
+Base: 543fc349ef396c47890580d8b8bbbe1d63054bc4
+Head: 5d702c659186dbaf7411ca880e0d86d571ecd3d3
 
 ## Changed files
-- M studio/production_os_worker.py
-- M tests/test_production_os_worker_runtime.py
+- M docs/PRODUCTION_OS_WORKER.md
+- M tests/test_production_os_local_e2e.py
 
 ## Affected areas
-- studio
+- docs
 - tests
 
 ## Related test candidates
-- tests/test_production_os_worker.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

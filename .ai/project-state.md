@@ -54,19 +54,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T03:47:55Z
+Generated: 2026-10-09T04:11:28Z
 
 ### Git
 - Branch: `main`
-- Head: `90a43464778b`
-- Commit date: 2026-10-09T05:47:37+02:00
-- Commit: fix(worker): restore durable checkpoints on workflow retries (#264)
+- Head: `5d702c659186`
+- Commit date: 2026-10-09T06:11:15+02:00
+- Commit: test(worker): verify durable two-session workflow retry over HTTP (#265)
 - Tracked files: 855
 
 ### Recently changed files
+- `docs/PRODUCTION_OS_WORKER.md`
+- `tests/test_production_os_local_e2e.py`
+- `control/production-os-worker-canary.json`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_worker_runtime.py`
-- `control/production-os-worker-canary.json`
 - `tests/test_production_os_worker_cli.py`
 
 ### Project signals

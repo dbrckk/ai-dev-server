@@ -1089,9 +1089,10 @@
         "tests/test_improvement_dispatch.py",
         "tests/test_improvement_executor.py",
         "tests/test_persistent_improvement_runner.py",
+        "tests/test_production_os_local_e2e.py",
         "tests/test_promoted_capabilities.py"
       ],
-      "in_degree": 24,
+      "in_degree": 25,
       "out_degree": 1
     },
     "studio/capability_registry_promotion_persist.py": {
@@ -2529,9 +2530,10 @@
       ],
       "dependents": [
         "studio/github_runner.py",
-        "tests/test_github_goal_store.py"
+        "tests/test_github_goal_store.py",
+        "tests/test_production_os_local_e2e.py"
       ],
-      "in_degree": 2,
+      "in_degree": 3,
       "out_degree": 8
     },
     "studio/github_memory_store.py": {
@@ -2730,9 +2732,10 @@
         "tests/test_goal_loop.py",
         "tests/test_improvement_backlog.py",
         "tests/test_improvement_executor.py",
-        "tests/test_persistent_improvement_runner.py"
+        "tests/test_persistent_improvement_runner.py",
+        "tests/test_production_os_local_e2e.py"
       ],
-      "in_degree": 17,
+      "in_degree": 18,
       "out_degree": 0
     },
     "studio/goal_learning.py": {
@@ -3194,9 +3197,10 @@
         "tests/test_github_goal_store.py",
         "tests/test_improvement_backlog.py",
         "tests/test_improvement_executor.py",
-        "tests/test_persistent_improvement_runner.py"
+        "tests/test_persistent_improvement_runner.py",
+        "tests/test_production_os_local_e2e.py"
       ],
-      "in_degree": 7,
+      "in_degree": 8,
       "out_degree": 0
     },
     "studio/improvement_dispatch.py": {
@@ -6212,8 +6216,10 @@
         "studio/improvement_backlog.py",
         "tests/test_journeys.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "tests/test_production_os_local_e2e.py"
+      ],
+      "in_degree": 1,
       "out_degree": 5
     },
     "tests/test_github_memory_store.py": {
@@ -6978,11 +6984,16 @@
     },
     "tests/test_production_os_local_e2e.py": {
       "dependencies": [
-        "studio/production_os_worker.py"
+        "studio/capability_registry.py",
+        "studio/github_goal_store.py",
+        "studio/goal_engine.py",
+        "studio/improvement_backlog.py",
+        "studio/production_os_worker.py",
+        "tests/test_github_goal_store.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 6
     },
     "tests/test_production_os_remote_asset_capability.py": {
       "dependencies": [

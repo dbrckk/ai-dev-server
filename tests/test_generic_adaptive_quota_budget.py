@@ -113,6 +113,23 @@ class AdaptiveQuotaBudgetTests(unittest.TestCase):
         self.assertIn("No provider remains", str(error))
         self.assertEqual(calls, [])
 
+    def test_exhausted_provider_is_not_misreported_as_project_limit(self):
+        result, error, calls, _ = self._run(
+            used=10000, project_cap=6000,
+        )
+        self.assertIsNone(result)
+        self.assertIn("insufficient pooled token quota", str(error))
+        self.assertNotIn("project_envelope_exhausted", str(error))
+        self.assertEqual(calls, [])
+
+    def test_genuinely_exhausted_project_envelope_has_precise_reason(self):
+        result, error, calls, _ = self._run(
+            used=0, project_cap=500,
+        )
+        self.assertIsNone(result)
+        self.assertIn("project_envelope_exhausted", str(error))
+        self.assertEqual(calls, [])
+
     def test_noncritical_reserve_is_preserved_but_review_may_use_it(self):
         # Quota 10,000: remaining 1,400; 300 protected tokens.
         # Normal product output cannot meet the 1,024 minimum; review can.

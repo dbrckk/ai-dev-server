@@ -1,9 +1,9 @@
 {
   "version": 1,
   "updated_at": "2026-10-09",
-  "task": "Continue Production-OS worker through active checkpoints; verify full production chain",
-  "base_commit": "131f06b304b5a762e57cec1fa8dfb03aa8006e09",
-  "branch": "fix/worker-continue-active",
+  "task": "Qualify the full Production-OS delivery chain after real worker canary 17 and surface GitHub PR HTTP 403 without false delivery claims.",
+  "base_commit": "32c0629f14ba32e24aa1da39fbded1bac24f9839",
+  "branch": "fix/pos-delivery-evidence-review-link",
   "completed": [
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",
@@ -86,8 +86,9 @@
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Bound repository snapshots for finite Production-OS model budgets and retain AGENTS.md in prioritized context",
-    "Verify CI and live canary with committed output; do not conclude fixed from isolated CI"
+    "Surface PR permission block as structured review-blocked evidence with manual compare link",
+    "Preserve changed_files and release_status in Production-OS result",
+    "Run canonical CI and verify credentials/outcome; do not claim release without PR"
   ],
   "merged_changes": [
     {
@@ -207,5 +208,14 @@
     "changed_files": 0,
     "checkpoint_phase": "planned",
     "fix_branch": "fix/generic-context-envelope"
+  },
+  "latest_canary": {
+    "sequence": 17,
+    "worker_run": 37968265692,
+    "canary_run": 37968265772,
+    "result": "succeeded",
+    "commit": "b82a9e275ba487f3176c76dddbdc7da8156f16b5",
+    "file": ".production-os/worker-canary-17.txt",
+    "pr": "API HTTP 403"
   }
 }

@@ -11,6 +11,7 @@ MAX_TOTAL=6_000_000
 class GenericRepository:
     def __init__(self,github,repo:str,project_id:str):
         self.github=github; self.repo=repo; self.project_id=project_id; self.branch="studio/"+project_id
+        self.default_branch=None
 
     def _tree(self,sha:str)->dict:
         tree=self.github.get("/git/trees/"+sha+"?recursive=1")
@@ -76,6 +77,7 @@ class GenericRepository:
         default = metadata.get("default_branch") if isinstance(metadata, dict) else None
         if not isinstance(default, str) or not default:
             raise StudioError("Generic repository default branch missing")
+        self.default_branch=default
 
         pulls = self.github.get("/pulls?state=open&per_page=100")
         if not isinstance(pulls, list):

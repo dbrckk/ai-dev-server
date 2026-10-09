@@ -2,25 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "test: cover fleet visual quality dashboard",
-      "terms": [
-        "cover",
-        "dashboard",
-        "fleet",
-        "quality",
-        "test",
-        "visual"
-      ],
-      "tests": [],
-      "useful": [
-        "studio/fleet_dashboard.py",
-        "studio/orchestrator.py",
-        "tests/test_fleet_dashboard.py",
-        "tests/test_orchestrator.py"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "feat: return visual asset quality to Production OS",
       "terms": [
         "asset",
@@ -1225,6 +1206,31 @@
         "studio/generic_repository.py",
         "studio/github_runner.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "Improve live NVIDIA structured model reliability and fallback efficiency after verified Production-OS canary 19.",
+      "terms": [
+        "19.",
+        "after",
+        "canary",
+        "efficiency",
+        "fallback",
+        "improve",
+        "live",
+        "model",
+        "nvidia",
+        "production-os",
+        "reliability",
+        "structured",
+        "verified"
+      ],
+      "tests": [],
+      "useful": [
+        "studio/generic_model.py",
+        "studio/production_os_provider_config.py",
+        "studio/production_os_worker_canary.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1235,6 +1241,11 @@
       "studio/generic_project.py": 4,
       "studio/generic_repository.py": 4,
       "studio/github_runner.py": 4
+    },
+    "19.": {
+      "studio/generic_model.py": 4,
+      "studio/production_os_provider_config.py": 4,
+      "studio/production_os_worker_canary.py": 4
     },
     "198": {
       "tests/test_production_os_actions_worker_workflow.py": 4
@@ -1332,10 +1343,12 @@
       "tests/test_production_os_worker_runtime.py": 4
     },
     "after": {
-      "studio/generic_model.py": 4,
+      "studio/generic_model.py": 8,
       "studio/generic_project.py": 4,
       "studio/generic_repository.py": 4,
       "studio/github_runner.py": 4,
+      "studio/production_os_provider_config.py": 4,
+      "studio/production_os_worker_canary.py": 4,
       "tests/test_production_os_actions_worker_workflow.py": 4
     },
     "agent": {
@@ -1501,10 +1514,12 @@
       "studio/github_runner.py": 4
     },
     "canary": {
-      "studio/generic_model.py": 4,
+      "studio/generic_model.py": 8,
       "studio/generic_project.py": 4,
       "studio/generic_repository.py": 4,
-      "studio/github_runner.py": 4
+      "studio/github_runner.py": 4,
+      "studio/production_os_provider_config.py": 4,
+      "studio/production_os_worker_canary.py": 4
     },
     "capabilities": {
       "studio/production_os_worker.py": 4,
@@ -1845,6 +1860,11 @@
     "early": {
       "tests/test_production_os_actions_worker_workflow.py": 4
     },
+    "efficiency": {
+      "studio/generic_model.py": 4,
+      "studio/production_os_provider_config.py": 4,
+      "studio/production_os_worker_canary.py": 4
+    },
     "emulator": {
       "studio/core.py": 4,
       "studio/generic_policy.py": 4,
@@ -1900,6 +1920,9 @@
       "studio/github_runner.py": 8
     },
     "fallback": {
+      "studio/generic_model.py": 4,
+      "studio/production_os_provider_config.py": 4,
+      "studio/production_os_worker_canary.py": 4,
       "tests/test_production_os_actions_worker_workflow.py": 4
     },
     "false": {
@@ -2070,6 +2093,11 @@
       "studio/asset_forge_bridge.py": 4,
       "tests/test_asset_forge_bridge.py": 4
     },
+    "improve": {
+      "studio/generic_model.py": 4,
+      "studio/production_os_provider_config.py": 4,
+      "studio/production_os_worker_canary.py": 4
+    },
     "inference": {
       "studio/asset_forge_bridge.py": 12,
       "tests/test_asset_forge_bridge.py": 12
@@ -2123,7 +2151,10 @@
     },
     "live": {
       "scripts/preflight-production-os-worker.py": 4,
+      "studio/generic_model.py": 4,
+      "studio/production_os_provider_config.py": 4,
       "studio/production_os_worker.py": 4,
+      "studio/production_os_worker_canary.py": 4,
       "tests/test_production_os_asset_forge_live_e2e_workflow.py": 4,
       "tests/test_production_os_worker_cli.py": 4,
       "tests/test_production_os_worker_preflight.py": 4,
@@ -2188,6 +2219,11 @@
     "metrics": {
       "studio/github_runner.py": 8
     },
+    "model": {
+      "studio/generic_model.py": 4,
+      "studio/production_os_provider_config.py": 4,
+      "studio/production_os_worker_canary.py": 4
+    },
     "multi-asset": {
       "studio/asset_forge_bridge.py": 4,
       "studio/orchestrator.py": 4,
@@ -2200,6 +2236,11 @@
     },
     "no": {
       "tests/test_production_os_actions_worker_workflow.py": 4
+    },
+    "nvidia": {
+      "studio/generic_model.py": 4,
+      "studio/production_os_provider_config.py": 4,
+      "studio/production_os_worker_canary.py": 4
     },
     "omniroute": {
       "studio/agents/codex.py": 4,
@@ -2387,7 +2428,7 @@
       "studio/autonomous_project.py": 8,
       "studio/capacity_scheduler.py": 4,
       "studio/core.py": 12,
-      "studio/generic_model.py": 16,
+      "studio/generic_model.py": 20,
       "studio/generic_project.py": 16,
       "studio/generic_repository.py": 4,
       "studio/generic_verify.py": 4,
@@ -2399,10 +2440,10 @@
       "studio/multi_engine_orchestrator.py": 4,
       "studio/omniroute_capacity.py": 4,
       "studio/production_os_live_diagnostics.py": 8,
-      "studio/production_os_provider_config.py": 4,
+      "studio/production_os_provider_config.py": 8,
       "studio/production_os_resume_objectives.py": 8,
       "studio/production_os_worker.py": 40,
-      "studio/production_os_worker_canary.py": 4,
+      "studio/production_os_worker_canary.py": 8,
       "tests/test_agent_router.py": 4,
       "tests/test_autonomous_project.py": 8,
       "tests/test_capacity_scheduler_omniroute.py": 4,
@@ -2516,6 +2557,11 @@
     },
     "rejected": {
       "tests/test_production_os_actions_worker_workflow.py": 4
+    },
+    "reliability": {
+      "studio/generic_model.py": 4,
+      "studio/production_os_provider_config.py": 4,
+      "studio/production_os_worker_canary.py": 4
     },
     "rembg": {
       "scripts/preflight-production-os-worker.py": 4,
@@ -2703,9 +2749,12 @@
     },
     "structured": {
       "studio/core.py": 8,
+      "studio/generic_model.py": 4,
       "studio/generic_policy.py": 4,
       "studio/generic_project.py": 4,
       "studio/github_runner.py": 4,
+      "studio/production_os_provider_config.py": 4,
+      "studio/production_os_worker_canary.py": 4,
       "tests/test_browser_validation_contract.py": 4,
       "tests/test_production_os_result_contract.py": 4
     },
@@ -2884,6 +2933,11 @@
       "tests/test_mobile_validation_contract.py": 4,
       "tests/test_production_os_result_contract.py": 8,
       "tests/test_production_os_worker_runtime.py": 4
+    },
+    "verified": {
+      "studio/generic_model.py": 4,
+      "studio/production_os_provider_config.py": 4,
+      "studio/production_os_worker_canary.py": 4
     },
     "verify": {
       "integration_tests/test_production_os_server_integration.py": 4,

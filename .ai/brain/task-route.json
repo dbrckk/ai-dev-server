@@ -4,68 +4,17 @@
     "expand_to": 12,
     "max_files": 3,
     "requested_max_files": 12,
-    "score_margin": 2,
+    "score_margin": 4,
     "tier": "narrow",
-    "top_score": 35
+    "top_score": 33
   },
   "cache": {
-    "fingerprint": "3e754f226e31bec2641a22665cacd49c658c55e90b73b4d6604b8d6d93ef9af3",
+    "fingerprint": "f4db7a3651b159b8c99288411ef7d6e25adb813e96b9d30f3007a068bfdc50b9",
     "hit": false
   },
-  "candidate_count": 107,
+  "candidate_count": 101,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine",
-        "game"
-      ],
-      "path": "tests/test_orchestrator.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 35,
-      "symbols": [
-        "GitHubRunnerTests",
-        "OrchestratorTests",
-        "missing_report",
-        "payload_for",
-        "request",
-        "test_adaptation_without_baseline_has_no_promotable_work_order",
-        "test_adapter_reports_complete_only_after_machine_completion",
-        "test_asset_forge_batch_receipt_marks_regenerated_quality",
-        "test_asset_forge_failure_receipt_marks_low_quality",
-        "test_full_pipeline_reaches_finished",
-        "test_multi_asset_request_uses_transactional_asset_forge_batch",
-        "test_non_main_is_rejected_before_generation",
-        "test_premium_visual_request_prefetches_asset_forge_before_preview",
-        "test_research_failure_prevents_synthesis",
-        "test_scheduler_rewind_can_revisit_release_build_boundedly",
-        "test_stage_return_code_two_is_human_action_not_failure",
-        "test_successful_stage_must_advance",
-        "test_unregistered_stage_research_then_synthesis"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine"
-      ],
-      "path": "studio/multi_engine_orchestrator.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 33,
-      "symbols": [
-        "_detect",
-        "_remaining",
-        "_run_stage",
-        "run_project"
-      ]
-    },
     {
       "learning_score": 0,
       "matched_terms": [
@@ -98,6 +47,52 @@
         "test_raster_quality_policy_can_be_overridden_per_task",
         "test_route_includes_repository_delivery_target",
         "test_routes_premium_visual_task"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine",
+        "game"
+      ],
+      "path": "tests/test_godot_android_stage.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 29,
+      "symbols": [
+        "FakeGitHub",
+        "GodotAndroidStageTests",
+        "exporter",
+        "runtime",
+        "templates",
+        "test_requires_validated_preview_checkpoint",
+        "test_success_advances_only_to_device_qa"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine",
+        "game"
+      ],
+      "path": "tests/test_godot_device_stage.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 29,
+      "symbols": [
+        "FakeGitHub",
+        "GodotDeviceStageTests",
+        "exporter",
+        "runtime",
+        "state",
+        "templates",
+        "test_device_cannot_spoof_journey_or_visual_evidence",
+        "test_matching_local_apk_advances_only_to_journey_qa",
+        "test_missing_local_apk_is_reexported_and_rebound",
+        "test_requires_android_export_checkpoint",
+        "validator"
       ]
     }
   ],

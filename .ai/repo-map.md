@@ -3235,8 +3235,8 @@ initial_prompt: |
 ## File: control/production-os-diagnostics-kick.json
 ````json
 {
-  "sequence": 4,
-  "reason": "Verify current structured model providers while Production-OS generic canary is executing"
+  "sequence": 6,
+  "reason": "Verify operator access after Production-OS commit 2752685 is live on Render"
 }
 ````
 
@@ -3263,7 +3263,7 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-  "sequence": 17,
+  "sequence": 19,
   "repository": "dbrckk/repo-standards"
 }
 ````
@@ -14346,6 +14346,9 @@ model = provider.model_for(role)
 ⋮----
 api = API(provider.base, provider.key)
 params = {
+# Keep real structured calls aligned with live diagnostics: NVIDIA
+# NIM exposes JSON-object completion mode, and a plain completion
+# can otherwise consume quota before _decode rejects free-form text.
 ⋮----
 reservation = None
 reservation_open = False
@@ -21286,6 +21289,19 @@ workflow = payload.get("workflow") if isinstance(payload, dict) else None
 ⋮----
 last_status = str(workflow.get("status") or "unknown").lower()
 ⋮----
+"""Warm the Render service using *only GET* before the one-shot POST.
+
+    A free Render instance may take longer than the 30-second operator POST
+    timeout to start. Never retry an ambiguous mutation response: the
+    dashboard launch is idempotent by request_id, but this probe deliberately
+    uses read-only requests and leaves the actual submission exactly once.
+    """
+deadline = float(clock()) + max(0.0, float(timeout_seconds))
+⋮----
+response = client.get("/readyz")
+⋮----
+remaining = deadline - float(clock())
+⋮----
 result = launch_canary(client, control)
 ⋮----
 outcome = wait_for_workflow(
@@ -21299,6 +21315,8 @@ args = parser.parse_args(argv)
 control = json.loads(args.control.read_text(encoding="utf-8"))
 token = os.environ.get("PRODUCTION_OS_OPERATOR_TOKEN", "").strip()
 base = os.environ.get("PRODUCTION_OS_URL", "").strip()
+⋮----
+client = OperatorClient(base, token)
 ⋮----
 result = run_canary(
 ````

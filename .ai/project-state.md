@@ -62,22 +62,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T18:35:36Z
+Generated: 2026-10-09T20:29:47Z
 
 ### Git
 - Branch: `main`
-- Head: `8ab8232b99c3`
-- Commit date: 2026-10-09T20:35:25+02:00
-- Commit: fix(production-os): expose blocked GitHub PR delivery and file evidence (#278)
+- Head: `8a02665ed7b0`
+- Commit date: 2026-10-09T22:29:18+02:00
+- Commit: fix(models): request NVIDIA JSON and prefer verified default fallback (#280)
 - Tracked files: 863
 
 ### Recently changed files
 - `docs/PRODUCTION_OS_WORKER.md`
-- `studio/generic_project.py`
-- `studio/generic_repository.py`
-- `studio/github_runner.py`
-- `control/production-os-worker-canary.json`
 - `studio/generic_model.py`
+- `studio/production_os_provider_config.py`
+- `control/production-os-diagnostics-kick.json`
+- `control/production-os-worker-canary.json`
+- `studio/production_os_worker_canary.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -113,8 +113,8 @@ request.json
 ## File: production-os-diagnostics-kick.json
 ```json
 {
-  "sequence": 4,
-  "reason": "Verify current structured model providers while Production-OS generic canary is executing"
+  "sequence": 6,
+  "reason": "Verify operator access after Production-OS commit 2752685 is live on Render"
 }
 ```
 
@@ -141,7 +141,7 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-  "sequence": 17,
+  "sequence": 19,
   "repository": "dbrckk/repo-standards"
 }
 ```

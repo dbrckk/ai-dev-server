@@ -3,6 +3,10 @@
 Status: active
 
 ## Working
+
+## Wake diagnostics follow-up (2026-10-09)
+- Worker canary #19 completed successfully but reported `worker_wake=scheduled_fallback`. Branch `feat/diagnose-worker-wake-config` adds a read-only live diagnostic for the allowlisted names of absent immediate-dispatch settings, so Render configuration can be corrected without reading or exposing secrets. Requires CI and live diagnostic after merge.
+
 - **2026-10-09 current:** Render Production-OS commit `2752685` is live, canary #19 succeeded with a real branch commit and accurately reported PR `review_blocked`; an operator diagnostic immediately after the redeploy briefly returned `unavailable`, but live rerun `37983251927` confirmed operator `ready` and inference `ready`. Providers 0 and 2 returned valid JSON, provider 1 repeatedly returned `invalid_response`. Branch `fix/nvidia-structured-fallback-routing` aligns actual NVIDIA calls with the diagnostic's JSON object mode and prioritizes verified default fallback over repeatedly noncompliant one; must pass CI and real verification.
 - **2026-10-09 latest:** live worker/canary #17 (`37968265692`, `37968265772`) succeeded after bounded-context fix #276; artifact `11634630863` shows checkpoint `b82a9e275ba487f3176c76dddbdc7da8156f16b5`, adding `.production-os/worker-canary-17.txt` to a studio branch. GitHub PR creation returned HTTP 403 and the final result incorrectly concealed changed files; work on `fix/pos-delivery-evidence-review-link` now makes review blockage actionable and reports changed-file evidence. Production deployment is NOT proven.
 - A real worker run reached a committed Godot checkpoint but returned `active` with `next_stage=preview`. The worker now continues that same claimed job through bounded runner invocations and only completes the Production-OS task when the Studio result is finished. Exhaustion reports `continuation_limit` explicitly.

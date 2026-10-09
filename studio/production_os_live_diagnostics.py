@@ -45,8 +45,39 @@ def diagnose(*, api_factory=API, providers=None, environ=None):
     if operator:
         result["operator_access"] = "unavailable"
         try:
-            api_factory(env["PRODUCTION_OS_URL"], operator).call("GET", "/v1/dashboard/device-sessions", timeout_seconds=10)
+            operator_client = api_factory(env["PRODUCTION_OS_URL"], operator)
+            operator_client.call("GET", "/v1/dashboard/device-sessions", timeout_seconds=10)
             result["operator_access"] = "ready"
+            if str(env.get("PRODUCTION_OS_DIAGNOSE_WAKE") or "") == "1":
+                # Operator-authorized GET only. Report allowed setting *names*,
+                # never a GitHub credential, token value or remote error body.
+                try:
+                    readiness = operator_client.call(
+                        "GET",
+                        "/v1/dashboard/launch-readiness?repository=dbrckk%2Frepo-standards",
+                        timeout_seconds=10,
+                    )
+                    wake = readiness.get("worker_wake") if isinstance(readiness, dict) else None
+                    allowed = {
+                        "GITHUB_TOKEN", "PRODUCTION_OS_ACTIONS_REPOSITORY",
+                        "PRODUCTION_OS_ACTIONS_WORKFLOW",
+                    }
+                    if isinstance(wake, dict):
+                        result["worker_wake"] = {
+                            "mode": (
+                                str(wake.get("mode"))
+                                if wake.get("mode") in {"immediate", "scheduled_fallback"}
+                                else "unknown"
+                            ),
+                            "missing_configuration": sorted({
+                                name for name in wake.get("missing_configuration", [])
+                                if isinstance(name, str) and name in allowed
+                            }) if isinstance(wake.get("missing_configuration"), list) else [],
+                        }
+                    else:
+                        result["worker_wake"] = {"mode": "unavailable"}
+                except Exception:
+                    result["worker_wake"] = {"mode": "unavailable"}
         except APIError as exc:
             result["operator_http_status"] = int(exc.status)
         except Exception:

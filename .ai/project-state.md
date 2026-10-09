@@ -54,22 +54,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T04:11:28Z
+Generated: 2026-10-09T04:15:28Z
 
 ### Git
 - Branch: `main`
-- Head: `5d702c659186`
-- Commit date: 2026-10-09T06:11:15+02:00
-- Commit: test(worker): verify durable two-session workflow retry over HTTP (#265)
-- Tracked files: 855
+- Head: `494abfa03d54`
+- Commit date: 2026-10-09T06:15:02+02:00
+- Commit: test(worker): prove GitHub branch recovery across two real Actions runner jobs (#266)
+- Tracked files: 858
 
 ### Recently changed files
+- `.github/workflows/production-os-live-resume-proof.yml`
+- `control/production-os-resume-proof.json`
+- `scripts/production-os-live-resume-proof.py`
 - `docs/PRODUCTION_OS_WORKER.md`
 - `tests/test_production_os_local_e2e.py`
 - `control/production-os-worker-canary.json`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_worker_runtime.py`
-- `tests/test_production_os_worker_cli.py`
 
 ### Project signals
 - No common build descriptor detected

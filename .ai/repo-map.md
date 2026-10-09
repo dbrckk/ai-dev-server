@@ -56,6 +56,7 @@ The content is organized as follows:
     production-os-actions-worker.yml
     production-os-asset-forge-e2e.yml
     production-os-live-diagnostics.yml
+    production-os-live-resume-proof.yml
     production-os-objective-recovery.yml
     production-os-worker-canary.yml
     production-os-worker-integration.yml
@@ -75,6 +76,7 @@ control/
     jumpy.json
   ci.json
   production-os-diagnostics-kick.json
+  production-os-resume-proof.json
   production-os-resume.json
   production-os-worker-canary.json
   production-os-worker-kick.json
@@ -108,6 +110,7 @@ scripts/
   jumpy-studio-cycle-v8.sh
   jumpy-studio-cycle.sh
   preflight-production-os-worker.py
+  production-os-live-resume-proof.py
   provider-status.sh
   restart-all.sh
   setup-serena-codex.sh
@@ -2547,6 +2550,63 @@ jobs:
         run: python studio/production_os_live_diagnostics.py
 ````
 
+## File: .github/workflows/production-os-live-resume-proof.yml
+````yaml
+name: Production-OS Live Two-Session Resume Proof
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'control/production-os-resume-proof.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: production-os-live-resume-proof
+  cancel-in-progress: false
+
+jobs:
+  first-session:
+    name: Save verified progress (runner 1)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      STUDIO_GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT || github.token }}
+    steps:
+      - name: Checkout trusted code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Persist a partial sealed goal and execution checkpoint
+        run: python scripts/production-os-live-resume-proof.py --phase checkpoint
+
+  second-session:
+    name: Recover and finish (runner 2)
+    needs: first-session
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      STUDIO_GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT || github.token }}
+    steps:
+      - name: Checkout trusted code on a fresh runner
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Restore remote checkpoint without rebuilding previous work
+        run: python scripts/production-os-live-resume-proof.py --phase resume
+````
+
 ## File: .github/workflows/production-os-objective-recovery.yml
 ````yaml
 name: Production-OS Objective Recovery
@@ -3172,6 +3232,15 @@ initial_prompt: |
 {
   "sequence": 4,
   "reason": "Verify current structured model providers while Production-OS generic canary is executing"
+}
+````
+
+## File: control/production-os-resume-proof.json
+````json
+{
+  "schema_version": "production-os/resume-proof-trigger/v1",
+  "sequence": 1,
+  "description": "Opt-in two-run remote autonomy checkpoint recovery proof"
 }
 ````
 
@@ -5390,6 +5459,55 @@ poll_interval = str(environ.get("PRODUCTION_OS_POLL_INTERVAL") or "10").strip()
 output_root = str(
 ⋮----
 def main() -> int
+````
+
+## File: scripts/production-os-live-resume-proof.py
+````python
+"""Two real GitHub Actions jobs proving durable Production-OS goal restoration.
+
+Uses a unique synthetic workflow ID for this Actions run. Does not claim a
+production job, invoke a coding model, or write to the target repo main branch.
+"""
+⋮----
+ROOT = Path(__file__).resolve().parents[1]
+⋮----
+def main(argv=None) -> int
+⋮----
+parser = argparse.ArgumentParser()
+⋮----
+args = parser.parse_args(argv)
+⋮----
+run_id = os.environ.get("GITHUB_RUN_ID", "")
+control_repo = os.environ.get("GITHUB_REPOSITORY", "")
+baseline_sha = os.environ.get("GITHUB_SHA", "")
+⋮----
+digest = hashlib.sha256(("production-os-resume-proof:" + run_id).encode()).hexdigest()
+workflow_id = digest[:32]
+attempt = 1 if args.phase == "checkpoint" else 2
+job = {
+request = build_studio_request(job)
+goal_id = request["id"]
+gh = GitHub(control_repo)
+⋮----
+out = Path(td)
+goal_path = out / ".autonomy/goal.json"
+checkpoint_path = out / ".autonomy/generic-execution-checkpoint.json"
+⋮----
+goal = new_goal(
+goal = record_cycle(goal, evidence={"build": "already-done"})
+⋮----
+checkpoint = advance(
+⋮----
+result = {
+⋮----
+goal = load_goal(goal_path)
+checkpoint = load_checkpoint(checkpoint_path)
+⋮----
+goal = finalize(record_cycle(goal, evidence={"tests": "verified"}))
+checkpoint = advance(checkpoint, round_index=2, phase="complete")
+⋮----
+live_goal = load_remote_goal(gh, goal_id)
+live_checkpoint = load_remote_checkpoint(gh, goal_id)
 ````
 
 ## File: scripts/provider-status.sh

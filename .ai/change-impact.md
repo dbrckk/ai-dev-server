@@ -1,15 +1,17 @@
 # Change impact
 
-Base: 543fc349ef396c47890580d8b8bbbe1d63054bc4
-Head: 5d702c659186dbaf7411ca880e0d86d571ecd3d3
+Base: 095ac360a02ae48a8e6fbf3b5b8e82393f82e8a2
+Head: 494abfa03d549849c747c8e9565bb15d49bc2c93
 
 ## Changed files
-- M docs/PRODUCTION_OS_WORKER.md
-- M tests/test_production_os_local_e2e.py
+- A .github/workflows/production-os-live-resume-proof.yml
+- A control/production-os-resume-proof.json
+- A scripts/production-os-live-resume-proof.py
 
 ## Affected areas
-- docs
-- tests
+- .github
+- control
+- scripts
 
 ## Related test candidates
 - No direct filename-based test match detected.

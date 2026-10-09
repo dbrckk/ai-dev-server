@@ -59,6 +59,7 @@ jumpy-studio-cycle-v7.sh
 jumpy-studio-cycle-v8.sh
 jumpy-studio-cycle.sh
 preflight-production-os-worker.py
+production-os-live-resume-proof.py
 provider-status.sh
 restart-all.sh
 setup-serena-codex.sh
@@ -2100,6 +2101,55 @@ poll_interval = str(environ.get("PRODUCTION_OS_POLL_INTERVAL") or "10").strip()
 output_root = str(
 ⋮----
 def main() -> int
+```
+
+## File: production-os-live-resume-proof.py
+```python
+"""Two real GitHub Actions jobs proving durable Production-OS goal restoration.
+
+Uses a unique synthetic workflow ID for this Actions run. Does not claim a
+production job, invoke a coding model, or write to the target repo main branch.
+"""
+⋮----
+ROOT = Path(__file__).resolve().parents[1]
+⋮----
+def main(argv=None) -> int
+⋮----
+parser = argparse.ArgumentParser()
+⋮----
+args = parser.parse_args(argv)
+⋮----
+run_id = os.environ.get("GITHUB_RUN_ID", "")
+control_repo = os.environ.get("GITHUB_REPOSITORY", "")
+baseline_sha = os.environ.get("GITHUB_SHA", "")
+⋮----
+digest = hashlib.sha256(("production-os-resume-proof:" + run_id).encode()).hexdigest()
+workflow_id = digest[:32]
+attempt = 1 if args.phase == "checkpoint" else 2
+job = {
+request = build_studio_request(job)
+goal_id = request["id"]
+gh = GitHub(control_repo)
+⋮----
+out = Path(td)
+goal_path = out / ".autonomy/goal.json"
+checkpoint_path = out / ".autonomy/generic-execution-checkpoint.json"
+⋮----
+goal = new_goal(
+goal = record_cycle(goal, evidence={"build": "already-done"})
+⋮----
+checkpoint = advance(
+⋮----
+result = {
+⋮----
+goal = load_goal(goal_path)
+checkpoint = load_checkpoint(checkpoint_path)
+⋮----
+goal = finalize(record_cycle(goal, evidence={"tests": "verified"}))
+checkpoint = advance(checkpoint, round_index=2, phase="complete")
+⋮----
+live_goal = load_remote_goal(gh, goal_id)
+live_checkpoint = load_remote_checkpoint(gh, goal_id)
 ```
 
 ## File: provider-status.sh

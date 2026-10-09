@@ -45,6 +45,7 @@ mobile-requests/
   jumpy.json
 ci.json
 production-os-diagnostics-kick.json
+production-os-resume-proof.json
 production-os-resume.json
 production-os-worker-canary.json
 production-os-worker-kick.json
@@ -114,6 +115,15 @@ request.json
 {
   "sequence": 4,
   "reason": "Verify current structured model providers while Production-OS generic canary is executing"
+}
+```
+
+## File: production-os-resume-proof.json
+```json
+{
+  "schema_version": "production-os/resume-proof-trigger/v1",
+  "sequence": 1,
+  "description": "Opt-in two-run remote autonomy checkpoint recovery proof"
 }
 ```
 

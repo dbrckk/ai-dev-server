@@ -14,6 +14,7 @@ from goal_engine import new_goal, record_cycle, finalize, load as load_goal, sav
 from capability_registry import new_registry, save as save_registry
 from improvement_backlog import new_backlog, save as save_backlog
 from test_github_goal_store import FakeGitHub
+from autonomous_project import run_persistent_project
 
 
 class _ControlPlane:
@@ -406,6 +407,82 @@ class ProductionOSLocalE2ETests(unittest.TestCase):
             next(c for c in plane.calls if c["path"] == "/v1/jobs/complete")[
                 "payload"]["key"],
         )
+
+
+    def test_crash_after_remote_cycle_checkpoint_resumes_on_fresh_disk(self):
+        """Remote state survives a crash before normal end-of-run persistence."""
+        remote = FakeGitHub()
+        project_id = "two-session-crash-proof"
+        executions = []
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            first_out = root / "first-runner"
+
+            def step(*args):
+                executions.append("first")
+                return {"status": "failed", "report": {}, "next_stage": "verify"}
+
+            def persist_then_crash(state, result):
+                self.assertEqual(
+                    load_goal(first_out / ".autonomy/goal.json"), state,
+                )
+                persist_local(remote, project_id, first_out)
+                raise RuntimeError("runner unexpectedly terminated")
+
+            with self.assertRaisesRegex(RuntimeError, "runner unexpectedly terminated"):
+                run_persistent_project(
+                    "request.json", first_out, str(root / "work1"),
+                    runner=lambda *args: None, deadline=100, clock=lambda: 0,
+                    goal_id=project_id,
+                    run_once=step, max_cycles=4,
+                    checkpoint_observer=persist_then_crash,
+                )
+
+            remote_partial = FakeGitHubGoalLoad(remote, project_id)
+            self.assertIsNotNone(remote_partial)
+            self.assertEqual(remote_partial["goal"]["attempt"], 1)
+            self.assertEqual(remote_partial["goal"]["status"], "active")
+
+            # GitHub Actions starts a different runner with no local project files.
+            second_out = root / "second-runner"
+            self.assertFalse((second_out / ".autonomy/goal.json").exists())
+            self.assertTrue(restore_local(remote, project_id, second_out))
+            restored = load_goal(second_out / ".autonomy/goal.json")
+            self.assertEqual(restored, remote_partial["goal"])
+
+            def resumed_step(*args):
+                executions.append("resumed")
+                return {
+                    "status": "complete",
+                    "report": {
+                        "completion": {"finished": True},
+                        "release_status": "store_ready",
+                    },
+                    "next_stage": None,
+                }
+
+            result = run_persistent_project(
+                "request.json", second_out, str(root / "work2"),
+                runner=lambda *args: None, deadline=100, clock=lambda: 0,
+                goal_id=project_id,
+                run_once=resumed_step, max_cycles=2,
+                checkpoint_observer=lambda state, value: persist_local(
+                    remote, project_id, second_out,
+                ),
+            )
+            self.assertEqual(result["status"], "complete")
+            self.assertEqual(executions, ["first", "resumed"])
+            self.assertEqual(result["attempt"], 2)
+            # The cycle checkpoint precedes terminal finalization. The native
+            # GitHub runner still flushes the finalized state after return.
+            checkpoint = FakeGitHubGoalLoad(remote, project_id)
+            self.assertEqual(checkpoint["goal"]["status"], "active")
+            self.assertIn("project_completion", checkpoint["goal"]["evidence"])
+            persist_local(remote, project_id, second_out)
+            final = FakeGitHubGoalLoad(remote, project_id)
+            self.assertEqual(final["goal"]["status"], "complete")
+            self.assertEqual(final["goal"]["attempt"], 2)
+
 
 
 if __name__ == "__main__":

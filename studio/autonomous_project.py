@@ -180,6 +180,7 @@ def run_persistent_project(
     max_attempts=20,
     max_cycles=20,
     run_once=None,
+    checkpoint_observer=None,
 ):
     project_out = Path(project_out)
     project_out.mkdir(parents=True, exist_ok=True)
@@ -302,10 +303,16 @@ def run_persistent_project(
         return translated
 
     def cycle_observer(goal_state, result):
-        if not baseline_sha or len(str(baseline_sha)) != 40: return
-        memory = load_memory(memory_path)
-        learned = learn_from_cycle(memory, goal_id, goal_state, result, str(baseline_sha))
-        if learned != memory: save_memory(memory_path, learned)
+        if baseline_sha and len(str(baseline_sha)) == 40:
+            memory = load_memory(memory_path)
+            learned = learn_from_cycle(memory, goal_id, goal_state, result, str(baseline_sha))
+            if learned != memory:
+                save_memory(memory_path, learned)
+        # run_goal has already durably written the integrity-sealed goal at
+        # this point. Persist only complete cycle boundaries: never publish
+        # an unverified/in-progress result as a successful checkpoint.
+        if checkpoint_observer is not None:
+            checkpoint_observer(dict(goal_state), result)
 
     def execute_registered_capability(registry, capability, goal_state):
         return execute_capability(

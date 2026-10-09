@@ -197,10 +197,14 @@ Legacy non-workflow jobs continue to use a job-scoped project ID.
 The short-lived GitHub Actions worker sets `STUDIO_PERSIST_REMOTE=1`. The
 native runner restores the goal, capability registry, improvement backlog and
 generic execution checkpoint from the protected `studio-autonomy-state` GitHub
-branch before doing more work. It persists the updated verified state at the
-end of the native runner invocation. The target-repository work branch and
-the remote autonomy checkpoint are **different** stores and must not be
-confused.
+branch before doing more work. It now also **persists the sealed goal and
+generic execution checkpoint after each completed autonomous goal cycle**,
+immediately after the goal is written locally. A final flush at the end of
+the native invocation persists terminal status, memory, and related metadata.
+Each intermediate checkpoint can truthfully remain `active` even when it
+already contains final evidence, because terminal finalization happens next.
+The target-repository work branch and the remote autonomy checkpoint are
+**different** stores and must not be confused.
 
 One interrupted/retried task is expected to follow this sequence:
 
@@ -222,8 +226,12 @@ limits bound consumption; they do not guarantee that enough inference
 capacity exists to complete a job.
 
 **Limits and failure modes:** Workers cannot recover steps that never reached
-the remote store. An abrupt runner termination during a local cycle may lose
-unpersisted progress, even though previously committed GitHub artifacts remain.
+the remote store. An abrupt runner termination **within** a goal cycle may lose
+work since its last persisted boundary; a crash after a finished cycle should
+preserve its evidence through the new intermediate remote checkpoint.
+Previously committed GitHub artifacts remain independently durable.
+Intermediate checkpoint persistence failures are treated as errors instead
+of silently executing additional cycles with uncommitted state.
 An exhausted token quota is not bypassed. A failed GitHub Actions dispatch
 leaves durable work queued for the scheduled fallback (currently every five
 minutes), and operator pause/drain continues to apply. The immediate wake

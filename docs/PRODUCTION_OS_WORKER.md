@@ -2,6 +2,9 @@
 
 ## Diagnosing delayed worker wake without revealing credentials
 
+On sleeping Render services, the optional diagnostic first waits for `/readyz` through bounded **GET-only** probes (up to 120 seconds) before checking operator access and missing wake settings. Network/gateway errors are retried only for this read-only readiness check. A timeout leaves operator access and worker wake marked unavailable instead of guessing configuration; it never launches a job or edits repositories. This addresses the transient `operator_access=unavailable` seen in live diagnostic run `37989346828` even while model providers were ready.
+
+
 A successful coding canary with `worker_wake=scheduled_fallback` indicates that the control plane accepted the job but cannot promise an immediate GitHub Actions wake; scheduled polling remains available. The live-diagnostics workflow now performs an optional, authorized **GET-only** `/v1/dashboard/launch-readiness` request after operator authentication and outputs the wake mode plus an allowlisted list of missing **setting names**. It never prints tokens or untrusted error text. The recognized variables are `GITHUB_TOKEN`, `PRODUCTION_OS_ACTIONS_REPOSITORY` and `PRODUCTION_OS_ACTIONS_WORKFLOW`. On Render, the intended non-secret settings are `dbrckk/ai-dev-server` and `production-os-actions-worker.yml`, respectively. GitHub permissions still require a credential provisioned through the service's secret management, not this repository. No scheduling or queue mutation is performed by this diagnostic.
 
 

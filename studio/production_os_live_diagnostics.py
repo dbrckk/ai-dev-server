@@ -1,10 +1,37 @@
 """Bounded live inference and operator-access checks; no queue or repository writes."""
 import json
 import os
+import time
 
-from core import API, APIError
+from core import API, APIError, StudioError
 from production_os_provider_config import configure
 from provider_router import load_providers
+
+
+def _warm_operator_connection(client, *, seconds=120, clock=time.monotonic, sleep=time.sleep):
+    """Bounded read-only Render warmup before probing operator credentials.
+
+    Readiness GETs can be retried after ambiguous timeouts; operator POSTs
+    must never be retried. Only transient gateway/readiness failures qualify.
+    """
+    deadline = clock() + seconds
+    while True:
+        remaining = deadline - clock()
+        if remaining <= 0:
+            return False
+        try:
+            result = client.call("GET", "/readyz", timeout_seconds=min(30, remaining))
+            if isinstance(result, dict) and result.get("status") == "ready":
+                return True
+        except APIError as exc:
+            if exc.status not in (502, 503, 504):
+                raise
+        except StudioError as exc:
+            if str(exc) != "API unavailable or timed out":
+                raise
+        if clock() >= deadline:
+            return False
+        sleep(min(5, max(0, deadline - clock())))
 
 
 def diagnose(*, api_factory=API, providers=None, environ=None):
@@ -46,9 +73,13 @@ def diagnose(*, api_factory=API, providers=None, environ=None):
         result["operator_access"] = "unavailable"
         try:
             operator_client = api_factory(env["PRODUCTION_OS_URL"], operator)
-            operator_client.call("GET", "/v1/dashboard/device-sessions", timeout_seconds=10)
-            result["operator_access"] = "ready"
-            if str(env.get("PRODUCTION_OS_DIAGNOSE_WAKE") or "") == "1":
+            diagnose_wake = str(env.get("PRODUCTION_OS_DIAGNOSE_WAKE") or "") == "1"
+            if diagnose_wake and not _warm_operator_connection(operator_client):
+                result["worker_wake"] = {"mode": "unavailable"}
+            else:
+                operator_client.call("GET", "/v1/dashboard/device-sessions", timeout_seconds=(30 if diagnose_wake else 10))
+                result["operator_access"] = "ready"
+            if diagnose_wake and result["operator_access"] == "ready":
                 # Operator-authorized GET only. Report allowed setting *names*,
                 # never a GitHub credential, token value or remote error body.
                 try:

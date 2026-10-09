@@ -3,6 +3,7 @@
 Status: active
 
 ## Working
+- 2026-10-09: live diagnostic `37989346828` returned `inference_ready=true` but `operator_access=unavailable` with wake configuration undetermined, consistent with cold Render startup within the previous 10 s operator read timeout. A GET-only bounded warmup on `fix/diagnostics-render-readiness-warmup` precedes operator and wake checks. Must pass CI and live diagnostic before merging.
 
 ## Wake diagnostics follow-up (2026-10-09)
 - Worker canary #19 completed successfully but reported `worker_wake=scheduled_fallback`. Branch `feat/diagnose-worker-wake-config` adds a read-only live diagnostic for the allowlisted names of absent immediate-dispatch settings, so Render configuration can be corrected without reading or exposing secrets. Requires CI and live diagnostic after merge.

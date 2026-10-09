@@ -557,7 +557,7 @@ def ask(
                 )
                 reservation_open = False
             call_cost = 0.0
-            if provider_cost_path is not None and isinstance(usage, dict):
+            if provider_cost_path is not None:
                 try:
                     call_cost = 0.0 if (provider.unmetered or provider.monthly_token_quota > 0) else estimate_call_cost(
                         prompt_tokens=prompt_tokens,
@@ -568,7 +568,7 @@ def ask(
                 except (TypeError, ValueError):
                     call_cost = 0.0
                 record_provider_cost(provider_cost_path, provider.name, role, call_cost)
-            if quota_path is not None and isinstance(usage, dict):
+            if quota_path is not None:
                 if provider.monthly_token_quota > 0:
                     record_provider_monthly_quota(
                         quota_path,

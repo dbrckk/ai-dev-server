@@ -142,7 +142,7 @@ def _snapshot(root: Path, limit_bytes: int = 420_000) -> dict:
     for p in root.rglob("*"):
         if p.is_file() and not p.is_symlink():
             rel = p.relative_to(root).as_posix()
-            priority = 0 if rel.lower() in {"readme.md","package.json","pyproject.toml","cargo.toml","go.mod","pom.xml"} else 1
+            priority = 0 if rel.lower() in {"agents.md","readme.md","package.json","pyproject.toml","cargo.toml","go.mod","pom.xml"} else 1
             preferred.append((priority, rel, p))
     for _, rel, p in sorted(preferred):
         try:

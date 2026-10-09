@@ -38,7 +38,7 @@ class _ControlPlane:
                     }
                 )
 
-                if self.path == "/v1/workers/register":
+                if self.path in {"/v1/workers/register", "/v1/workers/session"}:
                     body = {"worker": {"worker_id": payload["worker_id"]}}
                     self._send(200, body)
                     return
@@ -398,7 +398,7 @@ class ProductionOSLocalE2ETests(unittest.TestCase):
         paths = [c["path"] for c in plane.calls]
         self.assertEqual(paths.count("/v1/jobs/fail"), 1)
         self.assertEqual(paths.count("/v1/jobs/complete"), 1)
-        self.assertEqual(paths.count("/v1/workers/register"), 2)
+        self.assertEqual(paths.count("/v1/workers/session"), 2)
         self.assertEqual(paths.count("/v1/jobs/claim"), 2)
         self.assertNotEqual(
             next(c for c in plane.calls if c["path"] == "/v1/jobs/fail")[

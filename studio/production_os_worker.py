@@ -457,8 +457,23 @@ def production_capacity_snapshot(
     }
 
 
-def _project_id(job_key: str) -> str:
-    digest = hashlib.sha256(str(job_key).encode("utf-8")).hexdigest()[:24]
+def _project_id(job_key: str, *, repository: str = "",
+                workflow_id: str = "", workflow_task_id: str = "",
+                workflow_attempt: Any = None) -> str:
+    """Use durable task identity when the control plane supplied a workflow attempt.
+
+    Workflow retries enqueue a different job key. Keying autonomous state to
+    that ephemeral key loses the checkpoint saved by the preceding attempt.
+    The workflow/task/repository tuple is stable *only* across retries of
+    the same logical task; distinct tasks and workflow generations stay
+    isolated. Legacy jobs without workflow_attempt keep their former ID.
+    """
+    if (isinstance(workflow_attempt, int) and not isinstance(workflow_attempt, bool)
+            and workflow_attempt > 0 and repository and workflow_id and workflow_task_id):
+        identity = "\\0".join((repository, workflow_id, workflow_task_id))
+    else:
+        identity = str(job_key)
+    digest = hashlib.sha256(identity.encode("utf-8")).hexdigest()[:24]
     return "pos-" + digest
 
 
@@ -769,7 +784,13 @@ def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
         + _asset_forge_guidance(handoff)
     )[:24000]
     request = {
-        "id": _project_id(job_key),
+        "id": _project_id(
+            job_key,
+            repository=repository,
+            workflow_id=workflow_id,
+            workflow_task_id=workflow_task_id,
+            workflow_attempt=payload.get("workflow_attempt"),
+        ),
         "target_repo": repository,
         "app_name": _app_name(repository),
         "brief": brief,

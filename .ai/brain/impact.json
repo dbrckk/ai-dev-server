@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "e55990d7bf1ab9709046c4e7fe59fdfacd17d98d",
-  "head": "9bd235397331a09e5d721528143509f994cf4b9e",
+  "base": "9bd235397331a09e5d721528143509f994cf4b9e",
+  "head": "8ab8232b99c326afe8dde56005462f51ec78435c",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "docs/PRODUCTION_OS_WORKER.md",
+      "path": "control/production-os-worker-canary.json",
       "status": "M"
     },
     {
-      "path": "studio/core.py",
+      "path": "docs/PRODUCTION_OS_WORKER.md",
       "status": "M"
     },
     {
@@ -18,1787 +18,51 @@
       "status": "M"
     },
     {
-      "path": "tests/test_provider_429_cooldown.py",
-      "status": "A"
+      "path": "studio/generic_project.py",
+      "status": "M"
+    },
+    {
+      "path": "studio/generic_repository.py",
+      "status": "M"
+    },
+    {
+      "path": "studio/github_runner.py",
+      "status": "M"
     }
   ],
   "changed_source_files": [
-    "studio/core.py",
-    "studio/generic_model.py",
-    "tests/test_provider_429_cooldown.py"
-  ],
-  "impacted_files": [
-    "integration_tests/test_production_os_server_integration.py",
-    "studio/android_signing.py",
-    "studio/architecture_replacement_executor.py",
-    "studio/architecture_replacement_merge.py",
-    "studio/architecture_replacement_merge_gate.py",
-    "studio/architecture_replacement_persist.py",
-    "studio/architecture_replacement_pipeline.py",
-    "studio/architecture_replacement_postmerge_pipeline.py",
-    "studio/architecture_replacement_pr_package.py",
-    "studio/architecture_replacement_promotion.py",
-    "studio/architecture_replacement_rollback.py",
-    "studio/architecture_replacement_rollback_gate.py",
-    "studio/architecture_replacement_synthesis.py",
-    "studio/architecture_reputation_policy_migration_cli.py",
-    "studio/artifact_cas.py",
-    "studio/artifact_cas_namespace.py",
-    "studio/artifact_cas_promotion.py",
-    "studio/artifact_share_policy.py",
-    "studio/artwork_stage.py",
-    "studio/billing_qa.py",
-    "studio/billing_stage.py",
-    "studio/capability_registry_promotion_persist.py",
-    "studio/capability_stage.py",
-    "studio/ci_diagnostics.py",
-    "studio/ci_provider.py",
-    "studio/ci_runner.py",
-    "studio/core.py",
-    "studio/device_qa.py",
-    "studio/device_stage.py",
-    "studio/durable_state.py",
-    "studio/engine_detect.py",
-    "studio/engine_entry.py",
-    "studio/evolution_automerge.py",
-    "studio/evolution_isolated_runner.py",
-    "studio/evolution_pending.py",
-    "studio/evolution_persist.py",
-    "studio/evolution_promotion.py",
-    "studio/evolution_rollback.py",
-    "studio/evolution_synthesis.py",
-    "studio/fault_injection_smoke.py",
-    "studio/flutter_workspace.py",
-    "studio/full_gate_cache.py",
-    "studio/generic_capability_isolated_validation.py",
-    "studio/generic_capability_persist.py",
-    "studio/generic_capability_synthesis.py",
     "studio/generic_model.py",
     "studio/generic_project.py",
     "studio/generic_repository.py",
+    "studio/github_runner.py"
+  ],
+  "impacted_files": [
+    "studio/generic_model.py",
+    "studio/generic_project.py",
+    "studio/generic_repository.py",
+    "studio/generic_smoke.py",
     "studio/generic_verifier_adaptation.py",
-    "studio/github_full_gate_cache_store.py",
     "studio/github_runner.py",
-    "studio/goal_loop.py",
-    "studio/godot_android_export.py",
-    "studio/godot_android_stage.py",
-    "studio/godot_baseline.py",
-    "studio/godot_device_qa.py",
-    "studio/godot_device_stage.py",
-    "studio/godot_final_review_qa.py",
-    "studio/godot_final_review_stage.py",
-    "studio/godot_model.py",
-    "studio/godot_play_stage.py",
-    "studio/godot_preview.py",
-    "studio/godot_privacy_security_qa.py",
-    "studio/godot_privacy_security_stage.py",
-    "studio/godot_release_artifact.py",
-    "studio/godot_release_artifact_stage.py",
-    "studio/godot_release_qa.py",
-    "studio/godot_release_stage.py",
-    "studio/godot_repository_probe.py",
-    "studio/godot_runtime.py",
-    "studio/godot_runtime_journey_stage.py",
-    "studio/godot_runtime_journeys.py",
-    "studio/godot_session.py",
-    "studio/godot_store_metadata_qa.py",
-    "studio/godot_store_metadata_stage.py",
-    "studio/godot_visual_qa.py",
-    "studio/godot_visual_stage.py",
-    "studio/idempotent_model.py",
-    "studio/immutable_artifact_cache.py",
-    "studio/local_model_benchmark.py",
     "studio/multi_engine_orchestrator.py",
-    "studio/native_qa.py",
-    "studio/native_stage.py",
-    "studio/notification_qa.py",
-    "studio/notification_stage.py",
-    "studio/orchestrator.py",
-    "studio/performance_qa.py",
-    "studio/performance_stage.py",
-    "studio/persistent_quick_gate_cache.py",
-    "studio/platform_view_qa.py",
-    "studio/platform_view_stage.py",
-    "studio/play_publisher.py",
-    "studio/play_stage.py",
-    "studio/portfolio_scan.py",
-    "studio/post_preview.py",
-    "studio/privacy_stage.py",
-    "studio/production_os_live_diagnostics.py",
-    "studio/production_os_resume_objectives.py",
-    "studio/production_os_worker_canary.py",
-    "studio/provider_probe.py",
-    "studio/queue.py",
-    "studio/release.py",
-    "studio/release_candidate_search.py",
-    "studio/release_repair.py",
-    "studio/release_stage_engine.py",
-    "studio/run.py",
-    "studio/runtime_journeys.py",
-    "studio/security_agent.py",
-    "studio/security_stage.py",
-    "studio/smoke.py",
-    "studio/store_stage.py",
-    "studio/strict_task_claim_store.py",
-    "studio/task_claim_store.py",
-    "studio/telemetry.py",
-    "studio/workflow_checkpoint.py",
-    "tests/test_android_signing.py",
-    "tests/test_api_transport_retry.py",
-    "tests/test_artifact_cas.py",
-    "tests/test_artifact_cas_namespace.py",
-    "tests/test_artifact_cas_promotion.py",
-    "tests/test_autonomous_project.py",
-    "tests/test_billing_qa.py",
+    "studio/production_os_worker.py",
     "tests/test_browser_validation_contract.py",
-    "tests/test_ci.py",
-    "tests/test_durable_state.py",
-    "tests/test_engine_entry.py",
-    "tests/test_evolution_rollback.py",
     "tests/test_generic_adaptive_quota_budget.py",
+    "tests/test_generic_architecture.py",
     "tests/test_generic_model_capacity.py",
-    "tests/test_github_full_gate_cache_store.py",
-    "tests/test_godot_android_export.py",
-    "tests/test_godot_android_stage.py",
-    "tests/test_godot_baseline.py",
-    "tests/test_godot_device_qa.py",
-    "tests/test_godot_device_stage.py",
-    "tests/test_godot_final_review_qa.py",
-    "tests/test_godot_model.py",
-    "tests/test_godot_preview.py",
-    "tests/test_godot_privacy_security_qa.py",
-    "tests/test_godot_release_artifact.py",
-    "tests/test_godot_release_artifact_stage.py",
-    "tests/test_godot_repository_probe.py",
-    "tests/test_godot_runtime.py",
-    "tests/test_godot_runtime_journey_stage.py",
-    "tests/test_godot_session.py",
-    "tests/test_godot_store_metadata_qa.py",
-    "tests/test_godot_visual_qa.py",
-    "tests/test_godot_visual_stage.py",
-    "tests/test_immutable_artifact_cache.py",
-    "tests/test_journeys.py",
-    "tests/test_jumpy_v13_migration.py",
-    "tests/test_local_api_security.py",
+    "tests/test_generic_published_checkpoint.py",
+    "tests/test_generic_published_round_checkpoint.py",
+    "tests/test_generic_repository_pull_request.py",
+    "tests/test_generic_worker_canary_resume.py",
+    "tests/test_github_runner_persistent.py",
+    "tests/test_github_runner_round_persistence.py",
+    "tests/test_github_runner_usage.py",
     "tests/test_mobile_validation_contract.py",
-    "tests/test_multi_engine_orchestrator.py",
     "tests/test_orchestrator.py",
-    "tests/test_patch_safety_rebuild.py",
-    "tests/test_play_publisher.py",
-    "tests/test_play_stage.py",
-    "tests/test_production_os_live_diagnostics.py",
     "tests/test_production_os_result_contract.py",
-    "tests/test_production_os_worker.py",
-    "tests/test_project_context.py",
     "tests/test_provider_429_cooldown.py",
-    "tests/test_release_repair.py",
-    "tests/test_repository_branch_identity.py",
-    "tests/test_request_budget.py",
-    "tests/test_request_contract.py",
-    "tests/test_request_priority.py",
-    "tests/test_security_agent.py",
-    "tests/test_stage_registry.py",
-    "tests/test_strict_task_claim_store.py",
-    "tests/test_studio.py",
-    "tests/test_transport.py"
+    "tests/test_repository_branch_identity.py"
   ],
   "impacted_symbols": [
-    {
-      "name": "RealServerWorkerTests",
-      "kind": "class",
-      "file": "integration_tests/test_production_os_server_integration.py",
-      "line": 37
-    },
-    {
-      "name": "test_legacy_recovery_launch_is_idempotent_and_leaves_attempts_unchanged",
-      "kind": "function",
-      "file": "integration_tests/test_production_os_server_integration.py",
-      "line": 38
-    },
-    {
-      "name": "test_operator_recovery_preserves_goal_and_does_not_duplicate_active_generation",
-      "kind": "function",
-      "file": "integration_tests/test_production_os_server_integration.py",
-      "line": 72
-    },
-    {
-      "name": "test_worker_only_session_executes_and_reports_real_workflow",
-      "kind": "function",
-      "file": "integration_tests/test_production_os_server_integration.py",
-      "line": 100
-    },
-    {
-      "name": "test_unreadable_result_is_reported_to_real_server",
-      "kind": "function",
-      "file": "integration_tests/test_production_os_server_integration.py",
-      "line": 103
-    },
-    {
-      "name": "test_actions_preflight_recovers_interrupted_job_before_idle_check",
-      "kind": "function",
-      "file": "integration_tests/test_production_os_server_integration.py",
-      "line": 106
-    },
-    {
-      "name": "test_active_checkpoint_completes_same_real_workflow",
-      "kind": "function",
-      "file": "integration_tests/test_production_os_server_integration.py",
-      "line": 109
-    },
-    {
-      "name": "_exercise",
-      "kind": "function",
-      "file": "integration_tests/test_production_os_server_integration.py",
-      "line": 112
-    },
-    {
-      "name": "runner",
-      "kind": "function",
-      "file": "integration_tests/test_production_os_server_integration.py",
-      "line": 165
-    },
-    {
-      "name": "valid_aab",
-      "kind": "function",
-      "file": "studio/android_signing.py",
-      "line": 26
-    },
-    {
-      "name": "_signature_entry",
-      "kind": "function",
-      "file": "studio/android_signing.py",
-      "line": 37
-    },
-    {
-      "name": "strip_existing_signatures",
-      "kind": "function",
-      "file": "studio/android_signing.py",
-      "line": 45
-    },
-    {
-      "name": "_sign_env",
-      "kind": "function",
-      "file": "studio/android_signing.py",
-      "line": 69
-    },
-    {
-      "name": "signing_credentials",
-      "kind": "function",
-      "file": "studio/android_signing.py",
-      "line": 76
-    },
-    {
-      "name": "sign_aab",
-      "kind": "function",
-      "file": "studio/android_signing.py",
-      "line": 104
-    },
-    {
-      "name": "ReplacementExecutionError",
-      "kind": "class",
-      "file": "studio/architecture_replacement_executor.py",
-      "line": 22
-    },
-    {
-      "name": "_run",
-      "kind": "function",
-      "file": "studio/architecture_replacement_executor.py",
-      "line": 49
-    },
-    {
-      "name": "_sha",
-      "kind": "function",
-      "file": "studio/architecture_replacement_executor.py",
-      "line": 57
-    },
-    {
-      "name": "_safe_path",
-      "kind": "function",
-      "file": "studio/architecture_replacement_executor.py",
-      "line": 62
-    },
-    {
-      "name": "_validate_candidate",
-      "kind": "function",
-      "file": "studio/architecture_replacement_executor.py",
-      "line": 72
-    },
-    {
-      "name": "_materialize",
-      "kind": "function",
-      "file": "studio/architecture_replacement_executor.py",
-      "line": 110
-    },
-    {
-      "name": "_hash_files",
-      "kind": "function",
-      "file": "studio/architecture_replacement_executor.py",
-      "line": 120
-    },
-    {
-      "name": "_commit_candidate",
-      "kind": "function",
-      "file": "studio/architecture_replacement_executor.py",
-      "line": 128
-    },
-    {
-      "name": "_docker_command",
-      "kind": "function",
-      "file": "studio/architecture_replacement_executor.py",
-      "line": 142
-    },
-    {
-      "name": "_commands",
-      "kind": "function",
-      "file": "studio/architecture_replacement_executor.py",
-      "line": 174
-    },
-    {
-      "name": "_validate_tree",
-      "kind": "function",
-      "file": "studio/architecture_replacement_executor.py",
-      "line": 188
-    },
-    {
-      "name": "execute",
-      "kind": "function",
-      "file": "studio/architecture_replacement_executor.py",
-      "line": 204
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/architecture_replacement_executor.py",
-      "line": 273
-    },
-    {
-      "name": "ReplacementMergeError",
-      "kind": "class",
-      "file": "studio/architecture_replacement_merge.py",
-      "line": 18
-    },
-    {
-      "name": "_verify_authorization",
-      "kind": "function",
-      "file": "studio/architecture_replacement_merge.py",
-      "line": 21
-    },
-    {
-      "name": "merge",
-      "kind": "function",
-      "file": "studio/architecture_replacement_merge.py",
-      "line": 32
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/architecture_replacement_merge.py",
-      "line": 96
-    },
-    {
-      "name": "ReplacementMergeGateError",
-      "kind": "class",
-      "file": "studio/architecture_replacement_merge_gate.py",
-      "line": 15
-    },
-    {
-      "name": "_sha",
-      "kind": "function",
-      "file": "studio/architecture_replacement_merge_gate.py",
-      "line": 18
-    },
-    {
-      "name": "build",
-      "kind": "function",
-      "file": "studio/architecture_replacement_merge_gate.py",
-      "line": 23
-    },
-    {
-      "name": "write",
-      "kind": "function",
-      "file": "studio/architecture_replacement_merge_gate.py",
-      "line": 87
-    },
-    {
-      "name": "ReplacementPersistenceError",
-      "kind": "class",
-      "file": "studio/architecture_replacement_persist.py",
-      "line": 19
-    },
-    {
-      "name": "_request",
-      "kind": "function",
-      "file": "studio/architecture_replacement_persist.py",
-      "line": 22
-    },
-    {
-      "name": "_valid_repository",
-      "kind": "function",
-      "file": "studio/architecture_replacement_persist.py",
-      "line": 46
-    },
-    {
-      "name": "_sha",
-      "kind": "function",
-      "file": "studio/architecture_replacement_persist.py",
-      "line": 49
-    },
-    {
-      "name": "_load_candidate",
-      "kind": "function",
-      "file": "studio/architecture_replacement_persist.py",
-      "line": 54
-    },
-    {
-      "name": "_existing_pr",
-      "kind": "function",
-      "file": "studio/architecture_replacement_persist.py",
-      "line": 63
-    },
-    {
-      "name": "persist",
-      "kind": "function",
-      "file": "studio/architecture_replacement_persist.py",
-      "line": 84
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/architecture_replacement_persist.py",
-      "line": 187
-    },
-    {
-      "name": "run",
-      "kind": "function",
-      "file": "studio/architecture_replacement_pipeline.py",
-      "line": 20
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/architecture_replacement_pipeline.py",
-      "line": 47
-    },
-    {
-      "name": "_load",
-      "kind": "function",
-      "file": "studio/architecture_replacement_postmerge_pipeline.py",
-      "line": 23
-    },
-    {
-      "name": "run",
-      "kind": "function",
-      "file": "studio/architecture_replacement_postmerge_pipeline.py",
-      "line": 32
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/architecture_replacement_postmerge_pipeline.py",
-      "line": 96
-    },
-    {
-      "name": "ReplacementPRPackageError",
-      "kind": "class",
-      "file": "studio/architecture_replacement_pr_package.py",
-      "line": 16
-    },
-    {
-      "name": "_sha",
-      "kind": "function",
-      "file": "studio/architecture_replacement_pr_package.py",
-      "line": 19
-    },
-    {
-      "name": "build",
-      "kind": "function",
-      "file": "studio/architecture_replacement_pr_package.py",
-      "line": 24
-    },
-    {
-      "name": "write",
-      "kind": "function",
-      "file": "studio/architecture_replacement_pr_package.py",
-      "line": 95
-    },
-    {
-      "name": "ReplacementPromotionError",
-      "kind": "class",
-      "file": "studio/architecture_replacement_promotion.py",
-      "line": 16
-    },
-    {
-      "name": "_sha",
-      "kind": "function",
-      "file": "studio/architecture_replacement_promotion.py",
-      "line": 19
-    },
-    {
-      "name": "_candidate_digest",
-      "kind": "function",
-      "file": "studio/architecture_replacement_promotion.py",
-      "line": 24
-    },
-    {
-      "name": "review",
-      "kind": "function",
-      "file": "studio/architecture_replacement_promotion.py",
-      "line": 48
-    },
-    {
-      "name": "write",
-      "kind": "function",
-      "file": "studio/architecture_replacement_promotion.py",
-      "line": 127
-    },
-    {
-      "name": "ReplacementRollbackError",
-      "kind": "class",
-      "file": "studio/architecture_replacement_rollback.py",
-      "line": 14
-    },
-    {
-      "name": "_verify",
-      "kind": "function",
-      "file": "studio/architecture_replacement_rollback.py",
-      "line": 17
-    },
-    {
-      "name": "execute",
-      "kind": "function",
-      "file": "studio/architecture_replacement_rollback.py",
-      "line": 26
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/architecture_replacement_rollback.py",
-      "line": 93
-    },
-    {
-      "name": "ReplacementRollbackGateError",
-      "kind": "class",
-      "file": "studio/architecture_replacement_rollback_gate.py",
-      "line": 15
-    },
-    {
-      "name": "_sha",
-      "kind": "function",
-      "file": "studio/architecture_replacement_rollback_gate.py",
-      "line": 18
-    },
-    {
-      "name": "build",
-      "kind": "function",
-      "file": "studio/architecture_replacement_rollback_gate.py",
-      "line": 23
-    },
-    {
-      "name": "write",
-      "kind": "function",
-      "file": "studio/architecture_replacement_rollback_gate.py",
-      "line": 73
-    },
-    {
-      "name": "_baseline_sha",
-      "kind": "function",
-      "file": "studio/architecture_replacement_synthesis.py",
-      "line": 31
-    },
-    {
-      "name": "_collect_context",
-      "kind": "function",
-      "file": "studio/architecture_replacement_synthesis.py",
-      "line": 38
-    },
-    {
-      "name": "_prompt",
-      "kind": "function",
-      "file": "studio/architecture_replacement_synthesis.py",
-      "line": 91
-    },
-    {
-      "name": "_response",
-      "kind": "function",
-      "file": "studio/architecture_replacement_synthesis.py",
-      "line": 121
-    },
-    {
-      "name": "synthesize",
-      "kind": "function",
-      "file": "studio/architecture_replacement_synthesis.py",
-      "line": 152
-    },
-    {
-      "name": "consume",
-      "kind": "function",
-      "file": "studio/architecture_replacement_synthesis.py",
-      "line": 171
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/architecture_replacement_synthesis.py",
-      "line": 181
-    },
-    {
-      "name": "_load",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration_cli.py",
-      "line": 23
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/architecture_reputation_policy_migration_cli.py",
-      "line": 32
-    },
-    {
-      "name": "_root",
-      "kind": "function",
-      "file": "studio/artifact_cas.py",
-      "line": 16
-    },
-    {
-      "name": "_project_id",
-      "kind": "function",
-      "file": "studio/artifact_cas.py",
-      "line": 21
-    },
-    {
-      "name": "_scope_root",
-      "kind": "function",
-      "file": "studio/artifact_cas.py",
-      "line": 26
-    },
-    {
-      "name": "sha256",
-      "kind": "function",
-      "file": "studio/artifact_cas.py",
-      "line": 37
-    },
-    {
-      "name": "stats_digest",
-      "kind": "function",
-      "file": "studio/artifact_cas.py",
-      "line": 41
-    },
-    {
-      "name": "blob_path",
-      "kind": "function",
-      "file": "studio/artifact_cas.py",
-      "line": 48
-    },
-    {
-      "name": "put",
-      "kind": "function",
-      "file": "studio/artifact_cas.py",
-      "line": 59
-    },
-    {
-      "name": "get",
-      "kind": "function",
-      "file": "studio/artifact_cas.py",
-      "line": 107
-    },
-    {
-      "name": "usage",
-      "kind": "function",
-      "file": "studio/artifact_cas.py",
-      "line": 118
-    },
-    {
-      "name": "gc",
-      "kind": "function",
-      "file": "studio/artifact_cas.py",
-      "line": 129
-    },
-    {
-      "name": "project_namespace",
-      "kind": "function",
-      "file": "studio/artifact_cas_namespace.py",
-      "line": 12
-    },
-    {
-      "name": "scoped_digest",
-      "kind": "function",
-      "file": "studio/artifact_cas_namespace.py",
-      "line": 21
-    },
-    {
-      "name": "promote_private",
-      "kind": "function",
-      "file": "studio/artifact_cas_promotion.py",
-      "line": 15
-    },
-    {
-      "name": "validate_shareable_class",
-      "kind": "function",
-      "file": "studio/artifact_share_policy.py",
-      "line": 15
-    },
-    {
-      "name": "approved_classes",
-      "kind": "function",
-      "file": "studio/artifact_share_policy.py",
-      "line": 23
-    },
-    {
-      "name": "validate_shareable_payload",
-      "kind": "function",
-      "file": "studio/artifact_share_policy.py",
-      "line": 39
-    },
-    {
-      "name": "_registry",
-      "kind": "function",
-      "file": "studio/artwork_stage.py",
-      "line": 15
-    },
-    {
-      "name": "advance",
-      "kind": "function",
-      "file": "studio/artwork_stage.py",
-      "line": 20
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/artwork_stage.py",
-      "line": 57
-    },
-    {
-      "name": "_pubspec_dependencies",
-      "kind": "function",
-      "file": "studio/billing_qa.py",
-      "line": 22
-    },
-    {
-      "name": "_source_markers",
-      "kind": "function",
-      "file": "studio/billing_qa.py",
-      "line": 42
-    },
-    {
-      "name": "_apk_hash",
-      "kind": "function",
-      "file": "studio/billing_qa.py",
-      "line": 57
-    },
-    {
-      "name": "validate_sandbox_evidence",
-      "kind": "function",
-      "file": "studio/billing_qa.py",
-      "line": 64
-    },
-    {
-      "name": "validate_billing",
-      "kind": "function",
-      "file": "studio/billing_qa.py",
-      "line": 86
-    },
-    {
-      "name": "advance",
-      "kind": "function",
-      "file": "studio/billing_stage.py",
-      "line": 15
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/billing_stage.py",
-      "line": 45
-    },
-    {
-      "name": "CapabilityRegistryPromotionPersistError",
-      "kind": "class",
-      "file": "studio/capability_registry_promotion_persist.py",
-      "line": 19
-    },
-    {
-      "name": "_prefix",
-      "kind": "function",
-      "file": "studio/capability_registry_promotion_persist.py",
-      "line": 22
-    },
-    {
-      "name": "_repo_owner",
-      "kind": "function",
-      "file": "studio/capability_registry_promotion_persist.py",
-      "line": 27
-    },
-    {
-      "name": "_refs",
-      "kind": "function",
-      "file": "studio/capability_registry_promotion_persist.py",
-      "line": 33
-    },
-    {
-      "name": "_existing_pr",
-      "kind": "function",
-      "file": "studio/capability_registry_promotion_persist.py",
-      "line": 40
-    },
-    {
-      "name": "_load_registry",
-      "kind": "function",
-      "file": "studio/capability_registry_promotion_persist.py",
-      "line": 54
-    },
-    {
-      "name": "_verify_materialized_provider",
-      "kind": "function",
-      "file": "studio/capability_registry_promotion_persist.py",
-      "line": 76
-    },
-    {
-      "name": "persist",
-      "kind": "function",
-      "file": "studio/capability_registry_promotion_persist.py",
-      "line": 107
-    },
-    {
-      "name": "advance",
-      "kind": "function",
-      "file": "studio/capability_stage.py",
-      "line": 14
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/capability_stage.py",
-      "line": 39
-    },
-    {
-      "name": "_NoRedirect",
-      "kind": "class",
-      "file": "studio/ci_diagnostics.py",
-      "line": 25
-    },
-    {
-      "name": "redirect_request",
-      "kind": "function",
-      "file": "studio/ci_diagnostics.py",
-      "line": 26
-    },
-    {
-      "name": "_clean_repo",
-      "kind": "function",
-      "file": "studio/ci_diagnostics.py",
-      "line": 30
-    },
-    {
-      "name": "_clean_sha",
-      "kind": "function",
-      "file": "studio/ci_diagnostics.py",
-      "line": 42
-    },
-    {
-      "name": "_failed_step",
-      "kind": "function",
-      "file": "studio/ci_diagnostics.py",
-      "line": 49
-    },
-    {
-      "name": "_log_excerpt",
-      "kind": "function",
-      "file": "studio/ci_diagnostics.py",
-      "line": 62
-    },
-    {
-      "name": "_fetch_job_log",
-      "kind": "function",
-      "file": "studio/ci_diagnostics.py",
-      "line": 87
-    },
-    {
-      "name": "collect_failed_ci",
-      "kind": "function",
-      "file": "studio/ci_diagnostics.py",
-      "line": 159
-    },
-    {
-      "name": "selected",
-      "kind": "function",
-      "file": "studio/ci_provider.py",
-      "line": 6
-    },
-    {
-      "name": "enabled",
-      "kind": "function",
-      "file": "studio/ci_provider.py",
-      "line": 12
-    },
-    {
-      "name": "bounded_run",
-      "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 23
-    },
-    {
-      "name": "_admission_for_project",
-      "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 52
-    },
-    {
-      "name": "_heartbeat_loop",
-      "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 63
-    },
-    {
-      "name": "save_report",
-      "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 73
-    },
-    {
-      "name": "_run_registered_stages",
-      "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 79
-    },
-    {
-      "name": "_run_project_for_queue",
-      "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 88
-    },
-    {
-      "name": "run_queue",
-      "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 108
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/ci_runner.py",
-      "line": 183
-    },
-    {
-      "name": "StudioError",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 35
-    },
-    {
-      "name": "canonical",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 38
-    },
-    {
-      "name": "request_check",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 41
-    },
-    {
-      "name": "allowed",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 210
-    },
-    {
-      "name": "patch_check",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 224
-    },
-    {
-      "name": "require_clean_patch_workspace",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 244
-    },
-    {
-      "name": "apply_patch",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 249
-    },
-    {
-      "name": "ensure_directory",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 264
-    },
-    {
-      "name": "verdict",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 320
-    },
-    {
-      "name": "APIError",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 328
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 329
-    },
-    {
-      "name": "ProtocolError",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 333
-    },
-    {
-      "name": "NoRedirect",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 336
-    },
-    {
-      "name": "redirect_request",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 337
-    },
-    {
-      "name": "API",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 340
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 341
-    },
-    {
-      "name": "_response",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 359
-    },
-    {
-      "name": "call",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 395
-    },
-    {
-      "name": "Model",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 427
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 428
-    },
-    {
-      "name": "ask",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 454
-    },
-    {
-      "name": "_ask",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 483
-    },
-    {
-      "name": "unique_object",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 829
-    },
-    {
-      "name": "Sandbox",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 909
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 910
-    },
-    {
-      "name": "run",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 913
-    },
-    {
-      "name": "create",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 937
-    },
-    {
-      "name": "quick_dependency_gate",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 945
-    },
-    {
-      "name": "quick_analyze_gate",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 952
-    },
-    {
-      "name": "quick_test_gate",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 959
-    },
-    {
-      "name": "quick_gates",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 967
-    },
-    {
-      "name": "gates",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 981
-    },
-    {
-      "name": "run_command",
-      "kind": "function",
-      "file": "studio/device_qa.py",
-      "line": 20
-    },
-    {
-      "name": "wait_for_boot",
-      "kind": "function",
-      "file": "studio/device_qa.py",
-      "line": 25
-    },
-    {
-      "name": "package_name",
-      "kind": "function",
-      "file": "studio/device_qa.py",
-      "line": 39
-    },
-    {
-      "name": "start_emulator",
-      "kind": "function",
-      "file": "studio/device_qa.py",
-      "line": 57
-    },
-    {
-      "name": "validate_release_on_device",
-      "kind": "function",
-      "file": "studio/device_qa.py",
-      "line": 78
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/device_qa.py",
-      "line": 170
-    },
-    {
-      "name": "advance",
-      "kind": "function",
-      "file": "studio/device_stage.py",
-      "line": 15
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/device_stage.py",
-      "line": 45
-    },
-    {
-      "name": "_checksum",
-      "kind": "function",
-      "file": "studio/durable_state.py",
-      "line": 21
-    },
-    {
-      "name": "_migrate",
-      "kind": "function",
-      "file": "studio/durable_state.py",
-      "line": 26
-    },
-    {
-      "name": "load",
-      "kind": "function",
-      "file": "studio/durable_state.py",
-      "line": 42
-    },
-    {
-      "name": "save",
-      "kind": "function",
-      "file": "studio/durable_state.py",
-      "line": 63
-    },
-    {
-      "name": "load_recovering",
-      "kind": "function",
-      "file": "studio/durable_state.py",
-      "line": 84
-    },
-    {
-      "name": "repair_from_backup",
-      "kind": "function",
-      "file": "studio/durable_state.py",
-      "line": 97
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/engine_detect.py",
-      "line": 13
-    },
-    {
-      "name": "_exact_branch_ref",
-      "kind": "function",
-      "file": "studio/engine_entry.py",
-      "line": 15
-    },
-    {
-      "name": "detect_engine",
-      "kind": "function",
-      "file": "studio/engine_entry.py",
-      "line": 25
-    },
-    {
-      "name": "execute",
-      "kind": "function",
-      "file": "studio/engine_entry.py",
-      "line": 61
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/engine_entry.py",
-      "line": 76
-    },
-    {
-      "name": "AutoMergeError",
-      "kind": "class",
-      "file": "studio/evolution_automerge.py",
-      "line": 20
-    },
-    {
-      "name": "_allowed_paths",
-      "kind": "function",
-      "file": "studio/evolution_automerge.py",
-      "line": 23
-    },
-    {
-      "name": "_trusted_check",
-      "kind": "function",
-      "file": "studio/evolution_automerge.py",
-      "line": 27
-    },
-    {
-      "name": "_proof",
-      "kind": "function",
-      "file": "studio/evolution_automerge.py",
-      "line": 37
-    },
-    {
-      "name": "attempt",
-      "kind": "function",
-      "file": "studio/evolution_automerge.py",
-      "line": 50
-    },
-    {
-      "name": "wait_and_attempt",
-      "kind": "function",
-      "file": "studio/evolution_automerge.py",
-      "line": 82
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/evolution_automerge.py",
-      "line": 92
-    },
-    {
-      "name": "IsolatedRunError",
-      "kind": "class",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 28
-    },
-    {
-      "name": "_run",
-      "kind": "function",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 30
-    },
-    {
-      "name": "_sha",
-      "kind": "function",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 34
-    },
-    {
-      "name": "_test_path",
-      "kind": "function",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 37
-    },
-    {
-      "name": "_materialize_candidate",
-      "kind": "function",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 41
-    },
-    {
-      "name": "_protected_hashes",
-      "kind": "function",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 47
-    },
-    {
-      "name": "_docker_python",
-      "kind": "function",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 54
-    },
-    {
-      "name": "_trusted_flutter_smoke",
-      "kind": "function",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 58
-    },
-    {
-      "name": "_parse_unittest",
-      "kind": "function",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 62
-    },
-    {
-      "name": "_candidate_test_result",
-      "kind": "function",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 70
-    },
-    {
-      "name": "_copy_test_into_baseline",
-      "kind": "function",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 73
-    },
-    {
-      "name": "_commit_candidate",
-      "kind": "function",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 77
-    },
-    {
-      "name": "_is_reversible",
-      "kind": "function",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 82
-    },
-    {
-      "name": "_capability_result",
-      "kind": "function",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 83
-    },
-    {
-      "name": "execute",
-      "kind": "function",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 86
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/evolution_isolated_runner.py",
-      "line": 110
-    },
-    {
-      "name": "PendingError",
-      "kind": "class",
-      "file": "studio/evolution_pending.py",
-      "line": 15
-    },
-    {
-      "name": "_candidate_prs",
-      "kind": "function",
-      "file": "studio/evolution_pending.py",
-      "line": 19
-    },
-    {
-      "name": "check",
-      "kind": "function",
-      "file": "studio/evolution_pending.py",
-      "line": 28
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/evolution_pending.py",
-      "line": 62
-    },
-    {
-      "name": "PersistenceError",
-      "kind": "class",
-      "file": "studio/evolution_persist.py",
-      "line": 18
-    },
-    {
-      "name": "_request",
-      "kind": "function",
-      "file": "studio/evolution_persist.py",
-      "line": 22
-    },
-    {
-      "name": "_branch_prefix",
-      "kind": "function",
-      "file": "studio/evolution_persist.py",
-      "line": 42
-    },
-    {
-      "name": "_branch_name",
-      "kind": "function",
-      "file": "studio/evolution_persist.py",
-      "line": 48
-    },
-    {
-      "name": "_matching_refs",
-      "kind": "function",
-      "file": "studio/evolution_persist.py",
-      "line": 54
-    },
-    {
-      "name": "_existing_pr",
-      "kind": "function",
-      "file": "studio/evolution_persist.py",
-      "line": 64
-    },
-    {
-      "name": "_verify_local_promotion",
-      "kind": "function",
-      "file": "studio/evolution_persist.py",
-      "line": 76
-    },
-    {
-      "name": "persist",
-      "kind": "function",
-      "file": "studio/evolution_persist.py",
-      "line": 105
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/evolution_persist.py",
-      "line": 169
-    },
-    {
-      "name": "PromotionError",
-      "kind": "class",
-      "file": "studio/evolution_promotion.py",
-      "line": 21
-    },
-    {
-      "name": "_sha",
-      "kind": "function",
-      "file": "studio/evolution_promotion.py",
-      "line": 25
-    },
-    {
-      "name": "_candidate_digest",
-      "kind": "function",
-      "file": "studio/evolution_promotion.py",
-      "line": 31
-    },
-    {
-      "name": "_load_registry",
-      "kind": "function",
-      "file": "studio/evolution_promotion.py",
-      "line": 46
-    },
-    {
-      "name": "_atomic_write",
-      "kind": "function",
-      "file": "studio/evolution_promotion.py",
-      "line": 59
-    },
-    {
-      "name": "apply",
-      "kind": "function",
-      "file": "studio/evolution_promotion.py",
-      "line": 67
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/evolution_promotion.py",
-      "line": 155
-    },
-    {
-      "name": "RollbackError",
-      "kind": "class",
-      "file": "studio/evolution_rollback.py",
-      "line": 17
-    },
-    {
-      "name": "_atomic_write",
-      "kind": "function",
-      "file": "studio/evolution_rollback.py",
-      "line": 21
-    },
-    {
-      "name": "_load_json",
-      "kind": "function",
-      "file": "studio/evolution_rollback.py",
-      "line": 29
-    },
-    {
-      "name": "rollback",
-      "kind": "function",
-      "file": "studio/evolution_rollback.py",
-      "line": 39
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/evolution_rollback.py",
-      "line": 101
-    },
-    {
-      "name": "_context",
-      "kind": "function",
-      "file": "studio/evolution_synthesis.py",
-      "line": 17
-    },
-    {
-      "name": "synthesize",
-      "kind": "function",
-      "file": "studio/evolution_synthesis.py",
-      "line": 24
-    },
-    {
-      "name": "consume",
-      "kind": "function",
-      "file": "studio/evolution_synthesis.py",
-      "line": 60
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/evolution_synthesis.py",
-      "line": 62
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/fault_injection_smoke.py",
-      "line": 22
-    },
-    {
-      "name": "FakeGitHub",
-      "kind": "class",
-      "file": "studio/fault_injection_smoke.py",
-      "line": 109
-    },
-    {
-      "name": "get",
-      "kind": "function",
-      "file": "studio/fault_injection_smoke.py",
-      "line": 110
-    },
-    {
-      "name": "snapshot",
-      "kind": "function",
-      "file": "studio/flutter_workspace.py",
-      "line": 17
-    },
-    {
-      "name": "delta",
-      "kind": "function",
-      "file": "studio/flutter_workspace.py",
-      "line": 38
-    },
-    {
-      "name": "restore",
-      "kind": "function",
-      "file": "studio/flutter_workspace.py",
-      "line": 57
-    },
-    {
-      "name": "clean_transients",
-      "kind": "function",
-      "file": "studio/flutter_workspace.py",
-      "line": 72
-    },
-    {
-      "name": "_path",
-      "kind": "function",
-      "file": "studio/full_gate_cache.py",
-      "line": 26
-    },
-    {
-      "name": "_hash_json",
-      "kind": "function",
-      "file": "studio/full_gate_cache.py",
-      "line": 31
-    },
-    {
-      "name": "_native_fingerprint",
-      "kind": "function",
-      "file": "studio/full_gate_cache.py",
-      "line": 35
-    },
-    {
-      "name": "validation_key",
-      "kind": "function",
-      "file": "studio/full_gate_cache.py",
-      "line": 52
-    },
-    {
-      "name": "load",
-      "kind": "function",
-      "file": "studio/full_gate_cache.py",
-      "line": 73
-    },
-    {
-      "name": "save",
-      "kind": "function",
-      "file": "studio/full_gate_cache.py",
-      "line": 98
-    },
-    {
-      "name": "hit",
-      "kind": "function",
-      "file": "studio/full_gate_cache.py",
-      "line": 124
-    },
-    {
-      "name": "record_success",
-      "kind": "function",
-      "file": "studio/full_gate_cache.py",
-      "line": 129
-    },
-    {
-      "name": "IsolatedCapabilityValidationError",
-      "kind": "class",
-      "file": "studio/generic_capability_isolated_validation.py",
-      "line": 23
-    },
-    {
-      "name": "_canon",
-      "kind": "function",
-      "file": "studio/generic_capability_isolated_validation.py",
-      "line": 32
-    },
-    {
-      "name": "_seal",
-      "kind": "function",
-      "file": "studio/generic_capability_isolated_validation.py",
-      "line": 36
-    },
-    {
-      "name": "_call_name",
-      "kind": "function",
-      "file": "studio/generic_capability_isolated_validation.py",
-      "line": 40
-    },
-    {
-      "name": "_static_check",
-      "kind": "function",
-      "file": "studio/generic_capability_isolated_validation.py",
-      "line": 54
-    },
-    {
-      "name": "_docker",
-      "kind": "function",
-      "file": "studio/generic_capability_isolated_validation.py",
-      "line": 74
-    },
-    {
-      "name": "_test_count",
-      "kind": "function",
-      "file": "studio/generic_capability_isolated_validation.py",
-      "line": 89
-    },
-    {
-      "name": "_proof",
-      "kind": "function",
-      "file": "studio/generic_capability_isolated_validation.py",
-      "line": 94
-    },
-    {
-      "name": "validate_in_isolation",
-      "kind": "function",
-      "file": "studio/generic_capability_isolated_validation.py",
-      "line": 100
-    },
-    {
-      "name": "validate_isolated_validation_result",
-      "kind": "function",
-      "file": "studio/generic_capability_isolated_validation.py",
-      "line": 172
-    },
-    {
-      "name": "GenericCapabilityPersistError",
-      "kind": "class",
-      "file": "studio/generic_capability_persist.py",
-      "line": 15
-    },
-    {
-      "name": "_slug",
-      "kind": "function",
-      "file": "studio/generic_capability_persist.py",
-      "line": 17
-    },
-    {
-      "name": "_prefix",
-      "kind": "function",
-      "file": "studio/generic_capability_persist.py",
-      "line": 20
-    },
-    {
-      "name": "_paths",
-      "kind": "function",
-      "file": "studio/generic_capability_persist.py",
-      "line": 24
-    },
-    {
-      "name": "_exact_refs",
-      "kind": "function",
-      "file": "studio/generic_capability_persist.py",
-      "line": 33
-    },
-    {
-      "name": "_existing_pr",
-      "kind": "function",
-      "file": "studio/generic_capability_persist.py",
-      "line": 39
-    },
-    {
-      "name": "persist",
-      "kind": "function",
-      "file": "studio/generic_capability_persist.py",
-      "line": 49
-    },
-    {
-      "name": "_proposal",
-      "kind": "function",
-      "file": "studio/generic_capability_synthesis.py",
-      "line": 28
-    },
-    {
-      "name": "synthesize_from_memory",
-      "kind": "function",
-      "file": "studio/generic_capability_synthesis.py",
-      "line": 58
-    },
     {
       "name": "_decode",
       "kind": "function",
@@ -1821,91 +85,91 @@
       "name": "_snapshot",
       "kind": "function",
       "file": "studio/generic_project.py",
-      "line": 125
+      "line": 127
     },
     {
       "name": "_apply",
       "kind": "function",
       "file": "studio/generic_project.py",
-      "line": 147
+      "line": 160
     },
     {
       "name": "_prepare_architecture",
       "kind": "function",
       "file": "studio/generic_project.py",
-      "line": 170
+      "line": 183
     },
     {
       "name": "_record_architecture",
       "kind": "function",
       "file": "studio/generic_project.py",
-      "line": 203
+      "line": 216
     },
     {
       "name": "_browser_validation_contract",
       "kind": "function",
       "file": "studio/generic_project.py",
-      "line": 222
+      "line": 235
     },
     {
       "name": "_valid_browser_test_url",
       "kind": "function",
       "file": "studio/generic_project.py",
-      "line": 230
+      "line": 243
     },
     {
       "name": "_valid_browser_screenshot",
       "kind": "function",
       "file": "studio/generic_project.py",
-      "line": 244
+      "line": 257
     },
     {
       "name": "_run_browser_validation",
       "kind": "function",
       "file": "studio/generic_project.py",
-      "line": 277
+      "line": 290
     },
     {
       "name": "_mobile_validation_contract",
       "kind": "function",
       "file": "studio/generic_project.py",
-      "line": 435
+      "line": 448
     },
     {
       "name": "_verify_android_emulator_evidence",
       "kind": "function",
       "file": "studio/generic_project.py",
-      "line": 443
+      "line": 456
     },
     {
       "name": "_run_mobile_validation",
       "kind": "function",
       "file": "studio/generic_project.py",
-      "line": 511
+      "line": 524
     },
     {
       "name": "_existing_worker_canary_verification",
       "kind": "function",
       "file": "studio/generic_project.py",
-      "line": 682
+      "line": 695
     },
     {
       "name": "_save_published_checkpoint",
       "kind": "function",
       "file": "studio/generic_project.py",
-      "line": 727
+      "line": 740
     },
     {
       "name": "run_project",
       "kind": "function",
       "file": "studio/generic_project.py",
-      "line": 741
+      "line": 754
     },
     {
       "name": "evaluate_model_candidate",
       "kind": "function",
       "file": "studio/generic_project.py",
-      "line": 1341
+      "line": 1354
     },
     {
       "name": "GenericRepository",
@@ -1923,25 +187,79 @@
       "name": "_tree",
       "kind": "function",
       "file": "studio/generic_repository.py",
-      "line": 15
+      "line": 16
     },
     {
       "name": "restore",
       "kind": "function",
       "file": "studio/generic_repository.py",
-      "line": 21
+      "line": 22
     },
     {
       "name": "ensure_pull_request",
       "kind": "function",
       "file": "studio/generic_repository.py",
-      "line": 74
+      "line": 75
     },
     {
       "name": "publish",
       "kind": "function",
       "file": "studio/generic_repository.py",
-      "line": 119
+      "line": 121
+    },
+    {
+      "name": "_fixture",
+      "kind": "function",
+      "file": "studio/generic_smoke.py",
+      "line": 19
+    },
+    {
+      "name": "FakeRepository",
+      "kind": "class",
+      "file": "studio/generic_smoke.py",
+      "line": 35
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "studio/generic_smoke.py",
+      "line": 36
+    },
+    {
+      "name": "restore",
+      "kind": "function",
+      "file": "studio/generic_smoke.py",
+      "line": 39
+    },
+    {
+      "name": "publish",
+      "kind": "function",
+      "file": "studio/generic_smoke.py",
+      "line": 43
+    },
+    {
+      "name": "fake_ask",
+      "kind": "function",
+      "file": "studio/generic_smoke.py",
+      "line": 49
+    },
+    {
+      "name": "verifier_smoke",
+      "kind": "function",
+      "file": "studio/generic_smoke.py",
+      "line": 85
+    },
+    {
+      "name": "orchestration_smoke",
+      "kind": "function",
+      "file": "studio/generic_smoke.py",
+      "line": 102
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/generic_smoke.py",
+      "line": 140
     },
     {
       "name": "available_tools",
@@ -1974,96 +292,1300 @@
       "line": 104
     },
     {
-      "name": "FullGateCacheStoreError",
-      "kind": "class",
-      "file": "studio/github_full_gate_cache_store.py",
-      "line": 16
+      "name": "_prepare_capability_promotion_handoff",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 57
     },
     {
-      "name": "_validate",
+      "name": "_usage_count",
       "kind": "function",
-      "file": "studio/github_full_gate_cache_store.py",
+      "file": "studio/github_runner.py",
+      "line": 97
+    },
+    {
+      "name": "collect_agent_usage",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 106
+    },
+    {
+      "name": "write_production_os_result",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 171
+    },
+    {
+      "name": "_stop_bounded_process",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 563
+    },
+    {
+      "name": "bounded_run",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 599
+    },
+    {
+      "name": "_update_improvements",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 627
+    },
+    {
+      "name": "run",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 645
+    },
+    {
+      "name": "effective_runner",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 655
+    },
+    {
+      "name": "persist_published_round",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 948
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 972
+    },
+    {
+      "name": "persist_verified_cycle",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 982
+    },
+    {
+      "name": "improvement_project_cycle",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 1023
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 1169
+    },
+    {
+      "name": "_remaining",
+      "kind": "function",
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 14
+    },
+    {
+      "name": "_detect",
+      "kind": "function",
+      "file": "studio/multi_engine_orchestrator.py",
       "line": 20
     },
     {
-      "name": "_ref",
+      "name": "_run_stage",
       "kind": "function",
-      "file": "studio/github_full_gate_cache_store.py",
-      "line": 49
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 35
     },
     {
-      "name": "load",
+      "name": "run_project",
       "kind": "function",
-      "file": "studio/github_full_gate_cache_store.py",
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 41
+    },
+    {
+      "name": "_browser_validation_operational",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 41
+    },
+    {
+      "name": "_mobile_validation_operational",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 70
+    },
+    {
+      "name": "_asset_forge_operational_status",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 103
+    },
+    {
+      "name": "_remote_asset_forge_operational",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 132
+    },
+    {
+      "name": "worker_capabilities",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 157
+    },
+    {
+      "name": "ProductionOSWorkerError",
+      "kind": "class",
+      "file": "studio/production_os_worker.py",
+      "line": 199
+    },
+    {
+      "name": "_NoRedirect",
+      "kind": "class",
+      "file": "studio/production_os_worker.py",
+      "line": 203
+    },
+    {
+      "name": "redirect_request",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 204
+    },
+    {
+      "name": "_default_opener",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 210
+    },
+    {
+      "name": "ProductionOSClient",
+      "kind": "class",
+      "file": "studio/production_os_worker.py",
+      "line": 217
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 218
+    },
+    {
+      "name": "_post",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 258
+    },
+    {
+      "name": "claim",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 317
+    },
+    {
+      "name": "ack",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 334
+    },
+    {
+      "name": "complete",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 340
+    },
+    {
+      "name": "fail",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 343
+    },
+    {
+      "name": "register",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 346
+    },
+    {
+      "name": "heartbeat",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 373
+    },
+    {
+      "name": "production_capacity_snapshot",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 404
+    },
+    {
+      "name": "_project_id",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 460
+    },
+    {
+      "name": "_repository_branch_id",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 480
+    },
+    {
+      "name": "_app_name",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 508
+    },
+    {
+      "name": "_brief",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 518
+    },
+    {
+      "name": "_is_visual_handoff",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 531
+    },
+    {
+      "name": "_retry_guidance",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 572
+    },
+    {
+      "name": "_upstream_guidance",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 624
+    },
+    {
+      "name": "_asset_forge_guidance",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 697
+    },
+    {
+      "name": "build_studio_request",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 755
+    },
+    {
+      "name": "_write_project_capacity_plan",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 818
+    },
+    {
+      "name": "_attach_failed_ci_diagnostic",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 891
+    },
+    {
+      "name": "_result_payload",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 935
+    },
+    {
+      "name": "completion_payload",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 945
+    },
+    {
+      "name": "failure_payload",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 962
+    },
+    {
+      "name": "_retryable_runner_error",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1001
+    },
+    {
+      "name": "_failure_diagnostics",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1008
+    },
+    {
+      "name": "_summary_requests_retry",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1063
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1085
+    },
+    {
+      "name": "observe_job_control",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1193
+    },
+    {
+      "name": "report_local_failure",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1219
+    },
+    {
+      "name": "keep_job_alive",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1270
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1534
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 23
+    },
+    {
+      "name": "BrowserValidationContractTests",
+      "kind": "class",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 34
+    },
+    {
+      "name": "_write_script",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 35
+    },
+    {
+      "name": "test_runtime_browser_artifacts_are_not_publishable",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 72
+    },
+    {
+      "name": "test_request_check_accepts_browser_validation_contract",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 83
+    },
+    {
+      "name": "test_request_check_rejects_mutated_browser_validation_contract",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 90
+    },
+    {
+      "name": "test_browser_validation_requires_script",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 99
+    },
+    {
+      "name": "test_browser_validation_accepts_report_and_copies_artifacts",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 113
+    },
+    {
+      "name": "test_browser_validation_rejects_fake_screenshot_bytes",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 134
+    },
+    {
+      "name": "test_browser_validation_rejects_external_test_url",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 158
+    },
+    {
+      "name": "test_browser_validation_fails_on_console_errors",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 185
+    },
+    {
+      "name": "CaptureAPI",
+      "kind": "class",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 17
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 20
+    },
+    {
+      "name": "call",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 23
+    },
+    {
+      "name": "AdaptiveQuotaBudgetTests",
+      "kind": "class",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 34
+    },
+    {
+      "name": "setUp",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 35
+    },
+    {
+      "name": "_quota",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 38
+    },
+    {
+      "name": "_run",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 46
+    },
+    {
+      "name": "test_partially_used_free_quota_uses_smaller_real_max_tokens",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 85
+    },
+    {
+      "name": "test_small_project_envelope_reduces_requested_tokens_and_reservation",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 95
+    },
+    {
+      "name": "test_true_exhaustion_never_invokes_the_provider",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 110
+    },
+    {
+      "name": "test_exhausted_provider_is_not_misreported_as_project_limit",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 116
+    },
+    {
+      "name": "test_genuinely_exhausted_project_envelope_has_precise_reason",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 125
+    },
+    {
+      "name": "test_noncritical_reserve_is_preserved_but_review_may_use_it",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 133
+    },
+    {
+      "name": "test_code_requires_bounded_minimum_and_does_not_fake_completion",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 144
+    },
+    {
+      "name": "GenericArchitectureTests",
+      "kind": "class",
+      "file": "tests/test_generic_architecture.py",
+      "line": 12
+    },
+    {
+      "name": "test_prepare_architecture_is_generic_and_advisory",
+      "kind": "function",
+      "file": "tests/test_generic_architecture.py",
+      "line": 13
+    },
+    {
+      "name": "test_record_architecture_writes_full_evidence_chain",
+      "kind": "function",
+      "file": "tests/test_generic_architecture.py",
+      "line": 56
+    },
+    {
+      "name": "test_learning_failure_is_non_fatal_after_verified_round",
+      "kind": "function",
+      "file": "tests/test_generic_architecture.py",
+      "line": 82
+    },
+    {
+      "name": "_FakeAPI",
+      "kind": "class",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 14
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 18
+    },
+    {
+      "name": "call",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 21
+    },
+    {
+      "name": "GenericModelCapacityTests",
+      "kind": "class",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 27
+    },
+    {
+      "name": "_provider",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 28
+    },
+    {
+      "name": "_env",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 38
+    },
+    {
+      "name": "test_success_settles_transactional_reservation_with_actual_usage",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 45
+    },
+    {
+      "name": "test_protocol_failure_settles_consumed_tokens_without_double_release",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 70
+    },
+    {
+      "name": "test_transport_failure_releases_open_reservation",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 92
+    },
+    {
+      "name": "test_denied_reservation_skips_provider_call",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 117
+    },
+    {
+      "name": "GenericPublishedCheckpointTests",
+      "kind": "class",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 17
+    },
+    {
+      "name": "test_observer_reads_sealed_checkpoint_after_verified_round",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 18
+    },
+    {
+      "name": "observer",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 30
+    },
+    {
+      "name": "test_unpublished_phase_is_rejected_and_not_persisted",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 39
+    },
+    {
+      "name": "test_remote_persistence_failure_stops_after_local_commit",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 55
+    },
+    {
+      "name": "failure",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 65
+    },
+    {
+      "name": "test_real_generic_canary_path_mirrors_only_after_sealed_complete",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 72
+    },
+    {
+      "name": "observer",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 89
+    },
+    {
+      "name": "test_missing_observer_keeps_original_local_behavior",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 104
+    },
+    {
+      "name": "PublishedRoundCheckpointTests",
+      "kind": "class",
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "line": 20
+    },
+    {
+      "name": "test_two_published_rounds_restore_on_a_fresh_actions_runner",
+      "kind": "function",
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "line": 21
+    },
+    {
+      "name": "persist",
+      "kind": "function",
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "line": 29
+    },
+    {
+      "name": "test_complete_round_mirrors_final_checkpoint",
+      "kind": "function",
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "line": 55
+    },
+    {
+      "name": "test_unpublished_phase_never_reaches_remote_observer",
+      "kind": "function",
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "line": 70
+    },
+    {
+      "name": "test_remote_failure_is_not_suppressed_after_local_save",
+      "kind": "function",
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "line": 83
+    },
+    {
+      "name": "unavailable",
+      "kind": "function",
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "line": 91
+    },
+    {
+      "name": "FakeGitHub",
+      "kind": "class",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 9
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 10
+    },
+    {
+      "name": "get",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 15
+    },
+    {
+      "name": "call",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 23
+    },
+    {
+      "name": "test_ensure_pull_request_creates_one_for_managed_branch",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 38
+    },
+    {
+      "name": "test_ensure_pull_request_reuses_existing_exact_branch_pr",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 66
+    },
+    {
+      "name": "test_ensure_pull_request_ignores_other_studio_branch",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 92
+    },
+    {
+      "name": "ExistingWorkerCanaryVerificationTests",
+      "kind": "class",
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 11
+    },
+    {
+      "name": "_request",
+      "kind": "function",
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 12
+    },
+    {
+      "name": "test_accepts_exact_existing_canary_with_or_without_final_newline",
+      "kind": "function",
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 30
+    },
+    {
+      "name": "test_rejects_wrong_content",
+      "kind": "function",
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 52
+    },
+    {
+      "name": "test_rejects_non_canary_repository_or_missing_contract",
+      "kind": "function",
+      "file": "tests/test_generic_worker_canary_resume.py",
       "line": 62
     },
     {
-      "name": "save",
+      "name": "GithubRunnerPersistentTests",
+      "kind": "class",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 17
+    },
+    {
+      "name": "request",
       "kind": "function",
-      "file": "studio/github_full_gate_cache_store.py",
-      "line": 96
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 18
+    },
+    {
+      "name": "test_run_uses_persistent_goal_engine",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 29
+    },
+    {
+      "name": "test_human_action_is_not_reported_complete",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 41
+    },
+    {
+      "name": "test_transient_capacity_exhaustion_is_reported_without_terminal_goal_block",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 56
+    },
+    {
+      "name": "test_blocked_state_preserves_reason",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 73
+    },
+    {
+      "name": "test_remote_checkpoint_ingests_memory_before_state_persistence",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 88
+    },
+    {
+      "name": "test_published_round_remote_api_failure_stops_without_leaking_response",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 125
+    },
+    {
+      "name": "fake_native_project",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 132
+    },
+    {
+      "name": "fake_persistent_project",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 141
+    },
+    {
+      "name": "test_invalid_memory_ingestion_blocks_state_checkpoint",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 192
+    },
+    {
+      "name": "test_promotion_required_handoff_is_sealed_and_non_promoting",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 237
+    },
+    {
+      "name": "test_promotion_handoff_rejects_cross_candidate_validation",
+      "kind": "function",
+      "file": "tests/test_github_runner_persistent.py",
+      "line": 269
+    },
+    {
+      "name": "GithubRunnerRoundPersistenceTests",
+      "kind": "class",
+      "file": "tests/test_github_runner_round_persistence.py",
+      "line": 17
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_github_runner_round_persistence.py",
+      "line": 18
+    },
+    {
+      "name": "test_remote_generic_published_round_is_flushed_before_cycle_finishes",
+      "kind": "function",
+      "file": "tests/test_github_runner_round_persistence.py",
+      "line": 29
+    },
+    {
+      "name": "emulate_generic",
+      "kind": "function",
+      "file": "tests/test_github_runner_round_persistence.py",
+      "line": 79
+    },
+    {
+      "name": "emulate_goal_loop",
+      "kind": "function",
+      "file": "tests/test_github_runner_round_persistence.py",
+      "line": 90
+    },
+    {
+      "name": "test_wrong_project_round_checkpoint_is_refused",
+      "kind": "function",
+      "file": "tests/test_github_runner_round_persistence.py",
+      "line": 116
+    },
+    {
+      "name": "bad_generic",
+      "kind": "function",
+      "file": "tests/test_github_runner_round_persistence.py",
+      "line": 140
+    },
+    {
+      "name": "emulate_goal_loop",
+      "kind": "function",
+      "file": "tests/test_github_runner_round_persistence.py",
+      "line": 150
+    },
+    {
+      "name": "GitHubRunnerUsageTests",
+      "kind": "class",
+      "file": "tests/test_github_runner_usage.py",
+      "line": 10
+    },
+    {
+      "name": "test_collect_agent_usage_sums_codex_attempts_across_rounds",
+      "kind": "function",
+      "file": "tests/test_github_runner_usage.py",
+      "line": 11
+    },
+    {
+      "name": "test_collect_agent_usage_ignores_duplicate_non_attempt_usage_and_bad_values",
+      "kind": "function",
+      "file": "tests/test_github_runner_usage.py",
+      "line": 72
+    },
+    {
+      "name": "test_collect_agent_usage_empty_report_is_zeroed",
+      "kind": "function",
+      "file": "tests/test_github_runner_usage.py",
+      "line": 117
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 26
+    },
+    {
+      "name": "MobileValidationContractTests",
+      "kind": "class",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 37
+    },
+    {
+      "name": "_write_script",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 38
+    },
+    {
+      "name": "test_mobile_runtime_artifacts_are_not_publishable",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 63
+    },
+    {
+      "name": "test_request_check_accepts_mobile_contract",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 68
+    },
+    {
+      "name": "test_request_check_rejects_mutated_mobile_contract",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 75
+    },
+    {
+      "name": "test_mobile_validation_accepts_structured_emulator_evidence",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 84
+    },
+    {
+      "name": "test_mobile_validation_fails_on_fatal_errors",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 111
+    },
+    {
+      "name": "test_android_emulator_evidence_requires_real_emulator_identity",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 127
+    },
+    {
+      "name": "test_android_emulator_evidence_verifies_device_package_and_activity",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 140
+    },
+    {
+      "name": "test_mobile_specialty_requires_android_toolchain_probe",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 172
+    },
+    {
+      "name": "test_mobile_specialty_is_not_advertised_without_emulator",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 189
+    },
+    {
+      "name": "OrchestratorTests",
+      "kind": "class",
+      "file": "tests/test_orchestrator.py",
+      "line": 19
+    },
+    {
+      "name": "payload_for",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 20
+    },
+    {
+      "name": "missing_report",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 35
+    },
+    {
+      "name": "test_premium_visual_request_prefetches_asset_forge_before_preview",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 43
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 52
+    },
+    {
+      "name": "test_multi_asset_request_uses_transactional_asset_forge_batch",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 86
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 98
+    },
+    {
+      "name": "test_asset_forge_batch_receipt_marks_regenerated_quality",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 129
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 140
+    },
+    {
+      "name": "test_asset_forge_failure_receipt_marks_low_quality",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 174
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 185
+    },
+    {
+      "name": "test_full_pipeline_reaches_finished",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 203
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 207
+    },
+    {
+      "name": "test_unregistered_stage_research_then_synthesis",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 218
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 221
+    },
+    {
+      "name": "test_research_failure_prevents_synthesis",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 255
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 258
+    },
+    {
+      "name": "test_adaptation_without_baseline_has_no_promotable_work_order",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 271
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 274
+    },
+    {
+      "name": "test_stage_return_code_two_is_human_action_not_failure",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 283
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 286
+    },
+    {
+      "name": "test_scheduler_rewind_can_revisit_release_build_boundedly",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 310
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 319
+    },
+    {
+      "name": "test_successful_stage_must_advance",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 371
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 374
+    },
+    {
+      "name": "GitHubRunnerTests",
+      "kind": "class",
+      "file": "tests/test_orchestrator.py",
+      "line": 383
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 384
+    },
+    {
+      "name": "test_non_main_is_rejected_before_generation",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 390
+    },
+    {
+      "name": "test_adapter_reports_complete_only_after_machine_completion",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 394
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 397
+    },
+    {
+      "name": "ProductionOSResultContractTests",
+      "kind": "class",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 23
+    },
+    {
+      "name": "test_request_accepts_optional_production_os_correlation",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 24
+    },
+    {
+      "name": "test_request_rejects_invalid_production_os_correlation",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 41
+    },
+    {
+      "name": "test_result_envelope_correlates_usage_and_completion",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 51
+    },
+    {
+      "name": "test_result_envelope_preserves_delivery_evidence_for_production_os",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 89
+    },
+    {
+      "name": "test_result_envelope_includes_visual_asset_quality",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 240
+    },
+    {
+      "name": "test_no_result_envelope_without_correlation",
+      "kind": "function",
+      "file": "tests/test_production_os_result_contract.py",
+      "line": 312
+    },
+    {
+      "name": "_ProviderAPI",
+      "kind": "class",
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 17
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 21
+    },
+    {
+      "name": "call",
+      "kind": "function",
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 24
+    },
+    {
+      "name": "_providers",
+      "kind": "function",
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 37
+    },
+    {
+      "name": "Provider429CooldownTests",
+      "kind": "class",
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 50
+    },
+    {
+      "name": "setUp",
+      "kind": "function",
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 51
+    },
+    {
+      "name": "test_generic_model_uses_fallback_and_skips_429_provider_next_call",
+      "kind": "function",
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 55
+    },
+    {
+      "name": "test_generic_server_error_preserves_standard_three_failure_threshold",
+      "kind": "function",
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 79
+    },
+    {
+      "name": "test_flutter_model_provider_cooldown_and_independent_fallback",
+      "kind": "function",
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 93
+    },
+    {
+      "name": "RepositoryBranchIdentityTests",
+      "kind": "class",
+      "file": "tests/test_repository_branch_identity.py",
+      "line": 21
+    },
+    {
+      "name": "test_request_check_accepts_safe_repository_branch_identity",
+      "kind": "function",
+      "file": "tests/test_repository_branch_identity.py",
+      "line": 22
+    },
+    {
+      "name": "test_request_check_rejects_unsafe_repository_branch_identity",
+      "kind": "function",
+      "file": "tests/test_repository_branch_identity.py",
+      "line": 34
+    },
+    {
+      "name": "test_generic_repository_branch_is_independent_from_execution_request_id",
+      "kind": "function",
+      "file": "tests/test_repository_branch_identity.py",
+      "line": 44
     }
   ],
   "selected_tests": [
-    "integration_tests/test_production_os_server_integration.py",
-    "tests/test_android_signing.py",
-    "tests/test_api_transport_retry.py",
-    "tests/test_artifact_cas.py",
-    "tests/test_artifact_cas_namespace.py",
-    "tests/test_artifact_cas_promotion.py",
-    "tests/test_autonomous_project.py",
-    "tests/test_billing_qa.py",
     "tests/test_browser_validation_contract.py",
-    "tests/test_ci.py",
-    "tests/test_durable_state.py",
-    "tests/test_engine_entry.py",
-    "tests/test_evolution_rollback.py",
     "tests/test_generic_adaptive_quota_budget.py",
+    "tests/test_generic_architecture.py",
     "tests/test_generic_model_capacity.py",
-    "tests/test_github_full_gate_cache_store.py",
-    "tests/test_godot_android_export.py",
-    "tests/test_godot_android_stage.py",
-    "tests/test_godot_baseline.py",
-    "tests/test_godot_device_qa.py",
-    "tests/test_godot_device_stage.py",
-    "tests/test_godot_final_review_qa.py",
-    "tests/test_godot_model.py",
-    "tests/test_godot_preview.py",
-    "tests/test_godot_privacy_security_qa.py",
-    "tests/test_godot_release_artifact.py",
-    "tests/test_godot_release_artifact_stage.py",
-    "tests/test_godot_repository_probe.py",
-    "tests/test_godot_runtime.py",
-    "tests/test_godot_runtime_journey_stage.py",
-    "tests/test_godot_session.py",
-    "tests/test_godot_store_metadata_qa.py",
-    "tests/test_godot_visual_qa.py",
-    "tests/test_godot_visual_stage.py",
-    "tests/test_immutable_artifact_cache.py",
-    "tests/test_journeys.py",
-    "tests/test_jumpy_v13_migration.py",
-    "tests/test_local_api_security.py",
+    "tests/test_generic_published_checkpoint.py",
+    "tests/test_generic_published_round_checkpoint.py",
+    "tests/test_generic_repository_pull_request.py",
+    "tests/test_generic_worker_canary_resume.py",
+    "tests/test_github_runner_persistent.py",
+    "tests/test_github_runner_round_persistence.py",
+    "tests/test_github_runner_usage.py",
     "tests/test_mobile_validation_contract.py",
-    "tests/test_multi_engine_orchestrator.py",
     "tests/test_orchestrator.py",
-    "tests/test_patch_safety_rebuild.py",
-    "tests/test_play_publisher.py",
-    "tests/test_play_stage.py",
-    "tests/test_production_os_live_diagnostics.py",
     "tests/test_production_os_result_contract.py",
-    "tests/test_production_os_worker.py",
-    "tests/test_project_context.py",
     "tests/test_provider_429_cooldown.py",
-    "tests/test_release_repair.py",
-    "tests/test_repository_branch_identity.py",
-    "tests/test_request_budget.py",
-    "tests/test_request_contract.py",
-    "tests/test_request_priority.py",
-    "tests/test_security_agent.py",
-    "tests/test_stage_registry.py",
-    "tests/test_strict_task_claim_store.py",
-    "tests/test_studio.py",
-    "tests/test_transport.py",
-    "tests/test_unified_routing_score.py"
+    "tests/test_repository_branch_identity.py"
   ]
 }

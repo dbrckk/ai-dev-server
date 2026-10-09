@@ -1,18 +1,17 @@
 # Change impact
 
-Base: 5edf9c3fc2a97a1d519415909b08bce7586e9f3d
-Head: 9bd235397331a09e5d721528143509f994cf4b9e
+Base: 32c0629f14ba32e24aa1da39fbded1bac24f9839
+Head: 8ab8232b99c326afe8dde56005462f51ec78435c
 
 ## Changed files
 - M docs/PRODUCTION_OS_WORKER.md
-- M studio/core.py
-- M studio/generic_model.py
-- A tests/test_provider_429_cooldown.py
+- M studio/generic_project.py
+- M studio/generic_repository.py
+- M studio/github_runner.py
 
 ## Affected areas
 - docs
 - studio
-- tests
 
 ## Related test candidates
 - No direct filename-based test match detected.

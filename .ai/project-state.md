@@ -60,23 +60,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T16:03:51Z
+Generated: 2026-10-09T18:35:36Z
 
 ### Git
 - Branch: `main`
-- Head: `9bd235397331`
-- Commit date: 2026-10-09T18:03:40+02:00
-- Commit: fix(models): fast-circuit HTTP 429 providers and preserve independent fallback (#274)
+- Head: `8ab8232b99c3`
+- Commit date: 2026-10-09T20:35:25+02:00
+- Commit: fix(production-os): expose blocked GitHub PR delivery and file evidence (#278)
 - Tracked files: 863
 
 ### Recently changed files
 - `docs/PRODUCTION_OS_WORKER.md`
-- `studio/core.py`
-- `studio/generic_model.py`
-- `tests/test_provider_429_cooldown.py`
-- `tests/test_generic_adaptive_quota_budget.py`
-- `AGENTS.md`
+- `studio/generic_project.py`
+- `studio/generic_repository.py`
+- `studio/github_runner.py`
 - `control/production-os-worker-canary.json`
+- `studio/generic_model.py`
 
 ### Project signals
 - No common build descriptor detected

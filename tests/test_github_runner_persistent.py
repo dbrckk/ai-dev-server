@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 from github_runner import run, _prepare_capability_promotion_handoff
 from goal_engine import finalize, new_goal, record_cycle
+from goal_loop import DurableCheckpointError
 
 
 class GithubRunnerPersistentTests(unittest.TestCase):
@@ -120,6 +121,73 @@ class GithubRunnerPersistentTests(unittest.TestCase):
                 stack.enter_context(patch("github_runner.persist_execution_checkpoint_local",side_effect=lambda *a,**k:order.append("execution-checkpoint")))
                 run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha="d"*40)
             self.assertEqual(order,["ingest","state","memory","agent-performance","provider-health","provider-metrics","routing-history","verification-cost","phase-cost-baseline","strategy-efficiency","contextual-strategy-efficiency","quick-gate-cache","full-gate-cache","artifact-cas-stats","artifact-cas-audit","execution-checkpoint"])
+
+    def test_published_round_remote_api_failure_stops_without_leaking_response(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            request = self.request(root)
+            out = root / "out"
+            runs = []
+
+            def fake_native_project(*args, **kwargs):
+                runs.append("round")
+                self.assertIn("checkpoint_observer", kwargs)
+                kwargs["checkpoint_observer"]({
+                    "project_id": "demo",
+                    "phase": "published",
+                })
+                self.fail("must abort after failed persistence")
+
+            def fake_persistent_project(*args, **kwargs):
+                return kwargs["run_once"](*args[:7])
+
+            restores = (
+                "restore_local", "restore_memory_local",
+                "restore_agent_performance_local",
+                "restore_provider_health_local",
+                "restore_provider_metrics_local",
+                "restore_routing_history_local",
+                "restore_verification_cost_local",
+                "restore_phase_cost_baseline_local",
+                "restore_strategy_efficiency_local",
+                "restore_contextual_strategy_efficiency_local",
+                "restore_quick_gate_cache_local",
+                "restore_full_gate_cache_local",
+                "restore_artifact_cas_stats_local",
+                "restore_artifact_cas_audit_local",
+                "restore_execution_checkpoint_local",
+            )
+            with ExitStack() as stack:
+                stack.enter_context(patch.dict(os.environ, {
+                    "STUDIO_PERSIST_REMOTE": "1",
+                    "GITHUB_REPOSITORY": "owner/control",
+                }))
+                stack.enter_context(patch("github_runner.RepoGitHub"))
+                for method in restores:
+                    stack.enter_context(patch("github_runner." + method))
+                stack.enter_context(patch(
+                    "github_runner.run_persistent_project",
+                    side_effect=fake_persistent_project,
+                ))
+                stack.enter_context(patch(
+                    "github_runner.run_multi_engine_project",
+                    side_effect=fake_native_project,
+                ))
+                stack.enter_context(patch(
+                    "github_runner.persist_execution_checkpoint_local",
+                    side_effect=RuntimeError("api_key=do-not-leak"),
+                ))
+                with self.assertRaises(DurableCheckpointError) as raised:
+                    run(
+                        request, out,
+                        runner=lambda *a, **kw: None,
+                        clock=lambda: 0,
+                        budget_seconds=100,
+                        baseline_sha="a" * 40,
+                    )
+            self.assertEqual(runs, ["round"])
+            self.assertIn("RuntimeError", str(raised.exception))
+            self.assertNotIn("do-not-leak", str(raised.exception))
 
     def test_invalid_memory_ingestion_blocks_state_checkpoint(self):
         with tempfile.TemporaryDirectory() as td:

@@ -141,7 +141,7 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-  "sequence": 20,
+  "sequence": 21,
   "repository": "dbrckk/repo-standards"
 }
 ```
@@ -149,8 +149,8 @@ request.json
 ## File: production-os-worker-kick.json
 ```json
 {
-  "sequence": 22,
-  "reason": "Verify capacity-free resume and drain final Production-OS queued canary"
+  "sequence": 23,
+  "reason": "Wake existing Production-OS live canary 21 after it entered the queue"
 }
 ```
 

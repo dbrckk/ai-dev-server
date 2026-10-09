@@ -1,15 +1,15 @@
 # Change impact
 
-Base: 60b434667b06dd3e3b499c4c17c2fe935883714d
-Head: 04e4754d6bcdd0bde2a499fa1bd468c596fb5c90
+Base: 94805913d43e188e18c087339c4c83a5df0d293f
+Head: b53685c5952ce40d9d5d4002b0a9123a87310760
 
 ## Changed files
-- M docs/PRODUCTION_OS_WORKER.md
-- M studio/github_runner.py
+- M .github/workflows/production-os-actions-worker.yml
+- M tests/test_production_os_actions_worker_workflow.py
 
 ## Affected areas
-- docs
-- studio
+- .github
+- tests
 
 ## Related test candidates
 - No direct filename-based test match detected.

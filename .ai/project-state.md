@@ -68,22 +68,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T21:46:39Z
+Generated: 2026-10-09T22:00:35Z
 
 ### Git
 - Branch: `main`
-- Head: `04e4754d6bcd`
-- Commit date: 2026-10-09T23:45:51+02:00
-- Commit: fix(worker): keep verified checkpoints when optional GitHub telemetry is rejected (#284)
+- Head: `b53685c5952c`
+- Commit date: 2026-10-10T00:00:24+02:00
+- Commit: fix(actions): resolve only the qualified current Production-OS main
 - Tracked files: 863
 
 ### Recently changed files
+- `.github/workflows/production-os-actions-worker.yml`
+- `tests/test_production_os_actions_worker_workflow.py`
+- `control/production-os-worker-kick.json`
+- `control/production-os-worker-canary.json`
 - `docs/PRODUCTION_OS_WORKER.md`
 - `studio/github_runner.py`
-- `control/production-os-worker-canary.json`
-- `control/production-os-diagnostics-kick.json`
-- `studio/generic_model.py`
-- `studio/production_os_live_diagnostics.py`
 
 ### Project signals
 - No common build descriptor detected

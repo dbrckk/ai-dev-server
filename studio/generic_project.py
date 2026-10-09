@@ -9,7 +9,7 @@ import shutil
 import sys
 import time
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote
 
 from core import StudioError, canonical
 from capacity_runtime import project_envelope as load_project_envelope
@@ -2542,9 +2542,26 @@ Objective and current plan:
                 )
                 state["pull_request"] = pull_request
             except StudioError as exc:
+                # The coding checkpoint is durable even when a restricted
+                # GitHub token cannot create the review PR. Do not hide the
+                # missing delivery step or expose an arbitrary API error.
+                reason = (
+                    "pull_request_write_denied"
+                    if any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
+                    else "pull_request_unavailable"
+                )
+                base = getattr(repo, "default_branch", None)
+                comparison = (
+                    "https://github.com/" + req["target_repo"]
+                    + "/compare/" + quote(base, safe="")
+                    + "..." + quote(repo.branch, safe="/") + "?expand=1"
+                    if isinstance(base, str) and base else None
+                )
                 state["pull_request"] = {
                     "state":"unavailable",
-                    "error":str(exc)[:500],
+                    "reason":reason,
+                    "head":repo.branch,
+                    **({"base":base, "compare_url":comparison} if comparison else {}),
                 }
         state["execution_checkpoint"] = {
             "round": checkpoint["round"],
@@ -2560,7 +2577,11 @@ Objective and current plan:
                 "report": {
                     **state,
                     "completion": {"finished": True, "next_stage": None, "blockers": []},
-                    "release_status": "verified_project_complete",
+                    "release_status": (
+                        "verified_branch_review_blocked"
+                        if (state.get("pull_request") or {}).get("state") == "unavailable"
+                        else "verified_project_complete"
+                    ),
                 },
                 "next_stage": None,
             }

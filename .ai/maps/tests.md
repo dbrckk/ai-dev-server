@@ -183,6 +183,8 @@ test_generic_capability_synthesis_state.py
 test_generic_capability_validation_report.py
 test_generic_model_capacity.py
 test_generic_policy.py
+test_generic_published_checkpoint.py
+test_generic_published_round_checkpoint.py
 test_generic_repository_pull_request.py
 test_generic_structural_verify.py
 test_generic_toolchain.py
@@ -196,6 +198,7 @@ test_github_memory_store.py
 test_github_provider_health_store.py
 test_github_quick_gate_cache_store.py
 test_github_runner_persistent.py
+test_github_runner_round_persistence.py
 test_github_runner_usage.py
 test_global_admission.py
 test_goal_capability_runtime.py
@@ -2848,6 +2851,23 @@ after = load_registry(registry_path)
 def test_runtime_environment_is_restored_after_project_run(self)
 ⋮----
 previous = os.environ.get("STUDIO_CHECKPOINT_PATH")
+⋮----
+def test_checkpoint_observer_receives_saved_goal_after_every_complete_cycle(self)
+⋮----
+out = Path(td) / "out"
+checkpoints = []
+⋮----
+def step(*args)
+⋮----
+def persist(state, result)
+⋮----
+on_disk = load_goal(out / ".autonomy/goal.json")
+⋮----
+result = run_persistent_project(
+⋮----
+def test_failed_remote_cycle_checkpoint_aborts_without_silent_progress(self)
+⋮----
+def fail_remote(state, result)
 ```
 
 ## File: test_autonomous_research.py
@@ -5230,6 +5250,85 @@ def test_sensitive_and_ci_paths_are_blocked(self)
 def test_patch_rejects_secret_pattern(self)
 ```
 
+## File: test_generic_published_checkpoint.py
+```python
+"""Integrity and ordering guarantees for intra-cycle published-round checkpoints."""
+⋮----
+class GenericPublishedCheckpointTests(unittest.TestCase)
+⋮----
+def test_observer_reads_sealed_checkpoint_after_verified_round(self)
+⋮----
+path = Path(temp) / ".autonomy/generic-execution-checkpoint.json"
+checkpoint = advance(
+observed = []
+⋮----
+def observer(value)
+⋮----
+def test_unpublished_phase_is_rejected_and_not_persisted(self)
+⋮----
+path = Path(temp) / "checkpoint.json"
+⋮----
+seen = []
+⋮----
+def test_remote_persistence_failure_stops_after_local_commit(self)
+⋮----
+def failure(_value)
+⋮----
+def test_real_generic_canary_path_mirrors_only_after_sealed_complete(self)
+⋮----
+out = Path(temp) / "out"
+⋮----
+checkpoint_path = out / ".autonomy/generic-execution-checkpoint.json"
+⋮----
+proof = {"passed": True, "reason": "existing verified contract"}
+⋮----
+result = run_project(
+⋮----
+def test_missing_observer_keeps_original_local_behavior(self)
+```
+
+## File: test_generic_published_round_checkpoint.py
+```python
+"""Round-level recovery guarantees for generic autonomous projects."""
+⋮----
+class PublishedRoundCheckpointTests(unittest.TestCase)
+⋮----
+def test_two_published_rounds_restore_on_a_fresh_actions_runner(self)
+⋮----
+remote = FakeGitHub()
+⋮----
+first = Path(td) / "runner-one" / ".autonomy" / "generic-execution-checkpoint.json"
+second = Path(td) / "runner-two" / ".autonomy" / "generic-execution-checkpoint.json"
+project_id = "isolated-generic-resume"
+calls = []
+⋮----
+def persist(checkpoint)
+⋮----
+# The local integrity-sealed state must exist before any
+# remote state branch mutation can begin.
+⋮----
+checkpoint = new(project_id, "generic", "a" * 40)
+published_one = advance(
+⋮----
+published_two = advance(
+⋮----
+# Simulated crash before the enclosing goal cycle returns.
+⋮----
+def test_complete_round_mirrors_final_checkpoint(self)
+⋮----
+path = Path(td) / ".autonomy" / "generic-execution-checkpoint.json"
+checkpoint = advance(
+⋮----
+def test_unpublished_phase_never_reaches_remote_observer(self)
+⋮----
+path = Path(td) / "checkpoint.json"
+called = []
+⋮----
+def test_remote_failure_is_not_suppressed_after_local_save(self)
+⋮----
+def unavailable(_value)
+```
+
 ## File: test_generic_repository_pull_request.py
 ```python
 class FakeGitHub
@@ -5587,6 +5686,19 @@ def test_remote_checkpoint_ingests_memory_before_state_persistence(self)
 order=[]
 state={"status":"blocked","human_action":None,"blocked_reason":"test-stop"}
 ⋮----
+def test_published_round_remote_api_failure_stops_without_leaking_response(self)
+⋮----
+root = Path(td)
+request = self.request(root)
+out = root / "out"
+runs = []
+⋮----
+def fake_native_project(*args, **kwargs)
+⋮----
+def fake_persistent_project(*args, **kwargs)
+⋮----
+restores = (
+⋮----
 def test_invalid_memory_ingestion_blocks_state_checkpoint(self)
 ⋮----
 persist_state=stack.enter_context(patch("github_runner.persist_local"))
@@ -5603,6 +5715,40 @@ validation={
 handoff=_prepare_capability_promotion_handoff(out,state,"c"*40)
 ⋮----
 def test_promotion_handoff_rejects_cross_candidate_validation(self)
+```
+
+## File: test_github_runner_round_persistence.py
+```python
+"""Production-OS native runner round persistence wiring and identity guards."""
+⋮----
+class GithubRunnerRoundPersistenceTests(unittest.TestCase)
+⋮----
+def request(self, root)
+⋮----
+path = root / "request.json"
+⋮----
+def test_remote_generic_published_round_is_flushed_before_cycle_finishes(self)
+⋮----
+root = Path(td)
+request = self.request(root)
+out = root / "out"
+checkpoints = []
+checkpoint = {
+remote_saves = []
+⋮----
+flush = stack.enter_context(patch(
+⋮----
+def emulate_generic(*args, **kwargs)
+⋮----
+def emulate_goal_loop(*args, **kwargs)
+⋮----
+result = run(
+⋮----
+def test_wrong_project_round_checkpoint_is_refused(self)
+⋮----
+def bad_generic(*args, **kwargs)
+⋮----
+persist_remote = stack.enter_context(patch(
 ```
 
 ## File: test_github_runner_usage.py
@@ -5769,6 +5915,18 @@ state = run_goal(goal_path, registry_path, execute, max_cycles=5)
 def test_worker_exception_is_recorded_and_retried(self)
 ⋮----
 state = run_goal(goal_path, registry_path, execute, max_cycles=3)
+⋮----
+def test_failed_durable_checkpoint_never_consumes_more_cycle_attempts(self)
+⋮----
+calls = []
+⋮----
+def execute(_state)
+⋮----
+saved = load_goal(goal_path)
+⋮----
+def test_non_checkpoint_transient_exception_still_retries_normally(self)
+⋮----
+result = run_goal(
 ⋮----
 def test_retryable_exception_detail_redacts_common_secrets(self)
 ⋮----
@@ -7372,6 +7530,22 @@ root=Path(td); out=root/'out'; req=self.request(root)
 def runner(args,timeout)
 result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
 ⋮----
+@patch("multi_engine_orchestrator.run_generic_project")
+    def test_generic_only_forwards_published_round_checkpoint_callback(self, generic)
+⋮----
+root = Path(td)
+out = root / "out"
+req = self.request(root)
+callback_calls = []
+⋮----
+def runner(args, timeout)
+⋮----
+callback = callback_calls.append
+response = run_project(
+⋮----
+@patch("multi_engine_orchestrator.run_generic_project")
+    def test_generic_without_callback_preserves_original_call(self, generic)
+⋮----
 def _runner(self,out,fail_stage=None,bad_journey=False,bad_visual=False,release_ready=False,artifact_credentials=True)
 ⋮----
 calls=[]
@@ -8279,6 +8453,37 @@ final_goal = load_goal(
 remote_final = FakeGitHubGoalLoad(remote, projects[0]["id"])
 ⋮----
 paths = [c["path"] for c in plane.calls]
+⋮----
+def test_crash_after_remote_cycle_checkpoint_resumes_on_fresh_disk(self)
+⋮----
+"""Remote state survives a crash before normal end-of-run persistence."""
+⋮----
+project_id = "two-session-crash-proof"
+executions = []
+⋮----
+root = Path(td)
+first_out = root / "first-runner"
+⋮----
+def step(*args)
+⋮----
+def persist_then_crash(state, result)
+⋮----
+remote_partial = FakeGitHubGoalLoad(remote, project_id)
+⋮----
+# GitHub Actions starts a different runner with no local project files.
+second_out = root / "second-runner"
+⋮----
+restored = load_goal(second_out / ".autonomy/goal.json")
+⋮----
+def resumed_step(*args)
+⋮----
+result = run_persistent_project(
+⋮----
+# The cycle checkpoint precedes terminal finalization. The native
+# GitHub runner still flushes the finalized state after return.
+checkpoint = FakeGitHubGoalLoad(remote, project_id)
+⋮----
+final = FakeGitHubGoalLoad(remote, project_id)
 ```
 
 ## File: test_production_os_remote_asset_capability.py

@@ -54,24 +54,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-09T04:15:28Z
+Generated: 2026-10-09T11:22:19Z
 
 ### Git
 - Branch: `main`
-- Head: `494abfa03d54`
-- Commit date: 2026-10-09T06:15:02+02:00
-- Commit: test(worker): prove GitHub branch recovery across two real Actions runner jobs (#266)
-- Tracked files: 858
+- Head: `2e120747e129`
+- Commit date: 2026-10-09T13:20:24+02:00
+- Commit: docs(agents): adopt pinned 88-rule development standard
+- Tracked files: 861
 
 ### Recently changed files
-- `.github/workflows/production-os-live-resume-proof.yml`
-- `control/production-os-resume-proof.json`
-- `scripts/production-os-live-resume-proof.py`
-- `docs/PRODUCTION_OS_WORKER.md`
-- `tests/test_production_os_local_e2e.py`
+- `AGENTS.md`
 - `control/production-os-worker-canary.json`
-- `studio/production_os_worker.py`
-- `tests/test_production_os_worker_runtime.py`
+- `control/production-os-resume-proof.json`
+- `tests/test_generic_published_round_checkpoint.py`
+- `tests/test_github_runner_round_persistence.py`
 
 ### Project signals
 - No common build descriptor detected

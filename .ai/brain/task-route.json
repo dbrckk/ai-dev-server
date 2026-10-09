@@ -1,20 +1,101 @@
 {
   "budget": {
-    "confidence": "high",
+    "confidence": "medium",
     "expand_to": 12,
-    "max_files": 3,
+    "max_files": 6,
     "requested_max_files": 12,
-    "score_margin": 4,
-    "tier": "narrow",
-    "top_score": 33
+    "score_margin": 0,
+    "tier": "bounded",
+    "top_score": 36
   },
   "cache": {
-    "fingerprint": "22a87569d5158222bb9d60a192ab01b72eafcb8acde2d09ea40324b3f6b09cea",
+    "fingerprint": "7cf840b90a4b45aec66bd7ba85106b4f27620b85b99014e67ecb60be7c522efd",
     "hit": false
   },
-  "candidate_count": 91,
+  "candidate_count": 107,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "studio/multi_engine_orchestrator.py",
+      "reasons": [
+        "impact",
+        "recently-changed",
+        "search-index"
+      ],
+      "score": 36,
+      "symbols": [
+        "_detect",
+        "_remaining",
+        "_run_stage",
+        "run_project"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine"
+      ],
+      "path": "tests/test_multi_engine_orchestrator.py",
+      "reasons": [
+        "impact",
+        "recently-changed",
+        "search-index"
+      ],
+      "score": 36,
+      "symbols": [
+        "MultiEngineOrchestratorTests",
+        "_runner",
+        "request",
+        "test_credentials_lost_between_preflight_and_signing_return_to_human_action",
+        "test_each_failed_godot_stage_stays_on_itself",
+        "test_flutter_delegates_unchanged",
+        "test_generic_only_forwards_published_round_checkpoint_callback",
+        "test_generic_without_callback_preserves_original_call",
+        "test_godot_stops_cleanly_when_release_keystore_is_missing",
+        "test_journey_stage_cannot_fake_execution_coverage",
+        "test_missing_detection_evidence_fails_closed",
+        "test_opt_in_play_validation_can_complete_godot_pipeline",
+        "test_release_chain_reaches_human_play_submission_only",
+        "test_visual_stage_cannot_fake_visual_coverage"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine",
+        "game"
+      ],
+      "path": "tests/test_orchestrator.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 35,
+      "symbols": [
+        "GitHubRunnerTests",
+        "OrchestratorTests",
+        "missing_report",
+        "payload_for",
+        "request",
+        "test_adaptation_without_baseline_has_no_promotable_work_order",
+        "test_adapter_reports_complete_only_after_machine_completion",
+        "test_asset_forge_batch_receipt_marks_regenerated_quality",
+        "test_asset_forge_failure_receipt_marks_low_quality",
+        "test_full_pipeline_reaches_finished",
+        "test_multi_asset_request_uses_transactional_asset_forge_batch",
+        "test_non_main_is_rejected_before_generation",
+        "test_premium_visual_request_prefetches_asset_forge_before_preview",
+        "test_research_failure_prevents_synthesis",
+        "test_scheduler_rewind_can_revisit_release_build_boundedly",
+        "test_stage_return_code_two_is_human_action_not_failure",
+        "test_successful_stage_must_advance",
+        "test_unregistered_stage_research_then_synthesis"
+      ]
+    },
     {
       "learning_score": 0,
       "matched_terms": [

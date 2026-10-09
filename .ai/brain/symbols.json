@@ -2518,28 +2518,28 @@
       "language": "python",
       "kind": "function",
       "name": "context_provider",
-      "line": 227
+      "line": 228
     },
     {
       "file": "studio/autonomous_project.py",
       "language": "python",
       "kind": "function",
       "name": "execute_cycle",
-      "line": 262
+      "line": 263
     },
     {
       "file": "studio/autonomous_project.py",
       "language": "python",
       "kind": "function",
       "name": "cycle_observer",
-      "line": 304
+      "line": 305
     },
     {
       "file": "studio/autonomous_project.py",
       "language": "python",
       "kind": "function",
       "name": "execute_registered_capability",
-      "line": 310
+      "line": 317
     },
     {
       "file": "studio/autonomous_research.py",
@@ -5695,15 +5695,22 @@
       "file": "studio/generic_project.py",
       "language": "python",
       "kind": "function",
-      "name": "run_project",
+      "name": "_save_published_checkpoint",
       "line": 727
     },
     {
       "file": "studio/generic_project.py",
       "language": "python",
       "kind": "function",
+      "name": "run_project",
+      "line": 741
+    },
+    {
+      "file": "studio/generic_project.py",
+      "language": "python",
+      "kind": "function",
       "name": "evaluate_model_candidate",
-      "line": 1327
+      "line": 1341
     },
     {
       "file": "studio/generic_repository.py",
@@ -6585,84 +6592,98 @@
       "language": "python",
       "kind": "function",
       "name": "_prepare_capability_promotion_handoff",
-      "line": 56
+      "line": 57
     },
     {
       "file": "studio/github_runner.py",
       "language": "python",
       "kind": "function",
       "name": "_usage_count",
-      "line": 96
+      "line": 97
     },
     {
       "file": "studio/github_runner.py",
       "language": "python",
       "kind": "function",
       "name": "collect_agent_usage",
-      "line": 105
+      "line": 106
     },
     {
       "file": "studio/github_runner.py",
       "language": "python",
       "kind": "function",
       "name": "write_production_os_result",
-      "line": 170
+      "line": 171
     },
     {
       "file": "studio/github_runner.py",
       "language": "python",
       "kind": "function",
       "name": "_stop_bounded_process",
-      "line": 556
+      "line": 557
     },
     {
       "file": "studio/github_runner.py",
       "language": "python",
       "kind": "function",
       "name": "bounded_run",
-      "line": 592
+      "line": 593
     },
     {
       "file": "studio/github_runner.py",
       "language": "python",
       "kind": "function",
       "name": "_update_improvements",
-      "line": 620
+      "line": 621
     },
     {
       "file": "studio/github_runner.py",
       "language": "python",
       "kind": "function",
       "name": "run",
-      "line": 638
+      "line": 639
     },
     {
       "file": "studio/github_runner.py",
       "language": "python",
       "kind": "function",
       "name": "effective_runner",
-      "line": 648
+      "line": 649
+    },
+    {
+      "file": "studio/github_runner.py",
+      "language": "python",
+      "kind": "function",
+      "name": "persist_published_round",
+      "line": 942
     },
     {
       "file": "studio/github_runner.py",
       "language": "python",
       "kind": "function",
       "name": "run_once",
-      "line": 940
+      "line": 966
+    },
+    {
+      "file": "studio/github_runner.py",
+      "language": "python",
+      "kind": "function",
+      "name": "persist_verified_cycle",
+      "line": 976
     },
     {
       "file": "studio/github_runner.py",
       "language": "python",
       "kind": "function",
       "name": "improvement_project_cycle",
-      "line": 967
+      "line": 1017
     },
     {
       "file": "studio/github_runner.py",
       "language": "python",
       "kind": "function",
       "name": "main",
-      "line": 1092
+      "line": 1142
     },
     {
       "file": "studio/github_strategy_efficiency_store.py",
@@ -6898,16 +6919,23 @@
     {
       "file": "studio/goal_loop.py",
       "language": "python",
+      "kind": "class",
+      "name": "DurableCheckpointError",
+      "line": 16
+    },
+    {
+      "file": "studio/goal_loop.py",
+      "language": "python",
       "kind": "function",
       "name": "_safe_exception_detail",
-      "line": 18
+      "line": 24
     },
     {
       "file": "studio/goal_loop.py",
       "language": "python",
       "kind": "function",
       "name": "run_goal",
-      "line": 24
+      "line": 30
     },
     {
       "file": "studio/godot_android_export.py",
@@ -16633,6 +16661,48 @@
       "line": 240
     },
     {
+      "file": "tests/test_autonomous_project.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_checkpoint_observer_receives_saved_goal_after_every_complete_cycle",
+      "line": 275
+    },
+    {
+      "file": "tests/test_autonomous_project.py",
+      "language": "python",
+      "kind": "function",
+      "name": "step",
+      "line": 282
+    },
+    {
+      "file": "tests/test_autonomous_project.py",
+      "language": "python",
+      "kind": "function",
+      "name": "persist",
+      "line": 295
+    },
+    {
+      "file": "tests/test_autonomous_project.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_failed_remote_cycle_checkpoint_aborts_without_silent_progress",
+      "line": 318
+    },
+    {
+      "file": "tests/test_autonomous_project.py",
+      "language": "python",
+      "kind": "function",
+      "name": "step",
+      "line": 323
+    },
+    {
+      "file": "tests/test_autonomous_project.py",
+      "language": "python",
+      "kind": "function",
+      "name": "fail_remote",
+      "line": 327
+    },
+    {
       "file": "tests/test_autonomous_research.py",
       "language": "python",
       "kind": "class",
@@ -20826,6 +20896,118 @@
       "line": 23
     },
     {
+      "file": "tests/test_generic_published_checkpoint.py",
+      "language": "python",
+      "kind": "class",
+      "name": "GenericPublishedCheckpointTests",
+      "line": 17
+    },
+    {
+      "file": "tests/test_generic_published_checkpoint.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_observer_reads_sealed_checkpoint_after_verified_round",
+      "line": 18
+    },
+    {
+      "file": "tests/test_generic_published_checkpoint.py",
+      "language": "python",
+      "kind": "function",
+      "name": "observer",
+      "line": 30
+    },
+    {
+      "file": "tests/test_generic_published_checkpoint.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_unpublished_phase_is_rejected_and_not_persisted",
+      "line": 39
+    },
+    {
+      "file": "tests/test_generic_published_checkpoint.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_remote_persistence_failure_stops_after_local_commit",
+      "line": 55
+    },
+    {
+      "file": "tests/test_generic_published_checkpoint.py",
+      "language": "python",
+      "kind": "function",
+      "name": "failure",
+      "line": 65
+    },
+    {
+      "file": "tests/test_generic_published_checkpoint.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_real_generic_canary_path_mirrors_only_after_sealed_complete",
+      "line": 72
+    },
+    {
+      "file": "tests/test_generic_published_checkpoint.py",
+      "language": "python",
+      "kind": "function",
+      "name": "observer",
+      "line": 89
+    },
+    {
+      "file": "tests/test_generic_published_checkpoint.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_missing_observer_keeps_original_local_behavior",
+      "line": 104
+    },
+    {
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "language": "python",
+      "kind": "class",
+      "name": "PublishedRoundCheckpointTests",
+      "line": 20
+    },
+    {
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_two_published_rounds_restore_on_a_fresh_actions_runner",
+      "line": 21
+    },
+    {
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "language": "python",
+      "kind": "function",
+      "name": "persist",
+      "line": 29
+    },
+    {
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_complete_round_mirrors_final_checkpoint",
+      "line": 55
+    },
+    {
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_unpublished_phase_never_reaches_remote_observer",
+      "line": 70
+    },
+    {
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_remote_failure_is_not_suppressed_after_local_save",
+      "line": 83
+    },
+    {
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "language": "python",
+      "kind": "function",
+      "name": "unavailable",
+      "line": 91
+    },
+    {
       "file": "tests/test_generic_repository_pull_request.py",
       "language": "python",
       "kind": "class",
@@ -21369,70 +21551,147 @@
       "language": "python",
       "kind": "class",
       "name": "GithubRunnerPersistentTests",
-      "line": 16
-    },
-    {
-      "file": "tests/test_github_runner_persistent.py",
-      "language": "python",
-      "kind": "function",
-      "name": "request",
       "line": 17
     },
     {
       "file": "tests/test_github_runner_persistent.py",
       "language": "python",
       "kind": "function",
+      "name": "request",
+      "line": 18
+    },
+    {
+      "file": "tests/test_github_runner_persistent.py",
+      "language": "python",
+      "kind": "function",
       "name": "test_run_uses_persistent_goal_engine",
-      "line": 28
+      "line": 29
     },
     {
       "file": "tests/test_github_runner_persistent.py",
       "language": "python",
       "kind": "function",
       "name": "test_human_action_is_not_reported_complete",
-      "line": 40
+      "line": 41
     },
     {
       "file": "tests/test_github_runner_persistent.py",
       "language": "python",
       "kind": "function",
       "name": "test_transient_capacity_exhaustion_is_reported_without_terminal_goal_block",
-      "line": 55
+      "line": 56
     },
     {
       "file": "tests/test_github_runner_persistent.py",
       "language": "python",
       "kind": "function",
       "name": "test_blocked_state_preserves_reason",
-      "line": 72
+      "line": 73
     },
     {
       "file": "tests/test_github_runner_persistent.py",
       "language": "python",
       "kind": "function",
       "name": "test_remote_checkpoint_ingests_memory_before_state_persistence",
-      "line": 87
+      "line": 88
+    },
+    {
+      "file": "tests/test_github_runner_persistent.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_published_round_remote_api_failure_stops_without_leaking_response",
+      "line": 125
+    },
+    {
+      "file": "tests/test_github_runner_persistent.py",
+      "language": "python",
+      "kind": "function",
+      "name": "fake_native_project",
+      "line": 132
+    },
+    {
+      "file": "tests/test_github_runner_persistent.py",
+      "language": "python",
+      "kind": "function",
+      "name": "fake_persistent_project",
+      "line": 141
     },
     {
       "file": "tests/test_github_runner_persistent.py",
       "language": "python",
       "kind": "function",
       "name": "test_invalid_memory_ingestion_blocks_state_checkpoint",
-      "line": 124
+      "line": 192
     },
     {
       "file": "tests/test_github_runner_persistent.py",
       "language": "python",
       "kind": "function",
       "name": "test_promotion_required_handoff_is_sealed_and_non_promoting",
-      "line": 169
+      "line": 237
     },
     {
       "file": "tests/test_github_runner_persistent.py",
       "language": "python",
       "kind": "function",
       "name": "test_promotion_handoff_rejects_cross_candidate_validation",
-      "line": 201
+      "line": 269
+    },
+    {
+      "file": "tests/test_github_runner_round_persistence.py",
+      "language": "python",
+      "kind": "class",
+      "name": "GithubRunnerRoundPersistenceTests",
+      "line": 17
+    },
+    {
+      "file": "tests/test_github_runner_round_persistence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "request",
+      "line": 18
+    },
+    {
+      "file": "tests/test_github_runner_round_persistence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_remote_generic_published_round_is_flushed_before_cycle_finishes",
+      "line": 29
+    },
+    {
+      "file": "tests/test_github_runner_round_persistence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "emulate_generic",
+      "line": 79
+    },
+    {
+      "file": "tests/test_github_runner_round_persistence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "emulate_goal_loop",
+      "line": 90
+    },
+    {
+      "file": "tests/test_github_runner_round_persistence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_wrong_project_round_checkpoint_is_refused",
+      "line": 116
+    },
+    {
+      "file": "tests/test_github_runner_round_persistence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "bad_generic",
+      "line": 140
+    },
+    {
+      "file": "tests/test_github_runner_round_persistence.py",
+      "language": "python",
+      "kind": "function",
+      "name": "emulate_goal_loop",
+      "line": 150
     },
     {
       "file": "tests/test_github_runner_usage.py",
@@ -21711,7 +21970,7 @@
       "file": "tests/test_goal_loop.py",
       "language": "python",
       "kind": "function",
-      "name": "test_retryable_exception_detail_redacts_common_secrets",
+      "name": "test_failed_durable_checkpoint_never_consumes_more_cycle_attempts",
       "line": 59
     },
     {
@@ -21719,91 +21978,119 @@
       "language": "python",
       "kind": "function",
       "name": "execute",
-      "line": 65
+      "line": 64
+    },
+    {
+      "file": "tests/test_goal_loop.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_non_checkpoint_transient_exception_still_retries_normally",
+      "line": 83
+    },
+    {
+      "file": "tests/test_goal_loop.py",
+      "language": "python",
+      "kind": "function",
+      "name": "execute",
+      "line": 88
+    },
+    {
+      "file": "tests/test_goal_loop.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_retryable_exception_detail_redacts_common_secrets",
+      "line": 101
+    },
+    {
+      "file": "tests/test_goal_loop.py",
+      "language": "python",
+      "kind": "function",
+      "name": "execute",
+      "line": 107
     },
     {
       "file": "tests/test_goal_loop.py",
       "language": "python",
       "kind": "function",
       "name": "test_programming_error_blocks_without_repeating_broken_cycle",
-      "line": 76
+      "line": 118
     },
     {
       "file": "tests/test_goal_loop.py",
       "language": "python",
       "kind": "function",
       "name": "execute",
-      "line": 82
+      "line": 124
     },
     {
       "file": "tests/test_goal_loop.py",
       "language": "python",
       "kind": "function",
       "name": "test_missing_capability_is_adapted_registered_and_goal_resumes",
-      "line": 92
+      "line": 134
     },
     {
       "file": "tests/test_goal_loop.py",
       "language": "python",
       "kind": "function",
       "name": "execute",
-      "line": 97
+      "line": 139
     },
     {
       "file": "tests/test_goal_loop.py",
       "language": "python",
       "kind": "function",
       "name": "adapt",
-      "line": 102
-    },
-    {
-      "file": "tests/test_goal_loop.py",
-      "language": "python",
-      "kind": "function",
-      "name": "test_unverified_adaptation_never_registers_capability",
-      "line": 113
-    },
-    {
-      "file": "tests/test_goal_loop.py",
-      "language": "python",
-      "kind": "function",
-      "name": "execute",
-      "line": 117
-    },
-    {
-      "file": "tests/test_goal_loop.py",
-      "language": "python",
-      "kind": "function",
-      "name": "adapt",
-      "line": 119
-    },
-    {
-      "file": "tests/test_goal_loop.py",
-      "language": "python",
-      "kind": "function",
-      "name": "test_yield_run_preserves_attempt_budget_and_returns_active",
-      "line": 126
-    },
-    {
-      "file": "tests/test_goal_loop.py",
-      "language": "python",
-      "kind": "function",
-      "name": "test_human_action_stops_and_persists_terminal_state",
-      "line": 135
-    },
-    {
-      "file": "tests/test_goal_loop.py",
-      "language": "python",
-      "kind": "function",
-      "name": "test_absent_adapter_leads_to_blocked_terminal_state",
       "line": 144
     },
     {
       "file": "tests/test_goal_loop.py",
       "language": "python",
       "kind": "function",
+      "name": "test_unverified_adaptation_never_registers_capability",
+      "line": 155
+    },
+    {
+      "file": "tests/test_goal_loop.py",
+      "language": "python",
+      "kind": "function",
+      "name": "execute",
+      "line": 159
+    },
+    {
+      "file": "tests/test_goal_loop.py",
+      "language": "python",
+      "kind": "function",
+      "name": "adapt",
+      "line": 161
+    },
+    {
+      "file": "tests/test_goal_loop.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_yield_run_preserves_attempt_budget_and_returns_active",
+      "line": 168
+    },
+    {
+      "file": "tests/test_goal_loop.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_human_action_stops_and_persists_terminal_state",
+      "line": 177
+    },
+    {
+      "file": "tests/test_goal_loop.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_absent_adapter_leads_to_blocked_terminal_state",
+      "line": 186
+    },
+    {
+      "file": "tests/test_goal_loop.py",
+      "language": "python",
+      "kind": "function",
       "name": "test_local_cycle_budget_does_not_fake_completion",
-      "line": 152
+      "line": 194
     },
     {
       "file": "tests/test_godot_android_export.py",
@@ -24630,78 +24917,106 @@
       "file": "tests/test_multi_engine_orchestrator.py",
       "language": "python",
       "kind": "function",
-      "name": "_runner",
-      "line": 31
+      "name": "test_generic_only_forwards_published_round_checkpoint_callback",
+      "line": 32
     },
     {
       "file": "tests/test_multi_engine_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "runner",
-      "line": 33
+      "line": 42
+    },
+    {
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_generic_without_callback_preserves_original_call",
+      "line": 62
+    },
+    {
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "runner",
+      "line": 71
+    },
+    {
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_runner",
+      "line": 84
+    },
+    {
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "language": "python",
+      "kind": "function",
+      "name": "runner",
+      "line": 86
     },
     {
       "file": "tests/test_multi_engine_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "test_godot_stops_cleanly_when_release_keystore_is_missing",
-      "line": 88
+      "line": 141
     },
     {
       "file": "tests/test_multi_engine_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "test_release_chain_reaches_human_play_submission_only",
-      "line": 95
+      "line": 148
     },
     {
       "file": "tests/test_multi_engine_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "test_opt_in_play_validation_can_complete_godot_pipeline",
-      "line": 102
+      "line": 155
     },
     {
       "file": "tests/test_multi_engine_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "test_credentials_lost_between_preflight_and_signing_return_to_human_action",
-      "line": 114
+      "line": 167
     },
     {
       "file": "tests/test_multi_engine_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "test_each_failed_godot_stage_stays_on_itself",
-      "line": 120
+      "line": 173
     },
     {
       "file": "tests/test_multi_engine_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "test_journey_stage_cannot_fake_execution_coverage",
-      "line": 128
+      "line": 181
     },
     {
       "file": "tests/test_multi_engine_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "test_visual_stage_cannot_fake_visual_coverage",
-      "line": 134
+      "line": 187
     },
     {
       "file": "tests/test_multi_engine_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "test_missing_detection_evidence_fails_closed",
-      "line": 140
+      "line": 193
     },
     {
       "file": "tests/test_multi_engine_orchestrator.py",
       "language": "python",
       "kind": "function",
       "name": "runner",
-      "line": 143
+      "line": 196
     },
     {
       "file": "tests/test_multi_project_canary.py",
@@ -26094,119 +26409,147 @@
       "language": "python",
       "kind": "class",
       "name": "_ControlPlane",
-      "line": 19
+      "line": 20
     },
     {
       "file": "tests/test_production_os_local_e2e.py",
       "language": "python",
       "kind": "function",
       "name": "__init__",
-      "line": 20
+      "line": 21
     },
     {
       "file": "tests/test_production_os_local_e2e.py",
       "language": "python",
       "kind": "class",
       "name": "Handler",
-      "line": 26
-    },
-    {
-      "file": "tests/test_production_os_local_e2e.py",
-      "language": "python",
-      "kind": "function",
-      "name": "log_message",
       "line": 27
     },
     {
       "file": "tests/test_production_os_local_e2e.py",
       "language": "python",
       "kind": "function",
+      "name": "log_message",
+      "line": 28
+    },
+    {
+      "file": "tests/test_production_os_local_e2e.py",
+      "language": "python",
+      "kind": "function",
       "name": "do_POST",
-      "line": 30
+      "line": 31
     },
     {
       "file": "tests/test_production_os_local_e2e.py",
       "language": "python",
       "kind": "function",
       "name": "_send",
-      "line": 91
+      "line": 92
     },
     {
       "file": "tests/test_production_os_local_e2e.py",
       "language": "python",
       "kind": "function",
       "name": "url",
-      "line": 110
+      "line": 111
     },
     {
       "file": "tests/test_production_os_local_e2e.py",
       "language": "python",
       "kind": "function",
       "name": "__enter__",
-      "line": 114
+      "line": 115
     },
     {
       "file": "tests/test_production_os_local_e2e.py",
       "language": "python",
       "kind": "function",
       "name": "__exit__",
-      "line": 118
+      "line": 119
     },
     {
       "file": "tests/test_production_os_local_e2e.py",
       "language": "python",
       "kind": "class",
       "name": "ProductionOSLocalE2ETests",
-      "line": 124
-    },
-    {
-      "file": "tests/test_production_os_local_e2e.py",
-      "language": "python",
-      "kind": "function",
-      "name": "test_worker_completes_real_http_control_plane_cycle",
       "line": 125
     },
     {
       "file": "tests/test_production_os_local_e2e.py",
       "language": "python",
       "kind": "function",
+      "name": "test_worker_completes_real_http_control_plane_cycle",
+      "line": 126
+    },
+    {
+      "file": "tests/test_production_os_local_e2e.py",
+      "language": "python",
+      "kind": "function",
       "name": "runner",
-      "line": 129
+      "line": 130
     },
     {
       "file": "tests/test_production_os_local_e2e.py",
       "language": "python",
       "kind": "function",
       "name": "execute_once",
-      "line": 166
+      "line": 167
     },
     {
       "file": "tests/test_production_os_local_e2e.py",
       "language": "python",
       "kind": "function",
       "name": "test_two_separate_worker_sessions_restore_verified_partial_progress",
-      "line": 273
+      "line": 274
     },
     {
       "file": "tests/test_production_os_local_e2e.py",
       "language": "python",
       "kind": "function",
       "name": "task_job",
-      "line": 275
+      "line": 276
     },
     {
       "file": "tests/test_production_os_local_e2e.py",
       "language": "python",
       "kind": "function",
       "name": "runner",
-      "line": 304
+      "line": 305
     },
     {
       "file": "tests/test_production_os_local_e2e.py",
       "language": "python",
       "kind": "function",
       "name": "execute_once",
-      "line": 347
+      "line": 348
+    },
+    {
+      "file": "tests/test_production_os_local_e2e.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_crash_after_remote_cycle_checkpoint_resumes_on_fresh_disk",
+      "line": 412
+    },
+    {
+      "file": "tests/test_production_os_local_e2e.py",
+      "language": "python",
+      "kind": "function",
+      "name": "step",
+      "line": 421
+    },
+    {
+      "file": "tests/test_production_os_local_e2e.py",
+      "language": "python",
+      "kind": "function",
+      "name": "persist_then_crash",
+      "line": 425
+    },
+    {
+      "file": "tests/test_production_os_local_e2e.py",
+      "language": "python",
+      "kind": "function",
+      "name": "resumed_step",
+      "line": 453
     },
     {
       "file": "tests/test_production_os_remote_asset_capability.py",

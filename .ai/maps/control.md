@@ -122,7 +122,7 @@ request.json
 ```json
 {
   "schema_version": "production-os/resume-proof-trigger/v1",
-  "sequence": 1,
+  "sequence": 5,
   "description": "Opt-in two-run remote autonomy checkpoint recovery proof"
 }
 ```
@@ -141,7 +141,7 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-  "sequence": 9,
+  "sequence": 14,
   "repository": "dbrckk/repo-standards"
 }
 ```

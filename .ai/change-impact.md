@@ -1,17 +1,13 @@
 # Change impact
 
-Base: 095ac360a02ae48a8e6fbf3b5b8e82393f82e8a2
-Head: 494abfa03d549849c747c8e9565bb15d49bc2c93
+Base: 08959dd0422070d6fbec49c359bd36591e507201
+Head: 2e120747e1292bef4ffada6c13da8a3935b33825
 
 ## Changed files
-- A .github/workflows/production-os-live-resume-proof.yml
-- A control/production-os-resume-proof.json
-- A scripts/production-os-live-resume-proof.py
+- M AGENTS.md
 
 ## Affected areas
-- .github
-- control
-- scripts
+- (root)
 
 ## Related test candidates
 - No direct filename-based test match detected.

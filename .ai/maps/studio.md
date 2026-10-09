@@ -4444,6 +4444,10 @@ def cycle_observer(goal_state, result)
 ⋮----
 learned = learn_from_cycle(memory, goal_id, goal_state, result, str(baseline_sha))
 ⋮----
+# run_goal has already durably written the integrity-sealed goal at
+# this point. Persist only complete cycle boundaries: never publish
+# an unverified/in-progress result as a successful checkpoint.
+⋮----
 def execute_registered_capability(registry, capability, goal_state)
 ⋮----
 previous_runtime = {name: os.environ.get(name) for name in runtime_paths}
@@ -9015,7 +9019,16 @@ target = work / relative
 actual = target.read_text(encoding="utf-8")
 raw = target.read_bytes()
 ⋮----
-def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict
+def _save_published_checkpoint(path: Path, checkpoint: dict, observer=None) -> None
+⋮----
+"""Publish a round boundary only after the local sealed checkpoint exists.
+
+    Callers must first publish the corresponding repository commit. An observer
+    can then mirror the checkpoint to GitHub-backed autonomous state without
+    waiting for the entire goal cycle to finish.
+    """
+⋮----
+def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic, checkpoint_observer=None) -> dict
 ⋮----
 github = GitHub(req["target_repo"])
 repo = GenericRepository(
@@ -11008,9 +11021,29 @@ registry_review_path=out/'.autonomy/capability-registry-review.json'
 registry_review_status=inspect_capability_registry_review(
 ⋮----
 last_result={}
+⋮----
+def persist_published_round(checkpoint)
+⋮----
+# The repository commit and sealed local round checkpoint already
+# exist. Mirror that exact checkpoint before another expensive round.
+# The goal stays active until its separate evidence gate passes.
+⋮----
+# Network/API failures are not necessarily converted into
+# ExecutionCheckpointStoreError by the GitHub wrapper. Treat all
+# non-acknowledged durable writes as non-retryable for this run.
+# Expose only an exception class, not an HTTP/token-bearing body.
+⋮----
 def run_once(*args)
 ⋮----
 result=run_multi_engine_project(*args)
+⋮----
+result=run_multi_engine_project(
+⋮----
+def persist_verified_cycle(goal_state, result)
+⋮----
+# The goal loop has already sealed and saved the completed cycle.
+# Without this flush, an abrupt later runner interruption can discard
+# several verified cycles even when the GitHub state branch is healthy.
 ⋮----
 state=run_persistent_project(
 improvement=None
@@ -11347,6 +11380,10 @@ proof={"tests_passed":True,"commit_sha":commit_sha,"evidence_sha256":_digest(evi
 ````python
 """Persistent bounded autonomous goal loop."""
 ⋮----
+class DurableCheckpointError(StudioError)
+⋮----
+"""Checkpoint persistence failed; retry only from a new worker session."""
+⋮----
 _SENSITIVE_DETAIL = re.compile(
 ⋮----
 def _safe_exception_detail(exc)
@@ -11391,6 +11428,10 @@ cycle_state=dict(state)
 context=context_provider(dict(state))
 ⋮----
 result=execute_cycle(cycle_state)
+⋮----
+# The work branch may already contain a published commit, but
+# the remote checkpoint did not acknowledge it. Do not burn
+# additional goal/model attempts with uncertain durability.
 ⋮----
 # Transient worker/provider failures are retryable. Programming
 # errors are deterministic internal defects: fail closed instead
@@ -13844,7 +13885,7 @@ try: evidence=json.loads(path.read_text())
 ⋮----
 def _run_stage(script,request_path,project_out,work,runner,deadline,clock)
 ⋮----
-def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None)
+def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None,checkpoint_observer=None)
 ⋮----
 engine=_detect(request_path,project_out,runner,deadline,clock)
 ⋮----
@@ -13855,6 +13896,7 @@ portfolio_path=project_out/'portfolio-research.json'
 ⋮----
 try: portfolio=json.loads(portfolio_path.read_text())
 except (OSError,json.JSONDecodeError): portfolio={}
+kwargs={"portfolio":portfolio,"max_rounds":6,"deadline":deadline,"clock":clock}
 ⋮----
 godot_request=request_check(json.loads(Path(request_path).read_text()))
 ⋮----

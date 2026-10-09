@@ -588,6 +588,8 @@ tests/
   test_generic_capability_validation_report.py
   test_generic_model_capacity.py
   test_generic_policy.py
+  test_generic_published_checkpoint.py
+  test_generic_published_round_checkpoint.py
   test_generic_repository_pull_request.py
   test_generic_structural_verify.py
   test_generic_toolchain.py
@@ -601,6 +603,7 @@ tests/
   test_github_provider_health_store.py
   test_github_quick_gate_cache_store.py
   test_github_runner_persistent.py
+  test_github_runner_round_persistence.py
   test_github_runner_usage.py
   test_global_admission.py
   test_goal_capability_runtime.py
@@ -3239,7 +3242,7 @@ initial_prompt: |
 ````json
 {
   "schema_version": "production-os/resume-proof-trigger/v1",
-  "sequence": 1,
+  "sequence": 5,
   "description": "Opt-in two-run remote autonomy checkpoint recovery proof"
 }
 ````
@@ -3258,7 +3261,7 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-  "sequence": 9,
+  "sequence": 14,
   "repository": "dbrckk/repo-standards"
 }
 ````
@@ -9990,6 +9993,10 @@ def cycle_observer(goal_state, result)
 ⋮----
 learned = learn_from_cycle(memory, goal_id, goal_state, result, str(baseline_sha))
 ⋮----
+# run_goal has already durably written the integrity-sealed goal at
+# this point. Persist only complete cycle boundaries: never publish
+# an unverified/in-progress result as a successful checkpoint.
+⋮----
 def execute_registered_capability(registry, capability, goal_state)
 ⋮----
 previous_runtime = {name: os.environ.get(name) for name in runtime_paths}
@@ -14561,7 +14568,16 @@ target = work / relative
 actual = target.read_text(encoding="utf-8")
 raw = target.read_bytes()
 ⋮----
-def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic) -> dict
+def _save_published_checkpoint(path: Path, checkpoint: dict, observer=None) -> None
+⋮----
+"""Publish a round boundary only after the local sealed checkpoint exists.
+
+    Callers must first publish the corresponding repository commit. An observer
+    can then mirror the checkpoint to GitHub-backed autonomous state without
+    waiting for the entire goal cycle to finish.
+    """
+⋮----
+def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic, checkpoint_observer=None) -> dict
 ⋮----
 github = GitHub(req["target_repo"])
 repo = GenericRepository(
@@ -16554,9 +16570,29 @@ registry_review_path=out/'.autonomy/capability-registry-review.json'
 registry_review_status=inspect_capability_registry_review(
 ⋮----
 last_result={}
+⋮----
+def persist_published_round(checkpoint)
+⋮----
+# The repository commit and sealed local round checkpoint already
+# exist. Mirror that exact checkpoint before another expensive round.
+# The goal stays active until its separate evidence gate passes.
+⋮----
+# Network/API failures are not necessarily converted into
+# ExecutionCheckpointStoreError by the GitHub wrapper. Treat all
+# non-acknowledged durable writes as non-retryable for this run.
+# Expose only an exception class, not an HTTP/token-bearing body.
+⋮----
 def run_once(*args)
 ⋮----
 result=run_multi_engine_project(*args)
+⋮----
+result=run_multi_engine_project(
+⋮----
+def persist_verified_cycle(goal_state, result)
+⋮----
+# The goal loop has already sealed and saved the completed cycle.
+# Without this flush, an abrupt later runner interruption can discard
+# several verified cycles even when the GitHub state branch is healthy.
 ⋮----
 state=run_persistent_project(
 improvement=None
@@ -16893,6 +16929,10 @@ proof={"tests_passed":True,"commit_sha":commit_sha,"evidence_sha256":_digest(evi
 ````python
 """Persistent bounded autonomous goal loop."""
 ⋮----
+class DurableCheckpointError(StudioError)
+⋮----
+"""Checkpoint persistence failed; retry only from a new worker session."""
+⋮----
 _SENSITIVE_DETAIL = re.compile(
 ⋮----
 def _safe_exception_detail(exc)
@@ -16937,6 +16977,10 @@ cycle_state=dict(state)
 context=context_provider(dict(state))
 ⋮----
 result=execute_cycle(cycle_state)
+⋮----
+# The work branch may already contain a published commit, but
+# the remote checkpoint did not acknowledge it. Do not burn
+# additional goal/model attempts with uncertain durability.
 ⋮----
 # Transient worker/provider failures are retryable. Programming
 # errors are deterministic internal defects: fail closed instead
@@ -19390,7 +19434,7 @@ try: evidence=json.loads(path.read_text())
 ⋮----
 def _run_stage(script,request_path,project_out,work,runner,deadline,clock)
 ⋮----
-def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None)
+def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None,checkpoint_observer=None)
 ⋮----
 engine=_detect(request_path,project_out,runner,deadline,clock)
 ⋮----
@@ -19401,6 +19445,7 @@ portfolio_path=project_out/'portfolio-research.json'
 ⋮----
 try: portfolio=json.loads(portfolio_path.read_text())
 except (OSError,json.JSONDecodeError): portfolio={}
+kwargs={"portfolio":portfolio,"max_rounds":6,"deadline":deadline,"clock":clock}
 ⋮----
 godot_request=request_check(json.loads(Path(request_path).read_text()))
 ⋮----
@@ -27879,6 +27924,23 @@ after = load_registry(registry_path)
 def test_runtime_environment_is_restored_after_project_run(self)
 ⋮----
 previous = os.environ.get("STUDIO_CHECKPOINT_PATH")
+⋮----
+def test_checkpoint_observer_receives_saved_goal_after_every_complete_cycle(self)
+⋮----
+out = Path(td) / "out"
+checkpoints = []
+⋮----
+def step(*args)
+⋮----
+def persist(state, result)
+⋮----
+on_disk = load_goal(out / ".autonomy/goal.json")
+⋮----
+result = run_persistent_project(
+⋮----
+def test_failed_remote_cycle_checkpoint_aborts_without_silent_progress(self)
+⋮----
+def fail_remote(state, result)
 ````
 
 ## File: tests/test_autonomous_research.py
@@ -30261,6 +30323,85 @@ def test_sensitive_and_ci_paths_are_blocked(self)
 def test_patch_rejects_secret_pattern(self)
 ````
 
+## File: tests/test_generic_published_checkpoint.py
+````python
+"""Integrity and ordering guarantees for intra-cycle published-round checkpoints."""
+⋮----
+class GenericPublishedCheckpointTests(unittest.TestCase)
+⋮----
+def test_observer_reads_sealed_checkpoint_after_verified_round(self)
+⋮----
+path = Path(temp) / ".autonomy/generic-execution-checkpoint.json"
+checkpoint = advance(
+observed = []
+⋮----
+def observer(value)
+⋮----
+def test_unpublished_phase_is_rejected_and_not_persisted(self)
+⋮----
+path = Path(temp) / "checkpoint.json"
+⋮----
+seen = []
+⋮----
+def test_remote_persistence_failure_stops_after_local_commit(self)
+⋮----
+def failure(_value)
+⋮----
+def test_real_generic_canary_path_mirrors_only_after_sealed_complete(self)
+⋮----
+out = Path(temp) / "out"
+⋮----
+checkpoint_path = out / ".autonomy/generic-execution-checkpoint.json"
+⋮----
+proof = {"passed": True, "reason": "existing verified contract"}
+⋮----
+result = run_project(
+⋮----
+def test_missing_observer_keeps_original_local_behavior(self)
+````
+
+## File: tests/test_generic_published_round_checkpoint.py
+````python
+"""Round-level recovery guarantees for generic autonomous projects."""
+⋮----
+class PublishedRoundCheckpointTests(unittest.TestCase)
+⋮----
+def test_two_published_rounds_restore_on_a_fresh_actions_runner(self)
+⋮----
+remote = FakeGitHub()
+⋮----
+first = Path(td) / "runner-one" / ".autonomy" / "generic-execution-checkpoint.json"
+second = Path(td) / "runner-two" / ".autonomy" / "generic-execution-checkpoint.json"
+project_id = "isolated-generic-resume"
+calls = []
+⋮----
+def persist(checkpoint)
+⋮----
+# The local integrity-sealed state must exist before any
+# remote state branch mutation can begin.
+⋮----
+checkpoint = new(project_id, "generic", "a" * 40)
+published_one = advance(
+⋮----
+published_two = advance(
+⋮----
+# Simulated crash before the enclosing goal cycle returns.
+⋮----
+def test_complete_round_mirrors_final_checkpoint(self)
+⋮----
+path = Path(td) / ".autonomy" / "generic-execution-checkpoint.json"
+checkpoint = advance(
+⋮----
+def test_unpublished_phase_never_reaches_remote_observer(self)
+⋮----
+path = Path(td) / "checkpoint.json"
+called = []
+⋮----
+def test_remote_failure_is_not_suppressed_after_local_save(self)
+⋮----
+def unavailable(_value)
+````
+
 ## File: tests/test_generic_repository_pull_request.py
 ````python
 class FakeGitHub
@@ -30618,6 +30759,19 @@ def test_remote_checkpoint_ingests_memory_before_state_persistence(self)
 order=[]
 state={"status":"blocked","human_action":None,"blocked_reason":"test-stop"}
 ⋮----
+def test_published_round_remote_api_failure_stops_without_leaking_response(self)
+⋮----
+root = Path(td)
+request = self.request(root)
+out = root / "out"
+runs = []
+⋮----
+def fake_native_project(*args, **kwargs)
+⋮----
+def fake_persistent_project(*args, **kwargs)
+⋮----
+restores = (
+⋮----
 def test_invalid_memory_ingestion_blocks_state_checkpoint(self)
 ⋮----
 persist_state=stack.enter_context(patch("github_runner.persist_local"))
@@ -30634,6 +30788,40 @@ validation={
 handoff=_prepare_capability_promotion_handoff(out,state,"c"*40)
 ⋮----
 def test_promotion_handoff_rejects_cross_candidate_validation(self)
+````
+
+## File: tests/test_github_runner_round_persistence.py
+````python
+"""Production-OS native runner round persistence wiring and identity guards."""
+⋮----
+class GithubRunnerRoundPersistenceTests(unittest.TestCase)
+⋮----
+def request(self, root)
+⋮----
+path = root / "request.json"
+⋮----
+def test_remote_generic_published_round_is_flushed_before_cycle_finishes(self)
+⋮----
+root = Path(td)
+request = self.request(root)
+out = root / "out"
+checkpoints = []
+checkpoint = {
+remote_saves = []
+⋮----
+flush = stack.enter_context(patch(
+⋮----
+def emulate_generic(*args, **kwargs)
+⋮----
+def emulate_goal_loop(*args, **kwargs)
+⋮----
+result = run(
+⋮----
+def test_wrong_project_round_checkpoint_is_refused(self)
+⋮----
+def bad_generic(*args, **kwargs)
+⋮----
+persist_remote = stack.enter_context(patch(
 ````
 
 ## File: tests/test_github_runner_usage.py
@@ -30800,6 +30988,18 @@ state = run_goal(goal_path, registry_path, execute, max_cycles=5)
 def test_worker_exception_is_recorded_and_retried(self)
 ⋮----
 state = run_goal(goal_path, registry_path, execute, max_cycles=3)
+⋮----
+def test_failed_durable_checkpoint_never_consumes_more_cycle_attempts(self)
+⋮----
+calls = []
+⋮----
+def execute(_state)
+⋮----
+saved = load_goal(goal_path)
+⋮----
+def test_non_checkpoint_transient_exception_still_retries_normally(self)
+⋮----
+result = run_goal(
 ⋮----
 def test_retryable_exception_detail_redacts_common_secrets(self)
 ⋮----
@@ -32403,6 +32603,22 @@ root=Path(td); out=root/'out'; req=self.request(root)
 def runner(args,timeout)
 result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
 ⋮----
+@patch("multi_engine_orchestrator.run_generic_project")
+    def test_generic_only_forwards_published_round_checkpoint_callback(self, generic)
+⋮----
+root = Path(td)
+out = root / "out"
+req = self.request(root)
+callback_calls = []
+⋮----
+def runner(args, timeout)
+⋮----
+callback = callback_calls.append
+response = run_project(
+⋮----
+@patch("multi_engine_orchestrator.run_generic_project")
+    def test_generic_without_callback_preserves_original_call(self, generic)
+⋮----
 def _runner(self,out,fail_stage=None,bad_journey=False,bad_visual=False,release_ready=False,artifact_credentials=True)
 ⋮----
 calls=[]
@@ -33310,6 +33526,37 @@ final_goal = load_goal(
 remote_final = FakeGitHubGoalLoad(remote, projects[0]["id"])
 ⋮----
 paths = [c["path"] for c in plane.calls]
+⋮----
+def test_crash_after_remote_cycle_checkpoint_resumes_on_fresh_disk(self)
+⋮----
+"""Remote state survives a crash before normal end-of-run persistence."""
+⋮----
+project_id = "two-session-crash-proof"
+executions = []
+⋮----
+root = Path(td)
+first_out = root / "first-runner"
+⋮----
+def step(*args)
+⋮----
+def persist_then_crash(state, result)
+⋮----
+remote_partial = FakeGitHubGoalLoad(remote, project_id)
+⋮----
+# GitHub Actions starts a different runner with no local project files.
+second_out = root / "second-runner"
+⋮----
+restored = load_goal(second_out / ".autonomy/goal.json")
+⋮----
+def resumed_step(*args)
+⋮----
+result = run_persistent_project(
+⋮----
+# The cycle checkpoint precedes terminal finalization. The native
+# GitHub runner still flushes the finalized state after return.
+checkpoint = FakeGitHubGoalLoad(remote, project_id)
+⋮----
+final = FakeGitHubGoalLoad(remote, project_id)
 ````
 
 ## File: tests/test_production_os_remote_asset_capability.py
@@ -36355,6 +36602,15 @@ workflow:
 ````markdown
 # Repository agent instructions
 
+## Shared development policy — 88 validated rules (2026-10-09)
+
+The project adopts the [88-rule standard](https://github.com/dbrckk/repo-standards/blob/db2f86657ada74a0561e07189f9942d6b66ebb4a/standards/88-rules.md), the [operational agent skill](https://github.com/dbrckk/repo-standards/blob/db2f86657ada74a0561e07189f9942d6b66ebb4a/skills/repo-excellence-88/SKILL.md), and the [educational wiki](https://github.com/dbrckk/repo-standards/blob/db2f86657ada74a0561e07189f9942d6b66ebb4a/docs/WIKI-88.md). Read the relevant parts before substantial work and apply conditional rules only where appropriate.
+
+**Owner preference: do not create new unit tests.** Existing tests may be run for diagnostics; prioritize real functional and integration verification, lint, build, and reproducible checks. Never claim an unexecuted check passed.
+
+Preserve repository-specific constraints and authorized scope. The pinned policy commit above governs the 88 rules; `.repo-standards.yml` continues to configure existing repository intelligence and reusable workflows independently. Do not change workflow refs merely to adopt these rules.
+
+
 This repository adopts shared standards from `dbrckk/repo-standards` at the release recorded in `.repo-standards.yml`.
 
 Before substantial work:
@@ -36382,7 +36638,7 @@ Before substantial work:
 Repository-specific rules:
 - Preserve existing architecture and public interfaces unless the task requires a change.
 - Prefer the smallest coherent change.
-- Prefer targeted tests from `.ai/brain/selected-tests.json`; expand validation when impact is ambiguous or targeted tests fail.
+- Prefer targeted functional or integration checks; existing selected tests may be run as diagnostics, but do not create new unit tests. Expand validation when impact is ambiguous.
 - Treat hotset/context packets and graph shards as routing hints, not authoritative source.
 - Verify reference/dependency/impact/AST hits against authoritative source before editing.
 - Treat security signals and static graph edges as heuristics, not proof.

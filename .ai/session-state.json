@@ -1,9 +1,9 @@
 {
   "version": 1,
   "updated_at": "2026-10-09",
-  "task": "Qualify the full Production-OS delivery chain after real worker canary 17 and surface GitHub PR HTTP 403 without false delivery claims.",
-  "base_commit": "32c0629f14ba32e24aa1da39fbded1bac24f9839",
-  "branch": "fix/pos-delivery-evidence-review-link",
+  "task": "Fix Production-OS canary cold start after real sequence 18 POST timeout; preserve no-duplicate-launch invariant.",
+  "base_commit": "8023ba24664af065d6b70edcaded9d01dea40a22",
+  "branch": "fix/canary-render-readiness-warmup",
   "completed": [
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",
@@ -86,9 +86,9 @@
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Surface PR permission block as structured review-blocked evidence with manual compare link",
-    "Preserve changed_files and release_status in Production-OS result",
-    "Run canonical CI and verify credentials/outcome; do not claim release without PR"
+    "Validate GET-only /readyz warmup before one-time canary POST",
+    "Verify PR CI and merge",
+    "Run sequence 19 live after merge and inspect worker artifact for delivery_status/release_status"
   ],
   "merged_changes": [
     {
@@ -210,12 +210,9 @@
     "fix_branch": "fix/generic-context-envelope"
   },
   "latest_canary": {
-    "sequence": 17,
-    "worker_run": 37968265692,
-    "canary_run": 37968265772,
-    "result": "succeeded",
-    "commit": "b82a9e275ba487f3176c76dddbdc7da8156f16b5",
-    "file": ".production-os/worker-canary-17.txt",
-    "pr": "API HTTP 403"
+    "sequence": 18,
+    "canary_run": 37975993803,
+    "worker_run": 37975993742,
+    "result": "canary TimeoutError after 30s on launch, worker queue_empty after eventual readiness"
   }
 }

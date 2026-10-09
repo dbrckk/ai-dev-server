@@ -4,9 +4,10 @@ import json
 import os
 import re
 import time
+import urllib.error
 from pathlib import Path
 
-from core import canonical
+from core import APIError, StudioError, canonical
 from production_os_resume_objectives import OperatorClient
 
 
@@ -103,6 +104,38 @@ def wait_for_workflow(client, workflow_id, *, timeout_seconds, poll_seconds=10.0
         sleeper(min(poll, max(0.0, deadline - float(clock()))))
 
 
+
+def wait_for_readiness(client, *, timeout_seconds=180.0, poll_seconds=5.0,
+                       clock=time.monotonic, sleeper=time.sleep):
+    """Warm the Render service using *only GET* before the one-shot POST.
+
+    A free Render instance may take longer than the 30-second operator POST
+    timeout to start. Never retry an ambiguous mutation response: the
+    dashboard launch is idempotent by request_id, but this probe deliberately
+    uses read-only requests and leaves the actual submission exactly once.
+    """
+    deadline = float(clock()) + max(0.0, float(timeout_seconds))
+    while True:
+        try:
+            response = client.get("/readyz")
+            if isinstance(response, dict) and response.get("status") == "ready":
+                return
+            if not isinstance(response, dict) or response.get("status") != "not_ready":
+                raise RuntimeError("Production-OS readiness returned invalid response")
+        except APIError as exc:
+            if exc.status not in {502, 503, 504}:
+                raise
+        except StudioError as exc:
+            if str(exc) != "API unavailable or timed out":
+                raise
+        except (TimeoutError, ConnectionError, urllib.error.URLError):
+            pass
+        remaining = deadline - float(clock())
+        if remaining <= 0:
+            raise TimeoutError("Production-OS did not become ready")
+        sleeper(min(max(1.0, float(poll_seconds)), remaining))
+
+
 def run_canary(client, control, *, wait_seconds=0, poll_seconds=10.0,
                clock=time.monotonic, sleeper=time.sleep):
     result = launch_canary(client, control)
@@ -137,8 +170,10 @@ def main(argv=None):
             raise ValueError("Operator secret missing")
         if not base:
             raise ValueError("Production-OS URL missing")
+        client = OperatorClient(base, token)
+        wait_for_readiness(client)
         result = run_canary(
-            OperatorClient(base, token),
+            client,
             control,
             wait_seconds=args.wait_seconds,
             poll_seconds=args.poll_seconds,

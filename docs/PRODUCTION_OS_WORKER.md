@@ -1,5 +1,12 @@
 # Production-OS worker
 
+## Delivery proof and restricted GitHub credentials
+
+A successful canary demonstrates a verified **commit on a checkpoint branch**, not necessarily a pull request or a merged release. Live canary 17 (2026-10-09) produced an actual commit in `dbrckk/repo-standards` but PR creation failed with GitHub HTTP 403. The coding result was successful; **review delivery remains blocked** until a PR can be opened.
+
+For ordinary target repositories, grant the worker GitHub credential **Contents: write** and **Pull requests: write** on the *target repository* (fine-grained PAT or equivalent). Set the credential only in GitHub Actions secrets, never source files. If PR creation remains unavailable, the result retains a structured `pull_request.state=unavailable`, a fixed `reason` (without raw API text), and, when the default branch is known, `head`, `base` and an actionable GitHub `compare_url`. An operator can open this comparison and create a PR manually. The result also distinguishes `delivery_status=review_blocked` from a successful implementation checkpoint and exposes the changed file list from verified rounds when available. The release status is `verified_branch_review_blocked` until a PR can be created. A completed implementation is **not** proof of deployment.
+
+
 The AI Dev Server can run as a long-lived Production-OS worker and dispatch coding work to Codex CLI or the existing agent router.
 
 ## Required environment

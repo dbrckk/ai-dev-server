@@ -1,6 +1,7 @@
 """Integrity and ordering guarantees for intra-cycle published-round checkpoints."""
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 import sys
@@ -10,7 +11,7 @@ from execution_checkpoint import (
     ExecutionCheckpointError,
     advance, load, new,
 )
-from generic_project import _save_published_checkpoint
+from generic_project import _save_published_checkpoint, run_project
 
 
 class GenericPublishedCheckpointTests(unittest.TestCase):
@@ -67,6 +68,38 @@ class GenericPublishedCheckpointTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "remote checkpoint rejected"):
                 _save_published_checkpoint(path, checkpoint, failure)
             self.assertEqual(load(path), checkpoint)
+
+    def test_real_generic_canary_path_mirrors_only_after_sealed_complete(self):
+        with tempfile.TemporaryDirectory() as temp:
+            out = Path(temp) / "out"
+            out.mkdir()
+            checkpoint_path = out / ".autonomy/generic-execution-checkpoint.json"
+            observed = []
+            proof = {"passed": True, "reason": "existing verified contract"}
+            with patch("generic_project.GitHub"), patch(
+                "generic_project.GenericRepository",
+            ) as repository, patch(
+                "generic_project._existing_worker_canary_verification",
+                return_value=proof,
+            ):
+                repository.return_value.restore.return_value = (
+                    "a" * 40, {"status": "restored"},
+                )
+
+                def observer(value):
+                    self.assertEqual(load(checkpoint_path), value)
+                    observed.append(value)
+
+                result = run_project(
+                    {"id": "demo", "target_repo": "owner/app"},
+                    out,
+                    Path(temp) / "work",
+                    checkpoint_observer=observer,
+                )
+            self.assertEqual(result["status"], "complete")
+            self.assertEqual(len(observed), 1)
+            self.assertEqual(observed[0]["phase"], "complete")
+            self.assertEqual(observed[0]["last_verification"], proof)
 
     def test_missing_observer_keeps_original_local_behavior(self):
         with tempfile.TemporaryDirectory() as temp:

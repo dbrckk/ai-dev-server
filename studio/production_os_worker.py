@@ -1261,11 +1261,13 @@ def run_once(
     heartbeat_thread.start()
 
     started = float(clock())
-    runner_attempt = 0
+    # A successful autonomous continuation is progress, not a failed
+    # runner attempt. Track bounded transient retries independently so an
+    # interruption late in a multi-stage job still gets its retry budget.
+    retry_count = 0
     continuations = 0
     try:
         while True:
-            runner_attempt += 1
             try:
                 summary = run_project(
                     request_path,
@@ -1277,11 +1279,12 @@ def run_once(
                 if cancel_event.is_set():
                     raise
                 if (
-                    runner_attempt > retry_attempts
+                    retry_count >= retry_attempts
                     or not _retryable_runner_error(exc)
                 ):
                     raise
-                delay = retry_backoff * (2 ** (runner_attempt - 1))
+                retry_count += 1
+                delay = retry_backoff * (2 ** (retry_count - 1))
                 if delay > 0 and cancel_event.wait(delay):
                     raise
                 continue
@@ -1302,13 +1305,15 @@ def run_once(
                     write_production_os_result(project_out, request, summary)
                     break
                 continuations += 1
+                retry_count = 0
                 continue
             if (
-                runner_attempt <= retry_attempts
+                retry_count < retry_attempts
                 and _summary_requests_retry(summary)
                 and not cancel_event.is_set()
             ):
-                delay = retry_backoff * (2 ** (runner_attempt - 1))
+                retry_count += 1
+                delay = retry_backoff * (2 ** (retry_count - 1))
                 if delay > 0 and cancel_event.wait(delay):
                     break
                 continue

@@ -1,0 +1,53 @@
+name: Production-OS Live Two-Session Resume Proof
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'control/production-os-resume-proof.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: production-os-live-resume-proof
+  cancel-in-progress: false
+
+jobs:
+  first-session:
+    name: Save verified progress (runner 1)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      STUDIO_GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT || github.token }}
+    steps:
+      - name: Checkout trusted code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Persist a partial sealed goal and execution checkpoint
+        run: python scripts/production-os-live-resume-proof.py --phase checkpoint
+
+  second-session:
+    name: Recover and finish (runner 2)
+    needs: first-session
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      STUDIO_GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT || github.token }}
+    steps:
+      - name: Checkout trusted code on a fresh runner
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Restore remote checkpoint without rebuilding previous work
+        run: python scripts/production-os-live-resume-proof.py --phase resume

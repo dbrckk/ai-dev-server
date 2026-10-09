@@ -261,7 +261,10 @@ exhausted API account.
 After an HTTP 429 rate-limit response has exhausted its bounded transport retries,
 both generic and Flutter model routers immediately open the affected provider's
 temporary health circuit. They can use a separately configured eligible model
-without replaying the same failing provider in the next coding call. This
+without replaying the same failing provider in the next coding call. The
+mobile model engine also binds each request to the currently selected
+provider's own endpoint and credentials after health filtering or reranking,
+rather than incorrectly reusing its startup primary client. This
 cooldown expires automatically and is **not** treated as proof of permanent
 monthly quota exhaustion; HTTP 503 and ordinary model failures keep their
 existing multi-failure circuit threshold.

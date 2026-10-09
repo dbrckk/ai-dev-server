@@ -1,9 +1,9 @@
 {
   "version": 1,
   "updated_at": "2026-10-09",
-  "task": "Improve live NVIDIA structured model reliability and fallback efficiency after verified Production-OS canary 19.",
-  "base_commit": "61f335c6f8d88a33f2d6475d0b4be12976e02223",
-  "branch": "fix/nvidia-structured-fallback-routing",
+  "task": "Repair GET-only production operator wake diagnostics during Render cold starts.",
+  "base_commit": "7fdc1ba4172c17f05e20961f5c337d910dde6284",
+  "branch": "fix/diagnostics-render-readiness-warmup",
   "completed": [
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",
@@ -86,10 +86,10 @@
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Run existing CI and integration suites for generic_model structured JSON routing and fallback priorities; do not add unit tests",
-    "Verify PR and merge only after successful checks",
-    "Validate live generic inference, not only canary structural proof",
-    "Target GitHub Pull requests:write remains a separate external credential issue"
+    "Run existing CI and integration on GET-only operator warmup",
+    "Merge after all required CI gates pass",
+    "Run read-only wake diagnosis to surface missing Render setting names",
+    "Configure only non-secret Render wake settings where needed; do not read or invent credentials"
   ],
   "merged_changes": [
     {

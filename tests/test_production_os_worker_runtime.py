@@ -945,6 +945,88 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         self.assertNotIn("fail", [call[0] for call in client.calls])
 
 
+    def test_transient_error_after_autonomous_progress_keeps_retry_budget(self):
+        client = _FakeClient(sample_job())
+        attempts = []
+
+        def runner(request_path, out, **kwargs):
+            attempts.append(len(attempts) + 1)
+            if len(attempts) in {1, 2}:
+                return {
+                    "status": "active",
+                    "finished": False,
+                    "next_stage": "preview",
+                }
+            if len(attempts) == 3:
+                raise TimeoutError("provider temporarily unavailable")
+            return {
+                "status": "complete",
+                "finished": True,
+                "usage": {"total_tokens": 11},
+            }
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client, worker_id="ai-dev-1", output_root=Path(td),
+                run_project=runner, clock=lambda: 10.0,
+                runner_retry_attempts=1, runner_retry_backoff_seconds=0,
+                max_continuations=2,
+            )
+
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(attempts, [1, 2, 3, 4])
+        self.assertEqual([c[0] for c in client.calls].count("claim"), 1)
+        self.assertEqual([c[0] for c in client.calls].count("complete"), 1)
+        self.assertEqual([c[0] for c in client.calls].count("fail"), 0)
+
+    def test_retry_summary_after_autonomous_progress_is_retried(self):
+        client = _FakeClient(sample_job())
+        attempts = []
+
+        def runner(request_path, out, **kwargs):
+            attempts.append(len(attempts) + 1)
+            if len(attempts) == 1:
+                return {"status": "active", "finished": False, "next_stage": "preview"}
+            if len(attempts) == 2:
+                return {"status": "blocked", "finished": False, "next_stage": "retry"}
+            return {"status": "complete", "finished": True}
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client, worker_id="ai-dev-1", output_root=Path(td),
+                run_project=runner, clock=lambda: 10.0,
+                runner_retry_attempts=1, runner_retry_backoff_seconds=0,
+                max_continuations=1,
+            )
+
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(attempts, [1, 2, 3])
+        self.assertNotIn("fail", [c[0] for c in client.calls])
+
+    def test_transient_retry_after_progress_stays_bounded(self):
+        client = _FakeClient(sample_job())
+        attempts = []
+
+        def runner(request_path, out, **kwargs):
+            attempts.append(len(attempts) + 1)
+            if len(attempts) == 1:
+                return {"status": "active", "finished": False, "next_stage": "preview"}
+            raise TimeoutError("provider temporarily unavailable")
+
+        with tempfile.TemporaryDirectory() as td:
+            result = run_once(
+                client, worker_id="ai-dev-1", output_root=Path(td),
+                run_project=runner, clock=lambda: 10.0,
+                runner_retry_attempts=1, runner_retry_backoff_seconds=0,
+                max_continuations=1,
+            )
+
+        self.assertEqual(result["status"], "failed")
+        self.assertEqual(attempts, [1, 2, 3])
+        self.assertEqual([c[0] for c in client.calls].count("fail"), 1)
+        self.assertNotIn("complete", [c[0] for c in client.calls])
+
+
     def test_run_once_does_not_retry_non_transient_runner_error(self):
         client = _FakeClient(sample_job())
         attempts = {"count": 0}

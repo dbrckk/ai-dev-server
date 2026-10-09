@@ -183,3 +183,60 @@ attempt counters, pipeline status/stage and exception type. It omits request
 briefs, repository metadata, raw exceptions and tokens. Terminal failed tasks
 are not automatically retried by this diagnostic; retry/continue remains an
 operator action with the existing attempt limits.
+
+## Resume after a bounded GitHub Actions session
+
+Production-OS queues a **new job key** for every retry of a workflow task.
+The worker must not derive its durable autonomous state solely from this
+ephemeral job key. For workflow dispatches with a positive integer
+`workflow_attempt`, the project ID is now derived from the repository,
+workflow ID and task ID. That identity is stable across attempts of the same
+logical task and isolated between distinct tasks, workflows and repositories.
+Legacy non-workflow jobs continue to use a job-scoped project ID.
+
+The short-lived GitHub Actions worker sets `STUDIO_PERSIST_REMOTE=1`. The
+native runner restores the goal, capability registry, improvement backlog and
+generic execution checkpoint from the protected `studio-autonomy-state` GitHub
+branch before doing more work. It persists the updated verified state at the
+end of the native runner invocation. The target-repository work branch and
+the remote autonomy checkpoint are **different** stores and must not be
+confused.
+
+One interrupted/retried task is expected to follow this sequence:
+
+1. The first worker claims and acknowledges attempt 1, completes some
+   verifiable work and saves the sealed goal/partial evidence remotely.
+2. The runner reports `continuation_limit` or `runtime_limit` as a
+   **failure**, not fabricated completion.
+3. If the workflow has remaining `max_attempts`, Production-OS enqueues the
+   next attempt with a new job key. The server checks whether a worker wake
+   is needed after the workflow transition.
+4. A fresh Actions runner uses the same project ID, restores the saved goal
+   and continues from the missing evidence. It must still run and verify the
+   remaining work before reporting success.
+
+The worker allows up to **16** autonomous continuations by default, with a
+70-minute total runtime limit and a finalization reserve. Adjust these with
+`--max-continuations` (0–32) and `--max-runtime-seconds` (60–4800). Those
+limits bound consumption; they do not guarantee that enough inference
+capacity exists to complete a job.
+
+**Limits and failure modes:** Workers cannot recover steps that never reached
+the remote store. An abrupt runner termination during a local cycle may lose
+unpersisted progress, even though previously committed GitHub artifacts remain.
+An exhausted token quota is not bypassed. A failed GitHub Actions dispatch
+leaves durable work queued for the scheduled fallback (currently every five
+minutes), and operator pause/drain continues to apply. The immediate wake
+path needs a Render-side GitHub token authorized to dispatch Actions on
+`dbrckk/ai-dev-server`; a successful canary with
+`worker_wake=scheduled_fallback` does **not** prove immediate dispatch.
+
+The deterministic regression test
+`tests/test_production_os_local_e2e.py::ProductionOSLocalE2ETests::test_two_separate_worker_sessions_restore_verified_partial_progress`
+runs two authenticated worker sessions against a local HTTP fixture, with
+**different queue keys and empty disks**. It persists the first session's
+sealed goal through the real GitHub goal-store API using a fake GitHub
+Git-object protocol, restores it on the second session and verifies that
+completed build evidence is not lost or re-executed. This validates the
+cross-session contract in CI but is **not** itself a live, quota-consuming
+two-run Actions test.

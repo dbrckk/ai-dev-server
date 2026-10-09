@@ -272,5 +272,74 @@ class AutonomousProjectTests(unittest.TestCase):
 
 
 
+    def test_checkpoint_observer_receives_saved_goal_after_every_complete_cycle(self):
+        import json
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "out"
+            checkpoints = []
+            calls = {"n": 0}
+
+            def step(*args):
+                calls["n"] += 1
+                if calls["n"] == 1:
+                    return {"status": "failed", "report": {}, "next_stage": "tests"}
+                return {
+                    "status": "complete",
+                    "report": {
+                        "completion": {"finished": True},
+                        "release_status": "store_ready",
+                    },
+                    "next_stage": None,
+                }
+
+            def persist(state, result):
+                on_disk = load_goal(out / ".autonomy/goal.json")
+                self.assertEqual(on_disk, state)
+                checkpoints.append({
+                    "attempt": state["attempt"],
+                    "status": state["status"],
+                    "failure_count": len(state["failures"]),
+                    "evidence_keys": sorted(state["evidence"]),
+                })
+
+            result = run_persistent_project(
+                "request.json", out, str(Path(td) / "work"),
+                runner=lambda *a, **kw: None,
+                deadline=100, clock=lambda: 0,
+                run_once=step, max_cycles=3,
+                checkpoint_observer=persist,
+            )
+            self.assertEqual(result["status"], "complete")
+            self.assertEqual(calls["n"], 2)
+            self.assertEqual([c["attempt"] for c in checkpoints], [1, 2])
+            self.assertEqual(checkpoints[0]["failure_count"], 1)
+            self.assertIn("project_completion", checkpoints[-1]["evidence_keys"])
+
+    def test_failed_remote_cycle_checkpoint_aborts_without_silent_progress(self):
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "out"
+            calls = {"n": 0}
+
+            def step(*args):
+                calls["n"] += 1
+                return {"status": "failed", "report": {}, "next_stage": "verify"}
+
+            def fail_remote(state, result):
+                self.assertEqual(load_goal(out / ".autonomy/goal.json"), state)
+                raise RuntimeError("remote state unavailable")
+
+            with self.assertRaisesRegex(RuntimeError, "remote state unavailable"):
+                run_persistent_project(
+                    "request.json", out, str(Path(td) / "work"),
+                    runner=lambda *a, **kw: None,
+                    deadline=100, clock=lambda: 0,
+                    run_once=step, max_cycles=4,
+                    checkpoint_observer=fail_remote,
+                )
+            self.assertEqual(calls["n"], 1)
+            self.assertEqual(load_goal(out / ".autonomy/goal.json")["attempt"], 1)
+
+
+
 if __name__ == "__main__":
     unittest.main()

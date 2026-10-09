@@ -114,12 +114,12 @@ class AdaptiveQuotaBudgetTests(unittest.TestCase):
         self.assertEqual(calls, [])
 
     def test_noncritical_reserve_is_preserved_but_review_may_use_it(self):
-        # Quota 10,000: remaining 1,500; 300 protected tokens.
+        # Quota 10,000: remaining 1,400; 300 protected tokens.
         # Normal product output cannot meet the 1,024 minimum; review can.
-        _, denied, calls, _ = self._run(used=8500, role="product")
+        _, denied, calls, _ = self._run(used=8600, role="product")
         self.assertIsNotNone(denied)
         self.assertEqual(calls, [])
-        result, error, calls, _ = self._run(used=8500, role="review")
+        result, error, calls, _ = self._run(used=8600, role="review")
         self.assertIsNone(error)
         self.assertEqual(result[0], {"ok": True})
         self.assertGreaterEqual(calls[0]["max_tokens"], 1024)

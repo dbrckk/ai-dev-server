@@ -77,7 +77,7 @@ def diagnose(*, api_factory=API, providers=None, environ=None):
             if diagnose_wake and not _warm_operator_connection(operator_client):
                 result["worker_wake"] = {"mode": "unavailable"}
             else:
-                operator_client.call("GET", "/v1/dashboard/device-sessions", timeout_seconds=30)
+                operator_client.call("GET", "/v1/dashboard/device-sessions", timeout_seconds=(30 if diagnose_wake else 10))
                 result["operator_access"] = "ready"
             if diagnose_wake and result["operator_access"] == "ready":
                 # Operator-authorized GET only. Report allowed setting *names*,

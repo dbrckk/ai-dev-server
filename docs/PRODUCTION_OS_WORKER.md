@@ -4,6 +4,12 @@
 
 The `production-os-worker-canary.yml` acceptance workflow now warms the configured Production-OS control plane using a bounded series of **read-only `/readyz` probes** before its one-time authenticated launch. This handles Render cold starts exceeding the operator POST's 30-second request timeout. On a non-transient HTTP failure it fails immediately; if Render never reaches database readiness it stops without creating a project. **The launch POST is never retried after an ambiguous timeout**, avoiding duplicate autonomous work. Real canary #18 (run `37975993803`, 2026-10-09) exposed this: its POST timed out after 30 seconds, while its companion worker later connected and found an empty queue.
 
+## JSON-compliant model routing
+
+Live model diagnostics on 2026-10-09 (Actions runs `37983037858` and `37983251927`) reached two JSON-compliant NVIDIA endpoints, while the other configured fallback returned `invalid_response` repeatedly. Generic Production-OS calls now request NVIDIA NIM `response_format: {"type":"json_object"}` consistently with the existing live diagnostic and still validate the returned object. In automatic default NVIDIA configuration, the compliant Poolside fallback has priority 90 and the unreliable Lightning fallback has priority 70. A custom `STUDIO_PROVIDERS_JSON` configuration is never overwritten.
+
+This only changes routing preference and structured-output requests: the health circuit breaker, token reservations, free/paid budgets, remaining fallback, and fail-closed verification are unchanged. A valid diagnostic JSON response is not proof that a complex coding task will succeed; verify a real implementation before declaring full production readiness.
+
 ## Delivery proof and restricted GitHub credentials
 
 A successful canary demonstrates a verified **commit on a checkpoint branch**, not necessarily a pull request or a merged release. Live canary 17 (2026-10-09) produced an actual commit in `dbrckk/repo-standards` but PR creation failed with GitHub HTTP 403. The coding result was successful; **review delivery remains blocked** until a PR can be opened.

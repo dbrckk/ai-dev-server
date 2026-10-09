@@ -248,6 +248,17 @@ def ask(
         if capacity_ledger_path is not None and project_id is not None
         else {"reservations": {}, "consumed": {}}
     )
+    # A bounded Production-OS project needs enough capacity for planning,
+    # implementation, verification and a possible repair. Reserving a 16k
+    # completion on every short job can consume almost the entire envelope
+    # when a provider omits usage metadata. Cap the *actual API max_tokens*
+    # per call rather than underreporting an unbounded completion to the
+    # ledger. Larger projects retain their original completion allowance.
+    if project_capacity_envelope is not None and project_id is not None:
+        max_completion_tokens = min(
+            max_completion_tokens,
+            max(4096, int(project_capacity_envelope) // 4),
+        )
     call_budgets = {}
     for provider in providers:
         budget = _bounded_model_token_budget(

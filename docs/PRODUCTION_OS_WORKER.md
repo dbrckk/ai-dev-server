@@ -315,3 +315,7 @@ Git-object protocol, restores it on the second session and verifies that
 completed build evidence is not lost or re-executed. This validates the
 cross-session contract in CI but is **not** itself a live, quota-consuming
 two-run Actions test.
+
+## Accounting for partial provider token usage
+
+Some OpenAI-compatible APIs report `usage.total_tokens` without input/output subfields, or omit useful usage counters. For capacity and pooled quotas, Production-OS now uses the larger of the reported aggregate and the input/output sum; when there are no positive counters, it conservatively retains the admitted token estimate. Unknown token remainders are allocated to input tokens for quota bookkeeping. This is a safety guard against silently counting real work as zero, not a claim that missing usage can be measured exactly. Original prompts, credentials and provider response bodies are not logged.

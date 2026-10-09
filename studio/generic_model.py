@@ -81,7 +81,12 @@ def _decode(response: dict) -> dict:
 
 
 
-def _reported_usage_tokens(usage: dict | None, reserved_estimate: int) -> tuple[int, int, int]:
+def _reported_usage_tokens(
+    usage: dict | None,
+    reserved_estimate: int,
+    *,
+    unknown_to_output: bool = False,
+) -> tuple[int, int, int]:
     """Use provider-reported totals without treating missing fields as free.
 
     OpenAI-compatible gateways may report only total_tokens, and some omit
@@ -102,10 +107,14 @@ def _reported_usage_tokens(usage: dict | None, reserved_estimate: int) -> tuple[
     total = max(token_count("total_tokens"), prompt + completion)
     if not total:
         total = max(1, int(reserved_estimate))
-    # An aggregate-only response still consumes pooled token quota. Assign
-    # the unknown remainder to prompts for conservative quota bookkeeping.
+    # A provider's missing breakdown still consumes quota and costs money.
+    # Charge unknown tokens at the more expensive configured token rate.
     if prompt + completion < total:
-        prompt += total - prompt - completion
+        remainder = total - prompt - completion
+        if unknown_to_output:
+            completion += remainder
+        else:
+            prompt += remainder
     return prompt, completion, total
 
 
@@ -548,6 +557,9 @@ def ask(
             usage = response.get("usage") if isinstance(response, dict) else None
             prompt_tokens, completion_tokens, actual_tokens = _reported_usage_tokens(
                 usage, estimated_call_tokens,
+                unknown_to_output=(
+                    provider.output_cost_per_million > provider.input_cost_per_million
+                ),
             )
             if reservation is not None:
                 settle_capacity(

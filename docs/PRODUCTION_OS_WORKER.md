@@ -268,6 +268,15 @@ ledger conservatively charges the full reserved amount. It does not
 override the total project envelope or the provider's actual quota.
 A successful workflow must still produce verified repository evidence.
 
+Generic repository snapshots are also bounded for projects with a token
+envelope: each snapshot includes at most half the project's token envelope
+measured in **source bytes**, floored at 16 KiB and capped at 128 KiB. For a
+30,000-token project, that means up to 16,000 bytes of source instead of the
+usual 420,000-byte default. `AGENTS.md`, README and primary package manifests
+are considered first. This source-byte heuristic reduces context waste but
+does not claim to measure tokenizer-specific tokens exactly. Unbounded local
+projects keep their existing snapshot limit.
+
 After an HTTP 429 rate-limit response has exhausted its bounded transport retries,
 both generic and Flutter model routers immediately open the affected provider's
 temporary health circuit. They can use a separately configured eligible model

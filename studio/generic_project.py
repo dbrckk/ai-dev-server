@@ -1,6 +1,7 @@
 """Autonomous work/analyse/verify loop for generic software projects."""
 from __future__ import annotations
 
+import os
 import hashlib
 import json
 import re
@@ -11,6 +12,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from core import StudioError, canonical
+from capacity_runtime import project_envelope as load_project_envelope
 from generic_model import ask
 from generic_policy import validate_patch
 from generic_repository import GenericRepository
@@ -123,13 +125,24 @@ Return ONLY JSON {"complete":true|false,"remaining":["specific next work"],"reas
 
 
 def _snapshot(root: Path, limit_bytes: int = 420_000) -> dict:
+    # Autonomous Production-OS jobs have a finite inference envelope. Do not
+    # feed hundreds of kilobytes of largely unrelated repository files into
+    # each planning/implementation call: a single prompt can consume most of
+    # a small project's allowance before any code is changed. Unbounded local
+    # runs retain the prior snapshot limit.
+    envelope = load_project_envelope(
+        os.environ.get("STUDIO_CAPACITY_PLAN_PATH"),
+        os.environ.get("STUDIO_PROJECT_ID"),
+    )
+    if envelope is not None:
+        limit_bytes = min(limit_bytes, max(16_000, min(128_000, envelope // 2)))
     files = {}
     used = 0
     preferred = []
     for p in root.rglob("*"):
         if p.is_file() and not p.is_symlink():
             rel = p.relative_to(root).as_posix()
-            priority = 0 if rel.lower() in {"readme.md","package.json","pyproject.toml","cargo.toml","go.mod","pom.xml"} else 1
+            priority = 0 if rel.lower() in {"agents.md","readme.md","package.json","pyproject.toml","cargo.toml","go.mod","pom.xml"} else 1
             preferred.append((priority, rel, p))
     for _, rel, p in sorted(preferred):
         try:

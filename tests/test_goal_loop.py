@@ -7,7 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 from capability_registry import new_registry, save as save_registry, load as load_registry
 from goal_engine import new_goal, save as save_goal, load as load_goal
-from goal_loop import run_goal
+from goal_loop import DurableCheckpointError, run_goal
 
 
 class GoalLoopTests(unittest.TestCase):
@@ -55,6 +55,48 @@ class GoalLoopTests(unittest.TestCase):
             self.assertEqual(state["status"], "complete")
             self.assertEqual(calls["n"], 2)
             self.assertTrue(any(x == "cycle_exception:RuntimeError:transient provider failure" for x in state["failures"]))
+
+    def test_failed_durable_checkpoint_never_consumes_more_cycle_attempts(self):
+        with tempfile.TemporaryDirectory() as td:
+            goal_path, registry_path = self.make_paths(Path(td))
+            calls = []
+
+            def execute(_state):
+                calls.append("executed")
+                raise DurableCheckpointError(
+                    "Remote execution checkpoint persistence failed: APIError"
+                )
+
+            with self.assertRaisesRegex(
+                DurableCheckpointError, "checkpoint persistence failed",
+            ):
+                run_goal(
+                    goal_path, registry_path, execute,
+                    max_cycles=5,
+                )
+            self.assertEqual(calls, ["executed"])
+            saved = load_goal(goal_path)
+            self.assertEqual(saved["attempt"], 0)
+            self.assertEqual(saved["status"], "active")
+            self.assertEqual(saved["failures"], [])
+
+    def test_non_checkpoint_transient_exception_still_retries_normally(self):
+        with tempfile.TemporaryDirectory() as td:
+            goal_path, registry_path = self.make_paths(Path(td))
+            calls = []
+
+            def execute(_state):
+                calls.append("executed")
+                if len(calls) == 1:
+                    raise RuntimeError("transient provider failure")
+                return {"evidence": {"ok": "proved"}}
+
+            result = run_goal(
+                goal_path, registry_path, execute, max_cycles=3,
+            )
+            self.assertEqual(result["status"], "complete")
+            self.assertEqual(result["attempt"], 2)
+            self.assertEqual(len(calls), 2)
 
     def test_retryable_exception_detail_redacts_common_secrets(self):
         with tempfile.TemporaryDirectory() as td:

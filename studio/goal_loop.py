@@ -6,9 +6,15 @@ import re
 try:
     from .capability_registry import has_capability,load as load_registry,register,save as save_registry
     from .goal_engine import decide,finalize,load as load_goal,record_cycle,resolve_capability,save as save_goal
+    from .core import StudioError
 except ImportError:
     from capability_registry import has_capability,load as load_registry,register,save as save_registry
     from goal_engine import decide,finalize,load as load_goal,record_cycle,resolve_capability,save as save_goal
+    from core import StudioError
+
+
+class DurableCheckpointError(StudioError):
+    """Checkpoint persistence failed; retry only from a new worker session."""
 
 _SENSITIVE_DETAIL = re.compile(
     r"(?i)(bearer\s+|token\s*[=:]\s*|api[_-]?key\s*[=:]\s*|secret\s*[=:]\s*)\S+"
@@ -62,6 +68,11 @@ def run_goal(goal_path,registry_path,execute_cycle,adapt_capability=None,*,max_c
             cycle_state["learned_context"]=context
         try:
             result=execute_cycle(cycle_state)
+        except DurableCheckpointError:
+            # The work branch may already contain a published commit, but
+            # the remote checkpoint did not acknowledge it. Do not burn
+            # additional goal/model attempts with uncertain durability.
+            raise
         except Exception as exc:
             # Transient worker/provider failures are retryable. Programming
             # errors are deterministic internal defects: fail closed instead

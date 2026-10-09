@@ -211,7 +211,11 @@ GitHub-backed autonomy-state branch, even when the entire goal cycle still
 has more rounds to execute. The published SHA, round number, verification
 result and phase are recorded; a mere planned or uncommitted stage must
 never be treated as a published checkpoint. GitHub persistence errors
-halt further rounds. This does not increase model budgets and does not
+halt further rounds **and bypass the ordinary retryable model/goal loop**:
+the failed remote write cannot be interpreted as an ordinary provider
+error and silently spend another attempt. Only the exception type is
+reported; API error bodies (which may contain credentials) are not
+included. This does not increase model budgets and does not
 turn unsuccessful verification into successful completion. The goal state
 is still flushed at the completed goal-cycle boundary.
 

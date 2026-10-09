@@ -98,9 +98,13 @@ class AdaptiveQuotaBudgetTests(unittest.TestCase):
         self.assertEqual(result[0], {"ok": True})
         self.assertLess(calls[0]["max_tokens"], 3000)
         self.assertLessEqual(reservation.kwargs["estimated_tokens"], 3000)
+        prompt_estimate = max(1, (
+            len("Make valid short JSON") + len("Return an object with ok=true") + 3
+        ) // 4)
+        prompt_margin = max(128, (prompt_estimate + 4) // 5)
         self.assertEqual(
             reservation.kwargs["estimated_tokens"],
-            calls[0]["max_tokens"] + reservation.kwargs["estimated_tokens"] - calls[0]["max_tokens"],
+            calls[0]["max_tokens"] + prompt_estimate + prompt_margin,
         )
 
     def test_true_exhaustion_never_invokes_the_provider(self):

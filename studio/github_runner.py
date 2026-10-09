@@ -27,7 +27,7 @@ from capability_registry_promotion_persist import persist as persist_capability_
 from capability_registry_review import inspect as inspect_capability_registry_review, CapabilityRegistryReviewError
 from ci_provider import enabled
 from continuous_improvement import assess as assess_improvements
-from core import StudioError, canonical, request_check
+from core import APIError, StudioError, canonical, request_check
 from github_goal_store import RemoteStateError, persist_local, restore_local
 from goal_engine import load as load_goal_state, resume_human_action, save as save_goal_state
 from github_memory_store import GitHubMemoryError, persist_local as persist_memory_local, restore_local as restore_memory_local
@@ -1032,28 +1032,45 @@ def run(
                 verified_project_cycle(candidate,improvement_project_cycle),
                 max_cycles=2,
             )
+    telemetry_degraded_from = None
     if remote_github is not None:
         try:
-            # Memory ingestion must happen before autonomous-state persistence so
-            # every validated artifact produced during this run is durably
-            # checkpointed before the runner exits.
+            # Verified autonomous goal, project memory and execution checkpoint
+            # are mandatory. Auxiliary model-routing caches and telemetry must
+            # never turn an already-published code checkpoint into a false
+            # runner failure when GitHub rejects an optional write (HTTP 422).
             memory=load_project_memory(memory_path)
             memory=ingest_run(memory,request['id'],out)
             save_project_memory(memory_path,memory)
             persist_local(remote_github,request['id'],out)
             persist_memory_local(remote_github,memory_path)
-            persist_agent_performance_local(remote_github,out/'.autonomy/agent-performance.json')
-            persist_provider_health_local(remote_github,out/'.autonomy/provider-health.json')
-            persist_provider_metrics_local(remote_github,out/'.autonomy/provider-metrics.json')
-            persist_routing_history_local(remote_github,out/'.autonomy/routing-history.json')
-            persist_verification_cost_local(remote_github,out/'.autonomy/verification-cost.json')
-            persist_phase_cost_baseline_local(remote_github,out/'.autonomy/phase-cost-baselines.json')
-            persist_strategy_efficiency_local(remote_github,out/'.autonomy/strategy-efficiency.json')
-            persist_contextual_strategy_efficiency_local(remote_github,out/'.autonomy/contextual-strategy-efficiency.json')
-            persist_quick_gate_cache_local(remote_github,out/'.autonomy/quick-gate-cache.json')
-            persist_full_gate_cache_local(remote_github,out/'.autonomy/full-gate-cache.json')
-            persist_artifact_cas_stats_local(remote_github,out/'.autonomy/artifact-cas-stats.json')
-            persist_artifact_cas_audit_local(remote_github,out/'.autonomy/artifact-cas-audit.json')
+            optional_telemetry = (
+                ("agent_performance", lambda: persist_agent_performance_local(remote_github,out/'.autonomy/agent-performance.json')),
+                ("provider_health", lambda: persist_provider_health_local(remote_github,out/'.autonomy/provider-health.json')),
+                ("provider_metrics", lambda: persist_provider_metrics_local(remote_github,out/'.autonomy/provider-metrics.json')),
+                ("routing_history", lambda: persist_routing_history_local(remote_github,out/'.autonomy/routing-history.json')),
+                ("verification_cost", lambda: persist_verification_cost_local(remote_github,out/'.autonomy/verification-cost.json')),
+                ("phase_cost_baseline", lambda: persist_phase_cost_baseline_local(remote_github,out/'.autonomy/phase-cost-baselines.json')),
+                ("strategy_efficiency", lambda: persist_strategy_efficiency_local(remote_github,out/'.autonomy/strategy-efficiency.json')),
+                ("contextual_strategy_efficiency", lambda: persist_contextual_strategy_efficiency_local(remote_github,out/'.autonomy/contextual-strategy-efficiency.json')),
+                ("quick_gate_cache", lambda: persist_quick_gate_cache_local(remote_github,out/'.autonomy/quick-gate-cache.json')),
+                ("full_gate_cache", lambda: persist_full_gate_cache_local(remote_github,out/'.autonomy/full-gate-cache.json')),
+                ("artifact_cas_stats", lambda: persist_artifact_cas_stats_local(remote_github,out/'.autonomy/artifact-cas-stats.json')),
+                ("artifact_cas_audit", lambda: persist_artifact_cas_audit_local(remote_github,out/'.autonomy/artifact-cas-audit.json')),
+            )
+            for component, persist_telemetry in optional_telemetry:
+                try:
+                    persist_telemetry()
+                except APIError as exc:
+                    # GitHub reports 422 for rejected Git-data writes and
+                    # concurrent non-fast-forward updates. A bounded telemetry
+                    # degradation is honest; retrying every write would spam
+                    # GitHub and burn free Actions time. Validation errors,
+                    # other HTTP failures and mandatory persistence still fail.
+                    if exc.status != 422:
+                        raise
+                    telemetry_degraded_from = component
+                    break
             persist_execution_checkpoint_local(remote_github,request['id'],out/'.autonomy/generic-execution-checkpoint.json')
         except RemoteStateError as exc:
             raise StudioError('Remote autonomous state persistence failed: '+str(exc)) from None
@@ -1092,6 +1109,9 @@ def run(
         'next_stage':last_result.get('next_stage'),
         'finished':status=='complete',
     }
+    if telemetry_degraded_from is not None:
+        summary['persistence_status'] = 'verified_checkpoint_telemetry_degraded'
+        summary['persistence_component'] = telemetry_degraded_from
     project_report=(
         last_result.get('report')
         if isinstance(last_result.get('report'),dict)

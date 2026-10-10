@@ -8664,7 +8664,10 @@ instruction = canary_instruction(12)
 def test_launch_is_idempotent_and_uses_dashboard_api(self)
 ⋮----
 client = FakeClient()
-result = run_canary(client, {"sequence": 4, "repository": "dbrckk/repo-standards"})
+dispatches = []
+result = run_canary(
+⋮----
+self.assertEqual(dispatches, [1])  # no dispatch before successful admission
 ⋮----
 def test_wait_observes_real_terminal_success(self)
 ⋮----
@@ -8677,8 +8680,6 @@ result = wait_for_workflow(
 def test_terminal_failure_returns_without_retrying_mutation(self)
 ⋮----
 client = FakeClient(("running", "failed"))
-⋮----
-result = run_canary(
 ⋮----
 def test_wait_is_bounded(self)
 ⋮----

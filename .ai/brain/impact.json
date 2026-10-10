@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "04e4754d6bcdd0bde2a499fa1bd468c596fb5c90",
-  "head": "b53685c5952ce40d9d5d4002b0a9123a87310760",
+  "base": "b53685c5952ce40d9d5d4002b0a9123a87310760",
+  "head": "a8ce7b1a3fbf046ffaef995020099726fc28a2f1",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": ".github/workflows/production-os-actions-worker.yml",
+      "path": ".github/workflows/production-os-worker-canary.yml",
       "status": "M"
     },
     {
@@ -14,149 +14,752 @@
       "status": "M"
     },
     {
-      "path": "control/production-os-worker-kick.json",
+      "path": "studio/generic_project.py",
       "status": "M"
     },
     {
-      "path": "tests/test_production_os_actions_worker_workflow.py",
+      "path": "studio/generic_repository.py",
+      "status": "M"
+    },
+    {
+      "path": "studio/production_os_worker_canary.py",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_production_os_worker_canary.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "tests/test_production_os_actions_worker_workflow.py"
+    "studio/generic_project.py",
+    "studio/generic_repository.py",
+    "studio/production_os_worker_canary.py",
+    "tests/test_production_os_worker_canary.py"
   ],
   "impacted_files": [
-    "tests/test_production_os_actions_worker_workflow.py"
+    "studio/generic_project.py",
+    "studio/generic_repository.py",
+    "studio/generic_smoke.py",
+    "studio/multi_engine_orchestrator.py",
+    "studio/production_os_worker_canary.py",
+    "tests/test_browser_validation_contract.py",
+    "tests/test_generic_architecture.py",
+    "tests/test_generic_published_checkpoint.py",
+    "tests/test_generic_published_round_checkpoint.py",
+    "tests/test_generic_repository_pull_request.py",
+    "tests/test_generic_worker_canary_resume.py",
+    "tests/test_mobile_validation_contract.py",
+    "tests/test_production_os_worker_canary.py",
+    "tests/test_repository_branch_identity.py"
   ],
   "impacted_symbols": [
     {
-      "name": "test_actions_worker_has_no_codespace_dependency",
+      "name": "_snapshot",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 9
+      "file": "studio/generic_project.py",
+      "line": 127
     },
     {
-      "name": "test_actions_worker_polls_production_os_on_schedule",
+      "name": "_apply",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "file": "studio/generic_project.py",
+      "line": 160
+    },
+    {
+      "name": "_prepare_architecture",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 183
+    },
+    {
+      "name": "_record_architecture",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 216
+    },
+    {
+      "name": "_browser_validation_contract",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 235
+    },
+    {
+      "name": "_valid_browser_test_url",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 243
+    },
+    {
+      "name": "_valid_browser_screenshot",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 257
+    },
+    {
+      "name": "_run_browser_validation",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 290
+    },
+    {
+      "name": "_mobile_validation_contract",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 448
+    },
+    {
+      "name": "_verify_android_emulator_evidence",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 456
+    },
+    {
+      "name": "_run_mobile_validation",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 524
+    },
+    {
+      "name": "_existing_worker_canary_verification",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 695
+    },
+    {
+      "name": "_save_published_checkpoint",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 740
+    },
+    {
+      "name": "run_project",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 754
+    },
+    {
+      "name": "evaluate_model_candidate",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 1354
+    },
+    {
+      "name": "GenericRepository",
+      "kind": "class",
+      "file": "studio/generic_repository.py",
       "line": 15
     },
     {
-      "name": "test_actions_worker_uses_existing_secure_credentials",
+      "name": "__init__",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 31
+      "file": "studio/generic_repository.py",
+      "line": 16
     },
     {
-      "name": "test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback",
+      "name": "_tree",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 39
+      "file": "studio/generic_repository.py",
+      "line": 20
     },
     {
-      "name": "test_actions_worker_checks_backend_readiness_and_queue_before_heavy_setup",
+      "name": "restore",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 55
+      "file": "studio/generic_repository.py",
+      "line": 26
     },
     {
-      "name": "test_actions_worker_is_single_flight_and_bounded",
+      "name": "ensure_pull_request",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 67
+      "file": "studio/generic_repository.py",
+      "line": 79
     },
     {
-      "name": "test_actions_worker_retains_hidden_autonomy_diagnostics",
+      "name": "request_trusted_review_handoff",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 75
+      "file": "studio/generic_repository.py",
+      "line": 125
     },
     {
-      "name": "test_actions_worker_exits_heavy_path_when_no_compatible_work_exists",
+      "name": "publish",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 80
-    },
-    {
-      "name": "test_actions_worker_skips_base_pass_for_mobile_only_work",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 91
-    },
-    {
-      "name": "test_actions_worker_does_not_prepare_android_for_base_only_claim_race",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 104
-    },
-    {
-      "name": "test_actions_worker_reports_rejected_worker_token_without_exposing_it",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 110
-    },
-    {
-      "name": "test_actions_worker_availability_probe_fails_closed",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 117
-    },
-    {
-      "name": "test_actions_worker_bootstraps_remote_asset_forge_before_preflight",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 124
-    },
-    {
-      "name": "test_actions_worker_resolves_only_ci_green_current_production_os_main",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 137
-    },
-    {
-      "name": "test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 163
-    },
-    {
-      "name": "test_actions_worker_preflight_uses_runtime_capability_detection",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "file": "studio/generic_repository.py",
       "line": 174
     },
     {
-      "name": "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
+      "name": "_fixture",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 182
+      "file": "studio/generic_smoke.py",
+      "line": 19
     },
     {
-      "name": "test_actions_worker_has_resilient_model_provider_fallbacks",
-      "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 187
+      "name": "FakeRepository",
+      "kind": "class",
+      "file": "studio/generic_smoke.py",
+      "line": 35
     },
     {
-      "name": "test_actions_worker_fails_ci_when_production_result_failed",
+      "name": "__init__",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 192
+      "file": "studio/generic_smoke.py",
+      "line": 36
     },
     {
-      "name": "test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work",
+      "name": "restore",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 196
+      "file": "studio/generic_smoke.py",
+      "line": 39
     },
     {
-      "name": "test_control_only_pushes_do_not_fan_out_into_unrelated_heavy_ci",
+      "name": "publish",
       "kind": "function",
-      "file": "tests/test_production_os_actions_worker_workflow.py",
-      "line": 202
+      "file": "studio/generic_smoke.py",
+      "line": 43
+    },
+    {
+      "name": "fake_ask",
+      "kind": "function",
+      "file": "studio/generic_smoke.py",
+      "line": 49
+    },
+    {
+      "name": "verifier_smoke",
+      "kind": "function",
+      "file": "studio/generic_smoke.py",
+      "line": 85
+    },
+    {
+      "name": "orchestration_smoke",
+      "kind": "function",
+      "file": "studio/generic_smoke.py",
+      "line": 102
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/generic_smoke.py",
+      "line": 140
+    },
+    {
+      "name": "_remaining",
+      "kind": "function",
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 14
+    },
+    {
+      "name": "_detect",
+      "kind": "function",
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 20
+    },
+    {
+      "name": "_run_stage",
+      "kind": "function",
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 35
+    },
+    {
+      "name": "run_project",
+      "kind": "function",
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 41
+    },
+    {
+      "name": "dispatch_worker_after_enqueue",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 20
+    },
+    {
+      "name": "validate_control",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 57
+    },
+    {
+      "name": "canary_instruction",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 74
+    },
+    {
+      "name": "launch_canary",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 85
+    },
+    {
+      "name": "wait_for_workflow",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 118
+    },
+    {
+      "name": "wait_for_readiness",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 146
+    },
+    {
+      "name": "run_canary",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 177
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 199
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 23
+    },
+    {
+      "name": "BrowserValidationContractTests",
+      "kind": "class",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 34
+    },
+    {
+      "name": "_write_script",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 35
+    },
+    {
+      "name": "test_runtime_browser_artifacts_are_not_publishable",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 72
+    },
+    {
+      "name": "test_request_check_accepts_browser_validation_contract",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 83
+    },
+    {
+      "name": "test_request_check_rejects_mutated_browser_validation_contract",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 90
+    },
+    {
+      "name": "test_browser_validation_requires_script",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 99
+    },
+    {
+      "name": "test_browser_validation_accepts_report_and_copies_artifacts",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 113
+    },
+    {
+      "name": "test_browser_validation_rejects_fake_screenshot_bytes",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 134
+    },
+    {
+      "name": "test_browser_validation_rejects_external_test_url",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 158
+    },
+    {
+      "name": "test_browser_validation_fails_on_console_errors",
+      "kind": "function",
+      "file": "tests/test_browser_validation_contract.py",
+      "line": 185
+    },
+    {
+      "name": "GenericArchitectureTests",
+      "kind": "class",
+      "file": "tests/test_generic_architecture.py",
+      "line": 12
+    },
+    {
+      "name": "test_prepare_architecture_is_generic_and_advisory",
+      "kind": "function",
+      "file": "tests/test_generic_architecture.py",
+      "line": 13
+    },
+    {
+      "name": "test_record_architecture_writes_full_evidence_chain",
+      "kind": "function",
+      "file": "tests/test_generic_architecture.py",
+      "line": 56
+    },
+    {
+      "name": "test_learning_failure_is_non_fatal_after_verified_round",
+      "kind": "function",
+      "file": "tests/test_generic_architecture.py",
+      "line": 82
+    },
+    {
+      "name": "GenericPublishedCheckpointTests",
+      "kind": "class",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 17
+    },
+    {
+      "name": "test_observer_reads_sealed_checkpoint_after_verified_round",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 18
+    },
+    {
+      "name": "observer",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 30
+    },
+    {
+      "name": "test_unpublished_phase_is_rejected_and_not_persisted",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 39
+    },
+    {
+      "name": "test_remote_persistence_failure_stops_after_local_commit",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 55
+    },
+    {
+      "name": "failure",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 65
+    },
+    {
+      "name": "test_real_generic_canary_path_mirrors_only_after_sealed_complete",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 72
+    },
+    {
+      "name": "observer",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 89
+    },
+    {
+      "name": "test_missing_observer_keeps_original_local_behavior",
+      "kind": "function",
+      "file": "tests/test_generic_published_checkpoint.py",
+      "line": 104
+    },
+    {
+      "name": "PublishedRoundCheckpointTests",
+      "kind": "class",
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "line": 20
+    },
+    {
+      "name": "test_two_published_rounds_restore_on_a_fresh_actions_runner",
+      "kind": "function",
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "line": 21
+    },
+    {
+      "name": "persist",
+      "kind": "function",
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "line": 29
+    },
+    {
+      "name": "test_complete_round_mirrors_final_checkpoint",
+      "kind": "function",
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "line": 55
+    },
+    {
+      "name": "test_unpublished_phase_never_reaches_remote_observer",
+      "kind": "function",
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "line": 70
+    },
+    {
+      "name": "test_remote_failure_is_not_suppressed_after_local_save",
+      "kind": "function",
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "line": 83
+    },
+    {
+      "name": "unavailable",
+      "kind": "function",
+      "file": "tests/test_generic_published_round_checkpoint.py",
+      "line": 91
+    },
+    {
+      "name": "FakeGitHub",
+      "kind": "class",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 9
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 10
+    },
+    {
+      "name": "get",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 15
+    },
+    {
+      "name": "call",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 23
+    },
+    {
+      "name": "test_ensure_pull_request_creates_one_for_managed_branch",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 38
+    },
+    {
+      "name": "test_ensure_pull_request_reuses_existing_exact_branch_pr",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 66
+    },
+    {
+      "name": "test_ensure_pull_request_ignores_other_studio_branch",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 92
+    },
+    {
+      "name": "ExistingWorkerCanaryVerificationTests",
+      "kind": "class",
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 11
+    },
+    {
+      "name": "_request",
+      "kind": "function",
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 12
+    },
+    {
+      "name": "test_accepts_exact_existing_canary_with_or_without_final_newline",
+      "kind": "function",
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 30
+    },
+    {
+      "name": "test_rejects_wrong_content",
+      "kind": "function",
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 52
+    },
+    {
+      "name": "test_rejects_non_canary_repository_or_missing_contract",
+      "kind": "function",
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 62
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 26
+    },
+    {
+      "name": "MobileValidationContractTests",
+      "kind": "class",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 37
+    },
+    {
+      "name": "_write_script",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 38
+    },
+    {
+      "name": "test_mobile_runtime_artifacts_are_not_publishable",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 63
+    },
+    {
+      "name": "test_request_check_accepts_mobile_contract",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 68
+    },
+    {
+      "name": "test_request_check_rejects_mutated_mobile_contract",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 75
+    },
+    {
+      "name": "test_mobile_validation_accepts_structured_emulator_evidence",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 84
+    },
+    {
+      "name": "test_mobile_validation_fails_on_fatal_errors",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 111
+    },
+    {
+      "name": "test_android_emulator_evidence_requires_real_emulator_identity",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 127
+    },
+    {
+      "name": "test_android_emulator_evidence_verifies_device_package_and_activity",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 140
+    },
+    {
+      "name": "test_mobile_specialty_requires_android_toolchain_probe",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 172
+    },
+    {
+      "name": "test_mobile_specialty_is_not_advertised_without_emulator",
+      "kind": "function",
+      "file": "tests/test_mobile_validation_contract.py",
+      "line": 189
+    },
+    {
+      "name": "FakeClient",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 13
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 14
+    },
+    {
+      "name": "submit",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 19
+    },
+    {
+      "name": "get",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 29
+    },
+    {
+      "name": "WorkerCanaryTests",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 35
+    },
+    {
+      "name": "test_control_is_strict",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 36
+    },
+    {
+      "name": "test_canary_instruction_is_bounded_and_sequence_specific",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 50
+    },
+    {
+      "name": "test_launch_is_idempotent_and_uses_dashboard_api",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 56
+    },
+    {
+      "name": "test_wait_observes_real_terminal_success",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 74
+    },
+    {
+      "name": "clock",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 77
+    },
+    {
+      "name": "sleep",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 79
+    },
+    {
+      "name": "test_terminal_failure_returns_without_retrying_mutation",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 88
+    },
+    {
+      "name": "test_wait_is_bounded",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 101
+    },
+    {
+      "name": "test_canary_workflow_verifies_terminal_worker_completion",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 116
+    },
+    {
+      "name": "RepositoryBranchIdentityTests",
+      "kind": "class",
+      "file": "tests/test_repository_branch_identity.py",
+      "line": 21
+    },
+    {
+      "name": "test_request_check_accepts_safe_repository_branch_identity",
+      "kind": "function",
+      "file": "tests/test_repository_branch_identity.py",
+      "line": 22
+    },
+    {
+      "name": "test_request_check_rejects_unsafe_repository_branch_identity",
+      "kind": "function",
+      "file": "tests/test_repository_branch_identity.py",
+      "line": 34
+    },
+    {
+      "name": "test_generic_repository_branch_is_independent_from_execution_request_id",
+      "kind": "function",
+      "file": "tests/test_repository_branch_identity.py",
+      "line": 44
     }
   ],
   "selected_tests": [
-    "tests/test_production_os_actions_worker_workflow.py"
+    "tests/test_browser_validation_contract.py",
+    "tests/test_generic_architecture.py",
+    "tests/test_generic_published_checkpoint.py",
+    "tests/test_generic_published_round_checkpoint.py",
+    "tests/test_generic_repository_pull_request.py",
+    "tests/test_generic_worker_canary_resume.py",
+    "tests/test_mobile_validation_contract.py",
+    "tests/test_production_os_worker.py",
+    "tests/test_production_os_worker_canary.py",
+    "tests/test_repository_branch_identity.py"
   ]
 }

@@ -2690,6 +2690,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: production-os-worker-canary
@@ -2703,6 +2704,7 @@ jobs:
       PRODUCTION_OS_URL: ${{ vars.PRODUCTION_OS_URL || 'https://production-os1.onrender.com' }}
       PRODUCTION_OS_OPERATOR_TOKEN: ${{ secrets.PRODUCTION_OS_OPERATOR_TOKEN }}
       PYTHONPATH: studio
+      PRODUCTION_OS_CANARY_DISPATCH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout trusted canary
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -2714,6 +2716,8 @@ jobs:
         with:
           python-version: '3.12'
 
+      # A distinct workflow_dispatch is accepted after the API confirms queueing;
+      # unlike simultaneous push triggers, the worker cannot race ahead of the job.
       - name: Launch and verify real Production-OS worker canary
         run: >-
           python studio/production_os_worker_canary.py
@@ -3291,7 +3295,7 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-  "sequence": 21,
+  "sequence": 23,
   "repository": "dbrckk/repo-standards"
 }
 ````
@@ -15133,6 +15137,9 @@ pull_request = repo.ensure_pull_request(
 reason = (
 base = getattr(repo, "default_branch", None)
 comparison = (
+review_handoff = (
+# Dispatch acceptance is NOT a PR. Keep the review blocker
+# visible until an independent target-repo workflow opens it.
 ````
 
 ## File: studio/generic_repository.py
@@ -15191,6 +15198,23 @@ head = pr.get("head") if isinstance(pr.get("head"), dict) else {}
 base = pr.get("base") if isinstance(pr.get("base"), dict) else {}
 ⋮----
 created = self.github.call(
+⋮----
+def request_trusted_review_handoff(self, commit_sha: str) -> dict
+⋮----
+"""Ask an explicitly opted-in target to create its own draft PR.
+
+        The source credential may publish commits but lack pull-request write
+        privileges. A repository_dispatch accepted by GitHub is a request,
+        never evidence that a pull request exists or a release is complete.
+        Only the trusted target has installed the handoff workflow.
+        """
+⋮----
+token = str(getattr(self.github, "key", "") or "").strip()
+⋮----
+request = urllib.request.Request(
+⋮----
+# Do not retry a POST after an ambiguous timeout: duplicates can
+# happen, and the receiver already checks for an existing PR.
 ⋮----
 def publish(self,base_sha:str,root:Path,message:str)->str
 ⋮----
@@ -21330,6 +21354,17 @@ _REPOSITORY = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
 _WORKFLOW_ID = re.compile(r"[a-f0-9]{32}")
 _TERMINAL_FAILURES = {"failed", "cancelled", "canceled"}
 ⋮----
+def dispatch_worker_after_enqueue(*, token, repository, urlopen=urllib.request.urlopen)
+⋮----
+"""Dispatch the restricted same-repository worker after the task is queued.
+
+    GitHub grants this canary workflow only actions:write and contents:read.
+    Never accept a user-provided repository or workflow name for dispatch.
+    The 204 only confirms dispatch acceptance, not worker task completion.
+    """
+⋮----
+request = urllib.request.Request(
+⋮----
 def validate_control(payload)
 ⋮----
 sequence = payload.get("sequence")
@@ -21394,6 +21429,9 @@ base = os.environ.get("PRODUCTION_OS_URL", "").strip()
 ⋮----
 client = OperatorClient(base, token)
 ⋮----
+dispatch = None
+⋮----
+dispatch = lambda: dispatch_worker_after_enqueue(
 result = run_canary(
 ````
 
@@ -33903,7 +33941,10 @@ instruction = canary_instruction(12)
 def test_launch_is_idempotent_and_uses_dashboard_api(self)
 ⋮----
 client = FakeClient()
-result = run_canary(client, {"sequence": 4, "repository": "dbrckk/repo-standards"})
+dispatches = []
+result = run_canary(
+⋮----
+self.assertEqual(dispatches, [1])  # no dispatch before successful admission
 ⋮----
 def test_wait_observes_real_terminal_success(self)
 ⋮----
@@ -33916,8 +33957,6 @@ result = wait_for_workflow(
 def test_terminal_failure_returns_without_retrying_mutation(self)
 ⋮----
 client = FakeClient(("running", "failed"))
-⋮----
-result = run_canary(
 ⋮----
 def test_wait_is_bounded(self)
 ⋮----

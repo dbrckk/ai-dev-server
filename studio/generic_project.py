@@ -2557,11 +2557,19 @@ Objective and current plan:
                     + "..." + quote(repo.branch, safe="/") + "?expand=1"
                     if isinstance(base, str) and base else None
                 )
+                review_handoff = (
+                    repo.request_trusted_review_handoff(base_sha)
+                    if reason == "pull_request_write_denied"
+                    else None
+                )
+                # Dispatch acceptance is NOT a PR. Keep the review blocker
+                # visible until an independent target-repo workflow opens it.
                 state["pull_request"] = {
                     "state":"unavailable",
                     "reason":reason,
                     "head":repo.branch,
                     **({"base":base, "compare_url":comparison} if comparison else {}),
+                    **({"review_handoff":review_handoff} if review_handoff is not None else {}),
                 }
         state["execution_checkpoint"] = {
             "round": checkpoint["round"],

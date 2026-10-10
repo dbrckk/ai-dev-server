@@ -1,8 +1,12 @@
 """Bounded GitHub snapshot/publish backend for generic projects."""
 from __future__ import annotations
 import base64
+import json
+import re
+import urllib.error
+import urllib.request
 from pathlib import Path
-from core import StudioError, SECRET
+from core import StudioError, SECRET, NoRedirect
 from generic_policy import editable
 
 MAX_FILES=500
@@ -117,6 +121,55 @@ class GenericRepository:
             "base":default,
             "reused":False,
         }
+
+    def request_trusted_review_handoff(self, commit_sha: str) -> dict:
+        """Ask an explicitly opted-in target to create its own draft PR.
+
+        The source credential may publish commits but lack pull-request write
+        privileges. A repository_dispatch accepted by GitHub is a request,
+        never evidence that a pull request exists or a release is complete.
+        Only the trusted target has installed the handoff workflow.
+        """
+        if self.repo != "dbrckk/repo-standards":
+            return {"status": "not_configured"}
+        if not re.fullmatch(r"studio/mp-[a-f0-9]{24}", self.branch):
+            return {"status": "invalid_branch"}
+        if not isinstance(commit_sha, str) or not re.fullmatch(r"[a-f0-9]{40}", commit_sha):
+            return {"status": "invalid_commit"}
+        token = str(getattr(self.github, "key", "") or "").strip()
+        if not token:
+            return {"status": "missing_token"}
+        request = urllib.request.Request(
+            "https://api.github.com/repos/dbrckk/repo-standards/dispatches",
+            method="POST",
+            data=json.dumps({
+                "event_type": "production_os_review_handoff",
+                "client_payload": {
+                    "branch": self.branch,
+                    "commit_sha": commit_sha,
+                },
+            }).encode("utf-8"),
+            headers={
+                "Authorization": "Bearer " + token,
+                "Accept": "application/vnd.github+json",
+                "Content-Type": "application/json",
+                "X-GitHub-Api-Version": "2022-11-28",
+                "User-Agent": "production-os-studio-review-handoff",
+            },
+        )
+        try:
+            # Do not retry a POST after an ambiguous timeout: duplicates can
+            # happen, and the receiver already checks for an existing PR.
+            with urllib.request.build_opener(NoRedirect()).open(
+                request, timeout=20
+            ) as response:
+                if response.status != 204:
+                    return {"status": "unexpected_response"}
+        except urllib.error.HTTPError as exc:
+            return {"status": "rejected", "http_status": exc.code}
+        except (urllib.error.URLError, TimeoutError, StudioError, OSError):
+            return {"status": "unavailable"}
+        return {"status": "accepted"}
 
     def publish(self,base_sha:str,root:Path,message:str)->str:
         base_tree=self.github.get("/git/commits/"+base_sha).get("tree",{}).get("sha")

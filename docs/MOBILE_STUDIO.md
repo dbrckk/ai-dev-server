@@ -6,6 +6,12 @@ Un moteur générique pour **nouvelles applications Flutter**, avec livraison An
 
 Les sources et l'état sont enregistrés dans `studio/<id>` du dépôt cible. Les échecs et budgets épuisés restent explicites. La publication Google Play est désactivée par défaut et n'est ajoutée au contrat de complétion que via un opt-in explicite du brief.
 
+## Étape préalable — références concurrentes et REA
+
+Avant le brief de génération d'une **nouvelle application Android**, appliquer la [procédure de comparaison et d'inspection REA](APP_REFERENCE_REA.md) : chercher plusieurs équivalents (éditeur et fiche officielle), obtenir leur APK officiel seulement lorsque disponible et légalement accessible, inscrire sa provenance et son SHA-256 dans `dbrckk/zombie-apk`, puis analyser les fonctionnalités/limites avec REA si l'environnement dispose de JDK/JADX. Ne jamais recycler directement du code ou des assets propriétaires. Documenter les références confirmées, manquantes et non vérifiées dans le brief.
+
+Cette phase est actuellement **une procédure préparatoire documentée**, pas un téléchargement ou une analyse automatiques exécutés par le runner Flutter/Godot. Le processus ne peut pas inventer une APK officielle à partir d'une simple page Play Store.
+
 ## Utilisation depuis une conversation ChatGPT
 
 1. Créer un dépôt GitHub **vide**, ou avec seulement README, LICENSE et .gitignore.

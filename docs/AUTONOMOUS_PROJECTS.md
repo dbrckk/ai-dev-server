@@ -8,14 +8,15 @@ The normal lifecycle is:
 
 1. inspect the target repository and persisted project state;
 2. understand the objective and existing implementation;
-3. consult the curated star-list for reusable tools/repositories;
-4. plan the next concrete work;
-5. implement;
-6. run tests, builds, reviews and runtime/visual checks;
-7. repair failures and regressions;
-8. adapt the factory when a missing capability is discovered;
-9. persist checkpoints and memory;
-10. repeat automatically until completion.
+3. for new Android apps or major redesigns, complete the [REA competitor/reference research intake](APP_REFERENCE_REA.md) with official source evidence and explicit unavailability status before implementation planning;
+4. consult the curated star-list for reusable tools/repositories;
+5. plan the next concrete work;
+6. implement;
+7. run tests, builds, reviews and runtime/visual checks;
+8. repair failures and regressions;
+9. adapt the factory when a missing capability is discovered;
+10. persist checkpoints and memory;
+11. repeat automatically until completion.
 
 A failed test, model failure, provider quota, implementation error or missing internal capability is **not** a reason to ask the user to take over. The system should retry, reroute, repair, research or adapt when it can do so safely.
 

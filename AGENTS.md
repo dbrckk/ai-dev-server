@@ -9,6 +9,12 @@ The project adopts the [88-rule standard](https://github.com/dbrckk/repo-standar
 Preserve repository-specific constraints and authorized scope. The pinned policy commit above governs the 88 rules; `.repo-standards.yml` continues to configure existing repository intelligence and reusable workflows independently. Do not change workflow refs merely to adopt these rules.
 
 
+## Android app research before creation (REA)
+
+For a **new Android app or major redesign**, apply the [REA competitive-reference workflow](https://github.com/dbrckk/repo-standards/blob/50662421a37d91cda086261d9b20b42288f66cc0/skills/app-reference-rea/SKILL.md) **before** detailed product/design implementation. Find comparable official products, record publisher/store pages, obtain authentic APKs through legitimate distribution channels when possible, hash/verify actual bytes and signing identity, archive only private authorized binaries in [zombie-apk](https://github.com/dbrckk/zombie-apk/blob/ad335eab2d65def1e63fbde0374fe2cba785b400/references/catalog.json), and use REA/JADX when installed. Produce an evidence-based feature matrix and an original improved design.
+
+If an editor does not provide an APK or the legal/tool prerequisites are missing, **record the precise blocker and use verified official/public references instead**; never invent an APK, analysis or source authenticity. No DRM bypass, credential extraction, proprietary code/assets reuse, or public redistribution without rights. This is a task workflow, **not a new 89th rule**; keep existing 88 rules and existing tests unchanged.
+
 This repository adopts shared standards from `dbrckk/repo-standards` at the release recorded in `.repo-standards.yml`.
 
 Before substantial work:

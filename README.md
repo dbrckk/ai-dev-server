@@ -2,6 +2,12 @@
 
 Plateforme d'ingénierie autonome multi-engine et environnement de développement pour GitHub/Codespaces.
 
+## Références des applications existantes (REA)
+
+Pour toute **nouvelle application Android**, la préparation produit doit documenter les équivalents officiels, les sources et limites des APK, une analyse REA lorsque l'APK est accessible avec autorisation, puis un design et une implémentation **indépendants**. Voir [le guide Studio REA](docs/APP_REFERENCE_REA.md) et le catalogue commun [zombie-apk](https://github.com/dbrckk/zombie-apk).
+
+L'étape de recherche et les droits de reproduction/redistribution nécessitent encore de vraies preuves ; la présence de ce guide ou d'un prompt ne signifie **pas** qu'une recherche externe ou une inspection REA a été exécutée.
+
 ## Pipeline autonome
 
 Le moteur `studio/` reçoit un brief, détecte le type de projet et prend en charge trois familles :

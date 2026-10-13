@@ -5,49 +5,90 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "_empty": {
+    "GenericRepository": {
       "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 17,
-        "end": 18
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_load_unlocked": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 21,
-        "end": 39
+        "file": "studio/generic_repository.py",
+        "start": 16,
+        "end": 255
       },
       "symbol_dependencies": [
         {
-          "symbol": "_empty",
+          "symbol": "GitHub",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "NoRedirect",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 336,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
               "line": 17,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "load": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 42,
-        "end": 162
-      },
-      "symbol_dependencies": [
+        },
         {
-          "symbol": "_load_unlocked",
+          "symbol": "_find_open_pull_request",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
+              "file": "studio/generic_repository.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_tree",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
               "line": 21,
               "kind": "function",
               "language": "python"
@@ -56,11 +97,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_reap",
+          "symbol": "await_trusted_review",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 68,
+              "file": "studio/generic_repository.py",
+              "line": 124,
               "kind": "function",
               "language": "python"
             }
@@ -68,35 +109,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_save_unlocked",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "consumed_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 110,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "exclusive",
-          "definitions": [
-            {
-              "file": "studio/file_lock.py",
-              "line": 16,
+              "file": "studio/core.py",
+              "line": 395,
               "kind": "function",
               "language": "python"
             }
@@ -104,236 +121,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "load_active",
+          "symbol": "create",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "reserve",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 127,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "reserved_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "settle",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 209,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 9
-    },
-    "load_active": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 46,
-        "end": 57
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_load_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reap",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "load",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 42,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "reserve",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 127,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "settle",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 209,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "_save_unlocked": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 60,
-        "end": 65
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_reap": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 68,
-        "end": 94
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "reserved_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "reserved_tokens": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 97,
-        "end": 107
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "consumed_tokens": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 110,
-        "end": 124
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "reserve": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 127,
-        "end": 206
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_load_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reap",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_save_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "consumed_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 110,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "exclusive",
-          "definitions": [
-            {
-              "file": "studio/file_lock.py",
-              "line": 16,
+              "file": "studio/core.py",
+              "line": 937,
               "kind": "function",
               "language": "python"
             }
@@ -341,11 +133,59 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "reserved_tokens",
+          "symbol": "editable",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
+              "file": "studio/generic_policy.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ensure_pull_request",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 150,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "publish",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 225,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "request_trusted_review_handoff",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 176,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "restore",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 27,
               "kind": "function",
               "language": "python"
             }
@@ -353,20 +193,68 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 6
+      "dependency_count": 14
     },
-    "settle": {
+    "__init__": {
       "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 209,
-        "end": 238
+        "file": "studio/generic_repository.py",
+        "start": 17,
+        "end": 137
       },
       "symbol_dependencies": [
         {
-          "symbol": "_load_unlocked",
+          "symbol": "GitHub",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_find_open_pull_request",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_tree",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
               "line": 21,
               "kind": "function",
               "language": "python"
@@ -375,11 +263,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_reap",
+          "symbol": "await_trusted_review",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 68,
+              "file": "studio/generic_repository.py",
+              "line": 124,
               "kind": "function",
               "language": "python"
             }
@@ -387,23 +275,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_save_unlocked",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "exclusive",
-          "definitions": [
-            {
-              "file": "studio/file_lock.py",
-              "line": 16,
+              "file": "studio/core.py",
+              "line": 395,
               "kind": "function",
               "language": "python"
             }
@@ -411,127 +287,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "reserved_tokens",
+          "symbol": "editable",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "heartbeat": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 242,
-        "end": 290
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_load_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reap",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_save_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "exclusive",
-          "definitions": [
-            {
-              "file": "studio/file_lock.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "release": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 294,
-        "end": 309
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_load_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reap",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_save_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "exclusive",
-          "definitions": [
-            {
-              "file": "studio/file_lock.py",
-              "line": 16,
+              "file": "studio/generic_policy.py",
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
@@ -539,441 +299,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "reserved_tokens",
+          "symbol": "restore",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "transfer_project_reservations": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 314,
-        "end": 372
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_load_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reap",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_save_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "exclusive",
-          "definitions": [
-            {
-              "file": "studio/file_lock.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "release",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 294,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "reserve",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 127,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "reserved_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 7
-    },
-    "claim_preemption_lease": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 377,
-        "end": 426
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_load_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reap",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_save_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "exclusive",
-          "definitions": [
-            {
-              "file": "studio/file_lock.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "reserved_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "release_project": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 430,
-        "end": 461
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_load_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reap",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_save_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "exclusive",
-          "definitions": [
-            {
-              "file": "studio/file_lock.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "release",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 294,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "reserved_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "preemption_leases": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 465,
-        "end": 479
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "reserved_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "reservations_by_provider": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 483,
-        "end": 494
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "reserved_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "usage_by_project": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 497,
-        "end": 517
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "consumed_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 110,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "reserved_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "detailed_snapshot": {
-      "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 520,
-        "end": 534
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_load_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reap",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_save_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "consumed_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 110,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "exclusive",
-          "definitions": [
-            {
-              "file": "studio/file_lock.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "reservations_by_provider",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 483,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "reserved_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "usage_by_project",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 497,
+              "file": "studio/generic_repository.py",
+              "line": 27,
               "kind": "function",
               "language": "python"
             }
@@ -983,18 +313,52 @@
       ],
       "dependency_count": 8
     },
-    "snapshot": {
+    "_tree": {
       "source": {
-        "file": "studio/capacity_ledger.py",
-        "start": 536,
-        "end": 548
+        "file": "studio/generic_repository.py",
+        "start": 21,
+        "end": 25
       },
       "symbol_dependencies": [
         {
-          "symbol": "_load_unlocked",
+          "symbol": "StudioError",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "restore": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 27,
+        "end": 78
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_tree",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
               "line": 21,
               "kind": "function",
               "language": "python"
@@ -1003,47 +367,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "_reap",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_save_unlocked",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "consumed_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 110,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "exclusive",
-          "definitions": [
-            {
-              "file": "studio/file_lock.py",
-              "line": 16,
+              "file": "studio/core.py",
+              "line": 395,
               "kind": "function",
               "language": "python"
             }
@@ -1051,33 +379,33 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "reserved_tokens",
+          "symbol": "editable",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
+              "file": "studio/generic_policy.py",
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         }
       ],
-      "dependency_count": 6
+      "dependency_count": 4
     },
-    "_decode": {
+    "_find_open_pull_request": {
       "source": {
-        "file": "studio/generic_model.py",
-        "start": 67,
-        "end": 80
+        "file": "studio/generic_repository.py",
+        "start": 80,
+        "end": 122
       },
       "symbol_dependencies": [
         {
-          "symbol": "ProtocolError",
+          "symbol": "StudioError",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 333,
+              "line": 35,
               "kind": "class",
               "language": "python"
             }
@@ -1087,19 +415,55 @@
       ],
       "dependency_count": 1
     },
-    "_reported_usage_tokens": {
+    "await_trusted_review": {
       "source": {
-        "file": "studio/generic_model.py",
-        "start": 84,
-        "end": 118
+        "file": "studio/generic_repository.py",
+        "start": 124,
+        "end": 148
       },
       "symbol_dependencies": [
         {
-          "symbol": "token_count",
+          "symbol": "GitHub",
           "definitions": [
             {
-              "file": "studio/generic_model.py",
-              "line": 99,
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_find_open_pull_request",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 80,
               "kind": "function",
               "language": "python"
             }
@@ -1107,13 +471,13 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 3
     },
-    "token_count": {
+    "ensure_pull_request": {
       "source": {
-        "file": "studio/generic_model.py",
-        "start": 99,
-        "end": 219
+        "file": "studio/generic_repository.py",
+        "start": 150,
+        "end": 174
       },
       "symbol_dependencies": [
         {
@@ -1129,11 +493,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_bounded_model_token_budget",
+          "symbol": "_find_open_pull_request",
           "definitions": [
             {
-              "file": "studio/generic_model.py",
-              "line": 121,
+              "file": "studio/generic_repository.py",
+              "line": 80,
               "kind": "function",
               "language": "python"
             }
@@ -1141,108 +505,109 @@
           "relation": "same_file"
         },
         {
-          "symbol": "ask",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "studio/generic_model.py",
-              "line": 172,
+              "file": "studio/core.py",
+              "line": 395,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "request_trusted_review_handoff": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 176,
+        "end": 223
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "NoRedirect",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 336,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 937,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "publish",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 225,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "candidates_for",
-          "definitions": [
-            {
-              "file": "studio/provider_router.py",
-              "line": 330,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load_providers",
-          "definitions": [
-            {
-              "file": "studio/provider_router.py",
-              "line": 293,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
       "dependency_count": 5
     },
-    "_bounded_model_token_budget": {
+    "publish": {
       "source": {
-        "file": "studio/generic_model.py",
-        "start": 121,
-        "end": 169
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "ask": {
-      "source": {
-        "file": "studio/generic_model.py",
-        "start": 172,
-        "end": 691
+        "file": "studio/generic_repository.py",
+        "start": 225,
+        "end": 255
       },
       "symbol_dependencies": [
-        {
-          "symbol": "API",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 340,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProtocolError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 333,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ScoreTrace",
-          "definitions": [
-            {
-              "file": "studio/adaptive_scoring.py",
-              "line": 8,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
         {
           "symbol": "StudioError",
           "definitions": [
@@ -1250,66 +615,6 @@
               "file": "studio/core.py",
               "line": 35,
               "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_bounded_model_token_budget",
-          "definitions": [
-            {
-              "file": "studio/generic_model.py",
-              "line": 121,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_decode",
-          "definitions": [
-            {
-              "file": "studio/generic_model.py",
-              "line": 67,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_reported_usage_tokens",
-          "definitions": [
-            {
-              "file": "studio/generic_model.py",
-              "line": 84,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "as_dict",
-          "definitions": [
-            {
-              "file": "studio/adaptive_scoring.py",
-              "line": 13,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "budget_eligible",
-          "definitions": [
-            {
-              "file": "studio/provider_router.py",
-              "line": 404,
-              "kind": "function",
               "language": "python"
             }
           ],
@@ -1328,215 +633,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "candidates_for",
+          "symbol": "editable",
           "definitions": [
             {
-              "file": "studio/provider_router.py",
-              "line": 330,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "contextual_adjustment",
-          "definitions": [
-            {
-              "file": "studio/contextual_routing_memory.py",
-              "line": 159,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "contextual_bandit_score",
-          "definitions": [
-            {
-              "file": "studio/contextual_routing_memory.py",
-              "line": 96,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "eligible",
-          "definitions": [
-            {
-              "file": "studio/provider_health.py",
-              "line": 82,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "estimate_call_cost",
-          "definitions": [
-            {
-              "file": "studio/provider_cost.py",
-              "line": 56,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "exploration_bonus",
-          "definitions": [
-            {
-              "file": "studio/safe_rewrite_learning.py",
-              "line": 228,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "latency_bonus",
-          "definitions": [
-            {
-              "file": "studio/provider_metrics.py",
-              "line": 68,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "learned_weights",
-          "definitions": [
-            {
-              "file": "studio/routing_history.py",
-              "line": 94,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load_providers",
-          "definitions": [
-            {
-              "file": "studio/provider_router.py",
-              "line": 293,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "model_for",
-          "definitions": [
-            {
-              "file": "studio/provider_router.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "origin_violation_penalty",
-          "definitions": [
-            {
-              "file": "studio/safe_rewrite_learning.py",
-              "line": 198,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "reliability_bonus",
-          "definitions": [
-            {
-              "file": "studio/provider_health.py",
-              "line": 146,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "rewrite_recovery_bonus",
-          "definitions": [
-            {
-              "file": "studio/safe_rewrite_learning.py",
-              "line": 204,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "rows",
-          "definitions": [
-            {
-              "file": "studio/safe_rewrite_learning.py",
-              "line": 131,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "score",
-          "definitions": [
-            {
-              "file": "studio/local_model_reputation.py",
-              "line": 162,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "score_provider",
-          "definitions": [
-            {
-              "file": "studio/adaptive_scoring.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "stagnation_routing_penalty",
-          "definitions": [
-            {
-              "file": "studio/capacity_efficiency.py",
-              "line": 222,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "utility_score",
-          "definitions": [
-            {
-              "file": "studio/contextual_utility.py",
-              "line": 14,
+              "file": "studio/generic_policy.py",
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
@@ -1544,33 +645,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 29
+      "dependency_count": 3
     },
-    "CapacityLedgerTests": {
+    "FakeGitHub": {
       "source": {
-        "file": "tests/test_capacity_ledger.py",
-        "start": 15,
-        "end": 243
+        "file": "tests/test_generic_repository_pull_request.py",
+        "start": 10,
+        "end": 36
       },
       "symbol_dependencies": [
         {
-          "symbol": "Model",
+          "symbol": "__init__",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 427,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "claim_preemption_lease",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 377,
+              "file": "studio/generic_repository.py",
+              "line": 17,
               "kind": "function",
               "language": "python"
             }
@@ -1578,131 +667,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "consumed_tokens",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 110,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "heartbeat",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 242,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 42,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load_active",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 46,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "release",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 294,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "release_project",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 430,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "reserve",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 127,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "reserved_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "settle",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 209,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "snapshot",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 536,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_atomic_preemption_transfer_releases_victim_and_leases_contender",
-          "definitions": [
-            {
-              "file": "tests/test_capacity_ledger.py",
-              "line": 153,
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 24,
               "kind": "function",
               "language": "python"
             }
@@ -1710,465 +679,87 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_claim_preemption_lease_converts_lease_to_worker_reservation",
+          "symbol": "get",
           "definitions": [
             {
-              "file": "tests/test_capacity_ledger.py",
-              "line": 174,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_expired_preemption_lease_cannot_be_claimed",
-          "definitions": [
-            {
-              "file": "tests/test_capacity_ledger.py",
-              "line": 195,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_expired_reservations_are_reaped_before_new_claim",
-          "definitions": [
-            {
-              "file": "tests/test_capacity_ledger.py",
-              "line": 103,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_project_envelope_is_enforced_across_providers",
-          "definitions": [
-            {
-              "file": "tests/test_capacity_ledger.py",
-              "line": 39,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_provider_capacity_cannot_be_double_reserved",
-          "definitions": [
-            {
-              "file": "tests/test_capacity_ledger.py",
+              "file": "tests/test_generic_repository_pull_request.py",
               "line": 16,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "test_release_on_failed_call_returns_full_reservation",
-          "definitions": [
-            {
-              "file": "tests/test_capacity_ledger.py",
-              "line": 87,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_release_project_releases_only_owned_reservations",
-          "definitions": [
-            {
-              "file": "tests/test_capacity_ledger.py",
-              "line": 136,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_settle_releases_unused_reservation_and_records_actual_usage",
-          "definitions": [
-            {
-              "file": "tests/test_capacity_ledger.py",
-              "line": 64,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_worker_heartbeat_renews_only_on_progress",
-          "definitions": [
-            {
-              "file": "tests/test_capacity_ledger.py",
-              "line": 212,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "transfer_project_reservations",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
-      "dependency_count": 23
+      "dependency_count": 3
     },
-    "test_provider_capacity_cannot_be_double_reserved": {
+    "get": {
       "source": {
-        "file": "tests/test_capacity_ledger.py",
+        "file": "tests/test_generic_repository_pull_request.py",
         "start": 16,
-        "end": 37
+        "end": 22
       },
-      "symbol_dependencies": [
-        {
-          "symbol": "reserve",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 127,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
+      "symbol_dependencies": [],
+      "dependency_count": 0
     },
-    "test_project_envelope_is_enforced_across_providers": {
+    "call": {
       "source": {
-        "file": "tests/test_capacity_ledger.py",
+        "file": "tests/test_generic_repository_pull_request.py",
+        "start": 24,
+        "end": 36
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_ensure_pull_request_creates_one_for_managed_branch": {
+      "source": {
+        "file": "tests/test_generic_repository_pull_request.py",
         "start": 39,
-        "end": 62
+        "end": 64
       },
       "symbol_dependencies": [
         {
-          "symbol": "reserve",
+          "symbol": "FakeGitHub",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 127,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_settle_releases_unused_reservation_and_records_actual_usage": {
-      "source": {
-        "file": "tests/test_capacity_ledger.py",
-        "start": 64,
-        "end": 85
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "consumed_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 110,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 42,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "reserve",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 127,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "reserved_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "settle",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 209,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_release_on_failed_call_returns_full_reservation": {
-      "source": {
-        "file": "tests/test_capacity_ledger.py",
-        "start": 87,
-        "end": 101
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "release",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 294,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "reserve",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 127,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "reserved_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "snapshot",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 536,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "test_expired_reservations_are_reaped_before_new_claim": {
-      "source": {
-        "file": "tests/test_capacity_ledger.py",
-        "start": 103,
-        "end": 134
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "Model",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 427,
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 10,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "class_like"
+          "relation": "same_file"
         },
         {
-          "symbol": "load",
+          "symbol": "GenericRepository",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 42,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load_active",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 46,
-              "kind": "function",
+              "file": "studio/generic_repository.py",
+              "line": 16,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "reserve",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 127,
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 24,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "reserved_tokens",
+          "symbol": "ensure_pull_request",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "test_release_project_releases_only_owned_reservations": {
-      "source": {
-        "file": "tests/test_capacity_ledger.py",
-        "start": 136,
-        "end": 151
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "load",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 42,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "release_project",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 430,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "reserve",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 127,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_atomic_preemption_transfer_releases_victim_and_leases_contender": {
-      "source": {
-        "file": "tests/test_capacity_ledger.py",
-        "start": 153,
-        "end": 172
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "load",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 42,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "reserve",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 127,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "reserved_tokens",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 97,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "transfer_project_reservations",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 314,
+              "file": "studio/generic_repository.py",
+              "line": 150,
               "kind": "function",
               "language": "python"
             }
@@ -2178,55 +769,55 @@
       ],
       "dependency_count": 4
     },
-    "test_claim_preemption_lease_converts_lease_to_worker_reservation": {
+    "test_ensure_pull_request_reuses_existing_exact_branch_pr": {
       "source": {
-        "file": "tests/test_capacity_ledger.py",
-        "start": 174,
-        "end": 193
+        "file": "tests/test_generic_repository_pull_request.py",
+        "start": 67,
+        "end": 90
       },
       "symbol_dependencies": [
         {
-          "symbol": "claim_preemption_lease",
+          "symbol": "FakeGitHub",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 377,
-              "kind": "function",
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "GenericRepository",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 16,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "load",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 42,
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 24,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "reserve",
+          "symbol": "ensure_pull_request",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 127,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "transfer_project_reservations",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 314,
+              "file": "studio/generic_repository.py",
+              "line": 150,
               "kind": "function",
               "language": "python"
             }
@@ -2236,19 +827,43 @@
       ],
       "dependency_count": 4
     },
-    "test_expired_preemption_lease_cannot_be_claimed": {
+    "test_ensure_pull_request_ignores_other_studio_branch": {
       "source": {
-        "file": "tests/test_capacity_ledger.py",
-        "start": 195,
-        "end": 210
+        "file": "tests/test_generic_repository_pull_request.py",
+        "start": 93,
+        "end": 187
       },
       "symbol_dependencies": [
         {
-          "symbol": "claim_preemption_lease",
+          "symbol": "FakeGitHub",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 377,
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 10,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "GenericRepository",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_find_open_pull_request",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 80,
               "kind": "function",
               "language": "python"
             }
@@ -2256,11 +871,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "load",
+          "symbol": "await_trusted_review",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 42,
+              "file": "studio/generic_repository.py",
+              "line": 124,
               "kind": "function",
               "language": "python"
             }
@@ -2268,33 +883,57 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "transfer_project_reservations",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 314,
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ensure_pull_request",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 150,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "finish_target_actions",
+          "definitions": [
+            {
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 167,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 7
     },
-    "test_worker_heartbeat_renews_only_on_progress": {
+    "finish_target_actions": {
       "source": {
-        "file": "tests/test_capacity_ledger.py",
-        "start": 212,
-        "end": 243
+        "file": "tests/test_generic_repository_pull_request.py",
+        "start": 167,
+        "end": 287
       },
       "symbol_dependencies": [
         {
-          "symbol": "claim_preemption_lease",
+          "symbol": "await_trusted_review",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 377,
+              "file": "studio/generic_repository.py",
+              "line": 124,
               "kind": "function",
               "language": "python"
             }
@@ -2302,31 +941,19 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "heartbeat",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "studio/capacity_ledger.py",
-              "line": 242,
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 24,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "transfer_project_reservations",
-          "definitions": [
-            {
-              "file": "studio/capacity_ledger.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 3
+      "dependency_count": 2
     }
   }
 }

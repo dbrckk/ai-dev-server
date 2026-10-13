@@ -9639,6 +9639,13 @@ def await_trusted_review(self, expected_sha: str) -> dict | None
 ⋮----
 """Read-only bounded confirmation; an accepted dispatch is not a PR."""
 ⋮----
+# repository_dispatch only queues a target GitHub Actions workflow.
+# Production canaries demonstrated that target job scheduling and
+# startup can exceed the former 9-second confirmation window.
+# Allow up to three minutes for an independently created PR, without
+# ever retrying POST or relaxing exact-repository/commit checks.
+attempts = 13
+⋮----
 confirmed = self._find_open_pull_request(expected_sha=expected_sha)
 ⋮----
 confirmed = None

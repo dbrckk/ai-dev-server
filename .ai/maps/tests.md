@@ -5440,10 +5440,16 @@ target = FakeGitHub([{
 producer = GenericRepository(target, "dbrckk/repo-standards", "mp-" + "a" * 24)
 ⋮----
 confirmed = {
+# The target Actions runner can queue for over a minute. It should
+# still be recognized when its real PR appears after 8 x 15 seconds.
+ticks = [0]
+⋮----
+def finish_target_actions(delay)
 ⋮----
 actual = producer.await_trusted_review(sha)
 ⋮----
-# No target PR with the exact commit: remain blocked, not a fake success.
+# No target PR with the exact commit: stop within the finite 3-minute
+# window and keep the review blocker visible; never fabricate a PR.
 ⋮----
 missing = producer.await_trusted_review("3" * 40)
 ```

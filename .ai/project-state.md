@@ -97,25 +97,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-13T22:43:13Z
+Generated: 2026-10-13T23:31:29Z
 
 ### Git
 - Branch: `main`
-- Head: `cb5309fd85e4`
-- Commit date: 2026-10-14T00:43:03+02:00
-- Commit: fix(capacity): exclude expired token reservations from provider admission (#290)
+- Head: `ff7a22bab56d`
+- Commit date: 2026-10-14T01:31:07+02:00
+- Commit: fix(delivery): reliably confirm asynchronous trusted review PR on deployed Production-OS (#291)
 - Tracked files: 863
 
 ### Recently changed files
+- `.github/workflows/production-os-worker-integration.yml`
+- `studio/generic_repository.py`
+- `tests/test_generic_repository_pull_request.py`
 - `studio/capacity_ledger.py`
 - `studio/generic_model.py`
 - `tests/test_capacity_ledger.py`
 - `.github/workflows/production-os-actions-worker.yml`
-- `.github/workflows/production-os-worker-integration.yml`
 - `studio/generic_project.py`
-- `studio/generic_repository.py`
 - `studio/provider_router.py`
-- `tests/test_generic_repository_pull_request.py`
 - `tests/test_production_os_actions_worker_workflow.py`
 - `tests/test_provider_router.py`
 - `control/production-os-worker-kick.json`

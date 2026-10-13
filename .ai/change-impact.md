@@ -1,19 +1,20 @@
 # Change impact
 
-Base: 03c52575820d1f800a4a8e98f8db58b285bc9847
-Head: cb5309fd85e431480e5b211856644e41ab5e1de3
+Base: 8206f0f37faaf7988b40462895e6c427212eb88e
+Head: ff7a22bab56dc94c0b06ad49fddd897c95a2eb65
 
 ## Changed files
-- M studio/capacity_ledger.py
-- M studio/generic_model.py
-- M tests/test_capacity_ledger.py
+- M .github/workflows/production-os-worker-integration.yml
+- M studio/generic_repository.py
+- M tests/test_generic_repository_pull_request.py
 
 ## Affected areas
+- .github
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_capacity_ledger.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

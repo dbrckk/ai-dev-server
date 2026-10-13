@@ -2858,8 +2858,8 @@ jobs:
             sha: 7e0d47a8fd54e7faa3b3947b07259a5e065c3bdb
           - label: current-qualified-main-20261011
             sha: f7325526e47310f5d79412a089361b0cf06d81fd
-          - label: qualified-review-pr264-20261012
-            sha: 9aeefeb8e9f4273999c44cb5f4044d7ec78e005b
+          - label: deployed-render-production-20261013
+            sha: 972ef8328894d9cc1f18e7a6c7db96b5eb5b4aa1
     steps:
       - name: Checkout worker
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -15336,6 +15336,13 @@ base_repo = base.get("repo") if isinstance(base.get("repo"), dict) else {}
 def await_trusted_review(self, expected_sha: str) -> dict | None
 ⋮----
 """Read-only bounded confirmation; an accepted dispatch is not a PR."""
+⋮----
+# repository_dispatch only queues a target GitHub Actions workflow.
+# Production canaries demonstrated that target job scheduling and
+# startup can exceed the former 9-second confirmation window.
+# Allow up to three minutes for an independently created PR, without
+# ever retrying POST or relaxing exact-repository/commit checks.
+attempts = 13
 ⋮----
 confirmed = self._find_open_pull_request(expected_sha=expected_sha)
 ⋮----
@@ -30868,10 +30875,16 @@ target = FakeGitHub([{
 producer = GenericRepository(target, "dbrckk/repo-standards", "mp-" + "a" * 24)
 ⋮----
 confirmed = {
+# The target Actions runner can queue for over a minute. It should
+# still be recognized when its real PR appears after 8 x 15 seconds.
+ticks = [0]
+⋮----
+def finish_target_actions(delay)
 ⋮----
 actual = producer.await_trusted_review(sha)
 ⋮----
-# No target PR with the exact commit: remain blocked, not a fake success.
+# No target PR with the exact commit: stop within the finite 3-minute
+# window and keep the review blocker visible; never fabricate a PR.
 ⋮----
 missing = producer.await_trusted_review("3" * 40)
 ````

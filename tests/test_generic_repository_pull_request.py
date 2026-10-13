@@ -160,15 +160,28 @@ def test_ensure_pull_request_ignores_other_studio_branch():
         },
         "base": {"ref": "main", "repo": {"full_name": "dbrckk/repo-standards"}},
     }
-    with patch("time.sleep", side_effect=lambda delay: target.pulls.append(confirmed)) as sleep:
+    # The target Actions runner can queue for over a minute. It should
+    # still be recognized when its real PR appears after 8 x 15 seconds.
+    ticks = [0]
+
+    def finish_target_actions(delay):
+        assert delay == 15
+        ticks[0] += 1
+        if ticks[0] == 8:
+            target.pulls.append(confirmed)
+
+    with patch("time.sleep", side_effect=finish_target_actions) as sleep:
         actual = producer.await_trusted_review(sha)
-    sleep.assert_called_once_with(3)
+    assert sleep.call_count == 8
     assert actual["url"] == confirmed["html_url"]
     assert actual["handoff_confirmed"] is True
     assert not any(call[0] == "POST" for call in target.calls)
 
-    # No target PR with the exact commit: remain blocked, not a fake success.
+    # No target PR with the exact commit: stop within the finite 3-minute
+    # window and keep the review blocker visible; never fabricate a PR.
     with patch("time.sleep") as sleep:
         missing = producer.await_trusted_review("3" * 40)
     assert missing is None
-    assert sleep.call_count == 3
+    assert sleep.call_count == 12
+    for call in sleep.call_args_list:
+        assert call.args == (15,)

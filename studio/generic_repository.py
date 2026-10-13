@@ -5,6 +5,7 @@ import json
 import re
 import urllib.error
 import urllib.request
+from urllib.parse import quote
 from pathlib import Path
 from core import StudioError, SECRET, NoRedirect
 from generic_policy import editable
@@ -83,7 +84,15 @@ class GenericRepository:
             raise StudioError("Generic repository default branch missing")
         self.default_branch=default
 
-        pulls = self.github.get("/pulls?state=open&per_page=100")
+        owner = self.repo.split("/", 1)[0]
+        # Server-side branch filtering avoids missing an existing managed PR
+        # when the repository has more than 100 other open pull requests.
+        filter_head = quote(owner + ":" + self.branch, safe="")
+        filter_base = quote(default, safe="")
+        pulls = self.github.get(
+            "/pulls?state=open&head=" + filter_head
+            + "&base=" + filter_base + "&per_page=100"
+        )
         if not isinstance(pulls, list):
             raise StudioError("Generic pull request listing unavailable")
         for pr in pulls:
@@ -91,7 +100,14 @@ class GenericRepository:
                 continue
             head = pr.get("head") if isinstance(pr.get("head"), dict) else {}
             base = pr.get("base") if isinstance(pr.get("base"), dict) else {}
-            if head.get("ref") == self.branch and base.get("ref") == default:
+            head_repo = head.get("repo") if isinstance(head.get("repo"), dict) else {}
+            base_repo = base.get("repo") if isinstance(base.get("repo"), dict) else {}
+            if (
+                head.get("ref") == self.branch
+                and base.get("ref") == default
+                and str(head_repo.get("full_name") or "").casefold() == self.repo.casefold()
+                and str(base_repo.get("full_name") or "").casefold() == self.repo.casefold()
+            ):
                 return {
                     "number":pr.get("number"),
                     "state":pr.get("state") or "open",

@@ -113,6 +113,14 @@ class CapacityLedgerTests(unittest.TestCase):
                 now=10,
             )
             self.assertTrue(first["admitted"])
+            # Model admission must not count an expired lease before a new
+            # transactional reserve has had a chance to reap it on disk.
+            self.assertEqual(ledger.reserved_tokens(ledger.load_active(path, now=20)), 900)
+            self.assertEqual(ledger.reserved_tokens(ledger.load_active(path, now=41)), 0)
+            self.assertEqual(ledger.reserved_tokens(ledger.load_active(path, now=41), project_id="a"), 0)
+            # This routing view is read-only; the writer still owns durable
+            # reclamation and its auditable reap event.
+            self.assertEqual(ledger.reserved_tokens(ledger.load(path)), 900)
             second = ledger.reserve(
                 path,
                 project_id="b",

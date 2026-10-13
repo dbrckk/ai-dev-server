@@ -188,8 +188,67 @@ def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath():
 
 
 def test_actions_worker_has_resilient_model_provider_fallbacks():
+    # Exercise the actual Actions configuration step, not a replacement
+    # validator: primary NVIDIA keys must not be mandatory when an eligible
+    # alternate or keyless local coding provider is configured.
+    import json
+    import os
+    import subprocess
+    import tempfile
+    from textwrap import dedent
+
     assert "STUDIO_PROVIDERS_JSON: ${{ vars.STUDIO_PROVIDERS_JSON }}" in WORKFLOW
+    assert "STUDIO_FALLBACK_API_KEY: ${{ secrets.STUDIO_FALLBACK_API_KEY }}" in WORKFLOW
     assert "python studio/production_os_provider_config.py" in WORKFLOW
+    block = WORKFLOW.split("      - name: Validate worker configuration\n", 1)[1]
+    script = dedent(block.split("        run: |\n", 1)[1].split("\n      - name:", 1)[0])
+    with tempfile.TemporaryDirectory() as root:
+        env = {
+            "PATH": os.environ["PATH"],
+            "HOME": root,
+            "PYTHONPATH": "studio",
+            "GITHUB_ENV": str(Path(root) / "github-env"),
+            "PRODUCTION_OS_WORKER_TOKEN": "test-worker-secret",
+            "STUDIO_GITHUB_TOKEN": "test-repository-secret",
+            "PRODUCTION_OS_URL": "https://production.example",
+            "STUDIO_API_BASE": "https://custom.example.invalid/v1",
+        }
+
+        def run(config):
+            result = subprocess.run(
+                ["bash", "-c", script], env={**env, **config},
+                cwd=Path(__file__).resolve().parents[1],
+                text=True, capture_output=True, timeout=20,
+            )
+            assert "test-worker-secret" not in result.stdout + result.stderr
+            assert "test-repository-secret" not in result.stdout + result.stderr
+            assert "test-fallback-secret" not in result.stdout + result.stderr
+            return result
+
+        fallback = [{
+            "name": "free-alternate",
+            "base": "https://free.example.invalid/v1",
+            "key_env": "STUDIO_FALLBACK_API_KEY",
+            "model": "qwen-coder",
+        }]
+        accepted = run({
+            "STUDIO_FALLBACK_API_KEY": "test-fallback-secret",
+            "STUDIO_PROVIDERS_JSON": json.dumps(fallback),
+        })
+        assert accepted.returncode == 0, accepted.stderr
+        assert "configuration: ready" in accepted.stdout
+        local = run({
+            "STUDIO_API_BASE": "http://127.0.0.1:11434/v1",
+            "STUDIO_PROVIDERS_JSON": "",
+        })
+        assert local.returncode == 0, local.stderr
+        missing = run({"STUDIO_PROVIDERS_JSON": ""})
+        assert missing.returncode != 0
+        assert "No configured coding inference provider" in missing.stderr
+        missing_fallback = run({
+            "STUDIO_PROVIDERS_JSON": json.dumps(fallback),
+        })
+        assert missing_fallback.returncode != 0
 
 
 def test_actions_worker_fails_ci_when_production_result_failed():

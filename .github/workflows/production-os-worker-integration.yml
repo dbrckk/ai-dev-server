@@ -17,9 +17,19 @@ concurrency:
 jobs:
 
   production-os-worker:
-    name: Production-OS worker integration
+    name: Production-OS worker integration (${{ matrix.production_os.label }})
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        production_os:
+          - label: historical-baseline
+            sha: 7e0d47a8fd54e7faa3b3947b07259a5e065c3bdb
+          - label: current-qualified-main-20261011
+            sha: f7325526e47310f5d79412a089361b0cf06d81fd
+          - label: qualified-review-pr264-20261012
+            sha: 9aeefeb8e9f4273999c44cb5f4044d7ec78e005b
     steps:
       - name: Checkout worker
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -35,9 +45,14 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: dbrckk/Production-OS
-          ref: 7e0d47a8fd54e7faa3b3947b07259a5e065c3bdb
+          ref: ${{ matrix.production_os.sha }}
           path: .integration/production-os
           persist-credentials: false
+
+      - name: Verify exact Production-OS commit checked out
+        env:
+          EXPECTED_SERVER_SHA: ${{ matrix.production_os.sha }}
+        run: test "$(git -C .integration/production-os rev-parse HEAD)" = "$EXPECTED_SERVER_SHA"
 
       - name: Install server and worker test dependencies
         run: python -m pip install ./.integration/production-os pytest

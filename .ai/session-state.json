@@ -1,10 +1,12 @@
 {
   "version": 1,
-  "updated_at": "2026-10-09",
-  "task": "Prevent verified Production-OS commits from being reported as runner failures due only to rejected optional GitHub telemetry writes.",
-  "base_commit": "60b434667b06dd3e3b499c4c17c2fe935883714d",
-  "branch": "fix/noncritical-telemetry-github-422",
+  "updated_at": "2026-10-13",
+  "task": "Keep reliable idle worker queue-health evidence visible and verify real hosted capacity before claiming production readiness.",
+  "base_commit": "0a29a2cff5697bb3e46d32fc5906329d6f803d97",
+  "branch": "ci/qualify-worker-against-godot-pos-20261011",
   "completed": [
+    "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
+    "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",
     "Reject invalid timing before claim",
@@ -74,12 +76,30 @@
       }
     ],
     "latest_run_id": 37225933341,
-    "latest_queue": "1 visual asset job queued; missing visual-asset-production capability"
+    "latest_queue": "1 visual asset job queued; missing visual-asset-production capability",
+    "observed_at": "2026-10-13",
+    "observed_worker_run": 38455622324,
+    "observed_render_deployed_sha": "b9971ce5b71fd329abc7715df02332df1b806213",
+    "observed_readiness": "ready",
+    "observed_queue": {
+      "jobs": {
+        "completed": 20,
+        "failed": 19
+      },
+      "workflows": {
+        "succeeded": 20,
+        "failed": 8
+      }
+    },
+    "sampled_failure": "capacity_exhausted",
+    "last_work_status": "queue_empty",
+    "limit": "Historical counters, no hosted model inference or completed end-to-end task"
   },
   "pending": [
-    "Verify current worker result and subsequent persistence-fixed worker run",
-    "Verify remote memory branch advances and a real task completes",
-    "Remote Asset Forge dispatch authorization unavailable for visual capability"
+    "Qualify new exact worker HEAD 7/7 workflows including authenticated 3/3 Production-OS matrix",
+    "Validate viable free provider capacity before resuming failed implementation objectives",
+    "Require one operator-approved real resumed end-to-end hosted task before any release",
+    "Keep both PRs Draft; do not merge, deploy, trigger paid models or bypass licensing"
   ],
   "merged_pr": {
     "number": 240,

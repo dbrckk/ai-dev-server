@@ -149,6 +149,26 @@ class ProviderRouterTests(unittest.TestCase):
             providers = load_providers()
         self.assertEqual([p.name for p in providers], ["ollama"])
         self.assertTrue(providers[0].unmetered)
+        # Reject remote hostnames that merely start with a trusted local
+        # hostname; they must not bypass remote-provider credential checks.
+        for untrusted in (
+            "https://localhost.attacker.invalid/v1",
+            "http://127.0.0.1.attacker.invalid/v1",
+            "http://0.0.0.0.attacker.invalid/v1",
+            "http://localhost@attacker.invalid/v1",
+            "http://user@localhost:11434/v1",
+        ):
+            config[0]["base"] = untrusted
+            with patch.dict(
+                os.environ,
+                {"STUDIO_PROVIDERS_JSON": json.dumps(config)},
+                clear=True,
+            ):
+                with self.assertRaisesRegex(ValueError, "Remote providers require key_env"):
+                    load_providers()
+        config[0]["base"] = "http://[::1]:11434/v1"
+        with patch.dict(os.environ, {"STUDIO_PROVIDERS_JSON": json.dumps(config)}, clear=True):
+            self.assertEqual(load_providers()[0].name, "ollama")
 
     def test_remote_endpoint_is_metered_by_default(self):
         env = {

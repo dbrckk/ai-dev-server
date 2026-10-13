@@ -2562,15 +2562,24 @@ Objective and current plan:
                     if reason == "pull_request_write_denied"
                     else None
                 )
-                # Dispatch acceptance is NOT a PR. Keep the review blocker
-                # visible until an independent target-repo workflow opens it.
-                state["pull_request"] = {
-                    "state":"unavailable",
-                    "reason":reason,
-                    "head":repo.branch,
-                    **({"base":base, "compare_url":comparison} if comparison else {}),
-                    **({"review_handoff":review_handoff} if review_handoff is not None else {}),
-                }
+                # An accepted dispatch is not a PR. Verify the target-side
+                # asynchronously created review exists at the *same commit*
+                # before reporting an actual delivery. Never retry the POST.
+                confirmed_review = (
+                    repo.await_trusted_review(base_sha)
+                    if isinstance(review_handoff, dict)
+                    and review_handoff.get("status") == "accepted"
+                    else None
+                )
+                state["pull_request"] = (
+                    confirmed_review if confirmed_review is not None else {
+                        "state":"unavailable",
+                        "reason":reason,
+                        "head":repo.branch,
+                        **({"base":base, "compare_url":comparison} if comparison else {}),
+                        **({"review_handoff":review_handoff} if review_handoff is not None else {}),
+                    }
+                )
         state["execution_checkpoint"] = {
             "round": checkpoint["round"],
             "phase": checkpoint["phase"],

@@ -77,16 +77,15 @@ class GenericRepository:
             raise StudioError("No editable text source could be restored")
         return source,{"source_sha":source,"files":count,"bytes":total}
 
-    def ensure_pull_request(self, *, title: str, body: str = "") -> dict:
+    def _find_open_pull_request(self, *, expected_sha: str | None = None) -> dict | None:
+        """Read-only lookup; optional SHA pins a trusted async review handoff."""
         metadata = self.github.get("")
         default = metadata.get("default_branch") if isinstance(metadata, dict) else None
         if not isinstance(default, str) or not default:
             raise StudioError("Generic repository default branch missing")
-        self.default_branch=default
-
+        self.default_branch = default
         owner = self.repo.split("/", 1)[0]
-        # Server-side branch filtering avoids missing an existing managed PR
-        # when the repository has more than 100 other open pull requests.
+        # Server-side branch filtering avoids missing a PR amid many others.
         filter_head = quote(owner + ":" + self.branch, safe="")
         filter_base = quote(default, safe="")
         pulls = self.github.get(
@@ -107,16 +106,46 @@ class GenericRepository:
                 and base.get("ref") == default
                 and str(head_repo.get("full_name") or "").casefold() == self.repo.casefold()
                 and str(base_repo.get("full_name") or "").casefold() == self.repo.casefold()
+                and (expected_sha is None or head.get("sha") == expected_sha)
+                and type(pr.get("number")) is int
+                and isinstance(pr.get("html_url"), str)
+                and pr["html_url"].startswith("https://github.com/" + self.repo + "/pull/")
             ):
                 return {
-                    "number":pr.get("number"),
+                    "number":pr["number"],
                     "state":pr.get("state") or "open",
-                    "url":pr.get("html_url"),
+                    "url":pr["html_url"],
                     "head":self.branch,
                     "base":default,
                     "reused":True,
                 }
+        return None
 
+    def await_trusted_review(self, expected_sha: str) -> dict | None:
+        """Read-only bounded confirmation; an accepted dispatch is not a PR."""
+        if self.repo != "dbrckk/repo-standards":
+            return None
+        if not re.fullmatch(r"studio/mp-[a-f0-9]{24}", self.branch):
+            return None
+        if not isinstance(expected_sha, str) or not re.fullmatch(r"[a-f0-9]{40}", expected_sha):
+            return None
+        import time
+        for attempt in range(4):
+            try:
+                confirmed = self._find_open_pull_request(expected_sha=expected_sha)
+            except StudioError:
+                confirmed = None
+            if confirmed is not None:
+                return {**confirmed, "reused": False, "handoff_confirmed": True}
+            if attempt < 3:
+                time.sleep(3)
+        return None
+
+    def ensure_pull_request(self, *, title: str, body: str = "") -> dict:
+        existing = self._find_open_pull_request()
+        if existing is not None:
+            return existing
+        default = self.default_branch
         created = self.github.call(
             "POST",
             self.github.repo + "/pulls",

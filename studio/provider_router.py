@@ -6,6 +6,7 @@ import json
 import os
 import urllib.request
 import urllib.error
+from urllib.parse import urlsplit
 from pathlib import Path
 from typing import Iterable
 
@@ -46,15 +47,17 @@ class ProviderSpec:
 
 
 def _is_local_base(base: str) -> bool:
-    text = (base or "").strip().lower()
-    return (
-        text.startswith("http://127.0.0.1")
-        or text.startswith("https://127.0.0.1")
-        or text.startswith("http://localhost")
-        or text.startswith("https://localhost")
-        or text.startswith("http://0.0.0.0")
-        or text.startswith("https://0.0.0.0")
-    )
+    """Treat only exact loopback hostnames as local, never URL prefixes."""
+    try:
+        parsed = urlsplit((base or "").strip())
+        return (
+            parsed.scheme.lower() in {"http", "https"}
+            and parsed.hostname in {"127.0.0.1", "localhost", "0.0.0.0", "::1"}
+            and parsed.username is None
+            and parsed.password is None
+        )
+    except ValueError:
+        return False
 
 
 def _bool(value, default=True):

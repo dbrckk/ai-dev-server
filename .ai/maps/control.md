@@ -113,8 +113,8 @@ request.json
 ## File: production-os-diagnostics-kick.json
 ```json
 {
-  "sequence": 8,
-  "reason": "GET-only Render warmup + operator wake settings after #283"
+  "sequence": 10,
+  "reason": "read-only Production-OS live wake and operator diagnostics after CI qualification (2026-10-11)"
 }
 ```
 
@@ -141,7 +141,7 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-  "sequence": 23,
+  "sequence": 26,
   "repository": "dbrckk/repo-standards"
 }
 ```
@@ -149,8 +149,8 @@ request.json
 ## File: production-os-worker-kick.json
 ```json
 {
-  "sequence": 23,
-  "reason": "Wake existing Production-OS live canary 21 after it entered the queue"
+  "sequence": 24,
+  "reason": "Wake queued live canary 26 after exact Production-OS main CI 38159826248 succeeded"
 }
 ```
 

@@ -1907,6 +1907,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
       ASSET_FORGE_GITHUB_TOKEN: ${{ secrets.ASSET_FORGE_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
       STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
+      STUDIO_FALLBACK_API_KEY: ${{ secrets.STUDIO_FALLBACK_API_KEY }}
       STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
       STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
       STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
@@ -1931,6 +1932,7 @@ jobs:
           import json
           import os
           import urllib.request
+          import time
 
           runs_url = (
               "https://api.github.com/repos/dbrckk/Production-OS/actions/runs"
@@ -1953,7 +1955,10 @@ jobs:
               with urllib.request.urlopen(request, timeout=20) as response:
                   return json.load(response)
 
-          for attempt in range(3):
+          # A just-deployed main revision can still have running CI.
+          # Wait for its exact-head gate rather than failing a fresh worker.
+          # Bounded to eight minutes; never use an older qualified SHA.
+          for attempt in range(24):
               main_before = str(
                   ((fetch_json(branch_url).get("commit") or {}).get("sha") or "")
               ).lower()
@@ -1967,7 +1972,7 @@ jobs:
                   ((fetch_json(branch_url).get("commit") or {}).get("sha") or "")
               ).lower()
               if main_before != main_after:
-                  if attempt == 2:
+                  if attempt == 23:
                       raise SystemExit(
                           "Production-OS main moved during qualified revision lookup"
                       )
@@ -1992,9 +1997,30 @@ jobs:
                       break
 
               if not qualified:
-                  raise SystemExit(
-                      "No successful CI for current Production-OS main revision"
-                  )
+                  candidates = [
+                      run for run in payload.get("workflow_runs", [])
+                      if run.get("path") == ".github/workflows/ci.yml"
+                      and run.get("event") in {"push", "workflow_dispatch"}
+                      and run.get("head_branch") == "main"
+                      and (run.get("head_repository") or {}).get("full_name")
+                          == "dbrckk/Production-OS"
+                      and str(run.get("head_sha") or "").lower() == main_before
+                  ]
+                  if candidates and all(
+                      run.get("status") == "completed"
+                      and run.get("conclusion") not in {None, "success"}
+                      for run in candidates
+                  ):
+                      raise SystemExit(
+                          "Production-OS current main CI completed without success"
+                      )
+                  if attempt == 23:
+                      raise SystemExit(
+                          "No successful CI for current Production-OS main revision "
+                          "within the bounded worker qualification window"
+                      )
+                  time.sleep(20)
+                  continue
               print(main_before)
               break
           PY
@@ -2033,7 +2059,7 @@ jobs:
         run: |
           set -euo pipefail
           missing=()
-          for name in PRODUCTION_OS_WORKER_TOKEN STUDIO_GITHUB_TOKEN STUDIO_API_KEY; do
+          for name in PRODUCTION_OS_WORKER_TOKEN STUDIO_GITHUB_TOKEN; do
             if [ -z "${!name:-}" ]; then
               missing+=("$name")
             fi
@@ -2045,11 +2071,21 @@ jobs:
           python studio/production_os_provider_config.py
           python - <<'PY'
           from urllib.parse import urlsplit
+          from provider_router import load_providers
           import os
           value=os.environ["PRODUCTION_OS_URL"].strip()
           parsed=urlsplit(value)
           if parsed.scheme != "https" or not parsed.netloc:
               raise SystemExit("PRODUCTION_OS_URL must be HTTPS")
+          # Match the runtime router instead of requiring the NVIDIA-specific
+          # STUDIO_API_KEY when another configured provider has credentials.
+          # This checks local configuration only; it does not claim live quota.
+          try:
+              providers = load_providers(prefer_free=True)
+          except (ValueError, TypeError) as exc:
+              raise SystemExit("Production-OS inference provider configuration invalid") from exc
+          if not any(provider.model_for("implementation") for provider in providers):
+              raise SystemExit("No configured coding inference provider with usable credentials")
           print("Production-OS Actions worker configuration: ready")
           PY
 
@@ -2106,6 +2142,9 @@ jobs:
           import os
           import urllib.error
           import urllib.request
+          from collections import Counter
+          from datetime import datetime, timezone
+          from pathlib import Path
 
           base = os.environ["PRODUCTION_OS_URL"].rstrip("/")
           token = os.environ["PRODUCTION_OS_WORKER_TOKEN"].strip()
@@ -2122,6 +2161,9 @@ jobs:
           session = ProductionOSClient(base, token).register(worker_id, base_capabilities)
           recovered = (session or {}).get("recovered_jobs", [])
           print(f"Production-OS worker session: ready recovered_jobs={len(recovered)}")
+          # Snapshot is also produced on idle cycles; no task payload is kept.
+          inventory_counts = None
+          failed_statuses = Counter()
 
           def probe(capabilities):
               request = urllib.request.Request(
@@ -2163,6 +2205,17 @@ jobs:
               opener = urllib.request.build_opener(_NoRedirect())
               with opener.open(request, timeout=10) as response:
                   stats = json.loads(response.read(1000000).decode("utf-8"))
+              if not isinstance(stats, dict):
+                  raise ValueError("Production-OS queue inventory must be an object")
+              def counts(value, allowed):
+                  if not isinstance(value, dict):
+                      return {}
+                  return {k: v for k in allowed
+                          if type(v := value.get(k)) is int and v >= 0}
+              inventory_counts = {
+                  "jobs": counts(stats.get("jobs"), ("completed", "failed", "queued", "running")),
+                  "workflows": counts(stats.get("workflows"), ("succeeded", "failed", "active")),
+              }
               print("Production-OS queue inventory: " + json.dumps({
                   "jobs": stats.get("jobs", {}),
                   "workflows": stats.get("workflows", {}),
@@ -2208,6 +2261,13 @@ jobs:
                           "error_reason": evidence.get("error_reason"),
                           "worker_status": result.get("ai_dev_server_status"),
                       }, sort_keys=True))
+                      category = str(evidence.get("pipeline_status") or "").lower()
+                      if category not in {
+                          "capacity_exhausted", "runner_error", "runtime_limit",
+                          "continuation_limit", "transient_failure", "failed",
+                      }:
+                          category = "other"
+                      failed_statuses[category] += 1
           except (OSError, ValueError, RuntimeError, KeyError, TypeError) as exc:
               print("Production-OS failed task diagnosis unavailable: " + type(exc).__name__)
 
@@ -2241,6 +2301,46 @@ jobs:
               f"mobile={mobile_available} mobile_only={mobile_only} "
               f"capabilities={','.join(base_capabilities)}"
           )
+
+          # Persist only whitelisted historical counts and bounded failure
+          # categories. Do not retain workflow IDs, prompts or credentials.
+          failed_jobs = inventory_counts["jobs"].get("failed", 0) if inventory_counts is not None else None
+          failed_workflows = inventory_counts["workflows"].get("failed", 0) if inventory_counts is not None else None
+          report = {
+              "schema_version": "ai-dev-server/production-os-queue-health/v1",
+              "observed_at": datetime.now(timezone.utc).isoformat(),
+              "inventory_status": "available" if inventory_counts is not None else "unavailable",
+              "historical_jobs": inventory_counts["jobs"] if inventory_counts is not None else {},
+              "historical_workflows": inventory_counts["workflows"] if inventory_counts is not None else {},
+              "failed_task_pipeline_status_sample": dict(sorted(failed_statuses.items())),
+              "failed_workflow_sample_limit": 5,
+              "compatible_work_available": any_available,
+              "compatible_work_count": int(mobile_work.get("compatible_jobs") or 0),
+              "assessment": (
+                  "unverified" if inventory_counts is None
+                  else "historical_failures_present" if (failed_jobs or failed_workflows)
+                  else "no_recorded_failures"
+              ),
+          }
+          # These environment paths are supplied by GitHub Actions; the
+          # same probe is also executed by isolated authenticated integration
+          # tests, where diagnostic side effects must remain optional.
+          status_path = os.environ.get("PRODUCTION_OS_STATUS_FILE")
+          if status_path:
+              report_dir = Path(status_path).parent
+              report_dir.mkdir(parents=True, exist_ok=True)
+              (report_dir / "queue-health.json").write_text(
+                  json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+              )
+          summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+          if summary_path:
+              with open(summary_path, "a", encoding="utf-8") as summary:
+                  print("### Production-OS queue health", file=summary)
+                  print(f"- Inventory: {report['inventory_status']}", file=summary)
+                  print(f"- Historical failed jobs: {failed_jobs if failed_jobs is not None else 'unknown'}", file=summary)
+                  print(f"- Historical failed workflows: {failed_workflows if failed_workflows is not None else 'unknown'}", file=summary)
+                  print(f"- Compatible work available now: {any_available}", file=summary)
+                  print("- Evidence: queue-health.json artifact; counters are historical", file=summary)
           PY
 
       - name: Install autonomous coding agent
@@ -2747,9 +2847,19 @@ concurrency:
 jobs:
 
   production-os-worker:
-    name: Production-OS worker integration
+    name: Production-OS worker integration (${{ matrix.production_os.label }})
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        production_os:
+          - label: historical-baseline
+            sha: 7e0d47a8fd54e7faa3b3947b07259a5e065c3bdb
+          - label: current-qualified-main-20261011
+            sha: f7325526e47310f5d79412a089361b0cf06d81fd
+          - label: qualified-review-pr264-20261012
+            sha: 9aeefeb8e9f4273999c44cb5f4044d7ec78e005b
     steps:
       - name: Checkout worker
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -2765,9 +2875,14 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: dbrckk/Production-OS
-          ref: 7e0d47a8fd54e7faa3b3947b07259a5e065c3bdb
+          ref: ${{ matrix.production_os.sha }}
           path: .integration/production-os
           persist-credentials: false
+
+      - name: Verify exact Production-OS commit checked out
+        env:
+          EXPECTED_SERVER_SHA: ${{ matrix.production_os.sha }}
+        run: test "$(git -C .integration/production-os rev-parse HEAD)" = "$EXPECTED_SERVER_SHA"
 
       - name: Install server and worker test dependencies
         run: python -m pip install ./.integration/production-os pytest
@@ -3267,8 +3382,8 @@ initial_prompt: |
 ## File: control/production-os-diagnostics-kick.json
 ````json
 {
-  "sequence": 8,
-  "reason": "GET-only Render warmup + operator wake settings after #283"
+  "sequence": 10,
+  "reason": "read-only Production-OS live wake and operator diagnostics after CI qualification (2026-10-11)"
 }
 ````
 
@@ -3295,7 +3410,7 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-  "sequence": 23,
+  "sequence": 26,
   "repository": "dbrckk/repo-standards"
 }
 ````
@@ -3303,8 +3418,8 @@ initial_prompt: |
 ## File: control/production-os-worker-kick.json
 ````json
 {
-  "sequence": 23,
-  "reason": "Wake existing Production-OS live canary 21 after it entered the queue"
+  "sequence": 24,
+  "reason": "Wake queued live canary 26 after exact Production-OS main CI 38159826248 succeeded"
 }
 ````
 
@@ -15138,8 +15253,10 @@ reason = (
 base = getattr(repo, "default_branch", None)
 comparison = (
 review_handoff = (
-# Dispatch acceptance is NOT a PR. Keep the review blocker
-# visible until an independent target-repo workflow opens it.
+# An accepted dispatch is not a PR. Verify the target-side
+# asynchronously created review exists at the *same commit*
+# before reporting an actual delivery. Never retry the POST.
+confirmed_review = (
 ````
 
 ## File: studio/generic_repository.py
@@ -15187,16 +15304,36 @@ text=base64.b64decode(blob["content"]).decode("utf-8")
 ⋮----
 target=root/path
 ⋮----
-def ensure_pull_request(self, *, title: str, body: str = "") -> dict
+def _find_open_pull_request(self, *, expected_sha: str | None = None) -> dict | None
 ⋮----
+"""Read-only lookup; optional SHA pins a trusted async review handoff."""
 metadata = self.github.get("")
 default = metadata.get("default_branch") if isinstance(metadata, dict) else None
 ⋮----
-pulls = self.github.get("/pulls?state=open&per_page=100")
+owner = self.repo.split("/", 1)[0]
+# Server-side branch filtering avoids missing a PR amid many others.
+filter_head = quote(owner + ":" + self.branch, safe="")
+filter_base = quote(default, safe="")
+pulls = self.github.get(
 ⋮----
 head = pr.get("head") if isinstance(pr.get("head"), dict) else {}
 base = pr.get("base") if isinstance(pr.get("base"), dict) else {}
+head_repo = head.get("repo") if isinstance(head.get("repo"), dict) else {}
+base_repo = base.get("repo") if isinstance(base.get("repo"), dict) else {}
 ⋮----
+def await_trusted_review(self, expected_sha: str) -> dict | None
+⋮----
+"""Read-only bounded confirmation; an accepted dispatch is not a PR."""
+⋮----
+confirmed = self._find_open_pull_request(expected_sha=expected_sha)
+⋮----
+confirmed = None
+⋮----
+def ensure_pull_request(self, *, title: str, body: str = "") -> dict
+⋮----
+existing = self._find_open_pull_request()
+⋮----
+default = self.default_branch
 created = self.github.call(
 ⋮----
 def request_trusted_review_handoff(self, commit_sha: str) -> dict
@@ -22536,7 +22673,9 @@ explicit = self.role_models.get(role)
 ⋮----
 def _is_local_base(base: str) -> bool
 ⋮----
-text = (base or "").strip().lower()
+"""Treat only exact loopback hostnames as local, never URL prefixes."""
+⋮----
+parsed = urlsplit((base or "").strip())
 ⋮----
 def _bool(value, default=True)
 ⋮----
@@ -30693,7 +30832,30 @@ second = repository.ensure_pull_request(title="Managed project")
 ⋮----
 def test_ensure_pull_request_ignores_other_studio_branch()
 ⋮----
+# A fork can have the SAME branch name. Never report a fork
+# author's open PR as this worker's own verified delivery.
+⋮----
+# Missing repository identity is not sufficient evidence.
+⋮----
 result = repository.ensure_pull_request(title="Managed project")
+⋮----
+# A trusted target workflow creates its PR asynchronously after the
+# dispatch returns 204. Never claim successful delivery from the dispatch
+# or a different SHA, even if the branch name matches.
+sha = "1" * 40
+wrong_sha = "2" * 40
+branch = "studio/mp-" + "a" * 24
+target = FakeGitHub([{
+⋮----
+producer = GenericRepository(target, "dbrckk/repo-standards", "mp-" + "a" * 24)
+⋮----
+confirmed = {
+⋮----
+actual = producer.await_trusted_review(sha)
+⋮----
+# No target PR with the exact commit: remain blocked, not a fake success.
+⋮----
+missing = producer.await_trusted_review("3" * 40)
 ````
 
 ## File: tests/test_generic_structural_verify.py
@@ -33647,6 +33809,28 @@ def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath()
 ⋮----
 def test_actions_worker_has_resilient_model_provider_fallbacks()
 ⋮----
+# Exercise the actual Actions configuration step, not a replacement
+# validator: primary NVIDIA keys must not be mandatory when an eligible
+# alternate or keyless local coding provider is configured.
+⋮----
+block = WORKFLOW.split("      - name: Validate worker configuration\n", 1)[1]
+script = dedent(block.split("        run: |\n", 1)[1].split("\n      - name:", 1)[0])
+⋮----
+env = {
+⋮----
+def run(config)
+⋮----
+result = subprocess.run(
+⋮----
+fallback = [{
+accepted = run({
+⋮----
+local = run({
+⋮----
+missing = run({"STUDIO_PROVIDERS_JSON": ""})
+⋮----
+missing_fallback = run({
+⋮----
 def test_actions_worker_fails_ci_when_production_result_failed()
 ⋮----
 def test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work()
@@ -34747,6 +34931,9 @@ def test_local_endpoint_is_unmetered_by_default(self)
 def test_local_primary_can_be_keyless(self)
 ⋮----
 def test_local_json_provider_can_be_keyless(self)
+⋮----
+# Reject remote hostnames that merely start with a trusted local
+# hostname; they must not bypass remote-provider credential checks.
 ⋮----
 def test_remote_endpoint_is_metered_by_default(self)
 ⋮----

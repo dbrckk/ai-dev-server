@@ -5738,49 +5738,63 @@
       "language": "python",
       "kind": "class",
       "name": "GenericRepository",
-      "line": 15
-    },
-    {
-      "file": "studio/generic_repository.py",
-      "language": "python",
-      "kind": "function",
-      "name": "__init__",
       "line": 16
     },
     {
       "file": "studio/generic_repository.py",
       "language": "python",
       "kind": "function",
+      "name": "__init__",
+      "line": 17
+    },
+    {
+      "file": "studio/generic_repository.py",
+      "language": "python",
+      "kind": "function",
       "name": "_tree",
-      "line": 20
+      "line": 21
     },
     {
       "file": "studio/generic_repository.py",
       "language": "python",
       "kind": "function",
       "name": "restore",
-      "line": 26
+      "line": 27
+    },
+    {
+      "file": "studio/generic_repository.py",
+      "language": "python",
+      "kind": "function",
+      "name": "_find_open_pull_request",
+      "line": 80
+    },
+    {
+      "file": "studio/generic_repository.py",
+      "language": "python",
+      "kind": "function",
+      "name": "await_trusted_review",
+      "line": 124
     },
     {
       "file": "studio/generic_repository.py",
       "language": "python",
       "kind": "function",
       "name": "ensure_pull_request",
-      "line": 79
+      "line": 144
     },
     {
       "file": "studio/generic_repository.py",
       "language": "python",
       "kind": "function",
       "name": "request_trusted_review_handoff",
-      "line": 125
+      "line": 170
     },
     {
       "file": "studio/generic_repository.py",
       "language": "python",
       "kind": "function",
       "name": "publish",
-      "line": 174
+      "line": 219
     },
     {
       "file": "studio/generic_sandbox.py",
@@ -10323,84 +10337,84 @@
       "language": "python",
       "kind": "class",
       "name": "ProviderSpec",
-      "line": 22
+      "line": 23
     },
     {
       "file": "studio/provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "model_for",
-      "line": 37
+      "line": 38
     },
     {
       "file": "studio/provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "_is_local_base",
-      "line": 48
+      "line": 49
     },
     {
       "file": "studio/provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "_bool",
-      "line": 60
+      "line": 63
     },
     {
       "file": "studio/provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "_auto_omniroute",
-      "line": 68
+      "line": 71
     },
     {
       "file": "studio/provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "_primary",
-      "line": 101
+      "line": 104
     },
     {
       "file": "studio/provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "_json_specs",
-      "line": 163
+      "line": 166
     },
     {
       "file": "studio/provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "_local_capacity_specs",
-      "line": 240
+      "line": 243
     },
     {
       "file": "studio/provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "load_providers",
-      "line": 290
+      "line": 293
     },
     {
       "file": "studio/provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "sort_key",
-      "line": 319
+      "line": 322
     },
     {
       "file": "studio/provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "candidates_for",
-      "line": 327
+      "line": 330
     },
     {
       "file": "studio/provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "budget_eligible",
-      "line": 401
+      "line": 404
     },
     {
       "file": "studio/provider_runtime_reliability.py",
@@ -21159,49 +21173,49 @@
       "language": "python",
       "kind": "class",
       "name": "FakeGitHub",
-      "line": 9
-    },
-    {
-      "file": "tests/test_generic_repository_pull_request.py",
-      "language": "python",
-      "kind": "function",
-      "name": "__init__",
       "line": 10
     },
     {
       "file": "tests/test_generic_repository_pull_request.py",
       "language": "python",
       "kind": "function",
+      "name": "__init__",
+      "line": 11
+    },
+    {
+      "file": "tests/test_generic_repository_pull_request.py",
+      "language": "python",
+      "kind": "function",
       "name": "get",
-      "line": 15
+      "line": 16
     },
     {
       "file": "tests/test_generic_repository_pull_request.py",
       "language": "python",
       "kind": "function",
       "name": "call",
-      "line": 23
+      "line": 24
     },
     {
       "file": "tests/test_generic_repository_pull_request.py",
       "language": "python",
       "kind": "function",
       "name": "test_ensure_pull_request_creates_one_for_managed_branch",
-      "line": 38
+      "line": 39
     },
     {
       "file": "tests/test_generic_repository_pull_request.py",
       "language": "python",
       "kind": "function",
       "name": "test_ensure_pull_request_reuses_existing_exact_branch_pr",
-      "line": 66
+      "line": 67
     },
     {
       "file": "tests/test_generic_repository_pull_request.py",
       "language": "python",
       "kind": "function",
       "name": "test_ensure_pull_request_ignores_other_studio_branch",
-      "line": 92
+      "line": 93
     },
     {
       "file": "tests/test_generic_structural_verify.py",
@@ -26360,98 +26374,105 @@
       "language": "python",
       "kind": "function",
       "name": "test_actions_worker_exits_heavy_path_when_no_compatible_work_exists",
-      "line": 80
+      "line": 83
     },
     {
       "file": "tests/test_production_os_actions_worker_workflow.py",
       "language": "python",
       "kind": "function",
       "name": "test_actions_worker_skips_base_pass_for_mobile_only_work",
-      "line": 91
+      "line": 94
     },
     {
       "file": "tests/test_production_os_actions_worker_workflow.py",
       "language": "python",
       "kind": "function",
       "name": "test_actions_worker_does_not_prepare_android_for_base_only_claim_race",
-      "line": 104
+      "line": 107
     },
     {
       "file": "tests/test_production_os_actions_worker_workflow.py",
       "language": "python",
       "kind": "function",
       "name": "test_actions_worker_reports_rejected_worker_token_without_exposing_it",
-      "line": 110
+      "line": 113
     },
     {
       "file": "tests/test_production_os_actions_worker_workflow.py",
       "language": "python",
       "kind": "function",
       "name": "test_actions_worker_availability_probe_fails_closed",
-      "line": 117
+      "line": 120
     },
     {
       "file": "tests/test_production_os_actions_worker_workflow.py",
       "language": "python",
       "kind": "function",
       "name": "test_actions_worker_bootstraps_remote_asset_forge_before_preflight",
-      "line": 124
+      "line": 127
     },
     {
       "file": "tests/test_production_os_actions_worker_workflow.py",
       "language": "python",
       "kind": "function",
       "name": "test_actions_worker_resolves_only_ci_green_current_production_os_main",
-      "line": 137
+      "line": 140
     },
     {
       "file": "tests/test_production_os_actions_worker_workflow.py",
       "language": "python",
       "kind": "function",
       "name": "test_actions_worker_authenticates_qualified_revision_lookup_without_logging_token",
-      "line": 163
+      "line": 166
     },
     {
       "file": "tests/test_production_os_actions_worker_workflow.py",
       "language": "python",
       "kind": "function",
       "name": "test_actions_worker_preflight_uses_runtime_capability_detection",
-      "line": 174
+      "line": 177
     },
     {
       "file": "tests/test_production_os_actions_worker_workflow.py",
       "language": "python",
       "kind": "function",
       "name": "test_actions_worker_isolates_production_os_cli_from_studio_pythonpath",
-      "line": 182
+      "line": 185
     },
     {
       "file": "tests/test_production_os_actions_worker_workflow.py",
       "language": "python",
       "kind": "function",
       "name": "test_actions_worker_has_resilient_model_provider_fallbacks",
-      "line": 187
+      "line": 190
+    },
+    {
+      "file": "tests/test_production_os_actions_worker_workflow.py",
+      "language": "python",
+      "kind": "function",
+      "name": "run",
+      "line": 217
     },
     {
       "file": "tests/test_production_os_actions_worker_workflow.py",
       "language": "python",
       "kind": "function",
       "name": "test_actions_worker_fails_ci_when_production_result_failed",
-      "line": 192
+      "line": 254
     },
     {
       "file": "tests/test_production_os_actions_worker_workflow.py",
       "language": "python",
       "kind": "function",
       "name": "test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work",
-      "line": 196
+      "line": 258
     },
     {
       "file": "tests/test_production_os_actions_worker_workflow.py",
       "language": "python",
       "kind": "function",
       "name": "test_control_only_pushes_do_not_fan_out_into_unrelated_heavy_ci",
-      "line": 202
+      "line": 264
     },
     {
       "file": "tests/test_production_os_live_diagnostics.py",
@@ -28670,63 +28691,63 @@
       "language": "python",
       "kind": "function",
       "name": "test_remote_endpoint_is_metered_by_default",
-      "line": 153
+      "line": 173
     },
     {
       "file": "tests/test_provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "test_unmetered_can_be_explicit_for_remote_self_hosted_gateway",
-      "line": 163
+      "line": 183
     },
     {
       "file": "tests/test_provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "test_omniroute_endpoint_gets_current_recurring_quota_by_default",
-      "line": 174
+      "line": 194
     },
     {
       "file": "tests/test_provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "test_paid_budget_exhaustion_keeps_pooled_free_quota_provider",
-      "line": 185
+      "line": 205
     },
     {
       "file": "tests/test_provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "test_paid_budget_exhaustion_keeps_only_unmetered",
-      "line": 208
+      "line": 228
     },
     {
       "file": "tests/test_provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "test_paid_budget_not_exhausted_keeps_all",
-      "line": 232
+      "line": 252
     },
     {
       "file": "tests/test_provider_router.py",
       "language": "python",
       "kind": "function",
       "name": "test_role_specific_model_overrides_default",
-      "line": 244
-    },
-    {
-      "file": "tests/test_provider_router.py",
-      "language": "python",
-      "kind": "function",
-      "name": "test_json_provider_accepts_role_models",
       "line": 264
     },
     {
       "file": "tests/test_provider_router.py",
       "language": "python",
       "kind": "function",
-      "name": "test_vision_candidates_exclude_text_only_provider",
+      "name": "test_json_provider_accepts_role_models",
       "line": 284
+    },
+    {
+      "file": "tests/test_provider_router.py",
+      "language": "python",
+      "kind": "function",
+      "name": "test_vision_candidates_exclude_text_only_provider",
+      "line": 304
     },
     {
       "file": "tests/test_provider_runtime_reliability.py",

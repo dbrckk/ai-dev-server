@@ -5416,7 +5416,30 @@ second = repository.ensure_pull_request(title="Managed project")
 ⋮----
 def test_ensure_pull_request_ignores_other_studio_branch()
 ⋮----
+# A fork can have the SAME branch name. Never report a fork
+# author's open PR as this worker's own verified delivery.
+⋮----
+# Missing repository identity is not sufficient evidence.
+⋮----
 result = repository.ensure_pull_request(title="Managed project")
+⋮----
+# A trusted target workflow creates its PR asynchronously after the
+# dispatch returns 204. Never claim successful delivery from the dispatch
+# or a different SHA, even if the branch name matches.
+sha = "1" * 40
+wrong_sha = "2" * 40
+branch = "studio/mp-" + "a" * 24
+target = FakeGitHub([{
+⋮----
+producer = GenericRepository(target, "dbrckk/repo-standards", "mp-" + "a" * 24)
+⋮----
+confirmed = {
+⋮----
+actual = producer.await_trusted_review(sha)
+⋮----
+# No target PR with the exact commit: remain blocked, not a fake success.
+⋮----
+missing = producer.await_trusted_review("3" * 40)
 ```
 
 ## File: test_generic_structural_verify.py
@@ -8370,6 +8393,28 @@ def test_actions_worker_isolates_production_os_cli_from_studio_pythonpath()
 ⋮----
 def test_actions_worker_has_resilient_model_provider_fallbacks()
 ⋮----
+# Exercise the actual Actions configuration step, not a replacement
+# validator: primary NVIDIA keys must not be mandatory when an eligible
+# alternate or keyless local coding provider is configured.
+⋮----
+block = WORKFLOW.split("      - name: Validate worker configuration\n", 1)[1]
+script = dedent(block.split("        run: |\n", 1)[1].split("\n      - name:", 1)[0])
+⋮----
+env = {
+⋮----
+def run(config)
+⋮----
+result = subprocess.run(
+⋮----
+fallback = [{
+accepted = run({
+⋮----
+local = run({
+⋮----
+missing = run({"STUDIO_PROVIDERS_JSON": ""})
+⋮----
+missing_fallback = run({
+⋮----
 def test_actions_worker_fails_ci_when_production_result_failed()
 ⋮----
 def test_actions_worker_reports_remote_asset_forge_probe_without_blocking_code_work()
@@ -9470,6 +9515,9 @@ def test_local_endpoint_is_unmetered_by_default(self)
 def test_local_primary_can_be_keyless(self)
 ⋮----
 def test_local_json_provider_can_be_keyless(self)
+⋮----
+# Reject remote hostnames that merely start with a trusted local
+# hostname; they must not bypass remote-provider credential checks.
 ⋮----
 def test_remote_endpoint_is_metered_by_default(self)
 ⋮----

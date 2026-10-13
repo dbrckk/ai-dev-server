@@ -1,17 +1,25 @@
 # Change impact
 
-Base: 58ab69cae9b03cb0716a769974f020af45e7359d
-Head: a8ce7b1a3fbf046ffaef995020099726fc28a2f1
+Base: 88a6c2a8c416ae47638ce3a956a2ddbdc8b3118f
+Head: f7753357ae23eaf0f61b3a865522f1f80dd89424
 
 ## Changed files
+- M .github/workflows/production-os-actions-worker.yml
+- M .github/workflows/production-os-worker-integration.yml
 - M studio/generic_project.py
 - M studio/generic_repository.py
+- M studio/provider_router.py
+- M tests/test_generic_repository_pull_request.py
+- M tests/test_production_os_actions_worker_workflow.py
+- M tests/test_provider_router.py
 
 ## Affected areas
+- .github
 - studio
+- tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_provider_router.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

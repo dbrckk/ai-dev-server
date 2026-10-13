@@ -9555,8 +9555,10 @@ reason = (
 base = getattr(repo, "default_branch", None)
 comparison = (
 review_handoff = (
-# Dispatch acceptance is NOT a PR. Keep the review blocker
-# visible until an independent target-repo workflow opens it.
+# An accepted dispatch is not a PR. Verify the target-side
+# asynchronously created review exists at the *same commit*
+# before reporting an actual delivery. Never retry the POST.
+confirmed_review = (
 ````
 
 ## File: generic_repository.py
@@ -9604,16 +9606,36 @@ text=base64.b64decode(blob["content"]).decode("utf-8")
 ⋮----
 target=root/path
 ⋮----
-def ensure_pull_request(self, *, title: str, body: str = "") -> dict
+def _find_open_pull_request(self, *, expected_sha: str | None = None) -> dict | None
 ⋮----
+"""Read-only lookup; optional SHA pins a trusted async review handoff."""
 metadata = self.github.get("")
 default = metadata.get("default_branch") if isinstance(metadata, dict) else None
 ⋮----
-pulls = self.github.get("/pulls?state=open&per_page=100")
+owner = self.repo.split("/", 1)[0]
+# Server-side branch filtering avoids missing a PR amid many others.
+filter_head = quote(owner + ":" + self.branch, safe="")
+filter_base = quote(default, safe="")
+pulls = self.github.get(
 ⋮----
 head = pr.get("head") if isinstance(pr.get("head"), dict) else {}
 base = pr.get("base") if isinstance(pr.get("base"), dict) else {}
+head_repo = head.get("repo") if isinstance(head.get("repo"), dict) else {}
+base_repo = base.get("repo") if isinstance(base.get("repo"), dict) else {}
 ⋮----
+def await_trusted_review(self, expected_sha: str) -> dict | None
+⋮----
+"""Read-only bounded confirmation; an accepted dispatch is not a PR."""
+⋮----
+confirmed = self._find_open_pull_request(expected_sha=expected_sha)
+⋮----
+confirmed = None
+⋮----
+def ensure_pull_request(self, *, title: str, body: str = "") -> dict
+⋮----
+existing = self._find_open_pull_request()
+⋮----
+default = self.default_branch
 created = self.github.call(
 ⋮----
 def request_trusted_review_handoff(self, commit_sha: str) -> dict
@@ -16953,7 +16975,9 @@ explicit = self.role_models.get(role)
 ⋮----
 def _is_local_base(base: str) -> bool
 ⋮----
-text = (base or "").strip().lower()
+"""Treat only exact loopback hostnames as local, never URL prefixes."""
+⋮----
+parsed = urlsplit((base or "").strip())
 ⋮----
 def _bool(value, default=True)
 ⋮----

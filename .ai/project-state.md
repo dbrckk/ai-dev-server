@@ -97,24 +97,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-10T13:46:02Z
+Generated: 2026-10-13T21:20:03Z
 
 ### Git
 - Branch: `main`
-- Head: `a8ce7b1a3fbf`
-- Commit date: 2026-10-10T15:45:52+02:00
-- Commit: fix(delivery): repo-local PR review handoff after restricted cross-repo token (#287)
+- Head: `f7753357ae23`
+- Commit date: 2026-10-13T23:19:49+02:00
+- Commit: fix(worker): harden Production-OS integration, provider routing and verified PR delivery (#288)
 - Tracked files: 863
 
 ### Recently changed files
+- `.github/workflows/production-os-actions-worker.yml`
+- `.github/workflows/production-os-worker-integration.yml`
 - `studio/generic_project.py`
 - `studio/generic_repository.py`
-- `control/production-os-worker-canary.json`
-- `.github/workflows/production-os-worker-canary.yml`
-- `studio/production_os_worker_canary.py`
-- `tests/test_production_os_worker_canary.py`
-- `.github/workflows/production-os-actions-worker.yml`
+- `studio/provider_router.py`
+- `tests/test_generic_repository_pull_request.py`
 - `tests/test_production_os_actions_worker_workflow.py`
+- `tests/test_provider_router.py`
+- `control/production-os-worker-kick.json`
+- `control/production-os-worker-canary.json`
+- `control/production-os-diagnostics-kick.json`
 
 ### Project signals
 - No common build descriptor detected

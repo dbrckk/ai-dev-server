@@ -2,9 +2,10 @@
   "version": 1,
   "updated_at": "2026-10-13",
   "task": "Keep reliable idle worker queue-health evidence visible and verify real hosted capacity before claiming production readiness.",
-  "base_commit": "ce5ce033c540e1dd7bbdc7a151de9920087d4bc5",
+  "base_commit": "0a29a2cff5697bb3e46d32fc5906329d6f803d97",
   "branch": "ci/qualify-worker-against-godot-pos-20261011",
   "completed": [
+    "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
     "Report setup/result failures and clear active heartbeat",
     "Validate result correlation and shape",

@@ -435,18 +435,25 @@ jobs:
                   else "no_recorded_failures"
               ),
           }
-          report_dir = Path(os.environ["PRODUCTION_OS_STATUS_FILE"]).parent
-          report_dir.mkdir(parents=True, exist_ok=True)
-          (report_dir / "queue-health.json").write_text(
-              json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-          )
-          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
-              print("### Production-OS queue health", file=summary)
-              print(f"- Inventory: {report['inventory_status']}", file=summary)
-              print(f"- Historical failed jobs: {failed_jobs if failed_jobs is not None else 'unknown'}", file=summary)
-              print(f"- Historical failed workflows: {failed_workflows if failed_workflows is not None else 'unknown'}", file=summary)
-              print(f"- Compatible work available now: {any_available}", file=summary)
-              print("- Evidence: queue-health.json artifact; counters are historical", file=summary)
+          # These environment paths are supplied by GitHub Actions; the
+          # same probe is also executed by isolated authenticated integration
+          # tests, where diagnostic side effects must remain optional.
+          status_path = os.environ.get("PRODUCTION_OS_STATUS_FILE")
+          if status_path:
+              report_dir = Path(status_path).parent
+              report_dir.mkdir(parents=True, exist_ok=True)
+              (report_dir / "queue-health.json").write_text(
+                  json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+              )
+          summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+          if summary_path:
+              with open(summary_path, "a", encoding="utf-8") as summary:
+                  print("### Production-OS queue health", file=summary)
+                  print(f"- Inventory: {report['inventory_status']}", file=summary)
+                  print(f"- Historical failed jobs: {failed_jobs if failed_jobs is not None else 'unknown'}", file=summary)
+                  print(f"- Historical failed workflows: {failed_workflows if failed_workflows is not None else 'unknown'}", file=summary)
+                  print(f"- Compatible work available now: {any_available}", file=summary)
+                  print("- Evidence: queue-health.json artifact; counters are historical", file=summary)
           PY
 
       - name: Install autonomous coding agent

@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
@@ -16,7 +17,7 @@ class FakeGitHub:
         self.calls.append(("GET", path))
         if path == "":
             return {"default_branch":"main"}
-        if path == "/pulls?state=open&head=owner%3Astudio%2Fmp-abc&base=main&per_page=100":
+        if path.startswith("/pulls?state=open&head=") and path.endswith("&base=main&per_page=100"):
             return self.pulls
         raise AssertionError(path)
 
@@ -127,3 +128,47 @@ def test_ensure_pull_request_ignores_other_studio_branch():
     assert result["reused"] is False
     assert ("GET", "/pulls?state=open&head=owner%3Astudio%2Fmp-abc&base=main&per_page=100") in github.calls
     assert len([item for item in github.calls if item[0] == "POST"]) == 1
+
+    # A trusted target workflow creates its PR asynchronously after the
+    # dispatch returns 204. Never claim successful delivery from the dispatch
+    # or a different SHA, even if the branch name matches.
+    sha = "1" * 40
+    wrong_sha = "2" * 40
+    branch = "studio/mp-" + "a" * 24
+    target = FakeGitHub([{
+        "number": 40,
+        "state": "open",
+        "html_url": "https://github.com/dbrckk/repo-standards/pull/40",
+        "head": {
+            "ref": branch,
+            "sha": wrong_sha,
+            "repo": {"full_name": "dbrckk/repo-standards"},
+        },
+        "base": {"ref": "main", "repo": {"full_name": "dbrckk/repo-standards"}},
+    }])
+    target.repo = "/repos/dbrckk/repo-standards"
+    producer = GenericRepository(target, "dbrckk/repo-standards", "mp-" + "a" * 24)
+    assert producer._find_open_pull_request(expected_sha=sha) is None
+    confirmed = {
+        "number": 41,
+        "state": "open",
+        "html_url": "https://github.com/dbrckk/repo-standards/pull/41",
+        "head": {
+            "ref": branch,
+            "sha": sha,
+            "repo": {"full_name": "dbrckk/repo-standards"},
+        },
+        "base": {"ref": "main", "repo": {"full_name": "dbrckk/repo-standards"}},
+    }
+    with patch("time.sleep", side_effect=lambda delay: target.pulls.append(confirmed)) as sleep:
+        actual = producer.await_trusted_review(sha)
+    sleep.assert_called_once_with(3)
+    assert actual["url"] == confirmed["html_url"]
+    assert actual["handoff_confirmed"] is True
+    assert not any(call[0] == "POST" for call in target.calls)
+
+    # No target PR with the exact commit: remain blocked, not a fake success.
+    with patch("time.sleep") as sleep:
+        missing = producer.await_trusted_review("3" * 40)
+    assert missing is None
+    assert sleep.call_count == 3

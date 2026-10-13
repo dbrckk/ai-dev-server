@@ -31,6 +31,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.STUDIO_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
       ASSET_FORGE_GITHUB_TOKEN: ${{ secrets.ASSET_FORGE_GITHUB_TOKEN || secrets.CODESPACES_PAT }}
       STUDIO_API_KEY: ${{ secrets.STUDIO_API_KEY || secrets.NVIDIA_NIM_API_KEY }}
+      STUDIO_FALLBACK_API_KEY: ${{ secrets.STUDIO_FALLBACK_API_KEY }}
       STUDIO_API_BASE: ${{ vars.STUDIO_API_BASE || 'https://integrate.api.nvidia.com/v1' }}
       STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
       STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
@@ -182,7 +183,7 @@ jobs:
         run: |
           set -euo pipefail
           missing=()
-          for name in PRODUCTION_OS_WORKER_TOKEN STUDIO_GITHUB_TOKEN STUDIO_API_KEY; do
+          for name in PRODUCTION_OS_WORKER_TOKEN STUDIO_GITHUB_TOKEN; do
             if [ -z "${!name:-}" ]; then
               missing+=("$name")
             fi
@@ -194,11 +195,21 @@ jobs:
           python studio/production_os_provider_config.py
           python - <<'PY'
           from urllib.parse import urlsplit
+          from provider_router import load_providers
           import os
           value=os.environ["PRODUCTION_OS_URL"].strip()
           parsed=urlsplit(value)
           if parsed.scheme != "https" or not parsed.netloc:
               raise SystemExit("PRODUCTION_OS_URL must be HTTPS")
+          # Match the runtime router instead of requiring the NVIDIA-specific
+          # STUDIO_API_KEY when another configured provider has credentials.
+          # This checks local configuration only; it does not claim live quota.
+          try:
+              providers = load_providers(prefer_free=True)
+          except (ValueError, TypeError) as exc:
+              raise SystemExit("Production-OS inference provider configuration invalid") from exc
+          if not any(provider.model_for("implementation") for provider in providers):
+              raise SystemExit("No configured coding inference provider with usable credentials")
           print("Production-OS Actions worker configuration: ready")
           PY
 

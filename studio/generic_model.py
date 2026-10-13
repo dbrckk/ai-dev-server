@@ -55,7 +55,7 @@ from model_portfolio_learning import (
     load as load_model_portfolio_learning,
     diversity_bias as model_portfolio_diversity_bias,
 )
-from capacity_ledger import reserve as reserve_capacity, settle as settle_capacity, release as release_capacity, load as load_capacity_ledger, reserved_tokens as ledger_reserved_tokens, consumed_tokens as ledger_consumed_tokens
+from capacity_ledger import reserve as reserve_capacity, settle as settle_capacity, release as release_capacity, load_active as load_capacity_ledger, reserved_tokens as ledger_reserved_tokens, consumed_tokens as ledger_consumed_tokens
 from capacity_runtime import project_envelope as load_project_envelope
 from capacity_efficiency import (
     summarize as summarize_capacity_efficiency,

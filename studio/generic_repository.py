@@ -130,15 +130,21 @@ class GenericRepository:
         if not isinstance(expected_sha, str) or not re.fullmatch(r"[a-f0-9]{40}", expected_sha):
             return None
         import time
-        for attempt in range(4):
+        # repository_dispatch only queues a target GitHub Actions workflow.
+        # Production canaries demonstrated that target job scheduling and
+        # startup can exceed the former 9-second confirmation window.
+        # Allow up to three minutes for an independently created PR, without
+        # ever retrying POST or relaxing exact-repository/commit checks.
+        attempts = 13
+        for attempt in range(attempts):
             try:
                 confirmed = self._find_open_pull_request(expected_sha=expected_sha)
             except StudioError:
                 confirmed = None
             if confirmed is not None:
                 return {**confirmed, "reused": False, "handoff_confirmed": True}
-            if attempt < 3:
-                time.sleep(3)
+            if attempt + 1 < attempts:
+                time.sleep(15)
         return None
 
     def ensure_pull_request(self, *, title: str, body: str = "") -> dict:

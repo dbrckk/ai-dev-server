@@ -255,6 +255,9 @@ jobs:
           import os
           import urllib.error
           import urllib.request
+          from collections import Counter
+          from datetime import datetime, timezone
+          from pathlib import Path
 
           base = os.environ["PRODUCTION_OS_URL"].rstrip("/")
           token = os.environ["PRODUCTION_OS_WORKER_TOKEN"].strip()
@@ -271,6 +274,9 @@ jobs:
           session = ProductionOSClient(base, token).register(worker_id, base_capabilities)
           recovered = (session or {}).get("recovered_jobs", [])
           print(f"Production-OS worker session: ready recovered_jobs={len(recovered)}")
+          # Snapshot is also produced on idle cycles; no task payload is kept.
+          inventory_counts = None
+          failed_statuses = Counter()
 
           def probe(capabilities):
               request = urllib.request.Request(
@@ -312,6 +318,17 @@ jobs:
               opener = urllib.request.build_opener(_NoRedirect())
               with opener.open(request, timeout=10) as response:
                   stats = json.loads(response.read(1000000).decode("utf-8"))
+              if not isinstance(stats, dict):
+                  raise ValueError("Production-OS queue inventory must be an object")
+              def counts(value, allowed):
+                  if not isinstance(value, dict):
+                      return {}
+                  return {k: v for k in allowed
+                          if type(v := value.get(k)) is int and v >= 0}
+              inventory_counts = {
+                  "jobs": counts(stats.get("jobs"), ("completed", "failed", "queued", "running")),
+                  "workflows": counts(stats.get("workflows"), ("succeeded", "failed", "active")),
+              }
               print("Production-OS queue inventory: " + json.dumps({
                   "jobs": stats.get("jobs", {}),
                   "workflows": stats.get("workflows", {}),
@@ -357,6 +374,13 @@ jobs:
                           "error_reason": evidence.get("error_reason"),
                           "worker_status": result.get("ai_dev_server_status"),
                       }, sort_keys=True))
+                      category = str(evidence.get("pipeline_status") or "").lower()
+                      if category not in {
+                          "capacity_exhausted", "runner_error", "runtime_limit",
+                          "continuation_limit", "transient_failure", "failed",
+                      }:
+                          category = "other"
+                      failed_statuses[category] += 1
           except (OSError, ValueError, RuntimeError, KeyError, TypeError) as exc:
               print("Production-OS failed task diagnosis unavailable: " + type(exc).__name__)
 
@@ -390,6 +414,39 @@ jobs:
               f"mobile={mobile_available} mobile_only={mobile_only} "
               f"capabilities={','.join(base_capabilities)}"
           )
+
+          # Persist only whitelisted historical counts and bounded failure
+          # categories. Do not retain workflow IDs, prompts or credentials.
+          failed_jobs = inventory_counts["jobs"].get("failed", 0) if inventory_counts is not None else None
+          failed_workflows = inventory_counts["workflows"].get("failed", 0) if inventory_counts is not None else None
+          report = {
+              "schema_version": "ai-dev-server/production-os-queue-health/v1",
+              "observed_at": datetime.now(timezone.utc).isoformat(),
+              "inventory_status": "available" if inventory_counts is not None else "unavailable",
+              "historical_jobs": inventory_counts["jobs"] if inventory_counts is not None else {},
+              "historical_workflows": inventory_counts["workflows"] if inventory_counts is not None else {},
+              "failed_task_pipeline_status_sample": dict(sorted(failed_statuses.items())),
+              "failed_workflow_sample_limit": 5,
+              "compatible_work_available": any_available,
+              "compatible_work_count": int(mobile_work.get("compatible_jobs") or 0),
+              "assessment": (
+                  "unverified" if inventory_counts is None
+                  else "historical_failures_present" if (failed_jobs or failed_workflows)
+                  else "no_recorded_failures"
+              ),
+          }
+          report_dir = Path(os.environ["PRODUCTION_OS_STATUS_FILE"]).parent
+          report_dir.mkdir(parents=True, exist_ok=True)
+          (report_dir / "queue-health.json").write_text(
+              json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              print("### Production-OS queue health", file=summary)
+              print(f"- Inventory: {report['inventory_status']}", file=summary)
+              print(f"- Historical failed jobs: {failed_jobs if failed_jobs is not None else 'unknown'}", file=summary)
+              print(f"- Historical failed workflows: {failed_workflows if failed_workflows is not None else 'unknown'}", file=summary)
+              print(f"- Compatible work available now: {any_available}", file=summary)
+              print("- Evidence: queue-health.json artifact; counters are historical", file=summary)
           PY
 
       - name: Install autonomous coding agent

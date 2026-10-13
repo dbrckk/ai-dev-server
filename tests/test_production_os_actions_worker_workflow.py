@@ -74,6 +74,9 @@ def test_actions_worker_is_single_flight_and_bounded():
 
 def test_actions_worker_retains_hidden_autonomy_diagnostics():
     assert "include-hidden-files: true" in WORKFLOW
+    assert '"queue-health.json"' in WORKFLOW
+    assert '"failed_task_pipeline_status_sample"' in WORKFLOW
+    assert '"GITHUB_STEP_SUMMARY"' in WORKFLOW
 
 
 

@@ -1,25 +1,19 @@
 # Change impact
 
-Base: 88a6c2a8c416ae47638ce3a956a2ddbdc8b3118f
-Head: f7753357ae23eaf0f61b3a865522f1f80dd89424
+Base: 03c52575820d1f800a4a8e98f8db58b285bc9847
+Head: cb5309fd85e431480e5b211856644e41ab5e1de3
 
 ## Changed files
-- M .github/workflows/production-os-actions-worker.yml
-- M .github/workflows/production-os-worker-integration.yml
-- M studio/generic_project.py
-- M studio/generic_repository.py
-- M studio/provider_router.py
-- M tests/test_generic_repository_pull_request.py
-- M tests/test_production_os_actions_worker_workflow.py
-- M tests/test_provider_router.py
+- M studio/capacity_ledger.py
+- M studio/generic_model.py
+- M tests/test_capacity_ledger.py
 
 ## Affected areas
-- .github
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_provider_router.py
+- tests/test_capacity_ledger.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

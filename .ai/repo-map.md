@@ -10977,6 +10977,18 @@ reap_events = value.get("reap_events")
 ⋮----
 def load(path: Path) -> dict
 ⋮----
+def load_active(path: Path, *, now: float | None = None) -> dict
+⋮----
+"""Read the ledger for admission without counting expired reservations.
+
+    Transactional reserve/settle calls still reap and persist expiries under
+    the existing lock. This read-only view prevents the model router from
+    rejecting providers *before* it reaches the transactional reserve step.
+    Legacy load() retains raw checkpoint semantics for callers using a
+    synthetic clock.
+    """
+data = _load_unlocked(Path(path))
+⋮----
 def _save_unlocked(path: Path, data: dict) -> None
 ⋮----
 def _reap(data: dict, now: float) -> int
@@ -28863,6 +28875,12 @@ def test_release_on_failed_call_returns_full_reservation(self)
 result = ledger.release(path, reservation["reservation_id"], now=11)
 ⋮----
 def test_expired_reservations_are_reaped_before_new_claim(self)
+⋮----
+# Model admission must not count an expired lease before a new
+# transactional reserve has had a chance to reap it on disk.
+⋮----
+# This routing view is read-only; the writer still owns durable
+# reclamation and its auditable reap event.
 ⋮----
 def test_release_project_releases_only_owned_reservations(self)
 ⋮----

@@ -97,16 +97,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-13T21:20:03Z
+Generated: 2026-10-13T22:43:13Z
 
 ### Git
 - Branch: `main`
-- Head: `f7753357ae23`
-- Commit date: 2026-10-13T23:19:49+02:00
-- Commit: fix(worker): harden Production-OS integration, provider routing and verified PR delivery (#288)
+- Head: `cb5309fd85e4`
+- Commit date: 2026-10-14T00:43:03+02:00
+- Commit: fix(capacity): exclude expired token reservations from provider admission (#290)
 - Tracked files: 863
 
 ### Recently changed files
+- `studio/capacity_ledger.py`
+- `studio/generic_model.py`
+- `tests/test_capacity_ledger.py`
 - `.github/workflows/production-os-actions-worker.yml`
 - `.github/workflows/production-os-worker-integration.yml`
 - `studio/generic_project.py`
@@ -117,7 +120,6 @@ Generated: 2026-10-13T21:20:03Z
 - `tests/test_provider_router.py`
 - `control/production-os-worker-kick.json`
 - `control/production-os-worker-canary.json`
-- `control/production-os-diagnostics-kick.json`
 
 ### Project signals
 - No common build descriptor detected

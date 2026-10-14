@@ -6340,6 +6340,15 @@ def test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary(self)
 def test_budget_is_shared_and_fail_closed(self)
 ⋮----
 subject = model([], limit=0)
+⋮----
+root=Path(td); journal=root/'usage.json'; ledger=root/'ledger.json'; plan=root/'plan.json'
+⋮----
+reply=completion(product_value())
+⋮----
+subject=model([reply]); subject.ask('product','plan game')
+usage=snapshot()['usage']
+⋮----
+subject=model([])
 ```
 
 ## File: test_godot_play_stage.py

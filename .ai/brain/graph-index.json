@@ -15,6 +15,7 @@
         "studio/local_model_reputation.py",
         "studio/local_model_specialization.py",
         "studio/model_portfolio_learning.py",
+        "studio/native_model_usage.py",
         "studio/provider_cost.py",
         "studio/provider_health.py",
         "studio/provider_metrics.py",
@@ -135,6 +136,7 @@
         "studio/model_portfolio.py",
         "studio/model_portfolio_audit.py",
         "studio/multi_engine_orchestrator.py",
+        "studio/native_model_usage.py",
         "studio/native_qa.py",
         "studio/native_stage.py",
         "studio/notification_qa.py",
@@ -182,7 +184,6 @@
         "studio/unified_routing_score.py",
         "studio/workflow_checkpoint.py",
         "tests/test_adaptive_planning_runtime.py",
-        "tests/test_adaptive_review_telemetry.py",
         "tests/test_agent_router.py",
         "tests/test_android_signing.py",
         "tests/test_api_transport_retry.py",
@@ -248,7 +249,7 @@
         "tests/test_transport.py"
       ],
       "in_degree": 219,
-      "out_degree": 17,
+      "out_degree": 18,
       "path": "studio/core.py"
     },
     {
@@ -503,6 +504,7 @@
         "studio/meta_router.py",
         "studio/model_portfolio.py",
         "studio/model_portfolio_audit.py",
+        "studio/native_model_usage.py",
         "studio/omniroute_capacity.py",
         "studio/orchestrator.py",
         "studio/production_os_live_diagnostics.py",
@@ -515,8 +517,7 @@
         "studio/provider_monthly_quota.py",
         "studio/provider_probe.py",
         "studio/provider_router.py",
-        "studio/provider_runtime_reliability.py",
-        "studio/queue.py"
+        "studio/provider_runtime_reliability.py"
       ],
       "in_degree": 64,
       "out_degree": 1,
@@ -698,6 +699,7 @@
         "studio/improvement_executor.py",
         "studio/memory_lifecycle.py",
         "studio/multi_engine_orchestrator.py",
+        "studio/native_model_usage.py",
         "studio/portfolio_scan.py",
         "studio/project_memory.py",
         "studio/repository_research_provider.py",
@@ -714,7 +716,7 @@
         "tests/test_production_os_result_contract.py"
       ],
       "in_degree": 6,
-      "out_degree": 42,
+      "out_degree": 43,
       "path": "studio/github_runner.py"
     },
     {
@@ -796,6 +798,7 @@
         "studio/godot_preview.py",
         "studio/immutable_artifact_cache.py",
         "studio/local_capacity_inventory.py",
+        "studio/native_model_usage.py",
         "studio/persistent_quick_gate_cache.py",
         "studio/post_preview.py",
         "studio/preemption_apply.py",
@@ -811,7 +814,7 @@
         "studio/workflow_checkpoint.py",
         "tests/test_atomic_file.py"
       ],
-      "in_degree": 38,
+      "in_degree": 39,
       "out_degree": 1,
       "path": "studio/atomic_file.py"
     },
@@ -1045,6 +1048,7 @@
         "studio/goal_loop.py",
         "studio/human_input_request.py",
         "studio/multi_engine_orchestrator.py",
+        "studio/native_model_usage.py",
         "studio/project_memory.py",
         "studio/promoted_capabilities.py",
         "studio/telemetry.py",
@@ -1059,7 +1063,7 @@
         "tests/test_production_os_local_e2e.py"
       ],
       "in_degree": 5,
-      "out_degree": 15,
+      "out_degree": 16,
       "path": "studio/autonomous_project.py"
     },
     {
@@ -1176,6 +1180,32 @@
     {
       "dependencies": [],
       "dependents": [
+        "studio/architecture_learning.py",
+        "studio/capacity_efficiency.py",
+        "studio/capacity_ledger.py",
+        "studio/durable_state.py",
+        "studio/fleet_metrics.py",
+        "studio/full_gate_cache.py",
+        "studio/immutable_artifact_cache.py",
+        "studio/native_model_usage.py",
+        "studio/persistent_quick_gate_cache.py",
+        "studio/production_os_worker.py",
+        "studio/provider_monthly_quota.py",
+        "studio/recovery_controller.py",
+        "studio/strict_task_claim_store.py",
+        "studio/task_claim_store.py",
+        "studio/telemetry.py",
+        "studio/telemetry_maintenance.py",
+        "studio/workflow_checkpoint.py",
+        "tests/test_file_lock.py"
+      ],
+      "in_degree": 18,
+      "out_degree": 0,
+      "path": "studio/file_lock.py"
+    },
+    {
+      "dependencies": [],
+      "dependents": [
         "studio/adaptation.py",
         "studio/autonomous_project.py",
         "studio/capability_memory.py",
@@ -1198,6 +1228,60 @@
       "in_degree": 18,
       "out_degree": 0,
       "path": "studio/project_memory.py"
+    },
+    {
+      "dependencies": [
+        "studio/atomic_file.py",
+        "studio/core.py",
+        "studio/file_lock.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "studio/agents/orchestrator.py",
+        "studio/ci_runner.py",
+        "studio/fleet_capacity.py",
+        "studio/fleet_daemon.py",
+        "studio/generic_model.py",
+        "studio/native_model_usage.py",
+        "studio/preemption_apply.py",
+        "studio/worker_heartbeat.py",
+        "studio/worker_reaper.py",
+        "tests/test_agent_router.py",
+        "tests/test_capacity_ledger.py",
+        "tests/test_godot_model.py",
+        "tests/test_preemption_apply.py",
+        "tests/test_worker_reaper.py"
+      ],
+      "in_degree": 14,
+      "out_degree": 4,
+      "path": "studio/capacity_ledger.py"
+    },
+    {
+      "dependencies": [
+        "studio/atomic_file.py",
+        "studio/ci_diagnostics.py",
+        "studio/core.py",
+        "studio/file_lock.py",
+        "studio/github_runner.py",
+        "studio/native_model_usage.py",
+        "studio/omniroute_capacity.py",
+        "studio/stage_registry.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "integration_tests/test_production_os_server_integration.py",
+        "scripts/production-os-live-resume-proof.py",
+        "tests/test_mobile_validation_contract.py",
+        "tests/test_production_os_local_e2e.py",
+        "tests/test_production_os_remote_asset_capability.py",
+        "tests/test_production_os_worker.py",
+        "tests/test_production_os_worker_cli.py",
+        "tests/test_production_os_worker_recovery.py",
+        "tests/test_production_os_worker_runtime.py"
+      ],
+      "in_degree": 9,
+      "out_degree": 9,
+      "path": "studio/production_os_worker.py"
     },
     {
       "dependencies": [
@@ -1227,31 +1311,6 @@
       "path": "studio/release_stage_engine.py"
     },
     {
-      "dependencies": [],
-      "dependents": [
-        "studio/architecture_learning.py",
-        "studio/capacity_efficiency.py",
-        "studio/capacity_ledger.py",
-        "studio/durable_state.py",
-        "studio/fleet_metrics.py",
-        "studio/full_gate_cache.py",
-        "studio/immutable_artifact_cache.py",
-        "studio/persistent_quick_gate_cache.py",
-        "studio/production_os_worker.py",
-        "studio/provider_monthly_quota.py",
-        "studio/recovery_controller.py",
-        "studio/strict_task_claim_store.py",
-        "studio/task_claim_store.py",
-        "studio/telemetry.py",
-        "studio/telemetry_maintenance.py",
-        "studio/workflow_checkpoint.py",
-        "tests/test_file_lock.py"
-      ],
-      "in_degree": 17,
-      "out_degree": 0,
-      "path": "studio/file_lock.py"
-    },
-    {
       "dependencies": [
         "studio/stage_registry.py",
         "studio/task_scheduler.py"
@@ -1276,32 +1335,6 @@
       "in_degree": 15,
       "out_degree": 2,
       "path": "studio/completion.py"
-    },
-    {
-      "dependencies": [
-        "studio/atomic_file.py",
-        "studio/ci_diagnostics.py",
-        "studio/core.py",
-        "studio/file_lock.py",
-        "studio/github_runner.py",
-        "studio/omniroute_capacity.py",
-        "studio/stage_registry.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "integration_tests/test_production_os_server_integration.py",
-        "scripts/production-os-live-resume-proof.py",
-        "tests/test_mobile_validation_contract.py",
-        "tests/test_production_os_local_e2e.py",
-        "tests/test_production_os_remote_asset_capability.py",
-        "tests/test_production_os_worker.py",
-        "tests/test_production_os_worker_cli.py",
-        "tests/test_production_os_worker_recovery.py",
-        "tests/test_production_os_worker_runtime.py"
-      ],
-      "in_degree": 9,
-      "out_degree": 8,
-      "path": "studio/production_os_worker.py"
     },
     {
       "dependencies": [
@@ -1330,28 +1363,27 @@
     },
     {
       "dependencies": [
-        "studio/atomic_file.py",
         "studio/core.py",
-        "studio/file_lock.py",
+        "studio/engine_patch.py",
+        "studio/journeys.py",
+        "studio/learning_context.py",
+        "studio/native_model_usage.py",
+        "studio/provider_cost.py",
+        "studio/provider_health.py",
+        "studio/provider_metrics.py",
+        "studio/provider_monthly_quota.py",
+        "studio/provider_router.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py",
         "tests/test_unified_routing_score.py"
       ],
       "dependents": [
-        "studio/agents/orchestrator.py",
-        "studio/ci_runner.py",
-        "studio/fleet_capacity.py",
-        "studio/fleet_daemon.py",
-        "studio/generic_model.py",
-        "studio/preemption_apply.py",
-        "studio/worker_heartbeat.py",
-        "studio/worker_reaper.py",
-        "tests/test_agent_router.py",
-        "tests/test_capacity_ledger.py",
-        "tests/test_preemption_apply.py",
-        "tests/test_worker_reaper.py"
+        "studio/godot_preview.py",
+        "tests/test_godot_model.py"
       ],
-      "in_degree": 12,
-      "out_degree": 4,
-      "path": "studio/capacity_ledger.py"
+      "in_degree": 2,
+      "out_degree": 13,
+      "path": "studio/godot_model.py"
     },
     {
       "dependencies": [],
@@ -1400,29 +1432,6 @@
     },
     {
       "dependencies": [
-        "studio/core.py",
-        "studio/engine_patch.py",
-        "studio/journeys.py",
-        "studio/learning_context.py",
-        "studio/provider_cost.py",
-        "studio/provider_health.py",
-        "studio/provider_metrics.py",
-        "studio/provider_monthly_quota.py",
-        "studio/provider_router.py",
-        "tests/test_journeys.py",
-        "tests/test_studio.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "studio/godot_preview.py",
-        "tests/test_godot_model.py"
-      ],
-      "in_degree": 2,
-      "out_degree": 12,
-      "path": "studio/godot_model.py"
-    },
-    {
-      "dependencies": [
         "studio/atomic_file.py",
         "studio/core.py",
         "studio/file_lock.py"
@@ -1442,6 +1451,28 @@
       "in_degree": 10,
       "out_degree": 3,
       "path": "studio/durable_state.py"
+    },
+    {
+      "dependencies": [
+        "studio/atomic_file.py",
+        "studio/capacity_ledger.py",
+        "studio/capacity_runtime.py",
+        "studio/core.py",
+        "studio/file_lock.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "studio/autonomous_project.py",
+        "studio/core.py",
+        "studio/github_runner.py",
+        "studio/godot_model.py",
+        "studio/production_os_worker.py",
+        "tests/test_autonomous_project.py",
+        "tests/test_godot_model.py"
+      ],
+      "in_degree": 7,
+      "out_degree": 6,
+      "path": "studio/native_model_usage.py"
     },
     {
       "dependencies": [
@@ -1683,25 +1714,6 @@
     },
     {
       "dependencies": [
-        "studio/ci_provider.py",
-        "studio/core.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "studio/ci_runner.py",
-        "studio/fleet_capacity.py",
-        "studio/fleet_supervisor_apply.py",
-        "studio/readiness.py",
-        "tests/test_ci.py",
-        "tests/test_queue_terminal_state.py",
-        "tests/test_studio.py"
-      ],
-      "in_degree": 7,
-      "out_degree": 3,
-      "path": "studio/queue.py"
-    },
-    {
-      "dependencies": [
         "studio/adaptive_scoring.py",
         "studio/agents/registry.py",
         "studio/contextual_routing_memory.py",
@@ -1847,6 +1859,24 @@
       "in_degree": 7,
       "out_degree": 2,
       "path": "studio/architecture_learning.py"
+    },
+    {
+      "dependencies": [
+        "studio/ci_provider.py",
+        "studio/core.py"
+      ],
+      "dependents": [
+        "studio/ci_runner.py",
+        "studio/fleet_capacity.py",
+        "studio/fleet_supervisor_apply.py",
+        "studio/readiness.py",
+        "tests/test_ci.py",
+        "tests/test_queue_terminal_state.py",
+        "tests/test_studio.py"
+      ],
+      "in_degree": 7,
+      "out_degree": 2,
+      "path": "studio/queue.py"
     },
     {
       "dependencies": [
@@ -2037,26 +2067,9 @@
       "in_degree": 6,
       "out_degree": 2,
       "path": "studio/architecture_evaluator.py"
-    },
-    {
-      "dependencies": [
-        "studio/core.py",
-        "tests/test_studio.py"
-      ],
-      "dependents": [
-        "studio/architecture_replacement_merge.py",
-        "studio/architecture_replacement_postmerge.py",
-        "studio/architecture_replacement_pr_validator.py",
-        "studio/architecture_replacement_rollback.py",
-        "studio/architecture_reputation_policy_github_collect.py",
-        "tests/test_architecture_replacement_persist.py"
-      ],
-      "in_degree": 6,
-      "out_degree": 2,
-      "path": "studio/architecture_replacement_persist.py"
     }
   ],
-  "edge_count": 1888,
+  "edge_count": 1905,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 633,
   "schema_version": 1

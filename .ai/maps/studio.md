@@ -263,6 +263,7 @@ model_portfolio_learning.py
 model_portfolio.py
 multi_engine_orchestrator.py
 multi_project_smoke.py
+native_model_usage.py
 native_qa.py
 native_stage.py
 notification_qa.py
@@ -4396,6 +4397,11 @@ autonomy_root = project_out / AUTONOMY_DIR
 runtime_state_path = autonomy_root / "runtime-state.json"
 ⋮----
 runtime_paths = {
+capacity_plan = project_out.parent / 'capacity-plan.json'
+⋮----
+native_request = json.loads(Path(request_path).read_text())
+⋮----
+native_request = {}
 ⋮----
 goal_state = load_goal(goal_path)
 ⋮----
@@ -4440,6 +4446,8 @@ previous_history = os.environ.get("STUDIO_ROUTING_HISTORY_PATH")
 result = run_once(
 ⋮----
 detail = str(exc)
+⋮----
+native_usage = native_snapshot(runtime_paths['STUDIO_NATIVE_MODEL_USAGE_PATH'])
 ⋮----
 translated = translate_orchestrator_result(result)
 report = result.get("report") if isinstance(result, dict) else None
@@ -6249,7 +6257,7 @@ request_id = res.headers.get('NVCF-REQID', '')
 # Documented same-origin endpoint; never trust a remote Location URL.
 req = urllib.request.Request(self.base + '/status/' + request_id,
 ⋮----
-def call(self, method, path, data=None, timeout_seconds=300)
+def call(self, method, path, data=None, timeout_seconds=300, max_attempts=3)
 ⋮----
 headers={'Content-Type': 'application/json', 'Accept': 'application/json'}
 ⋮----
@@ -6371,7 +6379,7 @@ params = {'model': selected_model, 'stream': False,
 ⋮----
 started = time.monotonic()
 ⋮----
-r = api.call('POST', '/chat/completions', params)
+r = accounted_call(api, params, provider.name)
 elapsed = time.monotonic() - started
 ⋮----
 responded = True
@@ -11240,6 +11248,10 @@ telemetry_degraded_from = component
 ⋮----
 project_report=(
 ⋮----
+native_usage = native_snapshot(out/'.autonomy/native-model-usage.json')
+⋮----
+name = 'native:'+provider
+⋮----
 pr=summary['pull_request']
 ⋮----
 changed_files=[]
@@ -12051,7 +12063,7 @@ params = {
 ⋮----
 started = time.monotonic()
 ⋮----
-response = api.call('POST', '/chat/completions', params)
+response = accounted_call(api, params, provider.name)
 ⋮----
 elapsed = time.monotonic() - started
 ⋮----
@@ -14170,6 +14182,105 @@ result = subprocess.run(
 passed = True
 ````
 
+## File: native_model_usage.py
+````python
+"""Execution-local native inference accounting and shared project admission.
+
+Only counters and provider/model identifiers are retained, never prompts or replies.
+Unknown usage consumes the reservation estimate; reported usage replaces it.
+"""
+⋮----
+class NativeAccountingError(StudioError)
+⋮----
+class NativeCapacityError(NativeAccountingError)
+⋮----
+def _path()
+⋮----
+raw = os.environ.get('STUDIO_NATIVE_MODEL_USAGE_PATH', '')
+⋮----
+def _empty()
+⋮----
+def _load(path)
+⋮----
+value = json.loads(path.read_text())
+usage = value['usage']
+valid = (value.get('schema') == 1 and isinstance(usage, dict)
+valid = valid and all(isinstance(k, str) and type(v) is int and v >= 0
+⋮----
+def snapshot(path=None)
+⋮----
+path = Path(path) if path else _path()
+⋮----
+value = _load(path)
+usage = dict(value['usage'])
+⋮----
+providers = list(usage['agents'])
+models = list(usage['models'])
+⋮----
+def _save(path, value)
+⋮----
+def _reported(response)
+⋮----
+usage = response.get('usage') if isinstance(response, dict) else None
+⋮----
+incoming = usage.get('prompt_tokens')
+outgoing = usage.get('completion_tokens')
+⋮----
+total = usage.get('total_tokens', incoming + outgoing)
+⋮----
+prompt_details = usage.get('prompt_tokens_details')
+completion_details = usage.get('completion_tokens_details')
+cached = prompt_details.get('cached_tokens', 0) if isinstance(prompt_details, dict) else 0
+reasoning = completion_details.get('reasoning_tokens', 0) if isinstance(completion_details, dict) else 0
+⋮----
+def call(api, params, provider)
+⋮----
+path = _path()
+⋮----
+_save(path, _load(path))  # Verify storage before submitting inference.
+payload = dict(params)
+prompt_estimate = max(1, (len(json.dumps(payload.get('messages', []), ensure_ascii=False)) + 3)//4)
+output_limit = int(payload['max_tokens'])
+reservation = None
+ledger_path = None
+plan_raw = os.environ.get('STUDIO_CAPACITY_PLAN_PATH', '')
+project_id = os.environ.get('STUDIO_PROJECT_ID', '')
+⋮----
+envelope = project_envelope(plan_raw, project_id)
+ledger_raw = os.environ.get('STUDIO_CAPACITY_LEDGER_PATH', '')
+⋮----
+ledger_path = Path(ledger_raw)
+⋮----
+saved = json.loads(ledger_path.read_text())
+⋮----
+active = load_active(ledger_path)
+remaining = envelope - consumed_tokens(active, project_id=project_id) - reserved_tokens(active, project_id=project_id)
+output_limit = min(output_limit, remaining - prompt_estimate)
+⋮----
+reservation = reserve(ledger_path, project_id=project_id, provider='native:'+provider,
+⋮----
+value = _load(path); value['capacity_exhausted'] = True; _save(path, value)
+⋮----
+estimate = prompt_estimate + output_limit
+⋮----
+value = _load(path); usage = value['usage']
+⋮----
+name = str(payload.get('model') or 'unknown')
+⋮----
+response = None
+reported = None
+⋮----
+# One POST per accounted submission. Provider fallback is separately
+# reserved; opaque transport retries must not bypass admission.
+⋮----
+response = api.call('POST', '/chat/completions', payload, max_attempts=1)
+⋮----
+response = api.call('POST', '/chat/completions', payload)
+reported = _reported(response)
+⋮----
+actual = reported['total_tokens'] if reported is not None else estimate
+````
+
 ## File: native_qa.py
 ````python
 """Trusted Android QA for permission-driven/native-capability Flutter apps."""
@@ -16279,6 +16390,16 @@ response = client.heartbeat(worker_id, active_job_keys=(key,))
 ⋮----
 response = client.heartbeat(
 ⋮----
+native_usage_owned = False
+⋮----
+def retain_native_usage(envelope, request)
+⋮----
+usage_path = Path(output_root)/request['id']/'.autonomy/native-model-usage.json'
+⋮----
+retained = native_snapshot(usage_path)
+⋮----
+# Counter corruption must not prevent failure acknowledgment.
+⋮----
 def report_local_failure(exc, stage, request=None, duration=0.0)
 ⋮----
 # Report only the exception type: messages may contain credentials.
@@ -16294,6 +16415,11 @@ handoff = dict((job.get("payload") or {}).get("handoff") or {})
 ⋮----
 project_out = root / request["id"]
 ⋮----
+# Usage is per claimed execution; continuations retain this journal,
+# but a new server attempt must not report the previous attempt twice.
+native_usage_path = project_out / '.autonomy/native-model-usage.json'
+⋮----
+native_usage_owned = True
 request_path = project_out / "production-os-request.json"
 ⋮----
 stop_heartbeat = threading.Event()

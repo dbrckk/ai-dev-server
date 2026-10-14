@@ -101,27 +101,32 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-14T18:47:45Z
+Generated: 2026-10-14T19:48:50Z
 
 ### Git
 - Branch: `main`
-- Head: `062d45cbfb70`
-- Commit date: 2026-10-14T20:47:31+02:00
-- Commit: fix(godot): stop exhausted previews and retain durable checkpoint SHA
-- Tracked files: 863
+- Head: `a548be53a62c`
+- Commit date: 2026-10-14T21:48:38+02:00
+- Commit: fix(inference): account native calls against project capacity (#300)
+- Tracked files: 864
 
 ### Recently changed files
 - `docs/PRODUCTION_OS_WORKER.md`
 - `studio/autonomous_project.py`
+- `studio/core.py`
 - `studio/github_runner.py`
+- `studio/godot_model.py`
+- `studio/native_model_usage.py`
+- `studio/production_os_worker.py`
+- `tests/test_api_transport_retry.py`
+- `tests/test_autonomous_project.py`
+- `tests/test_godot_model.py`
 - `studio/godot_preview.py`
 - `studio/multi_engine_orchestrator.py`
-- `tests/test_autonomous_project.py`
 - `tests/test_github_runner_persistent.py`
 - `tests/test_godot_preview.py`
 - `tests/test_multi_engine_orchestrator.py`
 - `control/production-os-resume.json`
-- `control/production-os-diagnostics-kick.json`
 
 ### Project signals
 - No common build descriptor detected

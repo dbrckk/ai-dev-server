@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-13",
+  "updated_at": "2026-10-14",
   "task": "Keep reliable idle worker queue-health evidence visible and verify real hosted capacity before claiming production readiness.",
   "base_commit": "0a29a2cff5697bb3e46d32fc5906329d6f803d97",
   "branch": "ci/qualify-worker-against-godot-pos-20261011",
@@ -247,5 +247,19 @@
       "invalid_response",
       "ready"
     ]
+  },
+  "current_iteration": {
+    "repository": "dbrckk/ai-dev-server",
+    "base_branch": "main",
+    "branch": "fix/worker-token-redirect-isolation-20261014",
+    "pull_request": 295,
+    "objective": "Refuse redirect-following token-bearing API reads in the GitHub Actions Production-OS worker.",
+    "changes": [
+      "Bound authorized revision lookup to two fixed GitHub API URLs and no-redirect opener.",
+      "Use existing ProductionOSClient _NoRedirect transport for authenticated queue availability probe.",
+      "Extend two pre-existing workflow contract tests without adding test cases."
+    ],
+    "validation": "Exact-head GitHub Actions and CircleCI pending; no hosted paid inference or Render changes.",
+    "release_gate": "Merge only after all current-head CI checks pass; hosted provider capacity and completed real task remain unverified."
   }
 }

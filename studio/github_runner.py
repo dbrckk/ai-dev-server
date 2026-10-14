@@ -1151,6 +1151,13 @@ def run(
     if isinstance(project_report.get('mobile_validation'),dict):
         summary['mobile_validation']=dict(project_report['mobile_validation'])
     checkpoint_commit=project_report.get('checkpoint_commit')
+    if checkpoint_commit is None and state.get('blocked_reason') == 'godot_preview_cycle_budget_exhausted':
+        evidence = state.get('evidence')
+        saved = evidence.get('godot_preview_checkpoint') if isinstance(evidence, dict) else None
+        if isinstance(saved, dict) and saved.get('target_repo') == request['target_repo']:
+            sha = saved.get('commit_sha')
+            if isinstance(sha, str) and len(sha) == 40 and all(c in '0123456789abcdef' for c in sha):
+                checkpoint_commit = sha
     if isinstance(checkpoint_commit,str) and len(checkpoint_commit)==40:
         summary['commit_shas']=[checkpoint_commit]
     if improvement is not None:

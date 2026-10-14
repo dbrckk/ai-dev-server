@@ -101,6 +101,18 @@ class GithubRunnerPersistentTests(unittest.TestCase):
             self.assertFalse(result["finished"])
             self.assertEqual(result["next_stage"], "attempt_budget_exhausted")
             self.assertEqual(result["commit_shas"], ["c" * 40])
+            # An already-blocked goal skips run_once on a later worker.
+            # Retain only its matching repository's durable source evidence.
+            saved = {'status':'blocked', 'blocked_reason':'godot_preview_cycle_budget_exhausted',
+                     'evidence':{'godot_preview_checkpoint':{'commit_sha':'c'*40,
+                                                           'target_repo':'owner/demo'}}}
+            with patch('github_runner.run_persistent_project', return_value=saved):
+                result = run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100)
+            self.assertEqual(result['commit_shas'], ['c'*40])
+            saved['evidence']['godot_preview_checkpoint']['target_repo'] = 'other/game'
+            with patch('github_runner.run_persistent_project', return_value=saved):
+                result = run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100)
+            self.assertNotIn('commit_shas', result)
 
 
     def test_remote_checkpoint_ingests_memory_before_state_persistence(self):

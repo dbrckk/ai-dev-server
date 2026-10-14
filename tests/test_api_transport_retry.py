@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
 
-from core import API
+from core import API, StudioError
 
 
 class APITransportRetryTests(unittest.TestCase):
@@ -27,6 +27,12 @@ class APITransportRetryTests(unittest.TestCase):
         self.assertEqual(result, {'ok': True})
         self.assertEqual(response.call_count, 2)
         sleep.assert_called_once_with(1.0)
+        with patch.object(api, '_response', side_effect=urllib.error.URLError('temporary')) as response, \
+                patch('core.time.sleep') as sleep:
+            with self.assertRaises(StudioError):
+                api.call('POST','/chat/completions',{},max_attempts=1)
+            self.assertEqual(response.call_count,1)
+            sleep.assert_not_called()
 
 
 if __name__ == '__main__':

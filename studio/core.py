@@ -392,7 +392,9 @@ class API:
             time.sleep(min(2, max(0, deadline - time.monotonic())))
         raise StudioError('Pending inference polling limit reached')
 
-    def call(self, method, path, data=None, timeout_seconds=300):
+    def call(self, method, path, data=None, timeout_seconds=300, max_attempts=3):
+        if type(max_attempts) is not int or not 1 <= max_attempts <= 3:
+            raise StudioError('Invalid API retry limit')
         headers={'Content-Type': 'application/json', 'Accept': 'application/json'}
         if self.key:
             headers['Authorization']='Bearer ' + self.key
@@ -401,7 +403,7 @@ class API:
             headers=headers)
         timeout_seconds = max(1.0, min(300.0, float(timeout_seconds)))
         deadline = time.monotonic() + timeout_seconds
-        for attempt in range(3):
+        for attempt in range(max_attempts):
             remaining = deadline - time.monotonic()
             if remaining <= 0:
                 raise StudioError('API unavailable or timed out')
@@ -409,14 +411,14 @@ class API:
                 return self._response(req, timeout_seconds=remaining)
             except urllib.error.HTTPError as e:
                 # Never print remote bodies: providers may echo secrets or prompts.
-                if method not in ('GET', 'POST') or e.code not in (429, 502, 503, 504) or attempt == 2:
+                if method not in ('GET', 'POST') or e.code not in (429, 502, 503, 504) or attempt == max_attempts - 1:
                     raise APIError(e.code) from None
                 delay = min(float(2 ** attempt), max(0.0, deadline - time.monotonic()))
                 if delay <= 0:
                     raise StudioError('API unavailable or timed out') from None
                 time.sleep(delay)
             except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.HTTPException):
-                if method not in ('GET', 'POST') or attempt == 2:
+                if method not in ('GET', 'POST') or attempt == max_attempts - 1:
                     raise StudioError('API unavailable or timed out') from None
                 delay = min(float(2 ** attempt), max(0.0, deadline - time.monotonic()))
                 if delay <= 0:
@@ -720,13 +722,16 @@ class Model:
             if api.base == 'https://integrate.api.nvidia.com/v1' and selected_model.startswith('nvidia/nemotron-3-'):
                 params.update(chat_template_kwargs={'enable_thinking': True}, reasoning_budget=2048)
             print('Model role: ' + role + '; provider: ' + provider.name + '; model: ' + selected_model, flush=True)
+            from native_model_usage import call as accounted_call, NativeAccountingError
             started = time.monotonic()
             try:
-                r = api.call('POST', '/chat/completions', params)
+                r = accounted_call(api, params, provider.name)
                 elapsed = time.monotonic() - started
                 if metrics_path is not None:
                     record_provider_latency(metrics_path, provider.name, role, elapsed)
                 responded = True
+            except NativeAccountingError:
+                raise
             except (APIError, StudioError) as exc:
                 elapsed = time.monotonic() - started
                 if local_rep_path is not None and provider.unmetered and ':' in provider.name:

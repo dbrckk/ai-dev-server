@@ -3,12 +3,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 import re
 import tempfile
 import urllib.request
+import urllib.parse
 
-from core import StudioError, canonical
+from core import StudioError, canonical, NoRedirect
 from existing_project import ExistingProjectError, materialize, plan
 from godot_session import GodotSandbox
 
@@ -18,8 +20,26 @@ SHA_RE = re.compile(r'[0-9a-f]{40}')
 
 
 def _get_json(url: str) -> dict:
-    req = urllib.request.Request(url, headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'ai-dev-server-godot-probe'})
-    with urllib.request.urlopen(req, timeout=45) as response:
+    # Only forward the read-only Actions token to the canonical GitHub API.
+    # Anonymous requests are limited to 60/hour shared by the CI runner IP.
+    # Never follow a redirect that could disclose Authorization to another host.
+    parsed = urllib.parse.urlsplit(url)
+    if (
+        parsed.scheme != 'https'
+        or parsed.netloc != 'api.github.com'
+        or not parsed.path.startswith('/repos/')
+    ):
+        raise StudioError('Godot probe GitHub API URL is invalid')
+    headers = {
+        'Accept': 'application/vnd.github+json',
+        'User-Agent': 'ai-dev-server-godot-probe',
+    }
+    token = str(os.environ.get('GITHUB_TOKEN') or '').strip()
+    if token:
+        headers['Authorization'] = 'Bearer ' + token
+    req = urllib.request.Request(url, headers=headers)
+    opener = urllib.request.build_opener(NoRedirect())
+    with opener.open(req, timeout=45) as response:
         raw = response.read(MAX_RESPONSE_BYTES + 1)
     if len(raw) > MAX_RESPONSE_BYTES:
         raise StudioError('Public GitHub probe response exceeded limit')

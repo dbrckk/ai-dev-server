@@ -191,6 +191,7 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
     state['publication_request'] = dict(req.get('play_publish', {'enabled':False,'track':'internal','commit':False}))
     if state.get('engine') != 'godot':
         raise StudioError('Checkpoint engine mismatch')
+    state['target_repo'] = req['target_repo']
     if resumed:
         # The restored branch head is the authoritative committed checkpoint.
         # Stored state precedes its publication, so it may lack this SHA.

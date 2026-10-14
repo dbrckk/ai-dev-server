@@ -154,7 +154,14 @@ def translate_orchestrator_result(result: dict) -> dict:
     if (status == 'blocked' and next_stage == 'godot_preview_cycle_budget_exhausted'
             and isinstance(report, dict) and report.get('engine') == 'godot'
             and report.get('preview_cycle_budget_exhausted') is True):
-        return {'blocked_reason': 'godot_preview_cycle_budget_exhausted'}
+        blocked = {'blocked_reason': 'godot_preview_cycle_budget_exhausted'}
+        sha = report.get('checkpoint_commit')
+        repo = report.get('target_repo')
+        if (isinstance(sha, str) and len(sha) == 40
+                and all(c in '0123456789abcdef' for c in sha)
+                and isinstance(repo, str) and repo):
+            blocked['evidence'] = {'godot_preview_checkpoint': {'commit_sha': sha, 'target_repo': repo}}
+        return blocked
 
     if isinstance(status, str) and status:
         details = [status]

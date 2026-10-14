@@ -71,6 +71,7 @@ class AutonomousProjectTests(unittest.TestCase):
                      "report": {"engine": "godot", "preview_cycle_budget_exhausted": True}}
         self.assertEqual(translate_orchestrator_result(exhausted),
                          {"blocked_reason": "godot_preview_cycle_budget_exhausted"})
+        exhausted['report'].update(checkpoint_commit='f'*40, target_repo='owner/game')
         with tempfile.TemporaryDirectory() as td:
             from unittest.mock import Mock
             run_once = Mock(return_value=exhausted)
@@ -80,6 +81,8 @@ class AutonomousProjectTests(unittest.TestCase):
             self.assertEqual(state['status'], 'blocked')
             self.assertEqual(state['blocked_reason'], 'godot_preview_cycle_budget_exhausted')
             self.assertEqual(run_once.call_count, 1)
+            self.assertEqual(state['evidence']['godot_preview_checkpoint'],
+                             {'commit_sha': 'f'*40, 'target_repo': 'owner/game'})
 
     def test_promoted_stage_syncs_into_capability_registry(self):
         from studio.capability_registry import load as load_registry

@@ -357,7 +357,10 @@ and may omit that field.
 An unvalidated preview at `max_cycles` returns an explicit blocked report with
 `preview_cycle_budget_exhausted=true`. The native orchestrator stops the goal
 with `next_stage=godot_preview_cycle_budget_exhausted`, preserving the committed
-SHA and the previous validation blockers in the retained report. It does not
+SHA and the previous validation blockers in the retained report. The blocked
+goal also persists repository-bound checkpoint evidence, so a later worker
+that skips the already-blocked goal retains the same SHA without stage calls.
+It does not
 construct a model or sandbox, repeat active continuations, raise the configured
 budget, or claim completion. A validated preview still advances to Android QA
 even when its cycle count has reached the limit.
@@ -365,6 +368,8 @@ even when its cycle count has reached the limit.
 The 2026-10-14 replay used the actual request from worker38569417618 and the
 repaired Jumpy checkpoint5b1c32b1f04a7f1190ee8f66bb3abb56a933eeb5. The native
 result writer emitted `blocked`, the budget stage, that SHA and `succeeded=false`
-after one goal cycle (engine detection and preview only), without provider calls
+after one goal cycle (engine detection and preview only). A fresh worker
+directory restored from that sealed goal also retained the SHA and failed
+truthfully without rerunning any stage, without provider calls
 or repository writes. This replay checks recovery/reporting, not Android or
 store readiness.

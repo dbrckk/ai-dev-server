@@ -122,6 +122,14 @@ def test_actions_worker_availability_probe_fails_closed():
     assert "Production-OS availability probe returned invalid JSON" in WORKFLOW
     assert "except urllib.error.HTTPError as exc:" in WORKFLOW
     assert "raise SystemExit(" in WORKFLOW
+    # The bearer-authenticated availability request must not follow any
+    # redirect to another host. This reuses the worker's existing policy.
+    probe = WORKFLOW.split(
+        "- name: Probe compatible Production-OS work", 1
+    )[1].split("- name: Install autonomous coding agent", 1)[0]
+    assert "opener = urllib.request.build_opener(_NoRedirect())" in probe
+    assert "with opener.open(request, timeout=10) as response:" in probe
+    assert "urllib.request.urlopen(request, timeout=10)" not in probe
 
 
 def test_actions_worker_bootstraps_remote_asset_forge_before_preflight():
@@ -172,6 +180,14 @@ def test_actions_worker_authenticates_qualified_revision_lookup_without_logging_
     assert "urllib.request.Request(url, headers=headers)" in resolver
     assert 'print(token)' not in resolver
     assert 'printf' not in resolver.split("PY", 1)[0]
+    # Reject GitHub API redirects and only permit the two fixed read URLs.
+    assert "class NoRedirect(urllib.request.HTTPRedirectHandler):" in resolver
+    assert "def redirect_request(self, req, fp, code, msg, headers, newurl):" in resolver
+    assert "return None" in resolver
+    assert "if url not in {runs_url, branch_url}:" in resolver
+    assert "opener = urllib.request.build_opener(NoRedirect())" in resolver
+    assert "with opener.open(request, timeout=20) as response:" in resolver
+    assert "urllib.request.urlopen(request, timeout=20)" not in resolver
 
 
 def test_actions_worker_preflight_uses_runtime_capability_detection():

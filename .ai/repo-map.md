@@ -14423,6 +14423,11 @@ capacity_plan_raw = os.environ.get("STUDIO_CAPACITY_PLAN_PATH", "")
 capacity_efficiency_raw = os.environ.get("STUDIO_CAPACITY_EFFICIENCY_PATH", "")
 project_id = os.environ.get("STUDIO_PROJECT_ID", "").strip() or None
 project_capacity_envelope = load_project_envelope(
+# The operator explicitly configured a bounded project. A missing,
+# unreadable or malformed plan must not silently disable its token cap
+# and allow uncontrolled provider calls. Unbounded interactive use
+# remains available only when no project capacity plan is configured.
+⋮----
 capacity_efficiency = (
 ⋮----
 weighted_contexts = json.loads(os.environ.get("STUDIO_ROUTING_CONTEXTS_JSON", "[]"))
@@ -14828,6 +14833,11 @@ local_model_specialization_path = out / ".autonomy" / "local-model-specializatio
 model_portfolio_learning_path = out / ".autonomy" / "model-portfolio-learning.json"
 candidate_portfolio_learning_path = out / ".autonomy" / "candidate-portfolio-learning.json"
 capacity_efficiency_path = out.parent / "capacity-efficiency.json"
+⋮----
+capacity_plan_path = out.parent / "capacity-plan.json"
+# Production-OS always requires its separately published capacity plan.
+# Standalone generic studio runs historically allow the plan to be absent;
+# do not advertise a nonexistent *optional* plan as a configured cap.
 ⋮----
 max_api_cost = req.get("max_api_cost_usd")
 ⋮----
@@ -30732,6 +30742,20 @@ def test_transport_failure_releases_open_reservation(self)
 def test_denied_reservation_skips_provider_call(self)
 ⋮----
 denied = {
+⋮----
+# Extend the same admission gate: an explicitly configured but missing,
+# corrupt, or unrelated project plan must never fall back to unlimited
+# capacity. No provider instance should be created in these cases.
+⋮----
+plan_path = Path(td) / "capacity-plan.json"
+env = {
+⋮----
+# The plan exists but the project identity is missing: do not
+# silently treat the configured cap as a global unbounded mode.
+⋮----
+# No configured plan is a supported standalone/interactive mode.
+# The new fail-closed check must not require Production-OS limits
+# for unrelated local generic-model calls.
 ````
 
 ## File: tests/test_generic_policy.py

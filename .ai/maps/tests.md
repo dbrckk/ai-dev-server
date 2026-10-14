@@ -5297,6 +5297,20 @@ def test_transport_failure_releases_open_reservation(self)
 def test_denied_reservation_skips_provider_call(self)
 ⋮----
 denied = {
+⋮----
+# Extend the same admission gate: an explicitly configured but missing,
+# corrupt, or unrelated project plan must never fall back to unlimited
+# capacity. No provider instance should be created in these cases.
+⋮----
+plan_path = Path(td) / "capacity-plan.json"
+env = {
+⋮----
+# The plan exists but the project identity is missing: do not
+# silently treat the configured cap as a global unbounded mode.
+⋮----
+# No configured plan is a supported standalone/interactive mode.
+# The new fail-closed check must not require Production-OS limits
+# for unrelated local generic-model calls.
 ```
 
 ## File: test_generic_policy.py

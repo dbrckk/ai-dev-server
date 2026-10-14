@@ -97,29 +97,29 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-13T23:31:29Z
+Generated: 2026-10-14T08:07:46Z
 
 ### Git
 - Branch: `main`
-- Head: `ff7a22bab56d`
-- Commit date: 2026-10-14T01:31:07+02:00
-- Commit: fix(delivery): reliably confirm asynchronous trusted review PR on deployed Production-OS (#291)
+- Head: `6e528237a062`
+- Commit date: 2026-10-14T10:07:34+02:00
+- Commit: fix(capacity): enforce configured per-project inference budget (#293)
 - Tracked files: 863
 
 ### Recently changed files
+- `studio/generic_model.py`
+- `studio/generic_project.py`
+- `tests/test_generic_model_capacity.py`
 - `.github/workflows/production-os-worker-integration.yml`
 - `studio/generic_repository.py`
 - `tests/test_generic_repository_pull_request.py`
 - `studio/capacity_ledger.py`
-- `studio/generic_model.py`
 - `tests/test_capacity_ledger.py`
 - `.github/workflows/production-os-actions-worker.yml`
-- `studio/generic_project.py`
 - `studio/provider_router.py`
 - `tests/test_production_os_actions_worker_workflow.py`
 - `tests/test_provider_router.py`
 - `control/production-os-worker-kick.json`
-- `control/production-os-worker-canary.json`
 
 ### Project signals
 - No common build descriptor detected

@@ -8725,6 +8725,11 @@ capacity_plan_raw = os.environ.get("STUDIO_CAPACITY_PLAN_PATH", "")
 capacity_efficiency_raw = os.environ.get("STUDIO_CAPACITY_EFFICIENCY_PATH", "")
 project_id = os.environ.get("STUDIO_PROJECT_ID", "").strip() or None
 project_capacity_envelope = load_project_envelope(
+# The operator explicitly configured a bounded project. A missing,
+# unreadable or malformed plan must not silently disable its token cap
+# and allow uncontrolled provider calls. Unbounded interactive use
+# remains available only when no project capacity plan is configured.
+⋮----
 capacity_efficiency = (
 ⋮----
 weighted_contexts = json.loads(os.environ.get("STUDIO_ROUTING_CONTEXTS_JSON", "[]"))
@@ -9130,6 +9135,11 @@ local_model_specialization_path = out / ".autonomy" / "local-model-specializatio
 model_portfolio_learning_path = out / ".autonomy" / "model-portfolio-learning.json"
 candidate_portfolio_learning_path = out / ".autonomy" / "candidate-portfolio-learning.json"
 capacity_efficiency_path = out.parent / "capacity-efficiency.json"
+⋮----
+capacity_plan_path = out.parent / "capacity-plan.json"
+# Production-OS always requires its separately published capacity plan.
+# Standalone generic studio runs historically allow the plan to be absent;
+# do not advertise a nonexistent *optional* plan as a configured cap.
 ⋮----
 max_api_cost = req.get("max_api_cost_usd")
 ⋮----

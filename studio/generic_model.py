@@ -236,7 +236,7 @@ def ask(
     # unreadable or malformed plan must not silently disable its token cap
     # and allow uncontrolled provider calls. Unbounded interactive use
     # remains available only when no project capacity plan is configured.
-    if capacity_plan_raw and project_id is not None and project_capacity_envelope is None:
+    if capacity_plan_raw and (project_id is None or project_capacity_envelope is None):
         raise StudioError("Configured project capacity plan missing or invalid")
     capacity_efficiency = (
         summarize_capacity_efficiency(Path(capacity_efficiency_raw))

@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import Mock, patch
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
@@ -96,6 +97,34 @@ class GodotPreviewTests(unittest.TestCase):
         self.assertIn('architecture_decision',github.states[-1])
         self.assertIn('architecture_evaluation',github.states[-1])
         self.assertIn('architecture_benchmark',github.states[-1])
+
+        req = godot_preview.request_check(self.request())
+        fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(
+            {k: v for k, v in req.items() if k != 'enabled'}
+        ).encode()).hexdigest()
+        for status in ('repair_needed', 'godot_preview_validated'):
+            restored = {'request_hash': fingerprint, 'engine': 'godot',
+                        'status': status, 'cycles': req['max_cycles'], 'rounds': 14,
+                        'blockers': ['real parse error']}
+            model_factory = Mock()
+            sandbox_factory = Mock()
+            with self.subTest(status=status), tempfile.TemporaryDirectory() as td:
+                root = Path(td)
+                with patch.object(godot_preview, '_restore', return_value=(restored, 'f'*40, True)):
+                    resumed = godot_preview.execute(req, root/'work', root/'out', github,
+                                                     model_factory, sandbox_factory)
+                self.assertEqual(resumed['checkpoint_commit'], 'f'*40)
+                self.assertEqual(json.loads((root/'out/report.json').read_text()), resumed)
+                model_factory.assert_not_called()
+                sandbox_factory.assert_not_called()
+                if status == 'repair_needed':
+                    self.assertEqual(resumed['status'], 'blocked')
+                    self.assertTrue(resumed['preview_cycle_budget_exhausted'])
+                    self.assertFalse(resumed['completion']['finished'])
+                    self.assertEqual(resumed['blockers'], ['real parse error'])
+                else:
+                    self.assertEqual(resumed['status'], 'godot_preview_validated')
+                    self.assertNotIn('preview_cycle_budget_exhausted', resumed)
 
     def test_publication_refuses_branch_movement(self):
         github=FakeGitHub(); github.branch_head='e'*40

@@ -191,7 +191,14 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
     state['publication_request'] = dict(req.get('play_publish', {'enabled':False,'track':'internal','commit':False}))
     if state.get('engine') != 'godot':
         raise StudioError('Checkpoint engine mismatch')
-    if state['status'] == 'godot_preview_validated' or state['cycles'] >= req['max_cycles']:
+    if resumed:
+        # The restored branch head is the authoritative committed checkpoint.
+        # Stored state precedes its publication, so it may lack this SHA.
+        state['checkpoint_commit'] = parent
+    if state['status'] != 'godot_preview_validated' and state['cycles'] >= req['max_cycles']:
+        state.update(status='blocked', preview_cycle_budget_exhausted=True)
+        state['completion'] = {'finished': False, 'next_stage': 'godot_preview_cycle_budget_exhausted'}
+    if state['status'] == 'godot_preview_validated' or state.get('preview_cycle_budget_exhausted') is True:
         atomic_write_text(out / 'report.json', canonical(state)); return state
 
     architecture_recommendations = recommend(

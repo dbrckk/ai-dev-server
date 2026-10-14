@@ -67,6 +67,19 @@ class AutonomousProjectTests(unittest.TestCase):
         })
         self.assertIn("failure", translated)
         self.assertNotIn("human_action", translated)
+        exhausted = {"status": "blocked", "next_stage": "godot_preview_cycle_budget_exhausted",
+                     "report": {"engine": "godot", "preview_cycle_budget_exhausted": True}}
+        self.assertEqual(translate_orchestrator_result(exhausted),
+                         {"blocked_reason": "godot_preview_cycle_budget_exhausted"})
+        with tempfile.TemporaryDirectory() as td:
+            from unittest.mock import Mock
+            run_once = Mock(return_value=exhausted)
+            state = run_persistent_project("request.json", Path(td)/"out", str(Path(td)/"work"),
+                runner=lambda *a, **k: None, deadline=100, clock=lambda: 0,
+                max_cycles=20, run_once=run_once)
+            self.assertEqual(state['status'], 'blocked')
+            self.assertEqual(state['blocked_reason'], 'godot_preview_cycle_budget_exhausted')
+            self.assertEqual(run_once.call_count, 1)
 
     def test_promoted_stage_syncs_into_capability_registry(self):
         from studio.capability_registry import load as load_registry

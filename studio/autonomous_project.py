@@ -151,6 +151,11 @@ def translate_orchestrator_result(result: dict) -> dict:
             }
         }
 
+    if (status == 'blocked' and next_stage == 'godot_preview_cycle_budget_exhausted'
+            and isinstance(report, dict) and report.get('engine') == 'godot'
+            and report.get('preview_cycle_budget_exhausted') is True):
+        return {'blocked_reason': 'godot_preview_cycle_budget_exhausted'}
+
     if isinstance(status, str) and status:
         details = [status]
         if isinstance(next_stage, str) and next_stage:

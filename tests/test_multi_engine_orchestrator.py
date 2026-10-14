@@ -81,7 +81,7 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
             )
             self.assertNotIn("checkpoint_observer", generic.call_args.kwargs)
 
-    def _runner(self,out,fail_stage=None,bad_journey=False,bad_visual=False,release_ready=False,artifact_credentials=True):
+    def _runner(self,out,fail_stage=None,bad_journey=False,bad_visual=False,release_ready=False,artifact_credentials=True,exhausted_preview=False):
         calls=[]
         def runner(args,timeout):
             calls.append(args); out.mkdir(parents=True,exist_ok=True)
@@ -89,6 +89,10 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
             if script=='studio/engine_detect.py':
                 (out/'engine-detection.json').write_text(json.dumps({'status':'detected','engine':'godot'}))
             elif script=='studio/engine_entry.py':
+                if exhausted_preview:
+                    (out/'report.json').write_text(json.dumps({'engine':'godot','status':'blocked',
+                        'preview_cycle_budget_exhausted':True,'checkpoint_commit':'f'*40}))
+                    return subprocess.CompletedProcess(args,1)
                 (out/'report.json').write_text(json.dumps({'engine':'godot','status':'godot_preview_validated','completion':{'finished':False,'next_stage':'godot_android_export_qa'},'coverage':{}}))
             elif script=='studio/godot_android_stage.py':
                 if fail_stage=='android': return subprocess.CompletedProcess(args,1)
@@ -177,6 +181,14 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                 root=Path(td); out=root/'out'; req=self.request(root); runner,_=self._runner(out,fail_stage=failed,release_ready=failed in {'artifact','store','privacy','final'})
                 result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
                 self.assertEqual(result['status'],'failed'); self.assertEqual(result['next_stage'],next_stage)
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); out=root/'out'; req=self.request(root)
+            runner,calls=self._runner(out,exhausted_preview=True)
+            result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)
+            self.assertEqual(result['status'],'blocked')
+            self.assertEqual(result['next_stage'],'godot_preview_cycle_budget_exhausted')
+            self.assertEqual(result['report']['checkpoint_commit'],'f'*40)
+            self.assertEqual(len(calls),2)
 
     def test_journey_stage_cannot_fake_execution_coverage(self):
         with tempfile.TemporaryDirectory() as td:

@@ -346,3 +346,25 @@ Some OpenAI-compatible APIs report `usage.total_tokens` without input/output sub
 Live Production-OS canary #20 (`37992773915`) generated and structurally verified `.production-os/worker-canary-20.txt` and committed it to `studio/mp-aa8be7dea7e417424da80e41` at `405277e`. It then returned `runner_error` with GitHub HTTP 422 during remote state persistence; the companion canary did **not** constitute a fully successful task completion. GitHub branch history shows project-memory and provider-health checkpoints were committed before the failure, while subsequent provider metrics were not.
 
 The runner treats **only an HTTP 422 while writing optional telemetry/caches** as `verified_checkpoint_telemetry_degraded`, noting the first skipped component and avoiding further auxiliary writes in that session. It still *requires* durable autonomous goal state, project memory, and execution checkpoint; these critical failures remain fatal. Validation/schema errors and other HTTP errors remain fatal. An optional telemetry failure cannot silently imply the metrics were persisted or that a PR was created. Use the structured `persistence_status` and `persistence_component` in the retained runner summary, and verify the target branch commit independently.
+
+## Godot preview cycle exhaustion
+
+A restored Godot report retains the authoritative source branch head as
+`checkpoint_commit`, including when the preview is already validated or its
+cycle budget is exhausted. The stored checkpoint state predates publication
+and may omit that field.
+
+An unvalidated preview at `max_cycles` returns an explicit blocked report with
+`preview_cycle_budget_exhausted=true`. The native orchestrator stops the goal
+with `next_stage=godot_preview_cycle_budget_exhausted`, preserving the committed
+SHA and the previous validation blockers in the retained report. It does not
+construct a model or sandbox, repeat active continuations, raise the configured
+budget, or claim completion. A validated preview still advances to Android QA
+even when its cycle count has reached the limit.
+
+The 2026-10-14 replay used the actual request from worker38569417618 and the
+repaired Jumpy checkpoint5b1c32b1f04a7f1190ee8f66bb3abb56a933eeb5. The native
+result writer emitted `blocked`, the budget stage, that SHA and `succeeded=false`
+after one goal cycle (engine detection and preview only), without provider calls
+or repository writes. This replay checks recovery/reporting, not Android or
+store readiness.

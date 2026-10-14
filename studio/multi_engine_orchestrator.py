@@ -76,7 +76,12 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
         result=_run_stage(script,request_path,project_out,stage_work,runner,deadline,clock)
         if result is None: return {'status':'deferred','report':report,'next_stage':current_stage}
         report=load_report(project_out) if (project_out/'report.json').is_file() else {}
-        if result.returncode!=0: return {'status':'failed','report':report,'next_stage':current_stage}
+        if result.returncode!=0:
+            if (current_stage == 'preview' and report.get('engine') == 'godot'
+                    and report.get('status') == 'blocked'
+                    and report.get('preview_cycle_budget_exhausted') is True):
+                return {'status':'blocked','report':report,'next_stage':'godot_preview_cycle_budget_exhausted'}
+            return {'status':'failed','report':report,'next_stage':current_stage}
         completion=report.get('completion')
         if report.get('engine')!='godot' or report.get('status')!=expected_status: raise StudioError('Godot stage returned invalid report: '+current_stage)
         if not isinstance(completion,dict) or completion.get('finished') is not False or completion.get('next_stage')!=next_stage:

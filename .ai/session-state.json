@@ -1,9 +1,9 @@
 {
   "version": 1,
   "updated_at": "2026-10-14",
-  "task": "Prevent Godot numeric round counters from crashing native worker result reporting",
-  "base_commit": "312d3b3c01d48bcfb18ddb9c2702ab65dbbc3d57",
-  "branch": "fix/bounded-objective-recovery-20261014",
+  "task": "Stop exhausted Godot preview continuations and retain authoritative checkpoint SHA",
+  "base_commit": "0d44f164c3f47beb54ab1cb361934b26c3c9bc5b",
+  "branch": "fix/godot-exhausted-checkpoint-20261014",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -96,16 +96,16 @@
     "limit": "Historical counters, no hosted model inference or completed end-to-end task"
   },
   "pending": [
-    "Full existing suite and exact-head CI/review for this fix",
-    "Publish qualified correction and inspect real continuation, preserving checkpoint and failure evidence",
-    "Referenced visual live pilot requires explicit metered-provider approval in current Asset Forge workflow"
+    "Exact-head CI and review, then merge this bounded recovery correction",
+    "Native Godot usage telemetry and a completed hosted objective remain unqualified",
+    "Referenced image pilot still requires explicit metered-provider approval"
   ],
   "merged_pr": {
     "number": 240,
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Qualify integer Godot round reporting fix, then verify continuation of the same resumed objective"
+    "Qualify explicit exhausted preview stop; retain actual source checkpoint without new model calls"
   ],
   "merged_changes": [
     {
@@ -280,5 +280,26 @@
       "full_suite": "in progress"
     },
     "visuals": "Asset Forge current main already includes licensed FLUX.2 Klein 4B route; old Qwen licensing issue is historical for this alternative. Four existing Cloudflare checks with Pillow12.3 passed without provider calls; manual live pilot remains unexecuted."
+  },
+  "continuation_20261014_exhaustion": {
+    "previous_worker": 38569417618,
+    "artifact_id": 11898802259,
+    "source_commit": "5b1c32b1f04a7f1190ee8f66bb3abb56a933eeb5",
+    "previous_status": "continuation_limit; subsequent workflow failed3/3",
+    "merged_prior_fixes": [
+      "ai-dev-server298",
+      "Jumpy6"
+    ],
+    "replay": {
+      "status": "blocked",
+      "next_stage": "godot_preview_cycle_budget_exhausted",
+      "commit_retained": true,
+      "succeeded": false,
+      "stage_calls": 2,
+      "model_calls": 0,
+      "repository_writes": 0
+    },
+    "selected_tests": 45,
+    "ci": "pending"
   }
 }

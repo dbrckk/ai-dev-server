@@ -12480,7 +12480,16 @@ SHA_RE = re.compile(r'[0-9a-f]{40}')
 ⋮----
 def _get_json(url: str) -> dict
 ⋮----
-req = urllib.request.Request(url, headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'ai-dev-server-godot-probe'})
+# Only forward the read-only Actions token to the canonical GitHub API.
+# Anonymous requests are limited to 60/hour shared by the CI runner IP.
+# Never follow a redirect that could disclose Authorization to another host.
+parsed = urllib.parse.urlsplit(url)
+⋮----
+headers = {
+token = str(os.environ.get('GITHUB_TOKEN') or '').strip()
+⋮----
+req = urllib.request.Request(url, headers=headers)
+opener = urllib.request.build_opener(NoRedirect())
 ⋮----
 raw = response.read(MAX_RESPONSE_BYTES + 1)
 ⋮----

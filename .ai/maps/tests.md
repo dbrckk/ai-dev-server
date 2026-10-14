@@ -6570,6 +6570,12 @@ class GodotRepositoryProbeTests(unittest.TestCase)
 ⋮----
 def test_requires_pinned_commit(self)
 ⋮----
+# Extend the existing contract: the Actions token only reaches the
+# canonical GitHub API, with automatic credential redirects disabled.
+response = MagicMock()
+⋮----
+request = make_opener.return_value.open.call_args.args[0]
+⋮----
 def test_imports_pinned_godot_tree_before_runtime(self)
 ⋮----
 tree = {'truncated':False,'tree':[

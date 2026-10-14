@@ -97,16 +97,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-14T08:07:46Z
+Generated: 2026-10-14T09:38:08Z
 
 ### Git
 - Branch: `main`
-- Head: `6e528237a062`
-- Commit date: 2026-10-14T10:07:34+02:00
-- Commit: fix(capacity): enforce configured per-project inference budget (#293)
+- Head: `6401c6da314f`
+- Commit date: 2026-10-14T11:37:56+02:00
+- Commit: fix(ci): authenticate pinned Godot Jumpy probe safely
 - Tracked files: 863
 
 ### Recently changed files
+- `.github/workflows/multi-engine-benchmark.yml`
+- `studio/godot_repository_probe.py`
+- `tests/test_godot_repository_probe.py`
 - `studio/generic_model.py`
 - `studio/generic_project.py`
 - `tests/test_generic_model_capacity.py`
@@ -119,7 +122,6 @@ Generated: 2026-10-14T08:07:46Z
 - `studio/provider_router.py`
 - `tests/test_production_os_actions_worker_workflow.py`
 - `tests/test_provider_router.py`
-- `control/production-os-worker-kick.json`
 
 ### Project signals
 - No common build descriptor detected

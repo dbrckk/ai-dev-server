@@ -1,19 +1,20 @@
 # Change impact
 
-Base: d8c4989516353261f4718647563896f0b1b2d50e
-Head: 6e528237a062674fc6d7b8fafc74687353962580
+Base: e16be521d370b60e6faacbc1c83ccbb01b372a4b
+Head: 6401c6da314f37ea5a30e77e08eff263f61482fd
 
 ## Changed files
-- M studio/generic_model.py
-- M studio/generic_project.py
-- M tests/test_generic_model_capacity.py
+- M .github/workflows/multi-engine-benchmark.yml
+- M studio/godot_repository_probe.py
+- M tests/test_godot_repository_probe.py
 
 ## Affected areas
+- .github
 - studio
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_godot_repository_probe.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

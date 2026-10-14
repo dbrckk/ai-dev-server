@@ -1809,6 +1809,7 @@ jobs:
       - name: Probe pinned real Jumpy repository
         env:
           PYTHONPATH: studio
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           python studio/godot_repository_probe.py dbrckk/Jumpy f32cc45e2e1b8713c3aa41961810bcbc90ab97c0 --out /tmp/jumpy-godot-probe.json
           python -m json.tool /tmp/jumpy-godot-probe.json
@@ -18178,7 +18179,16 @@ SHA_RE = re.compile(r'[0-9a-f]{40}')
 ⋮----
 def _get_json(url: str) -> dict
 ⋮----
-req = urllib.request.Request(url, headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'ai-dev-server-godot-probe'})
+# Only forward the read-only Actions token to the canonical GitHub API.
+# Anonymous requests are limited to 60/hour shared by the CI runner IP.
+# Never follow a redirect that could disclose Authorization to another host.
+parsed = urllib.parse.urlsplit(url)
+⋮----
+headers = {
+token = str(os.environ.get('GITHUB_TOKEN') or '').strip()
+⋮----
+req = urllib.request.Request(url, headers=headers)
+opener = urllib.request.build_opener(NoRedirect())
 ⋮----
 raw = response.read(MAX_RESPONSE_BYTES + 1)
 ⋮----
@@ -32014,6 +32024,12 @@ raw = text.encode()
 class GodotRepositoryProbeTests(unittest.TestCase)
 ⋮----
 def test_requires_pinned_commit(self)
+⋮----
+# Extend the existing contract: the Actions token only reaches the
+# canonical GitHub API, with automatic credential redirects disabled.
+response = MagicMock()
+⋮----
+request = make_opener.return_value.open.call_args.args[0]
 ⋮----
 def test_imports_pinned_godot_tree_before_runtime(self)
 ⋮----

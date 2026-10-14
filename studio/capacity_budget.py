@@ -1,6 +1,8 @@
 """Scale autonomous model-call budget from available free capacity."""
 from __future__ import annotations
 
+import math
+
 ABSOLUTE_AUTO_CALL_CAP = 240
 UNMETERED_MULTIPLIER = 4.0
 POOLED_HIGH_MULTIPLIER = 3.0
@@ -24,11 +26,19 @@ def multiplier(capacity_status: dict) -> float:
         quota = row.get("monthly_quota")
         if not isinstance(quota, dict) or quota.get("exhausted") is True:
             continue
+        raw_ratio = quota.get("remaining_ratio", 0.0)
+        # Quota metadata may be missing or corrupted. NaN compares oddly
+        # with min/max and could be promoted to 100% free capacity; Infinity
+        # and out-of-range values must never raise the automatic call budget.
+        if isinstance(raw_ratio, bool):
+            continue
         try:
-            ratio = float(quota.get("remaining_ratio", 0.0) or 0.0)
+            ratio = float(raw_ratio)
         except (TypeError, ValueError):
             continue
-        best_ratio = max(best_ratio, max(0.0, min(1.0, ratio)))
+        if not math.isfinite(ratio) or not 0.0 <= ratio <= 1.0:
+            continue
+        best_ratio = max(best_ratio, ratio)
 
     if best_ratio >= 0.50:
         return POOLED_HIGH_MULTIPLIER

@@ -1216,6 +1216,22 @@ def run_once(
         )
     observe_job_control(response)
 
+    native_usage_owned = False
+
+    def retain_native_usage(envelope, request):
+        if native_usage_owned and isinstance(request, dict):
+            try:
+                usage_path = Path(output_root)/request['id']/'.autonomy/native-model-usage.json'
+                if usage_path.exists():
+                    from native_model_usage import snapshot as native_snapshot
+                    retained = native_snapshot(usage_path)
+                    if retained is not None:
+                        envelope['usage'] = retained['usage']
+            except Exception:
+                # Counter corruption must not prevent failure acknowledgment.
+                envelope.setdefault('evidence', {})['native_usage_status'] = 'unavailable'
+        return envelope
+
     def report_local_failure(exc, stage, request=None, duration=0.0):
         # Report only the exception type: messages may contain credentials.
         envelope = {
@@ -1229,6 +1245,7 @@ def run_once(
                 **_failure_diagnostics(exc),
             },
         }
+        retain_native_usage(envelope, request)
         client.fail(failure_payload(
             key, worker_id, envelope,
             duration_seconds=duration, capabilities=capabilities,
@@ -1239,7 +1256,7 @@ def run_once(
         client.heartbeat(worker_id, **kwargs)
         return {
             "status": "failed", "worker_id": worker_id, "key": key,
-            "project_id": request["id"] if request else None, "usage": {},
+            "project_id": request["id"] if request else None, "usage": dict(envelope['usage']),
         }
 
     request = None
@@ -1250,6 +1267,11 @@ def run_once(
         _write_project_capacity_plan(root, request, handoff, capacity)
         project_out = root / request["id"]
         project_out.mkdir(parents=True, exist_ok=True)
+        # Usage is per claimed execution; continuations retain this journal,
+        # but a new server attempt must not report the previous attempt twice.
+        native_usage_path = project_out / '.autonomy/native-model-usage.json'
+        native_usage_path.unlink(missing_ok=True)
+        native_usage_owned = True
         request_path = project_out / "production-os-request.json"
         request_path.write_text(
             json.dumps(
@@ -1400,6 +1422,7 @@ def run_once(
                 **_failure_diagnostics(exc),
             },
         }
+        retain_native_usage(envelope, request)
         # Preserve bounded diagnostics even when failure delivery is interrupted.
         try:
             atomic_write_text(project_out / "production-os-result.json", json.dumps(envelope) + "\n",
@@ -1428,7 +1451,7 @@ def run_once(
             "worker_id": worker_id,
             "key": key,
             "project_id": request["id"],
-            "usage": {},
+            "usage": dict(envelope["usage"]),
             "error": _failure_diagnostics(exc),
         }
 

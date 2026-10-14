@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 import unittest
+import os
+import tempfile
 from unittest.mock import patch
 import sys
 
@@ -138,6 +140,39 @@ class GodotModelTests(unittest.TestCase):
         subject = model([], limit=0)
         with self.assertRaisesRegex(StudioError, 'budget exhausted'):
             subject.ask('implementation', 'x')
+        from native_model_usage import snapshot
+        from capacity_ledger import consumed_tokens, load
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); journal=root/'usage.json'; ledger=root/'ledger.json'; plan=root/'plan.json'
+            plan.write_text(json.dumps({'projects':[{'id':'demo','token_envelope':20000}]}))
+            with patch.dict(os.environ, {'STUDIO_NATIVE_MODEL_USAGE_PATH':str(journal),
+                    'STUDIO_CAPACITY_PLAN_PATH':str(plan),'STUDIO_CAPACITY_LEDGER_PATH':str(ledger),
+                    'STUDIO_PROJECT_ID':'demo'}):
+                reply=completion(product_value())
+                reply['usage']={'prompt_tokens':31,'completion_tokens':19,'total_tokens':50,
+                                'prompt_tokens_details':{'cached_tokens':7},
+                                'completion_tokens_details':{'reasoning_tokens':5}}
+                subject=model([reply]); subject.ask('product','plan game')
+                usage=snapshot()['usage']
+                self.assertEqual((usage['runs'],usage['total_tokens'],usage['cached_input_tokens'],usage['reasoning_tokens']), (1,50,7,5))
+                self.assertEqual(usage['estimated_calls'],0)
+                self.assertEqual(consumed_tokens(load(ledger),project_id='demo'),50)
+                plan.write_text(json.dumps({'projects':[{'id':'demo','token_envelope':50}]}))
+                subject=model([])
+                with self.assertRaisesRegex(StudioError,'project_envelope_exhausted'):
+                    subject.ask('product','plan game')
+                self.assertEqual(subject.api.calls,[])
+                self.assertTrue(snapshot()['capacity_exhausted'])
+                self.assertEqual(snapshot()['usage']['runs'],1)
+                plan.write_text(json.dumps({'projects':[{'id':'demo','token_envelope':20000}]}))
+                ledger.write_text(json.dumps({'schema':1,'consumed':{'demo::native:primary':-100},'reservations':{}}))
+                with self.assertRaisesRegex(StudioError,'capacity ledger invalid'):
+                    subject.ask('product','plan game')
+                self.assertEqual(subject.api.calls,[])
+                plan.unlink()
+                with self.assertRaisesRegex(StudioError,'capacity plan missing or invalid'):
+                    subject.ask('product','plan game')
+                self.assertEqual(subject.api.calls,[])
 
 
 if __name__ == '__main__': unittest.main()

@@ -373,3 +373,22 @@ directory restored from that sealed goal also retained the SHA and failed
 truthfully without rerunning any stage, without provider calls
 or repository writes. This replay checks recovery/reporting, not Android or
 store readiness.
+
+## Native Godot and Flutter inference accounting
+
+Native model calls use an execution-local counter journal at
+`.autonomy/native-model-usage.json`. Reported OpenAI-compatible token counters
+replace the admission estimate. Missing or invalid counters and failed HTTP
+submissions retain the estimate and increment `estimated_calls`; this is an
+approximation, not tokenizer-specific billing evidence. Prompts, replies and
+credentials are never stored in this journal.
+
+Managed executions require a valid project capacity plan and share the existing
+capacity ledger with generic inference. Admission includes estimated prompt
+tokens and a bounded output allowance. Each accounted submission performs at
+most one HTTP POST; provider fallback is a separate admission. Exhaustion yields
+a capacity stop without burning additional continuation attempts. Journal
+counters persist through continuations but start fresh for each claimed server
+execution, while the project ledger remains cumulative. Failure reporting keeps
+this execution's native counters when available. Historical native calls that
+predate this change cannot be reconstructed from missing telemetry.

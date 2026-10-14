@@ -1118,6 +1118,19 @@ def run(
         else {}
     )
     summary['usage']=collect_agent_usage(project_report)
+    from native_model_usage import snapshot as native_snapshot
+    native_usage = native_snapshot(out/'.autonomy/native-model-usage.json')
+    if native_usage is not None:
+        for key, value in native_usage['usage'].items():
+            if key in ('input_tokens','cached_input_tokens','output_tokens','reasoning_tokens','total_tokens','runs'):
+                summary['usage'][key] += value
+            elif key == 'agents':
+                for provider, count in value.items():
+                    name = 'native:'+provider
+                    summary['usage']['agents'][name] = summary['usage']['agents'].get(name, 0) + count
+            else:
+                summary['usage'][key] = value
+        summary['usage']['api_calls'] = summary['usage']['runs']
     if isinstance(project_report.get('pull_request'),dict):
         summary['pull_request']=dict(project_report['pull_request'])
         pr=summary['pull_request']

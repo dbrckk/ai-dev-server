@@ -180,9 +180,11 @@ class AutonomousProjectTests(unittest.TestCase):
             root = Path(td)
             calls = {"n": 0}
 
+            from native_model_usage import NativeCapacityError
+
             def run_once(*args):
                 calls["n"] += 1
-                raise StudioError(
+                raise NativeCapacityError(
                     "All generic-project providers failed: "
                     "Capacity reservation denied: project_envelope_exhausted"
                 )

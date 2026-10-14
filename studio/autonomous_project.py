@@ -6,6 +6,7 @@ import json
 import os
 
 try:
+    from .core import StudioError
     from .capability_registry import new_registry, save as save_registry, load as load_registry, register, has_capability
     from .goal_engine import new_goal, save as save_goal, load as load_goal, resume_human_action
     from .goal_loop import run_goal
@@ -24,6 +25,7 @@ try:
     from .telemetry import emit as emit_telemetry
     from .telemetry_maintenance import compact as compact_telemetry
 except ImportError:
+    from core import StudioError
     from capability_registry import new_registry, save as save_registry, load as load_registry, register, has_capability
     from goal_engine import new_goal, save as save_goal, load as load_goal, resume_human_action
     from goal_loop import run_goal
@@ -210,7 +212,16 @@ def run_persistent_project(
         "STUDIO_CHECKPOINT_PATH": autonomy_root / "workflow-checkpoints.json",
         "STUDIO_TELEMETRY_PATH": autonomy_root / "telemetry.jsonl",
         "STUDIO_TASK_LEASE_PATH": autonomy_root / "task-leases.json",
+        "STUDIO_NATIVE_MODEL_USAGE_PATH": autonomy_root / "native-model-usage.json",
     }
+    capacity_plan = project_out.parent / 'capacity-plan.json'
+    try:
+        native_request = json.loads(Path(request_path).read_text())
+    except (OSError, ValueError):
+        native_request = {}
+    if capacity_plan.is_file() or (isinstance(native_request, dict) and native_request.get('production_os')):
+        runtime_paths['STUDIO_CAPACITY_PLAN_PATH'] = capacity_plan
+        runtime_paths['STUDIO_CAPACITY_LEDGER_PATH'] = project_out.parent / 'capacity-ledger.json'
     goal_path, registry_path, memory_path = ensure_project_goal(
         project_out, goal_id, objective, max_attempts=max_attempts
     )
@@ -287,9 +298,10 @@ def run_persistent_project(
                     request_path, project_out, work, runner, deadline, clock, baseline_sha
                 )
             except Exception as exc:
+                from native_model_usage import NativeCapacityError
                 detail = str(exc)
                 if (
-                    type(exc).__name__ == "StudioError"
+                    isinstance(exc, (StudioError, NativeCapacityError))
                     and "project_envelope_exhausted" in detail
                 ):
                     cycle_control["capacity_exhausted"] = True
@@ -304,11 +316,16 @@ def run_persistent_project(
             else: os.environ["STUDIO_PROVIDER_METRICS_PATH"] = previous_metrics
             if previous_history is None: os.environ.pop("STUDIO_ROUTING_HISTORY_PATH", None)
             else: os.environ["STUDIO_ROUTING_HISTORY_PATH"] = previous_history
+        from native_model_usage import snapshot as native_snapshot
+        native_usage = native_snapshot(runtime_paths['STUDIO_NATIVE_MODEL_USAGE_PATH'])
+        if native_usage and native_usage.get('capacity_exhausted') is True:
+            cycle_control['capacity_exhausted'] = True
+            return {'yield_run': True}
         translated = translate_orchestrator_result(result)
         report = result.get("report") if isinstance(result, dict) else None
         if isinstance(report, dict) and report.get("engine") == "godot" and translated.get("failure"):
             translated["yield_run_after_cycle"] = True
-        if translated.get("evidence"):
+        if 'project_completion' in (translated.get('evidence') or {}):
             translated["tests_passed"] = True
             translated["learning_summary"] = "Verified completion evidence for goal " + goal_id
             translated["learning_tags"] = ["goal-cycle","verified-completion"]

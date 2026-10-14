@@ -188,9 +188,12 @@ class GodotModel(Model):
             if api.base == 'https://integrate.api.nvidia.com/v1' and selected_model.startswith('nvidia/nemotron-3-'):
                 params.update(chat_template_kwargs={'enable_thinking': True}, reasoning_budget=2048)
             print('Model role: ' + role + '; provider: ' + provider.name + '; model: ' + selected_model, flush=True)
+            from native_model_usage import call as accounted_call, NativeAccountingError
             started = time.monotonic()
             try:
-                response = api.call('POST', '/chat/completions', params)
+                response = accounted_call(api, params, provider.name)
+            except NativeAccountingError:
+                raise
             except StudioError as exc:
                 elapsed = time.monotonic() - started
                 if metrics_path is not None:

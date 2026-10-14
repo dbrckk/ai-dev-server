@@ -152,6 +152,20 @@ class GenericModelCapacityTests(unittest.TestCase):
                         generic_model.ask("system", "user", role="product")
                     api.assert_not_called()
 
+        # No configured plan is a supported standalone/interactive mode.
+        # The new fail-closed check must not require Production-OS limits
+        # for unrelated local generic-model calls.
+        _FakeAPI.error = None
+        _FakeAPI.response = {
+            "choices": [{"finish_reason": "stop", "message": {"content": '{"ok":true}'}}],
+            "usage": {"prompt_tokens": 10, "completion_tokens": 4},
+        }
+        with patch.dict(os.environ, {}, clear=True), \
+             patch("generic_model.load_providers", return_value=(self._provider(),)), \
+             patch("generic_model.API", _FakeAPI):
+            value, _ = generic_model.ask("system", "user", role="product")
+        self.assertEqual(value, {"ok": True})
+
 
 if __name__ == "__main__":
     unittest.main()

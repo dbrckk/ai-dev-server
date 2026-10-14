@@ -3383,8 +3383,8 @@ initial_prompt: |
 ## File: control/production-os-diagnostics-kick.json
 ````json
 {
-  "sequence": 10,
-  "reason": "read-only Production-OS live wake and operator diagnostics after CI qualification (2026-10-11)"
+  "sequence": 12,
+  "reason": "Verify corrected diagnostic_ready acceptance after reviewed PR 297 passed 7/7 workflows and was merged (2026-10-14)"
 }
 ````
 
@@ -3400,10 +3400,9 @@ initial_prompt: |
 ## File: control/production-os-resume.json
 ````json
 {
-  "sequence": 2,
+  "sequence": 3,
   "failed_workflow_ids": [
-    "85cfbd6570e24f2bb41297f76cd5d948",
-    "65ea248fa5f840eeaa6041ef18728e13"
+    "1147aaa7a36840c2a823f542a2bac209"
   ]
 }
 ````
@@ -3419,8 +3418,8 @@ initial_prompt: |
 ## File: control/production-os-worker-kick.json
 ````json
 {
-  "sequence": 24,
-  "reason": "Wake queued live canary 26 after exact Production-OS main CI 38159826248 succeeded"
+  "sequence": 25,
+  "reason": "Continue eligible queued Production-OS work on qualified main after live operator, inference and immediate wake diagnostics (2026-10-14)"
 }
 ````
 
@@ -16938,6 +16937,11 @@ project_report=(
 pr=summary['pull_request']
 ⋮----
 changed_files=[]
+# Generic reports keep round records; Godot reports a numeric round
+# counter. Preserve its checkpoint/status without iterating that counter.
+round_records = project_report.get('rounds')
+⋮----
+round_records = []
 ⋮----
 path=item.get('path') if isinstance(item,dict) else None
 ⋮----
@@ -21447,6 +21451,13 @@ def main()
 result = diagnose()
 ⋮----
 result = {"schema_version": 1, "inference_ready": False, "configuration": "invalid"}
+# A responding model alone cannot qualify the control plane. Operator
+# access is required, and an explicitly requested wake probe must succeed.
+# Scheduled fallback remains a supported (reported) operating mode.
+ready = result.get("inference_ready") is True and result.get("operator_access") == "ready"
+⋮----
+wake = result.get("worker_wake")
+ready = ready and isinstance(wake, dict) and wake.get("mode") in {
 ````
 
 ## File: studio/production_os_provider_config.py
@@ -31242,6 +31253,13 @@ def test_blocked_state_preserves_reason(self)
 ⋮----
 result=run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha="c"*40)
 ⋮----
+# Godot stores a round counter rather than generic round records.
+# Reporting a real checkpoint must preserve the blocker and commit.
+report = {"engine": "godot", "rounds": 3,
+def completed_cycle(*args, **kwargs)
+⋮----
+result = run(request, out, runner=lambda *a, **k: None,
+⋮----
 def test_remote_checkpoint_ingests_memory_before_state_persistence(self)
 ⋮----
 order=[]
@@ -33937,6 +33955,13 @@ def test_operator_probe_is_read_only_and_no_token_is_reported(self)
 ⋮----
 def call(self, *args, **kwargs)
 result = diagnose(api_factory=FakeAPI, providers=[], environ={
+⋮----
+# A healthy model must not hide missing or rejected operator access.
+⋮----
+report = {'inference_ready': True, 'operator_access': access}
+⋮----
+report = {'inference_ready': True, 'operator_access': 'ready', 'worker_wake': wake}
+expected = isinstance(wake, dict) and wake.get('mode') in {'immediate', 'scheduled_fallback'}
 ⋮----
 def test_defaults_preserve_explicit_configuration_and_other_providers(self)
 ⋮----

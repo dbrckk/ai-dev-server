@@ -11239,6 +11239,11 @@ project_report=(
 pr=summary['pull_request']
 ⋮----
 changed_files=[]
+# Generic reports keep round records; Godot reports a numeric round
+# counter. Preserve its checkpoint/status without iterating that counter.
+round_records = project_report.get('rounds')
+⋮----
+round_records = []
 ⋮----
 path=item.get('path') if isinstance(item,dict) else None
 ⋮----
@@ -15748,6 +15753,13 @@ def main()
 result = diagnose()
 ⋮----
 result = {"schema_version": 1, "inference_ready": False, "configuration": "invalid"}
+# A responding model alone cannot qualify the control plane. Operator
+# access is required, and an explicitly requested wake probe must succeed.
+# Scheduled fallback remains a supported (reported) operating mode.
+ready = result.get("inference_ready") is True and result.get("operator_access") == "ready"
+⋮----
+wake = result.get("worker_wake")
+ready = ready and isinstance(wake, dict) and wake.get("mode") in {
 ````
 
 ## File: production_os_provider_config.py

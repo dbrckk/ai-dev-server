@@ -113,8 +113,8 @@ request.json
 ## File: production-os-diagnostics-kick.json
 ```json
 {
-  "sequence": 10,
-  "reason": "read-only Production-OS live wake and operator diagnostics after CI qualification (2026-10-11)"
+  "sequence": 12,
+  "reason": "Verify corrected diagnostic_ready acceptance after reviewed PR 297 passed 7/7 workflows and was merged (2026-10-14)"
 }
 ```
 
@@ -130,10 +130,9 @@ request.json
 ## File: production-os-resume.json
 ```json
 {
-  "sequence": 2,
+  "sequence": 3,
   "failed_workflow_ids": [
-    "85cfbd6570e24f2bb41297f76cd5d948",
-    "65ea248fa5f840eeaa6041ef18728e13"
+    "1147aaa7a36840c2a823f542a2bac209"
   ]
 }
 ```
@@ -149,8 +148,8 @@ request.json
 ## File: production-os-worker-kick.json
 ```json
 {
-  "sequence": 24,
-  "reason": "Wake queued live canary 26 after exact Production-OS main CI 38159826248 succeeded"
+  "sequence": 25,
+  "reason": "Continue eligible queued Production-OS work on qualified main after live operator, inference and immediate wake diagnostics (2026-10-14)"
 }
 ```
 

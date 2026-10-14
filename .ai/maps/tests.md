@@ -5787,6 +5787,13 @@ def test_blocked_state_preserves_reason(self)
 ⋮----
 result=run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100,baseline_sha="c"*40)
 ⋮----
+# Godot stores a round counter rather than generic round records.
+# Reporting a real checkpoint must preserve the blocker and commit.
+report = {"engine": "godot", "rounds": 3,
+def completed_cycle(*args, **kwargs)
+⋮----
+result = run(request, out, runner=lambda *a, **k: None,
+⋮----
 def test_remote_checkpoint_ingests_memory_before_state_persistence(self)
 ⋮----
 order=[]
@@ -8482,6 +8489,13 @@ def test_operator_probe_is_read_only_and_no_token_is_reported(self)
 ⋮----
 def call(self, *args, **kwargs)
 result = diagnose(api_factory=FakeAPI, providers=[], environ={
+⋮----
+# A healthy model must not hide missing or rejected operator access.
+⋮----
+report = {'inference_ready': True, 'operator_access': access}
+⋮----
+report = {'inference_ready': True, 'operator_access': 'ready', 'worker_wake': wake}
+expected = isinstance(wake, dict) and wake.get('mode') in {'immediate', 'scheduled_fallback'}
 ⋮----
 def test_defaults_preserve_explicit_configuration_and_other_providers(self)
 ⋮----

@@ -1,20 +1,18 @@
 # Change impact
 
-Base: e16be521d370b60e6faacbc1c83ccbb01b372a4b
-Head: 6401c6da314f37ea5a30e77e08eff263f61482fd
+Base: 21d05359b24a7f116537e6ef7ac27a143521519e
+Head: b42ce90db58bc1307b70ed5b9d539d4263e988ed
 
 ## Changed files
-- M .github/workflows/multi-engine-benchmark.yml
-- M studio/godot_repository_probe.py
-- M tests/test_godot_repository_probe.py
+- M studio/github_runner.py
+- M tests/test_github_runner_persistent.py
 
 ## Affected areas
-- .github
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_godot_repository_probe.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

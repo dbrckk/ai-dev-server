@@ -99,31 +99,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-14T09:38:08Z
+Generated: 2026-10-14T13:06:10Z
 
 ### Git
 - Branch: `main`
-- Head: `6401c6da314f`
-- Commit date: 2026-10-14T11:37:56+02:00
-- Commit: fix(ci): authenticate pinned Godot Jumpy probe safely
+- Head: `b42ce90db58b`
+- Commit date: 2026-10-14T15:05:58+02:00
+- Commit: fix(worker): preserve Godot checkpoints with numeric round counters (#298)
 - Tracked files: 863
 
 ### Recently changed files
-- `.github/workflows/multi-engine-benchmark.yml`
-- `studio/godot_repository_probe.py`
-- `tests/test_godot_repository_probe.py`
-- `studio/generic_model.py`
-- `studio/generic_project.py`
-- `tests/test_generic_model_capacity.py`
-- `.github/workflows/production-os-worker-integration.yml`
-- `studio/generic_repository.py`
-- `tests/test_generic_repository_pull_request.py`
-- `studio/capacity_ledger.py`
-- `tests/test_capacity_ledger.py`
-- `.github/workflows/production-os-actions-worker.yml`
-- `studio/provider_router.py`
-- `tests/test_production_os_actions_worker_workflow.py`
-- `tests/test_provider_router.py`
+- `studio/github_runner.py`
+- `tests/test_github_runner_persistent.py`
+- `control/production-os-resume.json`
+- `control/production-os-diagnostics-kick.json`
+- `docs/PRODUCTION_OS_WORKER.md`
+- `studio/production_os_live_diagnostics.py`
+- `tests/test_production_os_live_diagnostics.py`
+- `control/production-os-worker-kick.json`
 
 ### Project signals
 - No common build descriptor detected

@@ -1,9 +1,9 @@
 {
   "version": 1,
   "updated_at": "2026-10-14",
-  "task": "Make live Production-OS diagnostic exit status reflect inference, operator access and requested wake readiness",
-  "base_commit": "0b2568599222b877fb0bf808951302fb19f15537",
-  "branch": "fix/live-diagnostics-readiness-20261014",
+  "task": "Prevent Godot numeric round counters from crashing native worker result reporting",
+  "base_commit": "312d3b3c01d48bcfb18ddb9c2702ab65dbbc3d57",
+  "branch": "fix/bounded-objective-recovery-20261014",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -96,17 +96,16 @@
     "limit": "Historical counters, no hosted model inference or completed end-to-end task"
   },
   "pending": [
-    "Run correction-specific checks and exact revision CI",
-    "Review correction before promotion",
-    "Real nontrivial model-generated task and PR delivery after capacity changes remain unverified",
-    "Commercial referenced-image generation remains blocked by verified rights"
+    "Full existing suite and exact-head CI/review for this fix",
+    "Publish qualified correction and inspect real continuation, preserving checkpoint and failure evidence",
+    "Referenced visual live pilot requires explicit metered-provider approval in current Asset Forge workflow"
   ],
   "merged_pr": {
     "number": 240,
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Qualify live diagnostic CLI correction and exact revision CI"
+    "Qualify integer Godot round reporting fix, then verify continuation of the same resumed objective"
   ],
   "merged_changes": [
     {
@@ -263,7 +262,23 @@
       "real_http_cli": "operator accepted: exit 0; rejected and missing: exit 1; actual authenticated control-plane HTTP, local inference transport fixture",
       "compileall": "passed",
       "diff_check": "passed",
-      "full_unittest": "in progress"
+      "full_unittest": "1782 tests OK for prior PR297"
     }
+  },
+  "continuation_20261014_round_counter": {
+    "live_recovery_run": 38564720389,
+    "live_worker_run": 38564770694,
+    "workflow_id": "32aacc22549240148d8650711fae817c",
+    "project_id": "5b6d8735c0703cebd027d3ae8b6814c4",
+    "token_budget": 30000,
+    "real_checkpoint": "6a2551221d91d2ceed252a60963a501b4461d35b",
+    "root_cause": "Godot rounds integer iterated as generic record list in github_runner.run",
+    "validation": {
+      "targeted": "24 passed",
+      "artifact_replay": "actual archived report: active/preview, checkpoint retained, succeeded false",
+      "compile_diff": "passed",
+      "full_suite": "in progress"
+    },
+    "visuals": "Asset Forge current main already includes licensed FLUX.2 Klein 4B route; old Qwen licensing issue is historical for this alternative. Four existing Cloudflare checks with Pillow12.3 passed without provider calls; manual live pilot remains unexecuted."
   }
 }

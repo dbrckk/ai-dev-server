@@ -84,6 +84,24 @@ class GithubRunnerPersistentTests(unittest.TestCase):
                 self.assertFalse(result["finished"])
                 self.assertEqual(result["next_stage"],"attempt_budget_exhausted")
 
+            # Godot stores a round counter rather than generic round records.
+            # Reporting a real checkpoint must preserve the blocker and commit.
+            report = {"engine": "godot", "rounds": 3,
+                      "status": "repair_needed", "checkpoint_commit": "c" * 40}
+            def completed_cycle(*args, **kwargs):
+                kwargs["run_once"]()
+                return {"status": "blocked", "blocked_reason": "attempt_budget_exhausted"}
+            with (patch.dict(os.environ, {"STUDIO_PERSIST_REMOTE": "0"}),
+                  patch("github_runner.run_multi_engine_project", return_value={
+                      "status": "failed", "next_stage": "preview", "report": report}),
+                  patch("github_runner.run_persistent_project", side_effect=completed_cycle)):
+                result = run(request, out, runner=lambda *a, **k: None,
+                             clock=lambda: 0, budget_seconds=100, baseline_sha="c" * 40)
+            self.assertEqual(result["status"], "blocked")
+            self.assertFalse(result["finished"])
+            self.assertEqual(result["next_stage"], "attempt_budget_exhausted")
+            self.assertEqual(result["commit_shas"], ["c" * 40])
+
 
     def test_remote_checkpoint_ingests_memory_before_state_persistence(self):
         with tempfile.TemporaryDirectory() as td:

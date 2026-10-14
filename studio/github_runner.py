@@ -1128,7 +1128,12 @@ def run(
     if isinstance(project_report.get('release_status'),str):
         summary['release_status']=project_report['release_status']
     changed_files=[]
-    for round_evidence in project_report.get('rounds') or []:
+    # Generic reports keep round records; Godot reports a numeric round
+    # counter. Preserve its checkpoint/status without iterating that counter.
+    round_records = project_report.get('rounds')
+    if not isinstance(round_records, list):
+        round_records = []
+    for round_evidence in round_records:
         if not isinstance(round_evidence,dict):
             continue
         for path in round_evidence.get('changed_files') or []:

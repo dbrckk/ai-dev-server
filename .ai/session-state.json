@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "updated_at": "2026-10-13",
-  "task": "Keep reliable idle worker queue-health evidence visible and verify real hosted capacity before claiming production readiness.",
-  "base_commit": "0a29a2cff5697bb3e46d32fc5906329d6f803d97",
-  "branch": "ci/qualify-worker-against-godot-pos-20261011",
+  "updated_at": "2026-10-14",
+  "task": "Make live Production-OS diagnostic exit status reflect inference, operator access and requested wake readiness",
+  "base_commit": "0b2568599222b877fb0bf808951302fb19f15537",
+  "branch": "fix/live-diagnostics-readiness-20261014",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -96,20 +96,17 @@
     "limit": "Historical counters, no hosted model inference or completed end-to-end task"
   },
   "pending": [
-    "Qualify new exact worker HEAD 7/7 workflows including authenticated 3/3 Production-OS matrix",
-    "Validate viable free provider capacity before resuming failed implementation objectives",
-    "Require one operator-approved real resumed end-to-end hosted task before any release",
-    "Keep both PRs Draft; do not merge, deploy, trigger paid models or bypass licensing"
+    "Run correction-specific checks and exact revision CI",
+    "Review correction before promotion",
+    "Real nontrivial model-generated task and PR delivery after capacity changes remain unverified",
+    "Commercial referenced-image generation remains blocked by verified rights"
   ],
   "merged_pr": {
     "number": 240,
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Validate real canary #20 GitHub HTTP 422 boundary and preserve essential remote goal/checkpoint persistence",
-    "Run existing CI and functional integration; no new unit tests",
-    "Merge only after all CI succeeds; verify merged-head CI",
-    "Requalify production worker canary with fresh sequence after merge; worker immediate-wake GITHUB_TOKEN remains a separate Render secret"
+    "Qualify live diagnostic CLI correction and exact revision CI"
   ],
   "merged_changes": [
     {
@@ -247,5 +244,26 @@
       "invalid_response",
       "ready"
     ]
+  },
+  "continuation_20261014": {
+    "completed": [
+      "Inspected current Production-OS and AI Dev Server main, pinned shared policy and issue Production-OS #262",
+      "Reproduced diagnostic CLI false success for operator HTTP 403",
+      "Qualified live baseline: two model providers ready, operator ready, immediate wake; run 38560630702",
+      "Production-OS baseline: 1292 existing tests passed, 12 skipped, 20 E2E deselected; compile/build passed",
+      "6 authenticated real server/worker integrations passed",
+      "Require successful inference/operator/requested-wake probes in diagnostic CLI; preserve supported scheduled fallback"
+    ],
+    "limits": [
+      "No paid provider calls, no terminal objective retries, no Render configuration or deployment changes",
+      "Do not interpret small inference probes as sustained capacity proof"
+    ],
+    "validation": {
+      "targeted": "42 passed, 9 subtests passed",
+      "real_http_cli": "operator accepted: exit 0; rejected and missing: exit 1; actual authenticated control-plane HTTP, local inference transport fixture",
+      "compileall": "passed",
+      "diff_check": "passed",
+      "full_unittest": "in progress"
+    }
   }
 }

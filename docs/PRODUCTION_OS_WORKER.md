@@ -138,6 +138,13 @@ It does not claim jobs, retry objectives, modify repositories, print credentials
 or print generated responses. This check is separate from the scheduled worker
 and runs only when explicitly triggered.
 
+The CLI exits successfully only when inference and operator access are both
+ready. When `PRODUCTION_OS_DIAGNOSE_WAKE=1`, the wake probe must also report
+`immediate` or the supported `scheduled_fallback` mode. Missing credentials,
+rejected operator access, or an unavailable/unknown requested wake probe make
+`diagnostic_ready` false and return exit code 1 even if a model responds.
+These bounded probes do not prove sustained model capacity or delivery of a PR.
+
 ## Operational acceptance test
 
 A production deployment is considered usable only after one real job completes this path:

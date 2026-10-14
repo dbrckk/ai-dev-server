@@ -2817,6 +2817,11 @@ def test_status_detail_that_requires_external_secret_becomes_human_action(self)
 ⋮----
 def test_ordinary_failure_remains_autonomous_failure(self)
 ⋮----
+exhausted = {"status": "blocked", "next_stage": "godot_preview_cycle_budget_exhausted",
+⋮----
+run_once = Mock(return_value=exhausted)
+state = run_persistent_project("request.json", Path(td)/"out", str(Path(td)/"work"),
+⋮----
 def test_promoted_stage_syncs_into_capability_registry(self)
 ⋮----
 root=Path(td); out=root/"out"
@@ -5794,6 +5799,12 @@ def completed_cycle(*args, **kwargs)
 ⋮----
 result = run(request, out, runner=lambda *a, **k: None,
 ⋮----
+# An already-blocked goal skips run_once on a later worker.
+# Retain only its matching repository's durable source evidence.
+saved = {'status':'blocked', 'blocked_reason':'godot_preview_cycle_budget_exhausted',
+⋮----
+result = run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100)
+⋮----
 def test_remote_checkpoint_ingests_memory_before_state_persistence(self)
 ⋮----
 order=[]
@@ -6402,6 +6413,17 @@ def test_existing_godot_project_checkpoints_without_claiming_completion(self)
 github=FakeGitHub()
 ⋮----
 base=Path(td); state=godot_preview.execute(self.request(),base/'work',base/'out',github,FakeModel,FakeSandbox)
+⋮----
+req = godot_preview.request_check(self.request())
+fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(
+⋮----
+restored = {'request_hash': fingerprint, 'engine': 'godot',
+model_factory = Mock()
+sandbox_factory = Mock()
+⋮----
+root = Path(td)
+⋮----
+resumed = godot_preview.execute(req, root/'work', root/'out', github,
 ⋮----
 def test_publication_refuses_branch_movement(self)
 ⋮----
@@ -7665,7 +7687,7 @@ response = run_project(
 @patch("multi_engine_orchestrator.run_generic_project")
     def test_generic_without_callback_preserves_original_call(self, generic)
 ⋮----
-def _runner(self,out,fail_stage=None,bad_journey=False,bad_visual=False,release_ready=False,artifact_credentials=True)
+def _runner(self,out,fail_stage=None,bad_journey=False,bad_visual=False,release_ready=False,artifact_credentials=True,exhausted_preview=False)
 ⋮----
 calls=[]
 ⋮----

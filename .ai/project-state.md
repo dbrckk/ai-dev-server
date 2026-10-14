@@ -100,24 +100,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-14T13:06:10Z
+Generated: 2026-10-14T18:47:45Z
 
 ### Git
 - Branch: `main`
-- Head: `b42ce90db58b`
-- Commit date: 2026-10-14T15:05:58+02:00
-- Commit: fix(worker): preserve Godot checkpoints with numeric round counters (#298)
+- Head: `062d45cbfb70`
+- Commit date: 2026-10-14T20:47:31+02:00
+- Commit: fix(godot): stop exhausted previews and retain durable checkpoint SHA
 - Tracked files: 863
 
 ### Recently changed files
+- `docs/PRODUCTION_OS_WORKER.md`
+- `studio/autonomous_project.py`
 - `studio/github_runner.py`
+- `studio/godot_preview.py`
+- `studio/multi_engine_orchestrator.py`
+- `tests/test_autonomous_project.py`
 - `tests/test_github_runner_persistent.py`
+- `tests/test_godot_preview.py`
+- `tests/test_multi_engine_orchestrator.py`
 - `control/production-os-resume.json`
 - `control/production-os-diagnostics-kick.json`
-- `docs/PRODUCTION_OS_WORKER.md`
-- `studio/production_os_live_diagnostics.py`
-- `tests/test_production_os_live_diagnostics.py`
-- `control/production-os-worker-kick.json`
 
 ### Project signals
 - No common build descriptor detected

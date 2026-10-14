@@ -3400,9 +3400,9 @@ initial_prompt: |
 ## File: control/production-os-resume.json
 ````json
 {
-  "sequence": 3,
+  "sequence": 4,
   "failed_workflow_ids": [
-    "1147aaa7a36840c2a823f542a2bac209"
+    "32aacc22549240148d8650711fae817c"
   ]
 }
 ````
@@ -10076,6 +10076,10 @@ action = next_stage if isinstance(next_stage, str) and next_stage else "external
 ⋮----
 detail = next_stage if isinstance(next_stage, str) and next_stage else "unknown_capability"
 phase = result.get("pending_status") or result.get("promotion_status") or result.get("research_status") or "in_progress"
+⋮----
+blocked = {'blocked_reason': 'godot_preview_cycle_budget_exhausted'}
+sha = report.get('checkpoint_commit')
+repo = report.get('target_repo')
 ⋮----
 details = [status]
 ⋮----
@@ -16947,6 +16951,13 @@ path=item.get('path') if isinstance(item,dict) else None
 ⋮----
 checkpoint_commit=project_report.get('checkpoint_commit')
 ⋮----
+evidence = state.get('evidence')
+saved = evidence.get('godot_preview_checkpoint') if isinstance(evidence, dict) else None
+⋮----
+sha = saved.get('commit_sha')
+⋮----
+checkpoint_commit = sha
+⋮----
 missing=improvement_run['missing_capability']
 ⋮----
 adaptation_state=new_capability_adaptation_state(
@@ -17888,6 +17899,9 @@ branch = 'studio/' + req['id']
 fingerprint = hashlib.sha256(canonical({k:v for k,v in req.items() if k != 'enabled'}).encode()).hexdigest()
 ⋮----
 state = state or {'request_hash':fingerprint,'status':'pending','engine':'godot','cycles':0,'rounds':0,'blockers':[]}
+⋮----
+# The restored branch head is the authoritative committed checkpoint.
+# Stored state precedes its publication, so it may lack this SHA.
 ⋮----
 architecture_recommendations = recommend(
 architecture_root = architecture_learning_root(out)
@@ -28283,6 +28297,11 @@ def test_status_detail_that_requires_external_secret_becomes_human_action(self)
 ⋮----
 def test_ordinary_failure_remains_autonomous_failure(self)
 ⋮----
+exhausted = {"status": "blocked", "next_stage": "godot_preview_cycle_budget_exhausted",
+⋮----
+run_once = Mock(return_value=exhausted)
+state = run_persistent_project("request.json", Path(td)/"out", str(Path(td)/"work"),
+⋮----
 def test_promoted_stage_syncs_into_capability_registry(self)
 ⋮----
 root=Path(td); out=root/"out"
@@ -31260,6 +31279,12 @@ def completed_cycle(*args, **kwargs)
 ⋮----
 result = run(request, out, runner=lambda *a, **k: None,
 ⋮----
+# An already-blocked goal skips run_once on a later worker.
+# Retain only its matching repository's durable source evidence.
+saved = {'status':'blocked', 'blocked_reason':'godot_preview_cycle_budget_exhausted',
+⋮----
+result = run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100)
+⋮----
 def test_remote_checkpoint_ingests_memory_before_state_persistence(self)
 ⋮----
 order=[]
@@ -31868,6 +31893,17 @@ def test_existing_godot_project_checkpoints_without_claiming_completion(self)
 github=FakeGitHub()
 ⋮----
 base=Path(td); state=godot_preview.execute(self.request(),base/'work',base/'out',github,FakeModel,FakeSandbox)
+⋮----
+req = godot_preview.request_check(self.request())
+fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(
+⋮----
+restored = {'request_hash': fingerprint, 'engine': 'godot',
+model_factory = Mock()
+sandbox_factory = Mock()
+⋮----
+root = Path(td)
+⋮----
+resumed = godot_preview.execute(req, root/'work', root/'out', github,
 ⋮----
 def test_publication_refuses_branch_movement(self)
 ⋮----
@@ -33131,7 +33167,7 @@ response = run_project(
 @patch("multi_engine_orchestrator.run_generic_project")
     def test_generic_without_callback_preserves_original_call(self, generic)
 ⋮----
-def _runner(self,out,fail_stage=None,bad_journey=False,bad_visual=False,release_ready=False,artifact_credentials=True)
+def _runner(self,out,fail_stage=None,bad_journey=False,bad_visual=False,release_ready=False,artifact_credentials=True,exhausted_preview=False)
 ⋮----
 calls=[]
 ⋮----

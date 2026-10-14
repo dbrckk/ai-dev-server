@@ -1,20 +1,12 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "6401c6da314f37ea5a30e77e08eff263f61482fd",
-  "head": "b42ce90db58bc1307b70ed5b9d539d4263e988ed",
+  "base": "b42ce90db58bc1307b70ed5b9d539d4263e988ed",
+  "head": "062d45cbfb70056407b751fcd35417ee182ce84f",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "control/production-os-diagnostics-kick.json",
-      "status": "M"
-    },
-    {
       "path": "control/production-os-resume.json",
-      "status": "M"
-    },
-    {
-      "path": "control/production-os-worker-kick.json",
       "status": "M"
     },
     {
@@ -22,11 +14,23 @@
       "status": "M"
     },
     {
+      "path": "studio/autonomous_project.py",
+      "status": "M"
+    },
+    {
       "path": "studio/github_runner.py",
       "status": "M"
     },
     {
-      "path": "studio/production_os_live_diagnostics.py",
+      "path": "studio/godot_preview.py",
+      "status": "M"
+    },
+    {
+      "path": "studio/multi_engine_orchestrator.py",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_autonomous_project.py",
       "status": "M"
     },
     {
@@ -34,28 +38,186 @@
       "status": "M"
     },
     {
-      "path": "tests/test_production_os_live_diagnostics.py",
+      "path": "tests/test_godot_preview.py",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_multi_engine_orchestrator.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
+    "studio/autonomous_project.py",
     "studio/github_runner.py",
-    "studio/production_os_live_diagnostics.py",
+    "studio/godot_preview.py",
+    "studio/multi_engine_orchestrator.py",
+    "tests/test_autonomous_project.py",
     "tests/test_github_runner_persistent.py",
-    "tests/test_production_os_live_diagnostics.py"
+    "tests/test_godot_preview.py",
+    "tests/test_multi_engine_orchestrator.py"
   ],
   "impacted_files": [
+    "studio/autonomous_project.py",
+    "studio/ci_runner.py",
+    "studio/engine_entry.py",
     "studio/github_runner.py",
-    "studio/production_os_live_diagnostics.py",
+    "studio/godot_android_stage.py",
+    "studio/godot_device_stage.py",
+    "studio/godot_final_review_stage.py",
+    "studio/godot_play_stage.py",
+    "studio/godot_preview.py",
+    "studio/godot_privacy_security_stage.py",
+    "studio/godot_release_artifact_stage.py",
+    "studio/godot_release_stage.py",
+    "studio/godot_runtime_journey_stage.py",
+    "studio/godot_store_metadata_stage.py",
+    "studio/godot_visual_stage.py",
+    "studio/multi_engine_orchestrator.py",
     "studio/production_os_worker.py",
+    "tests/test_autonomous_project.py",
     "tests/test_github_runner_persistent.py",
     "tests/test_github_runner_round_persistence.py",
     "tests/test_github_runner_usage.py",
+    "tests/test_godot_preview.py",
+    "tests/test_human_handoff_status_v3.py",
+    "tests/test_multi_engine_orchestrator.py",
     "tests/test_orchestrator.py",
-    "tests/test_production_os_live_diagnostics.py",
+    "tests/test_production_os_local_e2e.py",
     "tests/test_production_os_result_contract.py"
   ],
   "impacted_symbols": [
+    {
+      "name": "_state_paths",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 44
+    },
+    {
+      "name": "_clear_human_input_request",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 49
+    },
+    {
+      "name": "ensure_project_goal",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 57
+    },
+    {
+      "name": "_sync_promoted_capabilities",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 78
+    },
+    {
+      "name": "translate_orchestrator_result",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 110
+    },
+    {
+      "name": "run_persistent_project",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 181
+    },
+    {
+      "name": "context_provider",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 240
+    },
+    {
+      "name": "execute_cycle",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 275
+    },
+    {
+      "name": "cycle_observer",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 317
+    },
+    {
+      "name": "execute_registered_capability",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 329
+    },
+    {
+      "name": "bounded_run",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 23
+    },
+    {
+      "name": "_admission_for_project",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 52
+    },
+    {
+      "name": "_heartbeat_loop",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 63
+    },
+    {
+      "name": "save_report",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 73
+    },
+    {
+      "name": "_run_registered_stages",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 79
+    },
+    {
+      "name": "_run_project_for_queue",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 88
+    },
+    {
+      "name": "run_queue",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 108
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 183
+    },
+    {
+      "name": "_exact_branch_ref",
+      "kind": "function",
+      "file": "studio/engine_entry.py",
+      "line": 15
+    },
+    {
+      "name": "detect_engine",
+      "kind": "function",
+      "file": "studio/engine_entry.py",
+      "line": 25
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/engine_entry.py",
+      "line": 61
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/engine_entry.py",
+      "line": 76
+    },
     {
       "name": "_prepare_capability_promotion_handoff",
       "kind": "function",
@@ -138,25 +300,211 @@
       "name": "main",
       "kind": "function",
       "file": "studio/github_runner.py",
-      "line": 1194
+      "line": 1201
     },
     {
-      "name": "_warm_operator_connection",
+      "name": "execute",
       "kind": "function",
-      "file": "studio/production_os_live_diagnostics.py",
-      "line": 11
-    },
-    {
-      "name": "diagnose",
-      "kind": "function",
-      "file": "studio/production_os_live_diagnostics.py",
-      "line": 37
+      "file": "studio/godot_android_stage.py",
+      "line": 16
     },
     {
       "name": "main",
       "kind": "function",
-      "file": "studio/production_os_live_diagnostics.py",
-      "line": 124
+      "file": "studio/godot_android_stage.py",
+      "line": 56
+    },
+    {
+      "name": "_valid_sha",
+      "kind": "function",
+      "file": "studio/godot_device_stage.py",
+      "line": 18
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_device_stage.py",
+      "line": 22
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_device_stage.py",
+      "line": 80
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_final_review_stage.py",
+      "line": 10
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_final_review_stage.py",
+      "line": 39
+    },
+    {
+      "name": "_human_action",
+      "kind": "function",
+      "file": "studio/godot_play_stage.py",
+      "line": 16
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_play_stage.py",
+      "line": 28
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_play_stage.py",
+      "line": 147
+    },
+    {
+      "name": "_safe_apply",
+      "kind": "function",
+      "file": "studio/godot_preview.py",
+      "line": 42
+    },
+    {
+      "name": "_context",
+      "kind": "function",
+      "file": "studio/godot_preview.py",
+      "line": 67
+    },
+    {
+      "name": "_exact_branch_ref",
+      "kind": "function",
+      "file": "studio/godot_preview.py",
+      "line": 89
+    },
+    {
+      "name": "_restore",
+      "kind": "function",
+      "file": "studio/godot_preview.py",
+      "line": 99
+    },
+    {
+      "name": "_publish",
+      "kind": "function",
+      "file": "studio/godot_preview.py",
+      "line": 138
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_preview.py",
+      "line": 178
+    },
+    {
+      "name": "checkpoint",
+      "kind": "function",
+      "file": "studio/godot_preview.py",
+      "line": 235
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_privacy_security_stage.py",
+      "line": 10
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_privacy_security_stage.py",
+      "line": 44
+    },
+    {
+      "name": "_sha",
+      "kind": "function",
+      "file": "studio/godot_release_artifact_stage.py",
+      "line": 19
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_release_artifact_stage.py",
+      "line": 23
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_release_artifact_stage.py",
+      "line": 77
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_release_stage.py",
+      "line": 14
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_release_stage.py",
+      "line": 54
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_runtime_journey_stage.py",
+      "line": 17
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_runtime_journey_stage.py",
+      "line": 52
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_store_metadata_stage.py",
+      "line": 13
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_store_metadata_stage.py",
+      "line": 50
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_visual_stage.py",
+      "line": 15
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_visual_stage.py",
+      "line": 52
+    },
+    {
+      "name": "_remaining",
+      "kind": "function",
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 14
+    },
+    {
+      "name": "_detect",
+      "kind": "function",
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 20
+    },
+    {
+      "name": "_run_stage",
+      "kind": "function",
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 35
+    },
+    {
+      "name": "run_project",
+      "kind": "function",
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 41
     },
     {
       "name": "_browser_validation_operational",
@@ -405,6 +753,156 @@
       "line": 1534
     },
     {
+      "name": "AutonomousProjectTests",
+      "kind": "class",
+      "file": "tests/test_autonomous_project.py",
+      "line": 16
+    },
+    {
+      "name": "test_complete_requires_machine_completion_evidence",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 17
+    },
+    {
+      "name": "test_false_complete_fails_closed",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 25
+    },
+    {
+      "name": "test_human_action_is_preserved",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 33
+    },
+    {
+      "name": "test_adaptation_yields_without_claiming_completion",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 41
+    },
+    {
+      "name": "test_status_detail_that_requires_external_secret_becomes_human_action",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 53
+    },
+    {
+      "name": "test_ordinary_failure_remains_autonomous_failure",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 62
+    },
+    {
+      "name": "test_promoted_stage_syncs_into_capability_registry",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 87
+    },
+    {
+      "name": "test_persistent_wrapper_relaunches_until_proved_complete",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 99
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 104
+    },
+    {
+      "name": "test_persistent_godot_failure_counts_once_then_yields_for_fresh_workspace",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 134
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 139
+    },
+    {
+      "name": "test_project_capacity_exhaustion_yields_without_burning_attempt_budget",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 178
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 183
+    },
+    {
+      "name": "test_human_action_persists_terminal_state",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 205
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 209
+    },
+    {
+      "name": "test_existing_project_registry_syncs_new_promoted_capability",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 229
+    },
+    {
+      "name": "sync",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 236
+    },
+    {
+      "name": "test_runtime_environment_is_restored_after_project_run",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 256
+    },
+    {
+      "name": "test_checkpoint_observer_receives_saved_goal_after_every_complete_cycle",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 291
+    },
+    {
+      "name": "step",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 298
+    },
+    {
+      "name": "persist",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 311
+    },
+    {
+      "name": "test_failed_remote_cycle_checkpoint_aborts_without_silent_progress",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 334
+    },
+    {
+      "name": "step",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 339
+    },
+    {
+      "name": "fail_remote",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 343
+    },
+    {
       "name": "GithubRunnerPersistentTests",
       "kind": "class",
       "file": "tests/test_github_runner_persistent.py",
@@ -450,43 +948,43 @@
       "name": "test_remote_checkpoint_ingests_memory_before_state_persistence",
       "kind": "function",
       "file": "tests/test_github_runner_persistent.py",
-      "line": 106
+      "line": 118
     },
     {
       "name": "test_published_round_remote_api_failure_stops_without_leaking_response",
       "kind": "function",
       "file": "tests/test_github_runner_persistent.py",
-      "line": 143
+      "line": 155
     },
     {
       "name": "fake_native_project",
       "kind": "function",
       "file": "tests/test_github_runner_persistent.py",
-      "line": 150
+      "line": 162
     },
     {
       "name": "fake_persistent_project",
       "kind": "function",
       "file": "tests/test_github_runner_persistent.py",
-      "line": 159
+      "line": 171
     },
     {
       "name": "test_invalid_memory_ingestion_blocks_state_checkpoint",
       "kind": "function",
       "file": "tests/test_github_runner_persistent.py",
-      "line": 210
+      "line": 222
     },
     {
       "name": "test_promotion_required_handoff_is_sealed_and_non_promoting",
       "kind": "function",
       "file": "tests/test_github_runner_persistent.py",
-      "line": 255
+      "line": 267
     },
     {
       "name": "test_promotion_handoff_rejects_cross_candidate_validation",
       "kind": "function",
       "file": "tests/test_github_runner_persistent.py",
-      "line": 287
+      "line": 299
     },
     {
       "name": "GithubRunnerRoundPersistenceTests",
@@ -559,6 +1057,264 @@
       "kind": "function",
       "file": "tests/test_github_runner_usage.py",
       "line": 117
+    },
+    {
+      "name": "blob",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 15
+    },
+    {
+      "name": "FakeGitHub",
+      "kind": "class",
+      "file": "tests/test_godot_preview.py",
+      "line": 19
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 20
+    },
+    {
+      "name": "get",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 24
+    },
+    {
+      "name": "call",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 38
+    },
+    {
+      "name": "FakeModel",
+      "kind": "class",
+      "file": "tests/test_godot_preview.py",
+      "line": 51
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 52
+    },
+    {
+      "name": "ask",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 53
+    },
+    {
+      "name": "FakeSandbox",
+      "kind": "class",
+      "file": "tests/test_godot_preview.py",
+      "line": 63
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 64
+    },
+    {
+      "name": "create",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 65
+    },
+    {
+      "name": "gates",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 67
+    },
+    {
+      "name": "GodotPreviewTests",
+      "kind": "class",
+      "file": "tests/test_godot_preview.py",
+      "line": 71
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 72
+    },
+    {
+      "name": "test_existing_godot_project_checkpoints_without_claiming_completion",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 75
+    },
+    {
+      "name": "test_publication_refuses_branch_movement",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 129
+    },
+    {
+      "name": "HumanHandoffStatusV3Tests",
+      "kind": "class",
+      "file": "tests/test_human_handoff_status_v3.py",
+      "line": 12
+    },
+    {
+      "name": "test_handoff_never_persists_secret_value_and_records_exact_name",
+      "kind": "function",
+      "file": "tests/test_human_handoff_status_v3.py",
+      "line": 13
+    },
+    {
+      "name": "test_named_secret_resumes_terminal_goal_before_worker_runs",
+      "kind": "function",
+      "file": "tests/test_human_handoff_status_v3.py",
+      "line": 32
+    },
+    {
+      "name": "require_secret",
+      "kind": "function",
+      "file": "tests/test_human_handoff_status_v3.py",
+      "line": 38
+    },
+    {
+      "name": "complete",
+      "kind": "function",
+      "file": "tests/test_human_handoff_status_v3.py",
+      "line": 63
+    },
+    {
+      "name": "test_missing_named_secret_does_not_reinvoke_worker",
+      "kind": "function",
+      "file": "tests/test_human_handoff_status_v3.py",
+      "line": 92
+    },
+    {
+      "name": "should_not_run",
+      "kind": "function",
+      "file": "tests/test_human_handoff_status_v3.py",
+      "line": 115
+    },
+    {
+      "name": "test_project_status_reads_sealed_goal_without_running_work",
+      "kind": "function",
+      "file": "tests/test_human_handoff_status_v3.py",
+      "line": 133
+    },
+    {
+      "name": "MultiEngineOrchestratorTests",
+      "kind": "class",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 15
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 16
+    },
+    {
+      "name": "test_flutter_delegates_unchanged",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 20
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 24
+    },
+    {
+      "name": "test_generic_only_forwards_published_round_checkpoint_callback",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 32
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 42
+    },
+    {
+      "name": "test_generic_without_callback_preserves_original_call",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 62
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 71
+    },
+    {
+      "name": "_runner",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 84
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 86
+    },
+    {
+      "name": "test_godot_stops_cleanly_when_release_keystore_is_missing",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 145
+    },
+    {
+      "name": "test_release_chain_reaches_human_play_submission_only",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 152
+    },
+    {
+      "name": "test_opt_in_play_validation_can_complete_godot_pipeline",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 159
+    },
+    {
+      "name": "test_credentials_lost_between_preflight_and_signing_return_to_human_action",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 171
+    },
+    {
+      "name": "test_each_failed_godot_stage_stays_on_itself",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 177
+    },
+    {
+      "name": "test_journey_stage_cannot_fake_execution_coverage",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 193
+    },
+    {
+      "name": "test_visual_stage_cannot_fake_visual_coverage",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 199
+    },
+    {
+      "name": "test_missing_detection_evidence_fails_closed",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 205
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 208
     },
     {
       "name": "OrchestratorTests",
@@ -741,88 +1497,130 @@
       "line": 397
     },
     {
-      "name": "LiveDiagnosticsTests",
+      "name": "_ControlPlane",
       "kind": "class",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 13
-    },
-    {
-      "name": "test_provider_fallback_recovers_gone_model_and_output_excludes_secrets",
-      "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 14
-    },
-    {
-      "name": "FakeAPI",
-      "kind": "class",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 18
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 20
     },
     {
       "name": "__init__",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 19
-    },
-    {
-      "name": "call",
-      "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
+      "file": "tests/test_production_os_local_e2e.py",
       "line": 21
     },
     {
-      "name": "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready",
-      "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 33
-    },
-    {
-      "name": "FakeAPI",
+      "name": "Handler",
       "kind": "class",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 35
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 27
     },
     {
-      "name": "__init__",
+      "name": "log_message",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 36
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 28
     },
     {
-      "name": "call",
+      "name": "do_POST",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 38
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 31
     },
     {
-      "name": "test_operator_probe_is_read_only_and_no_token_is_reported",
+      "name": "_send",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 49
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 92
     },
     {
-      "name": "FakeAPI",
+      "name": "url",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 111
+    },
+    {
+      "name": "__enter__",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 115
+    },
+    {
+      "name": "__exit__",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 119
+    },
+    {
+      "name": "ProductionOSLocalE2ETests",
       "kind": "class",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 51
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 125
     },
     {
-      "name": "__init__",
+      "name": "test_worker_completes_real_http_control_plane_cycle",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 52
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 126
     },
     {
-      "name": "call",
+      "name": "runner",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 54
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 130
     },
     {
-      "name": "test_defaults_preserve_explicit_configuration_and_other_providers",
+      "name": "execute_once",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 87
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 167
+    },
+    {
+      "name": "test_two_separate_worker_sessions_restore_verified_partial_progress",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 274
+    },
+    {
+      "name": "task_job",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 276
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 305
+    },
+    {
+      "name": "execute_once",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 348
+    },
+    {
+      "name": "test_crash_after_remote_cycle_checkpoint_resumes_on_fresh_disk",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 412
+    },
+    {
+      "name": "step",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 421
+    },
+    {
+      "name": "persist_then_crash",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 425
+    },
+    {
+      "name": "resumed_step",
+      "kind": "function",
+      "file": "tests/test_production_os_local_e2e.py",
+      "line": 453
     },
     {
       "name": "ProductionOSResultContractTests",
@@ -868,12 +1666,15 @@
     }
   ],
   "selected_tests": [
-    "tests/test_diagnostics.py",
+    "tests/test_autonomous_project.py",
     "tests/test_github_runner_persistent.py",
     "tests/test_github_runner_round_persistence.py",
     "tests/test_github_runner_usage.py",
+    "tests/test_godot_preview.py",
+    "tests/test_human_handoff_status_v3.py",
+    "tests/test_multi_engine_orchestrator.py",
     "tests/test_orchestrator.py",
-    "tests/test_production_os_live_diagnostics.py",
+    "tests/test_production_os_local_e2e.py",
     "tests/test_production_os_result_contract.py"
   ]
 }

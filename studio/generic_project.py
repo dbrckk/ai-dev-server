@@ -774,7 +774,14 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     __import__("os").environ["STUDIO_PROVIDER_COST_PATH"] = str(provider_cost_path)
     __import__("os").environ["STUDIO_PROVIDER_MONTHLY_QUOTA_PATH"] = str(provider_monthly_quota_path)
     __import__("os").environ["STUDIO_PROJECT_ID"] = str(req["id"])
-    __import__("os").environ["STUDIO_CAPACITY_PLAN_PATH"] = str(out.parent / "capacity-plan.json")
+    capacity_plan_path = out.parent / "capacity-plan.json"
+    # Production-OS always requires its separately published capacity plan.
+    # Standalone generic studio runs historically allow the plan to be absent;
+    # do not advertise a nonexistent *optional* plan as a configured cap.
+    if req.get("production_os") or capacity_plan_path.is_file():
+        __import__("os").environ["STUDIO_CAPACITY_PLAN_PATH"] = str(capacity_plan_path)
+    else:
+        __import__("os").environ.pop("STUDIO_CAPACITY_PLAN_PATH", None)
     __import__("os").environ["STUDIO_CAPACITY_LEDGER_PATH"] = str(out.parent / "capacity-ledger.json")
     __import__("os").environ["STUDIO_CAPACITY_EFFICIENCY_PATH"] = str(out.parent / "capacity-efficiency.json")
     __import__("os").environ["STUDIO_LOCAL_MODEL_REPUTATION_PATH"] = str(local_model_reputation_path)

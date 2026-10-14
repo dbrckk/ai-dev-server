@@ -1,4 +1,5 @@
 import os
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -123,6 +124,64 @@ class GenericModelCapacityTests(unittest.TestCase):
         with patch.dict(os.environ, self._env(), clear=True),              patch("generic_model.load_providers", return_value=(self._provider(),)),              patch("generic_model.load_project_envelope", return_value=1),              patch("generic_model.reserve_capacity", return_value=denied),              patch("generic_model.API", _FakeAPI):
             with self.assertRaisesRegex(Exception, "project_envelope_exhausted"):
                 generic_model.ask("system", "user", role="product")
+
+        # Extend the same admission gate: an explicitly configured but missing,
+        # corrupt, or unrelated project plan must never fall back to unlimited
+        # capacity. No provider instance should be created in these cases.
+        with tempfile.TemporaryDirectory() as td:
+            plan_path = Path(td) / "capacity-plan.json"
+            env = {
+                **self._env(),
+                "STUDIO_CAPACITY_PLAN_PATH": str(plan_path),
+            }
+            for content in (
+                None,
+                "not valid JSON",
+                '{"projects":[{"id":"other-project","token_envelope":50000}]}',
+            ):
+                if content is None:
+                    plan_path.unlink(missing_ok=True)
+                else:
+                    plan_path.write_text(content, encoding="utf-8")
+                with patch.dict(os.environ, env, clear=True), \
+                     patch("generic_model.load_providers", return_value=(self._provider(),)), \
+                     patch("generic_model.API") as api:
+                    with self.assertRaisesRegex(
+                        Exception, "Configured project capacity plan missing or invalid"
+                    ):
+                        generic_model.ask("system", "user", role="product")
+                    api.assert_not_called()
+
+            # The plan exists but the project identity is missing: do not
+            # silently treat the configured cap as a global unbounded mode.
+            plan_path.write_text(
+                '{"projects":[{"id":"project-a","token_envelope":50000}]}',
+                encoding="utf-8",
+            )
+            with patch.dict(
+                os.environ, {**env, "STUDIO_PROJECT_ID": ""}, clear=True
+            ), patch(
+                "generic_model.load_providers", return_value=(self._provider(),)
+            ), patch("generic_model.API") as api:
+                with self.assertRaisesRegex(
+                    Exception, "Configured project capacity plan missing or invalid"
+                ):
+                    generic_model.ask("system", "user", role="product")
+                api.assert_not_called()
+
+        # No configured plan is a supported standalone/interactive mode.
+        # The new fail-closed check must not require Production-OS limits
+        # for unrelated local generic-model calls.
+        _FakeAPI.error = None
+        _FakeAPI.response = {
+            "choices": [{"finish_reason": "stop", "message": {"content": '{"ok":true}'}}],
+            "usage": {"prompt_tokens": 10, "completion_tokens": 4},
+        }
+        with patch.dict(os.environ, {}, clear=True), \
+             patch("generic_model.load_providers", return_value=(self._provider(),)), \
+             patch("generic_model.API", _FakeAPI):
+            value, _ = generic_model.ask("system", "user", role="product")
+        self.assertEqual(value, {"ok": True})
 
 
 if __name__ == "__main__":

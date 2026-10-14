@@ -152,6 +152,23 @@ class GenericModelCapacityTests(unittest.TestCase):
                         generic_model.ask("system", "user", role="product")
                     api.assert_not_called()
 
+            # The plan exists but the project identity is missing: do not
+            # silently treat the configured cap as a global unbounded mode.
+            plan_path.write_text(
+                '{"projects":[{"id":"project-a","token_envelope":50000}]}',
+                encoding="utf-8",
+            )
+            with patch.dict(
+                os.environ, {**env, "STUDIO_PROJECT_ID": ""}, clear=True
+            ), patch(
+                "generic_model.load_providers", return_value=(self._provider(),)
+            ), patch("generic_model.API") as api:
+                with self.assertRaisesRegex(
+                    Exception, "Configured project capacity plan missing or invalid"
+                ):
+                    generic_model.ask("system", "user", role="product")
+                api.assert_not_called()
+
         # No configured plan is a supported standalone/interactive mode.
         # The new fail-closed check must not require Production-OS limits
         # for unrelated local generic-model calls.

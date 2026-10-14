@@ -1,9 +1,10 @@
 import base64
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
@@ -28,6 +29,27 @@ class GodotRepositoryProbeTests(unittest.TestCase):
     def test_requires_pinned_commit(self):
         with self.assertRaisesRegex(StudioError, 'full pinned commit'):
             godot_repository_probe.probe('dbrckk/Jumpy', 'main', fetch_json=lambda url: {})
+
+        # Extend the existing contract: the Actions token only reaches the
+        # canonical GitHub API, with automatic credential redirects disabled.
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = b'{}'
+        with patch.dict(os.environ, {'GITHUB_TOKEN': 'unit-test-token'}, clear=True), \
+             patch('godot_repository_probe.urllib.request.build_opener') as make_opener:
+            make_opener.return_value.open.return_value = response
+            self.assertEqual(
+                godot_repository_probe._get_json(
+                    'https://api.github.com/repos/dbrckk/Jumpy/git/trees/' + 'f' * 40
+                ),
+                {},
+            )
+            request = make_opener.return_value.open.call_args.args[0]
+            self.assertEqual(request.get_header('Authorization'), 'Bearer unit-test-token')
+            self.assertEqual(request.get_header('Accept'), 'application/vnd.github+json')
+            self.assertIsInstance(make_opener.call_args.args[0], godot_repository_probe.NoRedirect)
+            with self.assertRaisesRegex(StudioError, 'GitHub API URL is invalid'):
+                godot_repository_probe._get_json('https://api.github.com.evil.invalid/repos/x/y')
+            self.assertEqual(make_opener.return_value.open.call_count, 1)
 
     def test_imports_pinned_godot_tree_before_runtime(self):
         project_blob, project_size = blob('[application]\n')

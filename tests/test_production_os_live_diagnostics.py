@@ -1,9 +1,11 @@
 import json
+import io
 import unittest
+from contextlib import redirect_stdout
 from unittest.mock import patch
 
 from core import APIError, StudioError
-from production_os_live_diagnostics import diagnose
+from production_os_live_diagnostics import diagnose, main
 from production_os_provider_config import configure
 from provider_router import ProviderSpec
 
@@ -57,6 +59,30 @@ class LiveDiagnosticsTests(unittest.TestCase):
         self.assertEqual(result['operator_http_status'], 403)
         self.assertEqual(calls, [(('GET', '/v1/dashboard/device-sessions'), {'timeout_seconds': 10})])
         self.assertNotIn('operator-secret', json.dumps(result))
+        # A healthy model must not hide missing or rejected operator access.
+        with patch.dict('os.environ', {}, clear=True):
+            for access in ('not_configured', 'unavailable', 'ready'):
+                report = {'inference_ready': True, 'operator_access': access}
+                with self.subTest(operator_access=access), patch(
+                    'production_os_live_diagnostics.diagnose', return_value=report
+                ), redirect_stdout(io.StringIO()) as output:
+                    self.assertEqual(main(), 0 if access == 'ready' else 1)
+                    self.assertEqual(report['diagnostic_ready'], access == 'ready')
+                    self.assertNotIn('operator-secret', output.getvalue())
+        with patch.dict('os.environ', {'PRODUCTION_OS_DIAGNOSE_WAKE': '1'}, clear=True):
+            for wake in (None, {}, {'mode': 'unknown'}, {'mode': 'unavailable'},
+                         {'mode': 'immediate'}, {'mode': 'scheduled_fallback'}):
+                report = {'inference_ready': True, 'operator_access': 'ready', 'worker_wake': wake}
+                expected = isinstance(wake, dict) and wake.get('mode') in {'immediate', 'scheduled_fallback'}
+                with self.subTest(worker_wake=wake), patch(
+                    'production_os_live_diagnostics.diagnose', return_value=report
+                ), redirect_stdout(io.StringIO()):
+                    self.assertEqual(main(), 0 if expected else 1)
+                    self.assertEqual(report['diagnostic_ready'], expected)
+            with (patch('production_os_live_diagnostics.diagnose', side_effect=StudioError('operator-secret')),
+                  redirect_stdout(io.StringIO()) as output):
+                self.assertEqual(main(), 1)
+                self.assertNotIn('operator-secret', output.getvalue())
 
     def test_defaults_preserve_explicit_configuration_and_other_providers(self):
         env = {'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1/'}

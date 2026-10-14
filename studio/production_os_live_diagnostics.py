@@ -126,8 +126,18 @@ def main():
         result = diagnose()
     except Exception:
         result = {"schema_version": 1, "inference_ready": False, "configuration": "invalid"}
+    # A responding model alone cannot qualify the control plane. Operator
+    # access is required, and an explicitly requested wake probe must succeed.
+    # Scheduled fallback remains a supported (reported) operating mode.
+    ready = result.get("inference_ready") is True and result.get("operator_access") == "ready"
+    if str(os.environ.get("PRODUCTION_OS_DIAGNOSE_WAKE") or "") == "1":
+        wake = result.get("worker_wake")
+        ready = ready and isinstance(wake, dict) and wake.get("mode") in {
+            "immediate", "scheduled_fallback",
+        }
+    result["diagnostic_ready"] = ready
     print("Production-OS live diagnosis: " + json.dumps(result, sort_keys=True))
-    return 0 if result["inference_ready"] else 1
+    return 0 if ready else 1
 
 
 if __name__ == "__main__":

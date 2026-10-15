@@ -6464,6 +6464,18 @@ github=FakeGitHub()
 ⋮----
 base=Path(td); state=godot_preview.execute(self.request(),base/'work',base/'out',github,FakeModel,FakeSandbox)
 ⋮----
+# Existing Godot projects can have large editable scripts. Product
+# and design only need bounded, labelled source excerpts; implementation
+# must retain the exact full file for safe source rewrites.
+⋮----
+source_root = Path(td)
+⋮----
+main_source = 'extends Node\n' + '# existing gameplay\n' * 30_000
+⋮----
+planning = json.loads(godot_preview._context(
+⋮----
+implementation = json.loads(godot_preview._context(
+⋮----
 req = godot_preview.request_check(self.request())
 fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(
 ⋮----

@@ -102,16 +102,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-15T20:33:17Z
+Generated: 2026-10-15T21:11:56Z
 
 ### Git
 - Branch: `main`
-- Head: `3c67ed59169f`
-- Commit date: 2026-10-15T22:33:06+02:00
-- Commit: fix(godot): recover malformed model output via alternate provider (#308)
+- Head: `f4137d625983`
+- Commit date: 2026-10-15T23:11:46+02:00
+- Commit: fix(godot): bound planning source context before implementation (#309)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/godot_preview.py`
+- `tests/test_godot_preview.py`
 - `studio/godot_model.py`
 - `tests/test_godot_model.py`
 - `.github/workflows/production-os-actions-worker.yml`

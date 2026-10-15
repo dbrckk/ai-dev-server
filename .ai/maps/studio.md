@@ -12168,11 +12168,39 @@ root = root.resolve(); targets = []
 ⋮----
 target = (root / item['path']).resolve()
 ⋮----
-def _context(req: dict, state: dict, root: Path) -> str
+# Planning needs architecture and a representative source sample, not a full
+# replay of every script. Implementation, QA and review still get exact files.
+PLANNING_SOURCE_CHAR_BUDGET = 12_000
+PLANNING_PER_FILE_CHAR_BUDGET = 4_800
+PLANNING_FILE_PREVIEW_LIMIT = 8
+PLANNING_MANIFEST_LIMIT = 100
 ⋮----
-files = {}
+def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation') -> str
+⋮----
+paths = []
 ⋮----
 rel = path.relative_to(root).as_posix()
+⋮----
+files = {}
+planning = phase in ('product', 'design')
+⋮----
+# Explicitly distinguish source *excerpts* from the full files used
+# to generate patches. Keeping this manifest lets the planner reason
+# about the actual project structure without consuming its code budget.
+def priority(item)
+⋮----
+rel = item[0]
+⋮----
+remaining = PLANNING_SOURCE_CHAR_BUDGET
+⋮----
+limit = min(PLANNING_PER_FILE_CHAR_BUDGET, remaining)
+⋮----
+sample = source.read(limit + 1)
+truncated = len(sample) > limit
+⋮----
+# Never feed a partial source snapshot to code editing or review.
+⋮----
+context = {
 ⋮----
 def _exact_branch_ref(github, branch: str)
 ⋮----
@@ -12249,7 +12277,7 @@ def checkpoint() -> None
 ⋮----
 parent = _publish(github, branch, parent, root, state)
 ⋮----
-result = model.ask(role, _context(req,state,root))
+result = model.ask(role, _context(req,state,root,phase=role))
 ⋮----
 implementation_context = _context(req,state,root)
 patch = model.ask('implementation', implementation_context)

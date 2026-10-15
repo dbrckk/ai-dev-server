@@ -1,18 +1,18 @@
 # Change impact
 
-Base: c99df4f998a4979090b950a7bd212d4e39978f10
-Head: 3c67ed59169f12240b5c2dea2e8b52c1ffa6a153
+Base: 44ef8d9efaec02bd124022d5838d60856f76130c
+Head: f4137d62598333b52dc1988ef8aca2c3978247fe
 
 ## Changed files
-- M studio/godot_model.py
-- M tests/test_godot_model.py
+- M studio/godot_preview.py
+- M tests/test_godot_preview.py
 
 ## Affected areas
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_godot_model.py
+- tests/test_godot_preview.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

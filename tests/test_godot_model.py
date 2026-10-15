@@ -53,10 +53,31 @@ def product_value():
 
 class GodotModelTests(unittest.TestCase):
     def test_nvidia_source_generation_requests_json_mode(self):
-        subject = model([completion({'files': [{'path': 'scripts/main.gd', 'content': 'extends Node\n'}]})])
+        subject = model([
+            completion({'files': [{'path': 'scripts/main.gd', 'content': 'extends Node\\n'}]}),
+            completion(product_value()),
+            completion({'direction': 'minimal'}),
+        ])
         subject.api.base = 'https://integrate.api.nvidia.com/v1'
+        subject.providers = (
+            ProviderSpec(
+                'primary', 'https://integrate.api.nvidia.com/v1',
+                'primary-key', 'nvidia/nemotron-3-super-120b-a12b',
+                code_model='nvidia/nemotron-3-super-120b-a12b', priority=100,
+            ),
+        )
         subject.ask('implementation', 'improve game')
         self.assertEqual(subject.api.calls[0][2]['response_format'], {'type': 'json_object'})
+        self.assertEqual(subject.api.calls[0][2]['max_tokens'], 16000)
+        self.assertEqual(subject.api.calls[0][2]['reasoning_budget'], 2048)
+        subject.ask('product', 'plan game')
+        subject.ask('design', 'art direction')
+        self.assertEqual([call[2]['max_tokens'] for call in subject.api.calls], [16000, 3072, 1536])
+        self.assertEqual([call[2]['reasoning_budget'] for call in subject.api.calls], [2048, 512, 512])
+        self.assertTrue(all(
+            call[2]['response_format'] == {'type': 'json_object'}
+            for call in subject.api.calls
+        ))
 
     def test_product_uses_godot_planning_contract_not_flutter_execution_claims(self):
         subject = model([completion(product_value())])
@@ -67,6 +88,7 @@ class GodotModelTests(unittest.TestCase):
         self.assertIn('specifications only', system)
         self.assertNotIn('Flutter ValueKey', system)
         self.assertEqual(subject.models_used['product'], 'general')
+        self.assertEqual(subject.api.calls[0][2]['max_tokens'], 3072)
 
     def test_product_prompt_requires_literal_json_step_objects(self):
         subject = model([completion(product_value())])

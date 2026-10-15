@@ -51,9 +51,12 @@ PRODUCT_SCHEMA = (
     '{"action":"scroll","key":"settings_list","dy":-300}, {"action":"expect_text","value":"Score"}, '
     '{"action":"expect_absent","value":"Error"}, {"action":"expect_key","key":"timer_running"}. '
     'For Godot, every key is the exact case-sensitive Node.name of one unique runtime node, encoded as a lower-case slug; '
-    'implementation must assign that Node.name explicitly. These journeys are specifications only until trusted runtime execution. '\n    'Keep the deliverable compact: prioritize the requested gameplay bug, use one or two journeys unless more are required, and avoid repeating repository source.'
+    'implementation must assign that Node.name explicitly. These journeys are specifications only until trusted runtime execution. '
+    'Keep the deliverable compact: prioritize the requested gameplay bug, use one or two journeys unless more are required, and avoid repeating repository source.'
 )
-DESIGN_SCHEMA = ('Return ONLY a concise JSON object for the requested Godot change with direction, layout, feedback, '\n    'motion, accessibility and responsive behavior. Keep the answer focused on this specific change, avoid redundant '\n    'full-game inventories and source excerpts, and target no more than 900 output tokens.')
+DESIGN_SCHEMA = ('Return ONLY a concise JSON object for the requested Godot change with direction, layout, feedback, '
+    'motion, accessibility and responsive behavior. Keep the answer focused on this specific change, avoid redundant '
+    'full-game inventories and source excerpts, and target no more than 900 output tokens.')
 
 
 class GodotModel(Model):

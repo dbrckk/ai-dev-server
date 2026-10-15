@@ -23,7 +23,9 @@ def test_actions_worker_polls_production_os_on_schedule():
         assert f"cron: '{cron}'" not in WORKFLOW
     assert "workflow_dispatch:" in WORKFLOW
     assert "control/production-os-worker-kick.json" in WORKFLOW
-    assert "control/production-os-worker-canary.json" in WORKFLOW
+    # The canary workflow enqueues the task before dispatching the worker.
+    # A direct canary-file push wake races admission and creates duplicate runs.
+    assert "control/production-os-worker-canary.json" not in WORKFLOW
     assert "studio/production_os_worker.py" in WORKFLOW
     assert "--once" in WORKFLOW
 

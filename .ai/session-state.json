@@ -3,7 +3,7 @@
   "updated_at": "2026-10-15",
   "task": "Verify real startup and correct generic inference plus execution commit telemetry",
   "base_commit": "1cb258facb9fcd2877de97e677a83f7ccb72785f",
-  "branch": "fix/production-os-canary-dispatch-order-20261015",
+  "branch": "fix/godot-structured-provider-fallback-20261015",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -105,9 +105,10 @@
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Fix duplicate Production-OS worker starts on canary control pushes: the trusted canary workflow owns the after-enqueue dispatch",
-    "Validate exact-head AI Dev Server CI, then merge and verify subsequent canary behavior",
-    "Diagnose and improve real Godot-model sustained capacity; readiness probes alone do not qualify full source delivery"
+    "Confirm exact-head CI for Godot malformed JSON provider failover; preserve project budgets and single-provider repair",
+    "Confirm AI Dev Server PR #307 merged 87ee913bfdad0ce613e1f30d0a2225ffb74722b7 and minimal canary #33 succeeded with Jumpy PR #13",
+    "After verified merge, qualify a bounded real Godot coding change, not merely a marker file; independently check Godot CI and diff",
+    "Investigate actual project_envelope_exhausted token consumption before modifying model quota or paid provider settings"
   ],
   "merged_changes": [
     {
@@ -344,5 +345,23 @@
     "scenario": "file",
     "state": "triggered; verify workflow terminal result and target branch/PR",
     "source": "ai-dev-server GitHub Actions run 38798653799"
+  },
+  "live_provider_diagnostics_20261015": {
+    "run_id": 38798478687,
+    "inference_ready": true,
+    "operator_access": "ready",
+    "wake_mode": "immediate",
+    "primary": "ready",
+    "fallback_1": "HTTP 503",
+    "fallback_2": "invalid_response",
+    "limit": "Small diagnostic only; not sustained provider capacity"
+  },
+  "worker_canary_20261015": {
+    "number": 33,
+    "run_id": 38798653799,
+    "outcome": "succeeded",
+    "worker_run_id": 38798653760,
+    "output_pr": "dbrckk/Jumpy#13",
+    "output_type": "real one-file review-branch checkpoint, not new gameplay code"
   }
 }

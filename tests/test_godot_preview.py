@@ -81,7 +81,7 @@ class GodotPreviewTests(unittest.TestCase):
             self.assertEqual(planning['request']['brief'], self.request()['brief'])
             self.assertIn('scripts/main.gd', planning['source_files'])
             self.assertNotIn('files', planning)
-            self.assertEqual(planning['specifications']['project.godot'], '[application]\\n')
+            self.assertEqual(planning['specifications']['project.godot'], '[application]' + chr(10))
             self.assertIn('scripts/main.gd', implementation['files'])
         self.assertEqual(state['status'],'godot_preview_validated')
         self.assertFalse(state['completion']['finished'])

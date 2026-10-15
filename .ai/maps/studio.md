@@ -290,6 +290,7 @@ privacy_stage.py
 production_os_live_diagnostics.py
 production_os_provider_config.py
 production_os_resume_objectives.py
+production_os_review_canary.py
 production_os_worker_canary.py
 production_os_worker.py
 project_budget.py
@@ -14106,6 +14107,14 @@ def _run_stage(script,request_path,project_out,work,runner,deadline,clock)
 ⋮----
 def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None,checkpoint_observer=None)
 ⋮----
+# A delivery canary is an exact, authenticated Git checkpoint/PR contract,
+# NOT an instruction to build or release an entire Godot game. Keep the
+# usual engine detection for every other user request.
+⋮----
+canary_req=json.loads(Path(request_path).read_text())
+⋮----
+verified_canary=request_check(canary_req)
+⋮----
 engine=_detect(request_path,project_out,runner,deadline,clock)
 ⋮----
 req=json.loads(Path(request_path).read_text())
@@ -15968,6 +15977,60 @@ token = os.environ.get("PRODUCTION_OS_OPERATOR_TOKEN", "").strip()
 result = resume(OperatorClient(os.environ["PRODUCTION_OS_URL"], token),
 ````
 
+## File: production_os_review_canary.py
+````python
+"""Isolated, exact-contract GitHub delivery canary for opted-in Jumpy.
+
+This does not run a game-development model, alter Godot source or generalize
+repository_dispatch to untrusted targets. It proves branch -> review PR delivery.
+"""
+⋮----
+_CANARY = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8})\.")
+⋮----
+def contract(req: dict) -> tuple[str, str] | None
+⋮----
+"""Only an *exact* control-plane Jumpy canary can bypass Godot preview."""
+⋮----
+production_os = req.get("production_os")
+⋮----
+brief = req.get("brief")
+⋮----
+match = _CANARY.match(brief)
+⋮----
+sequence = int(match.group(1))
+path = f".production-os/worker-canary-{sequence}.txt"
+line = f"production-os-worker-canary sequence {sequence}"
+expected = (
+⋮----
+def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict
+⋮----
+checked = contract(req)
+⋮----
+github = GitHub(req["target_repo"])
+repo = GenericRepository(github, req["target_repo"], req.get("repository_branch_id") or req["id"])
+⋮----
+target = work / path
+⋮----
+raw = target.read_bytes()
+⋮----
+sha = repo.publish(base_sha, work, "Production-OS verified Jumpy delivery canary")
+verification = {
+checkpoint = advance_checkpoint(
+checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
+⋮----
+pr = repo.ensure_pull_request(
+⋮----
+denied = any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
+handoff = repo.request_trusted_review_handoff(sha) if denied else None
+confirmed = (
+pr = confirmed if confirmed is not None else {
+delivered = type(pr.get("number")) is int and isinstance(pr.get("url"), str) and (
+⋮----
+checkpoint = advance_checkpoint(checkpoint, phase="complete")
+⋮----
+report = {
+````
+
 ## File: production_os_worker_canary.py
 ````python
 """Launch and verify a bounded live Production-OS worker canary."""
@@ -15993,13 +16056,16 @@ sequence = payload.get("sequence")
 ⋮----
 repository = payload.get("repository")
 ⋮----
-def canary_instruction(sequence)
+scenario = payload.get("scenario", "file")
+⋮----
+def canary_instruction(sequence, scenario="file")
 ⋮----
 path = f".production-os/worker-canary-{sequence}.txt"
 content = f"production-os-worker-canary sequence {sequence}"
 ⋮----
 def launch_canary(client, control)
 ⋮----
+scenario = control.get("scenario", "file")
 response = client.submit(
 ⋮----
 project = response.get("project")

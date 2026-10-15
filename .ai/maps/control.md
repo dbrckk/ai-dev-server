@@ -113,8 +113,8 @@ request.json
 ## File: production-os-diagnostics-kick.json
 ```json
 {
-  "sequence": 13,
-  "reason": "Verify live inference/operator/wake readiness after reviewed PR300 native accounting (7/7 exact-head workflows) and deployed Production-OS PR269"
+  "sequence": 14,
+  "reason": "Verify model-provider availability, Production-OS operator access and worker wake after Production-OS #272 merge; read-only bounded live diagnostics"
 }
 ```
 
@@ -140,8 +140,9 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-  "sequence": 28,
-  "repository": "dbrckk/repo-standards"
+  "sequence": 33,
+  "repository": "dbrckk/Jumpy",
+  "scenario": "file"
 }
 ```
 

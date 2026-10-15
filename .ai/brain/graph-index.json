@@ -156,6 +156,7 @@
         "studio/production_os_live_diagnostics.py",
         "studio/production_os_provider_config.py",
         "studio/production_os_resume_objectives.py",
+        "studio/production_os_review_canary.py",
         "studio/production_os_worker.py",
         "studio/production_os_worker_canary.py",
         "studio/project_budget.py",
@@ -183,7 +184,6 @@
         "studio/telemetry.py",
         "studio/unified_routing_score.py",
         "studio/workflow_checkpoint.py",
-        "tests/test_adaptive_planning_runtime.py",
         "tests/test_agent_router.py",
         "tests/test_android_signing.py",
         "tests/test_api_transport_retry.py",
@@ -201,6 +201,7 @@
         "tests/test_engine_entry.py",
         "tests/test_evolution_rollback.py",
         "tests/test_generic_model_capacity.py",
+        "tests/test_generic_worker_canary_resume.py",
         "tests/test_github_full_gate_cache_store.py",
         "tests/test_goal_loop.py",
         "tests/test_godot_android_export.py",
@@ -248,7 +249,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 219,
+      "in_degree": 220,
       "out_degree": 18,
       "path": "studio/core.py"
     },
@@ -283,6 +284,7 @@
         "studio/atomic_file.py",
         "studio/autonomous_research.py",
         "studio/billing_qa.py",
+        "studio/candidates/jumpy_profile_save.gd",
         "studio/capability_candidate_validator.py",
         "studio/capability_registry_promotion_persist.py",
         "studio/capability_registry_review.py",
@@ -330,13 +332,13 @@
         "studio/github_verification_cost_store.py",
         "studio/global_admission.py",
         "studio/goal_loop.py",
-        "studio/godot_android_export.py",
         "studio/godot_model.py",
         "studio/godot_visual_qa.py",
         "studio/native_qa.py",
         "studio/notification_qa.py",
         "studio/omniroute_capacity.py",
         "studio/orchestrator.py",
+        "studio/production_os_review_canary.py",
         "studio/provider_router.py",
         "studio/repair_search_policy.py",
         "studio/runtime_health.py",
@@ -365,7 +367,7 @@
         "tests/test_strict_task_claim_store.py",
         "tests/test_task_lease.py"
       ],
-      "in_degree": 105,
+      "in_degree": 106,
       "out_degree": 3,
       "path": "tests/test_studio.py"
     },
@@ -583,6 +585,7 @@
         "studio/play_stage.py",
         "studio/post_preview.py",
         "studio/privacy_stage.py",
+        "studio/production_os_review_canary.py",
         "studio/provider_probe.py",
         "studio/security_stage.py",
         "studio/store_stage.py",
@@ -590,7 +593,7 @@
         "tests/test_star_recommendations.py",
         "tests/test_studio.py"
       ],
-      "in_degree": 32,
+      "in_degree": 33,
       "out_degree": 30,
       "path": "studio/run.py"
     },
@@ -752,6 +755,7 @@
         "studio/github_verification_cost_store.py",
         "studio/godot_model.py",
         "studio/godot_repository_probe.py",
+        "studio/jumpy_save_checks.gd",
         "studio/portfolio_scan.py",
         "studio/run.py",
         "tests/test_capability_registry_promotion_persist.py",
@@ -765,7 +769,7 @@
         "tests/test_godot_repository_probe.py",
         "tests/test_provider_429_cooldown.py"
       ],
-      "in_degree": 39,
+      "in_degree": 40,
       "out_degree": 2,
       "path": "tests/test_journeys.py"
     },
@@ -1562,6 +1566,25 @@
       "path": "studio/github_goal_store.py"
     },
     {
+      "dependencies": [],
+      "dependents": [
+        "scripts/production-os-live-resume-proof.py",
+        "studio/fault_injection_smoke.py",
+        "studio/fleet_capacity.py",
+        "studio/generic_project.py",
+        "studio/github_execution_checkpoint_store.py",
+        "studio/preemption_apply.py",
+        "studio/production_os_review_canary.py",
+        "tests/test_execution_checkpoint.py",
+        "tests/test_generic_published_checkpoint.py",
+        "tests/test_generic_published_round_checkpoint.py",
+        "tests/test_preemption_apply.py"
+      ],
+      "in_degree": 11,
+      "out_degree": 0,
+      "path": "studio/execution_checkpoint.py"
+    },
+    {
       "dependencies": [
         "studio/core.py"
       ],
@@ -1580,6 +1603,26 @@
       "in_degree": 10,
       "out_degree": 1,
       "path": "studio/godot_runtime.py"
+    },
+    {
+      "dependencies": [
+        "studio/core.py",
+        "studio/generic_policy.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py"
+      ],
+      "dependents": [
+        "studio/generic_project.py",
+        "studio/generic_smoke.py",
+        "studio/production_os_review_canary.py",
+        "tests/test_generic_published_checkpoint.py",
+        "tests/test_generic_repository_pull_request.py",
+        "tests/test_generic_worker_canary_resume.py",
+        "tests/test_repository_branch_identity.py"
+      ],
+      "in_degree": 7,
+      "out_degree": 4,
+      "path": "studio/generic_repository.py"
     },
     {
       "dependencies": [
@@ -1620,24 +1663,6 @@
       "in_degree": 6,
       "out_degree": 5,
       "path": "studio/goal_loop.py"
-    },
-    {
-      "dependencies": [],
-      "dependents": [
-        "scripts/production-os-live-resume-proof.py",
-        "studio/fault_injection_smoke.py",
-        "studio/fleet_capacity.py",
-        "studio/generic_project.py",
-        "studio/github_execution_checkpoint_store.py",
-        "studio/preemption_apply.py",
-        "tests/test_execution_checkpoint.py",
-        "tests/test_generic_published_checkpoint.py",
-        "tests/test_generic_published_round_checkpoint.py",
-        "tests/test_preemption_apply.py"
-      ],
-      "in_degree": 10,
-      "out_degree": 0,
-      "path": "studio/execution_checkpoint.py"
     },
     {
       "dependencies": [
@@ -1901,24 +1926,6 @@
     },
     {
       "dependencies": [
-        "studio/core.py",
-        "studio/generic_policy.py",
-        "tests/test_journeys.py",
-        "tests/test_studio.py"
-      ],
-      "dependents": [
-        "studio/generic_project.py",
-        "studio/generic_smoke.py",
-        "tests/test_generic_published_checkpoint.py",
-        "tests/test_generic_repository_pull_request.py",
-        "tests/test_repository_branch_identity.py"
-      ],
-      "in_degree": 5,
-      "out_degree": 4,
-      "path": "studio/generic_repository.py"
-    },
-    {
-      "dependencies": [
         "studio/architecture_replacement_reputation.py",
         "studio/architecture_reputation_policy_approval.py",
         "studio/architecture_reputation_policy_migration_review.py",
@@ -1952,6 +1959,24 @@
       "in_degree": 4,
       "out_degree": 5,
       "path": "studio/immutable_artifact_cache.py"
+    },
+    {
+      "dependencies": [
+        "studio/agents/orchestrator.py",
+        "studio/core.py",
+        "studio/generic_project.py",
+        "studio/orchestrator.py",
+        "studio/production_os_review_canary.py",
+        "studio/stage_registry.py"
+      ],
+      "dependents": [
+        "studio/autonomous_project.py",
+        "studio/github_runner.py",
+        "tests/test_multi_engine_orchestrator.py"
+      ],
+      "in_degree": 3,
+      "out_degree": 6,
+      "path": "studio/multi_engine_orchestrator.py"
     },
     {
       "dependencies": [
@@ -2053,27 +2078,10 @@
       "in_degree": 7,
       "out_degree": 1,
       "path": "studio/provider_metrics.py"
-    },
-    {
-      "dependencies": [
-        "studio/atomic_file.py",
-        "tests/test_studio.py"
-      ],
-      "dependents": [
-        "studio/architecture_contract.py",
-        "studio/generic_project.py",
-        "studio/godot_preview.py",
-        "studio/orchestrator.py",
-        "studio/run.py",
-        "tests/test_architecture_evaluator.py"
-      ],
-      "in_degree": 6,
-      "out_degree": 2,
-      "path": "studio/architecture_evaluator.py"
     }
   ],
-  "edge_count": 1908,
+  "edge_count": 1919,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 633,
+  "node_count": 635,
   "schema_version": 1
 }

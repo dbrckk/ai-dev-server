@@ -1,14 +1,15 @@
 # Change impact
 
-Base: 5721369acec381a9c2c97ad864b8da43b40ac8a8
-Head: d871180bcbdf3bafbf4870f50d285a6438ea29fb
+Base: ea5f6b31e93684459ae27a26e970d1d3c58bd1dd
+Head: 87ee913bfdad0ce613e1f30d0a2225ffb74722b7
 
 ## Changed files
-- M studio/generic_repository.py
-- M tests/test_generic_repository_pull_request.py
+- M .github/workflows/production-os-actions-worker.yml
+- M tests/test_production_os_actions_worker_workflow.py
+- M tests/test_production_os_worker_canary.py
 
 ## Affected areas
-- studio
+- .github
 - tests
 
 ## Related test candidates

@@ -5565,6 +5565,24 @@ def test_rejects_non_canary_repository_or_missing_contract(self)
 wrong_repo = self._request()
 ⋮----
 incomplete = self._request()
+⋮----
+# Extend the existing canary regression: Jumpy's exact marker-only
+# request must bypass the expensive Godot game-production pipeline.
+# Nearby or adversarial instructions keep normal engine routing.
+seq = 30
+path = f".production-os/worker-canary-{seq}.txt"
+line = f"production-os-worker-canary sequence {seq}"
+brief = (
+req = {
+⋮----
+out = Path(temp) / "out"
+work = Path(temp) / "work"
+published = "b" * 40
+observed = []
+⋮----
+instance = repository.return_value
+⋮----
+result = run_review_canary(
 ```
 
 ## File: test_github_artifact_cas_audit_store.py
@@ -8425,6 +8443,9 @@ def test_actions_worker_has_no_codespace_dependency()
 ⋮----
 def test_actions_worker_polls_production_os_on_schedule()
 ⋮----
+# The canary workflow enqueues the task before dispatching the worker.
+# A direct canary-file push wake races admission and creates duplicate runs.
+⋮----
 def test_actions_worker_uses_existing_secure_credentials()
 ⋮----
 def test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback()
@@ -8796,6 +8817,8 @@ def test_canary_instruction_is_bounded_and_sequence_specific(self)
 ⋮----
 instruction = canary_instruction(12)
 ⋮----
+gameplay = canary_instruction(32, "jumpy_landing_feedback")
+⋮----
 def test_launch_is_idempotent_and_uses_dashboard_api(self)
 ⋮----
 client = FakeClient()
@@ -8803,6 +8826,8 @@ dispatches = []
 result = run_canary(
 ⋮----
 self.assertEqual(dispatches, [1])  # no dispatch before successful admission
+gameplay_client = FakeClient()
+gameplay_result = run_canary(gameplay_client, {
 ⋮----
 def test_wait_observes_real_terminal_success(self)
 ⋮----
@@ -8823,6 +8848,10 @@ client = FakeClient(("running",))
 def test_canary_workflow_verifies_terminal_worker_completion()
 ⋮----
 workflow = Path(".github/workflows/production-os-worker-canary.yml").read_text(encoding="utf-8")
+⋮----
+# The canary enqueues first, then dispatches explicitly. A push-triggered
+# worker would race the queue and duplicate the trusted dispatch.
+worker_workflow = Path(".github/workflows/production-os-actions-worker.yml").read_text(
 ```
 
 ## File: test_production_os_worker_cli.py

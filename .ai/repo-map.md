@@ -373,6 +373,7 @@ studio/
   production_os_live_diagnostics.py
   production_os_provider_config.py
   production_os_resume_objectives.py
+  production_os_review_canary.py
   production_os_worker_canary.py
   production_os_worker.py
   project_budget.py
@@ -1884,7 +1885,6 @@ on:
     branches: [main]
     paths:
       - 'control/production-os-worker-kick.json'
-      - 'control/production-os-worker-canary.json'
   schedule:
     - cron: '*/5 * * * *'
 
@@ -3384,8 +3384,8 @@ initial_prompt: |
 ## File: control/production-os-diagnostics-kick.json
 ````json
 {
-  "sequence": 13,
-  "reason": "Verify live inference/operator/wake readiness after reviewed PR300 native accounting (7/7 exact-head workflows) and deployed Production-OS PR269"
+  "sequence": 14,
+  "reason": "Verify model-provider availability, Production-OS operator access and worker wake after Production-OS #272 merge; read-only bounded live diagnostics"
 }
 ````
 
@@ -3411,8 +3411,9 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-  "sequence": 28,
-  "repository": "dbrckk/repo-standards"
+  "sequence": 33,
+  "repository": "dbrckk/Jumpy",
+  "scenario": "file"
 }
 ````
 
@@ -19806,6 +19807,14 @@ def _run_stage(script,request_path,project_out,work,runner,deadline,clock)
 ⋮----
 def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None,checkpoint_observer=None)
 ⋮----
+# A delivery canary is an exact, authenticated Git checkpoint/PR contract,
+# NOT an instruction to build or release an entire Godot game. Keep the
+# usual engine detection for every other user request.
+⋮----
+canary_req=json.loads(Path(request_path).read_text())
+⋮----
+verified_canary=request_check(canary_req)
+⋮----
 engine=_detect(request_path,project_out,runner,deadline,clock)
 ⋮----
 req=json.loads(Path(request_path).read_text())
@@ -21668,6 +21677,60 @@ token = os.environ.get("PRODUCTION_OS_OPERATOR_TOKEN", "").strip()
 result = resume(OperatorClient(os.environ["PRODUCTION_OS_URL"], token),
 ````
 
+## File: studio/production_os_review_canary.py
+````python
+"""Isolated, exact-contract GitHub delivery canary for opted-in Jumpy.
+
+This does not run a game-development model, alter Godot source or generalize
+repository_dispatch to untrusted targets. It proves branch -> review PR delivery.
+"""
+⋮----
+_CANARY = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8})\.")
+⋮----
+def contract(req: dict) -> tuple[str, str] | None
+⋮----
+"""Only an *exact* control-plane Jumpy canary can bypass Godot preview."""
+⋮----
+production_os = req.get("production_os")
+⋮----
+brief = req.get("brief")
+⋮----
+match = _CANARY.match(brief)
+⋮----
+sequence = int(match.group(1))
+path = f".production-os/worker-canary-{sequence}.txt"
+line = f"production-os-worker-canary sequence {sequence}"
+expected = (
+⋮----
+def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict
+⋮----
+checked = contract(req)
+⋮----
+github = GitHub(req["target_repo"])
+repo = GenericRepository(github, req["target_repo"], req.get("repository_branch_id") or req["id"])
+⋮----
+target = work / path
+⋮----
+raw = target.read_bytes()
+⋮----
+sha = repo.publish(base_sha, work, "Production-OS verified Jumpy delivery canary")
+verification = {
+checkpoint = advance_checkpoint(
+checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
+⋮----
+pr = repo.ensure_pull_request(
+⋮----
+denied = any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
+handoff = repo.request_trusted_review_handoff(sha) if denied else None
+confirmed = (
+pr = confirmed if confirmed is not None else {
+delivered = type(pr.get("number")) is int and isinstance(pr.get("url"), str) and (
+⋮----
+checkpoint = advance_checkpoint(checkpoint, phase="complete")
+⋮----
+report = {
+````
+
 ## File: studio/production_os_worker_canary.py
 ````python
 """Launch and verify a bounded live Production-OS worker canary."""
@@ -21693,13 +21756,16 @@ sequence = payload.get("sequence")
 ⋮----
 repository = payload.get("repository")
 ⋮----
-def canary_instruction(sequence)
+scenario = payload.get("scenario", "file")
+⋮----
+def canary_instruction(sequence, scenario="file")
 ⋮----
 path = f".production-os/worker-canary-{sequence}.txt"
 content = f"production-os-worker-canary sequence {sequence}"
 ⋮----
 def launch_canary(client, control)
 ⋮----
+scenario = control.get("scenario", "file")
 response = client.submit(
 ⋮----
 project = response.get("project")
@@ -31185,6 +31251,24 @@ def test_rejects_non_canary_repository_or_missing_contract(self)
 wrong_repo = self._request()
 ⋮----
 incomplete = self._request()
+⋮----
+# Extend the existing canary regression: Jumpy's exact marker-only
+# request must bypass the expensive Godot game-production pipeline.
+# Nearby or adversarial instructions keep normal engine routing.
+seq = 30
+path = f".production-os/worker-canary-{seq}.txt"
+line = f"production-os-worker-canary sequence {seq}"
+brief = (
+req = {
+⋮----
+out = Path(temp) / "out"
+work = Path(temp) / "work"
+published = "b" * 40
+observed = []
+⋮----
+instance = repository.return_value
+⋮----
+result = run_review_canary(
 ````
 
 ## File: tests/test_github_artifact_cas_audit_store.py
@@ -34045,6 +34129,9 @@ def test_actions_worker_has_no_codespace_dependency()
 ⋮----
 def test_actions_worker_polls_production_os_on_schedule()
 ⋮----
+# The canary workflow enqueues the task before dispatching the worker.
+# A direct canary-file push wake races admission and creates duplicate runs.
+⋮----
 def test_actions_worker_uses_existing_secure_credentials()
 ⋮----
 def test_actions_worker_enables_real_mobile_specialist_runtime_on_idle_fallback()
@@ -34416,6 +34503,8 @@ def test_canary_instruction_is_bounded_and_sequence_specific(self)
 ⋮----
 instruction = canary_instruction(12)
 ⋮----
+gameplay = canary_instruction(32, "jumpy_landing_feedback")
+⋮----
 def test_launch_is_idempotent_and_uses_dashboard_api(self)
 ⋮----
 client = FakeClient()
@@ -34423,6 +34512,8 @@ dispatches = []
 result = run_canary(
 ⋮----
 self.assertEqual(dispatches, [1])  # no dispatch before successful admission
+gameplay_client = FakeClient()
+gameplay_result = run_canary(gameplay_client, {
 ⋮----
 def test_wait_observes_real_terminal_success(self)
 ⋮----
@@ -34443,6 +34534,10 @@ client = FakeClient(("running",))
 def test_canary_workflow_verifies_terminal_worker_completion()
 ⋮----
 workflow = Path(".github/workflows/production-os-worker-canary.yml").read_text(encoding="utf-8")
+⋮----
+# The canary enqueues first, then dispatches explicitly. A push-triggered
+# worker would race the queue and duplicate the trusted dispatch.
+worker_workflow = Path(".github/workflows/production-os-actions-worker.yml").read_text(
 ````
 
 ## File: tests/test_production_os_worker_cli.py

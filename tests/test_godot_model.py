@@ -57,6 +57,7 @@ class GodotModelTests(unittest.TestCase):
         subject.api.base = 'https://integrate.api.nvidia.com/v1'
         subject.ask('implementation', 'improve game')
         self.assertEqual(subject.api.calls[0][2]['response_format'], {'type': 'json_object'})
+        self.assertEqual(subject.api.calls[0][2]['reasoning_budget'], 2048)
 
     def test_product_uses_godot_planning_contract_not_flutter_execution_claims(self):
         subject = model([completion(product_value())])
@@ -67,6 +68,7 @@ class GodotModelTests(unittest.TestCase):
         self.assertIn('specifications only', system)
         self.assertNotIn('Flutter ValueKey', system)
         self.assertEqual(subject.models_used['product'], 'general')
+        self.assertEqual(subject.api.calls[0][2]['max_tokens'], 3072)
 
     def test_product_prompt_requires_literal_json_step_objects(self):
         subject = model([completion(product_value())])
@@ -86,6 +88,7 @@ class GodotModelTests(unittest.TestCase):
         self.assertIn('Godot 4.7', system)
         self.assertNotIn('Senior Flutter engineering team', system)
         self.assertEqual(subject.calls, 1)
+        self.assertEqual(params['max_tokens'], 16000)
 
     def test_test_role_rejects_non_test_path_then_repairs_once(self):
         subject = model([

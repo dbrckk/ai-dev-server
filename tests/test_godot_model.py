@@ -53,10 +53,32 @@ def product_value():
 
 class GodotModelTests(unittest.TestCase):
     def test_nvidia_source_generation_requests_json_mode(self):
-        subject = model([completion({'files': [{'path': 'scripts/main.gd', 'content': 'extends Node\n'}]})])
+        subject = model([
+            completion({'files': [{'path': 'scripts/main.gd', 'content': 'extends Node\\n'}]}),
+            completion(product_value()),
+            completion({'direction': 'minimal'}),
+        ])
         subject.api.base = 'https://integrate.api.nvidia.com/v1'
+        subject.providers = (
+            ProviderSpec(
+                'primary', 'https://integrate.api.nvidia.com/v1',
+                'primary-key', 'nvidia/nemotron-3-super-120b-a12b',
+                code_model='nvidia/nemotron-3-super-120b-a12b', priority=100,
+            ),
+        )
         subject.ask('implementation', 'improve game')
         self.assertEqual(subject.api.calls[0][2]['response_format'], {'type': 'json_object'})
+        self.assertEqual(subject.api.calls[0][2]['max_tokens'], 16000)
+        self.assertEqual(subject.api.calls[0][2]['reasoning_budget'], 2048)
+        subject.ask('product', 'plan game')
+        subject.ask('design', 'art direction')
+        self.assertEqual([call[2]['max_tokens'] for call in subject.api.calls], [16000, 3072, 1536])
+        self.assertEqual([call[2]['reasoning_budget'] for call in subject.api.calls], [2048, 512, 512])
+        self.assertIn('target no more than 900 output tokens', subject.api.calls[2][2]['messages'][0]['content'])
+        self.assertTrue(all(
+            call[2]['response_format'] == {'type': 'json_object'}
+            for call in subject.api.calls
+        ))
 
     def test_product_uses_godot_planning_contract_not_flutter_execution_claims(self):
         subject = model([completion(product_value())])
@@ -66,7 +88,9 @@ class GodotModelTests(unittest.TestCase):
         self.assertIn('Godot mobile game product lead', system)
         self.assertIn('specifications only', system)
         self.assertNotIn('Flutter ValueKey', system)
+        self.assertIn('Keep the deliverable compact', system)
         self.assertEqual(subject.models_used['product'], 'general')
+        self.assertEqual(subject.api.calls[0][2]['max_tokens'], 3072)
 
     def test_product_prompt_requires_literal_json_step_objects(self):
         subject = model([completion(product_value())])
@@ -199,6 +223,42 @@ class GodotModelTests(unittest.TestCase):
                 with self.assertRaisesRegex(StudioError,'capacity plan missing or invalid'):
                     subject.ask('product','plan game')
                 self.assertEqual(subject.api.calls,[])
+
+            # Regression from real Jumpy canary #34: under a finite envelope,
+            # conservative unknown-usage reservations for planning must still
+            # leave the full implementation output allowance available.
+            planning_journal = root/'planning-usage.json'
+            planning_ledger = root/'planning-ledger.json'
+            planning_plan = root/'planning-plan.json'
+            planning_plan.write_text(json.dumps({
+                'projects': [{'id': 'jumpy', 'token_envelope': 24000}]
+            }))
+            with patch.dict(os.environ, {
+                'STUDIO_NATIVE_MODEL_USAGE_PATH': str(planning_journal),
+                'STUDIO_CAPACITY_PLAN_PATH': str(planning_plan),
+                'STUDIO_CAPACITY_LEDGER_PATH': str(planning_ledger),
+                'STUDIO_PROJECT_ID': 'jumpy',
+            }):
+                subject = model([
+                    completion(product_value()),
+                    completion({'direction': 'focused'}),
+                    completion({'files': [{'path': 'scripts/main.gd',
+                                          'content': 'extends Node\\n'}]}),
+                ])
+                subject.providers = (subject.providers[0],)
+                subject.ask('product', 'fix one input bug')
+                subject.ask('design', 'minimal settings overlay')
+                source_patch = subject.ask('implementation', 'implement the guarded input')
+                self.assertEqual(source_patch['files'][0]['path'], 'scripts/main.gd')
+                self.assertEqual(
+                    [row[2]['max_tokens'] for row in subject.api.calls],
+                    [3072, 1536, 16000],
+                )
+                self.assertLessEqual(
+                    consumed_tokens(load(planning_ledger), project_id='jumpy'),
+                    24000,
+                )
+                self.assertFalse(snapshot()['capacity_exhausted'])
 
 
 if __name__ == '__main__': unittest.main()

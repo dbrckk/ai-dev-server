@@ -51,9 +51,12 @@ PRODUCT_SCHEMA = (
     '{"action":"scroll","key":"settings_list","dy":-300}, {"action":"expect_text","value":"Score"}, '
     '{"action":"expect_absent","value":"Error"}, {"action":"expect_key","key":"timer_running"}. '
     'For Godot, every key is the exact case-sensitive Node.name of one unique runtime node, encoded as a lower-case slug; '
-    'implementation must assign that Node.name explicitly. These journeys are specifications only until trusted runtime execution.'
+    'implementation must assign that Node.name explicitly. These journeys are specifications only until trusted runtime execution. '
+    'Keep the deliverable compact: prioritize the requested gameplay bug, use one or two journeys unless more are required, and avoid repeating repository source.'
 )
-DESIGN_SCHEMA = 'Return ONLY a JSON object containing the complete Godot-oriented design specification.'
+DESIGN_SCHEMA = ('Return ONLY a concise JSON object for the requested Godot change with direction, layout, feedback, '
+    'motion, accessibility and responsive behavior. Keep the answer focused on this specific change, avoid redundant '
+    'full-game inventories and source excerpts, and target no more than 900 output tokens.')
 
 
 class GodotModel(Model):
@@ -197,7 +200,7 @@ class GodotModel(Model):
             params = {
                 'model': selected_model,
                 'stream': False,
-                'max_tokens': 16000 if role == 'implementation' else 8192,
+                'max_tokens': 3072 if role == 'product' else 1536 if role == 'design' else (16000 if role == 'implementation' else 8192),
                 'messages': [
                     {'role': 'system', 'content': system_content},
                     {'role': 'user', 'content': context},
@@ -206,7 +209,7 @@ class GodotModel(Model):
             if api.base == 'https://integrate.api.nvidia.com/v1':
                 params['response_format'] = {'type': 'json_object'}
             if api.base == 'https://integrate.api.nvidia.com/v1' and selected_model.startswith('nvidia/nemotron-3-'):
-                params.update(chat_template_kwargs={'enable_thinking': True}, reasoning_budget=2048)
+                params.update(chat_template_kwargs={'enable_thinking': True}, reasoning_budget=512 if role in ('product', 'design') else 2048)
             print('Model role: ' + role + '; provider: ' + provider.name + '; model: ' + selected_model, flush=True)
             from native_model_usage import call as accounted_call, NativeAccountingError
             started = time.monotonic()

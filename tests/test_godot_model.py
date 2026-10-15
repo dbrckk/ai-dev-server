@@ -224,5 +224,41 @@ class GodotModelTests(unittest.TestCase):
                     subject.ask('product','plan game')
                 self.assertEqual(subject.api.calls,[])
 
+            # Regression from real Jumpy canary #34: under a finite envelope,
+            # conservative unknown-usage reservations for planning must still
+            # leave the full implementation output allowance available.
+            planning_journal = root/'planning-usage.json'
+            planning_ledger = root/'planning-ledger.json'
+            planning_plan = root/'planning-plan.json'
+            planning_plan.write_text(json.dumps({
+                'projects': [{'id': 'jumpy', 'token_envelope': 24000}]
+            }))
+            with patch.dict(os.environ, {
+                'STUDIO_NATIVE_MODEL_USAGE_PATH': str(planning_journal),
+                'STUDIO_CAPACITY_PLAN_PATH': str(planning_plan),
+                'STUDIO_CAPACITY_LEDGER_PATH': str(planning_ledger),
+                'STUDIO_PROJECT_ID': 'jumpy',
+            }):
+                subject = model([
+                    completion(product_value()),
+                    completion({'direction': 'focused'}),
+                    completion({'files': [{'path': 'scripts/main.gd',
+                                          'content': 'extends Node\\n'}]}),
+                ])
+                subject.providers = (subject.providers[0],)
+                subject.ask('product', 'fix one input bug')
+                subject.ask('design', 'minimal settings overlay')
+                source_patch = subject.ask('implementation', 'implement the guarded input')
+                self.assertEqual(source_patch['files'][0]['path'], 'scripts/main.gd')
+                self.assertEqual(
+                    [row[2]['max_tokens'] for row in subject.api.calls],
+                    [3072, 1536, 16000],
+                )
+                self.assertLessEqual(
+                    consumed_tokens(load(planning_ledger), project_id='jumpy'),
+                    24000,
+                )
+                self.assertFalse(snapshot()['capacity_exhausted'])
+
 
 if __name__ == '__main__': unittest.main()

@@ -76,6 +76,13 @@ class GodotPreviewTests(unittest.TestCase):
         github=FakeGitHub()
         with tempfile.TemporaryDirectory() as td:
             base=Path(td); state=godot_preview.execute(self.request(),base/'work',base/'out',github,FakeModel,FakeSandbox)
+            planning = json.loads(godot_preview._context(self.request(), state, base/'work', role='product'))
+            implementation = json.loads(godot_preview._context(self.request(), state, base/'work'))
+            self.assertEqual(planning['request']['brief'], self.request()['brief'])
+            self.assertIn('scripts/main.gd', planning['source_files'])
+            self.assertNotIn('files', planning)
+            self.assertEqual(planning['specifications']['project.godot'], '[application]\\n')
+            self.assertIn('scripts/main.gd', implementation['files'])
         self.assertEqual(state['status'],'godot_preview_validated')
         self.assertFalse(state['completion']['finished'])
         self.assertEqual(state['completion']['next_stage'],'godot_android_export_qa')

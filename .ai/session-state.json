@@ -3,7 +3,7 @@
   "updated_at": "2026-10-15",
   "task": "Verify real startup and correct generic inference plus execution commit telemetry",
   "base_commit": "1cb258facb9fcd2877de97e677a83f7ccb72785f",
-  "branch": "fix/godot-structured-provider-fallback-20261015",
+  "branch": "fix/godot-bounded-planning-context-20261015",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -105,10 +105,10 @@
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Confirm exact-head CI for Godot malformed JSON provider failover; preserve project budgets and single-provider repair",
-    "Confirm AI Dev Server PR #307 merged 87ee913bfdad0ce613e1f30d0a2225ffb74722b7 and minimal canary #33 succeeded with Jumpy PR #13",
-    "After verified merge, qualify a bounded real Godot coding change, not merely a marker file; independently check Godot CI and diff",
-    "Investigate actual project_envelope_exhausted token consumption before modifying model quota or paid provider settings"
+    "Godot planning context bounded to 12,000 source chars total, 4,800 per file, 8 previews and 100 manifest entries; leave implementation/QA/review exact source unchanged",
+    "Qualify existing test extension using a ~600 KB Godot script and real GitHub Actions on exact PR SHA",
+    "Previous PR #308 successfully merged as 3c67ed59169f12240b5c2dea2e8b52c1ffa6a153 with all seven checks successful",
+    "Next after merge: bounded hosted Godot coding canary and real changed-code Godot validation, without paid quota changes"
   ],
   "merged_changes": [
     {
@@ -363,5 +363,22 @@
     "worker_run_id": 38798653760,
     "output_pr": "dbrckk/Jumpy#13",
     "output_type": "real one-file review-branch checkpoint, not new gameplay code"
+  },
+  "godot_planning_context_20261015": {
+    "branch": "fix/godot-bounded-planning-context-20261015",
+    "source_char_budget": 12000,
+    "per_file_char_budget": 4800,
+    "preview_limit": 8,
+    "manifest_limit": 100,
+    "phase_scope": [
+      "product",
+      "design"
+    ],
+    "retained_exact_source": [
+      "implementation",
+      "tests",
+      "review"
+    ],
+    "status": "CI qualification pending"
   }
 }

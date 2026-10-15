@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from dataclasses import replace
 import hashlib
 import json
 import re
@@ -752,6 +753,13 @@ def _save_published_checkpoint(path: Path, checkpoint: dict, observer=None) -> N
 
 
 def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic, checkpoint_observer=None) -> dict:
+    # Catalog integrations are already narrowly specified by an operator
+    # and have a finite 90k-token envelope. Prefer one verified code patch
+    # over speculative planning and competing candidate portfolios.
+    catalog_integration = bool(req.get("production_os")) and bool(
+        re.search(r"\bTracking:\s+starlist-integration-v[12]-[0-9a-f]{24}\b",
+                  str(req.get("brief") or ""))
+    )
     github = GitHub(req["target_repo"])
     repo = GenericRepository(
         github,
@@ -1074,6 +1082,11 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             remaining_seconds=preplan_remaining,
             verification_seconds=verification_seconds,
         )
+        if catalog_integration:
+            # The known upstream URL, license and requested output are already
+            # present in the brief. The implementation model sees the same
+            # deterministic plan schema; all normal verification still runs.
+            round_require_planning = False
         planning_policy = planning_phase_decision(
             require_planning=round_require_planning,
             brief=req["brief"],
@@ -1136,6 +1149,11 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             predicted_agent_limit=predicted_agents,
             predicted_reserve_seconds=difficulty.verification_reserve_seconds,
         )
+        if catalog_integration:
+            round_budget = replace(
+                round_budget, max_work_passes=1, agent_limit=0,
+                mode="targeted-catalog-integration",
+            )
         phase_quotas = allocate_phase_quotas(
             available_seconds=remaining_seconds,
             verification_reserve_seconds=round_budget.reserve_seconds,
@@ -1330,6 +1348,7 @@ Objective and current plan:
                     "status":"adaptive_role_allocation",
                     "decision":role_allocation.as_dict(),
                 })
+                route_strategy = "model_only" if catalog_integration else meta_route.strategy
                 candidate_schedule = choose_candidate_schedule(
                     capacity_status=state.get("capacity_status", {}),
                     route_confidence=scheduler_confidence,
@@ -1345,7 +1364,7 @@ Objective and current plan:
                         if before_agent is not None
                         else 1
                     ),
-                    strategy=meta_route.strategy,
+                    strategy=route_strategy,
                     recommended_width=candidate_width_learning.get("recommended_width"),
                 )
                 round_candidate_portfolio = {
@@ -1514,7 +1533,7 @@ Objective and current plan:
                     candidate_records.append(candidate)
                     return candidate
 
-                selected_strategy = meta_route.strategy
+                selected_strategy = route_strategy
                 model_first = selected_strategy in {"model_only","model_to_agent"}
                 model_candidate = (
                     evaluate_model_candidate()
@@ -1673,7 +1692,8 @@ Objective and current plan:
                     if isinstance(item.get("model"), dict)
                 )
                 need_model_candidate = (
-                    allow_model_fallback
+                    (not catalog_integration)
+                    and allow_model_fallback
                     and used_model_count < candidate_schedule.model_limit
                     and len(candidate_records) < candidate_schedule.candidate_limit
                     and (

@@ -102,24 +102,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-15T22:49:58Z
+Generated: 2026-10-15T22:51:07Z
 
 ### Git
 - Branch: `main`
-- Head: `41767c11603f`
-- Commit date: 2026-10-16T00:49:37+02:00
-- Commit: fix(godot): reserve free tokens for implementation (#314)
+- Head: `971fa0c8591e`
+- Commit date: 2026-10-16T00:50:58+02:00
+- Commit: fix(tokens): prefer bounded implementation for star-list integrations (#313)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/generic_project.py`
 - `studio/godot_model.py`
 - `tests/test_godot_model.py`
 - `studio/core.py`
 - `studio/generic_model.py`
 - `studio/native_model_usage.py`
 - `control/production-os-worker-canary.json`
-- `studio/production_os_worker_canary.py`
-- `tests/test_production_os_worker_canary.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -9145,6 +9145,10 @@ def _save_published_checkpoint(path: Path, checkpoint: dict, observer=None) -> N
 ⋮----
 def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic, checkpoint_observer=None) -> dict
 ⋮----
+# Catalog integrations are already narrowly specified by an operator
+# and have a finite 90k-token envelope. Prefer one verified code patch
+# over speculative planning and competing candidate portfolios.
+catalog_integration = bool(req.get("production_os")) and bool(
 github = GitHub(req["target_repo"])
 repo = GenericRepository(
 ⋮----
@@ -9248,6 +9252,11 @@ preplan_remaining = None if deadline is None else max(0.0, deadline - clock())
 preplan_quotas = allocate_phase_quotas(
 normalized_difficulty = min(1.0, max(0.0, float(difficulty.score) / 10.0))
 round_require_planning = planning_required(
+⋮----
+# The known upstream URL, license and requested output are already
+# present in the brief. The implementation model sees the same
+# deterministic plan schema; all normal verification still runs.
+round_require_planning = False
 planning_policy = planning_phase_decision(
 planning_decision = {
 ⋮----
@@ -9271,6 +9280,8 @@ drift_multiplier = drift_detector.exploration_multiplier()
 predicted_passes = max(1, int(round(difficulty.recommended_work_passes * drift_multiplier))) if drift_multiplier > 0 else 1
 predicted_agents = max(0, int(round(difficulty.recommended_agent_limit * drift_multiplier)))
 round_budget = choose_budget(
+⋮----
+round_budget = replace(
 phase_quotas = allocate_phase_quotas(
 planning_elapsed = max(0, int(clock() - planning_started))
 planning_history = load_phase_cost_baselines(phase_baseline_path)
@@ -9335,6 +9346,7 @@ free_capacity = 1.0 if capacity_state.get("unmetered_available") else (
 role_allocation = choose_role_allocation(
 round_require_review = role_allocation.require_review
 ⋮----
+route_strategy = "model_only" if catalog_integration else meta_route.strategy
 candidate_schedule = choose_candidate_schedule(
 round_candidate_portfolio = {
 ⋮----
@@ -9373,7 +9385,7 @@ candidate_id = "model:" + model_provider + ":" + model_name
 ⋮----
 candidate = {
 ⋮----
-selected_strategy = meta_route.strategy
+selected_strategy = route_strategy
 model_first = selected_strategy in {"model_only","model_to_agent"}
 model_candidate = (
 model_verified = bool(

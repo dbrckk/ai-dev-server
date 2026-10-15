@@ -197,7 +197,7 @@ class GodotModel(Model):
             params = {
                 'model': selected_model,
                 'stream': False,
-                'max_tokens': 16000 if role == 'implementation' else 8192,
+                'max_tokens': 3072 if role == 'product' else 1536 if role == 'design' else (16000 if role == 'implementation' else 8192),
                 'messages': [
                     {'role': 'system', 'content': system_content},
                     {'role': 'user', 'content': context},
@@ -206,7 +206,7 @@ class GodotModel(Model):
             if api.base == 'https://integrate.api.nvidia.com/v1':
                 params['response_format'] = {'type': 'json_object'}
             if api.base == 'https://integrate.api.nvidia.com/v1' and selected_model.startswith('nvidia/nemotron-3-'):
-                params.update(chat_template_kwargs={'enable_thinking': True}, reasoning_budget=2048)
+                params.update(chat_template_kwargs={'enable_thinking': True}, reasoning_budget=512 if role in ('product', 'design') else 2048)
             print('Model role: ' + role + '; provider: ' + provider.name + '; model: ' + selected_model, flush=True)
             from native_model_usage import call as accounted_call, NativeAccountingError
             started = time.monotonic()

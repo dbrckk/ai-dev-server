@@ -142,3 +142,10 @@ def test_canary_workflow_verifies_terminal_worker_completion():
     assert "contents: read" in workflow
     assert "secrets.GITHUB_TOKEN" in workflow
     assert "PRODUCTION_OS_CANARY_DISPATCH_TOKEN" in workflow
+    # The canary enqueues first, then dispatches explicitly. A push-triggered
+    # worker would race the queue and duplicate the trusted dispatch.
+    worker_workflow = Path(".github/workflows/production-os-actions-worker.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "- 'control/production-os-worker-kick.json'" in worker_workflow
+    assert "- 'control/production-os-worker-canary.json'" not in worker_workflow

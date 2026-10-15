@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "updated_at": "2026-10-14",
-  "task": "Stop exhausted Godot preview continuations and retain authoritative checkpoint SHA",
-  "base_commit": "0d44f164c3f47beb54ab1cb361934b26c3c9bc5b",
-  "branch": "fix/godot-exhausted-checkpoint-20261014",
+  "updated_at": "2026-10-15",
+  "task": "Verify real startup and correct generic inference plus execution commit telemetry",
+  "base_commit": "1cb258facb9fcd2877de97e677a83f7ccb72785f",
+  "branch": "fix/generic-inference-accounting-20261015",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -319,6 +319,21 @@
       "review",
       "Android qualification",
       "completed hosted objective"
+    ]
+  },
+  "startup_qualification": {
+    "canary_sequence": 27,
+    "run": 38698376303,
+    "workflow_id": "6c9112c68ea34511814f3ebe1bc7a6fb",
+    "project_id": "1370289ddac9b749f1741ac86f509535",
+    "commit": "e1d7a4063b5b2581be1c6f334456684aaeec13d9",
+    "pull_request": "https://github.com/dbrckk/repo-standards/pull/10",
+    "status": "real delivery succeeded; counter corrections under qualification",
+    "pending": [
+      "exact-head CI and review",
+      "fresh accounting proof",
+      "Android/Jumpy complete objective",
+      "sustained provider capacity"
     ]
   }
 }

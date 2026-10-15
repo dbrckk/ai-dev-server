@@ -392,3 +392,23 @@ counters persist through continuations but start fresh for each claimed server
 execution, while the project ledger remains cumulative. Failure reporting keeps
 this execution's native counters when available. Historical native calls that
 predate this change cannot be reconstructed from missing telemetry.
+
+## Generic inference and execution counters
+
+Generic-project model requests use the same execution-local counter journal as
+Godot/Flutter calls. The generic router retains ownership of its existing
+reservation and settlement: journaling does not reserve capacity a second time.
+Reported counters replace estimates; a transport failure conservatively consumes
+the admitted estimate, because a timed-out or failed POST may have reached the
+provider. Accounting storage failures stop fallback; pre-submission failures
+release the reservation, while failures after submission retain the estimate.
+Real API submissions perform one POST per admission and preserve the configured
+timeout. The worker also copies validated commit SHAs from result evidence into
+the standard `commits.shas` summary consumed by execution analytics.
+
+Live canary27 (2026-10-15, Actions38698376303) created exactly the requested
+single file, committed e1d7a4063b5b2581be1c6f334456684aaeec13d9 in
+`dbrckk/repo-standards` and opened PR10 automatically. Its successful delivery
+exposed zero token/API/commit execution counters before these corrections. This
+is proof of a small hosted coding delivery, not an Android or complex-project
+release. Historical missing usage cannot be reconstructed.

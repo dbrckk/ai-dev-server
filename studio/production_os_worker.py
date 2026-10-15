@@ -935,11 +935,19 @@ def _attach_failed_ci_diagnostic(
 def _result_payload(result: dict[str, Any]) -> dict[str, Any]:
     usage = result.get("usage")
     evidence = result.get("evidence")
-    return {
+    payload = {
         "usage": dict(usage) if isinstance(usage, dict) else {},
         "evidence": dict(evidence) if isinstance(evidence, dict) else {},
         "ai_dev_server_status": str(result.get("status") or "unknown"),
     }
+
+    commits = evidence.get('commit_shas') if isinstance(evidence, dict) else None
+    if isinstance(commits, list):
+        shas = list(dict.fromkeys(sha for sha in commits
+                    if isinstance(sha, str) and re.fullmatch(r'[0-9a-f]{40}', sha)))
+        if shas:
+            payload['commits'] = {'shas': shas}
+    return payload
 
 
 def completion_payload(

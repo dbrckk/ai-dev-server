@@ -641,6 +641,7 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             )
             return {
                 "status": "complete",
+                "commit_shas": ["a"*40],
                 "finished": True,
                 "next_stage": None,
                 "usage": {
@@ -671,6 +672,7 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
         completed = client.calls[4][1]
         self.assertEqual(completed["key"], "job-abc123")
         self.assertEqual(completed["result"]["usage"]["total_tokens"], 130)
+        self.assertEqual(completed["result"]["commits"]["shas"], ["a"*40])
 
     def test_active_checkpoint_continues_same_claim_until_complete(self):
         client = _FakeClient(sample_job())

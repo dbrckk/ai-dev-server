@@ -57,15 +57,22 @@ class GenericModelCapacityTests(unittest.TestCase):
             "reservation_id": "r1",
             "reason": "reserved",
         }
-        with patch.dict(os.environ, self._env(), clear=True),              patch("generic_model.load_providers", return_value=(self._provider(),)),              patch("generic_model.load_project_envelope", return_value=50_000),              patch("generic_model.reserve_capacity", return_value=reservation) as reserve,              patch("generic_model.settle_capacity") as settle,              patch("generic_model.release_capacity") as release,              patch("generic_model.API", _FakeAPI):
+        with tempfile.TemporaryDirectory() as td, patch.dict(os.environ, {**self._env(), 'STUDIO_NATIVE_MODEL_USAGE_PATH':str(Path(td)/'usage.json')}, clear=True),              patch("generic_model.load_providers", return_value=(self._provider(),)),              patch("generic_model.load_project_envelope", return_value=50_000),              patch("generic_model.reserve_capacity", return_value=reservation) as reserve,              patch("generic_model.settle_capacity") as settle,              patch("generic_model.release_capacity") as release,              patch("generic_model.API", _FakeAPI):
             value, meta = generic_model.ask("system", "user", role="product")
+            from native_model_usage import snapshot
+            journal = snapshot()['usage']
+            self.assertEqual((journal['runs'], journal['total_tokens'], journal['estimated_calls']), (1,150,0))
+            _FakeAPI.response['usage'] = {'total_tokens': 75}
+            generic_model.ask('system', 'user', role='product')
+            self.assertEqual(snapshot()['usage']['total_tokens'], 225)
+            self.assertEqual(snapshot()['usage']['estimated_calls'], 0)
 
         self.assertEqual(value, {"ok": True})
         self.assertEqual(meta["capacity"]["project_id"], "project-a")
         self.assertEqual(meta["capacity"]["project_envelope_tokens"], 50_000)
-        reserve.assert_called_once()
-        settle.assert_called_once()
-        self.assertEqual(settle.call_args.kwargs["actual_tokens"], 150)
+        self.assertEqual(reserve.call_count, 2)
+        self.assertEqual(settle.call_count, 2)
+        self.assertEqual(settle.call_args.kwargs["actual_tokens"], 75)
         release.assert_not_called()
 
     def test_protocol_failure_settles_consumed_tokens_without_double_release(self):
@@ -108,11 +115,9 @@ class GenericModelCapacityTests(unittest.TestCase):
             with self.assertRaisesRegex(Exception, "All generic-project providers failed"):
                 generic_model.ask("system", "user", role="product")
 
-        settle.assert_not_called()
-        release.assert_called_once_with(
-            Path("/tmp/capacity-ledger-test.json"),
-            "r3",
-        )
+        settle.assert_called_once()
+        self.assertGreater(settle.call_args.kwargs['actual_tokens'], 0)
+        release.assert_not_called()
         _FakeAPI.error = None
 
     def test_denied_reservation_skips_provider_call(self):

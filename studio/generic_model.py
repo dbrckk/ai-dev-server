@@ -7,6 +7,7 @@ import time
 from pathlib import Path
 
 from core import API, APIError, ProtocolError, StudioError
+from native_model_usage import call as accounted_call, NativeAccountingError
 from provider_router import candidates_for, load_providers, budget_eligible
 from provider_health import eligible as provider_eligible, load as load_provider_health, reliability_bonus, record_failure as record_provider_failure, record_success as record_provider_success
 from provider_metrics import latency_bonus, load as load_provider_metrics, record as record_provider_latency
@@ -561,7 +562,8 @@ def ask(
 
         started = time.monotonic()
         try:
-            response = api.call("POST", "/chat/completions", params, timeout_seconds=remaining)
+            response = accounted_call(api, params, provider.name, capacity_reserved=True,
+                estimated_tokens=estimated_call_tokens, timeout_seconds=remaining)
             elapsed = time.monotonic() - started
             if metrics_path is not None:
                 record_provider_latency(metrics_path, provider.name, role, elapsed)
@@ -653,11 +655,16 @@ def ask(
         except (APIError, StudioError, ProtocolError) as exc:
             elapsed = time.monotonic() - started
             if reservation is not None and reservation_open:
-                release_capacity(
-                    capacity_ledger_path,
-                    reservation["reservation_id"],
-                )
+                if isinstance(exc, NativeAccountingError) and not getattr(exc, "inference_submitted", False):
+                    release_capacity(capacity_ledger_path, reservation["reservation_id"])
+                else:
+                    # A failed POST may have reached the provider. Retain its
+                    # admitted estimate rather than reopening consumed capacity.
+                    settle_capacity(capacity_ledger_path, reservation["reservation_id"],
+                                    actual_tokens=estimated_call_tokens)
                 reservation_open = False
+            if isinstance(exc, NativeAccountingError):
+                raise
             if local_rep_path is not None and provider.unmetered and ":" in provider.name:
                 record_local_model_reputation(
                     local_rep_path,

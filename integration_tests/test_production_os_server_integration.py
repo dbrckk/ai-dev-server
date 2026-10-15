@@ -175,12 +175,16 @@ class RealServerWorkerTests(unittest.TestCase):
                     if active_before_complete and len(executed) == 1:
                         return {'status': 'active', 'finished': False,
                                 'next_stage': 'preview', 'usage': {}}
-                    return {'status': 'complete', 'finished': True, 'usage': {}}
+                    return {'status': 'complete', 'finished': True, 'commit_shas': ['a'*40], 'usage': {'total_tokens':150,'runs':1,'api_calls':1}}
                 result = run_once(client, worker_id='github-actions-worker',
                                   output_root=root / 'output', run_project=runner,
                                   capabilities=['python'], heartbeat_interval_seconds=0.05)
                 self.assertEqual(executed, ['verified'] * (2 if active_before_complete else 1))
                 self.assertEqual(result['status'], expected)
+                if expected == 'completed':
+                    execution = control.dashboard_store.latest_execution(jobs[0]['key'])
+                    self.assertEqual(execution['commit_count'], 1)
+                    self.assertEqual(execution['total_tokens'], 150)
                 current = control.workflows.get(workflow['id'])
                 self.assertEqual(current['status'], 'succeeded' if expected == 'completed' else 'failed')
                 self.assertEqual(current['tasks'][0]['status'], 'succeeded' if expected == 'completed' else 'failed')

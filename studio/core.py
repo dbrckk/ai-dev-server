@@ -338,6 +338,7 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         raise StudioError('Credential-bearing HTTP redirects are refused')
 
 class API:
+    supports_bounded_retries = True
     def __init__(self, base, key):
         from urllib.parse import urlsplit
         u = urlsplit(base)

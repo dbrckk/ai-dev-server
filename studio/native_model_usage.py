@@ -87,10 +87,12 @@ def _reported(response):
     usage = response.get('usage') if isinstance(response, dict) else None
     if not isinstance(usage, dict):
         return None
-    incoming = usage.get('prompt_tokens')
-    outgoing = usage.get('completion_tokens')
-    if any(type(x) is not int or x < 0 for x in (incoming, outgoing)):
+    components = [usage.get(key, 0) for key in
+                  ('prompt_tokens', 'input_tokens', 'completion_tokens', 'output_tokens')]
+    if any(type(x) is not int or x < 0 for x in components):
         return None
+    incoming = max(components[:2])
+    outgoing = max(components[2:])
     total = usage.get('total_tokens', incoming + outgoing)
     if type(total) is not int or total <= 0 or total < incoming + outgoing:
         return None
@@ -105,10 +107,13 @@ def _reported(response):
             'cached_input_tokens': cached, 'reasoning_tokens': reasoning}
 
 
-def call(api, params, provider):
+def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=None, timeout_seconds=None):
+    transport = {} if timeout_seconds is None else {'timeout_seconds': timeout_seconds}
+    if getattr(type(api), 'supports_bounded_retries', False) is True:
+        transport['max_attempts'] = 1
     path = _path()
     if path is None:
-        return api.call('POST', '/chat/completions', params)
+        return api.call('POST', '/chat/completions', params, **transport)
     with exclusive(path):
         _save(path, _load(path))  # Verify storage before submitting inference.
     payload = dict(params)
@@ -118,7 +123,7 @@ def call(api, params, provider):
     ledger_path = None
     plan_raw = os.environ.get('STUDIO_CAPACITY_PLAN_PATH', '')
     project_id = os.environ.get('STUDIO_PROJECT_ID', '')
-    if plan_raw:
+    if plan_raw and not capacity_reserved:
         envelope = project_envelope(plan_raw, project_id)
         ledger_raw = os.environ.get('STUDIO_CAPACITY_LEDGER_PATH', '')
         if envelope is None or not ledger_raw or not project_id:
@@ -162,7 +167,7 @@ def call(api, params, provider):
     payload['max_tokens'] = output_limit
     if 'reasoning_budget' in payload:
         payload['reasoning_budget'] = min(int(payload['reasoning_budget']), output_limit)
-    estimate = prompt_estimate + output_limit
+    estimate = prompt_estimate + output_limit if estimated_tokens is None else max(1, int(estimated_tokens))
     try:
         with exclusive(path):
             value = _load(path); usage = value['usage']
@@ -175,28 +180,28 @@ def call(api, params, provider):
         if reservation is not None:
             settle(ledger_path, reservation['reservation_id'], actual_tokens=0)
         raise
-    response = None
-    reported = None
     try:
-        # One POST per accounted submission. Provider fallback is separately
-        # reserved; opaque transport retries must not bypass admission.
-        from core import API
-        if isinstance(api, API):
-            response = api.call('POST', '/chat/completions', payload, max_attempts=1)
-        else:
-            response = api.call('POST', '/chat/completions', payload)
-        reported = _reported(response)
-        return response
-    finally:
-        actual = reported['total_tokens'] if reported is not None else estimate
-        if reservation is not None:
-            settle(ledger_path, reservation['reservation_id'], actual_tokens=actual)
-        if reported is not None:
-            with exclusive(path):
-                value = _load(path); usage = value['usage']
-                usage['total_tokens'] += actual - estimate
-                usage['estimated_calls'] -= 1
-                usage['reported_tokens'] += actual
-                for key in ('input_tokens','output_tokens','cached_input_tokens','reasoning_tokens'):
-                    usage[key] += reported[key]
-                _save(path, value)
+        response = None
+        reported = None
+        try:
+            # One POST per accounted submission. Provider fallback is separately
+            # reserved; opaque transport retries must not bypass admission.
+            response = api.call('POST', '/chat/completions', payload, **transport)
+            reported = _reported(response)
+            return response
+        finally:
+            actual = reported['total_tokens'] if reported is not None else estimate
+            if reservation is not None:
+                settle(ledger_path, reservation['reservation_id'], actual_tokens=actual)
+            if reported is not None:
+                with exclusive(path):
+                    value = _load(path); usage = value['usage']
+                    usage['total_tokens'] += actual - estimate
+                    usage['estimated_calls'] -= 1
+                    usage['reported_tokens'] += actual
+                    for key in ('input_tokens','output_tokens','cached_input_tokens','reasoning_tokens'):
+                        usage[key] += reported[key]
+                    _save(path, value)
+    except NativeAccountingError as exc:
+        exc.inference_submitted = True
+        raise

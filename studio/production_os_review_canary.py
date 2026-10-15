@@ -15,7 +15,7 @@ from execution_checkpoint import advance as advance_checkpoint, new as new_check
 from generic_repository import GenericRepository
 from run import GitHub
 
-_CANARY = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8})\\.")
+_CANARY = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8})\.")
 
 
 def contract(req: dict) -> tuple[str, str] | None:
@@ -64,9 +64,9 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
     if target.exists() or target.is_symlink():
         raise StudioError("Delivery canary target already exists; no overwrite permitted")
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(line + "\\n", encoding="utf-8")
+    target.write_text(line + "\n", encoding="utf-8")
     raw = target.read_bytes()
-    if raw != (line + "\\n").encode("utf-8"):
+    if raw != (line + "\n").encode("utf-8"):
         raise StudioError("Delivery canary file bytes did not match contract")
     sha = repo.publish(base_sha, work, "Production-OS verified Jumpy delivery canary")
     verification = {

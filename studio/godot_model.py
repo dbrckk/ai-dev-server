@@ -59,7 +59,15 @@ DESIGN_SCHEMA = 'Return ONLY a JSON object containing the complete Godot-oriente
 class GodotModel(Model):
     def ask(self, role, context, screenshots=()):
         from learning_context import augment
-        context = augment(context)
+        # Keep validated memories, but prioritize the current source and
+        # preserve the remaining free quota for actual GDScript output.
+        # This cap affects injected memory only, never project files.
+        if role in ('product', 'design'):
+            context = augment(context, max_items=2, max_chars=1400)
+        elif role in ('implementation', 'tests', 'review'):
+            context = augment(context, max_items=4, max_chars=2800)
+        else:
+            context = augment(context)
         if role not in GODOT_ROLE:
             return super().ask(role, context, screenshots)
         if screenshots:

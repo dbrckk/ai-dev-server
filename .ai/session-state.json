@@ -3,7 +3,7 @@
   "updated_at": "2026-10-15",
   "task": "Verify real startup and correct generic inference plus execution commit telemetry",
   "base_commit": "1cb258facb9fcd2877de97e677a83f7ccb72785f",
-  "branch": "fix/godot-bounded-planning-context-20261015",
+  "branch": "feat/canary-jumpy-settings-tap-guard-20261015",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -105,10 +105,10 @@
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Godot planning context bounded to 12,000 source chars total, 4,800 per file, 8 previews and 100 manifest entries; leave implementation/QA/review exact source unchanged",
-    "Qualify existing test extension using a ~600 KB Godot script and real GitHub Actions on exact PR SHA",
-    "Previous PR #308 successfully merged as 3c67ed59169f12240b5c2dea2e8b52c1ffa6a153 with all seven checks successful",
-    "Next after merge: bounded hosted Godot coding canary and real changed-code Godot validation, without paid quota changes"
+    "PR #309 merged f4137d62598333b52dc1988ef8aca2c3978247fe with 7 successful exact-head workflows; bounded Godot planning context now on ai-dev-server/main",
+    "Add strict Jumpy-only settings tap guard source-code canary scenario; extend existing tests and qualify exact-head CI before triggering",
+    "After merge increment control canary sequence 33→34 and choose jumpy_settings_tap_guard to verify real model-generated GDScript patch (not marker file)",
+    "Review actual worker model capacity, change diff, Jumpy headless CI and PR before claiming source-code delivery. Never merge Jumpy checkpoint automatically."
   ],
   "merged_changes": [
     {
@@ -379,6 +379,18 @@
       "tests",
       "review"
     ],
-    "status": "CI qualification pending"
+    "status": "merged; exact-head 7/7 green",
+    "merge_commit": "f4137d62598333b52dc1988ef8aca2c3978247fe"
+  },
+  "canary_34_plan": {
+    "scenario": "jumpy_settings_tap_guard",
+    "repository": "dbrckk/Jumpy",
+    "objective": "Ignore blank-screen tap-to-start only when settings_open true on READY screen. Change scripts/main.gd in autonomous trusted worker; ensure Godot parse and review PR.",
+    "status": "canary scenario CI not yet qualified",
+    "non_goals": [
+      "No Jumpy main merge",
+      "No provider quota changes",
+      "No text marker workaround"
+    ]
   }
 }

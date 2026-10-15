@@ -64,7 +64,36 @@ def _safe_apply(
         target.write_text(content)
 
 
-def _context(req: dict, state: dict, root: Path) -> str:
+def _context(req: dict, state: dict, root: Path, *, role: str = 'implementation') -> str:
+    # Product/design planning needs the brief, project identity and authored
+    # specification, NOT full GDScript, every existing asset, or the extensive
+    # architecture telemetry. Model input is charged to the same project token
+    # envelope as implementation. Keep that budget available for code edits.
+    if role in ('product', 'design'):
+        references = {}
+        for rel, max_bytes in (('docs/GAME_DESIGN.md', 16000),
+                               ('project.godot', 8000),
+                               ('README.md', 4000)):
+            p = root / rel
+            if p.is_file() and not p.is_symlink() and p.stat().st_size <= max_bytes:
+                references[rel] = p.read_text(encoding='utf-8')
+        return canonical({
+            'engine': 'godot',
+            'phase': role,
+            'request': {
+                'app_name': req['app_name'],
+                'target_repo': req['target_repo'],
+                'brief': req['brief'],
+            },
+            'product': state.get('product') if role == 'design' else None,
+            'specifications': references,
+            'source_files': sorted(
+                path.relative_to(root).as_posix()
+                for path in root.rglob('*')
+                if path.is_file() and not path.is_symlink()
+                and editable(path.relative_to(root).as_posix(), 'godot')
+            )[:80],
+        })
     files = {}
     for path in sorted(root.rglob('*')):
         if not path.is_file() or path.is_symlink():
@@ -239,7 +268,7 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
     try:
         for role in ('product','design'):
             if role not in state:
-                result = model.ask(role, _context(req,state,root))
+                result = model.ask(role, _context(req, state, root, role=role))
                 if role == 'product':
                     try: validate_journeys(result.get('journeys'))
                     except ValueError as exc: raise StudioError(str(exc)) from None

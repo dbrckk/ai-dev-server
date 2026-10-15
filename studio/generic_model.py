@@ -9,7 +9,7 @@ from pathlib import Path
 from core import API, APIError, ProtocolError, StudioError
 from native_model_usage import call as accounted_call, NativeAccountingError
 from provider_router import candidates_for, load_providers, budget_eligible
-from provider_health import eligible as provider_eligible, load as load_provider_health, reliability_bonus, record_failure as record_provider_failure, record_success as record_provider_success
+from provider_health import eligible as provider_eligible, scoped_key as provider_scoped_key, load as load_provider_health, reliability_bonus, record_failure as record_provider_failure, record_success as record_provider_success
 from provider_metrics import latency_bonus, load as load_provider_metrics, record as record_provider_latency
 from adaptive_scoring import score_provider
 from routing_history import learned_weights, load as load_routing_history, record as record_routing_event
@@ -281,7 +281,21 @@ def ask(
     )
     weights = learned_weights(history, kind="provider", role=role)
     if health_path is not None:
-        providers = tuple(provider for provider in providers if provider_eligible(health_path, provider.name))
+        # Verified failures are tracked per provider/model/role. Respect that
+        # cooldown in addition to the provider-wide circuit breaker; otherwise
+        # a healthy provider's unusable coding model is selected repeatedly.
+        providers = tuple(
+            provider for provider in providers
+            if provider_eligible(health_path, provider.name)
+            and provider_eligible(
+                health_path,
+                provider_scoped_key(
+                    provider.name,
+                    model=provider.model_for(role),
+                    role=role,
+                ),
+            )
+        )
     providers = budget_eligible(
         providers,
         max_api_cost_usd=max_api_cost_usd,

@@ -1692,7 +1692,8 @@ Objective and current plan:
                     if isinstance(item.get("model"), dict)
                 )
                 need_model_candidate = (
-                    allow_model_fallback
+                    (not catalog_integration)
+                    and allow_model_fallback
                     and used_model_count < candidate_schedule.model_limit
                     and len(candidate_records) < candidate_schedule.candidate_limit
                     and (

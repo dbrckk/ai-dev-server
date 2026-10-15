@@ -122,6 +122,32 @@ class GodotModelTests(unittest.TestCase):
         self.assertIn('Godot mobile game product lead', fallback_api.calls[0][2]['messages'][0]['content'])
         api_factory.assert_called_once_with('https://fallback.test/v1', 'fallback-key')
 
+        # A successful HTTP call with malformed JSON is not successful
+        # inference. The bounded repair tries an alternate provider instead
+        # of requesting the same malformed completion twice.
+        malformed = {'choices': [{'finish_reason': 'stop',
+                                  'message': {'content': '{not json'}}]}
+        subject = model([malformed])
+        fallback_api = FakeAPI([completion(product_value())])
+        fallback_api.base = 'https://fallback.test/v1'
+        with patch('core.API', return_value=fallback_api):
+            result = subject.ask('product', 'plan game')
+        self.assertEqual(result['journeys'][0]['id'], 'play')
+        self.assertEqual(subject.providers_used['product'], 'fallback')
+        self.assertEqual(subject.calls, 2)
+        self.assertEqual(len(subject.api.calls), 1)
+        self.assertEqual(len(fallback_api.calls), 1)
+
+        # An installation with no alternate provider still retains its
+        # original same-provider repair attempt, with no new provider calls.
+        subject = model([malformed, completion(product_value())])
+        subject.providers = (subject.providers[0],)
+        result = subject.ask('product', 'plan game')
+        self.assertEqual(result['journeys'][0]['id'], 'play')
+        self.assertEqual(subject.providers_used['product'], 'primary')
+        self.assertEqual(len(subject.api.calls), 2)
+        self.assertEqual(subject.calls, 2)
+
     def test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary(self):
         subject = model([completion(product_value())])
         primary, fallback = subject.providers

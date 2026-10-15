@@ -113,8 +113,8 @@ request.json
 ## File: production-os-diagnostics-kick.json
 ```json
 {
-  "sequence": 12,
-  "reason": "Verify corrected diagnostic_ready acceptance after reviewed PR 297 passed 7/7 workflows and was merged (2026-10-14)"
+  "sequence": 13,
+  "reason": "Verify live inference/operator/wake readiness after reviewed PR300 native accounting (7/7 exact-head workflows) and deployed Production-OS PR269"
 }
 ```
 
@@ -140,7 +140,7 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-  "sequence": 26,
+  "sequence": 28,
   "repository": "dbrckk/repo-standards"
 }
 ```

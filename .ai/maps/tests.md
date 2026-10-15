@@ -5295,6 +5295,8 @@ def test_success_settles_transactional_reservation_with_actual_usage(self)
 ⋮----
 reservation = {
 ⋮----
+journal = snapshot()['usage']
+⋮----
 def test_protocol_failure_settles_consumed_tokens_without_double_release(self)
 ⋮----
 def test_transport_failure_releases_open_reservation(self)
@@ -5471,6 +5473,17 @@ actual = producer.await_trusted_review(sha)
 # window and keep the review blocker visible; never fabricate a PR.
 ⋮----
 missing = producer.await_trusted_review("3" * 40)
+⋮----
+# Extend the existing PR-delivery integration contract to the explicitly
+# opted-in Jumpy target. A 204 dispatch is only a request; the confirmed
+# PR must still match the exact commit and the destination repository.
+jumpy = FakeGitHub([{
+⋮----
+jumpy_producer = GenericRepository(jumpy, "dbrckk/Jumpy", "mp-" + "a" * 24)
+exact = jumpy_producer.await_trusted_review(sha)
+⋮----
+dispatched = jumpy_producer.request_trusted_review_handoff(sha)
+request = opener.return_value.open.call_args.args[0]
 ```
 
 ## File: test_generic_structural_verify.py

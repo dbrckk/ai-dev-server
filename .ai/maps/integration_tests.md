@@ -120,5 +120,7 @@ proc = subprocess.run([sys.executable, str(artifact)], check=True,
 ⋮----
 result = run_once(client, worker_id='github-actions-worker',
 ⋮----
+execution = control.dashboard_store.latest_execution(jobs[0]['key'])
+⋮----
 current = control.workflows.get(workflow['id'])
 ```

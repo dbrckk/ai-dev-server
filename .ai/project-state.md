@@ -102,32 +102,28 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-14T19:48:50Z
+Generated: 2026-10-15T14:06:14Z
 
 ### Git
 - Branch: `main`
-- Head: `a548be53a62c`
-- Commit date: 2026-10-14T21:48:38+02:00
-- Commit: fix(inference): account native calls against project capacity (#300)
+- Head: `d871180bcbdf`
+- Commit date: 2026-10-15T16:05:54+02:00
+- Commit: fix(worker): trusted Jumpy review PR handoff without elevated PAT (#302)
 - Tracked files: 864
 
 ### Recently changed files
+- `studio/generic_repository.py`
+- `tests/test_generic_repository_pull_request.py`
+- `control/production-os-worker-canary.json`
 - `docs/PRODUCTION_OS_WORKER.md`
-- `studio/autonomous_project.py`
+- `integration_tests/test_production_os_server_integration.py`
 - `studio/core.py`
-- `studio/github_runner.py`
-- `studio/godot_model.py`
+- `studio/generic_model.py`
 - `studio/native_model_usage.py`
 - `studio/production_os_worker.py`
-- `tests/test_api_transport_retry.py`
-- `tests/test_autonomous_project.py`
-- `tests/test_godot_model.py`
-- `studio/godot_preview.py`
-- `studio/multi_engine_orchestrator.py`
-- `tests/test_github_runner_persistent.py`
-- `tests/test_godot_preview.py`
-- `tests/test_multi_engine_orchestrator.py`
-- `control/production-os-resume.json`
+- `tests/test_generic_model_capacity.py`
+- `tests/test_production_os_worker_runtime.py`
+- `control/production-os-diagnostics-kick.json`
 
 ### Project signals
 - No common build descriptor detected

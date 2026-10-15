@@ -6232,6 +6232,7 @@ def redirect_request(self, req, fp, code, msg, headers, newurl)
 ⋮----
 class API
 ⋮----
+supports_bounded_retries = True
 def __init__(self, base, key)
 ⋮----
 u = urlsplit(base)
@@ -8864,7 +8865,7 @@ reservation_open = True
 ⋮----
 started = time.monotonic()
 ⋮----
-response = api.call("POST", "/chat/completions", params, timeout_seconds=remaining)
+response = accounted_call(api, params, provider.name, capacity_reserved=True,
 elapsed = time.monotonic() - started
 ⋮----
 usage = response.get("usage") if isinstance(response, dict) else None
@@ -8874,6 +8875,9 @@ call_cost = 0.0
 call_cost = 0.0 if (provider.unmetered or provider.monthly_token_quota > 0) else estimate_call_cost(
 ⋮----
 decoded = _decode(response)
+⋮----
+# A failed POST may have reached the provider. Retain its
+# admitted estimate rather than reopening consumed capacity.
 ⋮----
 # A provider-supplied 429 has already exhausted API-level
 # retries. Open its transient circuit now rather than
@@ -9601,6 +9605,10 @@ confirmed_review = (
 ⋮----
 MAX_FILES=500
 MAX_TOTAL=6_000_000
+⋮----
+# Only targets that have an independently reviewed default-branch
+# repository_dispatch workflow may request a GitHub-token PR handoff.
+TRUSTED_REVIEW_TARGETS = frozenset({
 ⋮----
 class GenericRepository
 ⋮----
@@ -14223,9 +14231,10 @@ def _reported(response)
 ⋮----
 usage = response.get('usage') if isinstance(response, dict) else None
 ⋮----
-incoming = usage.get('prompt_tokens')
-outgoing = usage.get('completion_tokens')
+components = [usage.get(key, 0) for key in
 ⋮----
+incoming = max(components[:2])
+outgoing = max(components[2:])
 total = usage.get('total_tokens', incoming + outgoing)
 ⋮----
 prompt_details = usage.get('prompt_tokens_details')
@@ -14233,7 +14242,9 @@ completion_details = usage.get('completion_tokens_details')
 cached = prompt_details.get('cached_tokens', 0) if isinstance(prompt_details, dict) else 0
 reasoning = completion_details.get('reasoning_tokens', 0) if isinstance(completion_details, dict) else 0
 ⋮----
-def call(api, params, provider)
+def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=None, timeout_seconds=None)
+⋮----
+transport = {} if timeout_seconds is None else {'timeout_seconds': timeout_seconds}
 ⋮----
 path = _path()
 ⋮----
@@ -14261,7 +14272,7 @@ reservation = reserve(ledger_path, project_id=project_id, provider='native:'+pro
 ⋮----
 value = _load(path); value['capacity_exhausted'] = True; _save(path, value)
 ⋮----
-estimate = prompt_estimate + output_limit
+estimate = prompt_estimate + output_limit if estimated_tokens is None else max(1, int(estimated_tokens))
 ⋮----
 value = _load(path); usage = value['usage']
 ⋮----
@@ -14272,10 +14283,7 @@ reported = None
 ⋮----
 # One POST per accounted submission. Provider fallback is separately
 # reserved; opaque transport retries must not bypass admission.
-⋮----
-response = api.call('POST', '/chat/completions', payload, max_attempts=1)
-⋮----
-response = api.call('POST', '/chat/completions', payload)
+response = api.call('POST', '/chat/completions', payload, **transport)
 reported = _reported(response)
 ⋮----
 actual = reported['total_tokens'] if reported is not None else estimate
@@ -16316,6 +16324,10 @@ def _result_payload(result: dict[str, Any]) -> dict[str, Any]
 ⋮----
 usage = result.get("usage")
 evidence = result.get("evidence")
+⋮----
+commits = evidence.get('commit_shas') if isinstance(evidence, dict) else None
+⋮----
+shas = list(dict.fromkeys(sha for sha in commits
 ⋮----
 status = str(result.get("status") or "failed")
 next_stage = result.get("evidence", {}).get("next_stage") if isinstance(

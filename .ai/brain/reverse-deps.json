@@ -2282,6 +2282,7 @@
         "studio/local_model_reputation.py",
         "studio/local_model_specialization.py",
         "studio/model_portfolio_learning.py",
+        "studio/native_model_usage.py",
         "studio/provider_cost.py",
         "studio/provider_health.py",
         "studio/provider_metrics.py",
@@ -2301,7 +2302,7 @@
         "tests/test_provider_429_cooldown.py"
       ],
       "in_degree": 5,
-      "out_degree": 21
+      "out_degree": 22
     },
     "studio/generic_policy.py": {
       "dependencies": [],
@@ -3537,13 +3538,15 @@
       "dependents": [
         "studio/autonomous_project.py",
         "studio/core.py",
+        "studio/generic_model.py",
         "studio/github_runner.py",
         "studio/godot_model.py",
         "studio/production_os_worker.py",
         "tests/test_autonomous_project.py",
+        "tests/test_generic_model_capacity.py",
         "tests/test_godot_model.py"
       ],
-      "in_degree": 7,
+      "in_degree": 9,
       "out_degree": 6
     },
     "studio/native_qa.py": {
@@ -6202,12 +6205,13 @@
       "dependencies": [
         "studio/core.py",
         "studio/generic_model.py",
+        "studio/native_model_usage.py",
         "studio/provider_router.py",
         "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 4
+      "out_degree": 5
     },
     "tests/test_generic_policy.py": {
       "dependencies": [

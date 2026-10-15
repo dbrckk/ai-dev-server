@@ -1,16 +1,24 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "062d45cbfb70056407b751fcd35417ee182ce84f",
-  "head": "a548be53a62c36b0bd42df4d0d70d24e38f77895",
+  "base": "a548be53a62c36b0bd42df4d0d70d24e38f77895",
+  "head": "d871180bcbdf3bafbf4870f50d285a6438ea29fb",
   "index_mode": "incremental",
   "changed_files": [
+    {
+      "path": "control/production-os-diagnostics-kick.json",
+      "status": "M"
+    },
+    {
+      "path": "control/production-os-worker-canary.json",
+      "status": "M"
+    },
     {
       "path": "docs/PRODUCTION_OS_WORKER.md",
       "status": "M"
     },
     {
-      "path": "studio/autonomous_project.py",
+      "path": "integration_tests/test_production_os_server_integration.py",
       "status": "M"
     },
     {
@@ -18,44 +26,44 @@
       "status": "M"
     },
     {
-      "path": "studio/github_runner.py",
+      "path": "studio/generic_model.py",
       "status": "M"
     },
     {
-      "path": "studio/godot_model.py",
+      "path": "studio/generic_repository.py",
       "status": "M"
     },
     {
       "path": "studio/native_model_usage.py",
-      "status": "A"
+      "status": "M"
     },
     {
       "path": "studio/production_os_worker.py",
       "status": "M"
     },
     {
-      "path": "tests/test_api_transport_retry.py",
+      "path": "tests/test_generic_model_capacity.py",
       "status": "M"
     },
     {
-      "path": "tests/test_autonomous_project.py",
+      "path": "tests/test_generic_repository_pull_request.py",
       "status": "M"
     },
     {
-      "path": "tests/test_godot_model.py",
+      "path": "tests/test_production_os_worker_runtime.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "studio/autonomous_project.py",
+    "integration_tests/test_production_os_server_integration.py",
     "studio/core.py",
-    "studio/github_runner.py",
-    "studio/godot_model.py",
+    "studio/generic_model.py",
+    "studio/generic_repository.py",
     "studio/native_model_usage.py",
     "studio/production_os_worker.py",
-    "tests/test_api_transport_retry.py",
-    "tests/test_autonomous_project.py",
-    "tests/test_godot_model.py"
+    "tests/test_generic_model_capacity.py",
+    "tests/test_generic_repository_pull_request.py",
+    "tests/test_production_os_worker_runtime.py"
   ],
   "impacted_files": [
     "integration_tests/test_production_os_server_integration.py",
@@ -189,11 +197,10 @@
     "tests/test_durable_state.py",
     "tests/test_engine_entry.py",
     "tests/test_evolution_rollback.py",
+    "tests/test_generic_adaptive_quota_budget.py",
     "tests/test_generic_model_capacity.py",
+    "tests/test_generic_repository_pull_request.py",
     "tests/test_github_full_gate_cache_store.py",
-    "tests/test_github_runner_persistent.py",
-    "tests/test_github_runner_round_persistence.py",
-    "tests/test_github_runner_usage.py",
     "tests/test_godot_android_export.py",
     "tests/test_godot_android_stage.py",
     "tests/test_godot_baseline.py",
@@ -212,7 +219,6 @@
     "tests/test_godot_store_metadata_qa.py",
     "tests/test_godot_visual_qa.py",
     "tests/test_godot_visual_stage.py",
-    "tests/test_human_handoff_status_v3.py",
     "tests/test_immutable_artifact_cache.py",
     "tests/test_journeys.py",
     "tests/test_jumpy_v13_migration.py",
@@ -1179,103 +1185,103 @@
       "name": "__init__",
       "kind": "function",
       "file": "studio/core.py",
-      "line": 341
+      "line": 342
     },
     {
       "name": "_response",
       "kind": "function",
       "file": "studio/core.py",
-      "line": 359
+      "line": 360
     },
     {
       "name": "call",
       "kind": "function",
       "file": "studio/core.py",
-      "line": 395
+      "line": 396
     },
     {
       "name": "Model",
       "kind": "class",
       "file": "studio/core.py",
-      "line": 429
+      "line": 430
     },
     {
       "name": "__init__",
       "kind": "function",
       "file": "studio/core.py",
-      "line": 430
+      "line": 431
     },
     {
       "name": "ask",
       "kind": "function",
       "file": "studio/core.py",
-      "line": 456
+      "line": 457
     },
     {
       "name": "_ask",
       "kind": "function",
       "file": "studio/core.py",
-      "line": 485
+      "line": 486
     },
     {
       "name": "unique_object",
       "kind": "function",
       "file": "studio/core.py",
-      "line": 834
+      "line": 835
     },
     {
       "name": "Sandbox",
       "kind": "class",
       "file": "studio/core.py",
-      "line": 914
+      "line": 915
     },
     {
       "name": "__init__",
       "kind": "function",
       "file": "studio/core.py",
-      "line": 915
+      "line": 916
     },
     {
       "name": "run",
       "kind": "function",
       "file": "studio/core.py",
-      "line": 918
+      "line": 919
     },
     {
       "name": "create",
       "kind": "function",
       "file": "studio/core.py",
-      "line": 942
+      "line": 943
     },
     {
       "name": "quick_dependency_gate",
       "kind": "function",
       "file": "studio/core.py",
-      "line": 950
+      "line": 951
     },
     {
       "name": "quick_analyze_gate",
       "kind": "function",
       "file": "studio/core.py",
-      "line": 957
+      "line": 958
     },
     {
       "name": "quick_test_gate",
       "kind": "function",
       "file": "studio/core.py",
-      "line": 964
+      "line": 965
     },
     {
       "name": "quick_gates",
       "kind": "function",
       "file": "studio/core.py",
-      "line": 972
+      "line": 973
     },
     {
       "name": "gates",
       "kind": "function",
       "file": "studio/core.py",
-      "line": 986
+      "line": 987
     },
     {
       "name": "run_command",
@@ -1911,31 +1917,31 @@
       "name": "_decode",
       "kind": "function",
       "file": "studio/generic_model.py",
-      "line": 67
+      "line": 68
     },
     {
       "name": "_reported_usage_tokens",
       "kind": "function",
       "file": "studio/generic_model.py",
-      "line": 84
+      "line": 85
     },
     {
       "name": "token_count",
       "kind": "function",
       "file": "studio/generic_model.py",
-      "line": 99
+      "line": 100
     },
     {
       "name": "_bounded_model_token_budget",
       "kind": "function",
       "file": "studio/generic_model.py",
-      "line": 121
+      "line": 122
     },
     {
       "name": "ask",
       "kind": "function",
       "file": "studio/generic_model.py",
-      "line": 172
+      "line": 173
     },
     {
       "name": "_snapshot",
@@ -2031,19 +2037,19 @@
       "name": "GenericRepository",
       "kind": "class",
       "file": "studio/generic_repository.py",
-      "line": 16
+      "line": 23
     },
     {
       "name": "__init__",
       "kind": "function",
       "file": "studio/generic_repository.py",
-      "line": 17
+      "line": 24
     },
     {
       "name": "_tree",
       "kind": "function",
       "file": "studio/generic_repository.py",
-      "line": 21
+      "line": 28
     }
   ],
   "selected_tests": [
@@ -2060,11 +2066,10 @@
     "tests/test_durable_state.py",
     "tests/test_engine_entry.py",
     "tests/test_evolution_rollback.py",
+    "tests/test_generic_adaptive_quota_budget.py",
     "tests/test_generic_model_capacity.py",
+    "tests/test_generic_repository_pull_request.py",
     "tests/test_github_full_gate_cache_store.py",
-    "tests/test_github_runner_persistent.py",
-    "tests/test_github_runner_round_persistence.py",
-    "tests/test_github_runner_usage.py",
     "tests/test_godot_android_export.py",
     "tests/test_godot_android_stage.py",
     "tests/test_godot_baseline.py",
@@ -2083,7 +2088,6 @@
     "tests/test_godot_store_metadata_qa.py",
     "tests/test_godot_visual_qa.py",
     "tests/test_godot_visual_stage.py",
-    "tests/test_human_handoff_status_v3.py",
     "tests/test_immutable_artifact_cache.py",
     "tests/test_journeys.py",
     "tests/test_jumpy_v13_migration.py",

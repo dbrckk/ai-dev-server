@@ -1,10 +1,12 @@
 # Change impact
 
-Base: ae380cf95d7925470ef1c2bbd38c652aebc00b98
-Head: 04745633548e43619a8d08f4e0bddc639e584489
+Base: 91639f3e13235ea7f5c28461baf6aebbd6e1442c
+Head: bcf0992defd666a0db8fcc990fce27b413be3040
 
 ## Changed files
+- M studio/core.py
 - M studio/generic_model.py
+- M studio/native_model_usage.py
 
 ## Affected areas
 - studio

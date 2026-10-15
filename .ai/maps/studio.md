@@ -6223,7 +6223,10 @@ def verdict(value)
 ⋮----
 class APIError(StudioError)
 ⋮----
-def __init__(self, status)
+def __init__(self, status, *, pending_accepted=False)
+⋮----
+# A status-poll failure may follow an accepted generation.
+# In that case token usage is unknown and must remain reserved.
 ⋮----
 class ProtocolError(StudioError)
 ⋮----
@@ -14332,13 +14335,19 @@ name = str(payload.get('model') or 'unknown')
 ⋮----
 response = None
 reported = None
+definitively_rejected = False
 ⋮----
 # One POST per accounted submission. Provider fallback is separately
 # reserved; opaque transport retries must not bypass admission.
 response = api.call('POST', '/chat/completions', payload, **transport)
 reported = _reported(response)
 ⋮----
-actual = reported['total_tokens'] if reported is not None else estimate
+# A rejection of the initial POST cannot have generated tokens.
+# Polling an accepted 202 response, transport timeouts and 5xx
+# failures remain conservatively charged: usage is unknown.
+definitively_rejected = (
+⋮----
+actual = (
 ````
 
 ## File: native_qa.py

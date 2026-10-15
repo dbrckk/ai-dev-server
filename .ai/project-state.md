@@ -102,23 +102,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-15T21:36:14Z
+Generated: 2026-10-15T22:32:53Z
 
 ### Git
 - Branch: `main`
-- Head: `04745633548e`
-- Commit date: 2026-10-15T23:36:03+02:00
-- Commit: fix: honor scoped model health when routing autonomous coding
+- Head: `bcf0992defd6`
+- Commit date: 2026-10-16T00:32:43+02:00
+- Commit: fix(capacity): release quota reservations on definite provider rejection (#312)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/core.py`
 - `studio/generic_model.py`
+- `studio/native_model_usage.py`
 - `control/production-os-worker-canary.json`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
 - `control/production-os-diagnostics-kick.json`
-- `studio/godot_preview.py`
-- `tests/test_godot_preview.py`
 
 ### Project signals
 - No common build descriptor detected

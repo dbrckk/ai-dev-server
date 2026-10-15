@@ -69,14 +69,31 @@ def validate_control(payload):
     if owner in {".", ".."} or name in {".", ".."}:
         raise ValueError("canary repository is invalid")
     scenario = payload.get("scenario", "file")
-    if not isinstance(scenario, str) or scenario not in {"file", "jumpy_landing_feedback"}:
+    if not isinstance(scenario, str) or scenario not in {"file", "jumpy_landing_feedback", "jumpy_settings_tap_guard"}:
         raise ValueError("canary scenario is invalid")
-    if scenario == "jumpy_landing_feedback" and repository != "dbrckk/Jumpy":
+    if scenario in {"jumpy_landing_feedback", "jumpy_settings_tap_guard"} and repository != "dbrckk/Jumpy":
         raise ValueError("gameplay scenario requires the trusted Jumpy repository")
     return sequence, repository
 
 
 def canary_instruction(sequence, scenario="file"):
+    if scenario == "jumpy_settings_tap_guard":
+        return (
+            f"Production-OS verified autonomous Jumpy code-change qualification {sequence}. "
+            "Fix ONE real interface bug in scripts/main.gd: when the READY screen's "
+            "Settings panel is open (settings_open == true), tapping empty space "
+            "currently starts a game via _unhandled_input. Prevent that accidental "
+            "tap-to-start while the settings panel is open. Keep the BACK button "
+            "working, preserve all settings toggles and allow normal tap-to-start "
+            "from the main READY menu. Leave the PLAYING and DEAD input branches, "
+            "all physics, scoring, daily seed, Profile data, and UI layout unchanged. "
+            "Implement the minimal guarded condition in existing Godot 4.7 GDScript; "
+            "do not generate a marker, canary text file or documentation-only change. "
+            "Do not change tests, dependencies, workflows, secrets or monetization. "
+            "Use actual Godot 4.7.2 headless parse validation and persist the modified "
+            "source in a review branch/pull request after verification. Never merge "
+            "or publish Jumpy; report failure truthfully if model capacity is insufficient."
+        )
     if scenario == "jumpy_landing_feedback":
         return (
             f"Production-OS verified Jumpy gameplay qualification {sequence}. "

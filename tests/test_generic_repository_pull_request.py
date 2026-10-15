@@ -185,3 +185,34 @@ def test_ensure_pull_request_ignores_other_studio_branch():
     assert sleep.call_count == 12
     for call in sleep.call_args_list:
         assert call.args == (15,)
+
+    # Extend the existing PR-delivery integration contract to the explicitly
+    # opted-in Jumpy target. A 204 dispatch is only a request; the confirmed
+    # PR must still match the exact commit and the destination repository.
+    jumpy = FakeGitHub([{
+        **confirmed,
+        "html_url": "https://github.com/dbrckk/Jumpy/pull/42",
+        "head": {
+            "ref": branch,
+            "sha": sha,
+            "repo": {"full_name": "dbrckk/Jumpy"},
+        },
+        "base": {"ref": "main", "repo": {"full_name": "dbrckk/Jumpy"}},
+    }])
+    jumpy.repo = "/repos/dbrckk/Jumpy"
+    jumpy.key = "test-only-credential"
+    jumpy_producer = GenericRepository(jumpy, "dbrckk/Jumpy", "mp-" + "a" * 24)
+    exact = jumpy_producer.await_trusted_review(sha)
+    assert exact["url"] == "https://github.com/dbrckk/Jumpy/pull/42"
+    assert exact["handoff_confirmed"] is True
+    with patch("time.sleep") as fake_wait:
+        assert jumpy_producer.await_trusted_review(wrong_sha) is None
+    assert fake_wait.call_count == 12
+    with patch("generic_repository.urllib.request.build_opener") as opener:
+        opener.return_value.open.return_value.__enter__.return_value.status = 204
+        dispatched = jumpy_producer.request_trusted_review_handoff(sha)
+        request = opener.return_value.open.call_args.args[0]
+    assert dispatched == {"status": "accepted"}
+    assert request.full_url == "https://api.github.com/repos/dbrckk/Jumpy/dispatches"
+    assert b'production_os_review_handoff' in request.data
+    assert GenericRepository(FakeGitHub(), "owner/repo", "mp-" + "a" * 24).request_trusted_review_handoff(sha) == {"status": "not_configured"}

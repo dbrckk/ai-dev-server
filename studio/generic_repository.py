@@ -13,6 +13,13 @@ from generic_policy import editable
 MAX_FILES=500
 MAX_TOTAL=6_000_000
 
+# Only targets that have an independently reviewed default-branch
+# repository_dispatch workflow may request a GitHub-token PR handoff.
+TRUSTED_REVIEW_TARGETS = frozenset({
+    "dbrckk/repo-standards",
+    "dbrckk/Jumpy",
+})
+
 class GenericRepository:
     def __init__(self,github,repo:str,project_id:str):
         self.github=github; self.repo=repo; self.project_id=project_id; self.branch="studio/"+project_id
@@ -123,7 +130,7 @@ class GenericRepository:
 
     def await_trusted_review(self, expected_sha: str) -> dict | None:
         """Read-only bounded confirmation; an accepted dispatch is not a PR."""
-        if self.repo != "dbrckk/repo-standards":
+        if self.repo not in TRUSTED_REVIEW_TARGETS:
             return None
         if not re.fullmatch(r"studio/mp-[a-f0-9]{24}", self.branch):
             return None
@@ -181,7 +188,7 @@ class GenericRepository:
         never evidence that a pull request exists or a release is complete.
         Only the trusted target has installed the handoff workflow.
         """
-        if self.repo != "dbrckk/repo-standards":
+        if self.repo not in TRUSTED_REVIEW_TARGETS:
             return {"status": "not_configured"}
         if not re.fullmatch(r"studio/mp-[a-f0-9]{24}", self.branch):
             return {"status": "invalid_branch"}
@@ -191,7 +198,7 @@ class GenericRepository:
         if not token:
             return {"status": "missing_token"}
         request = urllib.request.Request(
-            "https://api.github.com/repos/dbrckk/repo-standards/dispatches",
+            "https://api.github.com/repos/" + self.repo + "/dispatches",
             method="POST",
             data=json.dumps({
                 "event_type": "production_os_review_handoff",

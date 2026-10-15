@@ -102,23 +102,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-15T22:32:53Z
+Generated: 2026-10-15T22:49:58Z
 
 ### Git
 - Branch: `main`
-- Head: `bcf0992defd6`
-- Commit date: 2026-10-16T00:32:43+02:00
-- Commit: fix(capacity): release quota reservations on definite provider rejection (#312)
+- Head: `41767c11603f`
+- Commit date: 2026-10-16T00:49:37+02:00
+- Commit: fix(godot): reserve free tokens for implementation (#314)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/godot_model.py`
+- `tests/test_godot_model.py`
 - `studio/core.py`
 - `studio/generic_model.py`
 - `studio/native_model_usage.py`
 - `control/production-os-worker-canary.json`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
-- `control/production-os-diagnostics-kick.json`
 
 ### Project signals
 - No common build descriptor detected

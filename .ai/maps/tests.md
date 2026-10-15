@@ -6331,7 +6331,7 @@ class GodotModelTests(unittest.TestCase)
 ⋮----
 def test_nvidia_source_generation_requests_json_mode(self)
 ⋮----
-subject = model([completion({'files': [{'path': 'scripts/main.gd', 'content': 'extends Node\n'}]})])
+subject = model([
 ⋮----
 def test_product_uses_godot_planning_contract_not_flutter_execution_claims(self)
 ⋮----
@@ -6352,7 +6352,6 @@ system = params['messages'][0]['content']
 ⋮----
 def test_test_role_rejects_non_test_path_then_repairs_once(self)
 ⋮----
-subject = model([
 result = subject.ask('tests', 'write regression')
 ⋮----
 def test_truncated_patch_retry_requests_a_smaller_complete_change(self)
@@ -6390,6 +6389,15 @@ subject=model([reply]); subject.ask('product','plan game')
 usage=snapshot()['usage']
 ⋮----
 subject=model([])
+⋮----
+# Regression from real Jumpy canary #34: under a finite envelope,
+# conservative unknown-usage reservations for planning must still
+# leave the full implementation output allowance available.
+planning_journal = root/'planning-usage.json'
+planning_ledger = root/'planning-ledger.json'
+planning_plan = root/'planning-plan.json'
+⋮----
+source_patch = subject.ask('implementation', 'implement the guarded input')
 ```
 
 ## File: test_godot_play_stage.py

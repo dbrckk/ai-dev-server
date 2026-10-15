@@ -12028,7 +12028,7 @@ req=request_check(json.loads(Path(a.request).read_text())); state=execute(req,Pa
 GODOT_ROLE = {
 PATCH_SCHEMA = (
 PRODUCT_SCHEMA = (
-DESIGN_SCHEMA = 'Return ONLY a JSON object containing the complete Godot-oriented design specification.'
+DESIGN_SCHEMA = ('Return ONLY a concise JSON object for the requested Godot change with direction, layout, feedback, '
 ⋮----
 class GodotModel(Model)
 ⋮----

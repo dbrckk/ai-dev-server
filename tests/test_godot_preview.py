@@ -105,10 +105,10 @@ class GodotPreviewTests(unittest.TestCase):
             source_root = Path(td)
             (source_root / 'scripts').mkdir()
             (source_root / 'scenes').mkdir()
-            main_source = 'extends Node\\n' + '# existing gameplay\\n' * 30_000
-            (source_root / 'project.godot').write_text('[application]\\nrun/main_scene="res://scenes/main.tscn"\\n')
+            main_source = 'extends Node\n' + '# existing gameplay\n' * 30_000
+            (source_root / 'project.godot').write_text('[application]\nrun/main_scene="res://scenes/main.tscn"\n')
             (source_root / 'scripts/main.gd').write_text(main_source)
-            (source_root / 'scenes/main.tscn').write_text('[gd_scene format=3]\\n')
+            (source_root / 'scenes/main.tscn').write_text('[gd_scene format=3]\n')
             for phase in ('product', 'design'):
                 planning = json.loads(godot_preview._context(
                     self.request(), {}, source_root, phase=phase,

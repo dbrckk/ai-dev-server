@@ -1,19 +1,18 @@
 # Change impact
 
-Base: ea5f6b31e93684459ae27a26e970d1d3c58bd1dd
-Head: 87ee913bfdad0ce613e1f30d0a2225ffb74722b7
+Base: c99df4f998a4979090b950a7bd212d4e39978f10
+Head: 3c67ed59169f12240b5c2dea2e8b52c1ffa6a153
 
 ## Changed files
-- M .github/workflows/production-os-actions-worker.yml
-- M tests/test_production_os_actions_worker_workflow.py
-- M tests/test_production_os_worker_canary.py
+- M studio/godot_model.py
+- M tests/test_godot_model.py
 
 ## Affected areas
-- .github
+- studio
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_godot_model.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

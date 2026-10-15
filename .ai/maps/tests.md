@@ -6366,6 +6366,16 @@ def test_structured_godot_call_falls_back_to_secondary_provider(self)
 subject = model([StudioError('API unavailable or timed out')])
 fallback_api = FakeAPI([completion(product_value())])
 ⋮----
+# A successful HTTP call with malformed JSON is not successful
+# inference. The bounded repair tries an alternate provider instead
+# of requesting the same malformed completion twice.
+malformed = {'choices': [{'finish_reason': 'stop',
+subject = model([malformed])
+⋮----
+# An installation with no alternate provider still retains its
+# original same-provider repair attempt, with no new provider calls.
+subject = model([malformed, completion(product_value())])
+⋮----
 def test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary(self)
 ⋮----
 def test_budget_is_shared_and_fail_closed(self)

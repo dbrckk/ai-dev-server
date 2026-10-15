@@ -102,22 +102,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-15T20:17:26Z
+Generated: 2026-10-15T20:33:17Z
 
 ### Git
 - Branch: `main`
-- Head: `87ee913bfdad`
-- Commit date: 2026-10-15T22:17:14+02:00
-- Commit: fix(worker): enforce ordered Production-OS canary dispatch (#307)
+- Head: `3c67ed59169f`
+- Commit date: 2026-10-15T22:33:06+02:00
+- Commit: fix(godot): recover malformed model output via alternate provider (#308)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/godot_model.py`
+- `tests/test_godot_model.py`
 - `.github/workflows/production-os-actions-worker.yml`
 - `tests/test_production_os_actions_worker_workflow.py`
 - `tests/test_production_os_worker_canary.py`
 - `control/production-os-worker-canary.json`
 - `control/production-os-diagnostics-kick.json`
-- `studio/production_os_worker_canary.py`
 
 ### Project signals
 - No common build descriptor detected

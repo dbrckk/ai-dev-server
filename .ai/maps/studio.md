@@ -12031,12 +12031,17 @@ def ask(self, role, context, screenshots=())
 context = augment(context)
 ⋮----
 error = 'unknown structured-output error'
+invalid_response_provider = None
 ⋮----
-value = self._ask_godot(role, context)
+value = self._ask_godot(
 ⋮----
 error = str(exc)
+# Malformed provider envelopes/JSON should not consume the
+# only repair attempt on the same model when a healthy
+# alternative exists. Policy/schema errors and truncated
+# output keep their original same-provider repair contract.
 ⋮----
-def _ask_godot(self, role: str, context: str) -> dict
+invalid_response_provider = self.providers_used.get(role)
 ⋮----
 provider_candidates = tuple(
 health_raw = os.environ.get('STUDIO_PROVIDER_HEALTH_PATH', '')
@@ -12056,6 +12061,13 @@ max_api_cost_usd = float(os.environ.get('STUDIO_MAX_API_COST_USD', '0') or 0.0)
 max_api_cost_usd = 0.0
 provider_candidates = budget_eligible(
 quota_data = load_provider_monthly_quota(quota_path) if quota_path is not None else {'schema': 1, 'months': {}}
+⋮----
+# Retry provider malformed output with a different eligible provider,
+# but do not strand a single-provider installation or bypass budgets.
+⋮----
+alternatives = tuple(
+⋮----
+provider_candidates = alternatives
 ⋮----
 schema = PATCH_SCHEMA if role in ('implementation', 'tests') else PRODUCT_SCHEMA if role == 'product' else DESIGN_SCHEMA
 system_content = GODOT_ROLE[role] + '\n' + schema

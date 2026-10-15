@@ -57,7 +57,7 @@ class GodotModelTests(unittest.TestCase):
         subject.api.base = 'https://integrate.api.nvidia.com/v1'
         subject.ask('implementation', 'improve game')
         self.assertEqual(subject.api.calls[0][2]['response_format'], {'type': 'json_object'})
-        self.assertEqual(subject.api.calls[0][2]['reasoning_budget'], 2048)
+        self.assertNotIn('reasoning_budget', subject.api.calls[0][2])  # not a Nemotron 3 model
 
     def test_product_uses_godot_planning_contract_not_flutter_execution_claims(self):
         subject = model([completion(product_value())])

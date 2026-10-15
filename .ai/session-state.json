@@ -3,7 +3,7 @@
   "updated_at": "2026-10-15",
   "task": "Verify real startup and correct generic inference plus execution commit telemetry",
   "base_commit": "1cb258facb9fcd2877de97e677a83f7ccb72785f",
-  "branch": "fix/generic-inference-accounting-20261015",
+  "branch": "fix/production-os-canary-dispatch-order-20261015",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -105,7 +105,9 @@
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "Qualify explicit exhausted preview stop; retain actual source checkpoint without new model calls"
+    "Fix duplicate Production-OS worker starts on canary control pushes: the trusted canary workflow owns the after-enqueue dispatch",
+    "Validate exact-head AI Dev Server CI, then merge and verify subsequent canary behavior",
+    "Diagnose and improve real Godot-model sustained capacity; readiness probes alone do not qualify full source delivery"
   ],
   "merged_changes": [
     {
@@ -335,5 +337,12 @@
       "Android/Jumpy complete objective",
       "sustained provider capacity"
     ]
+  },
+  "last_worker_canary": {
+    "sequence": 33,
+    "repository": "dbrckk/Jumpy",
+    "scenario": "file",
+    "state": "triggered; verify workflow terminal result and target branch/PR",
+    "source": "ai-dev-server GitHub Actions run 38798653799"
   }
 }

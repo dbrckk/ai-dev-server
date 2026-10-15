@@ -3384,8 +3384,8 @@ initial_prompt: |
 ## File: control/production-os-diagnostics-kick.json
 ````json
 {
-  "sequence": 14,
-  "reason": "Verify model-provider availability, Production-OS operator access and worker wake after Production-OS #272 merge; read-only bounded live diagnostics"
+  "sequence": 15,
+  "reason": "Bounded provider, operator-access and worker-wake preflight before Jumpy real GDScript canary 34, after Godot PRs 308 and 309; no project mutation"
 }
 ````
 
@@ -3411,9 +3411,9 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-  "sequence": 33,
+  "sequence": 34,
   "repository": "dbrckk/Jumpy",
-  "scenario": "file"
+  "scenario": "jumpy_settings_tap_guard"
 }
 ````
 
@@ -14474,7 +14474,10 @@ max_api_cost_usd = 0.0
 spent_api_cost_usd = sum(
 weights = learned_weights(history, kind="provider", role=role)
 ⋮----
-providers = tuple(provider for provider in providers if provider_eligible(health_path, provider.name))
+# Verified failures are tracked per provider/model/role. Respect that
+# cooldown in addition to the provider-wide circuit breaker; otherwise
+# a healthy provider's unusable coding model is selected repeatedly.
+providers = tuple(
 providers = budget_eligible(
 ledger_data = (
 # A bounded Production-OS project needs enough capacity for planning,
@@ -34567,6 +34570,8 @@ instruction = canary_instruction(12)
 ⋮----
 gameplay = canary_instruction(32, "jumpy_landing_feedback")
 ⋮----
+guarded = canary_instruction(34, "jumpy_settings_tap_guard")
+⋮----
 def test_launch_is_idempotent_and_uses_dashboard_api(self)
 ⋮----
 client = FakeClient()
@@ -34576,6 +34581,9 @@ result = run_canary(
 self.assertEqual(dispatches, [1])  # no dispatch before successful admission
 gameplay_client = FakeClient()
 gameplay_result = run_canary(gameplay_client, {
+⋮----
+guard_client = FakeClient()
+guard_result = run_canary(guard_client, {
 ⋮----
 def test_wait_observes_real_terminal_success(self)
 ⋮----

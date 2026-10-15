@@ -102,25 +102,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-15T21:11:56Z
+Generated: 2026-10-15T21:36:14Z
 
 ### Git
 - Branch: `main`
-- Head: `f4137d625983`
-- Commit date: 2026-10-15T23:11:46+02:00
-- Commit: fix(godot): bound planning source context before implementation (#309)
+- Head: `04745633548e`
+- Commit date: 2026-10-15T23:36:03+02:00
+- Commit: fix: honor scoped model health when routing autonomous coding
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/generic_model.py`
+- `control/production-os-worker-canary.json`
+- `studio/production_os_worker_canary.py`
+- `tests/test_production_os_worker_canary.py`
+- `control/production-os-diagnostics-kick.json`
 - `studio/godot_preview.py`
 - `tests/test_godot_preview.py`
-- `studio/godot_model.py`
-- `tests/test_godot_model.py`
-- `.github/workflows/production-os-actions-worker.yml`
-- `tests/test_production_os_actions_worker_workflow.py`
-- `tests/test_production_os_worker_canary.py`
-- `control/production-os-worker-canary.json`
-- `control/production-os-diagnostics-kick.json`
 
 ### Project signals
 - No common build descriptor detected

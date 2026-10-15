@@ -5,11 +5,55 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "_safe_apply": {
+    "_decode": {
       "source": {
-        "file": "studio/godot_preview.py",
-        "start": 42,
-        "end": 64
+        "file": "studio/generic_model.py",
+        "start": 68,
+        "end": 81
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ProtocolError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 333,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_reported_usage_tokens": {
+      "source": {
+        "file": "studio/generic_model.py",
+        "start": 85,
+        "end": 119
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "token_count",
+          "definitions": [
+            {
+              "file": "studio/generic_model.py",
+              "line": 100,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "token_count": {
+      "source": {
+        "file": "studio/generic_model.py",
+        "start": 100,
+        "end": 220
       },
       "symbol_dependencies": [
         {
@@ -25,69 +69,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "write_text",
+          "symbol": "_bounded_model_token_budget",
           "definitions": [
             {
-              "file": "studio/atomic_file.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_context": {
-      "source": {
-        "file": "studio/godot_preview.py",
-        "start": 75,
-        "end": 137
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "canonical",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "editable",
-          "definitions": [
-            {
-              "file": "studio/project_engine.py",
-              "line": 59,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "main",
-          "definitions": [
-            {
-              "file": "studio/architecture_learning.py",
-              "line": 400,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "priority",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 90,
+              "file": "studio/generic_model.py",
+              "line": 122,
               "kind": "function",
               "language": "python"
             }
@@ -95,11 +81,35 @@
           "relation": "same_file"
         },
         {
-          "symbol": "verdict",
+          "symbol": "ask",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 320,
+              "file": "studio/generic_model.py",
+              "line": 173,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "candidates_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 330,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_providers",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 293,
               "kind": "function",
               "language": "python"
             }
@@ -109,201 +119,28 @@
       ],
       "dependency_count": 5
     },
-    "priority": {
+    "_bounded_model_token_budget": {
       "source": {
-        "file": "studio/godot_preview.py",
-        "start": 90,
-        "end": 210
+        "file": "studio/generic_model.py",
+        "start": 122,
+        "end": 170
       },
-      "symbol_dependencies": [
-        {
-          "symbol": "ExistingProjectError",
-          "definitions": [
-            {
-              "file": "studio/existing_project.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_exact_branch_ref",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 139,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_publish",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 188,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_restore",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 149,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "canonical",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "checkpoint",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 285,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "main",
-          "definitions": [
-            {
-              "file": "studio/architecture_learning.py",
-              "line": 400,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "materialize",
-          "definitions": [
-            {
-              "file": "studio/existing_project.py",
-              "line": 58,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "plan",
-          "definitions": [
-            {
-              "file": "studio/architecture_planner.py",
-              "line": 109,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/existing_project.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "restorable",
-          "definitions": [
-            {
-              "file": "studio/project_engine.py",
-              "line": 82,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verdict",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 320,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 12
+      "symbol_dependencies": [],
+      "dependency_count": 0
     },
-    "_exact_branch_ref": {
+    "ask": {
       "source": {
-        "file": "studio/godot_preview.py",
-        "start": 139,
-        "end": 146
+        "file": "studio/generic_model.py",
+        "start": 173,
+        "end": 718
       },
       "symbol_dependencies": [
         {
-          "symbol": "StudioError",
+          "symbol": "API",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_restore": {
-      "source": {
-        "file": "studio/godot_preview.py",
-        "start": 149,
-        "end": 185
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "ExistingProjectError",
-          "definitions": [
-            {
-              "file": "studio/existing_project.py",
-              "line": 18,
+              "line": 340,
               "kind": "class",
               "language": "python"
             }
@@ -311,11 +148,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "StudioError",
+          "symbol": "APIError",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 35,
+              "line": 328,
               "kind": "class",
               "language": "python"
             }
@@ -323,69 +160,41 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_exact_branch_ref",
+          "symbol": "NativeAccountingError",
           "definitions": [
             {
-              "file": "studio/godot_preview.py",
-              "line": 139,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "checkpoint",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 285,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "materialize",
-          "definitions": [
-            {
-              "file": "studio/existing_project.py",
-              "line": 58,
-              "kind": "function",
+              "file": "studio/native_model_usage.py",
+              "line": 20,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "plan",
+          "symbol": "ProtocolError",
           "definitions": [
             {
-              "file": "studio/architecture_planner.py",
-              "line": 109,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/existing_project.py",
-              "line": 22,
-              "kind": "function",
+              "file": "studio/core.py",
+              "line": 333,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "_publish": {
-      "source": {
-        "file": "studio/godot_preview.py",
-        "start": 188,
-        "end": 225
-      },
-      "symbol_dependencies": [
+        },
+        {
+          "symbol": "ScoreTrace",
+          "definitions": [
+            {
+              "file": "studio/adaptive_scoring.py",
+              "line": 8,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
         {
           "symbol": "StudioError",
           "definitions": [
@@ -399,16 +208,64 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_exact_branch_ref",
+          "symbol": "_bounded_model_token_budget",
           "definitions": [
             {
-              "file": "studio/godot_preview.py",
-              "line": 139,
+              "file": "studio/generic_model.py",
+              "line": 122,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "_decode",
+          "definitions": [
+            {
+              "file": "studio/generic_model.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reported_usage_tokens",
+          "definitions": [
+            {
+              "file": "studio/generic_model.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "as_dict",
+          "definitions": [
+            {
+              "file": "studio/adaptive_scoring.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "budget_eligible",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 404,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         },
         {
           "symbol": "call",
@@ -418,15 +275,129 @@
               "line": 396,
               "kind": "function",
               "language": "python"
+            },
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 110,
+              "kind": "function",
+              "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "canonical",
+          "symbol": "candidates_for",
           "definitions": [
             {
-              "file": "studio/core.py",
+              "file": "studio/provider_router.py",
+              "line": 330,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "contextual_adjustment",
+          "definitions": [
+            {
+              "file": "studio/contextual_routing_memory.py",
+              "line": 159,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "contextual_bandit_score",
+          "definitions": [
+            {
+              "file": "studio/contextual_routing_memory.py",
+              "line": 96,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "eligible",
+          "definitions": [
+            {
+              "file": "studio/provider_health.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "estimate_call_cost",
+          "definitions": [
+            {
+              "file": "studio/provider_cost.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "exploration_bonus",
+          "definitions": [
+            {
+              "file": "studio/safe_rewrite_learning.py",
+              "line": 228,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "latency_bonus",
+          "definitions": [
+            {
+              "file": "studio/provider_metrics.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "learned_weights",
+          "definitions": [
+            {
+              "file": "studio/routing_history.py",
+              "line": 94,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_providers",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 293,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "model_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
               "line": 38,
               "kind": "function",
               "language": "python"
@@ -435,23 +406,95 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "checkpoint",
+          "symbol": "origin_violation_penalty",
           "definitions": [
             {
-              "file": "studio/godot_preview.py",
-              "line": 285,
+              "file": "studio/safe_rewrite_learning.py",
+              "line": 198,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "restorable",
+          "symbol": "reliability_bonus",
           "definitions": [
             {
-              "file": "studio/project_engine.py",
-              "line": 82,
+              "file": "studio/provider_health.py",
+              "line": 146,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rewrite_recovery_bonus",
+          "definitions": [
+            {
+              "file": "studio/safe_rewrite_learning.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rows",
+          "definitions": [
+            {
+              "file": "studio/safe_rewrite_learning.py",
+              "line": 131,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "score",
+          "definitions": [
+            {
+              "file": "studio/local_model_reputation.py",
+              "line": 162,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "score_provider",
+          "definitions": [
+            {
+              "file": "studio/adaptive_scoring.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "stagnation_routing_penalty",
+          "definitions": [
+            {
+              "file": "studio/capacity_efficiency.py",
+              "line": 222,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utility_score",
+          "definitions": [
+            {
+              "file": "studio/contextual_utility.py",
+              "line": 14,
               "kind": "function",
               "language": "python"
             }
@@ -459,165 +502,71 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 6
+      "dependency_count": 30
     },
-    "execute": {
+    "dispatch_worker_after_enqueue": {
       "source": {
-        "file": "studio/godot_preview.py",
-        "start": 228,
-        "end": 437
+        "file": "studio/production_os_worker_canary.py",
+        "start": 20,
+        "end": 54
       },
       "symbol_dependencies": [
         {
-          "symbol": "ArchitectureChangeBlocked",
+          "symbol": "GitHub",
           "definitions": [
             {
-              "file": "studio/architecture_change_guard.py",
-              "line": 58,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GodotModel",
-          "definitions": [
-            {
-              "file": "studio/godot_model.py",
+              "file": "studio/run.py",
               "line": 59,
               "kind": "class",
               "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GodotSandbox",
-          "definitions": [
+            },
             {
-              "file": "studio/godot_session.py",
-              "line": 15,
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
               "kind": "class",
               "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "QA",
-          "definitions": [
+            },
             {
-              "file": "tests/test_studio.py",
-              "line": 236,
+              "file": "tests/test_capability_review.py",
+              "line": 14,
               "kind": "class",
               "language": "python"
             }
           ],
           "relation": "class_like"
-        },
+        }
+      ],
+      "dependency_count": 1
+    },
+    "validate_control": {
+      "source": {
+        "file": "studio/production_os_worker_canary.py",
+        "start": 57,
+        "end": 76
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "StudioError",
+          "symbol": "get",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_context",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 75,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_publish",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 188,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_restore",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 149,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_safe_apply",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 42,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ask",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 457,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/godot_model.py",
-              "line": 60,
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "checkpoint",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 285,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
+        }
+      ],
+      "dependency_count": 1
+    },
+    "canary_instruction": {
+      "source": {
+        "file": "studio/production_os_worker_canary.py",
+        "start": 79,
+        "end": 122
+      },
+      "symbol_dependencies": [
         {
           "symbol": "create",
           "definitions": [
@@ -626,303 +575,26 @@
               "line": 943,
               "kind": "function",
               "language": "python"
-            },
-            {
-              "file": "studio/godot_session.py",
-              "line": 19,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "gates",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 987,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/godot_session.py",
-              "line": 23,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "recommend",
-          "definitions": [
-            {
-              "file": "studio/project_recommendations.py",
-              "line": 23,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request_check",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_journeys",
-          "definitions": [
-            {
-              "file": "studio/journeys.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verdict",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 320,
-              "kind": "function",
-              "language": "python"
             }
           ],
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 18
+      "dependency_count": 1
     },
-    "checkpoint": {
+    "launch_canary": {
       "source": {
-        "file": "studio/godot_preview.py",
-        "start": 285,
-        "end": 405
+        "file": "studio/production_os_worker_canary.py",
+        "start": 125,
+        "end": 157
       },
       "symbol_dependencies": [
         {
-          "symbol": "ArchitectureChangeBlocked",
+          "symbol": "canary_instruction",
           "definitions": [
             {
-              "file": "studio/architecture_change_guard.py",
-              "line": 58,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "QA",
-          "definitions": [
-            {
-              "file": "tests/test_studio.py",
-              "line": 236,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_context",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 75,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_publish",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 188,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_safe_apply",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 42,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ask",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 457,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/godot_model.py",
-              "line": 60,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "gates",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 987,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/godot_session.py",
-              "line": 23,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_journeys",
-          "definitions": [
-            {
-              "file": "studio/journeys.py",
-              "line": 7,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verdict",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 320,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 11
-    },
-    "blob": {
-      "source": {
-        "file": "tests/test_godot_preview.py",
-        "start": 15,
-        "end": 16
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "FakeGitHub": {
-      "source": {
-        "file": "tests/test_godot_preview.py",
-        "start": 19,
-        "end": 48
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 342,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 431,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 916,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "blob",
-          "definitions": [
-            {
-              "file": "tests/test_godot_preview.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "tests/test_godot_preview.py",
-              "line": 38,
+              "file": "studio/production_os_worker_canary.py",
+              "line": 79,
               "kind": "function",
               "language": "python"
             }
@@ -933,101 +605,8 @@
           "symbol": "get",
           "definitions": [
             {
-              "file": "tests/test_godot_preview.py",
-              "line": 24,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "__init__": {
-      "source": {
-        "file": "tests/test_godot_preview.py",
-        "start": 20,
-        "end": 23
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "blob",
-          "definitions": [
-            {
-              "file": "tests/test_godot_preview.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "get": {
-      "source": {
-        "file": "tests/test_godot_preview.py",
-        "start": 24,
-        "end": 37
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "blob",
-          "definitions": [
-            {
-              "file": "tests/test_godot_preview.py",
-              "line": 15,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "call": {
-      "source": {
-        "file": "tests/test_godot_preview.py",
-        "start": 38,
-        "end": 48
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "FakeModel": {
-      "source": {
-        "file": "tests/test_godot_preview.py",
-        "start": 51,
-        "end": 60
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 342,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 431,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 916,
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
               "kind": "function",
               "language": "python"
             }
@@ -1035,11 +614,289 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "ask",
+          "symbol": "launch",
           "definitions": [
             {
-              "file": "tests/test_godot_preview.py",
-              "line": 53,
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "submit",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_control",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "wait_for_workflow": {
+      "source": {
+        "file": "studio/production_os_worker_canary.py",
+        "start": 160,
+        "end": 184
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "wait_for_readiness": {
+      "source": {
+        "file": "studio/production_os_worker_canary.py",
+        "start": 188,
+        "end": 216
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 340,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 328,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "launch",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "run_canary": {
+      "source": {
+        "file": "studio/production_os_worker_canary.py",
+        "start": 219,
+        "end": 238
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "launch_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 125,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 160,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "main": {
+      "source": {
+        "file": "studio/production_os_worker_canary.py",
+        "start": 241,
+        "end": 361
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "OperatorClient",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 21,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "dispatch_worker_after_enqueue",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/production_os_resume_objectives.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 219,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_readiness",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 188,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "FakeClient": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 13,
+        "end": 32
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "submit",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 19,
               "kind": "function",
               "language": "python"
             }
@@ -1049,110 +906,46 @@
       ],
       "dependency_count": 2
     },
-    "ask": {
+    "__init__": {
       "source": {
-        "file": "tests/test_godot_preview.py",
-        "start": 53,
-        "end": 60
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 14,
+        "end": 17
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "FakeSandbox": {
+    "submit": {
       "source": {
-        "file": "tests/test_godot_preview.py",
-        "start": 63,
-        "end": 68
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 19,
+        "end": 27
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "get": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 29,
+        "end": 32
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "WorkerCanaryTests": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 35,
+        "end": 149
       },
       "symbol_dependencies": [
         {
-          "symbol": "__init__",
+          "symbol": "FakeClient",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 342,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 431,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 916,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "create",
-          "definitions": [
-            {
-              "file": "tests/test_godot_preview.py",
-              "line": 65,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "gates",
-          "definitions": [
-            {
-              "file": "tests/test_godot_preview.py",
-              "line": 67,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "create": {
-      "source": {
-        "file": "tests/test_godot_preview.py",
-        "start": 65,
-        "end": 66
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "gates": {
-      "source": {
-        "file": "tests/test_godot_preview.py",
-        "start": 67,
-        "end": 68
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "GodotPreviewTests": {
-      "source": {
-        "file": "tests/test_godot_preview.py",
-        "start": 71,
-        "end": 171
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "FakeGitHub",
-          "definitions": [
-            {
-              "file": "tests/test_godot_preview.py",
-              "line": 19,
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 13,
               "kind": "class",
               "language": "python"
             }
@@ -1160,47 +953,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "FakeModel",
+          "symbol": "canary_instruction",
           "definitions": [
             {
-              "file": "tests/test_godot_preview.py",
-              "line": 51,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "FakeSandbox",
-          "definitions": [
-            {
-              "file": "tests/test_godot_preview.py",
-              "line": 63,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_context",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 75,
+              "file": "studio/production_os_worker_canary.py",
+              "line": 79,
               "kind": "function",
               "language": "python"
             }
@@ -1208,59 +965,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_publish",
+          "symbol": "clock",
           "definitions": [
             {
-              "file": "studio/godot_preview.py",
-              "line": 188,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_restore",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 149,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "execute",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 228,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_godot_preview.py",
-              "line": 24,
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 117,
               "kind": "function",
               "language": "python"
             }
@@ -1268,23 +977,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "request",
+          "symbol": "dispatch_worker_after_enqueue",
           "definitions": [
             {
-              "file": "tests/test_godot_preview.py",
-              "line": 72,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request_check",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 41,
+              "file": "studio/production_os_worker_canary.py",
+              "line": 20,
               "kind": "function",
               "language": "python"
             }
@@ -1292,11 +989,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "test_existing_godot_project_checkpoints_without_claiming_completion",
+          "symbol": "run_canary",
           "definitions": [
             {
-              "file": "tests/test_godot_preview.py",
-              "line": 75,
+              "file": "studio/production_os_worker_canary.py",
+              "line": 219,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "sleep",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 119,
               "kind": "function",
               "language": "python"
             }
@@ -1304,11 +1013,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_publication_refuses_branch_movement",
+          "symbol": "test_canary_instruction_is_bounded_and_sequence_specific",
           "definitions": [
             {
-              "file": "tests/test_godot_preview.py",
-              "line": 166,
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 54,
               "kind": "function",
               "language": "python"
             }
@@ -1316,11 +1025,83 @@
           "relation": "same_file"
         },
         {
-          "symbol": "verdict",
+          "symbol": "test_control_is_strict",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 320,
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 36,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_launch_is_idempotent_and_uses_dashboard_api",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 80,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 128,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_is_bounded",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 141,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_observes_real_terminal_success",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 114,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "validate_control",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 160,
               "kind": "function",
               "language": "python"
             }
@@ -1328,150 +1109,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 15
+      "dependency_count": 14
     },
-    "request": {
+    "test_control_is_strict": {
       "source": {
-        "file": "tests/test_godot_preview.py",
-        "start": 72,
-        "end": 73
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "test_existing_godot_project_checkpoints_without_claiming_completion": {
-      "source": {
-        "file": "tests/test_godot_preview.py",
-        "start": 75,
-        "end": 164
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 36,
+        "end": 52
       },
       "symbol_dependencies": [
         {
-          "symbol": "FakeGitHub",
+          "symbol": "validate_control",
           "definitions": [
             {
-              "file": "tests/test_godot_preview.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "FakeModel",
-          "definitions": [
-            {
-              "file": "tests/test_godot_preview.py",
-              "line": 51,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "FakeSandbox",
-          "definitions": [
-            {
-              "file": "tests/test_godot_preview.py",
-              "line": 63,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_context",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 75,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_restore",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 149,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "execute",
-          "definitions": [
-            {
-              "file": "studio/godot_preview.py",
-              "line": 228,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_godot_preview.py",
-              "line": 24,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request",
-          "definitions": [
-            {
-              "file": "tests/test_godot_preview.py",
-              "line": 72,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "request_check",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "verdict",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 320,
+              "file": "studio/production_os_worker_canary.py",
+              "line": 57,
               "kind": "function",
               "language": "python"
             }
@@ -1479,21 +1131,55 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 11
+      "dependency_count": 1
     },
-    "test_publication_refuses_branch_movement": {
+    "test_canary_instruction_is_bounded_and_sequence_specific": {
       "source": {
-        "file": "tests/test_godot_preview.py",
-        "start": 166,
-        "end": 171
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 54,
+        "end": 78
       },
       "symbol_dependencies": [
         {
-          "symbol": "FakeGitHub",
+          "symbol": "canary_instruction",
           "definitions": [
             {
-              "file": "tests/test_godot_preview.py",
-              "line": 19,
+              "file": "studio/production_os_worker_canary.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_control",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 57,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "test_launch_is_idempotent_and_uses_dashboard_api": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 80,
+        "end": 112
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 13,
               "kind": "class",
               "language": "python"
             }
@@ -1501,23 +1187,23 @@
           "relation": "same_file"
         },
         {
-          "symbol": "StudioError",
+          "symbol": "dispatch_worker_after_enqueue",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
+              "file": "studio/production_os_worker_canary.py",
+              "line": 20,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "_publish",
+          "symbol": "run_canary",
           "definitions": [
             {
-              "file": "studio/godot_preview.py",
-              "line": 188,
+              "file": "studio/production_os_worker_canary.py",
+              "line": 219,
               "kind": "function",
               "language": "python"
             }
@@ -1526,6 +1212,353 @@
         }
       ],
       "dependency_count": 3
+    },
+    "test_wait_observes_real_terminal_success": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 114,
+        "end": 126
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 13,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 117,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "sleep",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 119,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 160,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "clock": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 117,
+        "end": 237
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 13,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 219,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "sleep",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 119,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_canary_workflow_verifies_terminal_worker_completion",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 156,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 128,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_is_bounded",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 141,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 160,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "sleep": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 119,
+        "end": 239
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 13,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 117,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 219,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_canary_workflow_verifies_terminal_worker_completion",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 156,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 128,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_wait_is_bounded",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 141,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 160,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "test_terminal_failure_returns_without_retrying_mutation": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 128,
+        "end": 139
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 13,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 117,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "run_canary",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 219,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_wait_is_bounded": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 141,
+        "end": 149
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeClient",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 13,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "clock",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_worker_canary.py",
+              "line": 117,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "wait_for_workflow",
+          "definitions": [
+            {
+              "file": "studio/production_os_worker_canary.py",
+              "line": 160,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_canary_workflow_verifies_terminal_worker_completion": {
+      "source": {
+        "file": "tests/test_production_os_worker_canary.py",
+        "start": 156,
+        "end": 172
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
     }
   }
 }

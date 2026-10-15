@@ -8774,7 +8774,10 @@ max_api_cost_usd = 0.0
 spent_api_cost_usd = sum(
 weights = learned_weights(history, kind="provider", role=role)
 ⋮----
-providers = tuple(provider for provider in providers if provider_eligible(health_path, provider.name))
+# Verified failures are tracked per provider/model/role. Respect that
+# cooldown in addition to the provider-wide circuit breaker; otherwise
+# a healthy provider's unusable coding model is selected repeatedly.
+providers = tuple(
 providers = budget_eligible(
 ledger_data = (
 # A bounded Production-OS project needs enough capacity for planning,

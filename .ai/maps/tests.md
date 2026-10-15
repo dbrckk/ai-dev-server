@@ -8841,6 +8841,8 @@ instruction = canary_instruction(12)
 ⋮----
 gameplay = canary_instruction(32, "jumpy_landing_feedback")
 ⋮----
+guarded = canary_instruction(34, "jumpy_settings_tap_guard")
+⋮----
 def test_launch_is_idempotent_and_uses_dashboard_api(self)
 ⋮----
 client = FakeClient()
@@ -8850,6 +8852,9 @@ result = run_canary(
 self.assertEqual(dispatches, [1])  # no dispatch before successful admission
 gameplay_client = FakeClient()
 gameplay_result = run_canary(gameplay_client, {
+⋮----
+guard_client = FakeClient()
+guard_result = run_canary(guard_client, {
 ⋮----
 def test_wait_observes_real_terminal_success(self)
 ⋮----

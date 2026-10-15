@@ -1613,7 +1613,6 @@
         "studio/strict_task_claim_store.py",
         "studio/task_claim_store.py",
         "studio/telemetry.py",
-        "studio/unified_routing_score.py",
         "studio/workflow_checkpoint.py",
         "tests/test_agent_router.py",
         "tests/test_android_signing.py",
@@ -1680,7 +1679,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 220,
+      "in_degree": 219,
       "out_degree": 18
     },
     "studio/cost_drift.py": {
@@ -3959,13 +3958,14 @@
     "studio/production_os_worker_canary.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/production_os_resume_objectives.py"
+        "studio/production_os_resume_objectives.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "tests/test_production_os_worker_canary.py"
       ],
       "in_degree": 1,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/project_budget.py": {
       "dependencies": [
@@ -4924,7 +4924,6 @@
     },
     "studio/unified_routing_score.py": {
       "dependencies": [
-        "studio/core.py",
         "studio/provider_health.py",
         "studio/provider_metrics.py",
         "studio/provider_runtime_reliability.py",
@@ -4935,7 +4934,7 @@
         "tests/test_unified_routing_score.py"
       ],
       "in_degree": 2,
-      "out_degree": 5
+      "out_degree": 4
     },
     "studio/v1_gate.py": {
       "dependencies": [
@@ -7801,6 +7800,7 @@
         "studio/omniroute_capacity.py",
         "studio/orchestrator.py",
         "studio/production_os_review_canary.py",
+        "studio/production_os_worker_canary.py",
         "studio/provider_router.py",
         "studio/repair_search_policy.py",
         "studio/runtime_health.py",
@@ -7829,7 +7829,7 @@
         "tests/test_strict_task_claim_store.py",
         "tests/test_task_lease.py"
       ],
-      "in_degree": 106,
+      "in_degree": 107,
       "out_degree": 3
     },
     "tests/test_task_claim_store.py": {

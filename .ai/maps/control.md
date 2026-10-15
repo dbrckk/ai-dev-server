@@ -113,8 +113,8 @@ request.json
 ## File: production-os-diagnostics-kick.json
 ```json
 {
-  "sequence": 14,
-  "reason": "Verify model-provider availability, Production-OS operator access and worker wake after Production-OS #272 merge; read-only bounded live diagnostics"
+  "sequence": 15,
+  "reason": "Bounded provider, operator-access and worker-wake preflight before Jumpy real GDScript canary 34, after Godot PRs 308 and 309; no project mutation"
 }
 ```
 
@@ -140,9 +140,9 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-  "sequence": 33,
+  "sequence": 34,
   "repository": "dbrckk/Jumpy",
-  "scenario": "file"
+  "scenario": "jumpy_settings_tap_guard"
 }
 ```
 

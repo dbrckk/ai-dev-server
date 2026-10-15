@@ -65,9 +65,12 @@ class GodotModel(Model):
         if screenshots:
             raise StudioError('Godot source generation does not accept screenshots')
         error = 'unknown structured-output error'
+        invalid_response_provider = None
         for attempt in range(2):
             try:
-                value = self._ask_godot(role, context)
+                value = self._ask_godot(
+                    role, context, avoid_response_provider=invalid_response_provider,
+                )
                 if role in ('implementation', 'tests'):
                     validate_patch(value, 'godot', role)
                 elif role == 'product':
@@ -75,6 +78,12 @@ class GodotModel(Model):
                 return value
             except (ProtocolError, PatchPolicyError, ValueError) as exc:
                 error = str(exc)
+                # Malformed provider envelopes/JSON should not consume the
+                # only repair attempt on the same model when a healthy
+                # alternative exists. Policy/schema errors and truncated
+                # output keep their original same-provider repair contract.
+                if isinstance(exc, ProtocolError) and error != 'Model response truncated':
+                    invalid_response_provider = self.providers_used.get(role)
             if attempt or self.calls >= self.limit:
                 raise StudioError('Structured response rejected: ' + error) from None
             if error == 'Model response truncated' and role in ('implementation', 'tests'):
@@ -87,7 +96,9 @@ class GodotModel(Model):
                 context += '\nYour previous response violated this schema rule: ' + error + '. Return corrected complete JSON only.'
         raise StudioError('Protocol repair exhausted')
 
-    def _ask_godot(self, role: str, context: str) -> dict:
+    def _ask_godot(
+        self, role: str, context: str, *, avoid_response_provider: str | None = None,
+    ) -> dict:
         if self.calls >= self.limit:
             raise StudioError('Model call budget exhausted; checkpoint retained')
         if len(context.encode()) > 500000:
@@ -149,6 +160,15 @@ class GodotModel(Model):
             raise StudioError(
                 'No healthy provider remains for this role; paid budget or pooled token quota may be exhausted'
             )
+        # Retry provider malformed output with a different eligible provider,
+        # but do not strand a single-provider installation or bypass budgets.
+        if avoid_response_provider and len(provider_candidates) > 1:
+            alternatives = tuple(
+                provider for provider in provider_candidates
+                if provider.name != avoid_response_provider
+            )
+            if alternatives:
+                provider_candidates = alternatives
 
         self.routing_portfolio[role] = {
             'candidates': [

@@ -60,7 +60,7 @@ class GodotModelTests(unittest.TestCase):
         self.assertNotIn('reasoning_budget', subject.api.calls[0][2])  # not a Nemotron 3 model
 
     def test_product_uses_godot_planning_contract_not_flutter_execution_claims(self):
-        subject = model([completion(product_value())])
+        subject = model([completion(product_value()), completion({'direction': 'minimal'})])
         result = subject.ask('product', 'plan game')
         self.assertEqual(result['journeys'][0]['id'], 'play')
         system = subject.api.calls[0][2]['messages'][0]['content']
@@ -69,6 +69,8 @@ class GodotModelTests(unittest.TestCase):
         self.assertNotIn('Flutter ValueKey', system)
         self.assertEqual(subject.models_used['product'], 'general')
         self.assertEqual(subject.api.calls[0][2]['max_tokens'], 3072)
+        subject.ask('design', 'design game')
+        self.assertEqual(subject.api.calls[1][2]['max_tokens'], 1536)
 
     def test_product_prompt_requires_literal_json_step_objects(self):
         subject = model([completion(product_value())])

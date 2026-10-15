@@ -45,6 +45,7 @@ class WorkerCanaryTests(unittest.TestCase):
             {"sequence": 1, "repository": "owner/repo", "extra": 1},
             {"sequence": 1, "repository": "owner/repo", "scenario": "unknown"},
             {"sequence": 1, "repository": "owner/repo", "scenario": "jumpy_landing_feedback"},
+            {"sequence": 1, "repository": "owner/repo", "scenario": "jumpy_settings_tap_guard"},
             {"sequence": 1, "repository": "dbrckk/Jumpy", "scenario": 4},
         ):
             with self.subTest(value=value), self.assertRaises(ValueError):
@@ -61,6 +62,18 @@ class WorkerCanaryTests(unittest.TestCase):
         self.assertIn("reduced_motion and high_contrast", gameplay)
         self.assertIn("existing Godot 4.7.2", gameplay)
         self.assertNotIn(".production-os/worker-canary-", gameplay)
+        guarded = canary_instruction(34, "jumpy_settings_tap_guard")
+        self.assertIn("scripts/main.gd", guarded)
+        self.assertIn("settings_open == true", guarded)
+        self.assertIn("_unhandled_input", guarded)
+        self.assertIn("Godot 4.7.2 headless", guarded)
+        self.assertIn("normal tap-to-start", guarded)
+        self.assertNotIn(".production-os/worker-canary-", guarded)
+        self.assertEqual(
+            validate_control({"sequence": 34, "repository": "dbrckk/Jumpy",
+                              "scenario": "jumpy_settings_tap_guard"}),
+            (34, "dbrckk/Jumpy"),
+        )
         with self.assertRaises(ValueError):
             canary_instruction(32, "untrusted")
 
@@ -87,6 +100,14 @@ class WorkerCanaryTests(unittest.TestCase):
         self.assertEqual(gameplay_result["scenario"], "jumpy_landing_feedback")
         self.assertEqual(gameplay_client.submissions[0][1]["request_id"], "worker-canary-32")
         self.assertIn("scripts/main.gd", gameplay_client.submissions[0][1]["instruction"])
+        guard_client = FakeClient()
+        guard_result = run_canary(guard_client, {
+            "sequence": 34, "repository": "dbrckk/Jumpy",
+            "scenario": "jumpy_settings_tap_guard",
+        })
+        self.assertEqual(guard_result["scenario"], "jumpy_settings_tap_guard")
+        self.assertEqual(guard_client.submissions[0][1]["request_id"], "worker-canary-34")
+        self.assertIn("settings_open", guard_client.submissions[0][1]["instruction"])
         with self.assertRaises(ValueError):
             dispatch_worker_after_enqueue(token="not-used", repository="untrusted/repo")
 

@@ -64,15 +64,57 @@ def _safe_apply(
         target.write_text(content)
 
 
-def _context(req: dict, state: dict, root: Path) -> str:
-    files = {}
+# Planning needs architecture and a representative source sample, not a full
+# replay of every script. Implementation, QA and review still get exact files.
+PLANNING_SOURCE_CHAR_BUDGET = 12_000
+PLANNING_PER_FILE_CHAR_BUDGET = 4_800
+PLANNING_FILE_PREVIEW_LIMIT = 8
+PLANNING_MANIFEST_LIMIT = 100
+
+
+def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation') -> str:
+    paths = []
     for path in sorted(root.rglob('*')):
         if not path.is_file() or path.is_symlink():
             continue
         rel = path.relative_to(root).as_posix()
         if editable(rel, 'godot'):
+            paths.append((rel, path))
+
+    files = {}
+    planning = phase in ('product', 'design')
+    if planning:
+        # Explicitly distinguish source *excerpts* from the full files used
+        # to generate patches. Keeping this manifest lets the planner reason
+        # about the actual project structure without consuming its code budget.
+        def priority(item):
+            rel = item[0]
+            if rel == 'project.godot':
+                return (0, rel)
+            if rel == 'scripts/main.gd':
+                return (1, rel)
+            if rel.endswith('.tscn'):
+                return (2, rel)
+            if rel.endswith('.gd'):
+                return (3, rel)
+            return (4, rel)
+
+        remaining = PLANNING_SOURCE_CHAR_BUDGET
+        for rel, path in sorted(paths, key=priority):
+            if not remaining or len(files) >= PLANNING_FILE_PREVIEW_LIMIT:
+                break
+            limit = min(PLANNING_PER_FILE_CHAR_BUDGET, remaining)
+            with path.open('r', encoding='utf-8') as source:
+                sample = source.read(limit + 1)
+            truncated = len(sample) > limit
+            files[rel] = sample[:limit] + ('\n[TRUNCATED: planning excerpt only]' if truncated else '')
+            remaining -= min(limit, len(sample))
+    else:
+        # Never feed a partial source snapshot to code editing or review.
+        for rel, path in paths:
             files[rel] = path.read_text()
-    return canonical({
+
+    context = {
         'engine':'godot',
         'request':req,
         'product':state.get('product'),
@@ -83,8 +125,16 @@ def _context(req: dict, state: dict, root: Path) -> str:
         'architecture_preflight':state.get('architecture_preflight', {'status':'unavailable','verdict':'unknown'}),
         'architecture_benchmark':state.get('architecture_benchmark', {'status':'unavailable','migration_candidates':[]}),
         'files':files,
-    })
-
+    }
+    if planning:
+        context['files_mode'] = 'bounded_planning_excerpts_not_complete_source'
+        context['editable_file_count'] = len(paths)
+        context['editable_file_manifest'] = [
+            {'path': rel, 'size_bytes': path.stat().st_size}
+            for rel, path in paths[:PLANNING_MANIFEST_LIMIT]
+        ]
+        context['manifest_omitted_count'] = max(0, len(paths) - PLANNING_MANIFEST_LIMIT)
+    return canonical(context)
 
 def _exact_branch_ref(github, branch: str):
     refs = github.get('/git/matching-refs/heads/' + branch)
@@ -239,7 +289,7 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
     try:
         for role in ('product','design'):
             if role not in state:
-                result = model.ask(role, _context(req,state,root))
+                result = model.ask(role, _context(req,state,root,phase=role))
                 if role == 'product':
                     try: validate_journeys(result.get('journeys'))
                     except ValueError as exc: raise StudioError(str(exc)) from None

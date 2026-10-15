@@ -98,6 +98,43 @@ class GodotPreviewTests(unittest.TestCase):
         self.assertIn('architecture_evaluation',github.states[-1])
         self.assertIn('architecture_benchmark',github.states[-1])
 
+        # Existing Godot projects can have large editable scripts. Product
+        # and design only need bounded, labelled source excerpts; implementation
+        # must retain the exact full file for safe source rewrites.
+        with tempfile.TemporaryDirectory() as td:
+            source_root = Path(td)
+            (source_root / 'scripts').mkdir()
+            (source_root / 'scenes').mkdir()
+            main_source = 'extends Node\n' + '# existing gameplay\n' * 30_000
+            (source_root / 'project.godot').write_text('[application]\nrun/main_scene="res://scenes/main.tscn"\n')
+            (source_root / 'scripts/main.gd').write_text(main_source)
+            (source_root / 'scenes/main.tscn').write_text('[gd_scene format=3]\n')
+            for phase in ('product', 'design'):
+                planning = json.loads(godot_preview._context(
+                    self.request(), {}, source_root, phase=phase,
+                ))
+                self.assertEqual(planning['editable_file_count'], 3)
+                self.assertEqual(
+                    planning['files_mode'], 'bounded_planning_excerpts_not_complete_source',
+                )
+                self.assertIn('project.godot', planning['files'])
+                self.assertIn('scripts/main.gd', planning['files'])
+                self.assertIn('[TRUNCATED: planning excerpt only]', planning['files']['scripts/main.gd'])
+                self.assertLess(
+                    sum(len(content) for content in planning['files'].values()),
+                    godot_preview.PLANNING_SOURCE_CHAR_BUDGET + 300,
+                )
+                self.assertEqual(planning['manifest_omitted_count'], 0)
+                self.assertTrue(any(
+                    row['path'] == 'scripts/main.gd' and row['size_bytes'] > 300_000
+                    for row in planning['editable_file_manifest']
+                ))
+            implementation = json.loads(godot_preview._context(
+                self.request(), {}, source_root,
+            ))
+            self.assertEqual(implementation['files']['scripts/main.gd'], main_source)
+            self.assertNotIn('files_mode', implementation)
+
         req = godot_preview.request_check(self.request())
         fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(
             {k: v for k, v in req.items() if k != 'enabled'}

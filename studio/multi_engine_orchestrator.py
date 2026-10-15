@@ -9,6 +9,7 @@ import sys
 from core import StudioError, request_check
 from orchestrator import load_report, run_project as run_flutter_project
 from generic_project import run_project as run_generic_project
+from production_os_review_canary import contract as jum_review_canary_contract, run as run_jumpy_review_canary
 
 
 def _remaining(deadline, clock):
@@ -40,6 +41,19 @@ def _run_stage(script,request_path,project_out,work,runner,deadline,clock):
 
 def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None,checkpoint_observer=None):
     project_out.mkdir(parents=True,exist_ok=True)
+    # A delivery canary is an exact, authenticated Git checkpoint/PR contract,
+    # NOT an instruction to build or release an entire Godot game. Keep the
+    # usual engine detection for every other user request.
+    try:
+        canary_req=json.loads(Path(request_path).read_text())
+    except (OSError,json.JSONDecodeError):
+        raise StudioError('Project request is unreadable') from None
+    if jum_review_canary_contract(canary_req) is not None:
+        verified_canary=request_check(canary_req)
+        return run_jumpy_review_canary(
+            verified_canary,project_out,Path(work),
+            checkpoint_observer=checkpoint_observer,
+        )
     engine=_detect(request_path,project_out,runner,deadline,clock)
     if engine is None: return {'status':'deferred','report':{},'next_stage':'preview'}
     if engine=='flutter':

@@ -1,11 +1,14 @@
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 from generic_project import _existing_worker_canary_verification
+from production_os_review_canary import contract as review_contract, run as run_review_canary
+from core import StudioError
 
 
 class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
@@ -78,6 +81,86 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
             self.assertIsNone(
                 _existing_worker_canary_verification(incomplete, root)
             )
+
+        # Extend the existing canary regression: Jumpy's exact marker-only
+        # request must bypass the expensive Godot game-production pipeline.
+        # Nearby or adversarial instructions keep normal engine routing.
+        seq = 30
+        path = f".production-os/worker-canary-{seq}.txt"
+        line = f"production-os-worker-canary sequence {seq}"
+        brief = (
+            f"Production-OS worker canary {seq}. "
+            f"Make exactly one intentional product-file change: create {path} "
+            f"containing exactly one line: {line}. "
+            "Do not change dependencies, workflows, secrets, configuration, "
+            "or existing source files. Verify the file content, persist the normal "
+            "autonomous checkpoint branch, and finish the task successfully."
+        )
+        req = {
+            "id": "mp-" + "a" * 24,
+            "target_repo": "dbrckk/Jumpy",
+            "brief": brief,
+            "production_os": {"workflow_id": "1" * 32, "workflow_task_id": "implementation"},
+        }
+        self.assertEqual(review_contract(req), (path, line))
+        self.assertIsNone(review_contract({**req, "brief": brief + " Also modify scripts."}))
+        self.assertIsNone(review_contract({**req, "target_repo": "stranger/Jumpy"}))
+        self.assertIsNone(review_contract({**req, "production_os": {}}))
+        with tempfile.TemporaryDirectory() as temp:
+            out = Path(temp) / "out"
+            work = Path(temp) / "work"
+            published = "b" * 40
+            observed = []
+            with patch("production_os_review_canary.GitHub"), patch(
+                "production_os_review_canary.GenericRepository"
+            ) as repository:
+                instance = repository.return_value
+                instance.restore.return_value = ("a" * 40, {"files": 3})
+                instance.publish.return_value = published
+                instance.branch = "studio/mp-" + "a" * 24
+                instance.ensure_pull_request.return_value = {
+                    "number": 42, "state": "open",
+                    "url": "https://github.com/dbrckk/Jumpy/pull/42",
+                }
+                result = run_review_canary(
+                    req, out, work, checkpoint_observer=observed.append,
+                )
+                self.assertEqual((work / path).read_bytes(), (line + "\n").encode())
+                self.assertEqual(instance.publish.call_count, 1)
+                self.assertEqual([entry["phase"] for entry in observed], ["published", "complete"])
+                self.assertEqual(result["status"], "complete")
+                self.assertEqual(result["report"]["checkpoint_commit"], published)
+                self.assertEqual(result["report"]["pull_request"]["number"], 42)
+                self.assertEqual(result["report"]["rounds"][0]["changed_files"], [path])
+        with tempfile.TemporaryDirectory() as temp:
+            with patch("production_os_review_canary.GitHub"), patch(
+                "production_os_review_canary.GenericRepository"
+            ) as repository:
+                instance = repository.return_value
+                instance.restore.return_value = ("a" * 40, {"files": 3})
+                instance.publish.return_value = "b" * 40
+                instance.branch = "studio/mp-" + "a" * 24
+                instance.ensure_pull_request.side_effect = StudioError("API HTTP 403")
+                instance.request_trusted_review_handoff.return_value = {"status": "accepted"}
+                instance.await_trusted_review.return_value = {
+                    "number": 43, "state": "open",
+                    "url": "https://github.com/dbrckk/Jumpy/pull/43",
+                    "handoff_confirmed": True,
+                }
+                result = run_review_canary(
+                    req, Path(temp) / "out", Path(temp) / "work",
+                )
+                self.assertEqual(result["status"], "complete")
+                instance.request_trusted_review_handoff.assert_called_once_with("b" * 40)
+                instance.await_trusted_review.assert_called_once_with("b" * 40)
+                self.assertEqual(result["report"]["pull_request"]["number"], 43)
+                instance.await_trusted_review.return_value = None
+                result = run_review_canary(
+                    req, Path(temp) / "out2", Path(temp) / "work2",
+                )
+                self.assertEqual(result["status"], "blocked")
+                self.assertEqual(result["report"]["pull_request"]["state"], "unavailable")
+                self.assertFalse(result["report"]["completion"]["finished"])
 
 
 if __name__ == "__main__":

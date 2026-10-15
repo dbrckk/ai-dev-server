@@ -669,7 +669,14 @@ def ask(
         except (APIError, StudioError, ProtocolError) as exc:
             elapsed = time.monotonic() - started
             if reservation is not None and reservation_open:
-                if isinstance(exc, NativeAccountingError) and not getattr(exc, "inference_submitted", False):
+                if (
+                    isinstance(exc, NativeAccountingError)
+                    and not getattr(exc, "inference_submitted", False)
+                ) or (
+                    isinstance(exc, APIError)
+                    and exc.status in {400, 401, 403, 404, 422, 429}
+                    and not getattr(exc, "pending_accepted", False)
+                ):
                     release_capacity(capacity_ledger_path, reservation["reservation_id"])
                 else:
                     # A failed POST may have reached the provider. Retain its

@@ -326,8 +326,11 @@ def verdict(value):
     return value
 
 class APIError(StudioError):
-    def __init__(self, status):
+    def __init__(self, status, *, pending_accepted=False):
         self.status = status
+        # A status-poll failure may follow an accepted generation.
+        # In that case token usage is unknown and must remain reserved.
+        self.pending_accepted = bool(pending_accepted)
         super().__init__('API HTTP ' + str(status))
 
 class ProtocolError(StudioError):
@@ -370,7 +373,7 @@ class API:
                 response = opener.open(req, timeout=min(180, remaining))
             except urllib.error.HTTPError as e:
                 if poll:
-                    raise APIError(e.code) from None
+                    raise APIError(e.code, pending_accepted=True) from None
                 raise
             with response as res:
                 if res.status != 202:

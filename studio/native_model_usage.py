@@ -13,7 +13,7 @@ from pathlib import Path
 from atomic_file import write_text
 from capacity_ledger import consumed_tokens, load_active, reserved_tokens, reserve, settle
 from capacity_runtime import project_envelope
-from core import StudioError
+from core import StudioError, APIError
 from file_lock import exclusive
 
 
@@ -183,14 +183,27 @@ def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=Non
     try:
         response = None
         reported = None
+        definitively_rejected = False
         try:
             # One POST per accounted submission. Provider fallback is separately
             # reserved; opaque transport retries must not bypass admission.
             response = api.call('POST', '/chat/completions', payload, **transport)
             reported = _reported(response)
             return response
+        except APIError as exc:
+            # A rejection of the initial POST cannot have generated tokens.
+            # Polling an accepted 202 response, transport timeouts and 5xx
+            # failures remain conservatively charged: usage is unknown.
+            definitively_rejected = (
+                exc.status in {400, 401, 403, 404, 422, 429}
+                and not exc.pending_accepted
+            )
+            raise
         finally:
-            actual = reported['total_tokens'] if reported is not None else estimate
+            actual = (
+                reported['total_tokens'] if reported is not None else
+                0 if definitively_rejected else estimate
+            )
             if reservation is not None:
                 settle(ledger_path, reservation['reservation_id'], actual_tokens=actual)
             if reported is not None:
@@ -201,6 +214,12 @@ def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=Non
                     usage['reported_tokens'] += actual
                     for key in ('input_tokens','output_tokens','cached_input_tokens','reasoning_tokens'):
                         usage[key] += reported[key]
+                    _save(path, value)
+            elif definitively_rejected:
+                with exclusive(path):
+                    value = _load(path); usage = value['usage']
+                    usage['total_tokens'] -= estimate
+                    usage['estimated_calls'] -= 1
                     _save(path, value)
     except NativeAccountingError as exc:
         exc.inference_submitted = True

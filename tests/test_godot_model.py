@@ -74,6 +74,7 @@ class GodotModelTests(unittest.TestCase):
         subject.ask('design', 'art direction')
         self.assertEqual([call[2]['max_tokens'] for call in subject.api.calls], [16000, 3072, 1536])
         self.assertEqual([call[2]['reasoning_budget'] for call in subject.api.calls], [2048, 512, 512])
+        self.assertIn('target no more than 900 output tokens', subject.api.calls[2][2]['messages'][0]['content'])
         self.assertTrue(all(
             call[2]['response_format'] == {'type': 'json_object'}
             for call in subject.api.calls
@@ -87,6 +88,7 @@ class GodotModelTests(unittest.TestCase):
         self.assertIn('Godot mobile game product lead', system)
         self.assertIn('specifications only', system)
         self.assertNotIn('Flutter ValueKey', system)
+        self.assertIn('Keep the deliverable compact', system)
         self.assertEqual(subject.models_used['product'], 'general')
         self.assertEqual(subject.api.calls[0][2]['max_tokens'], 3072)
 

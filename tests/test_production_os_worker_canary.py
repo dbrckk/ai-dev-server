@@ -43,6 +43,9 @@ class WorkerCanaryTests(unittest.TestCase):
             {"sequence": 1, "repository": "owner/.."},
             {"sequence": 1, "repository": "./repo"},
             {"sequence": 1, "repository": "owner/repo", "extra": 1},
+            {"sequence": 1, "repository": "owner/repo", "scenario": "unknown"},
+            {"sequence": 1, "repository": "owner/repo", "scenario": "jumpy_landing_feedback"},
+            {"sequence": 1, "repository": "dbrckk/Jumpy", "scenario": 4},
         ):
             with self.subTest(value=value), self.assertRaises(ValueError):
                 validate_control(value)
@@ -52,6 +55,14 @@ class WorkerCanaryTests(unittest.TestCase):
         self.assertIn(".production-os/worker-canary-12.txt", instruction)
         self.assertIn("production-os-worker-canary sequence 12", instruction)
         self.assertIn("Do not change dependencies", instruction)
+        gameplay = canary_instruction(32, "jumpy_landing_feedback")
+        self.assertIn("scripts/main.gd", gameplay)
+        self.assertIn("PERFECT and CLUTCH", gameplay)
+        self.assertIn("reduced_motion and high_contrast", gameplay)
+        self.assertIn("existing Godot 4.7.2", gameplay)
+        self.assertNotIn(".production-os/worker-canary-", gameplay)
+        with self.assertRaises(ValueError):
+            canary_instruction(32, "untrusted")
 
     def test_launch_is_idempotent_and_uses_dashboard_api(self):
         client = FakeClient()
@@ -68,6 +79,14 @@ class WorkerCanaryTests(unittest.TestCase):
         self.assertEqual(result["worker_wake"], "dispatched")
         self.assertEqual(result["actions_worker_wake"], "accepted")
         self.assertEqual(dispatches, [1])  # no dispatch before successful admission
+        gameplay_client = FakeClient()
+        gameplay_result = run_canary(gameplay_client, {
+            "sequence": 32, "repository": "dbrckk/Jumpy",
+            "scenario": "jumpy_landing_feedback",
+        })
+        self.assertEqual(gameplay_result["scenario"], "jumpy_landing_feedback")
+        self.assertEqual(gameplay_client.submissions[0][1]["request_id"], "worker-canary-32")
+        self.assertIn("scripts/main.gd", gameplay_client.submissions[0][1]["instruction"])
         with self.assertRaises(ValueError):
             dispatch_worker_after_enqueue(token="not-used", repository="untrusted/repo")
 

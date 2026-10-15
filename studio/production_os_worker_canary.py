@@ -57,7 +57,7 @@ def dispatch_worker_after_enqueue(*, token, repository, urlopen=urllib.request.u
 def validate_control(payload):
     if not isinstance(payload, dict):
         raise ValueError("canary control must be an object")
-    if set(payload) != {"sequence", "repository"}:
+    if set(payload) not in ({"sequence", "repository"}, {"sequence", "repository", "scenario"}):
         raise ValueError("canary control fields are invalid")
     sequence = payload.get("sequence")
     if isinstance(sequence, bool) or not isinstance(sequence, int) or not 1 <= sequence <= 1_000_000_000:
@@ -68,10 +68,33 @@ def validate_control(payload):
     owner, name = repository.split("/", 1)
     if owner in {".", ".."} or name in {".", ".."}:
         raise ValueError("canary repository is invalid")
+    scenario = payload.get("scenario", "file")
+    if not isinstance(scenario, str) or scenario not in {"file", "jumpy_landing_feedback"}:
+        raise ValueError("canary scenario is invalid")
+    if scenario == "jumpy_landing_feedback" and repository != "dbrckk/Jumpy":
+        raise ValueError("gameplay scenario requires the trusted Jumpy repository")
     return sequence, repository
 
 
-def canary_instruction(sequence):
+def canary_instruction(sequence, scenario="file"):
+    if scenario == "jumpy_landing_feedback":
+        return (
+            f"Production-OS verified Jumpy gameplay qualification {sequence}. "
+            "Make ONE real gameplay-UX improvement in scripts/main.gd: add a short-lived, "
+            "clearly readable on-screen landing judgement for PERFECT and CLUTCH landings, "
+            "and a calmer ordinary-landing cue if useful. Trigger the cue only on a newly "
+            "scored landing, expire it automatically, and hide it on reset/death. "
+            "Place it away from score/buttons and keep it legible on phone portrait screens. "
+            "Respect reduced_motion and high_contrast settings without requiring animation. "
+            "Preserve exact existing gameplay scoring, jump and pulse physics, daily seed, "
+            "save data and player input. Keep the patch small and avoid new dependencies, "
+            "secrets, workflows, monetization or external SDKs. Do NOT create a canary text "
+            "file: this trial must modify actual source code. Use the existing Godot 4.7.2 "
+            "headless project validation, fix any parse errors, then persist a verified "
+            "review-branch checkpoint. Do not merge or publish the game."
+        )
+    if scenario != "file":
+        raise ValueError("unknown canary scenario")
     path = f".production-os/worker-canary-{sequence}.txt"
     content = f"production-os-worker-canary sequence {sequence}"
     return (
@@ -84,11 +107,12 @@ def canary_instruction(sequence):
 
 def launch_canary(client, control):
     sequence, repository = validate_control(control)
+    scenario = control.get("scenario", "file")
     response = client.submit(
         "/v1/dashboard/launch",
         {
             "repository": repository,
-            "instruction": canary_instruction(sequence),
+            "instruction": canary_instruction(sequence, scenario),
             "request_id": f"worker-canary-{sequence}",
         },
     )
@@ -108,6 +132,7 @@ def launch_canary(client, control):
     wake_status = str(wake.get("status") or "unknown") if isinstance(wake, dict) else "unknown"
     return {
         "sequence": sequence,
+        "scenario": scenario,
         "repository": repository,
         "project_id": project_id,
         "workflow_id": workflow_id,

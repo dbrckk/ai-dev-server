@@ -104,28 +104,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-16T11:02:52Z
+Generated: 2026-10-16T11:16:02Z
 
 ### Git
 - Branch: `main`
-- Head: `6d32994dd493`
-- Commit date: 2026-10-16T13:02:41+02:00
-- Commit: security(worker): reject credential-bearing HTTP redirects
+- Head: `aa1694c21225`
+- Commit date: 2026-10-16T13:15:39+02:00
+- Commit: perf(godot): bound review source and verdict token budgets (#324)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/core.py`
+- `studio/godot_preview.py`
+- `tests/test_godot_preview.py`
+- `tests/test_patch_safety_rebuild.py`
 - `.github/workflows/production-os-actions-worker.yml`
 - `tests/test_production_os_actions_worker_workflow.py`
 - `studio/engine_patch.py`
 - `studio/godot_model.py`
-- `studio/godot_preview.py`
 - `tests/test_engine_patch.py`
 - `tests/test_godot_model.py`
-- `tests/test_godot_preview.py`
 - `studio/generic_project.py`
-- `studio/native_model_usage.py`
-- `studio/production_os_worker_canary.py`
-- `tests/test_production_os_worker_canary.py`
 
 ### Project signals
 - No common build descriptor detected

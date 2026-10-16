@@ -1,18 +1,20 @@
 # Change impact
 
-Base: 02757745b63d4c6ceb3b5456ba8cdb762e3d2d27
-Head: 6d32994dd49395ec9e8a63953acc3d01f57d9289
+Base: 9322b58837683eea17a2287472b91b7b19dcab1d
+Head: aa1694c21225b05981097097154d601b70d679d0
 
 ## Changed files
-- M .github/workflows/production-os-actions-worker.yml
-- M tests/test_production_os_actions_worker_workflow.py
+- M studio/core.py
+- M studio/godot_preview.py
+- M tests/test_godot_preview.py
+- M tests/test_patch_safety_rebuild.py
 
 ## Affected areas
-- .github
+- studio
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_godot_preview.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

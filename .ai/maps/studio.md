@@ -12296,7 +12296,37 @@ seen = set()
 ⋮----
 chunk = ''.join(lines[start:end])
 ⋮----
-def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation') -> str
+def _review_evidence(patch: dict | None, root: Path) -> list[dict]
+⋮----
+"""Bounded, source-backed evidence of the accepted implementation patch.
+
+    The model sees exact changed snippets plus the current source checksum,
+    not a synthetic claim that the whole source has been independently read.
+    All candidate patches pass _safe_apply before this helper is called.
+    """
+⋮----
+kind = 'edits' if set(patch) == {'edits'} else 'files' if set(patch) == {'files'} else ''
+entries = patch.get(kind) if kind else None
+⋮----
+result = []
+remaining = 9_000
+⋮----
+rel = item.get('path')
+⋮----
+source_path = root / rel
+⋮----
+current = source_path.read_bytes()
+⋮----
+row = {
+⋮----
+before = item.get('find')
+after = item.get('replace')
+⋮----
+cost = len(row['before']) + len(row['after'])
+⋮----
+after = item.get('content')
+⋮----
+cost = len(row['source_excerpt'])
 ⋮----
 paths = []
 ⋮----
@@ -12304,7 +12334,7 @@ rel = path.relative_to(root).as_posix()
 ⋮----
 files = {}
 planning = phase in ('product', 'design')
-compact = (phase in ('implementation', 'tests') and
+compact = (phase in ('implementation', 'tests', 'review') and
 excerpted_paths = []
 ⋮----
 # Explicitly distinguish source *excerpts* from the full files used
@@ -12333,6 +12363,8 @@ source = path.read_text(encoding='utf-8')
 # Full source is retained for review and for small projects.
 ⋮----
 context = {
+⋮----
+report = canonical(validation_logs)
 ⋮----
 def _exact_branch_ref(github, branch: str)
 ⋮----
@@ -12419,6 +12451,8 @@ event = {
 ⋮----
 retry_patch = model.ask(
 ⋮----
+patch = retry_patch
+⋮----
 event_id = f"{req['id']}:{state['rounds']}:godot"
 model_name = str(getattr(model, 'models_used', {}).get('implementation') or 'unknown')
 ⋮----
@@ -12428,7 +12462,8 @@ try: journeys = validate_journeys(state['product'].get('journeys'))
 ⋮----
 pending_safe_rewrite = state.pop('pending_safe_rewrite_event_id', None)
 ⋮----
-review = verdict(model.ask('review', _context(req,state,root))); state['code_review'] = review
+review_context = _context(req, state, root, phase='review', review_patch=patch, validation_logs=logs)
+review = verdict(model.ask('review', review_context)); state['code_review'] = review
 ````
 
 ## File: godot_privacy_security_qa.py

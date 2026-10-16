@@ -89,6 +89,8 @@ class WorkerCanaryTests(unittest.TestCase):
         self.assertEqual(path, "/v1/dashboard/launch")
         self.assertEqual(payload["repository"], "dbrckk/repo-standards")
         self.assertEqual(payload["request_id"], "worker-canary-4")
+        self.assertNotIn("launch_profile", payload)
+        self.assertNotIn("token_budget", payload)
         self.assertEqual(result["worker_wake"], "dispatched")
         self.assertEqual(result["actions_worker_wake"], "accepted")
         self.assertEqual(dispatches, [1])  # no dispatch before successful admission
@@ -99,6 +101,8 @@ class WorkerCanaryTests(unittest.TestCase):
         })
         self.assertEqual(gameplay_result["scenario"], "jumpy_landing_feedback")
         self.assertEqual(gameplay_client.submissions[0][1]["request_id"], "worker-canary-32")
+        self.assertEqual(gameplay_client.submissions[0][1]["launch_profile"], "portfolio-integration")
+        self.assertEqual(gameplay_client.submissions[0][1]["token_budget"], 60000)
         self.assertIn("scripts/main.gd", gameplay_client.submissions[0][1]["instruction"])
         guard_client = FakeClient()
         guard_result = run_canary(guard_client, {
@@ -107,6 +111,8 @@ class WorkerCanaryTests(unittest.TestCase):
         })
         self.assertEqual(guard_result["scenario"], "jumpy_settings_tap_guard")
         self.assertEqual(guard_client.submissions[0][1]["request_id"], "worker-canary-34")
+        self.assertEqual(guard_client.submissions[0][1]["launch_profile"], "portfolio-integration")
+        self.assertEqual(guard_client.submissions[0][1]["token_budget"], 60000)
         self.assertIn("settings_open", guard_client.submissions[0][1]["instruction"])
         with self.assertRaises(ValueError):
             dispatch_worker_after_enqueue(token="not-used", repository="untrusted/repo")

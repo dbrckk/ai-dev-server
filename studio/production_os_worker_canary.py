@@ -125,14 +125,21 @@ def canary_instruction(sequence, scenario="file"):
 def launch_canary(client, control):
     sequence, repository = validate_control(control)
     scenario = control.get("scenario", "file")
-    response = client.submit(
-        "/v1/dashboard/launch",
-        {
-            "repository": repository,
-            "instruction": canary_instruction(sequence, scenario),
-            "request_id": f"worker-canary-{sequence}",
-        },
-    )
+    payload = {
+        "repository": repository,
+        "instruction": canary_instruction(sequence, scenario),
+        "request_id": f"worker-canary-{sequence}",
+    }
+    if scenario in {"jumpy_landing_feedback", "jumpy_settings_tap_guard"}:
+        # Actual gameplay changes need several planning, coding and validation
+        # calls. The historical 30k one-tap default has failed before any
+        # implementation; use the existing operator-only bounded profile.
+        # This is a consumption ceiling, not additional paid provider access.
+        payload.update({
+            "launch_profile": "portfolio-integration",
+            "token_budget": 60000,
+        })
+    response = client.submit("/v1/dashboard/launch", payload)
     if not isinstance(response, dict):
         raise RuntimeError("canary launch returned invalid response")
     project = response.get("project")

@@ -40,8 +40,14 @@ GODOT_ROLE = {
 }
 PATCH_SCHEMA = (
     'Editable implementation scope: project.godot, export_presets.cfg, scripts/**, scenes/**, assets/**, tests/**, docs/** '
-    'using only the trusted text extensions. QA role may write only tests/*.gd (including subdirectories). '
-    'Return ONLY JSON {"files":[{"path":"scripts/main.gd","content":"full file"}]}.'
+    'using only trusted text extensions. For modifications to EXISTING files, strongly prefer concise exact-match edits: '
+    'return ONLY JSON {"edits":[{"path":"scripts/main.gd","find":"exact unique existing snippet","replace":"modified snippet"}]}. '
+    'The find text must occur exactly once in the existing file; include enough surrounding lines for uniqueness. '
+    'Never use line numbers, wildcards or invented context. Preserve all code not explicitly changed. '
+    'Do NOT echo an entire existing file for a small change, because free model output quota is limited. '
+    'If adding a NEW file or a full rewrite is essential, alternatively return ONLY JSON '
+    '{"files":[{"path":"scripts/main.gd","content":"full file"}]}. Never mix files and edits. '
+    'QA role may write only tests/*.gd and MUST use files, not edits.'
 )
 PRODUCT_SCHEMA = (
     'Return ONLY a JSON object with your detailed deliverable and a journeys field. journeys must contain 1..6 objects with '

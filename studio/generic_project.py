@@ -757,7 +757,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
     # and have a finite 90k-token envelope. Prefer one verified code patch
     # over speculative planning and competing candidate portfolios.
     catalog_integration = bool(req.get("production_os")) and bool(
-        re.search(r"\bTracking:\s+starlist-integration-v[12]-[0-9a-f]{24}\b",
+        re.search(r"\bTracking:\s+starlist-integration-v[123]-[0-9a-f]{24}\b",
                   str(req.get("brief") or ""))
     )
     github = GitHub(req["target_repo"])

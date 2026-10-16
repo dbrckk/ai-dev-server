@@ -282,6 +282,7 @@ class GodotPreviewTests(unittest.TestCase):
             )
             godot_preview._record_retry_failure(guard, source_root, blocker)
             self.assertEqual(guard['retry_guard']['count'], 1)
+            self.assertNotIn('preview_retry_stopped', guard)
             # Reproduce canary #36: large autonomous architecture telemetry
             # must not be included in product/design prompts. The late
             # _unhandled_input handler remains available despite truncation.

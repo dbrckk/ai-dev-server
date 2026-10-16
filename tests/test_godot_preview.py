@@ -143,8 +143,11 @@ class GodotPreviewTests(unittest.TestCase):
             review = json.loads(godot_preview._context(
                 self.request(), {}, source_root, phase='review',
             ))
-            self.assertEqual(review['files']['scripts/main.gd'], main_source)
-            self.assertNotIn('files_mode', review)
+            self.assertEqual(review['files_mode'], 'bounded_review_source_excerpts')
+            self.assertLess(len(review['files']['scripts/main.gd']), 8_000)
+            self.assertIn('scripts/main.gd', review['excerpted_paths'])
+            self.assertEqual(review['accepted_change_evidence'], [])
+            self.assertNotIn(main_source, review['files']['scripts/main.gd'])
 
             # A small change must not require the model to echo the complete
             # 570k-character existing script. The runner expands each edit
@@ -161,6 +164,24 @@ class GodotPreviewTests(unittest.TestCase):
             after = guard.read_text()
             self.assertIn(replacement, after)
             self.assertNotIn('    if settings_open:', after)
+            review = json.loads(godot_preview._context(
+                self.request(), {}, source_root, phase='review',
+                review_patch=payload,
+                validation_logs=[{'exit_code': 0, 'source_project_immutable': True}],
+            ))
+            self.assertEqual(review['files_mode'], 'bounded_review_source_excerpts')
+            self.assertLess(
+                sum(len(content) for content in review['files'].values()),
+                godot_preview.COMPACT_SOURCE_CHAR_BUDGET + 400,
+            )
+            self.assertEqual(review['accepted_change_evidence'][0]['path'], 'scripts/guard.gd')
+            self.assertTrue(review['accepted_change_evidence'][0]['after_present_in_source'])
+            self.assertEqual(
+                review['accepted_change_evidence'][0]['current_source_sha256'],
+                godot_preview.hashlib.sha256(guard.read_bytes()).hexdigest(),
+            )
+            self.assertIn('exit_code', review['trusted_validation_excerpt'])
+            self.assertIn('not complete project source', review['review_scope'])
             for invalid in (
                 {'edits': [{'path': 'scripts/guard.gd', 'find': 'missing text',
                             'replace': 'safe'}]},

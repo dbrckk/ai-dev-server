@@ -45,6 +45,8 @@ class PatchSafetyRebuildTests(unittest.TestCase):
             ])
             self.assertEqual(model.ask("review","brief"),{"passed":False,"blockers":["defect"]})
             self.assertEqual(model.calls,2)
+            self.assertEqual(model.api.call.call_args_list[0].args[2]['max_tokens'], 1024)
+            self.assertEqual(model.api.call.call_args_list[1].args[2]['max_tokens'], 1024)
 
     def test_nonfinite_model_number_is_repaired(self):
         with patch.dict(os.environ,{"STUDIO_API_KEY":"test"},clear=True):

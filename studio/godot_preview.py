@@ -155,7 +155,65 @@ def _relevant_source_excerpt(source: str, brief: str, limit: int) -> str:
     return '\n[OMITTED SOURCE - EXACT EDITS ONLY]\n'.join(chunks)[:limit] + '\n[TRUNCATED SOURCE - EXACT EDITS ONLY]'
 
 
-def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation') -> str:
+def _review_evidence(patch: dict | None, root: Path) -> list[dict]:
+    """Bounded, source-backed evidence of the accepted implementation patch.
+
+    The model sees exact changed snippets plus the current source checksum,
+    not a synthetic claim that the whole source has been independently read.
+    All candidate patches pass _safe_apply before this helper is called.
+    """
+    if not isinstance(patch, dict):
+        return []
+    kind = 'edits' if set(patch) == {'edits'} else 'files' if set(patch) == {'files'} else ''
+    entries = patch.get(kind) if kind else None
+    if not isinstance(entries, list):
+        return []
+    result = []
+    remaining = 9_000
+    for item in entries[:12]:
+        if not isinstance(item, dict):
+            continue
+        rel = item.get('path')
+        if not isinstance(rel, str) or not editable(rel, 'godot'):
+            continue
+        source_path = root / rel
+        if not source_path.is_file() or source_path.is_symlink():
+            continue
+        try:
+            current = source_path.read_bytes()
+        except OSError:
+            continue
+        row = {
+            'path': rel,
+            'current_source_sha256': hashlib.sha256(current).hexdigest(),
+            'source_size_bytes': len(current),
+            'change_kind': 'exact_edit' if kind == 'edits' else 'complete_file',
+        }
+        if kind == 'edits':
+            before = item.get('find')
+            after = item.get('replace')
+            if not isinstance(before, str) or not isinstance(after, str):
+                continue
+            row['before'] = before[:min(2_500, remaining // 2)]
+            row['after'] = after[:min(2_500, remaining // 2)]
+            row['after_present_in_source'] = after.encode('utf-8') in current
+            cost = len(row['before']) + len(row['after'])
+        else:
+            after = item.get('content')
+            if not isinstance(after, str):
+                continue
+            row['source_excerpt'] = after[:min(3_000, remaining)]
+            row['source_excerpt_truncated'] = len(after) > len(row['source_excerpt'])
+            cost = len(row['source_excerpt'])
+        result.append(row)
+        remaining -= cost
+        if remaining <= 0:
+            break
+    return result
+
+
+def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation',
+             review_patch: dict | None = None, validation_logs: list | None = None) -> str:
     paths = []
     for path in sorted(root.rglob('*')):
         if not path.is_file() or path.is_symlink():
@@ -166,7 +224,7 @@ def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation
 
     files = {}
     planning = phase in ('product', 'design')
-    compact = (phase in ('implementation', 'tests') and
+    compact = (phase in ('implementation', 'tests', 'review') and
                sum(path.stat().st_size for _, path in paths) > COMPACT_SOURCE_THRESHOLD)
     excerpted_paths = []
     if planning:
@@ -244,13 +302,27 @@ def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation
         ]
         context['manifest_omitted_count'] = max(0, len(paths) - PLANNING_MANIFEST_LIMIT)
     if compact:
-        context['files_mode'] = 'bounded_exact_match_source_excerpts'
+        context['files_mode'] = (
+            'bounded_review_source_excerpts' if phase == 'review'
+            else 'bounded_exact_match_source_excerpts'
+        )
         context['excerpted_paths'] = excerpted_paths
         context['editable_file_manifest'] = [
             {'path': rel, 'size_bytes': path.stat().st_size}
             for rel, path in paths[:PLANNING_MANIFEST_LIMIT]
         ]
         context['manifest_omitted_count'] = max(0, len(paths) - PLANNING_MANIFEST_LIMIT)
+    if phase == 'review' and compact:
+        context['accepted_change_evidence'] = _review_evidence(review_patch, root)
+        if validation_logs is not None:
+            report = canonical(validation_logs)
+            context['trusted_validation_excerpt'] = report[:2_000]
+            context['validation_excerpt_truncated'] = len(report) > 2_000
+        context['review_scope'] = (
+            'Review the accepted changed snippets, surrounding authentic source excerpts '
+            'and trusted headless validation. This is bounded review input, not complete project source. '
+            'Reject suspicious or insufficient evidence; never claim full-file inspection.'
+        )
     return canonical(context)
 
 def _exact_branch_ref(github, branch: str):
@@ -457,6 +529,7 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
                     state.update(status='architecture_review_hold', blockers=[str(retry_exc)])
                     checkpoint()
                     continue
+                patch = retry_patch
                 event['safe_rewrite_status'] = 'accepted'
                 event_id = f"{req['id']}:{state['rounds']}:godot"
                 model_name = str(getattr(model, 'models_used', {}).get('implementation') or 'unknown')
@@ -500,7 +573,8 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
                     state['safe_rewrite_learning'] = summarize_safe_rewrite_learning(safe_rewrite_learning_path)
                 state.update(status='repair_needed',blockers=['Godot headless validation failed: ' + canonical(logs[-1:])[-16000:]])
                 checkpoint(); continue
-            review = verdict(model.ask('review', _context(req,state,root))); state['code_review'] = review
+            review_context = _context(req, state, root, phase='review', review_patch=patch, validation_logs=logs)
+            review = verdict(model.ask('review', review_context)); state['code_review'] = review
             if not review['passed']:
                 pending_safe_rewrite = state.pop('pending_safe_rewrite_event_id', None)
                 if pending_safe_rewrite:

@@ -6342,6 +6342,19 @@ system = subject.api.calls[0][2]['messages'][0]['content']
 ⋮----
 def test_product_prompt_requires_literal_json_step_objects(self)
 ⋮----
+# Canary 35 spent two calls rejecting an otherwise well-formed plan:
+# the Godot prompt omitted the validator's 40-character id limit.
+rejected = product_value()
+⋮----
+accepted = product_value()
+⋮----
+subject = model([completion(rejected), completion(accepted)])
+⋮----
+retry = subject.api.calls[1][2]['messages']
+⋮----
+# Keep strict rejection and the existing two-call ceiling.
+subject = model([completion(rejected), completion(rejected)])
+⋮----
 def test_implementation_uses_godot_prompt_and_scope(self)
 ⋮----
 subject = model([completion({'files':[{'path':'scripts/main.gd','content':'extends Node\n'}]})])

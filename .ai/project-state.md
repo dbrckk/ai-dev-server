@@ -104,22 +104,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-16T06:26:56Z
+Generated: 2026-10-16T08:11:26Z
 
 ### Git
 - Branch: `main`
-- Head: `fdddaf11229e`
-- Commit date: 2026-10-16T08:26:38+02:00
-- Commit: fix(tokens): limit large-project output reservations to preserve coding capacity
+- Head: `2cbe296f40be`
+- Commit date: 2026-10-16T10:11:14+02:00
+- Commit: fix(godot): align planning prompt with strict journey validator bounds
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/godot_model.py`
+- `tests/test_godot_model.py`
+- `studio/generic_project.py`
 - `studio/generic_model.py`
 - `control/production-os-worker-canary.json`
-- `studio/godot_model.py`
 - `studio/learning_context.py`
 - `tests/test_learning_context.py`
-- `studio/generic_project.py`
 
 ### Project signals
 - No common build descriptor detected

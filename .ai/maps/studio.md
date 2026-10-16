@@ -9220,7 +9220,10 @@ admission = capacity_runtime_state.get("admission")
 ⋮----
 stagnation_state = {
 star_context=recommend('implementation',out)
-snapshot = _snapshot(work)
+# Catalog integrations carry a known upstream and a narrow change
+# request. Large alphabetically ordered snapshots can crowd out
+# the patch itself and repeatedly charge input tokens.
+snapshot = _snapshot(work, 64_000 if catalog_integration else 420_000)
 previous_failures = sum(
 ⋮----
 verification_fallback = (
@@ -9301,6 +9304,7 @@ current_remaining = None if deadline is None else max(0.0, deadline - clock())
 implementation_context = {
 ⋮----
 used_external_agent = False
+catalog_model_attempted = False
 ⋮----
 before_agent = snapshot_agent_workspace(work)
 ⋮----
@@ -9388,6 +9392,10 @@ candidate = {
 ⋮----
 selected_strategy = route_strategy
 model_first = selected_strategy in {"model_only","model_to_agent"}
+# A failed single model candidate is not a reason to resend
+# the same prompt in the unconditional direct fallback.
+# Non-catalog work retains its existing retry strategy.
+catalog_model_attempted = bool(
 model_candidate = (
 model_verified = bool(
 ⋮----

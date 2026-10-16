@@ -1,16 +1,18 @@
 # Change impact
 
-Base: 2ec7117ec392a08322d19d0016214603caed3b1d
-Head: fdddaf11229e8494cb6dafc208d7b717227ca6e5
+Base: 412f5334febb55610e948323f614ce6dd1c4ae24
+Head: 2cbe296f40be9a5752192cacd8c7e6aef7281f81
 
 ## Changed files
-- M studio/generic_model.py
+- M studio/godot_model.py
+- M tests/test_godot_model.py
 
 ## Affected areas
 - studio
+- tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_godot_model.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

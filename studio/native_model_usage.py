@@ -118,6 +118,10 @@ def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=Non
         _save(path, _load(path))  # Verify storage before submitting inference.
     payload = dict(params)
     prompt_estimate = max(1, (len(json.dumps(payload.get('messages', []), ensure_ascii=False)) + 3)//4)
+    # Character-count token estimates are not exact for source code or JSON.
+    # Reserve conservative prompt headroom before enforcing a project cap;
+    # actual provider usage still replaces the reservation at settlement.
+    prompt_allowance = prompt_estimate + max(128, (prompt_estimate + 4)//5)
     output_limit = int(payload['max_tokens'])
     reservation = None
     ledger_path = None
@@ -155,10 +159,10 @@ def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=Non
                     raise NativeAccountingError('Configured native capacity ledger invalid') from None
             active = load_active(ledger_path)
         remaining = envelope - consumed_tokens(active, project_id=project_id) - reserved_tokens(active, project_id=project_id)
-        output_limit = min(output_limit, remaining - prompt_estimate)
+        output_limit = min(output_limit, remaining - prompt_allowance)
         if output_limit > 0:
             reservation = reserve(ledger_path, project_id=project_id, provider='native:'+provider,
-                estimated_tokens=prompt_estimate+output_limit, provider_remaining_tokens=None,
+                estimated_tokens=prompt_allowance+output_limit, provider_remaining_tokens=None,
                 project_envelope_tokens=envelope)
         if output_limit <= 0 or reservation.get('admitted') is not True:
             with exclusive(path):

@@ -49,6 +49,17 @@ PATCH_SCHEMA = (
     '{"files":[{"path":"scripts/main.gd","content":"full file"}]}. Never mix files and edits. '
     'QA role may write only tests/*.gd and MUST use files, not edits.'
 )
+# The QA role must NOT see the implementation's exact-edit preference.
+# Canary #37 spent two QA calls returning disallowed edit envelopes.
+TESTS_SCHEMA = (
+    'Godot QA: return ONLY JSON {"files":[{"path":"tests/main_test.gd",'
+    '"content":"complete GDScript test source"}]}. '
+    'Only NEW or full-source tests/*.gd entries are allowed; never return edits, '
+    'summaries, explanation, markdown, wrappers or implementation source. '
+    'Write a focused executable regression for the requested behavior and '
+    'preserve the production game. The accepted envelope has exactly one top-level key: files.'
+)
+
 PRODUCT_SCHEMA = (
     'Return ONLY a JSON object with your detailed deliverable and a journeys field. journeys must contain 1..6 objects with '
     'exactly id and steps; each journey needs 2..12 steps, at least one interaction and one assertion. '
@@ -110,7 +121,11 @@ class GodotModel(Model):
                 ) or (
                     role == 'product' and isinstance(exc, ValueError)
                 ) or (
-                    isinstance(exc, PatchPolicyError) and error == 'Expected patch envelope'
+                    isinstance(exc, PatchPolicyError)
+                    and error in (
+                        'Expected patch envelope',
+                        'Exact edits permitted only for Godot implementation',
+                    )
                 ):
                     invalid_response_provider = self.providers_used.get(role)
             if attempt or self.calls >= self.limit:
@@ -157,6 +172,14 @@ class GodotModel(Model):
                        if role == 'implementation' else
                        'Use {"files":[{"path":"tests/main_test.gd","content":"complete GDScript test source"}]}. '
                        'The QA role may write only tests/*.gd; exact edits are not allowed.')
+                )
+            elif role == 'tests' and error == 'Exact edits permitted only for Godot implementation':
+                context += (
+                    '\\nThe previous QA answer used implementation-only exact edits. '
+                    'Return ONLY JSON {"files":[{"path":"tests/main_test.gd",'
+                    '"content":"complete focused GDScript regression test"}]}. '
+                    'The only top-level key must be files. Never use edits, '
+                    'summary, or production scripts for QA.'
                 )
             elif role == 'product' and error == 'Invalid step text':
                 context += (
@@ -255,7 +278,7 @@ class GodotModel(Model):
             'independent_from_implementation': False,
         }
 
-        schema = PATCH_SCHEMA if role in ('implementation', 'tests') else PRODUCT_SCHEMA if role == 'product' else DESIGN_SCHEMA
+        schema = PATCH_SCHEMA if role == 'implementation' else TESTS_SCHEMA if role == 'tests' else PRODUCT_SCHEMA if role == 'product' else DESIGN_SCHEMA
         system_content = GODOT_ROLE[role] + '\n' + schema
         response = None
         selected_provider = None

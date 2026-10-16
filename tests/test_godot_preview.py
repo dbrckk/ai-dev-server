@@ -240,6 +240,49 @@ class GodotPreviewTests(unittest.TestCase):
             ))['files']['scripts/main.gd']
             self.assertIn('func _unhandled_input(event):', excerpt)
             self.assertIn('if settings_open:', excerpt)
+            # A rejected exact edit must receive a short grounded retry
+            # instead of repeating a full model context/cycle.
+            wrong = {'edits': [{
+                'path': 'scripts/main.gd',
+                'find': 'if setting_is_open:',
+                'replace': 'if not setting_is_open:',
+            }]}
+            retry_text = godot_preview._exact_edit_repair_context(
+                focused, source_root, wrong,
+            )
+            retry = json.loads(retry_text)
+            self.assertLess(len(retry_text), 5_500)
+            self.assertEqual(retry['retry'], 'one_attempt_only')
+            self.assertIn('func _unhandled_input(event):',
+                          retry['source_evidence'][0]['authentic_source_excerpt'])
+            self.assertIn('if settings_open:',
+                          retry['source_evidence'][0]['authentic_source_excerpt'])
+            self.assertIn('VERBATIM', retry['contract'])
+            self.assertIsNone(godot_preview._exact_edit_repair_context(
+                focused, source_root, {'files': []},
+            ))
+            with self.assertRaisesRegex(StudioError, 'exactly one source match'):
+                godot_preview._safe_apply(source_root, wrong, 'implementation')
+            # The stop-loss survives a checkpoint but resets when trusted
+            # source changes, so a real implementation advance is not lost.
+            guard = {}
+            blocker = 'Godot exact edit expected exactly one source match'
+            godot_preview._record_retry_failure(guard, source_root, blocker)
+            self.assertEqual(guard['retry_guard']['count'], 1)
+            self.assertNotIn('preview_retry_stopped', guard)
+            godot_preview._record_retry_failure(guard, source_root, blocker)
+            self.assertEqual(guard['retry_guard']['count'], 2)
+            self.assertTrue(guard['preview_retry_stopped'])
+            self.assertEqual(
+                guard['completion']['next_stage'],
+                'godot_preview_identical_failure_stop_loss',
+            )
+            (source_root / 'scenes/main.tscn').write_text(
+                '[gd_scene format=3]\\n# changed project source\\n'
+            )
+            godot_preview._record_retry_failure(guard, source_root, blocker)
+            self.assertEqual(guard['retry_guard']['count'], 1)
+            self.assertNotIn('preview_retry_stopped', guard)
             # Reproduce canary #36: large autonomous architecture telemetry
             # must not be included in product/design prompts. The late
             # _unhandled_input handler remains available despite truncation.
@@ -278,10 +321,15 @@ class GodotPreviewTests(unittest.TestCase):
         fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(
             {k: v for k, v in req.items() if k != 'enabled'}
         ).encode()).hexdigest()
-        for status in ('repair_needed', 'godot_preview_validated'):
+        for status in ('repair_needed', 'godot_preview_validated', 'stopped'):
             restored = {'request_hash': fingerprint, 'engine': 'godot',
                         'status': status, 'cycles': req['max_cycles'], 'rounds': 14,
                         'blockers': ['real parse error']}
+            if status == 'stopped':
+                restored.update(status='blocked', cycles=1,
+                                preview_retry_stopped=True,
+                                completion={'finished': False,
+                                            'next_stage': 'godot_preview_identical_failure_stop_loss'})
             model_factory = Mock()
             sandbox_factory = Mock()
             with self.subTest(status=status), tempfile.TemporaryDirectory() as td:
@@ -298,6 +346,14 @@ class GodotPreviewTests(unittest.TestCase):
                     self.assertTrue(resumed['preview_cycle_budget_exhausted'])
                     self.assertFalse(resumed['completion']['finished'])
                     self.assertEqual(resumed['blockers'], ['real parse error'])
+                elif status == 'stopped':
+                    self.assertEqual(resumed['status'], 'blocked')
+                    self.assertTrue(resumed['preview_retry_stopped'])
+                    self.assertEqual(resumed['cycles'], 1)
+                    self.assertEqual(
+                        resumed['completion']['next_stage'],
+                        'godot_preview_identical_failure_stop_loss',
+                    )
                 else:
                     self.assertEqual(resumed['status'], 'godot_preview_validated')
                     self.assertNotIn('preview_cycle_budget_exhausted', resumed)

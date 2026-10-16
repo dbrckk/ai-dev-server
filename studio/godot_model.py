@@ -317,7 +317,22 @@ class GodotModel(Model):
             from native_model_usage import call as accounted_call, NativeAccountingError
             started = time.monotonic()
             try:
-                response = accounted_call(api, params, provider.name)
+                # The capacity ledger may leave only a tiny output fragment.
+                # Sending it would spend free-provider quota on truncated JSON.
+                # Enforce a conservative minimum after prompt headroom, without
+                # granting additional tokens or changing the requested ceiling.
+                output_floor = (
+                    768 if role == 'product' else
+                    640 if role == 'design' else
+                    1536 if compact_source and role == 'implementation' else
+                    896 if compact_source and role == 'tests' else
+                    3072 if role == 'implementation' else
+                    1024
+                )
+                response = accounted_call(
+                    api, params, provider.name,
+                    minimum_output_tokens=output_floor,
+                )
             except NativeAccountingError:
                 raise
             except StudioError as exc:

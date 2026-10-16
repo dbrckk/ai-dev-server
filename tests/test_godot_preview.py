@@ -135,6 +135,52 @@ class GodotPreviewTests(unittest.TestCase):
             self.assertEqual(implementation['files']['scripts/main.gd'], main_source)
             self.assertNotIn('files_mode', implementation)
 
+            # A small change must not require the model to echo the complete
+            # 570k-character existing script. The runner expands each edit
+            # only after verifying a unique match in the authoritative file.
+            guard = source_root / 'scripts/guard.gd'
+            before = 'extends Node\\nfunc handle():\\n    if settings_open:\\n        start_game()\\n'
+            guard.write_text(before)
+            replacement = 'if not settings_open:\\n        start_game()'
+            payload = {'edits': [{'path': 'scripts/guard.gd',
+                                  'find': 'if settings_open:\\n        start_game()',
+                                  'replace': replacement}]}
+            godot_preview._safe_apply(source_root, payload, 'implementation',
+                                      architecture_changes_allowed=False)
+            after = guard.read_text()
+            self.assertIn(replacement, after)
+            self.assertNotIn('    if settings_open:', after)
+            for invalid in (
+                {'edits': [{'path': 'scripts/guard.gd', 'find': 'missing text',
+                            'replace': 'safe'}]},
+                {'edits': [{'path': 'scripts/guard.gd', 'find': 'Node',
+                            'replace': 'OtherNode'},
+                           {'path': 'scripts/main.gd', 'find': 'absent',
+                            'replace': 'safe'}]},
+            ):
+                with self.subTest(invalid=invalid), self.assertRaisesRegex(
+                    StudioError, 'exactly one source match',
+                ):
+                    godot_preview._safe_apply(source_root, invalid, 'implementation')
+                self.assertEqual(guard.read_text(), after)
+            with self.assertRaisesRegex(StudioError, 'existing workspace file'):
+                godot_preview._safe_apply(source_root, {'edits': [{
+                    'path': 'scripts/new.gd', 'find': 'x', 'replace': 'y',
+                }]}, 'implementation')
+            with self.assertRaisesRegex(godot_preview.ArchitectureChangeBlocked, 'HOLD'):
+                godot_preview._safe_apply(source_root, {'edits': [{
+                    'path': 'project.godot', 'find': '[application]',
+                    'replace': '[application]\\n# changed',
+                }]}, 'implementation', architecture_changes_allowed=False)
+            link = source_root / 'scripts/linked.gd'
+            link.symlink_to('guard.gd')
+            with self.assertRaisesRegex(StudioError, 'symlink'):
+                godot_preview._safe_apply(source_root, {'edits': [{
+                    'path': 'scripts/linked.gd', 'find': 'extends Node',
+                    'replace': 'extends Control',
+                }]}, 'implementation')
+            self.assertEqual(guard.read_text(), after)
+
         req = godot_preview.request_check(self.request())
         fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(
             {k: v for k, v in req.items() if k != 'enabled'}

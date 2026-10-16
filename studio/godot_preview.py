@@ -386,6 +386,110 @@ def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation
         )
     return canonical(context)
 
+
+# A #37 canary spent 58,472 tokens across five cycles. Repeated source-mismatch
+# errors must trigger focused correction, then a durable stop-loss rather than
+# submitting the same unproductive prompt indefinitely.
+_RETRY_STOP_BLOCKERS = {
+    'Godot exact edit expected exactly one source match',
+    'Structured response rejected: Expected patch envelope',
+    'Structured response rejected: Exact edits permitted only for Godot implementation',
+}
+RETRY_STOP_THRESHOLD = 2
+
+
+def _exact_edit_repair_context(req: dict, root: Path, patch: dict) -> str | None:
+    """Supply a bounded, authoritative snippet for one source-match correction."""
+    edits = patch.get('edits') if isinstance(patch, dict) else None
+    if not isinstance(edits, list) or not 1 <= len(edits) <= 2:
+        return None
+    excerpts = []
+    root = root.resolve()
+    for edit in edits:
+        if not isinstance(edit, dict):
+            return None
+        rel = edit.get('path')
+        find = edit.get('find')
+        if not isinstance(rel, str) or not editable(rel, 'godot') or not isinstance(find, str):
+            return None
+        path = root / rel
+        cursor = path
+        while cursor != root:
+            if cursor.is_symlink():
+                return None
+            cursor = cursor.parent
+        if not path.is_file() or path.stat().st_size > 600_000:
+            return None
+        try:
+            source = path.read_text(encoding='utf-8')
+        except (OSError, UnicodeError):
+            return None
+        if SECRET.search(source):
+            return None
+        snippet = _relevant_source_excerpt(source, str(req.get('brief') or '') + ' ' + find, 3_000)
+        excerpts.append({
+            'path': rel,
+            'rejected_find': find[:1_200],
+            'authentic_source_excerpt': snippet,
+        })
+    return canonical({
+        'engine': 'godot',
+        'phase': 'implementation',
+        'request': {'brief': str(req.get('brief') or '')[:1_000]},
+        'failure': 'Godot exact edit expected exactly one source match',
+        'retry': 'one_attempt_only',
+        'contract': (
+            'Return ONLY JSON with an edits array. Copy every find string VERBATIM '
+            'from the authentic source excerpts below, including tabs, spaces and '
+            'newlines; it must occur exactly once in the original file. Keep each '
+            'replacement minimal. No full-file rewrites, markdown or summaries. '
+            'If the exact change cannot be supported by the excerpt, do not invent source.'
+        ),
+        'source_evidence': excerpts,
+    })
+
+
+def _source_fingerprint(root: Path) -> str:
+    """Fingerprint trusted editable content, not mutable checkpoint metadata."""
+    digest = hashlib.sha256()
+    for path in sorted(root.rglob('*')):
+        if not path.is_file() or path.is_symlink():
+            continue
+        rel = path.relative_to(root).as_posix()
+        if not editable(rel, 'godot'):
+            continue
+        digest.update(rel.encode('utf-8'))
+        digest.update(b'\\0')
+        digest.update(hashlib.sha256(path.read_bytes()).digest())
+    return digest.hexdigest()
+
+
+def _record_retry_failure(state: dict, root: Path, blocker: str) -> None:
+    if blocker not in _RETRY_STOP_BLOCKERS:
+        state.pop('retry_guard', None)
+        return
+    fingerprint = _source_fingerprint(root)
+    previous = state.get('retry_guard')
+    same = (
+        isinstance(previous, dict)
+        and previous.get('blocker') == blocker
+        and previous.get('source_fingerprint') == fingerprint
+    )
+    count = (int(previous.get('count', 0)) + 1) if same else 1
+    state['retry_guard'] = {
+        'blocker': blocker,
+        'source_fingerprint': fingerprint,
+        'count': count,
+    }
+    if count >= RETRY_STOP_THRESHOLD:
+        state['preview_retry_stopped'] = True
+        state['completion'] = {
+            'finished': False,
+            'next_stage': 'godot_preview_identical_failure_stop_loss',
+            'reason': 'Repeated deterministic blocker on unchanged source; new evidence or a corrected request is required.',
+        }
+
+
 def _exact_branch_ref(github, branch: str):
     refs = github.get('/git/matching-refs/heads/' + branch)
     if not isinstance(refs, list):
@@ -499,7 +603,9 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
     if state['status'] != 'godot_preview_validated' and state['cycles'] >= req['max_cycles']:
         state.update(status='blocked', preview_cycle_budget_exhausted=True)
         state['completion'] = {'finished': False, 'next_stage': 'godot_preview_cycle_budget_exhausted'}
-    if state['status'] == 'godot_preview_validated' or state.get('preview_cycle_budget_exhausted') is True:
+    if (state['status'] == 'godot_preview_validated'
+            or state.get('preview_cycle_budget_exhausted') is True
+            or state.get('preview_retry_stopped') is True):
         atomic_write_text(out / 'report.json', canonical(state)); return state
 
     architecture_recommendations = recommend(
@@ -559,6 +665,23 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
                     ),
                     excerpted_paths=excerpted_paths,
                 )
+            except StudioError as exc:
+                if str(exc) != 'Godot exact edit expected exactly one source match':
+                    raise
+                repair_context = _exact_edit_repair_context(req, root, patch)
+                if repair_context is None:
+                    raise
+                repaired_patch = model.ask('implementation', repair_context)
+                _safe_apply(
+                    root,
+                    repaired_patch,
+                    'implementation',
+                    architecture_changes_allowed=bool(
+                        state.get('architecture_autonomy_policy', {}).get('architecture_changes_allowed', True)
+                    ),
+                    excerpted_paths=excerpted_paths,
+                )
+                patch = repaired_patch
             except ArchitectureChangeBlocked as exc:
                 event = {
                     'round': state['rounds'],
@@ -656,12 +779,15 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
                     review_passed=True,
                 )
                 state['safe_rewrite_learning'] = summarize_safe_rewrite_learning(safe_rewrite_learning_path)
+            state.pop('retry_guard', None)
+            state.pop('preview_retry_stopped', None)
             state.update(status='godot_preview_validated',blockers=[],validation_contract='godot-headless-v1')
             state['completion'] = {'finished':False,'next_stage':'godot_android_export_qa',
                                    'reason':'Headless Godot validation passed; Android export/device/visual journey evidence still required.'}
             break
     except StudioError as exc:
         state.update(status='blocked',blockers=[str(exc)])
+        _record_retry_failure(state, root, str(exc))
     finally:
         state['model_calls_this_cycle'] = model.calls
         state['checkpoint_replays_this_cycle'] = 0

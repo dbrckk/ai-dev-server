@@ -382,7 +382,18 @@ def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation
         # implementation must honor. Only long prose summaries are trimmed.
         criteria = [str(value)[:240] for value in criteria[:8] if isinstance(value, str)]
         design = state.get('design')
-        design_text = canonical(design) if isinstance(design, dict) else ''
+        design = design if isinstance(design, dict) else {}
+        # Select only the recognized design categories, never arbitrary
+        # telemetry keys or oversized nested model narratives.
+        design_parts = []
+        for key in ('direction', 'visual_direction', 'layout', 'feedback',
+                    'motion', 'accessibility', 'responsive_behavior'):
+            value = design.get(key)
+            if isinstance(value, str):
+                design_parts.append(key + ': ' + value[:200])
+            elif isinstance(value, (dict, list)):
+                design_parts.append(key + ': ' + canonical(value)[:240])
+        design_text = '; '.join(design_parts)
         blockers = state.get('blockers')
         blockers = blockers if isinstance(blockers, list) else []
         lean = {

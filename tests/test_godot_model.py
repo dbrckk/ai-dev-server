@@ -107,6 +107,7 @@ class GodotModelTests(unittest.TestCase):
         accepted = product_value()
         accepted['journeys'][0]['id'] = 'j' * 40
         subject = model([completion(rejected), completion(accepted)])
+        subject.providers = (subject.providers[0],)  # Single-provider repair stays local.
         result = subject.ask('product', 'plan game')
         self.assertEqual(result, accepted)
         self.assertEqual(subject.calls, 2)
@@ -125,6 +126,7 @@ class GodotModelTests(unittest.TestCase):
         self.assertIn(rejected['journeys'][0]['id'], retry[1]['content'])
         # Keep strict rejection and the existing two-call ceiling.
         subject = model([completion(rejected), completion(rejected)])
+        subject.providers = (subject.providers[0],)
         with self.assertRaisesRegex(StudioError, 'Structured response rejected'):
             subject.ask('product', 'plan game')
         self.assertEqual(subject.calls, 2)
@@ -181,6 +183,22 @@ class GodotModelTests(unittest.TestCase):
         self.assertIn('20,000 characters', retry)
         self.assertIn('complete JSON', retry)
 
+        # Canary 36: product/design truncation must request a genuinely
+        # smaller output instead of repeating a verbose invalid plan.
+        for role, repaired in (
+            ('product', product_value()),
+            ('design', {'direction': 'minimal'}),
+        ):
+            with self.subTest(role=role):
+                subject = model([truncated, completion(repaired)])
+                subject.providers = (subject.providers[0],)
+                subject.ask(role, 'plan a minimal input fix')
+                self.assertEqual(subject.calls, 2)
+                second = subject.api.calls[1][2]['messages'][1]['content']
+                self.assertIn('previous JSON was truncated', second)
+                self.assertIn('at most 700 output tokens', second)
+                self.assertIn('minimal valid complete JSON', second)
+
     def test_structured_godot_call_falls_back_to_secondary_provider(self):
         subject = model([StudioError('API unavailable or timed out')])
         fallback_api = FakeAPI([completion(product_value())])
@@ -208,6 +226,23 @@ class GodotModelTests(unittest.TestCase):
         self.assertEqual(subject.calls, 2)
         self.assertEqual(len(subject.api.calls), 1)
         self.assertEqual(len(fallback_api.calls), 1)
+
+        # Invalid product journey values are structured-output failures, too:
+        # prefer a separately eligible provider for the bounded repair.
+        bad_plan = product_value()
+        bad_plan['journeys'][0]['steps'][1]['value'] = ''
+        subject = model([completion(bad_plan)])
+        fallback_api = FakeAPI([completion(product_value())])
+        fallback_api.base = 'https://fallback.test/v1'
+        with patch('core.API', return_value=fallback_api):
+            good_plan = subject.ask('product', 'plan concise gameplay')
+        self.assertEqual(good_plan['journeys'][0]['id'], 'play')
+        self.assertEqual(subject.calls, 2)
+        self.assertEqual(subject.providers_used['product'], 'fallback')
+        self.assertEqual(len(subject.api.calls), 1)
+        self.assertEqual(len(fallback_api.calls), 1)
+        self.assertIn('Repair ONLY the invalid journey value fields',
+                      fallback_api.calls[0][2]['messages'][1]['content'])
 
         # An installation with no alternate provider still retains its
         # original same-provider repair attempt, with no new provider calls.

@@ -274,6 +274,47 @@ class GodotPreviewTests(unittest.TestCase):
                         len(lean['product']['acceptance_criteria'][0]), 180,
                     )
 
+            # Unlike the large Jumpy canary #37, code and QA prompts must
+            # retain acceptance journeys but OMIT unrelated huge telemetry.
+            noisy_state['design'] = {'direction': 'focused',
+                                     'noisy_narrative': 'w' * 100_000}
+            noisy_state['blockers'] = ['previous exact edit source mismatch']
+            for phase in ('implementation', 'tests'):
+                supplied_patch = {'edits': [{
+                    'path': 'scripts/guard.gd',
+                    'find': 'if settings_open:',
+                    'replace': 'if not settings_open:',
+                }]}
+                lean = json.loads(godot_preview._context(
+                    focused, noisy_state, source_root, phase=phase,
+                    review_patch=supplied_patch,
+                ))
+                prompt = godot_preview.canonical(lean)
+                self.assertLess(len(prompt), 16_000)
+                self.assertIn('func _unhandled_input(event):',
+                              lean['files']['scripts/main.gd'])
+                self.assertNotIn('architecture_decision', lean)
+                self.assertNotIn('architecture_benchmark', lean)
+                self.assertNotIn('architecture_preflight', lean)
+                self.assertNotIn('noisy_narrative', prompt)
+                self.assertIn('settings_guard',
+                              [j['id'] for j in lean['acceptance']['journeys']])
+                self.assertEqual(
+                    lean['architecture_constraints']['architecture_changes_allowed'],
+                    False,
+                )
+                self.assertEqual(
+                    lean['files_mode'], 'bounded_exact_match_source_excerpts',
+                )
+                if phase == 'tests':
+                    self.assertEqual(
+                        lean['accepted_change_evidence'][0]['path'],
+                        'scripts/guard.gd',
+                    )
+                    self.assertIn('tests/*.gd', lean['qa_scope'])
+                else:
+                    self.assertNotIn('accepted_change_evidence', lean)
+
         req = godot_preview.request_check(self.request())
         fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(
             {k: v for k, v in req.items() if k != 'enabled'}

@@ -6374,6 +6374,17 @@ def test_test_role_rejects_non_test_path_then_repairs_once(self)
 ⋮----
 result = subject.ask('tests', 'write regression')
 ⋮----
+# Canary #37: the QA role returned implementation-only edits. The
+# initial system contract must clearly require files, and the single
+# bounded repair must repeat the actual QA-only schema.
+malformed_qa = {'edits': [{
+⋮----
+corrected = subject.ask('tests', 'write settings regression')
+⋮----
+initial_system = subject.api.calls[0][2]['messages'][0]['content']
+⋮----
+retry_text = subject.api.calls[1][2]['messages'][1]['content']
+⋮----
 def test_truncated_patch_retry_requests_a_smaller_complete_change(self)
 ⋮----
 truncated = {'choices':[{'finish_reason':'length','message':{'content':'{"files":['}}]}
@@ -6564,6 +6575,17 @@ focused = dict(self.request())
 ⋮----
 excerpt = json.loads(godot_preview._context(
 ⋮----
+# A rejected exact edit must receive a short grounded retry
+# instead of repeating a full model context/cycle.
+wrong = {'edits': [{
+retry_text = godot_preview._exact_edit_repair_context(
+retry = json.loads(retry_text)
+⋮----
+# The stop-loss survives a checkpoint but resets when trusted
+# source changes, so a real implementation advance is not lost.
+guard = {}
+blocker = 'Godot exact edit expected exactly one source match'
+⋮----
 # Reproduce canary #36: large autonomous architecture telemetry
 # must not be included in product/design prompts. The late
 # _unhandled_input handler remains available despite truncation.
@@ -6575,6 +6597,7 @@ req = godot_preview.request_check(self.request())
 fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(
 ⋮----
 restored = {'request_hash': fingerprint, 'engine': 'godot',
+⋮----
 model_factory = Mock()
 sandbox_factory = Mock()
 ⋮----

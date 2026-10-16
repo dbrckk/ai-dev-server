@@ -17790,6 +17790,10 @@ req=request_check(json.loads(Path(a.request).read_text())); state=execute(req,Pa
 ⋮----
 GODOT_ROLE = {
 PATCH_SCHEMA = (
+# The QA role must NOT see the implementation's exact-edit preference.
+# Canary #37 spent two QA calls returning disallowed edit envelopes.
+TESTS_SCHEMA = (
+⋮----
 PRODUCT_SCHEMA = (
 DESIGN_SCHEMA = ('Return ONLY a concise JSON object for the requested Godot change with direction, layout, feedback, '
 ⋮----
@@ -17850,7 +17854,7 @@ alternatives = tuple(
 ⋮----
 provider_candidates = alternatives
 ⋮----
-schema = PATCH_SCHEMA if role in ('implementation', 'tests') else PRODUCT_SCHEMA if role == 'product' else DESIGN_SCHEMA
+schema = PATCH_SCHEMA if role == 'implementation' else TESTS_SCHEMA if role == 'tests' else PRODUCT_SCHEMA if role == 'product' else DESIGN_SCHEMA
 system_content = GODOT_ROLE[role] + '\n' + schema
 response = None
 selected_provider = None
@@ -18108,6 +18112,39 @@ compact_product = {
 ⋮----
 report = canonical(validation_logs)
 ⋮----
+# A #37 canary spent 58,472 tokens across five cycles. Repeated source-mismatch
+# errors must trigger focused correction, then a durable stop-loss rather than
+# submitting the same unproductive prompt indefinitely.
+_RETRY_STOP_BLOCKERS = {
+RETRY_STOP_THRESHOLD = 2
+⋮----
+def _exact_edit_repair_context(req: dict, root: Path, patch: dict) -> str | None
+⋮----
+"""Supply a bounded, authoritative snippet for one source-match correction."""
+edits = patch.get('edits') if isinstance(patch, dict) else None
+⋮----
+excerpts = []
+⋮----
+rel = edit.get('path')
+find = edit.get('find')
+⋮----
+path = root / rel
+cursor = path
+⋮----
+snippet = _relevant_source_excerpt(source, str(req.get('brief') or '') + ' ' + find, 3_000)
+⋮----
+def _source_fingerprint(root: Path) -> str
+⋮----
+"""Fingerprint trusted editable content, not mutable checkpoint metadata."""
+digest = hashlib.sha256()
+⋮----
+def _record_retry_failure(state: dict, root: Path, blocker: str) -> None
+⋮----
+fingerprint = _source_fingerprint(root)
+previous = state.get('retry_guard')
+same = (
+count = (int(previous.get('count', 0)) + 1) if same else 1
+⋮----
 def _exact_branch_ref(github, branch: str)
 ⋮----
 refs = github.get('/git/matching-refs/heads/' + branch)
@@ -18169,6 +18206,11 @@ fingerprint = hashlib.sha256(canonical({k:v for k,v in req.items() if k != 'enab
 ⋮----
 state = state or {'request_hash':fingerprint,'status':'pending','engine':'godot','cycles':0,'rounds':0,'blockers':[]}
 ⋮----
+# A stopped checkpoint may resume only after an actual trusted source
+# change; an identical retry consumes no new model capacity.
+⋮----
+guard = state.get('retry_guard')
+⋮----
 # The restored branch head is the authoritative committed checkpoint.
 # Stored state precedes its publication, so it may lack this SHA.
 ⋮----
@@ -18188,6 +18230,12 @@ result = model.ask(role, _context(req,state,root,phase=role))
 implementation_context = _context(req,state,root)
 excerpted_paths = tuple(json.loads(implementation_context).get('excerpted_paths', ()))
 patch = model.ask('implementation', implementation_context)
+⋮----
+repair_context = _exact_edit_repair_context(req, root, patch)
+⋮----
+repaired_patch = model.ask('implementation', repair_context)
+⋮----
+patch = repaired_patch
 ⋮----
 event = {
 ⋮----
@@ -32356,6 +32404,17 @@ def test_test_role_rejects_non_test_path_then_repairs_once(self)
 ⋮----
 result = subject.ask('tests', 'write regression')
 ⋮----
+# Canary #37: the QA role returned implementation-only edits. The
+# initial system contract must clearly require files, and the single
+# bounded repair must repeat the actual QA-only schema.
+malformed_qa = {'edits': [{
+⋮----
+corrected = subject.ask('tests', 'write settings regression')
+⋮----
+initial_system = subject.api.calls[0][2]['messages'][0]['content']
+⋮----
+retry_text = subject.api.calls[1][2]['messages'][1]['content']
+⋮----
 def test_truncated_patch_retry_requests_a_smaller_complete_change(self)
 ⋮----
 truncated = {'choices':[{'finish_reason':'length','message':{'content':'{"files":['}}]}
@@ -32546,6 +32605,17 @@ focused = dict(self.request())
 ⋮----
 excerpt = json.loads(godot_preview._context(
 ⋮----
+# A rejected exact edit must receive a short grounded retry
+# instead of repeating a full model context/cycle.
+wrong = {'edits': [{
+retry_text = godot_preview._exact_edit_repair_context(
+retry = json.loads(retry_text)
+⋮----
+# The stop-loss survives a checkpoint but resets when trusted
+# source changes, so a real implementation advance is not lost.
+guard = {}
+blocker = 'Godot exact edit expected exactly one source match'
+⋮----
 # Reproduce canary #36: large autonomous architecture telemetry
 # must not be included in product/design prompts. The late
 # _unhandled_input handler remains available despite truncation.
@@ -32557,6 +32627,7 @@ req = godot_preview.request_check(self.request())
 fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(
 ⋮----
 restored = {'request_hash': fingerprint, 'engine': 'godot',
+⋮----
 model_factory = Mock()
 sandbox_factory = Mock()
 ⋮----

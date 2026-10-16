@@ -12080,6 +12080,10 @@ req=request_check(json.loads(Path(a.request).read_text())); state=execute(req,Pa
 ⋮----
 GODOT_ROLE = {
 PATCH_SCHEMA = (
+# The QA role must NOT see the implementation's exact-edit preference.
+# Canary #37 spent two QA calls returning disallowed edit envelopes.
+TESTS_SCHEMA = (
+⋮----
 PRODUCT_SCHEMA = (
 DESIGN_SCHEMA = ('Return ONLY a concise JSON object for the requested Godot change with direction, layout, feedback, '
 ⋮----
@@ -12140,7 +12144,7 @@ alternatives = tuple(
 ⋮----
 provider_candidates = alternatives
 ⋮----
-schema = PATCH_SCHEMA if role in ('implementation', 'tests') else PRODUCT_SCHEMA if role == 'product' else DESIGN_SCHEMA
+schema = PATCH_SCHEMA if role == 'implementation' else TESTS_SCHEMA if role == 'tests' else PRODUCT_SCHEMA if role == 'product' else DESIGN_SCHEMA
 system_content = GODOT_ROLE[role] + '\n' + schema
 response = None
 selected_provider = None
@@ -12398,6 +12402,39 @@ compact_product = {
 ⋮----
 report = canonical(validation_logs)
 ⋮----
+# A #37 canary spent 58,472 tokens across five cycles. Repeated source-mismatch
+# errors must trigger focused correction, then a durable stop-loss rather than
+# submitting the same unproductive prompt indefinitely.
+_RETRY_STOP_BLOCKERS = {
+RETRY_STOP_THRESHOLD = 2
+⋮----
+def _exact_edit_repair_context(req: dict, root: Path, patch: dict) -> str | None
+⋮----
+"""Supply a bounded, authoritative snippet for one source-match correction."""
+edits = patch.get('edits') if isinstance(patch, dict) else None
+⋮----
+excerpts = []
+⋮----
+rel = edit.get('path')
+find = edit.get('find')
+⋮----
+path = root / rel
+cursor = path
+⋮----
+snippet = _relevant_source_excerpt(source, str(req.get('brief') or '') + ' ' + find, 3_000)
+⋮----
+def _source_fingerprint(root: Path) -> str
+⋮----
+"""Fingerprint trusted editable content, not mutable checkpoint metadata."""
+digest = hashlib.sha256()
+⋮----
+def _record_retry_failure(state: dict, root: Path, blocker: str) -> None
+⋮----
+fingerprint = _source_fingerprint(root)
+previous = state.get('retry_guard')
+same = (
+count = (int(previous.get('count', 0)) + 1) if same else 1
+⋮----
 def _exact_branch_ref(github, branch: str)
 ⋮----
 refs = github.get('/git/matching-refs/heads/' + branch)
@@ -12459,6 +12496,11 @@ fingerprint = hashlib.sha256(canonical({k:v for k,v in req.items() if k != 'enab
 ⋮----
 state = state or {'request_hash':fingerprint,'status':'pending','engine':'godot','cycles':0,'rounds':0,'blockers':[]}
 ⋮----
+# A stopped checkpoint may resume only after an actual trusted source
+# change; an identical retry consumes no new model capacity.
+⋮----
+guard = state.get('retry_guard')
+⋮----
 # The restored branch head is the authoritative committed checkpoint.
 # Stored state precedes its publication, so it may lack this SHA.
 ⋮----
@@ -12478,6 +12520,12 @@ result = model.ask(role, _context(req,state,root,phase=role))
 implementation_context = _context(req,state,root)
 excerpted_paths = tuple(json.loads(implementation_context).get('excerpted_paths', ()))
 patch = model.ask('implementation', implementation_context)
+⋮----
+repair_context = _exact_edit_repair_context(req, root, patch)
+⋮----
+repaired_patch = model.ask('implementation', repair_context)
+⋮----
+patch = repaired_patch
 ⋮----
 event = {
 ⋮----

@@ -8,14 +8,14 @@
     "GodotModel": {
       "definition": {
         "file": "studio/godot_model.py",
-        "line": 74,
+        "line": 85,
         "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/godot_model.py",
-          "line": 74,
+          "line": 85,
           "preview": "class GodotModel(Model):",
           "definition_candidate": true
         },
@@ -27,7 +27,7 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 478,
+          "line": 586,
           "preview": "def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, sandbox_factory=GodotSandbox) -> dict:",
           "definition_candidate": false
         },
@@ -49,7 +49,7 @@
     "ask": {
       "definition": {
         "file": "studio/godot_model.py",
-        "line": 75,
+        "line": 86,
         "kind": "function",
         "language": "python"
       },
@@ -146,43 +146,49 @@
         },
         {
           "file": "studio/godot_model.py",
-          "line": 75,
+          "line": 86,
           "preview": "def ask(self, role, context, screenshots=()):",
           "definition_candidate": true
         },
         {
           "file": "studio/godot_model.py",
-          "line": 87,
+          "line": 98,
           "preview": "return super().ask(role, context, screenshots)",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 542,
+          "line": 663,
           "preview": "result = model.ask(role, _context(req,state,root,phase=role))",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 551,
+          "line": 672,
           "preview": "patch = model.ask('implementation', implementation_context)",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 570,
+          "line": 689,
+          "preview": "repaired_patch = model.ask('implementation', repair_context)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 708,
           "preview": "retry_patch = model.ask(",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 611,
+          "line": 749,
           "preview": "qa = model.ask('tests', _context(req,state,root)); _safe_apply(",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 638,
+          "line": 776,
           "preview": "review = verdict(model.ask('review', review_context)); state['code_review'] = review",
           "definition_candidate": false
         },
@@ -356,109 +362,115 @@
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 178,
+          "line": 187,
+          "preview": "corrected = subject.ask('tests', 'write settings regression')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 204,
           "preview": "result = subject.ask('implementation', 'improve game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 195,
+          "line": 221,
           "preview": "result = subject.ask('implementation', compact)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 211,
+          "line": 237,
           "preview": "subject.ask(role, 'plan a minimal input fix')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 223,
+          "line": 249,
           "preview": "result = subject.ask('product', 'plan game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 239,
+          "line": 265,
           "preview": "result = subject.ask('product', 'plan game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 254,
+          "line": 280,
           "preview": "good_plan = subject.ask('product', 'plan concise gameplay')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 274,
+          "line": 300,
           "preview": "repaired = subject.ask('implementation', 'fix settings input')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 285,
+          "line": 311,
           "preview": "subject.ask(role, 'fix settings input')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 296,
+          "line": 322,
           "preview": "result = subject.ask('product', 'plan game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 309,
+          "line": 335,
           "preview": "result = subject.ask('product', 'plan game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 319,
+          "line": 345,
           "preview": "subject.ask('implementation', 'x')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 332,
+          "line": 358,
           "preview": "subject=model([reply]); subject.ask('product','plan game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 340,
+          "line": 366,
           "preview": "subject.ask('product','plan game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 347,
+          "line": 373,
           "preview": "subject.ask('product','plan game')",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 351,
-          "preview": "subject.ask('product','plan game')",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 376,
-          "preview": "subject.ask('product', 'fix one input bug')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
           "line": 377,
+          "preview": "subject.ask('product','plan game')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 402,
+          "preview": "subject.ask('product', 'fix one input bug')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 403,
           "preview": "subject.ask('design', 'minimal settings overlay')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 378,
+          "line": 404,
           "preview": "source_patch = subject.ask('implementation', 'implement the guarded input')",
           "definition_candidate": false
         },
@@ -649,25 +661,25 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 99
+      "occurrence_count": 101
     },
     "_ask_godot": {
       "definition": {
         "file": "studio/godot_model.py",
-        "line": 172,
+        "line": 195,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/godot_model.py",
-          "line": 94,
+          "line": 105,
           "preview": "value = self._ask_godot(",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 172,
+          "line": 195,
           "preview": "def _ask_godot(",
           "definition_candidate": true
         }
@@ -696,19 +708,25 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 553,
+          "line": 674,
           "preview": "_safe_apply(",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 580,
+          "line": 690,
           "preview": "_safe_apply(",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 611,
+          "line": 718,
+          "preview": "_safe_apply(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 749,
           "preview": "qa = model.ask('tests', _context(req,state,root)); _safe_apply(",
           "definition_candidate": false
         },
@@ -747,9 +765,15 @@
           "line": 225,
           "preview": "godot_preview._safe_apply(source_root, {",
           "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 265,
+          "preview": "godot_preview._safe_apply(source_root, wrong, 'implementation')",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 11
+      "occurrence_count": 13
     },
     "_relevant_source_excerpt": {
       "definition": {
@@ -776,9 +800,15 @@
           "line": 282,
           "preview": "files[rel] = _relevant_source_excerpt(source, req.get('brief', ''), limit)",
           "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 429,
+          "preview": "snippet = _relevant_source_excerpt(source, str(req.get('brief') or '') + ' ' + find, 3_000)",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 3
+      "occurrence_count": 4
     },
     "_review_evidence": {
       "definition": {
@@ -831,25 +861,25 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 542,
+          "line": 663,
           "preview": "result = model.ask(role, _context(req,state,root,phase=role))",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 549,
+          "line": 670,
           "preview": "implementation_context = _context(req,state,root)",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 611,
+          "line": 749,
           "preview": "qa = model.ask('tests', _context(req,state,root)); _safe_apply(",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 637,
+          "line": 775,
           "preview": "review_context = _context(req, state, root, phase='review', review_patch=patch, validation_logs=logs)",
           "definition_candidate": false
         },
@@ -933,7 +963,7 @@
         },
         {
           "file": "tests/test_godot_preview.py",
-          "line": 261,
+          "line": 304,
           "preview": "lean = json.loads(godot_preview._context(",
           "definition_candidate": false
         }
@@ -1178,13 +1208,13 @@
         },
         {
           "file": "studio/godot_model.py",
-          "line": 251,
+          "line": 274,
           "preview": "'priority': provider.priority,",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 317,
+          "line": 340,
           "preview": "'priority': provider.priority,",
           "definition_candidate": false
         },
@@ -1694,10 +1724,115 @@
       ],
       "occurrence_count": 2
     },
+    "_exact_edit_repair_context": {
+      "definition": {
+        "file": "studio/godot_preview.py",
+        "line": 401,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/godot_preview.py",
+          "line": 401,
+          "preview": "def _exact_edit_repair_context(req: dict, root: Path, patch: dict) -> str | None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 686,
+          "preview": "repair_context = _exact_edit_repair_context(req, root, patch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 250,
+          "preview": "retry_text = godot_preview._exact_edit_repair_context(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 261,
+          "preview": "self.assertIsNone(godot_preview._exact_edit_repair_context(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "_source_fingerprint": {
+      "definition": {
+        "file": "studio/godot_preview.py",
+        "line": 452,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/godot_preview.py",
+          "line": 452,
+          "preview": "def _source_fingerprint(root: Path) -> str:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 471,
+          "preview": "fingerprint = _source_fingerprint(root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 609,
+          "preview": "and guard['source_fingerprint'] != _source_fingerprint(root)):",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
+    "_record_retry_failure": {
+      "definition": {
+        "file": "studio/godot_preview.py",
+        "line": 467,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/godot_preview.py",
+          "line": 467,
+          "preview": "def _record_retry_failure(state: dict, root: Path, blocker: str) -> None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 805,
+          "preview": "_record_retry_failure(state, root, str(exc))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 270,
+          "preview": "godot_preview._record_retry_failure(guard, source_root, blocker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 273,
+          "preview": "godot_preview._record_retry_failure(guard, source_root, blocker)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 283,
+          "preview": "godot_preview._record_retry_failure(guard, source_root, blocker)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 5
+    },
     "_exact_branch_ref": {
       "definition": {
         "file": "studio/godot_preview.py",
-        "line": 389,
+        "line": 497,
         "kind": "function",
         "language": "python"
       },
@@ -1716,19 +1851,19 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 389,
+          "line": 497,
           "preview": "def _exact_branch_ref(github, branch: str):",
           "definition_candidate": true
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 403,
+          "line": 511,
           "preview": "branch_ref = _exact_branch_ref(github, branch)",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 439,
+          "line": 547,
           "preview": "current = _exact_branch_ref(github, branch)",
           "definition_candidate": false
         }
@@ -1738,7 +1873,7 @@
     "_restore": {
       "definition": {
         "file": "studio/godot_preview.py",
-        "line": 399,
+        "line": 507,
         "kind": "function",
         "language": "python"
       },
@@ -1793,13 +1928,13 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 399,
+          "line": 507,
           "preview": "def _restore(github, branch: str, root: Path) -> tuple[dict | None, str, bool]:",
           "definition_candidate": true
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 486,
+          "line": 594,
           "preview": "state, parent, resumed = _restore(github, branch, root)",
           "definition_candidate": false
         },
@@ -1937,7 +2072,7 @@
         },
         {
           "file": "tests/test_godot_preview.py",
-          "line": 289,
+          "line": 337,
           "preview": "with patch.object(godot_preview, '_restore', return_value=(restored, 'f'*40, True)):",
           "definition_candidate": false
         },
@@ -2019,7 +2154,7 @@
     "_publish": {
       "definition": {
         "file": "studio/godot_preview.py",
-        "line": 438,
+        "line": 546,
         "kind": "function",
         "language": "python"
       },
@@ -2080,13 +2215,13 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 438,
+          "line": 546,
           "preview": "def _publish(github, branch: str, parent: str, root: Path, state: dict) -> str:",
           "definition_candidate": true
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 537,
+          "line": 658,
           "preview": "parent = _publish(github, branch, parent, root, state)",
           "definition_candidate": false
         },
@@ -2212,7 +2347,7 @@
         },
         {
           "file": "tests/test_godot_preview.py",
-          "line": 310,
+          "line": 366,
           "preview": "godot_preview._publish(github,'studio/jumpy','f'*40,root,{'status':'x'})",
           "definition_candidate": false
         },
@@ -2282,7 +2417,7 @@
     "execute": {
       "definition": {
         "file": "studio/godot_preview.py",
-        "line": 478,
+        "line": 586,
         "kind": "function",
         "language": "python"
       },
@@ -2475,7 +2610,7 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 478,
+          "line": 586,
           "preview": "def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, sandbox_factory=GodotSandbox) -> dict:",
           "definition_candidate": true
         },
@@ -2931,7 +3066,7 @@
         },
         {
           "file": "tests/test_godot_preview.py",
-          "line": 290,
+          "line": 338,
           "preview": "resumed = godot_preview.execute(req, root/'work', root/'out', github,",
           "definition_candidate": false
         },
@@ -3013,7 +3148,7 @@
     "checkpoint": {
       "definition": {
         "file": "studio/godot_preview.py",
-        "line": 535,
+        "line": 656,
         "kind": "function",
         "language": "python"
       },
@@ -3805,31 +3940,31 @@
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 220,
+          "line": 246,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 236,
+          "line": 262,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 251,
+          "line": 277,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 271,
+          "line": 297,
           "preview": "fallback_api = FakeAPI([completion(patch_value)])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 305,
+          "line": 331,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
@@ -4997,37 +5132,37 @@
         },
         {
           "file": "studio/godot_model.py",
-          "line": 176,
+          "line": 199,
           "preview": "raise StudioError('Model call budget exhausted; checkpoint retained')",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 294,
+          "line": 317,
           "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 463,
+          "line": 571,
           "preview": "tree = github.call('POST', github.repo + '/git/trees', {'base_tree':base_tree,'tree':entries})",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 467,
+          "line": 575,
           "preview": "commit = github.call('POST', github.repo + '/git/commits', {'message':'Godot studio: ' + state['status'],'tree':tree_sha,'parents':[parent]})",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 472,
+          "line": 580,
           "preview": "github.call('PATCH', github.repo + '/git/refs/heads/' + branch, {'sha':commit_sha,'force':False})",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 474,
+          "line": 582,
           "preview": "github.call('POST', github.repo + '/git/refs', {'ref':'refs/heads/' + branch,'sha':commit_sha})",
           "definition_candidate": false
         },
@@ -5512,13 +5647,13 @@
         },
         {
           "file": "studio/godot_model.py",
-          "line": 354,
+          "line": 377,
           "preview": "raise ProtocolError('Provider returned invalid completion envelope')",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 357,
+          "line": 380,
           "preview": "raise ProtocolError('Provider returned invalid completion choice')",
           "definition_candidate": false
         },
@@ -5566,13 +5701,43 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 501,
+          "line": 481,
+          "preview": "if state.get('completion', {}).get('next_stage') == 'godot_preview_identical_failure_stop_loss':",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 482,
+          "preview": "state.pop('completion', None)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 490,
+          "preview": "state['completion'] = {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 612,
+          "preview": "if state.get('completion', {}).get('next_stage') == 'godot_preview_identical_failure_stop_loss':",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 613,
+          "preview": "state.pop('completion', None)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 620,
           "preview": "state['completion'] = {'finished': False, 'next_stage': 'godot_preview_cycle_budget_exhausted'}",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 660,
+          "line": 800,
           "preview": "state['completion'] = {'finished':False,'next_stage':'godot_android_export_qa',",
           "definition_candidate": false
         },
@@ -5820,36 +5985,6 @@
           "file": "studio/multi_engine_orchestrator.py",
           "line": 140,
           "preview": "if (report.get('status')!='godot_release_artifact_validated' or completion.get('next_stage')!='godot_store_metadata_qa'",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 149,
-          "preview": "completion=report.get('completion'); coverage=report.get('coverage') or {}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 151,
-          "preview": "or not isinstance(completion,dict) or completion.get('finished') is not False",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 152,
-          "preview": "or completion.get('next_stage')!='godot_privacy_security_qa'",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 160,
-          "preview": "completion=report.get('completion'); coverage=report.get('coverage') or {}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 162,
-          "preview": "or not isinstance(completion,dict) or completion.get('finished') is not False",
           "definition_candidate": false
         }
       ],
@@ -6626,61 +6761,61 @@
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 205,
+          "line": 231,
           "preview": "('product', product_value()),",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 220,
+          "line": 246,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 236,
+          "line": 262,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 248,
+          "line": 274,
           "preview": "bad_plan = product_value()",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 251,
+          "line": 277,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 294,
+          "line": 320,
           "preview": "subject = model([malformed, completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 303,
+          "line": 329,
           "preview": "subject = model([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 305,
+          "line": 331,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 328,
+          "line": 354,
           "preview": "reply=completion(product_value())",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 370,
+          "line": 396,
           "preview": "completion(product_value()),",
           "definition_candidate": false
         }
@@ -6792,14 +6927,14 @@
     "test_truncated_patch_retry_requests_a_smaller_complete_change": {
       "definition": {
         "file": "tests/test_godot_model.py",
-        "line": 172,
+        "line": 198,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_godot_model.py",
-          "line": 172,
+          "line": 198,
           "preview": "def test_truncated_patch_retry_requests_a_smaller_complete_change(self):",
           "definition_candidate": true
         }
@@ -6809,14 +6944,14 @@
     "test_structured_godot_call_falls_back_to_secondary_provider": {
       "definition": {
         "file": "tests/test_godot_model.py",
-        "line": 218,
+        "line": 244,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_godot_model.py",
-          "line": 218,
+          "line": 244,
           "preview": "def test_structured_godot_call_falls_back_to_secondary_provider(self):",
           "definition_candidate": true
         }
@@ -6826,14 +6961,14 @@
     "test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary": {
       "definition": {
         "file": "tests/test_godot_model.py",
-        "line": 302,
+        "line": 328,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_godot_model.py",
-          "line": 302,
+          "line": 328,
           "preview": "def test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary(self):",
           "definition_candidate": true
         }
@@ -6843,14 +6978,14 @@
     "test_budget_is_shared_and_fail_closed": {
       "definition": {
         "file": "tests/test_godot_model.py",
-        "line": 316,
+        "line": 342,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_godot_model.py",
-          "line": 316,
+          "line": 342,
           "preview": "def test_budget_is_shared_and_fail_closed(self):",
           "definition_candidate": true
         }
@@ -7946,7 +8081,7 @@
         },
         {
           "file": "tests/test_godot_preview.py",
-          "line": 306,
+          "line": 362,
           "preview": "github=FakeGitHub(); github.branch_head='e'*40",
           "definition_candidate": false
         },
@@ -9172,7 +9307,7 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 532,
+          "line": 653,
           "preview": "model = model_factory(req['max_calls']); sandbox = sandbox_factory(root); sandbox.create(req['app_name'])",
           "definition_candidate": false
         },
@@ -9567,7 +9702,7 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 623,
+          "line": 761,
           "preview": "passed, logs = sandbox.gates(req['app_name'], journeys)",
           "definition_candidate": false
         },
@@ -10642,14 +10777,14 @@
     "test_publication_refuses_branch_movement": {
       "definition": {
         "file": "tests/test_godot_preview.py",
-        "line": 305,
+        "line": 361,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_godot_preview.py",
-          "line": 305,
+          "line": 361,
           "preview": "def test_publication_refuses_branch_movement(self):",
           "definition_candidate": true
         }

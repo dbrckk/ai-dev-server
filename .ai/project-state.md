@@ -106,23 +106,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-16T13:59:14Z
+Generated: 2026-10-16T16:23:04Z
 
 ### Git
 - Branch: `main`
-- Head: `ec9dab426d9a`
-- Commit date: 2026-10-16T15:59:00+02:00
-- Commit: fix(godot): make malformed patch-envelope repair actionable (#327)
+- Head: `8c29dd56d5f3`
+- Commit date: 2026-10-16T18:22:11+02:00
+- Commit: fix(godot): stop unproductive token retries and isolate QA schema (#328)
 - Tracked files: 865
 
 ### Recently changed files
 - `studio/godot_model.py`
-- `tests/test_godot_model.py`
-- `control/production-os-worker-canary.json`
 - `studio/godot_preview.py`
+- `tests/test_godot_model.py`
 - `tests/test_godot_preview.py`
-- `studio/core.py`
-- `tests/test_patch_safety_rebuild.py`
+- `control/production-os-worker-canary.json`
 
 ### Project signals
 - No common build descriptor detected

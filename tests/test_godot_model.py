@@ -168,6 +168,32 @@ class GodotModelTests(unittest.TestCase):
         }]}))
         subject.ask('tests', '{"files_mode":"bounded_exact_match_source_excerpts"}')
         self.assertEqual(subject.api.calls[2][2]['max_tokens'], 3072)
+        # Canary #37: the QA role returned implementation-only edits. The
+        # initial system contract must clearly require files, and the single
+        # bounded repair must repeat the actual QA-only schema.
+        malformed_qa = {'edits': [{
+            'path': 'tests/main_test.gd',
+            'find': 'extends Node',
+            'replace': 'extends Node2D',
+        }]}
+        subject = model([
+            completion(malformed_qa),
+            completion({'files': [{
+                'path': 'tests/main_test.gd',
+                'content': 'extends Node\\n',
+            }]}),
+        ])
+        subject.providers = (subject.providers[0],)
+        corrected = subject.ask('tests', 'write settings regression')
+        self.assertEqual(corrected['files'][0]['path'], 'tests/main_test.gd')
+        self.assertEqual(subject.calls, 2)
+        initial_system = subject.api.calls[0][2]['messages'][0]['content']
+        self.assertIn('never return edits', initial_system)
+        self.assertIn('exactly one top-level key: files', initial_system)
+        self.assertNotIn('strongly prefer concise exact-match edits', initial_system)
+        retry_text = subject.api.calls[1][2]['messages'][1]['content']
+        self.assertIn('implementation-only exact edits', retry_text)
+        self.assertIn('The only top-level key must be files', retry_text)
 
     def test_truncated_patch_retry_requests_a_smaller_complete_change(self):
         truncated = {'choices':[{'finish_reason':'length','message':{'content':'{"files":['}}]}

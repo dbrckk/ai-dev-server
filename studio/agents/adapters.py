@@ -50,8 +50,8 @@ class AgentAdapter:
         # performed later by the trusted GitHub adapter after validation.
         # Prevent untrusted subprocesses (including Hermes and OpenCode)
         # from inheriting credentials that control workers, GitHub delivery,
-        # or host Git/SSH authentication. Model credentials remain available
-        # only through explicit, agent-scoped provider configuration.
+        # or host Git/SSH authentication. Model-provider credentials remain
+        # available for authorized inference; scoped aliases also work.
         control_prefixes = (
             "GITHUB_", "GH_", "STUDIO_", "PRODUCTION_OS_",
             "ASSET_FORGE_GITHUB_", "GIT_",

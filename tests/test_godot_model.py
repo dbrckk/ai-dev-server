@@ -414,4 +414,53 @@ class GodotModelTests(unittest.TestCase):
                 self.assertFalse(snapshot()['capacity_exhausted'])
 
 
+        # Refuse unusably short completions BEFORE contacting any provider:
+        # this protects scarce free capacity against guaranteed truncations.
+        # The ledger and usage journal must stay untouched by rejected calls.
+        from native_model_usage import call as accounted_call
+        with tempfile.TemporaryDirectory() as td:
+            base = Path(td)
+            usage = base / 'floor-usage.json'
+            ledger = base / 'floor-ledger.json'
+            plan = base / 'floor-plan.json'
+            plan.write_text(json.dumps({'projects': [{
+                'id': 'jumpy', 'token_envelope': 1500,
+            }]}))
+            with patch.dict(os.environ, {
+                'STUDIO_NATIVE_MODEL_USAGE_PATH': str(usage),
+                'STUDIO_CAPACITY_PLAN_PATH': str(plan),
+                'STUDIO_CAPACITY_LEDGER_PATH': str(ledger),
+                'STUDIO_PROJECT_ID': 'jumpy',
+            }):
+                subject = model([])
+                subject.providers = (subject.providers[0],)
+                compact = '{"files_mode":"bounded_exact_match_source_excerpts"}'
+                with self.assertRaisesRegex(StudioError, 'project_envelope_exhausted'):
+                    subject.ask('implementation', compact)
+                self.assertEqual(subject.api.calls, [])
+                self.assertEqual(consumed_tokens(load(ledger), project_id='jumpy'), 0)
+                self.assertEqual(snapshot()['usage']['runs'], 0)
+                self.assertTrue(snapshot()['capacity_exhausted'])
+
+                # The very same request is admitted when genuine remaining
+                # capacity suffices. No budget is artificially increased.
+                plan.write_text(json.dumps({'projects': [{
+                    'id': 'jumpy', 'token_envelope': 7000,
+                }]}))
+                subject = model([completion({'edits': [{
+                    'path': 'scripts/main.gd',
+                    'find': 'if settings_open:',
+                    'replace': 'if not settings_open:',
+                }]})])
+                subject.providers = (subject.providers[0],)
+                self.assertIn('edits', subject.ask('implementation', compact))
+                self.assertEqual(len(subject.api.calls), 1)
+                self.assertEqual(subject.api.calls[0][2]['max_tokens'], 4096)
+                self.assertEqual(snapshot()['usage']['runs'], 1)
+                with self.assertRaisesRegex(ValueError, 'positive integer'):
+                    accounted_call(subject.api, {'max_tokens': 100,
+                                  'messages': []}, 'primary',
+                                  minimum_output_tokens=0)
+
+
 if __name__ == '__main__': unittest.main()

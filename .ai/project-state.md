@@ -1,5 +1,7 @@
 # Project state
 
+- **2026-10-16 canary 35 / Godot contract limits:** Worker [38859838227](https://github.com/dbrckk/ai-dev-server/actions/runs/38859838227) failed honestly at preview after 3 calls / 24,920 reported tokens (22,832 input). Checkpoint `91a4be29445120cd25bc2d5f33fe2977d0e49142` records two rejected product responses: `jumpy-settings-open-tap-empty-prevents-start` exceeds the validator’s 40-character id limit, which the Godot prompt did not disclose. Branch `fix/godot-journey-contract-limits` declares the complete id/key/text/scroll bounds without relaxing validation or budgets. Existing regression reproduced the omission before the fix; 38 selected tests pass. CI/review pending. No gameplay patch, PR delivery, Android build or live inference success claimed; full-source implementation budget remains to qualify before another canary.
+
 Status: active
 
 ## Working

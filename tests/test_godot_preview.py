@@ -150,11 +150,11 @@ class GodotPreviewTests(unittest.TestCase):
             # 570k-character existing script. The runner expands each edit
             # only after verifying a unique match in the authoritative file.
             guard = source_root / 'scripts/guard.gd'
-            before = 'extends Node\\nfunc handle():\\n    if settings_open:\\n        start_game()\\n'
+            before = 'extends Node\nfunc handle():\n    if settings_open:\n        start_game()\n'
             guard.write_text(before)
-            replacement = 'if not settings_open:\\n        start_game()'
+            replacement = 'if not settings_open:\n        start_game()'
             payload = {'edits': [{'path': 'scripts/guard.gd',
-                                  'find': 'if settings_open:\\n        start_game()',
+                                  'find': 'if settings_open:\n        start_game()',
                                   'replace': replacement}]}
             godot_preview._safe_apply(source_root, payload, 'implementation',
                                       architecture_changes_allowed=False)
@@ -181,7 +181,7 @@ class GodotPreviewTests(unittest.TestCase):
             with self.assertRaisesRegex(godot_preview.ArchitectureChangeBlocked, 'HOLD'):
                 godot_preview._safe_apply(source_root, {'edits': [{
                     'path': 'project.godot', 'find': '[application]',
-                    'replace': '[application]\\n# changed',
+                    'replace': '[application]\n# changed',
                 }]}, 'implementation', architecture_changes_allowed=False)
             link = source_root / 'scripts/linked.gd'
             link.symlink_to('guard.gd')
@@ -199,9 +199,9 @@ class GodotPreviewTests(unittest.TestCase):
 
             # Relevant source anchors are selected from trusted code, not
             # hallucinated: the model sees the actual method it must edit.
-            focused_source = ('extends Node\\n' + '# unrelated\\n' * 400 +
-                              'func _unhandled_input(event):\\n    if settings_open:\\n        start_game()\\n' +
-                              '# tail\\n' * 1200)
+            focused_source = ('extends Node\n' + '# unrelated\n' * 400 +
+                              'func _unhandled_input(event):\n    if settings_open:\n        start_game()\n' +
+                              '# tail\n' * 4000)
             (source_root / 'scripts/main.gd').write_text(focused_source)
             focused = dict(self.request())
             focused['brief'] = 'Fix _unhandled_input when settings_open is true'

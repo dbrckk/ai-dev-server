@@ -362,6 +362,81 @@ def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation
                 }
                 lean['product'] = compact_product
         return canonical(lean)
+    if compact and phase in ('implementation', 'tests'):
+        # Large-project code and QA prompts should NOT replay full architecture
+        # telemetry or product/design narratives. These are checkpoint evidence
+        # validated by trusted architecture guards, not source-edit authority.
+        product = state.get('product')
+        if not isinstance(product, dict):
+            product = {}
+        criteria = product.get('acceptance_criteria')
+        if not isinstance(criteria, list):
+            deliverable = product.get('deliverable')
+            criteria = deliverable.get('acceptance_criteria') if isinstance(deliverable, dict) else []
+        if not isinstance(criteria, list):
+            criteria = []
+        journeys = product.get('journeys')
+        if not isinstance(journeys, list):
+            journeys = []
+        # Preserve EVERY journey step: these are the testable selectors the
+        # implementation must honor. Only long prose summaries are trimmed.
+        criteria = [str(value)[:240] for value in criteria[:8] if isinstance(value, str)]
+        design = state.get('design')
+        design_text = canonical(design) if isinstance(design, dict) else ''
+        brief = str(req.get('brief') or '')
+        blockers = state.get('blockers')
+        blockers = blockers if isinstance(blockers, list) else []
+        lean = {
+            'engine': 'godot',
+            'phase': phase,
+            'request': {
+                key: req[key] for key in ('app_name', 'target_repo', 'brief')
+                if key in req
+            },
+            'architecture_constraints': {
+                'architecture_changes_allowed': state.get(
+                    'architecture_autonomy_policy', {}
+                ).get('architecture_changes_allowed'),
+                'preflight_verdict': state.get(
+                    'architecture_preflight', {}
+                ).get('verdict'),
+            },
+            'acceptance': {
+                'criteria': criteria,
+                'journeys': journeys,
+            },
+            'design_guidance_excerpt': design_text[:1_000],
+            'design_excerpt_truncated': len(design_text) > 1_000,
+            'previous_blockers': [
+                value[:200] for value in blockers[:3]
+                if isinstance(value, str)
+            ],
+            'files': files,
+            'files_mode': 'bounded_exact_match_source_excerpts',
+            'excerpted_paths': excerpted_paths,
+            'editable_file_count': len(paths),
+            'editable_file_manifest': [
+                {'path': rel, 'size_bytes': path.stat().st_size}
+                for rel, path in paths[:PLANNING_MANIFEST_LIMIT]
+            ],
+            'manifest_omitted_count': max(0, len(paths) - PLANNING_MANIFEST_LIMIT),
+        }
+        if phase == 'tests':
+            # QA sees just the trusted accepted code change, not the complete
+            # generation history or unchecked model explanation.
+            evidence = _review_evidence(review_patch, root)
+            lean['accepted_change_evidence'] = [
+                {key: (value[:850] if isinstance(value, str) else value)
+                 for key, value in row.items()
+                 if key in ('path', 'change_kind', 'before', 'after',
+                            'source_excerpt', 'current_source_sha256')}
+                for row in evidence[:2]
+            ]
+            lean['qa_scope'] = (
+                'Return a complete tests/*.gd file covering the supplied '
+                'accepted code change. Do not modify production files.'
+            )
+        return canonical(lean)
     if compact:
         context['files_mode'] = (
             'bounded_review_source_excerpts' if phase == 'review'
@@ -608,7 +683,7 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
                 state['pending_safe_rewrite_event_id'] = event_id
                 state.update(status='working', blockers=[])
             if not any(p.is_file() and not p.is_symlink() for p in (root / 'tests').rglob('*.gd')):
-                qa = model.ask('tests', _context(req,state,root)); _safe_apply(
+                qa = model.ask('tests', _context(req,state,root,phase='tests',review_patch=patch)); _safe_apply(
                     root,
                     qa,
                     'tests',

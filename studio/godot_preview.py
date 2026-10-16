@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import json
+import re
 from pathlib import Path
 
 from core import StudioError, canonical, request_check, verdict
@@ -101,6 +103,51 @@ PLANNING_PER_FILE_CHAR_BUDGET = 4_800
 PLANNING_FILE_PREVIEW_LIMIT = 8
 PLANNING_MANIFEST_LIMIT = 100
 
+# Large existing projects should be edited by exact source snippets, not
+# regenerated wholesale. This budget is independent of model token counters.
+COMPACT_SOURCE_THRESHOLD = 18_000
+COMPACT_SOURCE_CHAR_BUDGET = 10_000
+COMPACT_PER_FILE_CHAR_BUDGET = 7_000
+COMPACT_SOURCE_FILE_LIMIT = 8
+
+
+def _relevant_source_excerpt(source: str, brief: str, limit: int) -> str:
+    if len(source) <= limit:
+        return source
+    # Prefer exact code identifiers explicitly mentioned in the task,
+    # e.g. settings_open and _unhandled_input. Never synthesize source.
+    identifiers = sorted(set(re.findall(r'[A-Za-z_][A-Za-z0-9_]{4,}', brief)),
+                         key=lambda value: (-len(value), value))
+    identifiers = [value.lower() for value in identifiers if '_' in value][:16]
+    lines = source.splitlines(keepends=True)
+    prefix = source[:min(1400, max(300, limit // 4))]
+    chunks = [prefix]
+    room = max(0, limit - len(prefix) - 120)
+    anchors = []
+    for i, line in enumerate(lines):
+        lowered = line.lower()
+        matching = [term for term in identifiers if term in lowered]
+        if matching:
+            score = 100 * len(matching) + sum(len(term) for term in matching)
+            anchors.append((-score, i))
+    # Without explicit identifiers, include representative function definitions.
+    if not anchors:
+        anchors = [(0, i) for i, line in enumerate(lines) if line.lstrip().startswith('func ')]
+    seen = set()
+    for _, index in sorted(anchors):
+        start, end = max(0, index - 5), min(len(lines), index + 11)
+        if any(i in seen for i in range(start, end)):
+            continue
+        chunk = ''.join(lines[start:end])
+        if len(chunk) > room:
+            continue
+        chunks.append(chunk)
+        seen.update(range(start, end))
+        room -= len(chunk) + 42
+        if room <= 0:
+            break
+    return '\\n[OMITTED SOURCE - EXACT EDITS ONLY]\\n'.join(chunks)[:limit] + '\\n[TRUNCATED SOURCE - EXACT EDITS ONLY]'
+
 
 def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation') -> str:
     paths = []
@@ -113,6 +160,9 @@ def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation
 
     files = {}
     planning = phase in ('product', 'design')
+    compact = (phase in ('implementation', 'tests') and
+               sum(path.stat().st_size for _, path in paths) > COMPACT_SOURCE_THRESHOLD)
+    excerpted_paths = []
     if planning:
         # Explicitly distinguish source *excerpts* from the full files used
         # to generate patches. Keeping this manifest lets the planner reason
@@ -139,8 +189,31 @@ def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation
             truncated = len(sample) > limit
             files[rel] = sample[:limit] + ('\n[TRUNCATED: planning excerpt only]' if truncated else '')
             remaining -= min(limit, len(sample))
+    elif compact:
+        # Exact-match edits are revalidated on full trusted files at apply
+        # time. Truncated input is NEVER permission to overwrite whole files.
+        def source_priority(item):
+            rel = item[0]
+            return (0 if rel == 'scripts/main.gd' else
+                    1 if rel == 'project.godot' else
+                    2 if rel.endswith('.gd') else
+                    3 if rel.endswith('.tscn') else 4, rel)
+
+        remaining = COMPACT_SOURCE_CHAR_BUDGET
+        for rel, path in sorted(paths, key=source_priority):
+            if remaining <= 0 or len(files) >= COMPACT_SOURCE_FILE_LIMIT:
+                excerpted_paths.append(rel)
+                continue
+            limit = min(COMPACT_PER_FILE_CHAR_BUDGET, remaining)
+            source = path.read_text(encoding='utf-8')
+            if len(source) > limit:
+                files[rel] = _relevant_source_excerpt(source, req.get('brief', ''), limit)
+                excerpted_paths.append(rel)
+            else:
+                files[rel] = source
+            remaining -= min(len(source), limit)
     else:
-        # Never feed a partial source snapshot to code editing or review.
+        # Full source is retained for review and for small projects.
         for rel, path in paths:
             files[rel] = path.read_text()
 
@@ -159,6 +232,14 @@ def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation
     if planning:
         context['files_mode'] = 'bounded_planning_excerpts_not_complete_source'
         context['editable_file_count'] = len(paths)
+        context['editable_file_manifest'] = [
+            {'path': rel, 'size_bytes': path.stat().st_size}
+            for rel, path in paths[:PLANNING_MANIFEST_LIMIT]
+        ]
+        context['manifest_omitted_count'] = max(0, len(paths) - PLANNING_MANIFEST_LIMIT)
+    if compact:
+        context['files_mode'] = 'bounded_exact_match_source_excerpts'
+        context['excerpted_paths'] = excerpted_paths
         context['editable_file_manifest'] = [
             {'path': rel, 'size_bytes': path.stat().st_size}
             for rel, path in paths[:PLANNING_MANIFEST_LIMIT]

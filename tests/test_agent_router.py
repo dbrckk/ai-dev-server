@@ -202,6 +202,51 @@ class AgentRouterTests(unittest.TestCase):
             self.assertEqual(child_env["OPENCODE_STUDIO_API_KEY"], "scoped-model-key")
             self.assertEqual(child_env["OMNIROUTE_API_KEY"], "provider-model-key")
 
+    def test_opencode_headless_exit_zero_needs_real_assistant_output(self):
+        from agents.orchestrator import _completion_verified
+
+        def evidence(stdout):
+            return AgentRun("opencode", 0, 1.0, stdout, "")
+
+        self.assertFalse(_completion_verified(evidence("")))
+        self.assertFalse(_completion_verified(evidence(
+            '{"type":"step_start","part":{"type":"step-start"}}'
+        )))
+        self.assertFalse(_completion_verified(evidence(
+            '{"type":"text","part":{"type":"text","text":""}}'
+        )))
+        self.assertFalse(_completion_verified(evidence(
+            '{"type":"text","part":{"type":"text","text":"Continue",'
+            '"synthetic":true}}'
+        )))
+        self.assertFalse(_completion_verified(evidence(
+            '{"type":"text","part":{"type":"text","text":"compaction",'
+            '"metadata":{"compaction_continue":true}}}'
+        )))
+        verified = evidence(
+            '{"type":"step_start"}\n'
+            '{"type":"text","part":{"type":"text","text":"Implemented and tested."}}\n'
+            '{"type":"step_finish"}'
+        )
+        self.assertTrue(_completion_verified(verified))
+        with patch("shutil.which", return_value="/usr/bin/opencode"), patch(
+            "agents.orchestrator.AgentAdapter.run",
+            return_value=evidence('{"type":"step_start"}')
+        ):
+            failed = execute_named("opencode", "edit this", cwd=ROOT)
+        self.assertEqual(failed["status"], "failed")
+        self.assertEqual(failed["attempts"][0]["returncode"], 0)
+        self.assertFalse(failed["attempts"][0]["completion_verified"])
+        self.assertEqual(
+            failed["attempts"][0]["failure_reason"], "unverified-headless-output"
+        )
+        with patch("shutil.which", return_value="/usr/bin/opencode"), patch(
+            "agents.orchestrator.AgentAdapter.run", return_value=verified
+        ):
+            succeeded = execute_named("opencode", "edit this", cwd=ROOT)
+        self.assertEqual(succeeded["status"], "passed")
+        self.assertTrue(succeeded["attempts"][0]["completion_verified"])
+
     def test_codex_invocation_uses_verified_headless_contract(self):
         argv, extra = invocation_for("codex", "do work")
 

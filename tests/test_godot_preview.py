@@ -155,7 +155,7 @@ class GodotPreviewTests(unittest.TestCase):
                             'replace': 'safe'}]},
                 {'edits': [{'path': 'scripts/guard.gd', 'find': 'Node',
                             'replace': 'OtherNode'},
-                           {'path': 'scripts/main.gd', 'find': 'absent',
+                           {'path': 'scenes/main.tscn', 'find': 'absent',
                             'replace': 'safe'}]},
             ):
                 with self.subTest(invalid=invalid), self.assertRaisesRegex(

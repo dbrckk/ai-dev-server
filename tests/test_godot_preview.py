@@ -132,8 +132,19 @@ class GodotPreviewTests(unittest.TestCase):
             implementation = json.loads(godot_preview._context(
                 self.request(), {}, source_root,
             ))
-            self.assertEqual(implementation['files']['scripts/main.gd'], main_source)
-            self.assertNotIn('files_mode', implementation)
+            self.assertEqual(implementation['files_mode'], 'bounded_exact_match_source_excerpts')
+            self.assertIn('scripts/main.gd', implementation['excerpted_paths'])
+            self.assertLess(len(implementation['files']['scripts/main.gd']), 8_000)
+            self.assertIn('[TRUNCATED SOURCE - EXACT EDITS ONLY]', implementation['files']['scripts/main.gd'])
+            self.assertLess(
+                sum(len(content) for content in implementation['files'].values()),
+                godot_preview.COMPACT_SOURCE_CHAR_BUDGET + 400,
+            )
+            review = json.loads(godot_preview._context(
+                self.request(), {}, source_root, phase='review',
+            ))
+            self.assertEqual(review['files']['scripts/main.gd'], main_source)
+            self.assertNotIn('files_mode', review)
 
             # A small change must not require the model to echo the complete
             # 570k-character existing script. The runner expands each edit
@@ -180,6 +191,25 @@ class GodotPreviewTests(unittest.TestCase):
                     'replace': 'extends Control',
                 }]}, 'implementation')
             self.assertEqual(guard.read_text(), after)
+            with self.assertRaisesRegex(StudioError, 'excerpted source requires exact edits'):
+                godot_preview._safe_apply(source_root, {
+                    'files': [{'path': 'scripts/guard.gd', 'content': before}],
+                }, 'implementation', excerpted_paths=('scripts/guard.gd',))
+            self.assertEqual(guard.read_text(), after)
+
+            # Relevant source anchors are selected from trusted code, not
+            # hallucinated: the model sees the actual method it must edit.
+            focused_source = ('extends Node\\n' + '# unrelated\\n' * 400 +
+                              'func _unhandled_input(event):\\n    if settings_open:\\n        start_game()\\n' +
+                              '# tail\\n' * 1200)
+            (source_root / 'scripts/main.gd').write_text(focused_source)
+            focused = dict(self.request())
+            focused['brief'] = 'Fix _unhandled_input when settings_open is true'
+            excerpt = json.loads(godot_preview._context(
+                focused, {}, source_root, phase='implementation',
+            ))['files']['scripts/main.gd']
+            self.assertIn('func _unhandled_input(event):', excerpt)
+            self.assertIn('if settings_open:', excerpt)
 
         req = godot_preview.request_check(self.request())
         fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(

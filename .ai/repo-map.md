@@ -14634,7 +14634,7 @@ CANDIDATE_REVIEW_SYSTEM = """You are an independent engineering reviewer compari
 ⋮----
 REVIEW_SYSTEM = """You are the verification-driven senior reviewer.
 ⋮----
-def _snapshot(root: Path, limit_bytes: int = 420_000) -> dict
+def _snapshot(root: Path, limit_bytes: int = 420_000, *, source_first: bool = False) -> dict
 ⋮----
 # Autonomous Production-OS jobs have a finite inference envelope. Do not
 # feed hundreds of kilobytes of largely unrelated repository files into
@@ -14649,6 +14649,25 @@ used = 0
 preferred = []
 ⋮----
 rel = p.relative_to(root).as_posix()
+⋮----
+lower = rel.lower()
+# Indexed/generated context and vendor caches cannot improve a
+# targeted integration's first source patch. Avoid crowding out
+# implementation files with unrelated prose and large reports.
+⋮----
+source = p.suffix.lower() in {
+implementation = lower.startswith((
+⋮----
+priority = 0
+⋮----
+priority = 1
+⋮----
+priority = 2
+⋮----
+priority = 3
+⋮----
+priority = 4
+⋮----
 priority = 0 if rel.lower() in {"agents.md","readme.md","package.json","pyproject.toml","cargo.toml","go.mod","pom.xml"} else 1
 ⋮----
 text = p.read_text(encoding="utf-8")
@@ -14921,9 +14940,9 @@ admission = capacity_runtime_state.get("admission")
 stagnation_state = {
 star_context=recommend('implementation',out)
 # Catalog integrations carry a known upstream and a narrow change
-# request. Large alphabetically ordered snapshots can crowd out
-# the patch itself and repeatedly charge input tokens.
-snapshot = _snapshot(work, 64_000 if catalog_integration else 420_000)
+# request. Prefer real source files in a compact bounded snapshot;
+# repeatedly sending README/docs consumed most of the 90k budget.
+snapshot = _snapshot(work, 24_000 if catalog_integration else 420_000, source_first=catalog_integration)
 previous_failures = sum(
 ⋮----
 verification_fallback = (

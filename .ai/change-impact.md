@@ -1,19 +1,16 @@
 # Change impact
 
-Base: 32e7011ea034dd5194a10b61c3b3aa58dfe551ef
-Head: da140b852d26327c19adf852590e65b71af2222f
+Base: 01e3927b150a933ede6a1a494c69cf3d29a691ca
+Head: 236989e38173fa6b2d1fbb2c80eb04542dd62f15
 
 ## Changed files
-- M studio/native_model_usage.py
-- M studio/production_os_worker_canary.py
-- M tests/test_production_os_worker_canary.py
+- M studio/generic_project.py
 
 ## Affected areas
 - studio
-- tests
 
 ## Related test candidates
-- tests/test_production_os_worker_canary.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

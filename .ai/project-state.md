@@ -104,24 +104,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-16T08:15:06Z
+Generated: 2026-10-16T09:18:26Z
 
 ### Git
 - Branch: `main`
-- Head: `da140b852d26`
-- Commit date: 2026-10-16T10:14:46+02:00
-- Commit: fix: bound Godot canary budgets and reserve native prompt-token headroom
+- Head: `236989e38173`
+- Commit date: 2026-10-16T11:17:55+02:00
+- Commit: fix: recognize star-list v3 recovery as targeted work
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/generic_project.py`
 - `studio/native_model_usage.py`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
 - `studio/godot_model.py`
 - `tests/test_godot_model.py`
-- `studio/generic_project.py`
-- `studio/generic_model.py`
-- `control/production-os-worker-canary.json`
 
 ### Project signals
 - No common build descriptor detected

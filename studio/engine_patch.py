@@ -18,6 +18,38 @@ def validate(value: dict, engine: str, role: str = 'implementation') -> list[dic
     profile(engine)
     if role not in ('implementation', 'tests'):
         raise PatchPolicyError('Unsupported patch role')
+    # Exact-match edits are deliberately Godot-implementation only. A small
+    # replacement avoids asking a free model to echo a whole existing script.
+    # This validates the envelope; the runner must verify the unique match
+    # against the trusted on-disk source before constructing full-file patches.
+    if isinstance(value, dict) and set(value) == {'edits'}:
+        if engine != 'godot' or role != 'implementation':
+            raise PatchPolicyError('Exact edits permitted only for Godot implementation')
+        edits = value['edits']
+        if not isinstance(edits, list) or not 1 <= len(edits) <= 12:
+            raise PatchPolicyError('Exact edit count invalid')
+        seen = set()
+        total = 0
+        normalized = []
+        for item in edits:
+            if not isinstance(item, dict) or set(item) != {'path', 'find', 'replace'}:
+                raise PatchPolicyError('Exact edit entry malformed')
+            path, find, replacement = item['path'], item['find'], item['replace']
+            if not isinstance(path, str) or not editable(path, engine):
+                raise PatchPolicyError('Exact edit path outside Godot scope')
+            if path in seen or not isinstance(find, str) or not isinstance(replacement, str):
+                raise PatchPolicyError('Duplicate path or invalid exact edit')
+            if not find or find == replacement or '\x00' in find or '\x00' in replacement:
+                raise PatchPolicyError('Empty, unchanged or invalid exact edit')
+            size = len(find.encode('utf-8')) + len(replacement.encode('utf-8'))
+            if size > 24_000 or SECRET.search(find) or SECRET.search(replacement):
+                raise PatchPolicyError('Exact edit too large or contains credential-like material')
+            total += size
+            if total > 48_000:
+                raise PatchPolicyError('Exact edit payload too large')
+            seen.add(path)
+            normalized.append({'path': path, 'find': find, 'replace': replacement})
+        return normalized
     if not isinstance(value, dict) or set(value) != {'files'} or not isinstance(value['files'], list):
         raise PatchPolicyError('Expected patch envelope')
     if not 1 <= len(value['files']) <= MAX_FILES:

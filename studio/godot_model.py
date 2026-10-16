@@ -40,8 +40,14 @@ GODOT_ROLE = {
 }
 PATCH_SCHEMA = (
     'Editable implementation scope: project.godot, export_presets.cfg, scripts/**, scenes/**, assets/**, tests/**, docs/** '
-    'using only the trusted text extensions. QA role may write only tests/*.gd (including subdirectories). '
-    'Return ONLY JSON {"files":[{"path":"scripts/main.gd","content":"full file"}]}.'
+    'using only trusted text extensions. For modifications to EXISTING files, strongly prefer concise exact-match edits: '
+    'return ONLY JSON {"edits":[{"path":"scripts/main.gd","find":"exact unique existing snippet","replace":"modified snippet"}]}. '
+    'The find text must occur exactly once in the existing file; include enough surrounding lines for uniqueness. '
+    'Never use line numbers, wildcards or invented context. Preserve all code not explicitly changed. '
+    'Do NOT echo an entire existing file for a small change, because free model output quota is limited. '
+    'If adding a NEW file or a full rewrite is essential, alternatively return ONLY JSON '
+    '{"files":[{"path":"scripts/main.gd","content":"full file"}]}. Never mix files and edits. '
+    'QA role may write only tests/*.gd and MUST use files, not edits.'
 )
 PRODUCT_SCHEMA = (
     'Return ONLY a JSON object with your detailed deliverable and a journeys field. journeys must contain 1..6 objects with '
@@ -205,6 +211,7 @@ class GodotModel(Model):
         elapsed = 0.0
         last_error = None
         primary_provider = self.providers[0] if self.providers else None
+        compact_source = 'bounded_exact_match_source_excerpts' in context
 
         for provider in provider_candidates:
             selected_model = provider.model_for(role, False)
@@ -212,7 +219,12 @@ class GodotModel(Model):
             params = {
                 'model': selected_model,
                 'stream': False,
-                'max_tokens': 3072 if role == 'product' else 1536 if role == 'design' else (16000 if role == 'implementation' else 8192),
+                'max_tokens': (
+                    3072 if role == 'product' else 1536 if role == 'design' else
+                    4096 if compact_source and role == 'implementation' else
+                    3072 if compact_source and role == 'tests' else
+                    16000 if role == 'implementation' else 8192
+                ),
                 'messages': [
                     {'role': 'system', 'content': system_content},
                     {'role': 'user', 'content': context},
@@ -221,7 +233,11 @@ class GodotModel(Model):
             if api.base == 'https://integrate.api.nvidia.com/v1':
                 params['response_format'] = {'type': 'json_object'}
             if api.base == 'https://integrate.api.nvidia.com/v1' and selected_model.startswith('nvidia/nemotron-3-'):
-                params.update(chat_template_kwargs={'enable_thinking': True}, reasoning_budget=512 if role in ('product', 'design') else 2048)
+                params.update(
+                    chat_template_kwargs={'enable_thinking': True},
+                    reasoning_budget=(512 if role in ('product', 'design') or (compact_source and role == 'tests')
+                                      else 1024 if compact_source and role == 'implementation' else 2048),
+                )
             print('Model role: ' + role + '; provider: ' + provider.name + '; model: ' + selected_model, flush=True)
             from native_model_usage import call as accounted_call, NativeAccountingError
             started = time.monotonic()

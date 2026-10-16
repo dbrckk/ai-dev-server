@@ -181,11 +181,13 @@ class AgentRouterTests(unittest.TestCase):
         }
         for name in ("opencode", "hermes"):
             adapter = AgentAdapter(AgentSpec(name, name, frozenset({"repo_analysis"})))
-            with patch.dict(os.environ, inherited, clear=True), \\
-                 patch("shutil.which", return_value="/usr/bin/" + name), \\
-                 patch("agents.adapters.subprocess.run",
-                       return_value=subprocess.CompletedProcess(
-                           [name, "run"], 0, "finished", "")) as child:
+            with (
+                patch.dict(os.environ, inherited, clear=True),
+                patch("shutil.which", return_value="/usr/bin/" + name),
+                patch("agents.adapters.subprocess.run",
+                      return_value=subprocess.CompletedProcess(
+                          [name, "run"], 0, "finished", "")) as child,
+            ):
                 result = adapter.run([name, "run"], cwd=ROOT,
                                      extra_env=overrides, timeout=10)
             self.assertEqual(result.returncode, 0)

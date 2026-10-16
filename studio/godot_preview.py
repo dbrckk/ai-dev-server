@@ -47,7 +47,13 @@ def _safe_apply(
     role: str,
     *,
     architecture_changes_allowed: bool = True,
+    excerpted_paths: tuple[str, ...] = (),
 ) -> None:
+    # No full overwrite is safe when the model saw only selected excerpts.
+    if isinstance(value, dict) and set(value) == {'files'} and excerpted_paths:
+        if any(isinstance(item, dict) and item.get('path') in excerpted_paths
+               for item in value.get('files', ())):
+            raise StudioError('Godot excerpted source requires exact edits, not a full-file rewrite')
     # Aider-style small edits: validate before any write, then expand
     # uniquely matched on-disk snippets into the existing full-file safety
     # contract. Never trust excerpts or model-provided source as authority.
@@ -408,6 +414,7 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
         for _ in range(req['max_rounds']):
             state['rounds'] += 1
             implementation_context = _context(req,state,root)
+            excerpted_paths = tuple(json.loads(implementation_context).get('excerpted_paths', ()))
             patch = model.ask('implementation', implementation_context)
             try:
                 _safe_apply(
@@ -417,6 +424,7 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
                     architecture_changes_allowed=bool(
                         state.get('architecture_autonomy_policy', {}).get('architecture_changes_allowed', True)
                     ),
+                    excerpted_paths=excerpted_paths,
                 )
             except ArchitectureChangeBlocked as exc:
                 event = {
@@ -441,6 +449,7 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
                         retry_patch,
                         'implementation',
                         architecture_changes_allowed=False,
+                        excerpted_paths=excerpted_paths,
                     )
                 except ArchitectureChangeBlocked as retry_exc:
                     event['safe_rewrite_status'] = 'blocked'

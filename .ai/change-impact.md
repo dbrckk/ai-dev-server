@@ -1,20 +1,16 @@
 # Change impact
 
-Base: f71acdbd6d270d57df63caffe05790b3d6fafce8
-Head: 3596785f7e014e482ec3450545fb1ae1d64f2cbc
+Base: 2ec7117ec392a08322d19d0016214603caed3b1d
+Head: fdddaf11229e8494cb6dafc208d7b717227ca6e5
 
 ## Changed files
-- M studio/godot_model.py
-- M studio/learning_context.py
-- M tests/test_learning_context.py
+- M studio/generic_model.py
 
 ## Affected areas
 - studio
-- tests
 
 ## Related test candidates
-- tests/test_godot_model.py
-- tests/test_learning_context.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

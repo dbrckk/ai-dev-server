@@ -5,51 +5,120 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "GodotModel": {
+    "_decode": {
       "definition": {
-        "file": "studio/godot_model.py",
-        "line": 62,
-        "kind": "class",
+        "file": "studio/generic_model.py",
+        "line": 68,
+        "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/godot_model.py",
-          "line": 62,
-          "preview": "class GodotModel(Model):",
+          "file": "studio/generic_model.py",
+          "line": 68,
+          "preview": "def _decode(response: dict) -> dict:",
           "definition_candidate": true
         },
         {
-          "file": "studio/godot_preview.py",
-          "line": 16,
-          "preview": "from godot_model import GodotModel",
+          "file": "studio/generic_model.py",
+          "line": 548,
+          "preview": "# can otherwise consume quota before _decode rejects free-form text.",
           "definition_candidate": false
         },
         {
-          "file": "studio/godot_preview.py",
-          "line": 228,
-          "preview": "def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, sandbox_factory=GodotSandbox) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 12,
-          "preview": "from godot_model import GodotModel",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 31,
-          "preview": "obj = GodotModel.__new__(GodotModel)",
+          "file": "studio/generic_model.py",
+          "line": 620,
+          "preview": "decoded = _decode(response)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 5
+      "occurrence_count": 3
+    },
+    "_reported_usage_tokens": {
+      "definition": {
+        "file": "studio/generic_model.py",
+        "line": 85,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_model.py",
+          "line": 85,
+          "preview": "def _reported_usage_tokens(",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 587,
+          "preview": "prompt_tokens, completion_tokens, actual_tokens = _reported_usage_tokens(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "token_count": {
+      "definition": {
+        "file": "studio/generic_model.py",
+        "line": 100,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_model.py",
+          "line": 100,
+          "preview": "def token_count(key):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 106,
+          "preview": "prompt = max(token_count(\"prompt_tokens\"), token_count(\"input_tokens\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 107,
+          "preview": "completion = max(token_count(\"completion_tokens\"), token_count(\"output_tokens\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 108,
+          "preview": "total = max(token_count(\"total_tokens\"), prompt + completion)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "_bounded_model_token_budget": {
+      "definition": {
+        "file": "studio/generic_model.py",
+        "line": 122,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_model.py",
+          "line": 122,
+          "preview": "def _bounded_model_token_budget(",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 324,
+          "preview": "budget = _bounded_model_token_budget(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
     },
     "ask": {
       "definition": {
-        "file": "studio/godot_model.py",
-        "line": 63,
+        "file": "studio/generic_model.py",
+        "line": 173,
         "kind": "function",
         "language": "python"
       },
@@ -64,7 +133,7 @@
           "file": "studio/generic_model.py",
           "line": 173,
           "preview": "def ask(",
-          "definition_candidate": false
+          "definition_candidate": true
         },
         {
           "file": "studio/generic_project.py",
@@ -148,7 +217,7 @@
           "file": "studio/godot_model.py",
           "line": 63,
           "preview": "def ask(self, role, context, screenshots=()):",
-          "definition_candidate": true
+          "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
@@ -590,228 +659,6 @@
         }
       ],
       "occurrence_count": 89
-    },
-    "_ask_godot": {
-      "definition": {
-        "file": "studio/godot_model.py",
-        "line": 110,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/godot_model.py",
-          "line": 82,
-          "preview": "value = self._ask_godot(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_model.py",
-          "line": 110,
-          "preview": "def _ask_godot(",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "load_context": {
-      "definition": {
-        "file": "studio/learning_context.py",
-        "line": 9,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/generic_project.py",
-          "line": 27,
-          "preview": "from learning_context import load_context",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 1005,
-          "preview": "learned_context = load_context()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_verifier_adaptation.py",
-          "line": 11,
-          "preview": "from learning_context import load_context",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_verifier_adaptation.py",
-          "line": 95,
-          "preview": "\"validated_engineering_memory\": load_context(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/learning_context.py",
-          "line": 9,
-          "preview": "def load_context():",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/learning_context.py",
-          "line": 39,
-          "preview": "items = load_context()",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_learning_context.py",
-          "line": 4,
-          "preview": "from learning_context import augment,load_context",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_learning_context.py",
-          "line": 13,
-          "preview": "items=load_context(); self.assertEqual(len(items),1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_learning_context.py",
-          "line": 49,
-          "preview": "try: self.assertEqual(load_context(),[]); self.assertEqual(augment(\"task\"),\"task\")",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 9
-    },
-    "augment": {
-      "definition": {
-        "file": "studio/learning_context.py",
-        "line": 30,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/core.py",
-          "line": 461,
-          "preview": "from learning_context import augment",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 462,
-          "preview": "context = augment(context)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_model.py",
-          "line": 64,
-          "preview": "from learning_context import augment",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_model.py",
-          "line": 69,
-          "preview": "context = augment(context, max_items=2, max_chars=1400)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_model.py",
-          "line": 71,
-          "preview": "context = augment(context, max_items=4, max_chars=2800)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_model.py",
-          "line": 73,
-          "preview": "context = augment(context)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/learning_context.py",
-          "line": 30,
-          "preview": "def augment(context, *, max_items=None, max_chars=None):",
-          "definition_candidate": true
-        },
-        {
-          "file": "tests/test_learning_context.py",
-          "line": 4,
-          "preview": "from learning_context import augment,load_context",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_learning_context.py",
-          "line": 14,
-          "preview": "text=augment(\"task\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_learning_context.py",
-          "line": 28,
-          "preview": "bounded = augment(\"authoritative full source\", max_items=1, max_chars=600)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_learning_context.py",
-          "line": 38,
-          "preview": "augment(\"authoritative full source\", max_items=1, max_chars=10),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_learning_context.py",
-          "line": 49,
-          "preview": "try: self.assertEqual(load_context(),[]); self.assertEqual(augment(\"task\"),\"task\")",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 12
-    },
-    "LearningContextTests": {
-      "definition": {
-        "file": "tests/test_learning_context.py",
-        "line": 6,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_learning_context.py",
-          "line": 6,
-          "preview": "class LearningContextTests(unittest.TestCase):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_bounded_valid_context_is_injected": {
-      "definition": {
-        "file": "tests/test_learning_context.py",
-        "line": 7,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_learning_context.py",
-          "line": 7,
-          "preview": "def test_bounded_valid_context_is_injected(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_invalid_or_oversized_context_is_ignored": {
-      "definition": {
-        "file": "tests/test_learning_context.py",
-        "line": 45,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_learning_context.py",
-          "line": 45,
-          "preview": "def test_invalid_or_oversized_context_is_ignored(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
     }
   }
 }

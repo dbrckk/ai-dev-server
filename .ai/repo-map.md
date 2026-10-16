@@ -3411,7 +3411,7 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-  "sequence": 35,
+  "sequence": 36,
   "repository": "dbrckk/Jumpy",
   "scenario": "jumpy_settings_tap_guard"
 }
@@ -14483,12 +14483,13 @@ weights = learned_weights(history, kind="provider", role=role)
 providers = tuple(
 providers = budget_eligible(
 ledger_data = (
-# A bounded Production-OS project needs enough capacity for planning,
-# implementation, verification and a possible repair. Reserving a 16k
-# completion on every short job can consume almost the entire envelope
-# when a provider omits usage metadata. Cap the *actual API max_tokens*
-# per call rather than underreporting an unbounded completion to the
-# ledger. Larger projects retain their original completion allowance.
+# A bounded Production-OS project needs capacity for implementation and
+# validation across several independent calls. With a large (e.g. 90k)
+# envelope a missing provider usage report used to reserve up to 16k
+# *output* tokens per call, exhausting the project before any code landed.
+# Cap the ACTUAL submitted max_tokens (not just the accounting estimate).
+# Preserve existing envelopes <=32k and permit at least 4k for smaller
+# projects. This is an admission cap, not a claim of actual token use.
 ⋮----
 max_completion_tokens = min(
 call_budgets = {}

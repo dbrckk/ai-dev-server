@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "971fa0c8591e1dfa1e7d62de784cf7fd2b0ef1e6",
-  "head": "3596785f7e014e482ec3450545fb1ae1d64f2cbc",
+  "base": "3596785f7e014e482ec3450545fb1ae1d64f2cbc",
+  "head": "fdddaf11229e8494cb6dafc208d7b717227ca6e5",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -10,225 +10,51 @@
       "status": "M"
     },
     {
-      "path": "studio/godot_model.py",
-      "status": "M"
-    },
-    {
-      "path": "studio/learning_context.py",
-      "status": "M"
-    },
-    {
-      "path": "tests/test_learning_context.py",
+      "path": "studio/generic_model.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "studio/godot_model.py",
-    "studio/learning_context.py",
-    "tests/test_learning_context.py"
+    "studio/generic_model.py"
   ],
   "impacted_files": [
-    "studio/core.py",
+    "studio/generic_model.py",
     "studio/generic_project.py",
     "studio/generic_verifier_adaptation.py",
-    "studio/godot_model.py",
-    "studio/godot_preview.py",
-    "studio/learning_context.py",
-    "tests/test_godot_model.py",
-    "tests/test_learning_context.py"
+    "tests/test_generic_adaptive_quota_budget.py",
+    "tests/test_generic_model_capacity.py",
+    "tests/test_provider_429_cooldown.py"
   ],
   "impacted_symbols": [
     {
-      "name": "StudioError",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 35
-    },
-    {
-      "name": "canonical",
+      "name": "_decode",
       "kind": "function",
-      "file": "studio/core.py",
-      "line": 38
+      "file": "studio/generic_model.py",
+      "line": 68
     },
     {
-      "name": "request_check",
+      "name": "_reported_usage_tokens",
       "kind": "function",
-      "file": "studio/core.py",
-      "line": 41
+      "file": "studio/generic_model.py",
+      "line": 85
     },
     {
-      "name": "allowed",
+      "name": "token_count",
       "kind": "function",
-      "file": "studio/core.py",
-      "line": 210
+      "file": "studio/generic_model.py",
+      "line": 100
     },
     {
-      "name": "patch_check",
+      "name": "_bounded_model_token_budget",
       "kind": "function",
-      "file": "studio/core.py",
-      "line": 224
-    },
-    {
-      "name": "require_clean_patch_workspace",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 244
-    },
-    {
-      "name": "apply_patch",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 249
-    },
-    {
-      "name": "ensure_directory",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 264
-    },
-    {
-      "name": "verdict",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 320
-    },
-    {
-      "name": "APIError",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 328
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 329
-    },
-    {
-      "name": "ProtocolError",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 336
-    },
-    {
-      "name": "NoRedirect",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 339
-    },
-    {
-      "name": "redirect_request",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 340
-    },
-    {
-      "name": "API",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 343
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 345
-    },
-    {
-      "name": "_response",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 363
-    },
-    {
-      "name": "call",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 399
-    },
-    {
-      "name": "Model",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 433
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 434
+      "file": "studio/generic_model.py",
+      "line": 122
     },
     {
       "name": "ask",
       "kind": "function",
-      "file": "studio/core.py",
-      "line": 460
-    },
-    {
-      "name": "_ask",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 489
-    },
-    {
-      "name": "unique_object",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 838
-    },
-    {
-      "name": "Sandbox",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 918
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 919
-    },
-    {
-      "name": "run",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 922
-    },
-    {
-      "name": "create",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 946
-    },
-    {
-      "name": "quick_dependency_gate",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 954
-    },
-    {
-      "name": "quick_analyze_gate",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 961
-    },
-    {
-      "name": "quick_test_gate",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 968
-    },
-    {
-      "name": "quick_gates",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 976
-    },
-    {
-      "name": "gates",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 990
+      "file": "studio/generic_model.py",
+      "line": 173
     },
     {
       "name": "_snapshot",
@@ -351,200 +177,207 @@
       "line": 104
     },
     {
-      "name": "GodotModel",
+      "name": "CaptureAPI",
       "kind": "class",
-      "file": "studio/godot_model.py",
-      "line": 62
-    },
-    {
-      "name": "ask",
-      "kind": "function",
-      "file": "studio/godot_model.py",
-      "line": 63
-    },
-    {
-      "name": "_ask_godot",
-      "kind": "function",
-      "file": "studio/godot_model.py",
-      "line": 110
-    },
-    {
-      "name": "_safe_apply",
-      "kind": "function",
-      "file": "studio/godot_preview.py",
-      "line": 42
-    },
-    {
-      "name": "_context",
-      "kind": "function",
-      "file": "studio/godot_preview.py",
-      "line": 75
-    },
-    {
-      "name": "priority",
-      "kind": "function",
-      "file": "studio/godot_preview.py",
-      "line": 90
-    },
-    {
-      "name": "_exact_branch_ref",
-      "kind": "function",
-      "file": "studio/godot_preview.py",
-      "line": 139
-    },
-    {
-      "name": "_restore",
-      "kind": "function",
-      "file": "studio/godot_preview.py",
-      "line": 149
-    },
-    {
-      "name": "_publish",
-      "kind": "function",
-      "file": "studio/godot_preview.py",
-      "line": 188
-    },
-    {
-      "name": "execute",
-      "kind": "function",
-      "file": "studio/godot_preview.py",
-      "line": 228
-    },
-    {
-      "name": "checkpoint",
-      "kind": "function",
-      "file": "studio/godot_preview.py",
-      "line": 285
-    },
-    {
-      "name": "load_context",
-      "kind": "function",
-      "file": "studio/learning_context.py",
-      "line": 9
-    },
-    {
-      "name": "augment",
-      "kind": "function",
-      "file": "studio/learning_context.py",
-      "line": 30
-    },
-    {
-      "name": "FakeAPI",
-      "kind": "class",
-      "file": "tests/test_godot_model.py",
-      "line": 16
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 17
     },
     {
       "name": "__init__",
       "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 18
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 20
     },
     {
       "name": "call",
       "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 19
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 23
     },
     {
-      "name": "completion",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 26
-    },
-    {
-      "name": "model",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 30
-    },
-    {
-      "name": "product_value",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 49
-    },
-    {
-      "name": "GodotModelTests",
+      "name": "AdaptiveQuotaBudgetTests",
       "kind": "class",
-      "file": "tests/test_godot_model.py",
-      "line": 54
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 34
     },
     {
-      "name": "test_nvidia_source_generation_requests_json_mode",
+      "name": "setUp",
       "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 55
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 35
     },
     {
-      "name": "test_product_uses_godot_planning_contract_not_flutter_execution_claims",
+      "name": "_quota",
       "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 83
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 38
     },
     {
-      "name": "test_product_prompt_requires_literal_json_step_objects",
+      "name": "_run",
       "kind": "function",
-      "file": "tests/test_godot_model.py",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 46
+    },
+    {
+      "name": "test_partially_used_free_quota_uses_smaller_real_max_tokens",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 85
+    },
+    {
+      "name": "test_small_project_envelope_reduces_requested_tokens_and_reservation",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
       "line": 95
     },
     {
-      "name": "test_implementation_uses_godot_prompt_and_scope",
+      "name": "test_true_exhaustion_never_invokes_the_provider",
       "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 104
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 110
     },
     {
-      "name": "test_test_role_rejects_non_test_path_then_repairs_once",
+      "name": "test_exhausted_provider_is_not_misreported_as_project_limit",
       "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 114
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 116
     },
     {
-      "name": "test_truncated_patch_retry_requests_a_smaller_complete_change",
+      "name": "test_genuinely_exhausted_project_envelope_has_precise_reason",
       "kind": "function",
-      "file": "tests/test_godot_model.py",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 125
+    },
+    {
+      "name": "test_noncritical_reserve_is_preserved_but_review_may_use_it",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 133
+    },
+    {
+      "name": "test_code_requires_bounded_minimum_and_does_not_fake_completion",
+      "kind": "function",
+      "file": "tests/test_generic_adaptive_quota_budget.py",
+      "line": 144
+    },
+    {
+      "name": "_FakeAPI",
+      "kind": "class",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 15
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 19
+    },
+    {
+      "name": "call",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 22
+    },
+    {
+      "name": "GenericModelCapacityTests",
+      "kind": "class",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 28
+    },
+    {
+      "name": "_provider",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 29
+    },
+    {
+      "name": "_env",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 39
+    },
+    {
+      "name": "test_success_settles_transactional_reservation_with_actual_usage",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 46
+    },
+    {
+      "name": "test_protocol_failure_settles_consumed_tokens_without_double_release",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 78
+    },
+    {
+      "name": "test_transport_failure_releases_open_reservation",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 100
+    },
+    {
+      "name": "test_denied_reservation_skips_provider_call",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
       "line": 123
     },
     {
-      "name": "test_structured_godot_call_falls_back_to_secondary_provider",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 137
-    },
-    {
-      "name": "test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 175
-    },
-    {
-      "name": "test_budget_is_shared_and_fail_closed",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 189
-    },
-    {
-      "name": "LearningContextTests",
+      "name": "_ProviderAPI",
       "kind": "class",
-      "file": "tests/test_learning_context.py",
-      "line": 6
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 17
     },
     {
-      "name": "test_bounded_valid_context_is_injected",
+      "name": "__init__",
       "kind": "function",
-      "file": "tests/test_learning_context.py",
-      "line": 7
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 21
     },
     {
-      "name": "test_invalid_or_oversized_context_is_ignored",
+      "name": "call",
       "kind": "function",
-      "file": "tests/test_learning_context.py",
-      "line": 45
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 24
+    },
+    {
+      "name": "_providers",
+      "kind": "function",
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 37
+    },
+    {
+      "name": "Provider429CooldownTests",
+      "kind": "class",
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 50
+    },
+    {
+      "name": "setUp",
+      "kind": "function",
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 51
+    },
+    {
+      "name": "test_generic_model_uses_fallback_and_skips_429_provider_next_call",
+      "kind": "function",
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 55
+    },
+    {
+      "name": "test_generic_server_error_preserves_standard_three_failure_threshold",
+      "kind": "function",
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 79
+    },
+    {
+      "name": "test_flutter_model_provider_cooldown_and_independent_fallback",
+      "kind": "function",
+      "file": "tests/test_provider_429_cooldown.py",
+      "line": 93
     }
   ],
   "selected_tests": [
-    "tests/test_godot_model.py",
-    "tests/test_learning_context.py"
+    "tests/test_generic_adaptive_quota_budget.py",
+    "tests/test_generic_model_capacity.py",
+    "tests/test_provider_429_cooldown.py"
   ]
 }

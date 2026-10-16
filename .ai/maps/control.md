@@ -140,7 +140,7 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-  "sequence": 35,
+  "sequence": 36,
   "repository": "dbrckk/Jumpy",
   "scenario": "jumpy_settings_tap_guard"
 }

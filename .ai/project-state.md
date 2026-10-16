@@ -102,25 +102,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-16T06:20:44Z
+Generated: 2026-10-16T06:26:56Z
 
 ### Git
 - Branch: `main`
-- Head: `3596785f7e01`
-- Commit date: 2026-10-16T08:20:34+02:00
-- Commit: fix(godot): bound learned-memory prompt overhead for token-limited coding
+- Head: `fdddaf11229e`
+- Commit date: 2026-10-16T08:26:38+02:00
+- Commit: fix(tokens): limit large-project output reservations to preserve coding capacity
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/generic_model.py`
+- `control/production-os-worker-canary.json`
 - `studio/godot_model.py`
 - `studio/learning_context.py`
 - `tests/test_learning_context.py`
-- `control/production-os-worker-canary.json`
 - `studio/generic_project.py`
-- `tests/test_godot_model.py`
-- `studio/core.py`
-- `studio/generic_model.py`
-- `studio/native_model_usage.py`
 
 ### Project signals
 - No common build descriptor detected

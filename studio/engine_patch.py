@@ -39,7 +39,7 @@ def validate(value: dict, engine: str, role: str = 'implementation') -> list[dic
                 raise PatchPolicyError('Exact edit path outside Godot scope')
             if path in seen or not isinstance(find, str) or not isinstance(replacement, str):
                 raise PatchPolicyError('Duplicate path or invalid exact edit')
-            if not find or find == replacement or '\\x00' in find or '\\x00' in replacement:
+            if not find or find == replacement or '\x00' in find or '\x00' in replacement:
                 raise PatchPolicyError('Empty, unchanged or invalid exact edit')
             size = len(find.encode('utf-8')) + len(replacement.encode('utf-8'))
             if size > 24_000 or SECRET.search(find) or SECRET.search(replacement):

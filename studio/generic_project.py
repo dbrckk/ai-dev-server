@@ -974,7 +974,10 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
                 "level": "recovery",
             }
         star_context=recommend('implementation',out)
-        snapshot = _snapshot(work)
+        # Catalog integrations carry a known upstream and a narrow change
+        # request. Large alphabetically ordered snapshots can crowd out
+        # the patch itself and repeatedly charge input tokens.
+        snapshot = _snapshot(work, 64_000 if catalog_integration else 420_000)
         previous_failures = sum(
             1 for item in state["rounds"]
             if isinstance(item,dict) and isinstance(item.get("verification"),dict)
@@ -1228,7 +1231,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             implementation_context = {
                 "brief": req["brief"],
                 "plan": current_plan,
-                "repository": _snapshot(work),
+                "repository": _snapshot(work, 64_000 if catalog_integration else 420_000),
                 "validated_engineering_memory": learned_context,
                 "previous_verification": last_verification,
                 "bootstrap": state["bootstrap"],
@@ -1236,6 +1239,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             }
 
             used_external_agent = False
+            catalog_model_attempted = False
             if work_pass == 1:
                 try:
                     before_agent = snapshot_agent_workspace(work)
@@ -1535,6 +1539,12 @@ Objective and current plan:
 
                 selected_strategy = route_strategy
                 model_first = selected_strategy in {"model_only","model_to_agent"}
+                # A failed single model candidate is not a reason to resend
+                # the same prompt in the unconditional direct fallback.
+                # Non-catalog work retains its existing retry strategy.
+                catalog_model_attempted = bool(
+                    catalog_integration and model_first and candidate_schedule.model_limit > 0
+                )
                 model_candidate = (
                     evaluate_model_candidate()
                     if model_first and candidate_schedule.model_limit > 0
@@ -1922,7 +1932,7 @@ Objective and current plan:
                         unused_seconds=phase_quotas.fallback - fallback_elapsed,
                     )
 
-            if not used_external_agent and not changed:
+            if not used_external_agent and not changed and not catalog_model_attempted:
                 direct_model_timeout = bounded_timeout(
                     phase_remaining(
                         phase_quotas,

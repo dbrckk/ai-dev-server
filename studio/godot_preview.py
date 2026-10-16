@@ -104,10 +104,10 @@ def _safe_apply(
 
 # Planning needs architecture and a representative source sample, not a full
 # replay of every script. Implementation, QA and review still get exact files.
-PLANNING_SOURCE_CHAR_BUDGET = 12_000
-PLANNING_PER_FILE_CHAR_BUDGET = 4_800
-PLANNING_FILE_PREVIEW_LIMIT = 8
-PLANNING_MANIFEST_LIMIT = 100
+PLANNING_SOURCE_CHAR_BUDGET = 6_000
+PLANNING_PER_FILE_CHAR_BUDGET = 3_500
+PLANNING_FILE_PREVIEW_LIMIT = 6
+PLANNING_MANIFEST_LIMIT = 48
 
 # Large existing projects should be edited by exact source snippets, not
 # regenerated wholesale. This budget is independent of model token counters.
@@ -190,10 +190,18 @@ def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation
             if not remaining or len(files) >= PLANNING_FILE_PREVIEW_LIMIT:
                 break
             limit = min(PLANNING_PER_FILE_CHAR_BUDGET, remaining)
+            # Retain task-relevant function bodies even when they occur far
+            # below the beginning of a large gameplay script. These are
+            # labelled partial excerpts, never authoritative full source.
             with path.open('r', encoding='utf-8') as source:
-                sample = source.read(limit + 1)
+                sample = source.read()
             truncated = len(sample) > limit
-            files[rel] = sample[:limit] + ('\n[TRUNCATED: planning excerpt only]' if truncated else '')
+            files[rel] = (
+                _relevant_source_excerpt(sample, req.get('brief', ''), limit)
+                if truncated else sample
+            )
+            if truncated:
+                files[rel] += '\n[TRUNCATED: planning excerpt only]'
             remaining -= min(limit, len(sample))
     elif compact:
         # Exact-match edits are revalidated on full trusted files at apply
@@ -236,13 +244,61 @@ def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation
         'files':files,
     }
     if planning:
-        context['files_mode'] = 'bounded_planning_excerpts_not_complete_source'
-        context['editable_file_count'] = len(paths)
-        context['editable_file_manifest'] = [
-            {'path': rel, 'size_bytes': path.stat().st_size}
-            for rel, path in paths[:PLANNING_MANIFEST_LIMIT]
-        ]
-        context['manifest_omitted_count'] = max(0, len(paths) - PLANNING_MANIFEST_LIMIT)
+        # The #36 canary spent 28,101 *input* tokens across only four
+        # product-stage calls. Do not send full architecture telemetry,
+        # entire request control data or verbose product deliverables to
+        # preliminary planning. Preserve the complete trusted state for
+        # implementation, QA, checkpoints and downstream validation.
+        minimal_request = {
+            key: req.get(key)
+            for key in ('app_name', 'target_repo', 'brief')
+            if req.get(key) is not None
+        }
+        compact_architecture = {
+            'framework': 'godot',
+            'architecture_changes_allowed': state.get(
+                'architecture_autonomy_policy', {}
+            ).get('architecture_changes_allowed'),
+            'preflight_verdict': state.get('architecture_preflight', {}).get('verdict'),
+        }
+        lean = {
+            'engine': 'godot',
+            'phase': phase,
+            'request': minimal_request,
+            'architecture_constraints': compact_architecture,
+            'files_mode': 'bounded_planning_excerpts_not_complete_source',
+            'files': files,
+            'editable_file_count': len(paths),
+            'editable_file_manifest': [
+                {'path': rel, 'size_bytes': path.stat().st_size}
+                for rel, path in paths[:PLANNING_MANIFEST_LIMIT]
+            ],
+            'manifest_omitted_count': max(0, len(paths) - PLANNING_MANIFEST_LIMIT),
+        }
+        if phase == 'design':
+            product = state.get('product')
+            if isinstance(product, dict):
+                criteria = product.get('acceptance_criteria')
+                if not isinstance(criteria, list):
+                    deliverable = product.get('deliverable')
+                    criteria = deliverable.get('acceptance_criteria') if isinstance(deliverable, dict) else []
+                compact_product = {
+                    'acceptance_criteria': [
+                        item[:180] for item in (criteria or [])[:4]
+                        if isinstance(item, str)
+                    ],
+                    'journeys': [
+                        {
+                            'id': journey.get('id'),
+                            'steps': journey.get('steps', [])[:4],
+                        }
+                        for journey in (product.get('journeys') or [])[:3]
+                        if isinstance(journey, dict)
+                        and isinstance(journey.get('steps'), list)
+                    ],
+                }
+                lean['product'] = compact_product
+        return canonical(lean)
     if compact:
         context['files_mode'] = 'bounded_exact_match_source_excerpts'
         context['excerpted_paths'] = excerpted_paths

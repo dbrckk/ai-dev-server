@@ -3959,13 +3959,14 @@
       "dependencies": [
         "studio/core.py",
         "studio/production_os_resume_objectives.py",
-        "tests/test_studio.py"
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "tests/test_production_os_worker_canary.py"
       ],
       "in_degree": 1,
-      "out_degree": 3
+      "out_degree": 4
     },
     "studio/project_budget.py": {
       "dependencies": [
@@ -4195,8 +4196,7 @@
     },
     "studio/provider_runtime_reliability.py": {
       "dependencies": [
-        "studio/core.py",
-        "tests/test_unified_routing_score.py"
+        "studio/core.py"
       ],
       "dependents": [
         "studio/provider_router.py",
@@ -4204,7 +4204,7 @@
         "tests/test_provider_runtime_reliability.py"
       ],
       "in_degree": 3,
-      "out_degree": 2
+      "out_degree": 1
     },
     "studio/queue.py": {
       "dependencies": [
@@ -7953,14 +7953,14 @@
         "studio/production_os_live_diagnostics.py",
         "studio/production_os_provider_config.py",
         "studio/production_os_worker.py",
+        "studio/production_os_worker_canary.py",
         "studio/promoted_capabilities.py",
         "studio/provider_cost.py",
         "studio/provider_health.py",
         "studio/provider_metrics.py",
         "studio/provider_monthly_quota.py",
         "studio/provider_probe.py",
-        "studio/provider_router.py",
-        "studio/provider_runtime_reliability.py"
+        "studio/provider_router.py"
       ],
       "in_degree": 64,
       "out_degree": 1

@@ -104,23 +104,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-16T08:11:26Z
+Generated: 2026-10-16T08:15:06Z
 
 ### Git
 - Branch: `main`
-- Head: `2cbe296f40be`
-- Commit date: 2026-10-16T10:11:14+02:00
-- Commit: fix(godot): align planning prompt with strict journey validator bounds
+- Head: `da140b852d26`
+- Commit date: 2026-10-16T10:14:46+02:00
+- Commit: fix: bound Godot canary budgets and reserve native prompt-token headroom
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/native_model_usage.py`
+- `studio/production_os_worker_canary.py`
+- `tests/test_production_os_worker_canary.py`
 - `studio/godot_model.py`
 - `tests/test_godot_model.py`
 - `studio/generic_project.py`
 - `studio/generic_model.py`
 - `control/production-os-worker-canary.json`
-- `studio/learning_context.py`
-- `tests/test_learning_context.py`
 
 ### Project signals
 - No common build descriptor detected

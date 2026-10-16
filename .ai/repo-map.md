@@ -20064,6 +20064,10 @@ path = _path()
 _save(path, _load(path))  # Verify storage before submitting inference.
 payload = dict(params)
 prompt_estimate = max(1, (len(json.dumps(payload.get('messages', []), ensure_ascii=False)) + 3)//4)
+# Character-count token estimates are not exact for source code or JSON.
+# Reserve conservative prompt headroom before enforcing a project cap;
+# actual provider usage still replaces the reservation at settlement.
+prompt_allowance = prompt_estimate + max(128, (prompt_estimate + 4)//5)
 output_limit = int(payload['max_tokens'])
 reservation = None
 ledger_path = None
@@ -20079,7 +20083,7 @@ saved = json.loads(ledger_path.read_text())
 ⋮----
 active = load_active(ledger_path)
 remaining = envelope - consumed_tokens(active, project_id=project_id) - reserved_tokens(active, project_id=project_id)
-output_limit = min(output_limit, remaining - prompt_estimate)
+output_limit = min(output_limit, remaining - prompt_allowance)
 ⋮----
 reservation = reserve(ledger_path, project_id=project_id, provider='native:'+provider,
 ⋮----
@@ -21876,7 +21880,14 @@ content = f"production-os-worker-canary sequence {sequence}"
 def launch_canary(client, control)
 ⋮----
 scenario = control.get("scenario", "file")
-response = client.submit(
+payload = {
+⋮----
+# Actual gameplay changes need several planning, coding and validation
+# calls. The historical 30k one-tap default has failed before any
+# implementation; use the existing operator-only bounded profile.
+# This is a consumption ceiling, not additional paid provider access.
+⋮----
+response = client.submit("/v1/dashboard/launch", payload)
 ⋮----
 project = response.get("project")
 ⋮----

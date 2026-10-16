@@ -6,7 +6,7 @@
 - Symbols: 4697
 - Internal import edges: 1345
 - Impacted files: 12
-- Selected tests: 7
+- Selected tests: 5
 
 ## Languages
 - python: 645 files

@@ -125,6 +125,15 @@ class GodotPreviewTests(unittest.TestCase):
                     godot_preview.PLANNING_SOURCE_CHAR_BUDGET + 300,
                 )
                 self.assertEqual(planning['manifest_omitted_count'], 0)
+                self.assertEqual(planning['phase'], phase)
+                self.assertEqual(
+                    sorted(planning['request']),
+                    ['app_name', 'brief', 'target_repo'],
+                )
+                self.assertNotIn('architecture_decision', planning)
+                self.assertNotIn('architecture_benchmark', planning)
+                self.assertNotIn('architecture_preflight', planning)
+                self.assertLess(len(godot_preview.canonical(planning)), 9_000)
                 self.assertTrue(any(
                     row['path'] == 'scripts/main.gd' and row['size_bytes'] > 300_000
                     for row in planning['editable_file_manifest']
@@ -231,6 +240,39 @@ class GodotPreviewTests(unittest.TestCase):
             ))['files']['scripts/main.gd']
             self.assertIn('func _unhandled_input(event):', excerpt)
             self.assertIn('if settings_open:', excerpt)
+            # Reproduce canary #36: large autonomous architecture telemetry
+            # must not be included in product/design prompts. The late
+            # _unhandled_input handler remains available despite truncation.
+            noisy_state = {
+                'architecture_decision': {'telemetry': 'a' * 120_000},
+                'architecture_benchmark': {'telemetry': 'b' * 120_000},
+                'architecture_preflight': {'verdict': 'pass', 'noise': 'c' * 120_000},
+                'architecture_autonomy_policy': {'architecture_changes_allowed': False},
+                'product': {
+                    'deliverable': {'acceptance_criteria': ['one bug: ' + 'x' * 1000]},
+                    'journeys': [{'id': 'settings_guard', 'steps': [
+                        {'action': 'tap', 'key': 'settings_button'},
+                        {'action': 'expect_absent', 'value': 'Started'},
+                    ]}],
+                    'noisy_narrative': 'z' * 150_000,
+                },
+            }
+            for phase in ('product', 'design'):
+                lean = json.loads(godot_preview._context(
+                    focused, noisy_state, source_root, phase=phase,
+                ))
+                self.assertLess(len(godot_preview.canonical(lean)), 10_000)
+                self.assertIn('func _unhandled_input(event):', lean['files']['scripts/main.gd'])
+                self.assertNotIn('telemetry', godot_preview.canonical(lean))
+                self.assertNotIn('noisy_narrative', lean)
+                self.assertFalse(lean['architecture_constraints']['architecture_changes_allowed'])
+                if phase == 'design':
+                    self.assertEqual(
+                        lean['product']['journeys'][0]['id'], 'settings_guard',
+                    )
+                    self.assertLessEqual(
+                        len(lean['product']['acceptance_criteria'][0]), 180,
+                    )
 
         req = godot_preview.request_check(self.request())
         fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(

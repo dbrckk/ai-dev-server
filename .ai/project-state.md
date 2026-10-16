@@ -102,23 +102,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-15T22:51:07Z
+Generated: 2026-10-16T06:20:44Z
 
 ### Git
 - Branch: `main`
-- Head: `971fa0c8591e`
-- Commit date: 2026-10-16T00:50:58+02:00
-- Commit: fix(tokens): prefer bounded implementation for star-list integrations (#313)
+- Head: `3596785f7e01`
+- Commit date: 2026-10-16T08:20:34+02:00
+- Commit: fix(godot): bound learned-memory prompt overhead for token-limited coding
 - Tracked files: 865
 
 ### Recently changed files
-- `studio/generic_project.py`
 - `studio/godot_model.py`
+- `studio/learning_context.py`
+- `tests/test_learning_context.py`
+- `control/production-os-worker-canary.json`
+- `studio/generic_project.py`
 - `tests/test_godot_model.py`
 - `studio/core.py`
 - `studio/generic_model.py`
 - `studio/native_model_usage.py`
-- `control/production-os-worker-canary.json`
 
 ### Project signals
 - No common build descriptor detected

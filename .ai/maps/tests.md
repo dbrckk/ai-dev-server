@@ -7351,6 +7351,13 @@ old=os.environ.get("STUDIO_LEARNED_CONTEXT_PATH"); os.environ["STUDIO_LEARNED_CO
 items=load_context(); self.assertEqual(len(items),1)
 text=augment("task")
 ⋮----
+# Constrain only the optional memory, never the task text;
+# favour observations from the same Godot project.
+⋮----
+bounded = augment("authoritative full source", max_items=1, max_chars=600)
+⋮----
+compact = json.loads(bounded.split("overrides it:\n", 1)[1])
+⋮----
 def test_invalid_or_oversized_context_is_ignored(self)
 ⋮----
 path=Path(td)/"ctx.json"; path.write_text("x"*70000)

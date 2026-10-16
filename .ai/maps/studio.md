@@ -12046,6 +12046,14 @@ class GodotModel(Model)
 ⋮----
 def ask(self, role, context, screenshots=())
 ⋮----
+# Keep validated memories, but prioritize the current source and
+# preserve the remaining free quota for actual GDScript output.
+# This cap affects injected memory only, never project files.
+⋮----
+context = augment(context, max_items=2, max_chars=1400)
+⋮----
+context = augment(context, max_items=4, max_chars=2800)
+⋮----
 context = augment(context)
 ⋮----
 error = 'unknown structured-output error'
@@ -13551,11 +13559,40 @@ out=[]
 ⋮----
 summary=item.get("summary")
 ⋮----
-def augment(context)
+def augment(context, *, max_items=None, max_chars=None)
 ⋮----
-items=load_context()
+"""Append fallible engineering memory, optionally bounded for token-tight tasks.
+
+    The caller's authoritative source context is NEVER trimmed. The optional
+    budget applies only to the appended memory JSON. This follows the
+    deterministic, source-preserving compaction approach used by projects
+    such as headroomlabs-ai/headroom and fast-jev-compaction, without running
+    a separate compressor or another model.
+    """
+items = load_context()
 ⋮----
-payload=json.dumps(items,ensure_ascii=False,sort_keys=True)
+count = max(0, int(max_items))
+# Stable priority keeps project-specific observations ahead of
+# unrelated memories; preserve original order within each group.
+items = sorted(items, key=lambda item: not item['same_project'])[:count]
+⋮----
+ceiling = max(0, int(max_chars))
+selected = []
+⋮----
+# Avoid repeated verbose provenance and tags, but retain a source
+# identifier for traceability and clearly flag the summary as
+# fallible context, not instructions.
+provenance = item.get('provenance', {})
+compact = {
+encoded = json.dumps(selected + [compact], ensure_ascii=False, sort_keys=True)
+⋮----
+# Never take an unbounded number of attempts or silently
+# truncate an arbitrary JSON string in the encoded payload.
+remaining = ceiling - len(json.dumps(selected, ensure_ascii=False, sort_keys=True))
+⋮----
+items = selected
+⋮----
+payload = json.dumps(items, ensure_ascii=False, sort_keys=True)
 ````
 
 ## File: lease_guard.py

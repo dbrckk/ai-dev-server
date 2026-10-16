@@ -125,7 +125,7 @@ Compilation/tests alone are not enough if requested functionality remains missin
 Return ONLY JSON {"complete":true|false,"remaining":["specific next work"],"reason":"..."}."""
 
 
-def _snapshot(root: Path, limit_bytes: int = 420_000) -> dict:
+def _snapshot(root: Path, limit_bytes: int = 420_000, *, source_first: bool = False) -> dict:
     # Autonomous Production-OS jobs have a finite inference envelope. Do not
     # feed hundreds of kilobytes of largely unrelated repository files into
     # each planning/implementation call: a single prompt can consume most of
@@ -143,7 +143,41 @@ def _snapshot(root: Path, limit_bytes: int = 420_000) -> dict:
     for p in root.rglob("*"):
         if p.is_file() and not p.is_symlink():
             rel = p.relative_to(root).as_posix()
-            priority = 0 if rel.lower() in {"agents.md","readme.md","package.json","pyproject.toml","cargo.toml","go.mod","pom.xml"} else 1
+            if source_first:
+                lower = rel.lower()
+                # Indexed/generated context and vendor caches cannot improve a
+                # targeted integration's first source patch. Avoid crowding out
+                # implementation files with unrelated prose and large reports.
+                if lower.startswith((
+                    ".ai/", ".git/", "node_modules/", ".venv/", "venv/",
+                    "dist/", "build/", "coverage/", ".next/",
+                )):
+                    continue
+                source = p.suffix.lower() in {
+                    ".py", ".kt", ".kts", ".java", ".ts", ".tsx", ".js",
+                    ".jsx", ".go", ".rs", ".dart", ".gd", ".lua", ".luau",
+                    ".vue", ".swift", ".cs", ".cpp", ".c", ".h",
+                }
+                implementation = lower.startswith((
+                    "src/", "app/src/", "backend/", "frontend/", "lib/",
+                    "server/", "client/",
+                ))
+                if source and implementation:
+                    priority = 0
+                elif source and not lower.startswith(("test/", "tests/")):
+                    priority = 1
+                elif lower in {
+                    "package.json", "pyproject.toml", "cargo.toml",
+                    "go.mod", "pom.xml", "settings.gradle.kts",
+                    "build.gradle.kts",
+                }:
+                    priority = 2
+                elif source:
+                    priority = 3
+                else:
+                    priority = 4
+            else:
+                priority = 0 if rel.lower() in {"agents.md","readme.md","package.json","pyproject.toml","cargo.toml","go.mod","pom.xml"} else 1
             preferred.append((priority, rel, p))
     for _, rel, p in sorted(preferred):
         try:
@@ -975,9 +1009,9 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             }
         star_context=recommend('implementation',out)
         # Catalog integrations carry a known upstream and a narrow change
-        # request. Large alphabetically ordered snapshots can crowd out
-        # the patch itself and repeatedly charge input tokens.
-        snapshot = _snapshot(work, 64_000 if catalog_integration else 420_000)
+        # request. Prefer real source files in a compact bounded snapshot;
+        # repeatedly sending README/docs consumed most of the 90k budget.
+        snapshot = _snapshot(work, 24_000 if catalog_integration else 420_000, source_first=catalog_integration)
         previous_failures = sum(
             1 for item in state["rounds"]
             if isinstance(item,dict) and isinstance(item.get("verification"),dict)
@@ -1231,7 +1265,7 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
             implementation_context = {
                 "brief": req["brief"],
                 "plan": current_plan,
-                "repository": _snapshot(work, 64_000 if catalog_integration else 420_000),
+                "repository": _snapshot(work, 24_000 if catalog_integration else 420_000, source_first=catalog_integration),
                 "validated_engineering_memory": learned_context,
                 "previous_verification": last_verification,
                 "bootstrap": state["bootstrap"],

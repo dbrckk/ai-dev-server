@@ -62,7 +62,9 @@ PRODUCT_SCHEMA = (
     'Text values must be strings of 1..160 characters. Scroll dy must be a nonzero number between -1000 and 1000. '
     'For Godot, every key is the exact case-sensitive Node.name of one unique runtime node, encoded as a lower-case slug; '
     'implementation must assign that Node.name explicitly. These journeys are specifications only until trusted runtime execution. '
-    'Keep the deliverable compact: prioritize the requested gameplay bug, use one or two journeys unless more are required, and avoid repeating repository source.'
+    'Keep the deliverable compact: prioritize the requested gameplay bug, use one or two journeys unless more are required, and avoid repeating repository source. '
+    'Output should use no more than 900 tokens: at most four brief acceptance criteria and minimal journeys; '
+    'do not invent lengthy nested design documents, layout inventories or full source.'
 )
 DESIGN_SCHEMA = ('Return ONLY a concise JSON object for the requested Godot change with direction, layout, feedback, '
     'motion, accessibility and responsive behavior. Keep the answer focused on this specific change, avoid redundant '
@@ -99,19 +101,56 @@ class GodotModel(Model):
                 return value
             except (ProtocolError, PatchPolicyError, ValueError) as exc:
                 error = str(exc)
-                # Malformed provider envelopes/JSON should not consume the
-                # only repair attempt on the same model when a healthy
-                # alternative exists. Policy/schema errors and truncated
-                # output keep their original same-provider repair contract.
-                if isinstance(exc, ProtocolError) and error != 'Model response truncated':
+                # Invalid JSON or product journeys may be provider-specific.
+                # Use the one bounded repair on a different eligible provider
+                # where available; never bypass its quota/routing limits.
+                # Truncations and policy errors remain on the same provider.
+                if (
+                    isinstance(exc, ProtocolError) and error != 'Model response truncated'
+                ) or (
+                    role == 'product' and isinstance(exc, ValueError)
+                ):
                     invalid_response_provider = self.providers_used.get(role)
             if attempt or self.calls >= self.limit:
                 raise StudioError('Structured response rejected: ' + error) from None
-            if error == 'Model response truncated' and role in ('implementation', 'tests'):
+            if (
+                error == 'Model response truncated'
+                and role == 'implementation'
+                and '"files_mode":"bounded_exact_match_source_excerpts"' in context
+            ):
+                # A large project was supplied as trusted source excerpts.
+                # Its full files cannot be reconstructed from that prompt.
+                # Demand a single small exact replacement, not a full rewrite.
+                context += (
+                    '\nYour previous compact Godot edit was truncated. '
+                    'Return ONLY JSON {"edits":[{"path":"scripts/main.gd",'
+                    '"find":"exact unique existing snippet",'
+                    '"replace":"minimal changed snippet"}]}. '
+                    'Use at most one or two short exact edits; no complete source files, '
+                    'no commentary, no code fences and no invented context.'
+                )
+            elif error == 'Model response truncated' and role in ('implementation', 'tests'):
                 context += (
                     '\nYour previous response hit the output limit. Return complete JSON with at most two files '
                     'and at most 20,000 characters of combined file content. Include full contents for each '
                     'file; prioritize the smallest self-contained change. Further files can follow in later rounds.'
+                )
+            elif error == 'Model response truncated' and role in ('product', 'design'):
+                context += (
+                    '\nYour previous JSON was truncated by the provider output limit. '
+                    'Do NOT repeat the long plan. Return ONLY a minimal valid complete JSON '
+                    'with at most 700 output tokens for product or 450 for design. '
+                    'For product use one journey with two or three steps, one interaction '
+                    'and one assertion; use at most three brief acceptance criteria. '
+                    'Every action value must be a nonempty string under 80 characters. '
+                    'For design return a few short keys and no deep nested objects.'
+                )
+            elif role == 'product' and error == 'Invalid step text':
+                context += (
+                    '\nRepair ONLY the invalid journey value fields. Each value must '
+                    'be a nonempty string of 1..160 characters, ideally under 80, '
+                    'not null, an array or a long descriptive paragraph. '
+                    'Return the complete concise JSON with the original valid steps preserved.'
                 )
             else:
                 context += '\nYour previous response violated this schema rule: ' + error + '. Return corrected complete JSON only.'

@@ -107,7 +107,12 @@ def _reported(response):
             'cached_input_tokens': cached, 'reasoning_tokens': reasoning}
 
 
-def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=None, timeout_seconds=None):
+def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=None,
+         timeout_seconds=None, minimum_output_tokens=1):
+    # Caller-specified floor is an admission check, not an extra quota grant.
+    # Do not submit a completion that cannot possibly fit a useful response.
+    if type(minimum_output_tokens) is not int or minimum_output_tokens < 1:
+        raise ValueError('minimum_output_tokens must be a positive integer')
     transport = {} if timeout_seconds is None else {'timeout_seconds': timeout_seconds}
     if getattr(type(api), 'supports_bounded_retries', False) is True:
         transport['max_attempts'] = 1
@@ -160,11 +165,11 @@ def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=Non
             active = load_active(ledger_path)
         remaining = envelope - consumed_tokens(active, project_id=project_id) - reserved_tokens(active, project_id=project_id)
         output_limit = min(output_limit, remaining - prompt_allowance)
-        if output_limit > 0:
+        if output_limit >= minimum_output_tokens:
             reservation = reserve(ledger_path, project_id=project_id, provider='native:'+provider,
                 estimated_tokens=prompt_allowance+output_limit, provider_remaining_tokens=None,
                 project_envelope_tokens=envelope)
-        if output_limit <= 0 or reservation.get('admitted') is not True:
+        if output_limit < minimum_output_tokens or reservation.get('admitted') is not True:
             with exclusive(path):
                 value = _load(path); value['capacity_exhausted'] = True; _save(path, value)
             raise NativeCapacityError('project_envelope_exhausted')

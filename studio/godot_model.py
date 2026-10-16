@@ -211,6 +211,7 @@ class GodotModel(Model):
         elapsed = 0.0
         last_error = None
         primary_provider = self.providers[0] if self.providers else None
+        compact_source = 'bounded_exact_match_source_excerpts' in context
 
         for provider in provider_candidates:
             selected_model = provider.model_for(role, False)
@@ -218,7 +219,12 @@ class GodotModel(Model):
             params = {
                 'model': selected_model,
                 'stream': False,
-                'max_tokens': 3072 if role == 'product' else 1536 if role == 'design' else (16000 if role == 'implementation' else 8192),
+                'max_tokens': (
+                    3072 if role == 'product' else 1536 if role == 'design' else
+                    4096 if compact_source and role == 'implementation' else
+                    3072 if compact_source and role == 'tests' else
+                    16000 if role == 'implementation' else 8192
+                ),
                 'messages': [
                     {'role': 'system', 'content': system_content},
                     {'role': 'user', 'content': context},
@@ -227,7 +233,11 @@ class GodotModel(Model):
             if api.base == 'https://integrate.api.nvidia.com/v1':
                 params['response_format'] = {'type': 'json_object'}
             if api.base == 'https://integrate.api.nvidia.com/v1' and selected_model.startswith('nvidia/nemotron-3-'):
-                params.update(chat_template_kwargs={'enable_thinking': True}, reasoning_budget=512 if role in ('product', 'design') else 2048)
+                params.update(
+                    chat_template_kwargs={'enable_thinking': True},
+                    reasoning_budget=(512 if role in ('product', 'design') or (compact_source and role == 'tests')
+                                      else 1024 if compact_source and role == 'implementation' else 2048),
+                )
             print('Model role: ' + role + '; provider: ' + provider.name + '; model: ' + selected_model, flush=True)
             from native_model_usage import call as accounted_call, NativeAccountingError
             started = time.monotonic()

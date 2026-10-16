@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-15",
+  "updated_at": "2026-10-16",
   "task": "Verify real startup and correct generic inference plus execution commit telemetry",
   "base_commit": "1cb258facb9fcd2877de97e677a83f7ccb72785f",
   "branch": "feat/canary-jumpy-settings-tap-guard-20261015",
@@ -107,7 +107,7 @@
   "current_work": [
     "PR #309 merged f4137d62598333b52dc1988ef8aca2c3978247fe with 7 successful exact-head workflows; bounded Godot planning context now on ai-dev-server/main",
     "Add strict Jumpy-only settings tap guard source-code canary scenario; extend existing tests and qualify exact-head CI before triggering",
-    "After merge increment control canary sequence 33→34 and choose jumpy_settings_tap_guard to verify real model-generated GDScript patch (not marker file)",
+    "After merge increment control canary sequence 33\u219234 and choose jumpy_settings_tap_guard to verify real model-generated GDScript patch (not marker file)",
     "Review actual worker model capacity, change diff, Jumpy headless CI and PR before claiming source-code delivery. Never merge Jumpy checkpoint automatically."
   ],
   "merged_changes": [
@@ -392,5 +392,22 @@
       "No provider quota changes",
       "No text marker workaround"
     ]
+  },
+  "current_followup": {
+    "task": "Godot journey contract parity after canary 35",
+    "branch": "fix/godot-journey-contract-limits",
+    "evidence": {
+      "worker_run": 38859838227,
+      "execution": "05e75229ba935445c7b31de0:1",
+      "checkpoint": "91a4be29445120cd25bc2d5f33fe2977d0e49142",
+      "failure": "capacity_exhausted: preview",
+      "calls": 3,
+      "total_tokens": 24920,
+      "input_tokens": 22832,
+      "reason": "Initial product responses rejected for journey id longer than 40 characters; Godot PRODUCT_SCHEMA omitted that limit."
+    },
+    "changes": "Declare id, selector, text and scroll limits in Godot product contract; retain strict validator and two-call repair ceiling. Extend existing regression only.",
+    "validation": "38 existing selected tests passed; regression failed before fix. GitHub CI and review pending.",
+    "remaining": "No real source change or Android delivery. Do not relaunch without checking remaining full-source/output budget requirements."
   }
 }

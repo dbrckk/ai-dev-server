@@ -93,13 +93,34 @@ class GodotModelTests(unittest.TestCase):
         self.assertEqual(subject.api.calls[0][2]['max_tokens'], 3072)
 
     def test_product_prompt_requires_literal_json_step_objects(self):
-        subject = model([completion(product_value())])
-        subject.ask('product', 'plan game')
+        # Canary 35 spent two calls rejecting an otherwise well-formed plan:
+        # the Godot prompt omitted the validator's 40-character id limit.
+        rejected = product_value()
+        rejected['journeys'][0]['id'] = 'jumpy-settings-open-tap-empty-prevents-start'
+        accepted = product_value()
+        accepted['journeys'][0]['id'] = 'j' * 40
+        subject = model([completion(rejected), completion(accepted)])
+        result = subject.ask('product', 'plan game')
+        self.assertEqual(result, accepted)
+        self.assertEqual(subject.calls, 2)
         system = subject.api.calls[0][2]['messages'][0]['content']
         self.assertIn('Every step MUST be a JSON object', system)
         self.assertIn('{"action":"tap","key":"play_button"}', system)
         self.assertIn('{"action":"expect_text","value":"Score"}', system)
         self.assertNotIn('tap(key)', system)
+        self.assertIn('max 40 characters', system)
+        self.assertIn('initial is reserved', system)
+        self.assertIn('max 60 characters', system)
+        self.assertIn('1..160 characters', system)
+        self.assertIn('nonzero number between -1000 and 1000', system)
+        retry = subject.api.calls[1][2]['messages']
+        self.assertEqual(retry[0]['content'], system)
+        self.assertIn(rejected['journeys'][0]['id'], retry[1]['content'])
+        # Keep strict rejection and the existing two-call ceiling.
+        subject = model([completion(rejected), completion(rejected)])
+        with self.assertRaisesRegex(StudioError, 'Structured response rejected'):
+            subject.ask('product', 'plan game')
+        self.assertEqual(subject.calls, 2)
 
     def test_implementation_uses_godot_prompt_and_scope(self):
         subject = model([completion({'files':[{'path':'scripts/main.gd','content':'extends Node\n'}]})])

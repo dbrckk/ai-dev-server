@@ -183,6 +183,22 @@ class GodotModelTests(unittest.TestCase):
         self.assertIn('20,000 characters', retry)
         self.assertIn('complete JSON', retry)
 
+        # When the full source was intentionally omitted, the one repair
+        # must request a small exact edit, never a full-file hallucination.
+        subject = model([
+            truncated,
+            completion({'edits': [{'path': 'scripts/main.gd',
+                                   'find': 'if settings_open:',
+                                   'replace': 'if not settings_open:'}]}),
+        ])
+        compact = '{"files_mode":"bounded_exact_match_source_excerpts"}'
+        result = subject.ask('implementation', compact)
+        self.assertEqual(result['edits'][0]['path'], 'scripts/main.gd')
+        compact_retry = subject.api.calls[1][2]['messages'][1]['content']
+        self.assertIn('previous compact Godot edit was truncated', compact_retry)
+        self.assertIn('Return ONLY JSON {"edits"', compact_retry)
+        self.assertNotIn('full contents for each', compact_retry)
+
         # Canary 36: product/design truncation must request a genuinely
         # smaller output instead of repeating a verbose invalid plan.
         for role, repaired in (

@@ -113,7 +113,23 @@ class GodotModel(Model):
                     invalid_response_provider = self.providers_used.get(role)
             if attempt or self.calls >= self.limit:
                 raise StudioError('Structured response rejected: ' + error) from None
-            if error == 'Model response truncated' and role in ('implementation', 'tests'):
+            if (
+                error == 'Model response truncated'
+                and role == 'implementation'
+                and '"files_mode":"bounded_exact_match_source_excerpts"' in context
+            ):
+                # A large project was supplied as trusted source excerpts.
+                # Its full files cannot be reconstructed from that prompt.
+                # Demand a single small exact replacement, not a full rewrite.
+                context += (
+                    '\nYour previous compact Godot edit was truncated. '
+                    'Return ONLY JSON {"edits":[{"path":"scripts/main.gd",'
+                    '"find":"exact unique existing snippet",'
+                    '"replace":"minimal changed snippet"}]}. '
+                    'Use at most one or two short exact edits; no complete source files, '
+                    'no commentary, no code fences and no invented context.'
+                )
+            elif error == 'Model response truncated' and role in ('implementation', 'tests'):
                 context += (
                     '\nYour previous response hit the output limit. Return complete JSON with at most two files '
                     'and at most 20,000 characters of combined file content. Include full contents for each '

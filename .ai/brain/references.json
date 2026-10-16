@@ -27,7 +27,7 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 586,
+          "line": 671,
           "preview": "def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, sandbox_factory=GodotSandbox) -> dict:",
           "definition_candidate": false
         },
@@ -158,37 +158,37 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 663,
+          "line": 748,
           "preview": "result = model.ask(role, _context(req,state,root,phase=role))",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 672,
+          "line": 757,
           "preview": "patch = model.ask('implementation', implementation_context)",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 689,
+          "line": 774,
           "preview": "repaired_patch = model.ask('implementation', repair_context)",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 708,
+          "line": 793,
           "preview": "retry_patch = model.ask(",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 749,
-          "preview": "qa = model.ask('tests', _context(req,state,root)); _safe_apply(",
+          "line": 834,
+          "preview": "qa = model.ask('tests', _context(req,state,root,phase='tests',review_patch=patch)); _safe_apply(",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 776,
+          "line": 861,
           "preview": "review = verdict(model.ask('review', review_context)); state['code_review'] = review",
           "definition_candidate": false
         },
@@ -475,6 +475,18 @@
           "definition_candidate": false
         },
         {
+          "file": "tests/test_godot_model.py",
+          "line": 439,
+          "preview": "subject.ask('implementation', compact)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 456,
+          "preview": "self.assertIn('edits', subject.ask('implementation', compact))",
+          "definition_candidate": false
+        },
+        {
           "file": "tests/test_godot_preview.py",
           "line": 53,
           "preview": "def ask(self,role,context,screenshots=()):",
@@ -661,7 +673,7 @@
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 101
+      "occurrence_count": 103
     },
     "_ask_godot": {
       "definition": {
@@ -708,26 +720,26 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 674,
+          "line": 759,
           "preview": "_safe_apply(",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 690,
+          "line": 775,
           "preview": "_safe_apply(",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 718,
+          "line": 803,
           "preview": "_safe_apply(",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 749,
-          "preview": "qa = model.ask('tests', _context(req,state,root)); _safe_apply(",
+          "line": 834,
+          "preview": "qa = model.ask('tests', _context(req,state,root,phase='tests',review_patch=patch)); _safe_apply(",
           "definition_candidate": false
         },
         {
@@ -803,7 +815,7 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 429,
+          "line": 514,
           "preview": "snippet = _relevant_source_excerpt(source, str(req.get('brief') or '') + ' ' + find, 3_000)",
           "definition_candidate": false
         }
@@ -826,12 +838,18 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 377,
+          "line": 437,
+          "preview": "evidence = _review_evidence(review_patch, root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 462,
           "preview": "context['accepted_change_evidence'] = _review_evidence(review_patch, root)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 2
+      "occurrence_count": 3
     },
     "_context": {
       "definition": {
@@ -861,25 +879,25 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 663,
+          "line": 748,
           "preview": "result = model.ask(role, _context(req,state,root,phase=role))",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 670,
+          "line": 755,
           "preview": "implementation_context = _context(req,state,root)",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 749,
-          "preview": "qa = model.ask('tests', _context(req,state,root)); _safe_apply(",
+          "line": 834,
+          "preview": "qa = model.ask('tests', _context(req,state,root,phase='tests',review_patch=patch)); _safe_apply(",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 775,
+          "line": 860,
           "preview": "review_context = _context(req, state, root, phase='review', review_patch=patch, validation_logs=logs)",
           "definition_candidate": false
         },
@@ -966,9 +984,15 @@
           "line": 304,
           "preview": "lean = json.loads(godot_preview._context(",
           "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 331,
+          "preview": "lean = json.loads(godot_preview._context(",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 21
+      "occurrence_count": 22
     },
     "priority": {
       "definition": {
@@ -1214,7 +1238,7 @@
         },
         {
           "file": "studio/godot_model.py",
-          "line": 340,
+          "line": 355,
           "preview": "'priority': provider.priority,",
           "definition_candidate": false
         },
@@ -1727,20 +1751,20 @@
     "_exact_edit_repair_context": {
       "definition": {
         "file": "studio/godot_preview.py",
-        "line": 401,
+        "line": 486,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/godot_preview.py",
-          "line": 401,
+          "line": 486,
           "preview": "def _exact_edit_repair_context(req: dict, root: Path, patch: dict) -> str | None:",
           "definition_candidate": true
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 686,
+          "line": 771,
           "preview": "repair_context = _exact_edit_repair_context(req, root, patch)",
           "definition_candidate": false
         },
@@ -1762,26 +1786,26 @@
     "_source_fingerprint": {
       "definition": {
         "file": "studio/godot_preview.py",
-        "line": 452,
+        "line": 537,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/godot_preview.py",
-          "line": 452,
+          "line": 537,
           "preview": "def _source_fingerprint(root: Path) -> str:",
           "definition_candidate": true
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 471,
+          "line": 556,
           "preview": "fingerprint = _source_fingerprint(root)",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 609,
+          "line": 694,
           "preview": "and guard['source_fingerprint'] != _source_fingerprint(root)):",
           "definition_candidate": false
         }
@@ -1791,20 +1815,20 @@
     "_record_retry_failure": {
       "definition": {
         "file": "studio/godot_preview.py",
-        "line": 467,
+        "line": 552,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/godot_preview.py",
-          "line": 467,
+          "line": 552,
           "preview": "def _record_retry_failure(state: dict, root: Path, blocker: str) -> None:",
           "definition_candidate": true
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 805,
+          "line": 890,
           "preview": "_record_retry_failure(state, root, str(exc))",
           "definition_candidate": false
         },
@@ -1832,7 +1856,7 @@
     "_exact_branch_ref": {
       "definition": {
         "file": "studio/godot_preview.py",
-        "line": 497,
+        "line": 582,
         "kind": "function",
         "language": "python"
       },
@@ -1851,19 +1875,19 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 497,
+          "line": 582,
           "preview": "def _exact_branch_ref(github, branch: str):",
           "definition_candidate": true
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 511,
+          "line": 596,
           "preview": "branch_ref = _exact_branch_ref(github, branch)",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 547,
+          "line": 632,
           "preview": "current = _exact_branch_ref(github, branch)",
           "definition_candidate": false
         }
@@ -1873,7 +1897,7 @@
     "_restore": {
       "definition": {
         "file": "studio/godot_preview.py",
-        "line": 507,
+        "line": 592,
         "kind": "function",
         "language": "python"
       },
@@ -1928,13 +1952,13 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 507,
+          "line": 592,
           "preview": "def _restore(github, branch: str, root: Path) -> tuple[dict | None, str, bool]:",
           "definition_candidate": true
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 594,
+          "line": 679,
           "preview": "state, parent, resumed = _restore(github, branch, root)",
           "definition_candidate": false
         },
@@ -2072,7 +2096,7 @@
         },
         {
           "file": "tests/test_godot_preview.py",
-          "line": 337,
+          "line": 378,
           "preview": "with patch.object(godot_preview, '_restore', return_value=(restored, 'f'*40, True)):",
           "definition_candidate": false
         },
@@ -2154,7 +2178,7 @@
     "_publish": {
       "definition": {
         "file": "studio/godot_preview.py",
-        "line": 546,
+        "line": 631,
         "kind": "function",
         "language": "python"
       },
@@ -2215,13 +2239,13 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 546,
+          "line": 631,
           "preview": "def _publish(github, branch: str, parent: str, root: Path, state: dict) -> str:",
           "definition_candidate": true
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 658,
+          "line": 743,
           "preview": "parent = _publish(github, branch, parent, root, state)",
           "definition_candidate": false
         },
@@ -2347,7 +2371,7 @@
         },
         {
           "file": "tests/test_godot_preview.py",
-          "line": 366,
+          "line": 407,
           "preview": "godot_preview._publish(github,'studio/jumpy','f'*40,root,{'status':'x'})",
           "definition_candidate": false
         },
@@ -2417,7 +2441,7 @@
     "execute": {
       "definition": {
         "file": "studio/godot_preview.py",
-        "line": 586,
+        "line": 671,
         "kind": "function",
         "language": "python"
       },
@@ -2610,7 +2634,7 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 586,
+          "line": 671,
           "preview": "def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, sandbox_factory=GodotSandbox) -> dict:",
           "definition_candidate": true
         },
@@ -3066,7 +3090,7 @@
         },
         {
           "file": "tests/test_godot_preview.py",
-          "line": 338,
+          "line": 379,
           "preview": "resumed = godot_preview.execute(req, root/'work', root/'out', github,",
           "definition_candidate": false
         },
@@ -3148,7 +3172,7 @@
     "checkpoint": {
       "definition": {
         "file": "studio/godot_preview.py",
-        "line": 656,
+        "line": 741,
         "kind": "function",
         "language": "python"
       },
@@ -3876,6 +3900,2397 @@
       ],
       "occurrence_count": 120
     },
+    "NativeAccountingError": {
+      "definition": {
+        "file": "studio/native_model_usage.py",
+        "line": 20,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/core.py",
+          "line": 729,
+          "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 737,
+          "preview": "except NativeAccountingError:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 10,
+          "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 675,
+          "preview": "isinstance(exc, NativeAccountingError)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 689,
+          "preview": "if isinstance(exc, NativeAccountingError):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_model.py",
+          "line": 317,
+          "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_model.py",
+          "line": 336,
+          "preview": "except NativeAccountingError:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 20,
+          "preview": "class NativeAccountingError(StudioError):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 24,
+          "preview": "class NativeCapacityError(NativeAccountingError):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 58,
+          "preview": "raise NativeAccountingError('Native usage checkpoint missing or invalid') from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 83,
+          "preview": "raise NativeAccountingError('Native usage checkpoint unavailable') from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 139,
+          "preview": "raise NativeAccountingError('Configured native project capacity plan missing or invalid')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 164,
+          "preview": "raise NativeAccountingError('Configured native capacity ledger invalid') from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 233,
+          "preview": "except NativeAccountingError as exc:",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 14
+    },
+    "NativeCapacityError": {
+      "definition": {
+        "file": "studio/native_model_usage.py",
+        "line": 24,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/autonomous_project.py",
+          "line": 301,
+          "preview": "from native_model_usage import NativeCapacityError",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/autonomous_project.py",
+          "line": 304,
+          "preview": "isinstance(exc, (StudioError, NativeCapacityError))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 24,
+          "preview": "class NativeCapacityError(NativeAccountingError):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 175,
+          "preview": "raise NativeCapacityError('project_envelope_exhausted')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_autonomous_project.py",
+          "line": 183,
+          "preview": "from native_model_usage import NativeCapacityError",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_autonomous_project.py",
+          "line": 187,
+          "preview": "raise NativeCapacityError(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "_path": {
+      "definition": {
+        "file": "studio/native_model_usage.py",
+        "line": 28,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/artifact_cas_audit.py",
+          "line": 13,
+          "preview": "def _path() -> Path | None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artifact_cas_audit.py",
+          "line": 19,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artifact_cas_audit.py",
+          "line": 42,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artifact_cas_stats.py",
+          "line": 12,
+          "preview": "def _path() -> Path | None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artifact_cas_stats.py",
+          "line": 18,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artifact_cas_stats.py",
+          "line": 36,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/full_gate_cache.py",
+          "line": 26,
+          "preview": "def _path() -> Path | None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/full_gate_cache.py",
+          "line": 74,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/full_gate_cache.py",
+          "line": 99,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_execution_checkpoint_store.py",
+          "line": 26,
+          "preview": "def _path(project_id: str) -> str:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_execution_checkpoint_store.py",
+          "line": 50,
+          "preview": "target = _path(project_id)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_execution_checkpoint_store.py",
+          "line": 97,
+          "preview": "\"path\": _path(project_id),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/immutable_artifact_cache.py",
+          "line": 21,
+          "preview": "def _path() -> Path | None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/immutable_artifact_cache.py",
+          "line": 169,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/immutable_artifact_cache.py",
+          "line": 261,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 28,
+          "preview": "def _path():",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 62,
+          "preview": "path = Path(path) if path else _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 119,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/persistent_quick_gate_cache.py",
+          "line": 17,
+          "preview": "def _path() -> Path | None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/persistent_quick_gate_cache.py",
+          "line": 36,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/persistent_quick_gate_cache.py",
+          "line": 54,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repair_strategy.py",
+          "line": 49,
+          "preview": "def _path() -> Path | None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repair_strategy.py",
+          "line": 55,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repair_strategy.py",
+          "line": 117,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/strict_task_claim_store.py",
+          "line": 16,
+          "preview": "def _path() -> Path | None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/strict_task_claim_store.py",
+          "line": 37,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/strict_task_claim_store.py",
+          "line": 63,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/strict_task_claim_store.py",
+          "line": 82,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/task_claim_store.py",
+          "line": 16,
+          "preview": "def _path() -> Path | None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/task_claim_store.py",
+          "line": 35,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/task_claim_store.py",
+          "line": 61,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/task_claim_store.py",
+          "line": 80,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/telemetry.py",
+          "line": 19,
+          "preview": "def _path() -> Path | None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/telemetry.py",
+          "line": 25,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/workflow_checkpoint.py",
+          "line": 18,
+          "preview": "def _path() -> Path | None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/workflow_checkpoint.py",
+          "line": 50,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/workflow_checkpoint.py",
+          "line": 63,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/workflow_checkpoint.py",
+          "line": 88,
+          "preview": "path = _path()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 38
+    },
+    "_empty": {
+      "definition": {
+        "file": "studio/native_model_usage.py",
+        "line": 33,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/capacity_efficiency.py",
+          "line": 15,
+          "preview": "def _empty() -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_efficiency.py",
+          "line": 21,
+          "preview": "return _empty()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_efficiency.py",
+          "line": 25,
+          "preview": "return _empty()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_efficiency.py",
+          "line": 27,
+          "preview": "return _empty()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_ledger.py",
+          "line": 17,
+          "preview": "def _empty() -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_ledger.py",
+          "line": 24,
+          "preview": "return _empty()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_ledger.py",
+          "line": 28,
+          "preview": "return _empty()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_ledger.py",
+          "line": 30,
+          "preview": "return _empty()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 33,
+          "preview": "def _empty():",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 43,
+          "preview": "return _empty()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 51,
+          "preview": "for k in _empty()['usage'] if k not in ('agents', 'models')))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/recovery_controller.py",
+          "line": 15,
+          "preview": "def _empty() -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/recovery_controller.py",
+          "line": 21,
+          "preview": "return _empty()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/recovery_controller.py",
+          "line": 25,
+          "preview": "return _empty()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/recovery_controller.py",
+          "line": 27,
+          "preview": "return _empty()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 15
+    },
+    "_load": {
+      "definition": {
+        "file": "studio/native_model_usage.py",
+        "line": 41,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/architecture_replacement_postmerge_pipeline.py",
+          "line": 23,
+          "preview": "def _load(path: Path, label: str) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_postmerge_pipeline.py",
+          "line": 33,
+          "preview": "work_order=_load(work_order_path,\"work order\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_postmerge_pipeline.py",
+          "line": 34,
+          "preview": "merged=_load(merged_path,\"merged evidence\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_postmerge_pipeline.py",
+          "line": 35,
+          "preview": "package=_load(package_path,\"PR package\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 23,
+          "preview": "def _load(path: Path, label: str) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 61,
+          "preview": "registry=_load(Path(args.registry),\"registry\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 62,
+          "preview": "learning=_load(Path(args.learning),\"learning\") if args.learning else None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 72,
+          "preview": "plan=_load(Path(args.plan),\"migration plan\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 93,
+          "preview": "registry=_load(registry_path,\"registry\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 94,
+          "preview": "plan=_load(Path(args.plan),\"migration plan\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 95,
+          "preview": "authorization=_load(Path(args.authorization),\"authorization\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 96,
+          "preview": "approval=_load(Path(args.approval),\"approval provenance\") if args.approval else None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 97,
+          "preview": "ledger=_load(Path(args.ledger),\"approval ledger\") if args.ledger else None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 99,
+          "preview": "github_attestation=_load(Path(args.github_attestation),\"GitHub attestation\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 41,
+          "preview": "def _load(path):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 66,
+          "preview": "value = _load(path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 123,
+          "preview": "_save(path, _load(path))  # Verify storage before submitting inference.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 174,
+          "preview": "value = _load(path); value['capacity_exhausted'] = True; _save(path, value)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 182,
+          "preview": "value = _load(path); usage = value['usage']",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 220,
+          "preview": "value = _load(path); usage = value['usage']",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 229,
+          "preview": "value = _load(path); usage = value['usage']",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/recovery_controller.py",
+          "line": 19,
+          "preview": "def _load(path: Path) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/recovery_controller.py",
+          "line": 52,
+          "preview": "data = _load(path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/routing_calibration.py",
+          "line": 10,
+          "preview": "def _load(path: Path) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/routing_calibration.py",
+          "line": 56,
+          "preview": "audit = _load(audit_path)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/routing_calibration.py",
+          "line": 57,
+          "preview": "outcomes = [_load(path) for path in outcome_paths]",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 26
+    },
+    "snapshot": {
+      "definition": {
+        "file": "studio/native_model_usage.py",
+        "line": 61,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 98,
+          "preview": "snapshot=fetch_omniroute_summary(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 106,
+          "preview": "not snapshot.authenticated_usage",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 107,
+          "preview": "or snapshot.remaining_tokens is None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 108,
+          "preview": "or int(snapshot.remaining_tokens) <= 0",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/workspace.py",
+          "line": 8,
+          "preview": "def snapshot(root:Path)->dict[str,str]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/workspace.py",
+          "line": 17,
+          "preview": "if total>MAX_SNAPSHOT_BYTES: raise ValueError(\"Agent workspace snapshot too large\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/workspace.py",
+          "line": 22,
+          "preview": "after=snapshot(root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/workspace.py",
+          "line": 39,
+          "preview": "current=snapshot(root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/autonomous_project.py",
+          "line": 319,
+          "preview": "from native_model_usage import snapshot as native_snapshot",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_ledger.py",
+          "line": 536,
+          "preview": "def snapshot(path: Path, *, now: float | None = None) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_scheduler.py",
+          "line": 433,
+          "preview": "snapshot = fetch_omniroute_summary(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_scheduler.py",
+          "line": 438,
+          "preview": "live_row = snapshot.provider_row(\"omniroute\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_scheduler.py",
+          "line": 441,
+          "preview": "\"authenticated_usage\": snapshot.authenticated_usage,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_scheduler.py",
+          "line": 442,
+          "preview": "\"steady_recurring_tokens\": snapshot.steady_recurring_tokens,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_scheduler.py",
+          "line": 443,
+          "preview": "\"used_this_month\": snapshot.used_this_month,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_scheduler.py",
+          "line": 444,
+          "preview": "\"remaining_tokens\": snapshot.remaining_tokens,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_scheduler.py",
+          "line": 445,
+          "preview": "\"catalog_updated_at\": snapshot.catalog_updated_at,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_scheduler.py",
+          "line": 446,
+          "preview": "\"catalog_source\": snapshot.catalog_source,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_status.py",
+          "line": 1,
+          "preview": "\"\"\"Safe capacity snapshot for reports; never exposes provider keys.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_status.py",
+          "line": 10,
+          "preview": "def snapshot(quota_path: Path | None = None) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/cost_drift.py",
+          "line": 82,
+          "preview": "def snapshot(self) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 73,
+          "preview": "'-no-snapshot', '-no-boot-anim', '-gpu', 'swiftshader_indirect'],",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/existing_project.py",
+          "line": 1,
+          "preview": "\"\"\"Plan and materialize a bounded existing mobile repository snapshot.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_daemon.py",
+          "line": 11,
+          "preview": "from capacity_ledger import snapshot as capacity_ledger_snapshot",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_daemon.py",
+          "line": 13,
+          "preview": "from fleet_metrics import append as append_metrics, snapshot",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_daemon.py",
+          "line": 35,
+          "preview": "metric_row = snapshot(root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_metrics.py",
+          "line": 30,
+          "preview": "def snapshot(root: Path | str = \"studio-output\", *, ts: float | None = None) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_metrics.py",
+          "line": 85,
+          "preview": "result = append(Path(args.history), snapshot(args.root))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/flutter_workspace.py",
+          "line": 17,
+          "preview": "def snapshot(root: Path) -> dict[str, str]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/flutter_workspace.py",
+          "line": 33,
+          "preview": "raise StudioError(\"Flutter repair workspace snapshot too large\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/flutter_workspace.py",
+          "line": 39,
+          "preview": "after = snapshot(root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/flutter_workspace.py",
+          "line": 59,
+          "preview": "current = snapshot(root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/full_gate_cache.py",
+          "line": 11,
+          "preview": "from flutter_workspace import snapshot as flutter_snapshot",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 32,
+          "preview": "from agents.workspace import snapshot as snapshot_agent_workspace, validate_delta as validate_agent_delta, restore as restore_agent_workspace",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 64,
+          "preview": "from capacity_status import snapshot as capacity_snapshot",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 69,
+          "preview": "snapshot as local_model_reputation_snapshot,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 74,
+          "preview": "snapshot as local_model_specialization_snapshot,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 123,
+          "preview": "Judge whether the user's objective is complete from the repository snapshot and actual verification results.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 133,
+          "preview": "# runs retain the prior snapshot limit.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1012,
+          "preview": "# request. Prefer real source files in a compact bounded snapshot;",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1014,
+          "preview": "snapshot = _snapshot(work, 24_000 if catalog_integration else 420_000, source_first=catalog_integration)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1036,
+          "preview": "file_count=len(snapshot[\"files\"]),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1037,
+          "preview": "source_bytes=int(snapshot[\"bytes\"]),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1094,
+          "preview": "\"repository\": snapshot,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1235,
+          "preview": "\"global_cost\":cost_controller.snapshot(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 2542,
+          "preview": "\"run_cost\": cost_controller.snapshot(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 2543,
+          "preview": "\"cost_drift\": drift_detector.snapshot(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 2586,
+          "preview": "state[\"model_calls_this_cycle\"] = int(cost_controller.snapshot().get(\"model_calls\", 0))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 1,
+          "preview": "\"\"\"Bounded GitHub snapshot/publish backend for generic projects.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 1121,
+          "preview": "from native_model_usage import snapshot as native_snapshot",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_device_qa.py",
+          "line": 61,
+          "preview": "return subprocess.Popen(['emulator','-avd',AVD_NAME,'-no-window','-no-audio','-no-snapshot',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/local_model_reputation.py",
+          "line": 232,
+          "preview": "def snapshot(data: dict) -> list[dict]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/local_model_specialization.py",
+          "line": 149,
+          "preview": "def snapshot(data: dict) -> list[dict]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 61,
+          "preview": "def snapshot(path=None):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 409,
+          "preview": "\"\"\"Return a safe global token-capacity snapshot for Production-OS.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 418,
+          "preview": "snapshot = fetch_summary(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 435,
+          "preview": "authenticated = bool(snapshot.authenticated_usage)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 441,
+          "preview": "int(snapshot.steady_recurring_tokens)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 443,
+          "preview": "else int(snapshot.steady_recurring_tokens)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 446,
+          "preview": "int(snapshot.used_this_month)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 447,
+          "preview": "if snapshot.used_this_month is not None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 451,
+          "preview": "int(snapshot.remaining_tokens)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 452,
+          "preview": "if snapshot.remaining_tokens is not None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 455,
+          "preview": "\"catalog_updated_at\": snapshot.catalog_updated_at,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 456,
+          "preview": "\"catalog_source\": snapshot.catalog_source,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1234,
+          "preview": "from native_model_usage import snapshot as native_snapshot",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_health.py",
+          "line": 192,
+          "preview": "snapshot = {}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_health.py",
+          "line": 198,
+          "preview": "snapshot[provider] = {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_health.py",
+          "line": 207,
+          "preview": "return snapshot",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/quick_gate_cache.py",
+          "line": 26,
+          "preview": "def workspace_hash(snapshot: dict[str, str]) -> str:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/quick_gate_cache.py",
+          "line": 31,
+          "preview": "for path, content in snapshot.items()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/release_candidate_search.py",
+          "line": 12,
+          "preview": "snapshot as snapshot_workspace,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/release_repair.py",
+          "line": 12,
+          "preview": "from flutter_workspace import snapshot as snapshot_agent_workspace, restore as restore_agent_workspace, delta as validate_agent_delta",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/release_repair.py",
+          "line": 371,
+          "preview": "def _restore(root: Path, snapshot: dict[str, bytes | None]) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/release_repair.py",
+          "line": 372,
+          "preview": "for rel, original in snapshot.items():",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/run.py",
+          "line": 33,
+          "preview": "from capacity_status import snapshot as capacity_snapshot",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/run.py",
+          "line": 37,
+          "preview": "snapshot as local_model_reputation_snapshot,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/run.py",
+          "line": 42,
+          "preview": "snapshot as local_model_specialization_snapshot,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/run_cost_controller.py",
+          "line": 60,
+          "preview": "def snapshot(self) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/security_agent.py",
+          "line": 59,
+          "preview": "snapshot = {}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/security_agent.py",
+          "line": 62,
+          "preview": "snapshot[item[\"path\"]] = path.read_bytes() if path.is_file() else None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/security_agent.py",
+          "line": 73,
+          "preview": "for rel, original in snapshot.items():",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_workspace.py",
+          "line": 5,
+          "preview": "from agents.workspace import snapshot,validate_delta,restore",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_workspace.py",
+          "line": 11,
+          "preview": "before=snapshot(root); (root/\"a.py\").write_text(\"x=2\\n\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_workspace.py",
+          "line": 16,
+          "preview": "before=snapshot(root); (root/\"a.py\").unlink()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capacity_ledger.py",
+          "line": 101,
+          "preview": "self.assertEqual(ledger.snapshot(path, now=12)[\"reserved_tokens\"], 0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capacity_scheduler_omniroute.py",
+          "line": 18,
+          "preview": "snapshot = OmniRouteCapacitySnapshot(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capacity_scheduler_omniroute.py",
+          "line": 48,
+          "preview": "return_value=snapshot,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_cost_drift.py",
+          "line": 66,
+          "preview": "self.assertEqual(len(d.snapshot()[\"samples\"]), 20)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_daemon.py",
+          "line": 14,
+          "preview": "patch(\"fleet_daemon.snapshot\", return_value={\"ts\": 1, \"healthy\": 1}), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_daemon.py",
+          "line": 30,
+          "preview": "patch(\"fleet_daemon.snapshot\", return_value={\"ts\": 1, \"healthy\": 1}), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_daemon.py",
+          "line": 46,
+          "preview": "patch(\"fleet_daemon.snapshot\", return_value={\"ts\": 1, \"healthy\": 1}), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_daemon.py",
+          "line": 68,
+          "preview": "patch(\"fleet_daemon.snapshot\", return_value={\"ts\": 1, \"healthy\": 2}), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_metrics.py",
+          "line": 43,
+          "preview": "row = fleet_metrics.snapshot(\"ignored\", ts=100.0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 62,
+          "preview": "from native_model_usage import snapshot",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 63,
+          "preview": "journal = snapshot()['usage']",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 67,
+          "preview": "self.assertEqual(snapshot()['usage']['total_tokens'], 225)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 68,
+          "preview": "self.assertEqual(snapshot()['usage']['estimated_calls'], 0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 346,
+          "preview": "from native_model_usage import snapshot",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 359,
+          "preview": "usage=snapshot()['usage']",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 368,
+          "preview": "self.assertTrue(snapshot()['capacity_exhausted'])",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 369,
+          "preview": "self.assertEqual(snapshot()['usage']['runs'],1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 414,
+          "preview": "self.assertFalse(snapshot()['capacity_exhausted'])",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 442,
+          "preview": "self.assertEqual(snapshot()['usage']['runs'], 0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 443,
+          "preview": "self.assertTrue(snapshot()['capacity_exhausted'])",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 459,
+          "preview": "self.assertEqual(snapshot()['usage']['runs'], 1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 27,
+          "preview": "snapshot = parse_summary({",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 35,
+          "preview": "self.assertEqual(snapshot.steady_recurring_tokens, 1_000_000)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 36,
+          "preview": "self.assertEqual(snapshot.used_this_month, 250_000)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 37,
+          "preview": "self.assertEqual(snapshot.remaining_tokens, 750_000)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 38,
+          "preview": "self.assertTrue(snapshot.authenticated_usage)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 39,
+          "preview": "self.assertEqual(snapshot.provider_row()[\"available_tokens\"], 750_000)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 42,
+          "preview": "snapshot = parse_summary({",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 50,
+          "preview": "self.assertFalse(snapshot.authenticated_usage)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 51,
+          "preview": "self.assertEqual(snapshot.provider_row()[\"available_tokens\"], 0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 52,
+          "preview": "self.assertEqual(snapshot.steady_recurring_tokens, 1_000_000)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 71,
+          "preview": "snapshot = fetch_summary(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 81,
+          "preview": "self.assertEqual(snapshot.remaining_tokens, 60)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 95,
+          "preview": "snapshot = fetch_summary(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 105,
+          "preview": "self.assertEqual(snapshot.remaining_tokens, 60)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 120
+    },
+    "_save": {
+      "definition": {
+        "file": "studio/native_model_usage.py",
+        "line": 79,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/candidate_portfolio_learning.py",
+          "line": 26,
+          "preview": "def _save(path: Path, data: dict) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/candidate_portfolio_learning.py",
+          "line": 77,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/contextual_routing_memory.py",
+          "line": 51,
+          "preview": "def _save(path: Path, data: dict) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/contextual_routing_memory.py",
+          "line": 92,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/contextual_strategy_efficiency.py",
+          "line": 48,
+          "preview": "def _save(path:Path,data:dict)->None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/contextual_strategy_efficiency.py",
+          "line": 91,
+          "preview": "_save(path,data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/local_model_benchmark.py",
+          "line": 16,
+          "preview": "def _save(path: Path, data: dict) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/local_model_benchmark.py",
+          "line": 149,
+          "preview": "_save(out_path, results)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/local_model_reputation.py",
+          "line": 65,
+          "preview": "def _save(path: Path, data: dict) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/local_model_reputation.py",
+          "line": 122,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/local_model_reputation.py",
+          "line": 158,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/local_model_specialization.py",
+          "line": 45,
+          "preview": "def _save(path: Path, data: dict) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/local_model_specialization.py",
+          "line": 98,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/model_portfolio_learning.py",
+          "line": 61,
+          "preview": "def _save(path: Path, data: dict) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/model_portfolio_learning.py",
+          "line": 92,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 79,
+          "preview": "def _save(path, value):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 123,
+          "preview": "_save(path, _load(path))  # Verify storage before submitting inference.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 174,
+          "preview": "value = _load(path); value['capacity_exhausted'] = True; _save(path, value)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 187,
+          "preview": "_save(path, value)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 226,
+          "preview": "_save(path, value)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 232,
+          "preview": "_save(path, value)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/phase_cost_baseline.py",
+          "line": 45,
+          "preview": "def _save(path: Path, data: dict) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/phase_cost_baseline.py",
+          "line": 83,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_cost.py",
+          "line": 38,
+          "preview": "def _save(path: Path, data: dict) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_cost.py",
+          "line": 83,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_health.py",
+          "line": 64,
+          "preview": "def _save(path: Path, data: dict) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_health.py",
+          "line": 113,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_health.py",
+          "line": 142,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_metrics.py",
+          "line": 37,
+          "preview": "def _save(path: Path, data: dict) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_metrics.py",
+          "line": 64,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_monthly_quota.py",
+          "line": 32,
+          "preview": "def _save(path: Path, data: dict) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_monthly_quota.py",
+          "line": 81,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/routing_history.py",
+          "line": 47,
+          "preview": "def _save(path: Path, events: list[dict]) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/routing_history.py",
+          "line": 90,
+          "preview": "_save(path, events)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/safe_rewrite_learning.py",
+          "line": 55,
+          "preview": "def _save(path: Path, data: dict) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/safe_rewrite_learning.py",
+          "line": 101,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/safe_rewrite_learning.py",
+          "line": 122,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/strategy_efficiency.py",
+          "line": 52,
+          "preview": "def _save(path: Path, data: dict) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/strategy_efficiency.py",
+          "line": 102,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/verification_cost.py",
+          "line": 42,
+          "preview": "def _save(path: Path, data: dict) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/verification_cost.py",
+          "line": 73,
+          "preview": "_save(path, data)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 41
+    },
+    "_reported": {
+      "definition": {
+        "file": "studio/native_model_usage.py",
+        "line": 86,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 86,
+          "preview": "def _reported(response):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 200,
+          "preview": "reported = _reported(response)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "call": {
+      "definition": {
+        "file": "studio/native_model_usage.py",
+        "line": 110,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/adaptive_phase_policy.py",
+          "line": 10,
+          "preview": "\"\"\"Decide whether a model planning call is worth its round budget.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/adaptive_phase_policy.py",
+          "line": 12,
+          "preview": "A skipped planning call still produces the stable plan schema consumed by",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/adaptive_role_allocator.py",
+          "line": 48,
+          "preview": "\"\"\"Return whether this round is worth spending a model call on planning.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_merge.py",
+          "line": 3,
+          "preview": "This is the only replacement component allowed to call GitHub's merge endpoint. It requires",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_merge_gate.py",
+          "line": 3,
+          "preview": "This module is read-only. It does not call GitHub and does not merge. Its output can only",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_pr_package.py",
+          "line": 3,
+          "preview": "This module does not call GitHub, does not push, and does not merge. It emits the exact",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_synthesis.py",
+          "line": 126,
+          "preview": "return api.call(\"POST\",\"/chat/completions\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_synthesis.py",
+          "line": 143,
+          "preview": "return routed.call(\"POST\",\"/chat/completions\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 158,
+          "preview": "tree=github.call(\"POST\",github.repo+\"/git/trees\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 188,
+          "preview": "commit=github.call(\"POST\",github.repo+\"/git/commits\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 196,
+          "preview": "github.call(\"POST\",github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+branch,\"sha\":commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 197,
+          "preview": "pr=github.call(\"POST\",github.repo+\"/pulls\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_budget.py",
+          "line": 1,
+          "preview": "\"\"\"Scale autonomous model-call budget from available free capacity.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 174,
+          "preview": "payload = api.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 204,
+          "preview": "jobs_payload = api.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 399,
+          "preview": "def call(self, method, path, data=None, timeout_seconds=300, max_attempts=3):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 463,
+          "preview": "# One schema/truncation repair, charged against the global model-call budget.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 491,
+          "preview": "raise StudioError('Model call budget exhausted; checkpoint retained')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 729,
+          "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_candidate.py",
+          "line": 42,
+          "preview": "FORBIDDEN_CALLS = {'eval','exec','compile','__import__','os.system','os.popen','subprocess.call',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_synthesis.py",
+          "line": 32,
+          "preview": "response=api.call('POST','/chat/completions',params)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_synthesis.py",
+          "line": 45,
+          "preview": "response=routed_api.call('POST','/chat/completions',params)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fault_injection_smoke.py",
+          "line": 30,
+          "preview": "api.call(\"POST\", \"/chat/completions\", {}, timeout_seconds=30)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_isolated_validation.py",
+          "line": 69,
+          "preview": "raise IsolatedCapabilityValidationError(label+\" uses forbidden call\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_persist.py",
+          "line": 90,
+          "preview": "tree=github.call(\"POST\",github.repo+\"/git/trees\",{\"base_tree\":base_tree,\"tree\":entries})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_persist.py",
+          "line": 108,
+          "preview": "commit=github.call(\"POST\",github.repo+\"/git/commits\",{\"message\":\"Persist validated capability candidate: \"+capability,\"tree\":tree_sha,\"parents\":[baseline_sha]})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_persist.py",
+          "line": 112,
+          "preview": "github.call(\"POST\",github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+branch,\"sha\":commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_persist.py",
+          "line": 113,
+          "preview": "pr=github.call(\"POST\",github.repo+\"/pulls\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_synthesis.py",
+          "line": 49,
+          "preview": "response = api.call(\"POST\", \"/chat/completions\", params)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 10,
+          "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 312,
+          "preview": "# *output* tokens per call, exhausting the project before any code landed.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 726,
+          "preview": "raise StudioError(\"Generic model call quota timed out\") from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 131,
+          "preview": "# each planning/implementation call: a single prompt can consume most of",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 45,
+          "preview": "init=self.github.call(\"PUT\",self.github.repo+\"/contents/README.md\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 162,
+          "preview": "created = self.github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 254,
+          "preview": "tree=self.github.call(\"POST\",self.github.repo+\"/git/trees\",{\"base_tree\":base_tree,\"tree\":entries})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 255,
+          "preview": "commit=self.github.call(\"POST\",self.github.repo+\"/git/commits\",{\"message\":message,\"tree\":tree[\"sha\"],\"parents\":[base_sha]})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 259,
+          "preview": "self.github.call(\"PATCH\",self.github.repo+\"/git/refs/heads/\"+self.branch,{\"sha\":commit[\"sha\"],\"force\":False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 261,
+          "preview": "self.github.call(\"POST\",self.github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+self.branch,\"sha\":commit[\"sha\"]})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_agent_performance_store.py",
+          "line": 61,
+          "preview": "tree=github.call(\"POST\",github.repo+\"/git/trees\",{\"base_tree\":base_tree,\"tree\":[{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_agent_performance_store.py",
+          "line": 64,
+          "preview": "commit=github.call(\"POST\",github.repo+\"/git/commits\",{\"message\":\"Persist agent performance memory\",\"tree\":tree[\"sha\"],\"parents\":[parent]})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_agent_performance_store.py",
+          "line": 67,
+          "preview": "github.call(\"POST\",github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+STATE_BRANCH,\"sha\":sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_agent_performance_store.py",
+          "line": 69,
+          "preview": "github.call(\"PATCH\",github.repo+\"/git/refs/heads/\"+STATE_BRANCH,{\"sha\":sha,\"force\":False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_audit_store.py",
+          "line": 115,
+          "preview": "tree = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_audit_store.py",
+          "line": 131,
+          "preview": "commit = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_audit_store.py",
+          "line": 144,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_audit_store.py",
+          "line": 150,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_stats_store.py",
+          "line": 122,
+          "preview": "tree = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_stats_store.py",
+          "line": 138,
+          "preview": "commit = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_stats_store.py",
+          "line": 151,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_stats_store.py",
+          "line": 157,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_contextual_strategy_efficiency_store.py",
+          "line": 111,
+          "preview": "tree=github.call(\"POST\",github.repo+\"/git/trees\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_contextual_strategy_efficiency_store.py",
+          "line": 118,
+          "preview": "commit=github.call(\"POST\",github.repo+\"/git/commits\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_contextual_strategy_efficiency_store.py",
+          "line": 127,
+          "preview": "github.call(\"POST\",github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+STATE_BRANCH,\"sha\":commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_contextual_strategy_efficiency_store.py",
+          "line": 129,
+          "preview": "github.call(\"PATCH\",github.repo+\"/git/refs/heads/\"+STATE_BRANCH,{\"sha\":commit_sha,\"force\":False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_execution_checkpoint_store.py",
+          "line": 94,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_execution_checkpoint_store.py",
+          "line": 106,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_execution_checkpoint_store.py",
+          "line": 115,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {\"ref\": \"refs/heads/\" + STATE_BRANCH, \"sha\": commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_execution_checkpoint_store.py",
+          "line": 117,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {\"sha\": commit_sha, \"force\": False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_full_gate_cache_store.py",
+          "line": 116,
+          "preview": "tree = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_full_gate_cache_store.py",
+          "line": 132,
+          "preview": "commit = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_full_gate_cache_store.py",
+          "line": 145,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_full_gate_cache_store.py",
+          "line": 151,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_goal_store.py",
+          "line": 244,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {\"base_tree\": base_tree, \"tree\": entries})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_goal_store.py",
+          "line": 248,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_goal_store.py",
+          "line": 257,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_goal_store.py",
+          "line": 262,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_memory_store.py",
+          "line": 86,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_memory_store.py",
+          "line": 98,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_memory_store.py",
+          "line": 107,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_memory_store.py",
+          "line": 112,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_phase_cost_baseline_store.py",
+          "line": 102,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_phase_cost_baseline_store.py",
+          "line": 114,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_phase_cost_baseline_store.py",
+          "line": 123,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {\"ref\": \"refs/heads/\" + STATE_BRANCH, \"sha\": commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_phase_cost_baseline_store.py",
+          "line": 125,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {\"sha\": commit_sha, \"force\": False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_health_store.py",
+          "line": 123,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_health_store.py",
+          "line": 135,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_health_store.py",
+          "line": 144,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_health_store.py",
+          "line": 149,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_metrics_store.py",
+          "line": 95,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_metrics_store.py",
+          "line": 107,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_metrics_store.py",
+          "line": 116,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {\"ref\": \"refs/heads/\" + STATE_BRANCH, \"sha\": commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_metrics_store.py",
+          "line": 118,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {\"sha\": commit_sha, \"force\": False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_quick_gate_cache_store.py",
+          "line": 131,
+          "preview": "tree = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_quick_gate_cache_store.py",
+          "line": 147,
+          "preview": "commit = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_quick_gate_cache_store.py",
+          "line": 160,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_quick_gate_cache_store.py",
+          "line": 166,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_routing_history_store.py",
+          "line": 114,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_routing_history_store.py",
+          "line": 126,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_routing_history_store.py",
+          "line": 135,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {\"ref\": \"refs/heads/\" + STATE_BRANCH, \"sha\": commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_routing_history_store.py",
+          "line": 137,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {\"sha\": commit_sha, \"force\": False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_strategy_efficiency_store.py",
+          "line": 103,
+          "preview": "tree=github.call(\"POST\",github.repo+\"/git/trees\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_strategy_efficiency_store.py",
+          "line": 110,
+          "preview": "commit=github.call(\"POST\",github.repo+\"/git/commits\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_strategy_efficiency_store.py",
+          "line": 119,
+          "preview": "github.call(\"POST\",github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+STATE_BRANCH,\"sha\":commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_strategy_efficiency_store.py",
+          "line": 121,
+          "preview": "github.call(\"PATCH\",github.repo+\"/git/refs/heads/\"+STATE_BRANCH,{\"sha\":commit_sha,\"force\":False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_verification_cost_store.py",
+          "line": 96,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_verification_cost_store.py",
+          "line": 108,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_verification_cost_store.py",
+          "line": 117,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {\"ref\": \"refs/heads/\" + STATE_BRANCH, \"sha\": commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_verification_cost_store.py",
+          "line": 119,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {\"sha\": commit_sha, \"force\": False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_model.py",
+          "line": 199,
+          "preview": "raise StudioError('Model call budget exhausted; checkpoint retained')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_model.py",
+          "line": 317,
+          "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 656,
+          "preview": "tree = github.call('POST', github.repo + '/git/trees', {'base_tree':base_tree,'tree':entries})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 660,
+          "preview": "commit = github.call('POST', github.repo + '/git/commits', {'message':'Godot studio: ' + state['status'],'tree':tree_sha,'parents':[parent]})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 665,
+          "preview": "github.call('PATCH', github.repo + '/git/refs/heads/' + branch, {'sha':commit_sha,'force':False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 667,
+          "preview": "github.call('POST', github.repo + '/git/refs', {'ref':'refs/heads/' + branch,'sha':commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/local_model_benchmark.py",
+          "line": 59,
+          "preview": "response = api.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 110,
+          "preview": "def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=None,",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 121,
+          "preview": "return api.call('POST', '/chat/completions', params, **transport)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 199,
+          "preview": "response = api.call('POST', '/chat/completions', payload, **transport)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/portfolio_scan.py",
+          "line": 43,
+          "preview": "batch = api.call(\"GET\", f\"/user/repos?affiliation=owner&per_page=100&page={page}&sort=updated\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/portfolio_scan.py",
+          "line": 60,
+          "preview": "batch = public.call(\"GET\", f\"/users/{quote(owner)}/repos?per_page=100&page={page}&sort=updated\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/portfolio_scan.py",
+          "line": 76,
+          "preview": "branch=api.call(\"GET\",\"/repos/\"+full+\"/branches/\"+quote(default))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/portfolio_scan.py",
+          "line": 80,
+          "preview": "tree=api.call(\"GET\",\"/repos/\"+full+\"/git/trees/\"+sha+\"?recursive=1\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/portfolio_scan.py",
+          "line": 88,
+          "preview": "blob=api.call(\"GET\",\"/repos/\"+full+\"/git/blobs/\"+readme[\"sha\"])",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 23,
+          "preview": "result = client.call(\"GET\", \"/readyz\", timeout_seconds=min(30, remaining))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 56,
+          "preview": "response = api_factory(provider.base, provider.key).call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 80,
+          "preview": "operator_client.call(\"GET\", \"/v1/dashboard/device-sessions\", timeout_seconds=(30 if diagnose_wake else 10))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 86,
+          "preview": "readiness = operator_client.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_resume_objectives.py",
+          "line": 23,
+          "preview": "return self.call(\"GET\", path, timeout_seconds=30)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_health.py",
+          "line": 172,
+          "preview": "Only post-verification outcomes should call this function. This prevents",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 120
+    },
     "FakeAPI": {
       "definition": {
         "file": "tests/test_godot_model.py",
@@ -4528,737 +6943,6 @@
       ],
       "occurrence_count": 83
     },
-    "call": {
-      "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 19,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 10,
-          "preview": "\"\"\"Decide whether a model planning call is worth its round budget.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 12,
-          "preview": "A skipped planning call still produces the stable plan schema consumed by",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_role_allocator.py",
-          "line": 48,
-          "preview": "\"\"\"Return whether this round is worth spending a model call on planning.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_merge.py",
-          "line": 3,
-          "preview": "This is the only replacement component allowed to call GitHub's merge endpoint. It requires",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_merge_gate.py",
-          "line": 3,
-          "preview": "This module is read-only. It does not call GitHub and does not merge. Its output can only",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_pr_package.py",
-          "line": 3,
-          "preview": "This module does not call GitHub, does not push, and does not merge. It emits the exact",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 126,
-          "preview": "return api.call(\"POST\",\"/chat/completions\",{",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 143,
-          "preview": "return routed.call(\"POST\",\"/chat/completions\",{",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_registry_promotion_persist.py",
-          "line": 158,
-          "preview": "tree=github.call(\"POST\",github.repo+\"/git/trees\",{",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_registry_promotion_persist.py",
-          "line": 188,
-          "preview": "commit=github.call(\"POST\",github.repo+\"/git/commits\",{",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_registry_promotion_persist.py",
-          "line": 196,
-          "preview": "github.call(\"POST\",github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+branch,\"sha\":commit_sha})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_registry_promotion_persist.py",
-          "line": 197,
-          "preview": "pr=github.call(\"POST\",github.repo+\"/pulls\",{",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_budget.py",
-          "line": 1,
-          "preview": "\"\"\"Scale autonomous model-call budget from available free capacity.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_diagnostics.py",
-          "line": 174,
-          "preview": "payload = api.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_diagnostics.py",
-          "line": 204,
-          "preview": "jobs_payload = api.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 399,
-          "preview": "def call(self, method, path, data=None, timeout_seconds=300, max_attempts=3):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 463,
-          "preview": "# One schema/truncation repair, charged against the global model-call budget.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 491,
-          "preview": "raise StudioError('Model call budget exhausted; checkpoint retained')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 729,
-          "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_candidate.py",
-          "line": 42,
-          "preview": "FORBIDDEN_CALLS = {'eval','exec','compile','__import__','os.system','os.popen','subprocess.call',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_synthesis.py",
-          "line": 32,
-          "preview": "response=api.call('POST','/chat/completions',params)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_synthesis.py",
-          "line": 45,
-          "preview": "response=routed_api.call('POST','/chat/completions',params)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fault_injection_smoke.py",
-          "line": 30,
-          "preview": "api.call(\"POST\", \"/chat/completions\", {}, timeout_seconds=30)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_isolated_validation.py",
-          "line": 69,
-          "preview": "raise IsolatedCapabilityValidationError(label+\" uses forbidden call\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_persist.py",
-          "line": 90,
-          "preview": "tree=github.call(\"POST\",github.repo+\"/git/trees\",{\"base_tree\":base_tree,\"tree\":entries})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_persist.py",
-          "line": 108,
-          "preview": "commit=github.call(\"POST\",github.repo+\"/git/commits\",{\"message\":\"Persist validated capability candidate: \"+capability,\"tree\":tree_sha,\"parents\":[baseline_sha]})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_persist.py",
-          "line": 112,
-          "preview": "github.call(\"POST\",github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+branch,\"sha\":commit_sha})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_persist.py",
-          "line": 113,
-          "preview": "pr=github.call(\"POST\",github.repo+\"/pulls\",{",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_synthesis.py",
-          "line": 49,
-          "preview": "response = api.call(\"POST\", \"/chat/completions\", params)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 10,
-          "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 312,
-          "preview": "# *output* tokens per call, exhausting the project before any code landed.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 726,
-          "preview": "raise StudioError(\"Generic model call quota timed out\") from None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 131,
-          "preview": "# each planning/implementation call: a single prompt can consume most of",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_repository.py",
-          "line": 45,
-          "preview": "init=self.github.call(\"PUT\",self.github.repo+\"/contents/README.md\",{",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_repository.py",
-          "line": 162,
-          "preview": "created = self.github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_repository.py",
-          "line": 254,
-          "preview": "tree=self.github.call(\"POST\",self.github.repo+\"/git/trees\",{\"base_tree\":base_tree,\"tree\":entries})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_repository.py",
-          "line": 255,
-          "preview": "commit=self.github.call(\"POST\",self.github.repo+\"/git/commits\",{\"message\":message,\"tree\":tree[\"sha\"],\"parents\":[base_sha]})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_repository.py",
-          "line": 259,
-          "preview": "self.github.call(\"PATCH\",self.github.repo+\"/git/refs/heads/\"+self.branch,{\"sha\":commit[\"sha\"],\"force\":False})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_repository.py",
-          "line": 261,
-          "preview": "self.github.call(\"POST\",self.github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+self.branch,\"sha\":commit[\"sha\"]})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_agent_performance_store.py",
-          "line": 61,
-          "preview": "tree=github.call(\"POST\",github.repo+\"/git/trees\",{\"base_tree\":base_tree,\"tree\":[{",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_agent_performance_store.py",
-          "line": 64,
-          "preview": "commit=github.call(\"POST\",github.repo+\"/git/commits\",{\"message\":\"Persist agent performance memory\",\"tree\":tree[\"sha\"],\"parents\":[parent]})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_agent_performance_store.py",
-          "line": 67,
-          "preview": "github.call(\"POST\",github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+STATE_BRANCH,\"sha\":sha})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_agent_performance_store.py",
-          "line": 69,
-          "preview": "github.call(\"PATCH\",github.repo+\"/git/refs/heads/\"+STATE_BRANCH,{\"sha\":sha,\"force\":False})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_artifact_cas_audit_store.py",
-          "line": 115,
-          "preview": "tree = github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_artifact_cas_audit_store.py",
-          "line": 131,
-          "preview": "commit = github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_artifact_cas_audit_store.py",
-          "line": 144,
-          "preview": "github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_artifact_cas_audit_store.py",
-          "line": 150,
-          "preview": "github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_artifact_cas_stats_store.py",
-          "line": 122,
-          "preview": "tree = github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_artifact_cas_stats_store.py",
-          "line": 138,
-          "preview": "commit = github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_artifact_cas_stats_store.py",
-          "line": 151,
-          "preview": "github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_artifact_cas_stats_store.py",
-          "line": 157,
-          "preview": "github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_contextual_strategy_efficiency_store.py",
-          "line": 111,
-          "preview": "tree=github.call(\"POST\",github.repo+\"/git/trees\",{",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_contextual_strategy_efficiency_store.py",
-          "line": 118,
-          "preview": "commit=github.call(\"POST\",github.repo+\"/git/commits\",{",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_contextual_strategy_efficiency_store.py",
-          "line": 127,
-          "preview": "github.call(\"POST\",github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+STATE_BRANCH,\"sha\":commit_sha})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_contextual_strategy_efficiency_store.py",
-          "line": 129,
-          "preview": "github.call(\"PATCH\",github.repo+\"/git/refs/heads/\"+STATE_BRANCH,{\"sha\":commit_sha,\"force\":False})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_execution_checkpoint_store.py",
-          "line": 94,
-          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_execution_checkpoint_store.py",
-          "line": 106,
-          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_execution_checkpoint_store.py",
-          "line": 115,
-          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {\"ref\": \"refs/heads/\" + STATE_BRANCH, \"sha\": commit_sha})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_execution_checkpoint_store.py",
-          "line": 117,
-          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {\"sha\": commit_sha, \"force\": False})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_full_gate_cache_store.py",
-          "line": 116,
-          "preview": "tree = github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_full_gate_cache_store.py",
-          "line": 132,
-          "preview": "commit = github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_full_gate_cache_store.py",
-          "line": 145,
-          "preview": "github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_full_gate_cache_store.py",
-          "line": 151,
-          "preview": "github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_goal_store.py",
-          "line": 244,
-          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {\"base_tree\": base_tree, \"tree\": entries})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_goal_store.py",
-          "line": 248,
-          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_goal_store.py",
-          "line": 257,
-          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_goal_store.py",
-          "line": 262,
-          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_memory_store.py",
-          "line": 86,
-          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_memory_store.py",
-          "line": 98,
-          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_memory_store.py",
-          "line": 107,
-          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_memory_store.py",
-          "line": 112,
-          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_phase_cost_baseline_store.py",
-          "line": 102,
-          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_phase_cost_baseline_store.py",
-          "line": 114,
-          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_phase_cost_baseline_store.py",
-          "line": 123,
-          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {\"ref\": \"refs/heads/\" + STATE_BRANCH, \"sha\": commit_sha})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_phase_cost_baseline_store.py",
-          "line": 125,
-          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {\"sha\": commit_sha, \"force\": False})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_provider_health_store.py",
-          "line": 123,
-          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_provider_health_store.py",
-          "line": 135,
-          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_provider_health_store.py",
-          "line": 144,
-          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_provider_health_store.py",
-          "line": 149,
-          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_provider_metrics_store.py",
-          "line": 95,
-          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_provider_metrics_store.py",
-          "line": 107,
-          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_provider_metrics_store.py",
-          "line": 116,
-          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {\"ref\": \"refs/heads/\" + STATE_BRANCH, \"sha\": commit_sha})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_provider_metrics_store.py",
-          "line": 118,
-          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {\"sha\": commit_sha, \"force\": False})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_quick_gate_cache_store.py",
-          "line": 131,
-          "preview": "tree = github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_quick_gate_cache_store.py",
-          "line": 147,
-          "preview": "commit = github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_quick_gate_cache_store.py",
-          "line": 160,
-          "preview": "github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_quick_gate_cache_store.py",
-          "line": 166,
-          "preview": "github.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_routing_history_store.py",
-          "line": 114,
-          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_routing_history_store.py",
-          "line": 126,
-          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_routing_history_store.py",
-          "line": 135,
-          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {\"ref\": \"refs/heads/\" + STATE_BRANCH, \"sha\": commit_sha})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_routing_history_store.py",
-          "line": 137,
-          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {\"sha\": commit_sha, \"force\": False})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_strategy_efficiency_store.py",
-          "line": 103,
-          "preview": "tree=github.call(\"POST\",github.repo+\"/git/trees\",{",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_strategy_efficiency_store.py",
-          "line": 110,
-          "preview": "commit=github.call(\"POST\",github.repo+\"/git/commits\",{",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_strategy_efficiency_store.py",
-          "line": 119,
-          "preview": "github.call(\"POST\",github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+STATE_BRANCH,\"sha\":commit_sha})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_strategy_efficiency_store.py",
-          "line": 121,
-          "preview": "github.call(\"PATCH\",github.repo+\"/git/refs/heads/\"+STATE_BRANCH,{\"sha\":commit_sha,\"force\":False})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_verification_cost_store.py",
-          "line": 96,
-          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_verification_cost_store.py",
-          "line": 108,
-          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_verification_cost_store.py",
-          "line": 117,
-          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {\"ref\": \"refs/heads/\" + STATE_BRANCH, \"sha\": commit_sha})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_verification_cost_store.py",
-          "line": 119,
-          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {\"sha\": commit_sha, \"force\": False})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_model.py",
-          "line": 199,
-          "preview": "raise StudioError('Model call budget exhausted; checkpoint retained')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_model.py",
-          "line": 317,
-          "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_preview.py",
-          "line": 571,
-          "preview": "tree = github.call('POST', github.repo + '/git/trees', {'base_tree':base_tree,'tree':entries})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_preview.py",
-          "line": 575,
-          "preview": "commit = github.call('POST', github.repo + '/git/commits', {'message':'Godot studio: ' + state['status'],'tree':tree_sha,'parents':[parent]})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_preview.py",
-          "line": 580,
-          "preview": "github.call('PATCH', github.repo + '/git/refs/heads/' + branch, {'sha':commit_sha,'force':False})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_preview.py",
-          "line": 582,
-          "preview": "github.call('POST', github.repo + '/git/refs', {'ref':'refs/heads/' + branch,'sha':commit_sha})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/local_model_benchmark.py",
-          "line": 59,
-          "preview": "response = api.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 110,
-          "preview": "def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=None, timeout_seconds=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 116,
-          "preview": "return api.call('POST', '/chat/completions', params, **transport)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 194,
-          "preview": "response = api.call('POST', '/chat/completions', payload, **transport)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/portfolio_scan.py",
-          "line": 43,
-          "preview": "batch = api.call(\"GET\", f\"/user/repos?affiliation=owner&per_page=100&page={page}&sort=updated\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/portfolio_scan.py",
-          "line": 60,
-          "preview": "batch = public.call(\"GET\", f\"/users/{quote(owner)}/repos?per_page=100&page={page}&sort=updated\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/portfolio_scan.py",
-          "line": 76,
-          "preview": "branch=api.call(\"GET\",\"/repos/\"+full+\"/branches/\"+quote(default))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/portfolio_scan.py",
-          "line": 80,
-          "preview": "tree=api.call(\"GET\",\"/repos/\"+full+\"/git/trees/\"+sha+\"?recursive=1\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/portfolio_scan.py",
-          "line": 88,
-          "preview": "blob=api.call(\"GET\",\"/repos/\"+full+\"/git/blobs/\"+readme[\"sha\"])",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_live_diagnostics.py",
-          "line": 23,
-          "preview": "result = client.call(\"GET\", \"/readyz\", timeout_seconds=min(30, remaining))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_live_diagnostics.py",
-          "line": 56,
-          "preview": "response = api_factory(provider.base, provider.key).call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_live_diagnostics.py",
-          "line": 80,
-          "preview": "operator_client.call(\"GET\", \"/v1/dashboard/device-sessions\", timeout_seconds=(30 if diagnose_wake else 10))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_live_diagnostics.py",
-          "line": 86,
-          "preview": "readiness = operator_client.call(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_resume_objectives.py",
-          "line": 23,
-          "preview": "return self.call(\"GET\", path, timeout_seconds=30)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/provider_health.py",
-          "line": 172,
-          "preview": "Only post-verification outcomes should call this function. This prevents",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 120
-    },
     "completion": {
       "definition": {
         "file": "tests/test_godot_model.py",
@@ -5647,13 +7331,13 @@
         },
         {
           "file": "studio/godot_model.py",
-          "line": 377,
+          "line": 392,
           "preview": "raise ProtocolError('Provider returned invalid completion envelope')",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 380,
+          "line": 395,
           "preview": "raise ProtocolError('Provider returned invalid completion choice')",
           "definition_candidate": false
         },
@@ -5701,43 +7385,43 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 481,
+          "line": 566,
           "preview": "if state.get('completion', {}).get('next_stage') == 'godot_preview_identical_failure_stop_loss':",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 482,
+          "line": 567,
           "preview": "state.pop('completion', None)",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 490,
+          "line": 575,
           "preview": "state['completion'] = {",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 612,
+          "line": 697,
           "preview": "if state.get('completion', {}).get('next_stage') == 'godot_preview_identical_failure_stop_loss':",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 613,
+          "line": 698,
           "preview": "state.pop('completion', None)",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 620,
+          "line": 705,
           "preview": "state['completion'] = {'finished': False, 'next_stage': 'godot_preview_cycle_budget_exhausted'}",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 800,
+          "line": 885,
           "preview": "state['completion'] = {'finished':False,'next_stage':'godot_android_export_qa',",
           "definition_candidate": false
         },
@@ -8081,7 +9765,7 @@
         },
         {
           "file": "tests/test_godot_preview.py",
-          "line": 362,
+          "line": 403,
           "preview": "github=FakeGitHub(); github.branch_head='e'*40",
           "definition_candidate": false
         },
@@ -9307,7 +10991,7 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 653,
+          "line": 738,
           "preview": "model = model_factory(req['max_calls']); sandbox = sandbox_factory(root); sandbox.create(req['app_name'])",
           "definition_candidate": false
         },
@@ -9702,7 +11386,7 @@
         },
         {
           "file": "studio/godot_preview.py",
-          "line": 761,
+          "line": 846,
           "preview": "passed, logs = sandbox.gates(req['app_name'], journeys)",
           "definition_candidate": false
         },
@@ -10777,14 +12461,14 @@
     "test_publication_refuses_branch_movement": {
       "definition": {
         "file": "tests/test_godot_preview.py",
-        "line": 361,
+        "line": 402,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_godot_preview.py",
-          "line": 361,
+          "line": 402,
           "preview": "def test_publication_refuses_branch_movement(self):",
           "definition_candidate": true
         }

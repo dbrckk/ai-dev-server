@@ -6466,6 +6466,22 @@ planning_ledger = root/'planning-ledger.json'
 planning_plan = root/'planning-plan.json'
 ⋮----
 source_patch = subject.ask('implementation', 'implement the guarded input')
+⋮----
+# Refuse unusably short completions BEFORE contacting any provider:
+# this protects scarce free capacity against guaranteed truncations.
+# The ledger and usage journal must stay untouched by rejected calls.
+⋮----
+base = Path(td)
+usage = base / 'floor-usage.json'
+ledger = base / 'floor-ledger.json'
+plan = base / 'floor-plan.json'
+⋮----
+subject = model([])
+⋮----
+# The very same request is admitted when genuine remaining
+# capacity suffices. No budget is artificially increased.
+⋮----
+subject = model([completion({'edits': [{
 ```
 
 ## File: test_godot_play_stage.py
@@ -6592,6 +6608,13 @@ blocker = 'Godot exact edit expected exactly one source match'
 noisy_state = {
 ⋮----
 lean = json.loads(godot_preview._context(
+⋮----
+# Unlike the large Jumpy canary #37, code and QA prompts must
+# retain acceptance journeys but OMIT unrelated huge telemetry.
+⋮----
+supplied_patch = {'edits': [{
+⋮----
+prompt = godot_preview.canonical(lean)
 ⋮----
 req = godot_preview.request_check(self.request())
 fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(

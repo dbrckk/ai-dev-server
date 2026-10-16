@@ -12160,7 +12160,12 @@ params = {
 ⋮----
 started = time.monotonic()
 ⋮----
-response = accounted_call(api, params, provider.name)
+# The capacity ledger may leave only a tiny output fragment.
+# Sending it would spend free-provider quota on truncated JSON.
+# Enforce a conservative minimum after prompt headroom, without
+# granting additional tokens or changing the requested ceiling.
+output_floor = (
+response = accounted_call(
 ⋮----
 elapsed = time.monotonic() - started
 ⋮----
@@ -12400,6 +12405,31 @@ journeys = product.get('journeys')
 journeys = []
 compact_product = {
 ⋮----
+# Large-project code and QA prompts should NOT replay full architecture
+# telemetry or product/design narratives. These are checkpoint evidence
+# validated by trusted architecture guards, not source-edit authority.
+⋮----
+product = {}
+⋮----
+# Preserve EVERY journey step: these are the testable selectors the
+# implementation must honor. Only long prose summaries are trimmed.
+criteria = [str(value)[:240] for value in criteria[:8] if isinstance(value, str)]
+design = state.get('design')
+design = design if isinstance(design, dict) else {}
+# Select only the recognized design categories, never arbitrary
+# telemetry keys or oversized nested model narratives.
+design_parts = []
+⋮----
+value = design.get(key)
+⋮----
+design_text = '; '.join(design_parts)
+blockers = state.get('blockers')
+blockers = blockers if isinstance(blockers, list) else []
+⋮----
+# QA sees just the trusted accepted code change, not the complete
+# generation history or unchecked model explanation.
+evidence = _review_evidence(review_patch, root)
+⋮----
 report = canonical(validation_logs)
 ⋮----
 # A #37 canary spent 58,472 tokens across five cycles. Repeated source-mismatch
@@ -12536,7 +12566,7 @@ patch = retry_patch
 event_id = f"{req['id']}:{state['rounds']}:godot"
 model_name = str(getattr(model, 'models_used', {}).get('implementation') or 'unknown')
 ⋮----
-qa = model.ask('tests', _context(req,state,root)); _safe_apply(
+qa = model.ask('tests', _context(req,state,root,phase='tests',review_patch=patch)); _safe_apply(
 ⋮----
 try: journeys = validate_journeys(state['product'].get('journeys'))
 ⋮----
@@ -14568,7 +14598,8 @@ completion_details = usage.get('completion_tokens_details')
 cached = prompt_details.get('cached_tokens', 0) if isinstance(prompt_details, dict) else 0
 reasoning = completion_details.get('reasoning_tokens', 0) if isinstance(completion_details, dict) else 0
 ⋮----
-def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=None, timeout_seconds=None)
+# Caller-specified floor is an admission check, not an extra quota grant.
+# Do not submit a completion that cannot possibly fit a useful response.
 ⋮----
 transport = {} if timeout_seconds is None else {'timeout_seconds': timeout_seconds}
 ⋮----

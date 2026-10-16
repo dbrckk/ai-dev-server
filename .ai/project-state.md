@@ -106,19 +106,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-16T16:23:04Z
+Generated: 2026-10-16T19:16:24Z
 
 ### Git
 - Branch: `main`
-- Head: `8c29dd56d5f3`
-- Commit date: 2026-10-16T18:22:11+02:00
-- Commit: fix(godot): stop unproductive token retries and isolate QA schema (#328)
+- Head: `a7939ab405e3`
+- Commit date: 2026-10-16T21:16:03+02:00
+- Commit: fix(capacity): reject under-budget Godot completions before inference (#330)
 - Tracked files: 865
 
 ### Recently changed files
 - `studio/godot_model.py`
-- `studio/godot_preview.py`
+- `studio/native_model_usage.py`
 - `tests/test_godot_model.py`
+- `studio/godot_preview.py`
 - `tests/test_godot_preview.py`
 - `control/production-os-worker-canary.json`
 

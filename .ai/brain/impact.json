@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "ec9dab426d9a0fea614a79a8882ff313cab8c827",
-  "head": "8c29dd56d5f3dba30f9634f953b83fc8bab6f1d3",
+  "base": "8c29dd56d5f3dba30f9634f953b83fc8bab6f1d3",
+  "head": "a7939ab405e313b846a1e630267b0d3d3323119a",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -11,6 +11,10 @@
     },
     {
       "path": "studio/godot_preview.py",
+      "status": "M"
+    },
+    {
+      "path": "studio/native_model_usage.py",
       "status": "M"
     },
     {
@@ -25,11 +29,16 @@
   "changed_source_files": [
     "studio/godot_model.py",
     "studio/godot_preview.py",
+    "studio/native_model_usage.py",
     "tests/test_godot_model.py",
     "tests/test_godot_preview.py"
   ],
   "impacted_files": [
+    "studio/autonomous_project.py",
+    "studio/core.py",
     "studio/engine_entry.py",
+    "studio/generic_model.py",
+    "studio/github_runner.py",
     "studio/godot_android_stage.py",
     "studio/godot_device_stage.py",
     "studio/godot_final_review_stage.py",
@@ -42,10 +51,266 @@
     "studio/godot_runtime_journey_stage.py",
     "studio/godot_store_metadata_stage.py",
     "studio/godot_visual_stage.py",
+    "studio/native_model_usage.py",
+    "studio/production_os_worker.py",
+    "tests/test_autonomous_project.py",
+    "tests/test_generic_model_capacity.py",
     "tests/test_godot_model.py",
     "tests/test_godot_preview.py"
   ],
   "impacted_symbols": [
+    {
+      "name": "_state_paths",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 46
+    },
+    {
+      "name": "_clear_human_input_request",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 51
+    },
+    {
+      "name": "ensure_project_goal",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 59
+    },
+    {
+      "name": "_sync_promoted_capabilities",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 80
+    },
+    {
+      "name": "translate_orchestrator_result",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 112
+    },
+    {
+      "name": "run_persistent_project",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 183
+    },
+    {
+      "name": "context_provider",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 251
+    },
+    {
+      "name": "execute_cycle",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 286
+    },
+    {
+      "name": "cycle_observer",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 334
+    },
+    {
+      "name": "execute_registered_capability",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 346
+    },
+    {
+      "name": "StudioError",
+      "kind": "class",
+      "file": "studio/core.py",
+      "line": 35
+    },
+    {
+      "name": "canonical",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 38
+    },
+    {
+      "name": "request_check",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 41
+    },
+    {
+      "name": "allowed",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 210
+    },
+    {
+      "name": "patch_check",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 224
+    },
+    {
+      "name": "require_clean_patch_workspace",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 244
+    },
+    {
+      "name": "apply_patch",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 249
+    },
+    {
+      "name": "ensure_directory",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 264
+    },
+    {
+      "name": "verdict",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 320
+    },
+    {
+      "name": "APIError",
+      "kind": "class",
+      "file": "studio/core.py",
+      "line": 328
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 329
+    },
+    {
+      "name": "ProtocolError",
+      "kind": "class",
+      "file": "studio/core.py",
+      "line": 336
+    },
+    {
+      "name": "NoRedirect",
+      "kind": "class",
+      "file": "studio/core.py",
+      "line": 339
+    },
+    {
+      "name": "redirect_request",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 340
+    },
+    {
+      "name": "API",
+      "kind": "class",
+      "file": "studio/core.py",
+      "line": 343
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 345
+    },
+    {
+      "name": "_response",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 363
+    },
+    {
+      "name": "call",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 399
+    },
+    {
+      "name": "Model",
+      "kind": "class",
+      "file": "studio/core.py",
+      "line": 433
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 434
+    },
+    {
+      "name": "ask",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 460
+    },
+    {
+      "name": "_ask",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 489
+    },
+    {
+      "name": "unique_object",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 838
+    },
+    {
+      "name": "Sandbox",
+      "kind": "class",
+      "file": "studio/core.py",
+      "line": 918
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 919
+    },
+    {
+      "name": "run",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 922
+    },
+    {
+      "name": "create",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 946
+    },
+    {
+      "name": "quick_dependency_gate",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 954
+    },
+    {
+      "name": "quick_analyze_gate",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 961
+    },
+    {
+      "name": "quick_test_gate",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 968
+    },
+    {
+      "name": "quick_gates",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 976
+    },
+    {
+      "name": "gates",
+      "kind": "function",
+      "file": "studio/core.py",
+      "line": 990
+    },
     {
       "name": "_exact_branch_ref",
       "kind": "function",
@@ -69,6 +334,120 @@
       "kind": "function",
       "file": "studio/engine_entry.py",
       "line": 76
+    },
+    {
+      "name": "_decode",
+      "kind": "function",
+      "file": "studio/generic_model.py",
+      "line": 68
+    },
+    {
+      "name": "_reported_usage_tokens",
+      "kind": "function",
+      "file": "studio/generic_model.py",
+      "line": 85
+    },
+    {
+      "name": "token_count",
+      "kind": "function",
+      "file": "studio/generic_model.py",
+      "line": 100
+    },
+    {
+      "name": "_bounded_model_token_budget",
+      "kind": "function",
+      "file": "studio/generic_model.py",
+      "line": 122
+    },
+    {
+      "name": "ask",
+      "kind": "function",
+      "file": "studio/generic_model.py",
+      "line": 173
+    },
+    {
+      "name": "_prepare_capability_promotion_handoff",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 57
+    },
+    {
+      "name": "_usage_count",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 97
+    },
+    {
+      "name": "collect_agent_usage",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 106
+    },
+    {
+      "name": "write_production_os_result",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 171
+    },
+    {
+      "name": "_stop_bounded_process",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 563
+    },
+    {
+      "name": "bounded_run",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 599
+    },
+    {
+      "name": "_update_improvements",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 627
+    },
+    {
+      "name": "run",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 645
+    },
+    {
+      "name": "effective_runner",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 655
+    },
+    {
+      "name": "persist_published_round",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 948
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 972
+    },
+    {
+      "name": "persist_verified_cycle",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 982
+    },
+    {
+      "name": "improvement_project_cycle",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 1023
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 1214
     },
     {
       "name": "execute",
@@ -188,49 +567,49 @@
       "name": "_exact_edit_repair_context",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 401
+      "line": 486
     },
     {
       "name": "_source_fingerprint",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 452
+      "line": 537
     },
     {
       "name": "_record_retry_failure",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 467
+      "line": 552
     },
     {
       "name": "_exact_branch_ref",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 497
+      "line": 582
     },
     {
       "name": "_restore",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 507
+      "line": 592
     },
     {
       "name": "_publish",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 546
+      "line": 631
     },
     {
       "name": "execute",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 586
+      "line": 671
     },
     {
       "name": "checkpoint",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 656
+      "line": 741
     },
     {
       "name": "execute",
@@ -309,6 +688,522 @@
       "kind": "function",
       "file": "studio/godot_visual_stage.py",
       "line": 52
+    },
+    {
+      "name": "NativeAccountingError",
+      "kind": "class",
+      "file": "studio/native_model_usage.py",
+      "line": 20
+    },
+    {
+      "name": "NativeCapacityError",
+      "kind": "class",
+      "file": "studio/native_model_usage.py",
+      "line": 24
+    },
+    {
+      "name": "_path",
+      "kind": "function",
+      "file": "studio/native_model_usage.py",
+      "line": 28
+    },
+    {
+      "name": "_empty",
+      "kind": "function",
+      "file": "studio/native_model_usage.py",
+      "line": 33
+    },
+    {
+      "name": "_load",
+      "kind": "function",
+      "file": "studio/native_model_usage.py",
+      "line": 41
+    },
+    {
+      "name": "snapshot",
+      "kind": "function",
+      "file": "studio/native_model_usage.py",
+      "line": 61
+    },
+    {
+      "name": "_save",
+      "kind": "function",
+      "file": "studio/native_model_usage.py",
+      "line": 79
+    },
+    {
+      "name": "_reported",
+      "kind": "function",
+      "file": "studio/native_model_usage.py",
+      "line": 86
+    },
+    {
+      "name": "call",
+      "kind": "function",
+      "file": "studio/native_model_usage.py",
+      "line": 110
+    },
+    {
+      "name": "_browser_validation_operational",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 41
+    },
+    {
+      "name": "_mobile_validation_operational",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 70
+    },
+    {
+      "name": "_asset_forge_operational_status",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 103
+    },
+    {
+      "name": "_remote_asset_forge_operational",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 132
+    },
+    {
+      "name": "worker_capabilities",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 157
+    },
+    {
+      "name": "ProductionOSWorkerError",
+      "kind": "class",
+      "file": "studio/production_os_worker.py",
+      "line": 199
+    },
+    {
+      "name": "_NoRedirect",
+      "kind": "class",
+      "file": "studio/production_os_worker.py",
+      "line": 203
+    },
+    {
+      "name": "redirect_request",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 204
+    },
+    {
+      "name": "_default_opener",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 210
+    },
+    {
+      "name": "ProductionOSClient",
+      "kind": "class",
+      "file": "studio/production_os_worker.py",
+      "line": 217
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 218
+    },
+    {
+      "name": "_post",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 258
+    },
+    {
+      "name": "claim",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 317
+    },
+    {
+      "name": "ack",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 334
+    },
+    {
+      "name": "complete",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 340
+    },
+    {
+      "name": "fail",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 343
+    },
+    {
+      "name": "register",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 346
+    },
+    {
+      "name": "heartbeat",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 373
+    },
+    {
+      "name": "production_capacity_snapshot",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 404
+    },
+    {
+      "name": "_project_id",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 460
+    },
+    {
+      "name": "_repository_branch_id",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 480
+    },
+    {
+      "name": "_app_name",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 508
+    },
+    {
+      "name": "_brief",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 518
+    },
+    {
+      "name": "_is_visual_handoff",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 531
+    },
+    {
+      "name": "_retry_guidance",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 572
+    },
+    {
+      "name": "_upstream_guidance",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 624
+    },
+    {
+      "name": "_asset_forge_guidance",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 697
+    },
+    {
+      "name": "build_studio_request",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 755
+    },
+    {
+      "name": "_write_project_capacity_plan",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 818
+    },
+    {
+      "name": "_attach_failed_ci_diagnostic",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 891
+    },
+    {
+      "name": "_result_payload",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 935
+    },
+    {
+      "name": "completion_payload",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 953
+    },
+    {
+      "name": "failure_payload",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 970
+    },
+    {
+      "name": "_retryable_runner_error",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1009
+    },
+    {
+      "name": "_failure_diagnostics",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1016
+    },
+    {
+      "name": "_summary_requests_retry",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1071
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1093
+    },
+    {
+      "name": "observe_job_control",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1201
+    },
+    {
+      "name": "retain_native_usage",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1229
+    },
+    {
+      "name": "report_local_failure",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1243
+    },
+    {
+      "name": "keep_job_alive",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1300
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1565
+    },
+    {
+      "name": "AutonomousProjectTests",
+      "kind": "class",
+      "file": "tests/test_autonomous_project.py",
+      "line": 16
+    },
+    {
+      "name": "test_complete_requires_machine_completion_evidence",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 17
+    },
+    {
+      "name": "test_false_complete_fails_closed",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 25
+    },
+    {
+      "name": "test_human_action_is_preserved",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 33
+    },
+    {
+      "name": "test_adaptation_yields_without_claiming_completion",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 41
+    },
+    {
+      "name": "test_status_detail_that_requires_external_secret_becomes_human_action",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 53
+    },
+    {
+      "name": "test_ordinary_failure_remains_autonomous_failure",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 62
+    },
+    {
+      "name": "test_promoted_stage_syncs_into_capability_registry",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 87
+    },
+    {
+      "name": "test_persistent_wrapper_relaunches_until_proved_complete",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 99
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 104
+    },
+    {
+      "name": "test_persistent_godot_failure_counts_once_then_yields_for_fresh_workspace",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 134
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 139
+    },
+    {
+      "name": "test_project_capacity_exhaustion_yields_without_burning_attempt_budget",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 178
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 185
+    },
+    {
+      "name": "test_human_action_persists_terminal_state",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 207
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 211
+    },
+    {
+      "name": "test_existing_project_registry_syncs_new_promoted_capability",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 231
+    },
+    {
+      "name": "sync",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 238
+    },
+    {
+      "name": "test_runtime_environment_is_restored_after_project_run",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 258
+    },
+    {
+      "name": "test_checkpoint_observer_receives_saved_goal_after_every_complete_cycle",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 293
+    },
+    {
+      "name": "step",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 300
+    },
+    {
+      "name": "persist",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 313
+    },
+    {
+      "name": "test_failed_remote_cycle_checkpoint_aborts_without_silent_progress",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 336
+    },
+    {
+      "name": "step",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 341
+    },
+    {
+      "name": "fail_remote",
+      "kind": "function",
+      "file": "tests/test_autonomous_project.py",
+      "line": 345
+    },
+    {
+      "name": "_FakeAPI",
+      "kind": "class",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 15
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 19
+    },
+    {
+      "name": "call",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 22
+    },
+    {
+      "name": "GenericModelCapacityTests",
+      "kind": "class",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 28
+    },
+    {
+      "name": "_provider",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 29
+    },
+    {
+      "name": "_env",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 39
+    },
+    {
+      "name": "test_success_settles_transactional_reservation_with_actual_usage",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 46
+    },
+    {
+      "name": "test_protocol_failure_settles_consumed_tokens_without_double_release",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 78
+    },
+    {
+      "name": "test_transport_failure_releases_open_reservation",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 100
+    },
+    {
+      "name": "test_denied_reservation_skips_provider_call",
+      "kind": "function",
+      "file": "tests/test_generic_model_capacity.py",
+      "line": 123
     },
     {
       "name": "FakeAPI",
@@ -500,10 +1395,12 @@
       "name": "test_publication_refuses_branch_movement",
       "kind": "function",
       "file": "tests/test_godot_preview.py",
-      "line": 361
+      "line": 402
     }
   ],
   "selected_tests": [
+    "tests/test_autonomous_project.py",
+    "tests/test_generic_model_capacity.py",
     "tests/test_godot_model.py",
     "tests/test_godot_preview.py"
   ]

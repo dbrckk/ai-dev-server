@@ -117,7 +117,7 @@ COMPACT_PER_FILE_CHAR_BUDGET = 7_000
 COMPACT_SOURCE_FILE_LIMIT = 8
 
 
-def _relevant_source_excerpt(source: str, brief: str, limit: int) -> str:
+def _relevant_source_excerpt(source: str, brief: str, limit: int, *, planning: bool = False) -> str:
     if len(source) <= limit:
         return source
     # Prefer exact code identifiers explicitly mentioned in the task,
@@ -152,7 +152,9 @@ def _relevant_source_excerpt(source: str, brief: str, limit: int) -> str:
         room -= len(chunk) + 42
         if room <= 0:
             break
-    return '\n[OMITTED SOURCE - EXACT EDITS ONLY]\n'.join(chunks)[:limit] + '\n[TRUNCATED SOURCE - EXACT EDITS ONLY]'
+    omitted = '[OMITTED SOURCE - planning excerpt only]' if planning else '[OMITTED SOURCE - EXACT EDITS ONLY]'
+    truncated = '[TRUNCATED: planning excerpt only]' if planning else '[TRUNCATED SOURCE - EXACT EDITS ONLY]'
+    return ('\n' + omitted + '\n').join(chunks)[:limit] + '\n' + truncated
 
 
 def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation') -> str:
@@ -197,11 +199,9 @@ def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation
                 sample = source.read()
             truncated = len(sample) > limit
             files[rel] = (
-                _relevant_source_excerpt(sample, req.get('brief', ''), limit)
+                _relevant_source_excerpt(sample, req.get('brief', ''), limit, planning=True)
                 if truncated else sample
             )
-            if truncated:
-                files[rel] += '\n[TRUNCATED: planning excerpt only]'
             remaining -= min(limit, len(sample))
     elif compact:
         # Exact-match edits are revalidated on full trusted files at apply

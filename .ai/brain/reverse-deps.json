@@ -115,7 +115,9 @@
     },
     "studio/agents/adapters.py": {
       "dependencies": [
-        "studio/agents/registry.py"
+        "studio/agents/registry.py",
+        "studio/core.py",
+        "tests/test_unified_routing_score.py"
       ],
       "dependents": [
         "studio/agents/orchestrator.py",
@@ -123,7 +125,7 @@
         "tests/test_codex_output_retention.py"
       ],
       "in_degree": 3,
-      "out_degree": 1
+      "out_degree": 3
     },
     "studio/agents/codex.py": {
       "dependencies": [
@@ -1464,6 +1466,7 @@
         "scripts/production-os-live-resume-proof.py",
         "studio/adaptive_phase_policy.py",
         "studio/adaptive_role_allocator.py",
+        "studio/agents/adapters.py",
         "studio/agents/codex.py",
         "studio/agents/orchestrator.py",
         "studio/android_signing.py",
@@ -1681,7 +1684,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 220,
+      "in_degree": 221,
       "out_degree": 18
     },
     "studio/cost_drift.py": {
@@ -4173,8 +4176,7 @@
         "studio/provider_runtime_reliability.py",
         "studio/routing_audit.py",
         "studio/unified_routing_score.py",
-        "tests/test_studio.py",
-        "tests/test_unified_routing_score.py"
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/architecture_replacement_synthesis.py",
@@ -4196,7 +4198,7 @@
         "tests/test_provider_router.py"
       ],
       "in_degree": 17,
-      "out_degree": 9
+      "out_degree": 8
     },
     "studio/provider_runtime_reliability.py": {
       "dependencies": [
@@ -7915,6 +7917,7 @@
         "studio/unified_routing_score.py"
       ],
       "dependents": [
+        "studio/agents/adapters.py",
         "studio/agents/codex.py",
         "studio/agents/orchestrator.py",
         "studio/architecture_change_guard.py",
@@ -7977,8 +7980,7 @@
         "studio/provider_health.py",
         "studio/provider_metrics.py",
         "studio/provider_monthly_quota.py",
-        "studio/provider_probe.py",
-        "studio/provider_router.py"
+        "studio/provider_probe.py"
       ],
       "in_degree": 64,
       "out_degree": 1

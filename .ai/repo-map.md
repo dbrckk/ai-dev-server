@@ -6108,6 +6108,12 @@ def probe(self) -> bool
 env = os.environ.copy()
 # Coding agents do not need repository-write credentials: publishing is
 # performed later by the trusted GitHub adapter after validation.
+# Prevent untrusted subprocesses (including Hermes and OpenCode)
+# from inheriting credentials that control workers, GitHub delivery,
+# or host Git/SSH authentication. Model-provider credentials remain
+# available for authorized inference; scoped aliases also work.
+control_prefixes = (
+control_keys = {"CODESPACES_PAT", "SSH_ASKPASS", "SSH_AUTH_SOCK"}
 ⋮----
 # Never let an autonomous prompt override process-critical variables.
 ⋮----
@@ -26677,6 +26683,20 @@ def test_cost_aware_utility_prefers_faster_agent_when_context_quality_is_equal(s
 def test_opencode_invocation_uses_secret_alias(self)
 ⋮----
 env={
+⋮----
+def test_external_agent_isolates_control_plane_credentials(self)
+⋮----
+# Hermes/OpenCode CLI processes may be untrusted third-party code.
+# Production-OS worker authority and Git/SSH publishing credentials
+# must never be inherited or reintroduced via extra_env.
+inherited = {
+overrides = {
+⋮----
+adapter = AgentAdapter(AgentSpec(name, name, frozenset({"repo_analysis"})))
+⋮----
+result = adapter.run([name, "run"], cwd=ROOT,
+⋮----
+child_env = child.call_args.kwargs["env"]
 ⋮----
 def test_codex_invocation_uses_verified_headless_contract(self)
 ⋮----

@@ -1,19 +1,18 @@
 # Change impact
 
-Base: 1bfea7fcaa47b9449d3f02fda786512802a1b8c9
-Head: a7939ab405e313b846a1e630267b0d3d3323119a
+Base: 3b1a1997dc234dea2ce358f908cb5384f62394eb
+Head: 0d7b31ded1e5c81a4929bca470b1764de9fca341
 
 ## Changed files
-- M studio/godot_model.py
-- M studio/native_model_usage.py
-- M tests/test_godot_model.py
+- M studio/agents/adapters.py
+- M tests/test_agent_router.py
 
 ## Affected areas
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_godot_model.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

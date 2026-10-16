@@ -398,6 +398,12 @@ def probe(self) -> bool
 env = os.environ.copy()
 # Coding agents do not need repository-write credentials: publishing is
 # performed later by the trusted GitHub adapter after validation.
+# Prevent untrusted subprocesses (including Hermes and OpenCode)
+# from inheriting credentials that control workers, GitHub delivery,
+# or host Git/SSH authentication. Model-provider credentials remain
+# available for authorized inference; scoped aliases also work.
+control_prefixes = (
+control_keys = {"CODESPACES_PAT", "SSH_ASKPASS", "SSH_AUTH_SOCK"}
 ⋮----
 # Never let an autonomous prompt override process-critical variables.
 ⋮----

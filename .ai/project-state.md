@@ -106,22 +106,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-16T19:16:24Z
+Generated: 2026-10-16T20:47:58Z
 
 ### Git
 - Branch: `main`
-- Head: `a7939ab405e3`
-- Commit date: 2026-10-16T21:16:03+02:00
-- Commit: fix(capacity): reject under-budget Godot completions before inference (#330)
+- Head: `0d7b31ded1e5`
+- Commit date: 2026-10-16T16:47:49-04:00
+- Commit: fix(agents): prevent Hermes and OpenCode subprocesses inheriting Production-OS credentials (#331)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/agents/adapters.py`
+- `tests/test_agent_router.py`
 - `studio/godot_model.py`
 - `studio/native_model_usage.py`
 - `tests/test_godot_model.py`
 - `studio/godot_preview.py`
 - `tests/test_godot_preview.py`
-- `control/production-os-worker-canary.json`
 
 ### Project signals
 - No common build descriptor detected

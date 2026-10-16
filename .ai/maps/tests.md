@@ -617,6 +617,20 @@ def test_opencode_invocation_uses_secret_alias(self)
 ⋮----
 env={
 ⋮----
+def test_external_agent_isolates_control_plane_credentials(self)
+⋮----
+# Hermes/OpenCode CLI processes may be untrusted third-party code.
+# Production-OS worker authority and Git/SSH publishing credentials
+# must never be inherited or reintroduced via extra_env.
+inherited = {
+overrides = {
+⋮----
+adapter = AgentAdapter(AgentSpec(name, name, frozenset({"repo_analysis"})))
+⋮----
+result = adapter.run([name, "run"], cwd=ROOT,
+⋮----
+child_env = child.call_args.kwargs["env"]
+⋮----
 def test_codex_invocation_uses_verified_headless_contract(self)
 ⋮----
 def test_codex_execute_named_exposes_token_usage(self)

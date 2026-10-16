@@ -12103,12 +12103,16 @@ invalid_response_provider = None
 value = self._ask_godot(
 ⋮----
 error = str(exc)
-# Malformed provider envelopes/JSON should not consume the
-# only repair attempt on the same model when a healthy
-# alternative exists. Policy/schema errors and truncated
-# output keep their original same-provider repair contract.
+# Invalid JSON or product journeys may be provider-specific.
+# Use the one bounded repair on a different eligible provider
+# where available; never bypass its quota/routing limits.
+# Truncations and policy errors remain on the same provider.
 ⋮----
 invalid_response_provider = self.providers_used.get(role)
+⋮----
+# A large project was supplied as trusted source excerpts.
+# Its full files cannot be reconstructed from that prompt.
+# Demand a single small exact replacement, not a full rewrite.
 ⋮----
 provider_candidates = tuple(
 health_raw = os.environ.get('STUDIO_PROVIDER_HEALTH_PATH', '')

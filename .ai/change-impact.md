@@ -1,20 +1,18 @@
 # Change impact
 
-Base: 9322b58837683eea17a2287472b91b7b19dcab1d
-Head: aa1694c21225b05981097097154d601b70d679d0
+Base: 21d4c84cdfa9d77aa66f50d355e90df59d742f9f
+Head: 773d9ce2257e0a2ccdae31303fc03ab14152c96d
 
 ## Changed files
-- M studio/core.py
-- M studio/godot_preview.py
-- M tests/test_godot_preview.py
-- M tests/test_patch_safety_rebuild.py
+- M studio/godot_model.py
+- M tests/test_godot_model.py
 
 ## Affected areas
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_godot_preview.py
+- tests/test_godot_model.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

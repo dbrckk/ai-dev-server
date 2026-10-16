@@ -17813,12 +17813,16 @@ invalid_response_provider = None
 value = self._ask_godot(
 ⋮----
 error = str(exc)
-# Malformed provider envelopes/JSON should not consume the
-# only repair attempt on the same model when a healthy
-# alternative exists. Policy/schema errors and truncated
-# output keep their original same-provider repair contract.
+# Invalid JSON or product journeys may be provider-specific.
+# Use the one bounded repair on a different eligible provider
+# where available; never bypass its quota/routing limits.
+# Truncations and policy errors remain on the same provider.
 ⋮----
 invalid_response_provider = self.providers_used.get(role)
+⋮----
+# A large project was supplied as trusted source excerpts.
+# Its full files cannot be reconstructed from that prompt.
+# Demand a single small exact replacement, not a full rewrite.
 ⋮----
 provider_candidates = tuple(
 health_raw = os.environ.get('STUDIO_PROVIDER_HEALTH_PATH', '')
@@ -32303,6 +32307,7 @@ rejected = product_value()
 accepted = product_value()
 ⋮----
 subject = model([completion(rejected), completion(accepted)])
+subject.providers = (subject.providers[0],)  # Single-provider repair stays local.
 ⋮----
 retry = subject.api.calls[1][2]['messages']
 ⋮----
@@ -32329,6 +32334,21 @@ truncated = {'choices':[{'finish_reason':'length','message':{'content':'{"files"
 ⋮----
 retry = subject.api.calls[1][2]['messages'][1]['content']
 ⋮----
+# When the full source was intentionally omitted, the one repair
+# must request a small exact edit, never a full-file hallucination.
+⋮----
+compact = '{"files_mode":"bounded_exact_match_source_excerpts"}'
+result = subject.ask('implementation', compact)
+⋮----
+compact_retry = subject.api.calls[1][2]['messages'][1]['content']
+⋮----
+# Canary 36: product/design truncation must request a genuinely
+# smaller output instead of repeating a verbose invalid plan.
+⋮----
+subject = model([truncated, completion(repaired)])
+⋮----
+second = subject.api.calls[1][2]['messages'][1]['content']
+⋮----
 def test_structured_godot_call_falls_back_to_secondary_provider(self)
 ⋮----
 subject = model([StudioError('API unavailable or timed out')])
@@ -32339,6 +32359,14 @@ fallback_api = FakeAPI([completion(product_value())])
 # of requesting the same malformed completion twice.
 malformed = {'choices': [{'finish_reason': 'stop',
 subject = model([malformed])
+⋮----
+# Invalid product journey values are structured-output failures, too:
+# prefer a separately eligible provider for the bounded repair.
+bad_plan = product_value()
+⋮----
+subject = model([completion(bad_plan)])
+⋮----
+good_plan = subject.ask('product', 'plan concise gameplay')
 ⋮----
 # An installation with no alternate provider still retains its
 # original same-provider repair attempt, with no new provider calls.

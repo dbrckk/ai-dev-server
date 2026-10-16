@@ -104,16 +104,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-16T11:16:02Z
+Generated: 2026-10-16T11:20:29Z
 
 ### Git
 - Branch: `main`
-- Head: `aa1694c21225`
-- Commit date: 2026-10-16T13:15:39+02:00
-- Commit: perf(godot): bound review source and verdict token budgets (#324)
+- Head: `773d9ce2257e`
+- Commit date: 2026-10-16T13:20:20+02:00
+- Commit: fix(godot): concise structured planning repair and alternate provider fallback (#325)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/godot_model.py`
+- `tests/test_godot_model.py`
 - `studio/core.py`
 - `studio/godot_preview.py`
 - `tests/test_godot_preview.py`
@@ -121,9 +123,7 @@ Generated: 2026-10-16T11:16:02Z
 - `.github/workflows/production-os-actions-worker.yml`
 - `tests/test_production_os_actions_worker_workflow.py`
 - `studio/engine_patch.py`
-- `studio/godot_model.py`
 - `tests/test_engine_patch.py`
-- `tests/test_godot_model.py`
 - `studio/generic_project.py`
 
 ### Project signals

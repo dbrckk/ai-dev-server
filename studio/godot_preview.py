@@ -383,7 +383,6 @@ def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation
         criteria = [str(value)[:240] for value in criteria[:8] if isinstance(value, str)]
         design = state.get('design')
         design_text = canonical(design) if isinstance(design, dict) else ''
-        brief = str(req.get('brief') or '')
         blockers = state.get('blockers')
         blockers = blockers if isinstance(blockers, list) else []
         lean = {

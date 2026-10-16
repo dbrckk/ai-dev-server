@@ -79,6 +79,13 @@ class GodotModelTests(unittest.TestCase):
             call[2]['response_format'] == {'type': 'json_object'}
             for call in subject.api.calls
         ))
+        subject.api.responses.append(completion({'edits':[{
+            'path': 'scripts/main.gd', 'find': 'if settings_open:',
+            'replace': 'if not settings_open:',
+        }]}))
+        subject.ask('implementation', '{"files_mode":"bounded_exact_match_source_excerpts"}')
+        self.assertEqual(subject.api.calls[3][2]['max_tokens'], 4096)
+        self.assertEqual(subject.api.calls[3][2]['reasoning_budget'], 1024)
 
     def test_product_uses_godot_planning_contract_not_flutter_execution_claims(self):
         subject = model([completion(product_value())])
@@ -139,6 +146,12 @@ class GodotModelTests(unittest.TestCase):
         result = subject.ask('implementation', 'fix one input bug')
         self.assertEqual(result['edits'][0]['path'], 'scripts/main.gd')
         self.assertEqual(subject.calls, 2)
+        subject.api.responses.append(completion({'edits': [{
+            'path': 'scripts/main.gd', 'find': 'if settings_open:',
+            'replace': 'if not settings_open:',
+        }]}))
+        subject.ask('implementation', '{"files_mode":"bounded_exact_match_source_excerpts"}')
+        self.assertEqual(subject.api.calls[2][2]['max_tokens'], 4096)
 
     def test_test_role_rejects_non_test_path_then_repairs_once(self):
         subject = model([
@@ -148,6 +161,11 @@ class GodotModelTests(unittest.TestCase):
         result = subject.ask('tests', 'write regression')
         self.assertEqual(result['files'][0]['path'], 'tests/main_test.gd')
         self.assertEqual(subject.calls, 2)
+        subject.api.responses.append(completion({'files': [{
+            'path': 'tests/guard_test.gd', 'content': 'extends Node',
+        }]}))
+        subject.ask('tests', '{"files_mode":"bounded_exact_match_source_excerpts"}')
+        self.assertEqual(subject.api.calls[2][2]['max_tokens'], 3072)
 
     def test_truncated_patch_retry_requests_a_smaller_complete_change(self):
         truncated = {'choices':[{'finish_reason':'length','message':{'content':'{"files":['}}]}

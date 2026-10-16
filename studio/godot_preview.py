@@ -46,6 +46,36 @@ def _safe_apply(
     *,
     architecture_changes_allowed: bool = True,
 ) -> None:
+    # Aider-style small edits: validate before any write, then expand
+    # uniquely matched on-disk snippets into the existing full-file safety
+    # contract. Never trust excerpts or model-provided source as authority.
+    if isinstance(value, dict) and set(value) == {'edits'}:
+        edits = validate_patch(value, 'godot', role)
+        root = root.resolve()
+        expanded = []
+        for item in edits:
+            raw_target = root / item['path']
+            cursor = raw_target
+            while cursor != root:
+                if cursor.is_symlink():
+                    raise StudioError('Godot exact edit crossed symlink')
+                cursor = cursor.parent
+            target = raw_target.resolve()
+            if not target.is_relative_to(root) or not target.is_file():
+                raise StudioError('Godot exact edit requires an existing workspace file')
+            try:
+                if target.stat().st_size > 600_000:
+                    raise StudioError('Godot exact edit source exceeds size limit')
+                original = target.read_text(encoding='utf-8')
+            except (OSError, UnicodeError):
+                raise StudioError('Godot exact edit source is unreadable') from None
+            if original.count(item['find']) != 1:
+                raise StudioError('Godot exact edit expected exactly one source match')
+            revised = original.replace(item['find'], item['replace'], 1)
+            if revised == original or not revised:
+                raise StudioError('Godot exact edit must preserve nonempty changed source')
+            expanded.append({'path': item['path'], 'content': revised})
+        value = {'files': expanded}
     enforce_architecture_change_guard(
         value,
         engine='godot',

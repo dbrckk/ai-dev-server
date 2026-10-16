@@ -4199,6 +4199,10 @@ def test_godot_implementation_accepts_project_text_scope(self)
 ⋮----
 result = validate({'files': [
 ⋮----
+# Compact output contract: exact text edits are accepted only for
+# Godot implementation, never for QA or Flutter.
+edit = {'edits': [{'path': 'scripts/player.gd',
+⋮----
 def test_godot_rejects_workflow_binary_and_traversal(self)
 ⋮----
 def test_engine_specific_test_roles_are_enforced(self)
@@ -6363,6 +6367,8 @@ result = subject.ask('implementation', 'improve game')
 params = subject.api.calls[0][2]
 system = params['messages'][0]['content']
 ⋮----
+result = subject.ask('implementation', 'fix one input bug')
+⋮----
 def test_test_role_rejects_non_test_path_then_repairs_once(self)
 ⋮----
 result = subject.ask('tests', 'write regression')
@@ -6496,6 +6502,29 @@ main_source = 'extends Node\n' + '# existing gameplay\n' * 30_000
 planning = json.loads(godot_preview._context(
 ⋮----
 implementation = json.loads(godot_preview._context(
+⋮----
+review = json.loads(godot_preview._context(
+⋮----
+# A small change must not require the model to echo the complete
+# 570k-character existing script. The runner expands each edit
+# only after verifying a unique match in the authoritative file.
+guard = source_root / 'scripts/guard.gd'
+before = 'extends Node\nfunc handle():\n    if settings_open:\n        start_game()\n'
+⋮----
+replacement = 'if not settings_open:\n        start_game()'
+payload = {'edits': [{'path': 'scripts/guard.gd',
+⋮----
+after = guard.read_text()
+⋮----
+link = source_root / 'scripts/linked.gd'
+⋮----
+# Relevant source anchors are selected from trusted code, not
+# hallucinated: the model sees the actual method it must edit.
+focused_source = ('extends Node\n' + '# unrelated\n' * 400 +
+⋮----
+focused = dict(self.request())
+⋮----
+excerpt = json.loads(godot_preview._context(
 ⋮----
 req = godot_preview.request_check(self.request())
 fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(

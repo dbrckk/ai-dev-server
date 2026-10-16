@@ -104,22 +104,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-16T09:18:26Z
+Generated: 2026-10-16T11:01:30Z
 
 ### Git
 - Branch: `main`
-- Head: `236989e38173`
-- Commit date: 2026-10-16T11:17:55+02:00
-- Commit: fix: recognize star-list v3 recovery as targeted work
+- Head: `ef1b0fe8e74d`
+- Commit date: 2026-10-16T13:01:14+02:00
+- Commit: perf(godot): bound source context and generate verified exact edits (#321)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/engine_patch.py`
+- `studio/godot_model.py`
+- `studio/godot_preview.py`
+- `tests/test_engine_patch.py`
+- `tests/test_godot_model.py`
+- `tests/test_godot_preview.py`
 - `studio/generic_project.py`
 - `studio/native_model_usage.py`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
-- `studio/godot_model.py`
-- `tests/test_godot_model.py`
 
 ### Project signals
 - No common build descriptor detected

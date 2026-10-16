@@ -1,493 +1,553 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "da140b852d26327c19adf852590e65b71af2222f",
-  "head": "236989e38173fa6b2d1fbb2c80eb04542dd62f15",
+  "base": "236989e38173fa6b2d1fbb2c80eb04542dd62f15",
+  "head": "ef1b0fe8e74dbae18f2d54e9f6ab042e1cda994f",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "studio/generic_project.py",
+      "path": "studio/engine_patch.py",
+      "status": "M"
+    },
+    {
+      "path": "studio/godot_model.py",
+      "status": "M"
+    },
+    {
+      "path": "studio/godot_preview.py",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_engine_patch.py",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_godot_model.py",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_godot_preview.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "studio/generic_project.py"
+    "studio/engine_patch.py",
+    "studio/godot_model.py",
+    "studio/godot_preview.py",
+    "tests/test_engine_patch.py",
+    "tests/test_godot_model.py",
+    "tests/test_godot_preview.py"
   ],
   "impacted_files": [
-    "studio/generic_project.py",
-    "studio/generic_smoke.py",
-    "studio/multi_engine_orchestrator.py",
-    "tests/test_browser_validation_contract.py",
-    "tests/test_generic_architecture.py",
-    "tests/test_generic_published_checkpoint.py",
-    "tests/test_generic_published_round_checkpoint.py",
-    "tests/test_generic_worker_canary_resume.py",
-    "tests/test_mobile_validation_contract.py"
+    "studio/engine_entry.py",
+    "studio/engine_patch.py",
+    "studio/godot_android_stage.py",
+    "studio/godot_device_stage.py",
+    "studio/godot_final_review_stage.py",
+    "studio/godot_model.py",
+    "studio/godot_play_stage.py",
+    "studio/godot_preview.py",
+    "studio/godot_privacy_security_stage.py",
+    "studio/godot_release_artifact_stage.py",
+    "studio/godot_release_stage.py",
+    "studio/godot_runtime_journey_stage.py",
+    "studio/godot_store_metadata_stage.py",
+    "studio/godot_visual_stage.py",
+    "tests/test_engine_patch.py",
+    "tests/test_godot_model.py",
+    "tests/test_godot_preview.py"
   ],
   "impacted_symbols": [
     {
-      "name": "_snapshot",
+      "name": "_exact_branch_ref",
       "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 128
+      "file": "studio/engine_entry.py",
+      "line": 15
     },
     {
-      "name": "_apply",
+      "name": "detect_engine",
       "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 195
+      "file": "studio/engine_entry.py",
+      "line": 25
     },
     {
-      "name": "_prepare_architecture",
+      "name": "execute",
       "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 218
-    },
-    {
-      "name": "_record_architecture",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 251
-    },
-    {
-      "name": "_browser_validation_contract",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 270
-    },
-    {
-      "name": "_valid_browser_test_url",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 278
-    },
-    {
-      "name": "_valid_browser_screenshot",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 292
-    },
-    {
-      "name": "_run_browser_validation",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 325
-    },
-    {
-      "name": "_mobile_validation_contract",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 483
-    },
-    {
-      "name": "_verify_android_emulator_evidence",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 491
-    },
-    {
-      "name": "_run_mobile_validation",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 559
-    },
-    {
-      "name": "_existing_worker_canary_verification",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 730
-    },
-    {
-      "name": "_save_published_checkpoint",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 775
-    },
-    {
-      "name": "run_project",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 789
-    },
-    {
-      "name": "evaluate_model_candidate",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 1418
-    },
-    {
-      "name": "_fixture",
-      "kind": "function",
-      "file": "studio/generic_smoke.py",
-      "line": 19
-    },
-    {
-      "name": "FakeRepository",
-      "kind": "class",
-      "file": "studio/generic_smoke.py",
-      "line": 35
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/generic_smoke.py",
-      "line": 36
-    },
-    {
-      "name": "restore",
-      "kind": "function",
-      "file": "studio/generic_smoke.py",
-      "line": 39
-    },
-    {
-      "name": "publish",
-      "kind": "function",
-      "file": "studio/generic_smoke.py",
-      "line": 43
-    },
-    {
-      "name": "fake_ask",
-      "kind": "function",
-      "file": "studio/generic_smoke.py",
-      "line": 49
-    },
-    {
-      "name": "verifier_smoke",
-      "kind": "function",
-      "file": "studio/generic_smoke.py",
-      "line": 85
-    },
-    {
-      "name": "orchestration_smoke",
-      "kind": "function",
-      "file": "studio/generic_smoke.py",
-      "line": 102
+      "file": "studio/engine_entry.py",
+      "line": 61
     },
     {
       "name": "main",
       "kind": "function",
-      "file": "studio/generic_smoke.py",
-      "line": 140
+      "file": "studio/engine_entry.py",
+      "line": 76
     },
     {
-      "name": "_remaining",
-      "kind": "function",
-      "file": "studio/multi_engine_orchestrator.py",
-      "line": 15
-    },
-    {
-      "name": "_detect",
-      "kind": "function",
-      "file": "studio/multi_engine_orchestrator.py",
-      "line": 21
-    },
-    {
-      "name": "_run_stage",
-      "kind": "function",
-      "file": "studio/multi_engine_orchestrator.py",
-      "line": 36
-    },
-    {
-      "name": "run_project",
-      "kind": "function",
-      "file": "studio/multi_engine_orchestrator.py",
-      "line": 42
-    },
-    {
-      "name": "request",
-      "kind": "function",
-      "file": "tests/test_browser_validation_contract.py",
-      "line": 23
-    },
-    {
-      "name": "BrowserValidationContractTests",
+      "name": "PatchPolicyError",
       "kind": "class",
-      "file": "tests/test_browser_validation_contract.py",
-      "line": 34
-    },
-    {
-      "name": "_write_script",
-      "kind": "function",
-      "file": "tests/test_browser_validation_contract.py",
-      "line": 35
-    },
-    {
-      "name": "test_runtime_browser_artifacts_are_not_publishable",
-      "kind": "function",
-      "file": "tests/test_browser_validation_contract.py",
-      "line": 72
-    },
-    {
-      "name": "test_request_check_accepts_browser_validation_contract",
-      "kind": "function",
-      "file": "tests/test_browser_validation_contract.py",
-      "line": 83
-    },
-    {
-      "name": "test_request_check_rejects_mutated_browser_validation_contract",
-      "kind": "function",
-      "file": "tests/test_browser_validation_contract.py",
-      "line": 90
-    },
-    {
-      "name": "test_browser_validation_requires_script",
-      "kind": "function",
-      "file": "tests/test_browser_validation_contract.py",
-      "line": 99
-    },
-    {
-      "name": "test_browser_validation_accepts_report_and_copies_artifacts",
-      "kind": "function",
-      "file": "tests/test_browser_validation_contract.py",
-      "line": 113
-    },
-    {
-      "name": "test_browser_validation_rejects_fake_screenshot_bytes",
-      "kind": "function",
-      "file": "tests/test_browser_validation_contract.py",
-      "line": 134
-    },
-    {
-      "name": "test_browser_validation_rejects_external_test_url",
-      "kind": "function",
-      "file": "tests/test_browser_validation_contract.py",
-      "line": 158
-    },
-    {
-      "name": "test_browser_validation_fails_on_console_errors",
-      "kind": "function",
-      "file": "tests/test_browser_validation_contract.py",
-      "line": 185
-    },
-    {
-      "name": "GenericArchitectureTests",
-      "kind": "class",
-      "file": "tests/test_generic_architecture.py",
-      "line": 12
-    },
-    {
-      "name": "test_prepare_architecture_is_generic_and_advisory",
-      "kind": "function",
-      "file": "tests/test_generic_architecture.py",
+      "file": "studio/engine_patch.py",
       "line": 13
     },
     {
-      "name": "test_record_architecture_writes_full_evidence_chain",
+      "name": "validate",
       "kind": "function",
-      "file": "tests/test_generic_architecture.py",
-      "line": 56
-    },
-    {
-      "name": "test_learning_failure_is_non_fatal_after_verified_round",
-      "kind": "function",
-      "file": "tests/test_generic_architecture.py",
-      "line": 82
-    },
-    {
-      "name": "GenericPublishedCheckpointTests",
-      "kind": "class",
-      "file": "tests/test_generic_published_checkpoint.py",
+      "file": "studio/engine_patch.py",
       "line": 17
     },
     {
-      "name": "test_observer_reads_sealed_checkpoint_after_verified_round",
+      "name": "execute",
       "kind": "function",
-      "file": "tests/test_generic_published_checkpoint.py",
+      "file": "studio/godot_android_stage.py",
+      "line": 16
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_android_stage.py",
+      "line": 56
+    },
+    {
+      "name": "_valid_sha",
+      "kind": "function",
+      "file": "studio/godot_device_stage.py",
       "line": 18
     },
     {
-      "name": "observer",
+      "name": "execute",
       "kind": "function",
-      "file": "tests/test_generic_published_checkpoint.py",
-      "line": 30
+      "file": "studio/godot_device_stage.py",
+      "line": 22
     },
     {
-      "name": "test_unpublished_phase_is_rejected_and_not_persisted",
+      "name": "main",
       "kind": "function",
-      "file": "tests/test_generic_published_checkpoint.py",
+      "file": "studio/godot_device_stage.py",
+      "line": 80
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_final_review_stage.py",
+      "line": 10
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_final_review_stage.py",
       "line": 39
     },
     {
-      "name": "test_remote_persistence_failure_stops_after_local_commit",
-      "kind": "function",
-      "file": "tests/test_generic_published_checkpoint.py",
-      "line": 55
-    },
-    {
-      "name": "failure",
-      "kind": "function",
-      "file": "tests/test_generic_published_checkpoint.py",
-      "line": 65
-    },
-    {
-      "name": "test_real_generic_canary_path_mirrors_only_after_sealed_complete",
-      "kind": "function",
-      "file": "tests/test_generic_published_checkpoint.py",
+      "name": "GodotModel",
+      "kind": "class",
+      "file": "studio/godot_model.py",
       "line": 72
     },
     {
-      "name": "observer",
+      "name": "ask",
       "kind": "function",
-      "file": "tests/test_generic_published_checkpoint.py",
-      "line": 89
+      "file": "studio/godot_model.py",
+      "line": 73
     },
     {
-      "name": "test_missing_observer_keeps_original_local_behavior",
+      "name": "_ask_godot",
       "kind": "function",
-      "file": "tests/test_generic_published_checkpoint.py",
-      "line": 104
+      "file": "studio/godot_model.py",
+      "line": 120
     },
     {
-      "name": "PublishedRoundCheckpointTests",
-      "kind": "class",
-      "file": "tests/test_generic_published_round_checkpoint.py",
-      "line": 20
-    },
-    {
-      "name": "test_two_published_rounds_restore_on_a_fresh_actions_runner",
+      "name": "_human_action",
       "kind": "function",
-      "file": "tests/test_generic_published_round_checkpoint.py",
-      "line": 21
+      "file": "studio/godot_play_stage.py",
+      "line": 16
     },
     {
-      "name": "persist",
+      "name": "execute",
       "kind": "function",
-      "file": "tests/test_generic_published_round_checkpoint.py",
-      "line": 29
+      "file": "studio/godot_play_stage.py",
+      "line": 28
     },
     {
-      "name": "test_complete_round_mirrors_final_checkpoint",
+      "name": "main",
       "kind": "function",
-      "file": "tests/test_generic_published_round_checkpoint.py",
-      "line": 55
+      "file": "studio/godot_play_stage.py",
+      "line": 147
     },
     {
-      "name": "test_unpublished_phase_never_reaches_remote_observer",
+      "name": "_safe_apply",
       "kind": "function",
-      "file": "tests/test_generic_published_round_checkpoint.py",
-      "line": 70
+      "file": "studio/godot_preview.py",
+      "line": 44
     },
     {
-      "name": "test_remote_failure_is_not_suppressed_after_local_save",
+      "name": "_relevant_source_excerpt",
       "kind": "function",
-      "file": "tests/test_generic_published_round_checkpoint.py",
-      "line": 83
+      "file": "studio/godot_preview.py",
+      "line": 120
     },
     {
-      "name": "unavailable",
+      "name": "_context",
       "kind": "function",
-      "file": "tests/test_generic_published_round_checkpoint.py",
-      "line": 91
+      "file": "studio/godot_preview.py",
+      "line": 158
     },
     {
-      "name": "ExistingWorkerCanaryVerificationTests",
-      "kind": "class",
-      "file": "tests/test_generic_worker_canary_resume.py",
+      "name": "priority",
+      "kind": "function",
+      "file": "studio/godot_preview.py",
+      "line": 176
+    },
+    {
+      "name": "source_priority",
+      "kind": "function",
+      "file": "studio/godot_preview.py",
+      "line": 201
+    },
+    {
+      "name": "_exact_branch_ref",
+      "kind": "function",
+      "file": "studio/godot_preview.py",
+      "line": 256
+    },
+    {
+      "name": "_restore",
+      "kind": "function",
+      "file": "studio/godot_preview.py",
+      "line": 266
+    },
+    {
+      "name": "_publish",
+      "kind": "function",
+      "file": "studio/godot_preview.py",
+      "line": 305
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_preview.py",
+      "line": 345
+    },
+    {
+      "name": "checkpoint",
+      "kind": "function",
+      "file": "studio/godot_preview.py",
+      "line": 402
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_privacy_security_stage.py",
+      "line": 10
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_privacy_security_stage.py",
+      "line": 44
+    },
+    {
+      "name": "_sha",
+      "kind": "function",
+      "file": "studio/godot_release_artifact_stage.py",
+      "line": 19
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_release_artifact_stage.py",
+      "line": 23
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_release_artifact_stage.py",
+      "line": 77
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_release_stage.py",
       "line": 14
     },
     {
-      "name": "_request",
+      "name": "main",
       "kind": "function",
-      "file": "tests/test_generic_worker_canary_resume.py",
+      "file": "studio/godot_release_stage.py",
+      "line": 54
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_runtime_journey_stage.py",
+      "line": 17
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_runtime_journey_stage.py",
+      "line": 52
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_store_metadata_stage.py",
+      "line": 13
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_store_metadata_stage.py",
+      "line": 50
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_visual_stage.py",
       "line": 15
     },
     {
-      "name": "test_accepts_exact_existing_canary_with_or_without_final_newline",
+      "name": "main",
       "kind": "function",
-      "file": "tests/test_generic_worker_canary_resume.py",
-      "line": 33
+      "file": "studio/godot_visual_stage.py",
+      "line": 52
     },
     {
-      "name": "test_rejects_wrong_content",
+      "name": "EnginePatchTests",
+      "kind": "class",
+      "file": "tests/test_engine_patch.py",
+      "line": 10
+    },
+    {
+      "name": "test_flutter_scope_remains_compatible",
       "kind": "function",
-      "file": "tests/test_generic_worker_canary_resume.py",
+      "file": "tests/test_engine_patch.py",
+      "line": 11
+    },
+    {
+      "name": "test_godot_implementation_accepts_project_text_scope",
+      "kind": "function",
+      "file": "tests/test_engine_patch.py",
+      "line": 15
+    },
+    {
+      "name": "test_godot_rejects_workflow_binary_and_traversal",
+      "kind": "function",
+      "file": "tests/test_engine_patch.py",
+      "line": 45
+    },
+    {
+      "name": "test_engine_specific_test_roles_are_enforced",
+      "kind": "function",
+      "file": "tests/test_engine_patch.py",
+      "line": 50
+    },
+    {
+      "name": "test_duplicate_empty_and_secret_content_fail_closed",
+      "kind": "function",
+      "file": "tests/test_engine_patch.py",
+      "line": 58
+    },
+    {
+      "name": "test_unknown_engine_and_role_fail_closed",
+      "kind": "function",
+      "file": "tests/test_engine_patch.py",
+      "line": 69
+    },
+    {
+      "name": "FakeAPI",
+      "kind": "class",
+      "file": "tests/test_godot_model.py",
+      "line": 16
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_godot_model.py",
+      "line": 18
+    },
+    {
+      "name": "call",
+      "kind": "function",
+      "file": "tests/test_godot_model.py",
+      "line": 19
+    },
+    {
+      "name": "completion",
+      "kind": "function",
+      "file": "tests/test_godot_model.py",
+      "line": 26
+    },
+    {
+      "name": "model",
+      "kind": "function",
+      "file": "tests/test_godot_model.py",
+      "line": 30
+    },
+    {
+      "name": "product_value",
+      "kind": "function",
+      "file": "tests/test_godot_model.py",
+      "line": 49
+    },
+    {
+      "name": "GodotModelTests",
+      "kind": "class",
+      "file": "tests/test_godot_model.py",
+      "line": 54
+    },
+    {
+      "name": "test_nvidia_source_generation_requests_json_mode",
+      "kind": "function",
+      "file": "tests/test_godot_model.py",
       "line": 55
     },
     {
-      "name": "test_rejects_non_canary_repository_or_missing_contract",
+      "name": "test_product_uses_godot_planning_contract_not_flutter_execution_claims",
       "kind": "function",
-      "file": "tests/test_generic_worker_canary_resume.py",
+      "file": "tests/test_godot_model.py",
+      "line": 90
+    },
+    {
+      "name": "test_product_prompt_requires_literal_json_step_objects",
+      "kind": "function",
+      "file": "tests/test_godot_model.py",
+      "line": 102
+    },
+    {
+      "name": "test_implementation_uses_godot_prompt_and_scope",
+      "kind": "function",
+      "file": "tests/test_godot_model.py",
+      "line": 132
+    },
+    {
+      "name": "test_test_role_rejects_non_test_path_then_repairs_once",
+      "kind": "function",
+      "file": "tests/test_godot_model.py",
+      "line": 156
+    },
+    {
+      "name": "test_truncated_patch_retry_requests_a_smaller_complete_change",
+      "kind": "function",
+      "file": "tests/test_godot_model.py",
+      "line": 170
+    },
+    {
+      "name": "test_structured_godot_call_falls_back_to_secondary_provider",
+      "kind": "function",
+      "file": "tests/test_godot_model.py",
+      "line": 184
+    },
+    {
+      "name": "test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary",
+      "kind": "function",
+      "file": "tests/test_godot_model.py",
+      "line": 222
+    },
+    {
+      "name": "test_budget_is_shared_and_fail_closed",
+      "kind": "function",
+      "file": "tests/test_godot_model.py",
+      "line": 236
+    },
+    {
+      "name": "blob",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 15
+    },
+    {
+      "name": "FakeGitHub",
+      "kind": "class",
+      "file": "tests/test_godot_preview.py",
+      "line": 19
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 20
+    },
+    {
+      "name": "get",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 24
+    },
+    {
+      "name": "call",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 38
+    },
+    {
+      "name": "FakeModel",
+      "kind": "class",
+      "file": "tests/test_godot_preview.py",
+      "line": 51
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 52
+    },
+    {
+      "name": "ask",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 53
+    },
+    {
+      "name": "FakeSandbox",
+      "kind": "class",
+      "file": "tests/test_godot_preview.py",
+      "line": 63
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 64
+    },
+    {
+      "name": "create",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
       "line": 65
+    },
+    {
+      "name": "gates",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 67
+    },
+    {
+      "name": "GodotPreviewTests",
+      "kind": "class",
+      "file": "tests/test_godot_preview.py",
+      "line": 71
     },
     {
       "name": "request",
       "kind": "function",
-      "file": "tests/test_mobile_validation_contract.py",
-      "line": 26
+      "file": "tests/test_godot_preview.py",
+      "line": 72
     },
     {
-      "name": "MobileValidationContractTests",
-      "kind": "class",
-      "file": "tests/test_mobile_validation_contract.py",
-      "line": 37
-    },
-    {
-      "name": "_write_script",
+      "name": "test_existing_godot_project_checkpoints_without_claiming_completion",
       "kind": "function",
-      "file": "tests/test_mobile_validation_contract.py",
-      "line": 38
-    },
-    {
-      "name": "test_mobile_runtime_artifacts_are_not_publishable",
-      "kind": "function",
-      "file": "tests/test_mobile_validation_contract.py",
-      "line": 63
-    },
-    {
-      "name": "test_request_check_accepts_mobile_contract",
-      "kind": "function",
-      "file": "tests/test_mobile_validation_contract.py",
-      "line": 68
-    },
-    {
-      "name": "test_request_check_rejects_mutated_mobile_contract",
-      "kind": "function",
-      "file": "tests/test_mobile_validation_contract.py",
+      "file": "tests/test_godot_preview.py",
       "line": 75
     },
     {
-      "name": "test_mobile_validation_accepts_structured_emulator_evidence",
+      "name": "test_publication_refuses_branch_movement",
       "kind": "function",
-      "file": "tests/test_mobile_validation_contract.py",
-      "line": 84
-    },
-    {
-      "name": "test_mobile_validation_fails_on_fatal_errors",
-      "kind": "function",
-      "file": "tests/test_mobile_validation_contract.py",
-      "line": 111
-    },
-    {
-      "name": "test_android_emulator_evidence_requires_real_emulator_identity",
-      "kind": "function",
-      "file": "tests/test_mobile_validation_contract.py",
-      "line": 127
-    },
-    {
-      "name": "test_android_emulator_evidence_verifies_device_package_and_activity",
-      "kind": "function",
-      "file": "tests/test_mobile_validation_contract.py",
-      "line": 140
-    },
-    {
-      "name": "test_mobile_specialty_requires_android_toolchain_probe",
-      "kind": "function",
-      "file": "tests/test_mobile_validation_contract.py",
-      "line": 172
-    },
-    {
-      "name": "test_mobile_specialty_is_not_advertised_without_emulator",
-      "kind": "function",
-      "file": "tests/test_mobile_validation_contract.py",
-      "line": 189
+      "file": "tests/test_godot_preview.py",
+      "line": 242
     }
   ],
   "selected_tests": [
-    "tests/test_browser_validation_contract.py",
-    "tests/test_generic_architecture.py",
-    "tests/test_generic_published_checkpoint.py",
-    "tests/test_generic_published_round_checkpoint.py",
-    "tests/test_generic_worker_canary_resume.py",
-    "tests/test_mobile_validation_contract.py"
+    "tests/test_engine_patch.py",
+    "tests/test_godot_model.py",
+    "tests/test_godot_preview.py"
   ]
 }

@@ -12536,6 +12536,19 @@ class PatchPolicyError(ValueError)
 ⋮----
 def validate(value: dict, engine: str, role: str = 'implementation') -> list[dict]
 ⋮----
+# Exact-match edits are deliberately Godot-implementation only. A small
+# replacement avoids asking a free model to echo a whole existing script.
+# This validates the envelope; the runner must verify the unique match
+# against the trusted on-disk source before constructing full-file patches.
+⋮----
+edits = value['edits']
+⋮----
+seen = set()
+total = 0
+normalized = []
+⋮----
+size = len(find.encode('utf-8')) + len(replacement.encode('utf-8'))
+⋮----
 seen = set(); total = 0; normalized = []
 ⋮----
 path = item.get('path'); content = item.get('content')
@@ -17831,6 +17844,7 @@ selected_model = ''
 elapsed = 0.0
 last_error = None
 primary_provider = self.providers[0] if self.providers else None
+compact_source = 'bounded_exact_match_source_excerpts' in context
 ⋮----
 selected_model = provider.model_for(role, False)
 api = self.api if primary_provider is not None and provider == primary_provider else core.API(provider.base, provider.key)
@@ -17917,6 +17931,28 @@ branch and never claims Android export, device QA, visual QA or journey executio
 ⋮----
 MAX_PUBLISH_FILE_BYTES = 1_000_000
 ⋮----
+# No full overwrite is safe when the model saw only selected excerpts.
+⋮----
+# Aider-style small edits: validate before any write, then expand
+# uniquely matched on-disk snippets into the existing full-file safety
+# contract. Never trust excerpts or model-provided source as authority.
+⋮----
+edits = validate_patch(value, 'godot', role)
+root = root.resolve()
+expanded = []
+⋮----
+raw_target = root / item['path']
+cursor = raw_target
+⋮----
+cursor = cursor.parent
+target = raw_target.resolve()
+⋮----
+original = target.read_text(encoding='utf-8')
+⋮----
+revised = original.replace(item['find'], item['replace'], 1)
+⋮----
+value = {'files': expanded}
+⋮----
 files = validate_patch(value, 'godot', role)
 root = root.resolve(); targets = []
 ⋮----
@@ -17929,6 +17965,37 @@ PLANNING_PER_FILE_CHAR_BUDGET = 4_800
 PLANNING_FILE_PREVIEW_LIMIT = 8
 PLANNING_MANIFEST_LIMIT = 100
 ⋮----
+# Large existing projects should be edited by exact source snippets, not
+# regenerated wholesale. This budget is independent of model token counters.
+COMPACT_SOURCE_THRESHOLD = 18_000
+COMPACT_SOURCE_CHAR_BUDGET = 10_000
+COMPACT_PER_FILE_CHAR_BUDGET = 7_000
+COMPACT_SOURCE_FILE_LIMIT = 8
+⋮----
+def _relevant_source_excerpt(source: str, brief: str, limit: int) -> str
+⋮----
+# Prefer exact code identifiers explicitly mentioned in the task,
+# e.g. settings_open and _unhandled_input. Never synthesize source.
+identifiers = sorted(set(re.findall(r'[A-Za-z_][A-Za-z0-9_]{4,}', brief)),
+identifiers = [value.lower() for value in identifiers if '_' in value][:16]
+lines = source.splitlines(keepends=True)
+prefix = source[:min(1400, max(300, limit // 4))]
+chunks = [prefix]
+room = max(0, limit - len(prefix) - 120)
+anchors = []
+⋮----
+lowered = line.lower()
+matching = [term for term in identifiers if term in lowered]
+⋮----
+score = 100 * len(matching) + sum(len(term) for term in matching)
+⋮----
+# Without explicit identifiers, include representative function definitions.
+⋮----
+anchors = [(0, i) for i, line in enumerate(lines) if line.lstrip().startswith('func ')]
+seen = set()
+⋮----
+chunk = ''.join(lines[start:end])
+⋮----
 def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation') -> str
 ⋮----
 paths = []
@@ -17937,6 +18004,8 @@ rel = path.relative_to(root).as_posix()
 ⋮----
 files = {}
 planning = phase in ('product', 'design')
+compact = (phase in ('implementation', 'tests') and
+excerpted_paths = []
 ⋮----
 # Explicitly distinguish source *excerpts* from the full files used
 # to generate patches. Keeping this manifest lets the planner reason
@@ -17952,7 +18021,16 @@ limit = min(PLANNING_PER_FILE_CHAR_BUDGET, remaining)
 sample = source.read(limit + 1)
 truncated = len(sample) > limit
 ⋮----
-# Never feed a partial source snapshot to code editing or review.
+# Exact-match edits are revalidated on full trusted files at apply
+# time. Truncated input is NEVER permission to overwrite whole files.
+def source_priority(item)
+⋮----
+remaining = COMPACT_SOURCE_CHAR_BUDGET
+⋮----
+limit = min(COMPACT_PER_FILE_CHAR_BUDGET, remaining)
+source = path.read_text(encoding='utf-8')
+⋮----
+# Full source is retained for review and for small projects.
 ⋮----
 context = {
 ⋮----
@@ -18034,6 +18112,7 @@ parent = _publish(github, branch, parent, root, state)
 result = model.ask(role, _context(req,state,root,phase=role))
 ⋮----
 implementation_context = _context(req,state,root)
+excerpted_paths = tuple(json.loads(implementation_context).get('excerpted_paths', ()))
 patch = model.ask('implementation', implementation_context)
 ⋮----
 event = {
@@ -30025,6 +30104,10 @@ def test_godot_implementation_accepts_project_text_scope(self)
 ⋮----
 result = validate({'files': [
 ⋮----
+# Compact output contract: exact text edits are accepted only for
+# Godot implementation, never for QA or Flutter.
+edit = {'edits': [{'path': 'scripts/player.gd',
+⋮----
 def test_godot_rejects_workflow_binary_and_traversal(self)
 ⋮----
 def test_engine_specific_test_roles_are_enforced(self)
@@ -32189,6 +32272,8 @@ result = subject.ask('implementation', 'improve game')
 params = subject.api.calls[0][2]
 system = params['messages'][0]['content']
 ⋮----
+result = subject.ask('implementation', 'fix one input bug')
+⋮----
 def test_test_role_rejects_non_test_path_then_repairs_once(self)
 ⋮----
 result = subject.ask('tests', 'write regression')
@@ -32322,6 +32407,29 @@ main_source = 'extends Node\n' + '# existing gameplay\n' * 30_000
 planning = json.loads(godot_preview._context(
 ⋮----
 implementation = json.loads(godot_preview._context(
+⋮----
+review = json.loads(godot_preview._context(
+⋮----
+# A small change must not require the model to echo the complete
+# 570k-character existing script. The runner expands each edit
+# only after verifying a unique match in the authoritative file.
+guard = source_root / 'scripts/guard.gd'
+before = 'extends Node\nfunc handle():\n    if settings_open:\n        start_game()\n'
+⋮----
+replacement = 'if not settings_open:\n        start_game()'
+payload = {'edits': [{'path': 'scripts/guard.gd',
+⋮----
+after = guard.read_text()
+⋮----
+link = source_root / 'scripts/linked.gd'
+⋮----
+# Relevant source anchors are selected from trusted code, not
+# hallucinated: the model sees the actual method it must edit.
+focused_source = ('extends Node\n' + '# unrelated\n' * 400 +
+⋮----
+focused = dict(self.request())
+⋮----
+excerpt = json.loads(godot_preview._context(
 ⋮----
 req = godot_preview.request_check(self.request())
 fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(

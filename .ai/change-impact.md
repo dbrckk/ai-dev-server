@@ -1,16 +1,24 @@
 # Change impact
 
-Base: 01e3927b150a933ede6a1a494c69cf3d29a691ca
-Head: 236989e38173fa6b2d1fbb2c80eb04542dd62f15
+Base: ada40882c21720b9bfb122d5b75ecbc18ca4bfbd
+Head: ef1b0fe8e74dbae18f2d54e9f6ab042e1cda994f
 
 ## Changed files
-- M studio/generic_project.py
+- M studio/engine_patch.py
+- M studio/godot_model.py
+- M studio/godot_preview.py
+- M tests/test_engine_patch.py
+- M tests/test_godot_model.py
+- M tests/test_godot_preview.py
 
 ## Affected areas
 - studio
+- tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_engine_patch.py
+- tests/test_godot_model.py
+- tests/test_godot_preview.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

@@ -130,7 +130,15 @@ class GodotModelTests(unittest.TestCase):
         system = params['messages'][0]['content']
         self.assertIn('Godot 4.7', system)
         self.assertNotIn('Senior Flutter engineering team', system)
+        self.assertIn('strongly prefer concise exact-match edits', system)
         self.assertEqual(subject.calls, 1)
+        subject.api.responses.append(completion({'edits': [{
+            'path': 'scripts/main.gd', 'find': 'if settings_open:',
+            'replace': 'if not settings_open:',
+        }]}))
+        result = subject.ask('implementation', 'fix one input bug')
+        self.assertEqual(result['edits'][0]['path'], 'scripts/main.gd')
+        self.assertEqual(subject.calls, 2)
 
     def test_test_role_rejects_non_test_path_then_repairs_once(self):
         subject = model([

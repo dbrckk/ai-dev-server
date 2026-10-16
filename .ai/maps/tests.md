@@ -8556,6 +8556,8 @@ def test_actions_worker_reports_rejected_worker_token_without_exposing_it()
 ⋮----
 def test_actions_worker_availability_probe_fails_closed()
 ⋮----
+probe = WORKFLOW.split(
+⋮----
 def test_actions_worker_bootstraps_remote_asset_forge_before_preflight()
 ⋮----
 resolve = WORKFLOW.index("Resolve qualified Production-OS revision")

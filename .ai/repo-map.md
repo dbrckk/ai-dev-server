@@ -1952,9 +1952,19 @@ jobs:
           if token:
               headers["Authorization"] = f"Bearer {token}"
 
+          # Never forward a credential-bearing GitHub API request to a
+          # redirect target. Only the two fixed read endpoints are allowed.
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+
+          opener = urllib.request.build_opener(NoRedirect())
+
           def fetch_json(url):
+              if url not in {runs_url, branch_url}:
+                  raise SystemExit("Unexpected Production-OS GitHub API URL")
               request = urllib.request.Request(url, headers=headers)
-              with urllib.request.urlopen(request, timeout=20) as response:
+              with opener.open(request, timeout=20) as response:
                   return json.load(response)
 
           # A just-deployed main revision can still have running CI.
@@ -2166,6 +2176,8 @@ jobs:
           # Snapshot is also produced on idle cycles; no task payload is kept.
           inventory_counts = None
           failed_statuses = Counter()
+          # Reuse the exact no-redirect policy of ProductionOSClient.
+          opener = urllib.request.build_opener(_NoRedirect())
 
           def probe(capabilities):
               request = urllib.request.Request(
@@ -2182,7 +2194,7 @@ jobs:
                   },
               )
               try:
-                  with urllib.request.urlopen(request, timeout=10) as response:
+                  with opener.open(request, timeout=10) as response:
                       payload = json.loads(response.read().decode("utf-8"))
               except urllib.error.HTTPError as exc:
                   if exc.code in {401, 403}:
@@ -2204,7 +2216,6 @@ jobs:
                   base + "/v1/stats",
                   headers={"Authorization": "Bearer " + token, "Accept": "application/json"},
               )
-              opener = urllib.request.build_opener(_NoRedirect())
               with opener.open(request, timeout=10) as response:
                   stats = json.loads(response.read(1000000).decode("utf-8"))
               if not isinstance(stats, dict):
@@ -2232,7 +2243,6 @@ jobs:
                   base + "/v1/workflows",
                   headers={"Authorization": "Bearer " + token, "Accept": "application/json"},
               )
-              opener = urllib.request.build_opener(_NoRedirect())
               with opener.open(request, timeout=10) as response:
                   workflows = json.loads(response.read(1000000).decode("utf-8")).get("workflows", [])
               for workflow in [w for w in workflows if w.get("status") == "failed"][:5]:
@@ -34460,6 +34470,8 @@ def test_actions_worker_does_not_prepare_android_for_base_only_claim_race()
 def test_actions_worker_reports_rejected_worker_token_without_exposing_it()
 ⋮----
 def test_actions_worker_availability_probe_fails_closed()
+⋮----
+probe = WORKFLOW.split(
 ⋮----
 def test_actions_worker_bootstraps_remote_asset_forge_before_preflight()
 ⋮----

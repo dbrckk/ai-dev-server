@@ -1663,6 +1663,7 @@
         "tests/test_patch_safety_rebuild.py",
         "tests/test_play_publisher.py",
         "tests/test_play_stage.py",
+        "tests/test_production_os_actions_worker_workflow.py",
         "tests/test_production_os_live_diagnostics.py",
         "tests/test_production_os_result_contract.py",
         "tests/test_production_os_worker.py",
@@ -1680,7 +1681,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 219,
+      "in_degree": 220,
       "out_degree": 18
     },
     "studio/cost_drift.py": {
@@ -7118,6 +7119,14 @@
     "tests/test_privacy_stage.py": {
       "dependencies": [
         "studio/privacy_stage.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 1
+    },
+    "tests/test_production_os_actions_worker_workflow.py": {
+      "dependencies": [
+        "studio/core.py"
       ],
       "dependents": [],
       "in_degree": 0,

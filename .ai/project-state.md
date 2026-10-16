@@ -104,16 +104,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-16T11:01:30Z
+Generated: 2026-10-16T11:02:52Z
 
 ### Git
 - Branch: `main`
-- Head: `ef1b0fe8e74d`
-- Commit date: 2026-10-16T13:01:14+02:00
-- Commit: perf(godot): bound source context and generate verified exact edits (#321)
+- Head: `6d32994dd493`
+- Commit date: 2026-10-16T13:02:41+02:00
+- Commit: security(worker): reject credential-bearing HTTP redirects
 - Tracked files: 865
 
 ### Recently changed files
+- `.github/workflows/production-os-actions-worker.yml`
+- `tests/test_production_os_actions_worker_workflow.py`
 - `studio/engine_patch.py`
 - `studio/godot_model.py`
 - `studio/godot_preview.py`

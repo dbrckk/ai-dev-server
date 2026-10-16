@@ -476,6 +476,10 @@ def _record_retry_failure(state: dict, root: Path, blocker: str) -> None:
         and previous.get('source_fingerprint') == fingerprint
     )
     count = (int(previous.get('count', 0)) + 1) if same else 1
+    if not same:
+        state.pop('preview_retry_stopped', None)
+        if state.get('completion', {}).get('next_stage') == 'godot_preview_identical_failure_stop_loss':
+            state.pop('completion', None)
     state['retry_guard'] = {
         'blocker': blocker,
         'source_fingerprint': fingerprint,
@@ -596,6 +600,17 @@ def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, 
     if state.get('engine') != 'godot':
         raise StudioError('Checkpoint engine mismatch')
     state['target_repo'] = req['target_repo']
+    # A stopped checkpoint may resume only after an actual trusted source
+    # change; an identical retry consumes no new model capacity.
+    if state.get('preview_retry_stopped') is True:
+        guard = state.get('retry_guard')
+        if (isinstance(guard, dict)
+                and isinstance(guard.get('source_fingerprint'), str)
+                and guard['source_fingerprint'] != _source_fingerprint(root)):
+            state.pop('preview_retry_stopped', None)
+            state.pop('retry_guard', None)
+            if state.get('completion', {}).get('next_stage') == 'godot_preview_identical_failure_stop_loss':
+                state.pop('completion', None)
     if resumed:
         # The restored branch head is the authoritative committed checkpoint.
         # Stored state precedes its publication, so it may lack this SHA.

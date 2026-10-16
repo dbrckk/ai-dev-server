@@ -282,6 +282,11 @@ def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation
                 if not isinstance(criteria, list):
                     deliverable = product.get('deliverable')
                     criteria = deliverable.get('acceptance_criteria') if isinstance(deliverable, dict) else []
+                if not isinstance(criteria, list):
+                    criteria = []
+                journeys = product.get('journeys')
+                if not isinstance(journeys, list):
+                    journeys = []
                 compact_product = {
                     'acceptance_criteria': [
                         item[:180] for item in (criteria or [])[:4]
@@ -292,7 +297,7 @@ def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation
                             'id': journey.get('id'),
                             'steps': journey.get('steps', [])[:4],
                         }
-                        for journey in (product.get('journeys') or [])[:3]
+                        for journey in journeys[:3]
                         if isinstance(journey, dict)
                         and isinstance(journey.get('steps'), list)
                     ],

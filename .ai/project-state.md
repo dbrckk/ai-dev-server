@@ -106,27 +106,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-16T11:20:29Z
+Generated: 2026-10-16T13:59:14Z
 
 ### Git
 - Branch: `main`
-- Head: `773d9ce2257e`
-- Commit date: 2026-10-16T13:20:20+02:00
-- Commit: fix(godot): concise structured planning repair and alternate provider fallback (#325)
+- Head: `ec9dab426d9a`
+- Commit date: 2026-10-16T15:59:00+02:00
+- Commit: fix(godot): make malformed patch-envelope repair actionable (#327)
 - Tracked files: 865
 
 ### Recently changed files
 - `studio/godot_model.py`
 - `tests/test_godot_model.py`
-- `studio/core.py`
+- `control/production-os-worker-canary.json`
 - `studio/godot_preview.py`
 - `tests/test_godot_preview.py`
+- `studio/core.py`
 - `tests/test_patch_safety_rebuild.py`
-- `.github/workflows/production-os-actions-worker.yml`
-- `tests/test_production_os_actions_worker_workflow.py`
-- `studio/engine_patch.py`
-- `tests/test_engine_patch.py`
-- `studio/generic_project.py`
 
 ### Project signals
 - No common build descriptor detected

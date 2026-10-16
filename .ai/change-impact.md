@@ -1,7 +1,7 @@
 # Change impact
 
-Base: 21d4c84cdfa9d77aa66f50d355e90df59d742f9f
-Head: 773d9ce2257e0a2ccdae31303fc03ab14152c96d
+Base: 06a0ba80ae74ebe42898482e311de0873f1a4651
+Head: ec9dab426d9a0fea614a79a8882ff313cab8c827
 
 ## Changed files
 - M studio/godot_model.py

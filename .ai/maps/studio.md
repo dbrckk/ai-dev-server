@@ -12103,7 +12103,7 @@ invalid_response_provider = None
 value = self._ask_godot(
 ⋮----
 error = str(exc)
-# Invalid JSON or product journeys may be provider-specific.
+# Invalid JSON, product journeys or patch envelopes may be provider-specific.
 # Use the one bounded repair on a different eligible provider
 # where available; never bypass its quota/routing limits.
 # Truncations and policy errors remain on the same provider.
@@ -12264,10 +12264,10 @@ target = (root / item['path']).resolve()
 ⋮----
 # Planning needs architecture and a representative source sample, not a full
 # replay of every script. Implementation, QA and review still get exact files.
-PLANNING_SOURCE_CHAR_BUDGET = 12_000
-PLANNING_PER_FILE_CHAR_BUDGET = 4_800
-PLANNING_FILE_PREVIEW_LIMIT = 8
-PLANNING_MANIFEST_LIMIT = 100
+PLANNING_SOURCE_CHAR_BUDGET = 6_000
+PLANNING_PER_FILE_CHAR_BUDGET = 3_500
+PLANNING_FILE_PREVIEW_LIMIT = 6
+PLANNING_MANIFEST_LIMIT = 48
 ⋮----
 # Large existing projects should be edited by exact source snippets, not
 # regenerated wholesale. This budget is independent of model token counters.
@@ -12276,7 +12276,7 @@ COMPACT_SOURCE_CHAR_BUDGET = 10_000
 COMPACT_PER_FILE_CHAR_BUDGET = 7_000
 COMPACT_SOURCE_FILE_LIMIT = 8
 ⋮----
-def _relevant_source_excerpt(source: str, brief: str, limit: int) -> str
+def _relevant_source_excerpt(source: str, brief: str, limit: int, *, planning: bool = False) -> str
 ⋮----
 # Prefer exact code identifiers explicitly mentioned in the task,
 # e.g. settings_open and _unhandled_input. Never synthesize source.
@@ -12299,6 +12299,9 @@ anchors = [(0, i) for i, line in enumerate(lines) if line.lstrip().startswith('f
 seen = set()
 ⋮----
 chunk = ''.join(lines[start:end])
+⋮----
+omitted = '[OMITTED SOURCE - planning excerpt only]' if planning else '[OMITTED SOURCE - EXACT EDITS ONLY]'
+truncated = '[TRUNCATED: planning excerpt only]' if planning else '[TRUNCATED SOURCE - EXACT EDITS ONLY]'
 ⋮----
 def _review_evidence(patch: dict | None, root: Path) -> list[dict]
 ⋮----
@@ -12351,8 +12354,11 @@ rel = item[0]
 remaining = PLANNING_SOURCE_CHAR_BUDGET
 ⋮----
 limit = min(PLANNING_PER_FILE_CHAR_BUDGET, remaining)
+# Retain task-relevant function bodies even when they occur far
+# below the beginning of a large gameplay script. These are
+# labelled partial excerpts, never authoritative full source.
 ⋮----
-sample = source.read(limit + 1)
+sample = source.read()
 truncated = len(sample) > limit
 ⋮----
 # Exact-match edits are revalidated on full trusted files at apply
@@ -12367,6 +12373,28 @@ source = path.read_text(encoding='utf-8')
 # Full source is retained for review and for small projects.
 ⋮----
 context = {
+⋮----
+# The #36 canary spent 28,101 *input* tokens across only four
+# product-stage calls. Do not send full architecture telemetry,
+# entire request control data or verbose product deliverables to
+# preliminary planning. Preserve the complete trusted state for
+# implementation, QA, checkpoints and downstream validation.
+minimal_request = {
+compact_architecture = {
+lean = {
+⋮----
+product = state.get('product')
+⋮----
+criteria = product.get('acceptance_criteria')
+⋮----
+deliverable = product.get('deliverable')
+criteria = deliverable.get('acceptance_criteria') if isinstance(deliverable, dict) else []
+⋮----
+criteria = []
+journeys = product.get('journeys')
+⋮----
+journeys = []
+compact_product = {
 ⋮----
 report = canonical(validation_logs)
 ⋮----

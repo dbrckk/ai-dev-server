@@ -9,7 +9,7 @@
       "source": {
         "file": "studio/godot_model.py",
         "start": 74,
-        "end": 368
+        "end": 381
       },
       "symbol_dependencies": [
         {
@@ -97,6 +97,18 @@
           "relation": "class_like"
         },
         {
+          "symbol": "QA",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 236,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
           "symbol": "StudioError",
           "definitions": [
             {
@@ -113,12 +125,24 @@
           "definitions": [
             {
               "file": "studio/godot_model.py",
-              "line": 159,
+              "line": 172,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "allowed",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 210,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         },
         {
           "symbol": "ask",
@@ -271,13 +295,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 20
+      "dependency_count": 22
     },
     "ask": {
       "source": {
         "file": "studio/godot_model.py",
         "start": 75,
-        "end": 157
+        "end": 170
       },
       "symbol_dependencies": [
         {
@@ -317,6 +341,18 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "QA",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 236,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
           "symbol": "StudioError",
           "definitions": [
             {
@@ -333,12 +369,24 @@
           "definitions": [
             {
               "file": "studio/godot_model.py",
-              "line": 159,
+              "line": 172,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "allowed",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 210,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         },
         {
           "symbol": "augment",
@@ -377,13 +425,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 8
+      "dependency_count": 10
     },
     "_ask_godot": {
       "source": {
         "file": "studio/godot_model.py",
-        "start": 159,
-        "end": 368
+        "start": 172,
+        "end": 381
       },
       "symbol_dependencies": [
         {
@@ -587,6 +635,1045 @@
       ],
       "dependency_count": 15
     },
+    "_safe_apply": {
+      "source": {
+        "file": "studio/godot_preview.py",
+        "start": 44,
+        "end": 102
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate",
+          "definitions": [
+            {
+              "file": "studio/architecture_preflight.py",
+              "line": 66,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/engine_patch.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "write",
+          "definitions": [
+            {
+              "file": "studio/architecture_benchmark.py",
+              "line": 102,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/architecture_evaluator.py",
+              "line": 99,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/architecture_learning.py",
+              "line": 386,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/architecture_outcome.py",
+              "line": 114,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/architecture_planner.py",
+              "line": 256,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "write_text",
+          "definitions": [
+            {
+              "file": "studio/atomic_file.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "_relevant_source_excerpt": {
+      "source": {
+        "file": "studio/godot_preview.py",
+        "start": 120,
+        "end": 157
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_review_evidence": {
+      "source": {
+        "file": "studio/godot_preview.py",
+        "start": 160,
+        "end": 214
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_safe_apply",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "editable",
+          "definitions": [
+            {
+              "file": "studio/project_engine.py",
+              "line": 59,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_context": {
+      "source": {
+        "file": "studio/godot_preview.py",
+        "start": 217,
+        "end": 387
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "QA",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 236,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Reject",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 158,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Truncated",
+          "definitions": [
+            {
+              "file": "tests/test_journeys.py",
+              "line": 110,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "_relevant_source_excerpt",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 120,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_review_evidence",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 160,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "editable",
+          "definitions": [
+            {
+              "file": "studio/project_engine.py",
+              "line": 59,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "main",
+          "definitions": [
+            {
+              "file": "studio/architecture_learning.py",
+              "line": 400,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "priority",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 236,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "source_priority",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 267,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "verdict",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 320,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "priority": {
+      "source": {
+        "file": "studio/godot_preview.py",
+        "start": 236,
+        "end": 356
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "QA",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 236,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Truncated",
+          "definitions": [
+            {
+              "file": "tests/test_journeys.py",
+              "line": 110,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "_relevant_source_excerpt",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 120,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "main",
+          "definitions": [
+            {
+              "file": "studio/architecture_learning.py",
+              "line": 400,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "source_priority",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 267,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "verdict",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 320,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "source_priority": {
+      "source": {
+        "file": "studio/godot_preview.py",
+        "start": 267,
+        "end": 387
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "QA",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 236,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "Reject",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 158,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "_relevant_source_excerpt",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 120,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_review_evidence",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 160,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "main",
+          "definitions": [
+            {
+              "file": "studio/architecture_learning.py",
+              "line": 400,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verdict",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 320,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "_exact_branch_ref": {
+      "source": {
+        "file": "studio/godot_preview.py",
+        "start": 389,
+        "end": 396
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_restore": {
+      "source": {
+        "file": "studio/godot_preview.py",
+        "start": 399,
+        "end": 435
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ExistingProjectError",
+          "definitions": [
+            {
+              "file": "studio/existing_project.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_exact_branch_ref",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 389,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "checkpoint",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 535,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "materialize",
+          "definitions": [
+            {
+              "file": "studio/existing_project.py",
+              "line": 58,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "plan",
+          "definitions": [
+            {
+              "file": "studio/architecture_planner.py",
+              "line": 109,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/existing_project.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "_publish": {
+      "source": {
+        "file": "studio/godot_preview.py",
+        "start": 438,
+        "end": 475
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_exact_branch_ref",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 389,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 399,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "checkpoint",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 535,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "restorable",
+          "definitions": [
+            {
+              "file": "studio/project_engine.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "execute": {
+      "source": {
+        "file": "studio/godot_preview.py",
+        "start": 478,
+        "end": 692
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ArchitectureChangeBlocked",
+          "definitions": [
+            {
+              "file": "studio/architecture_change_guard.py",
+              "line": 58,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "GodotModel",
+          "definitions": [
+            {
+              "file": "studio/godot_model.py",
+              "line": 74,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "GodotSandbox",
+          "definitions": [
+            {
+              "file": "studio/godot_session.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "QA",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 236,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_context",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 217,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_publish",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 438,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_restore",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 399,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_safe_apply",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 460,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/godot_model.py",
+              "line": 75,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "checkpoint",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 535,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "create",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 946,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/godot_session.py",
+              "line": 19,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "gates",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 990,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/godot_session.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "recommend",
+          "definitions": [
+            {
+              "file": "studio/project_recommendations.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "request_check",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_journeys",
+          "definitions": [
+            {
+              "file": "studio/journeys.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verdict",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 320,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 18
+    },
+    "checkpoint": {
+      "source": {
+        "file": "studio/godot_preview.py",
+        "start": 535,
+        "end": 655
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ArchitectureChangeBlocked",
+          "definitions": [
+            {
+              "file": "studio/architecture_change_guard.py",
+              "line": 58,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "QA",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 236,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_context",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 217,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_publish",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 438,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_safe_apply",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 460,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/godot_model.py",
+              "line": 75,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "gates",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 990,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/godot_session.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_journeys",
+          "definitions": [
+            {
+              "file": "studio/journeys.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verdict",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 320,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 11
+    },
     "FakeAPI": {
       "source": {
         "file": "tests/test_godot_model.py",
@@ -725,7 +1812,7 @@
       "source": {
         "file": "tests/test_godot_model.py",
         "start": 54,
-        "end": 359
+        "end": 388
       },
       "symbol_dependencies": [
         {
@@ -771,6 +1858,18 @@
               "file": "studio/core.py",
               "line": 35,
               "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "allowed",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 210,
+              "kind": "function",
               "language": "python"
             }
           ],
@@ -901,7 +2000,7 @@
           "definitions": [
             {
               "file": "tests/test_godot_model.py",
-              "line": 287,
+              "line": 316,
               "kind": "function",
               "language": "python"
             }
@@ -961,7 +2060,7 @@
           "definitions": [
             {
               "file": "tests/test_godot_model.py",
-              "line": 273,
+              "line": 302,
               "kind": "function",
               "language": "python"
             }
@@ -1005,7 +2104,7 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 22
+      "dependency_count": 23
     },
     "test_nvidia_source_generation_requests_json_mode": {
       "source": {
@@ -1419,7 +2518,7 @@
       "source": {
         "file": "tests/test_godot_model.py",
         "start": 218,
-        "end": 271
+        "end": 300
       },
       "symbol_dependencies": [
         {
@@ -1453,6 +2552,18 @@
               "file": "studio/core.py",
               "line": 35,
               "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "allowed",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 210,
+              "kind": "function",
               "language": "python"
             }
           ],
@@ -1525,13 +2636,13 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 8
+      "dependency_count": 9
     },
     "test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary": {
       "source": {
         "file": "tests/test_godot_model.py",
-        "start": 273,
-        "end": 285
+        "start": 302,
+        "end": 314
       },
       "symbol_dependencies": [
         {
@@ -1630,8 +2741,8 @@
     "test_budget_is_shared_and_fail_closed": {
       "source": {
         "file": "tests/test_godot_model.py",
-        "start": 287,
-        "end": 359
+        "start": 316,
+        "end": 388
       },
       "symbol_dependencies": [
         {
@@ -1744,6 +2855,694 @@
         }
       ],
       "dependency_count": 8
+    },
+    "blob": {
+      "source": {
+        "file": "tests/test_godot_preview.py",
+        "start": 15,
+        "end": 16
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "FakeGitHub": {
+      "source": {
+        "file": "tests/test_godot_preview.py",
+        "start": 19,
+        "end": 48
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 329,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 434,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 919,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "blob",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "get": {
+      "source": {
+        "file": "tests/test_godot_preview.py",
+        "start": 24,
+        "end": 37
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "blob",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 15,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "FakeModel": {
+      "source": {
+        "file": "tests/test_godot_preview.py",
+        "start": 51,
+        "end": 60
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 329,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 434,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 919,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 53,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "FakeSandbox": {
+      "source": {
+        "file": "tests/test_godot_preview.py",
+        "start": 63,
+        "end": 68
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 329,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 434,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 919,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 65,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "gates",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 67,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "create": {
+      "source": {
+        "file": "tests/test_godot_preview.py",
+        "start": 65,
+        "end": 66
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "gates": {
+      "source": {
+        "file": "tests/test_godot_preview.py",
+        "start": 67,
+        "end": 68
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "GodotPreviewTests": {
+      "source": {
+        "file": "tests/test_godot_preview.py",
+        "start": 71,
+        "end": 310
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ArchitectureChangeBlocked",
+          "definitions": [
+            {
+              "file": "studio/architecture_change_guard.py",
+              "line": 58,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "FakeGitHub",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "FakeModel",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 51,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "FakeSandbox",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 63,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_context",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 217,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_publish",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 438,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_restore",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 399,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_safe_apply",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "execute",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 478,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "request",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 72,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "request_check",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_existing_godot_project_checkpoints_without_claiming_completion",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 75,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_publication_refuses_branch_movement",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 305,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "verdict",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 320,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 17
+    },
+    "request": {
+      "source": {
+        "file": "tests/test_godot_preview.py",
+        "start": 72,
+        "end": 73
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_existing_godot_project_checkpoints_without_claiming_completion": {
+      "source": {
+        "file": "tests/test_godot_preview.py",
+        "start": 75,
+        "end": 303
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ArchitectureChangeBlocked",
+          "definitions": [
+            {
+              "file": "studio/architecture_change_guard.py",
+              "line": 58,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "FakeGitHub",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "FakeModel",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 51,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "FakeSandbox",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 63,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_context",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 217,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_restore",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 399,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_safe_apply",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 44,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "canonical",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "execute",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 478,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 24,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "request",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 72,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "request_check",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "verdict",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 320,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 14
+    },
+    "test_publication_refuses_branch_movement": {
+      "source": {
+        "file": "tests/test_godot_preview.py",
+        "start": 305,
+        "end": 310
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeGitHub",
+          "definitions": [
+            {
+              "file": "tests/test_godot_preview.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_publish",
+          "definitions": [
+            {
+              "file": "studio/godot_preview.py",
+              "line": 438,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
     }
   }
 }

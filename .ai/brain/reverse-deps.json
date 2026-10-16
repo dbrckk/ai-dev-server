@@ -2974,6 +2974,7 @@
         "studio/project_engine.py",
         "studio/project_recommendations.py",
         "studio/safe_rewrite_learning.py",
+        "studio/stage_registry.py",
         "tests/test_journeys.py",
         "tests/test_studio.py"
       ],
@@ -2992,7 +2993,7 @@
         "tests/test_godot_preview.py"
       ],
       "in_degree": 12,
-      "out_degree": 20
+      "out_degree": 21
     },
     "studio/godot_privacy_security_qa.py": {
       "dependencies": [
@@ -4721,6 +4722,7 @@
         "studio/godot_final_review_qa.py",
         "studio/godot_final_review_stage.py",
         "studio/godot_play_stage.py",
+        "studio/godot_preview.py",
         "studio/godot_privacy_security_stage.py",
         "studio/godot_release_artifact_stage.py",
         "studio/godot_release_qa.py",
@@ -4763,7 +4765,7 @@
         "tests/test_task_scheduler.py",
         "tests/test_workflow_checkpoint.py"
       ],
-      "in_degree": 59,
+      "in_degree": 60,
       "out_degree": 0
     },
     "studio/stagnation_controller.py": {
@@ -6540,11 +6542,12 @@
         "studio/architecture_change_guard.py",
         "studio/core.py",
         "studio/godot_preview.py",
-        "tests/test_journeys.py"
+        "tests/test_journeys.py",
+        "tests/test_production_os_local_e2e.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 4
+      "out_degree": 5
     },
     "tests/test_godot_privacy_security_qa.py": {
       "dependencies": [
@@ -7154,8 +7157,10 @@
         "studio/production_os_worker.py",
         "tests/test_github_goal_store.py"
       ],
-      "dependents": [],
-      "in_degree": 0,
+      "dependents": [
+        "tests/test_godot_preview.py"
+      ],
+      "in_degree": 1,
       "out_degree": 7
     },
     "tests/test_production_os_remote_asset_capability.py": {

@@ -1,29 +1,121 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "aa1694c21225b05981097097154d601b70d679d0",
-  "head": "773d9ce2257e0a2ccdae31303fc03ab14152c96d",
+  "base": "773d9ce2257e0a2ccdae31303fc03ab14152c96d",
+  "head": "ec9dab426d9a0fea614a79a8882ff313cab8c827",
   "index_mode": "incremental",
   "changed_files": [
+    {
+      "path": "control/production-os-worker-canary.json",
+      "status": "M"
+    },
     {
       "path": "studio/godot_model.py",
       "status": "M"
     },
     {
+      "path": "studio/godot_preview.py",
+      "status": "M"
+    },
+    {
       "path": "tests/test_godot_model.py",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_godot_preview.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
     "studio/godot_model.py",
-    "tests/test_godot_model.py"
+    "studio/godot_preview.py",
+    "tests/test_godot_model.py",
+    "tests/test_godot_preview.py"
   ],
   "impacted_files": [
+    "studio/engine_entry.py",
+    "studio/godot_android_stage.py",
+    "studio/godot_device_stage.py",
+    "studio/godot_final_review_stage.py",
     "studio/godot_model.py",
+    "studio/godot_play_stage.py",
     "studio/godot_preview.py",
-    "tests/test_godot_model.py"
+    "studio/godot_privacy_security_stage.py",
+    "studio/godot_release_artifact_stage.py",
+    "studio/godot_release_stage.py",
+    "studio/godot_runtime_journey_stage.py",
+    "studio/godot_store_metadata_stage.py",
+    "studio/godot_visual_stage.py",
+    "tests/test_godot_model.py",
+    "tests/test_godot_preview.py"
   ],
   "impacted_symbols": [
+    {
+      "name": "_exact_branch_ref",
+      "kind": "function",
+      "file": "studio/engine_entry.py",
+      "line": 15
+    },
+    {
+      "name": "detect_engine",
+      "kind": "function",
+      "file": "studio/engine_entry.py",
+      "line": 25
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/engine_entry.py",
+      "line": 61
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/engine_entry.py",
+      "line": 76
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_android_stage.py",
+      "line": 16
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_android_stage.py",
+      "line": 56
+    },
+    {
+      "name": "_valid_sha",
+      "kind": "function",
+      "file": "studio/godot_device_stage.py",
+      "line": 18
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_device_stage.py",
+      "line": 22
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_device_stage.py",
+      "line": 80
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_final_review_stage.py",
+      "line": 10
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_final_review_stage.py",
+      "line": 39
+    },
     {
       "name": "GodotModel",
       "kind": "class",
@@ -40,7 +132,25 @@
       "name": "_ask_godot",
       "kind": "function",
       "file": "studio/godot_model.py",
-      "line": 159
+      "line": 172
+    },
+    {
+      "name": "_human_action",
+      "kind": "function",
+      "file": "studio/godot_play_stage.py",
+      "line": 16
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_play_stage.py",
+      "line": 28
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_play_stage.py",
+      "line": 147
     },
     {
       "name": "_safe_apply",
@@ -58,55 +168,133 @@
       "name": "_review_evidence",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 158
+      "line": 160
     },
     {
       "name": "_context",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 215
+      "line": 217
     },
     {
       "name": "priority",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 234
+      "line": 236
     },
     {
       "name": "source_priority",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 259
+      "line": 267
     },
     {
       "name": "_exact_branch_ref",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 328
+      "line": 389
     },
     {
       "name": "_restore",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 338
+      "line": 399
     },
     {
       "name": "_publish",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 377
+      "line": 438
     },
     {
       "name": "execute",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 417
+      "line": 478
     },
     {
       "name": "checkpoint",
       "kind": "function",
       "file": "studio/godot_preview.py",
-      "line": 474
+      "line": 535
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_privacy_security_stage.py",
+      "line": 10
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_privacy_security_stage.py",
+      "line": 44
+    },
+    {
+      "name": "_sha",
+      "kind": "function",
+      "file": "studio/godot_release_artifact_stage.py",
+      "line": 19
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_release_artifact_stage.py",
+      "line": 23
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_release_artifact_stage.py",
+      "line": 77
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_release_stage.py",
+      "line": 14
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_release_stage.py",
+      "line": 54
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_runtime_journey_stage.py",
+      "line": 17
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_runtime_journey_stage.py",
+      "line": 52
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_store_metadata_stage.py",
+      "line": 13
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_store_metadata_stage.py",
+      "line": 50
+    },
+    {
+      "name": "execute",
+      "kind": "function",
+      "file": "studio/godot_visual_stage.py",
+      "line": 15
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/godot_visual_stage.py",
+      "line": 52
     },
     {
       "name": "FakeAPI",
@@ -196,16 +384,113 @@
       "name": "test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary",
       "kind": "function",
       "file": "tests/test_godot_model.py",
-      "line": 273
+      "line": 302
     },
     {
       "name": "test_budget_is_shared_and_fail_closed",
       "kind": "function",
       "file": "tests/test_godot_model.py",
-      "line": 287
+      "line": 316
+    },
+    {
+      "name": "blob",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 15
+    },
+    {
+      "name": "FakeGitHub",
+      "kind": "class",
+      "file": "tests/test_godot_preview.py",
+      "line": 19
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 20
+    },
+    {
+      "name": "get",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 24
+    },
+    {
+      "name": "call",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 38
+    },
+    {
+      "name": "FakeModel",
+      "kind": "class",
+      "file": "tests/test_godot_preview.py",
+      "line": 51
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 52
+    },
+    {
+      "name": "ask",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 53
+    },
+    {
+      "name": "FakeSandbox",
+      "kind": "class",
+      "file": "tests/test_godot_preview.py",
+      "line": 63
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 64
+    },
+    {
+      "name": "create",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 65
+    },
+    {
+      "name": "gates",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 67
+    },
+    {
+      "name": "GodotPreviewTests",
+      "kind": "class",
+      "file": "tests/test_godot_preview.py",
+      "line": 71
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 72
+    },
+    {
+      "name": "test_existing_godot_project_checkpoints_without_claiming_completion",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 75
+    },
+    {
+      "name": "test_publication_refuses_branch_movement",
+      "kind": "function",
+      "file": "tests/test_godot_preview.py",
+      "line": 305
     }
   ],
   "selected_tests": [
-    "tests/test_godot_model.py"
+    "tests/test_godot_model.py",
+    "tests/test_godot_preview.py"
   ]
 }

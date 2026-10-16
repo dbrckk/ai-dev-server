@@ -6414,6 +6414,20 @@ subject = model([completion(bad_plan)])
 ⋮----
 good_plan = subject.ask('product', 'plan concise gameplay')
 ⋮----
+# Canary 37 ended after five cycles with "Expected patch envelope".
+# Valid JSON with the wrong envelope needs an actionable repair and
+# the same independently eligible fallback as malformed JSON.
+patch_value = {'edits': [{'path': 'scripts/main.gd',
+invalid_patch = {'summary': 'guard READY input', **patch_value}
+subject = model([completion(invalid_patch)])
+fallback_api = FakeAPI([completion(patch_value)])
+⋮----
+repaired = subject.ask('implementation', 'fix settings input')
+⋮----
+subject = model([completion(invalid_patch), completion(invalid_patch)])
+⋮----
+repair = subject.api.calls[1][2]['messages'][1]['content']
+⋮----
 # An installation with no alternate provider still retains its
 # original same-provider repair attempt, with no new provider calls.
 subject = model([malformed, completion(product_value())])
@@ -6549,6 +6563,13 @@ focused_source = ('extends Node\n' + '# unrelated\n' * 400 +
 focused = dict(self.request())
 ⋮----
 excerpt = json.loads(godot_preview._context(
+⋮----
+# Reproduce canary #36: large autonomous architecture telemetry
+# must not be included in product/design prompts. The late
+# _unhandled_input handler remains available despite truncation.
+noisy_state = {
+⋮----
+lean = json.loads(godot_preview._context(
 ⋮----
 req = godot_preview.request_check(self.request())
 fingerprint = godot_preview.hashlib.sha256(godot_preview.canonical(

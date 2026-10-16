@@ -1,6 +1,7 @@
 from pathlib import Path
 import json
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -11,7 +12,7 @@ STUDIO = ROOT / "studio"
 if str(STUDIO) not in sys.path:
     sys.path.insert(0, str(STUDIO))
 
-from agents.adapters import AgentRun
+from agents.adapters import AgentAdapter, AgentRun
 from agents.registry import AgentRegistry, AgentSpec
 from agents.router import choose_agent, rank_agents
 from agents.orchestrator import execute_named, invocation_for
@@ -152,6 +153,54 @@ class AgentRouterTests(unittest.TestCase):
         self.assertEqual(extra["OPENCODE_STUDIO_API_KEY"],"super-secret")
         self.assertNotIn("super-secret",extra["OPENCODE_CONFIG_CONTENT"])
         self.assertIn("OPENCODE_STUDIO_API_KEY",extra["OPENCODE_CONFIG_CONTENT"])
+
+    def test_external_agent_isolates_control_plane_credentials(self):
+        # Hermes/OpenCode CLI processes may be untrusted third-party code.
+        # Production-OS worker authority and Git/SSH publishing credentials
+        # must never be inherited or reintroduced via extra_env.
+        inherited = {
+            "GITHUB_TOKEN": "github-secret",
+            "GH_TOKEN": "gh-secret",
+            "STUDIO_GITHUB_TOKEN": "studio-secret",
+            "PRODUCTION_OS_OPERATOR_TOKEN": "operator-secret",
+            "PRODUCTION_OS_WORKER_TOKEN": "worker-secret",
+            "PRODUCTION_OS_URL": "https://operator.internal",
+            "ASSET_FORGE_GITHUB_TOKEN": "asset-secret",
+            "GIT_ASKPASS": "git-askpass-secret",
+            "SSH_ASKPASS": "ssh-askpass-secret",
+            "SSH_AUTH_SOCK": "/private/socket",
+            "OMNIROUTE_API_KEY": "provider-model-key",
+        }
+        overrides = {
+            "PRODUCTION_OS_OPERATOR_TOKEN": "override-operator",
+            "GITHUB_TOKEN": "override-github",
+            "GIT_CONFIG_COUNT": "5",
+            "STUDIO_API_KEY": "override-studio",
+            "SSH_AUTH_SOCK": "/other/private/socket",
+            "OPENCODE_STUDIO_API_KEY": "scoped-model-key",
+        }
+        for name in ("opencode", "hermes"):
+            adapter = AgentAdapter(AgentSpec(name, name, frozenset({"repo_analysis"})))
+            with (
+                patch.dict(os.environ, inherited, clear=True),
+                patch("shutil.which", return_value="/usr/bin/" + name),
+                patch("agents.adapters.subprocess.run",
+                      return_value=subprocess.CompletedProcess(
+                          [name, "run"], 0, "finished", "")) as child,
+            ):
+                result = adapter.run([name, "run"], cwd=ROOT,
+                                     extra_env=overrides, timeout=10)
+            self.assertEqual(result.returncode, 0)
+            child_env = child.call_args.kwargs["env"]
+            for secret in (
+                "GITHUB_TOKEN", "GH_TOKEN", "STUDIO_GITHUB_TOKEN",
+                "PRODUCTION_OS_OPERATOR_TOKEN", "PRODUCTION_OS_WORKER_TOKEN",
+                "PRODUCTION_OS_URL", "ASSET_FORGE_GITHUB_TOKEN", "GIT_ASKPASS",
+                "SSH_ASKPASS", "SSH_AUTH_SOCK", "GIT_CONFIG_COUNT", "STUDIO_API_KEY",
+            ):
+                self.assertNotIn(secret, child_env, (name, secret))
+            self.assertEqual(child_env["OPENCODE_STUDIO_API_KEY"], "scoped-model-key")
+            self.assertEqual(child_env["OMNIROUTE_API_KEY"], "provider-model-key")
 
     def test_codex_invocation_uses_verified_headless_contract(self):
         argv, extra = invocation_for("codex", "do work")

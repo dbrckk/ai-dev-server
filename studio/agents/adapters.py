@@ -48,13 +48,23 @@ class AgentAdapter:
         env = os.environ.copy()
         # Coding agents do not need repository-write credentials: publishing is
         # performed later by the trusted GitHub adapter after validation.
+        # Prevent untrusted subprocesses (including Hermes and OpenCode)
+        # from inheriting credentials that control workers, GitHub delivery,
+        # or host Git/SSH authentication. Model-provider credentials remain
+        # available for authorized inference; scoped aliases also work.
+        control_prefixes = (
+            "GITHUB_", "GH_", "STUDIO_", "PRODUCTION_OS_",
+            "ASSET_FORGE_GITHUB_", "GIT_",
+        )
+        control_keys = {"CODESPACES_PAT", "SSH_ASKPASS", "SSH_AUTH_SOCK"}
         for key in list(env):
-            if key.startswith(("GITHUB_","GH_","STUDIO_")) or key=="CODESPACES_PAT":
-                env.pop(key,None)
+            if key.startswith(control_prefixes) or key in control_keys:
+                env.pop(key, None)
         # Never let an autonomous prompt override process-critical variables.
         if extra_env:
             for key,value in extra_env.items():
-                if key in {"PATH","HOME","PYTHONPATH","LD_PRELOAD"} or key.startswith(("GITHUB_","GH_")):
+                if (key in {"PATH", "HOME", "PYTHONPATH", "LD_PRELOAD"}
+                        or key.startswith(control_prefixes) or key in control_keys):
                     continue
                 env[key]=value
         started = time.monotonic()

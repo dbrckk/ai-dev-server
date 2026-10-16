@@ -394,20 +394,18 @@
     ]
   },
   "current_followup": {
-    "task": "Godot journey contract parity after canary 35",
-    "branch": "fix/godot-journey-contract-limits",
+    "task": "Repair malformed Godot patch envelopes after canary37",
+    "branch": "fix/godot-patch-envelope-repair",
+    "base": "06a0ba80ae74ebe42898482e311de0873f1a4651",
     "evidence": {
-      "worker_run": 38859838227,
-      "execution": "05e75229ba935445c7b31de0:1",
-      "checkpoint": "91a4be29445120cd25bc2d5f33fe2977d0e49142",
-      "failure": "capacity_exhausted: preview",
-      "calls": 3,
-      "total_tokens": 24920,
-      "input_tokens": 22832,
-      "reason": "Initial product responses rejected for journey id longer than 40 characters; Godot PRODUCT_SCHEMA omitted that limit."
+      "worker_run": 38893647358,
+      "checkpoint": "afd6e5f08287acdfaf0829b872c11b750f50ba9f",
+      "calls": 10,
+      "tokens": 58472,
+      "cycles": 5,
+      "blocker": "Structured response rejected: Expected patch envelope"
     },
-    "changes": "Declare id, selector, text and scroll limits in Godot product contract; retain strict validator and two-call repair ceiling. Extend existing regression only.",
-    "validation": "38 existing selected tests passed; regression failed before fix. GitHub CI and review pending.",
-    "remaining": "No real source change or Android delivery. Do not relaunch without checking remaining full-source/output budget requirements."
+    "validation": "38 selected tests pass; review/CI pending",
+    "remaining": "No source delivery or Android readiness. Raw provider reply unavailable; regression uses synthetic invalid envelope. Do not blindly repeat canary; outer-cycle stop-loss still needs assessment."
   }
 }

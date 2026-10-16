@@ -260,6 +260,35 @@ class GodotModelTests(unittest.TestCase):
         self.assertIn('Repair ONLY the invalid journey value fields',
                       fallback_api.calls[0][2]['messages'][1]['content'])
 
+        # Canary 37 ended after five cycles with "Expected patch envelope".
+        # Valid JSON with the wrong envelope needs an actionable repair and
+        # the same independently eligible fallback as malformed JSON.
+        patch_value = {'edits': [{'path': 'scripts/main.gd',
+                                 'find': 'if state == "READY":',
+                                 'replace': 'if state == "READY" and not settings_open:'}]}
+        invalid_patch = {'summary': 'guard READY input', **patch_value}
+        subject = model([completion(invalid_patch)])
+        fallback_api = FakeAPI([completion(patch_value)])
+        fallback_api.base = 'https://fallback.test/v1'
+        with patch('core.API', return_value=fallback_api):
+            repaired = subject.ask('implementation', 'fix settings input')
+        self.assertEqual(repaired, patch_value)
+        self.assertEqual(subject.calls, 2)
+        self.assertEqual(len(subject.api.calls), 1)
+        self.assertEqual(subject.providers_used['implementation'], 'fallback')
+        self.assertIn('exactly one top-level key',
+                      fallback_api.calls[0][2]['messages'][1]['content'])
+        for role in ('implementation', 'tests'):
+            subject = model([completion(invalid_patch), completion(invalid_patch)])
+            subject.providers = (subject.providers[0],)
+            with self.assertRaisesRegex(StudioError, 'Expected patch envelope'):
+                subject.ask(role, 'fix settings input')
+            self.assertEqual(subject.calls, 2)
+            repair = subject.api.calls[1][2]['messages'][1]['content']
+            if role == 'tests':
+                self.assertIn('exact edits are not allowed', repair)
+                self.assertNotIn('use {"edits"', repair)
+
         # An installation with no alternate provider still retains its
         # original same-provider repair attempt, with no new provider calls.
         subject = model([malformed, completion(product_value())])

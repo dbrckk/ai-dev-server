@@ -101,7 +101,7 @@ class GodotModel(Model):
                 return value
             except (ProtocolError, PatchPolicyError, ValueError) as exc:
                 error = str(exc)
-                # Invalid JSON or product journeys may be provider-specific.
+                # Invalid JSON, product journeys or patch envelopes may be provider-specific.
                 # Use the one bounded repair on a different eligible provider
                 # where available; never bypass its quota/routing limits.
                 # Truncations and policy errors remain on the same provider.
@@ -109,6 +109,8 @@ class GodotModel(Model):
                     isinstance(exc, ProtocolError) and error != 'Model response truncated'
                 ) or (
                     role == 'product' and isinstance(exc, ValueError)
+                ) or (
+                    isinstance(exc, PatchPolicyError) and error == 'Expected patch envelope'
                 ):
                     invalid_response_provider = self.providers_used.get(role)
             if attempt or self.calls >= self.limit:
@@ -144,6 +146,17 @@ class GodotModel(Model):
                     'and one assertion; use at most three brief acceptance criteria. '
                     'Every action value must be a nonempty string under 80 characters. '
                     'For design return a few short keys and no deep nested objects.'
+                )
+            elif error == 'Expected patch envelope' and role in ('implementation', 'tests'):
+                context += (
+                    '\nThe previous JSON was not a patch envelope. Return exactly one top-level key, '
+                    'with no summary, explanation, markdown, wrapper or acceptance criteria. '
+                    + ('For this existing-source change use {"edits":[{"path":"scripts/main.gd",'
+                       '"find":"exact unique existing snippet","replace":"modified snippet"}]}. '
+                       'Do not mix files and edits; preserve the supplied source outside the exact replacement.'
+                       if role == 'implementation' else
+                       'Use {"files":[{"path":"tests/main_test.gd","content":"complete GDScript test source"}]}. '
+                       'The QA role may write only tests/*.gd; exact edits are not allowed.')
                 )
             elif role == 'product' and error == 'Invalid step text':
                 context += (

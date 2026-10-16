@@ -146,7 +146,7 @@ def _relevant_source_excerpt(source: str, brief: str, limit: int) -> str:
         room -= len(chunk) + 42
         if room <= 0:
             break
-    return '\\n[OMITTED SOURCE - EXACT EDITS ONLY]\\n'.join(chunks)[:limit] + '\\n[TRUNCATED SOURCE - EXACT EDITS ONLY]'
+    return '\n[OMITTED SOURCE - EXACT EDITS ONLY]\n'.join(chunks)[:limit] + '\n[TRUNCATED SOURCE - EXACT EDITS ONLY]'
 
 
 def _context(req: dict, state: dict, root: Path, *, phase: str = 'implementation') -> str:

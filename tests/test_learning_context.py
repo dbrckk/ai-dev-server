@@ -14,6 +14,30 @@ class LearningContextTests(unittest.TestCase):
                 text=augment("task")
                 self.assertIn("Use deterministic node names",text)
                 self.assertIn("fallible prior evidence",text)
+                # Constrain only the optional memory, never the task text;
+                # favour observations from the same Godot project.
+                path.write_text(json.dumps([
+                    {"summary": "Generic observation " + "x" * 800,
+                     "tags": ["generic"], "same_project": False,
+                     "provenance": {"source": "old", "metadata": "Y" * 2000}},
+                    {"summary": "Jumpy-specific input regression " + "z" * 800,
+                     "tags": ["godot", "jumpy", "input", "ui"],
+                     "same_project": True,
+                     "provenance": {"source": "validated_project_execution"}},
+                ]))
+                bounded = augment("authoritative full source", max_items=1, max_chars=600)
+                self.assertTrue(bounded.startswith("authoritative full source\n\n"))
+                self.assertIn("Jumpy-specific input regression", bounded)
+                self.assertNotIn("Generic observation", bounded)
+                compact = json.loads(bounded.split("overrides it:\n", 1)[1])
+                self.assertLessEqual(len(json.dumps(compact, ensure_ascii=False, sort_keys=True)), 600)
+                self.assertEqual(len(compact), 1)
+                self.assertEqual(compact[0]["tags"], ["godot", "jumpy", "input"])
+                self.assertEqual(compact[0]["provenance"]["source"], "validated_project_execution")
+                self.assertEqual(
+                    augment("authoritative full source", max_items=1, max_chars=10),
+                    "authoritative full source",
+                )
             finally:
                 if old is None: os.environ.pop("STUDIO_LEARNED_CONTEXT_PATH",None)
                 else: os.environ["STUDIO_LEARNED_CONTEXT_PATH"]=old

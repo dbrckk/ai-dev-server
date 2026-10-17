@@ -403,7 +403,9 @@ env = os.environ.copy()
 # or host Git/SSH authentication. Model-provider credentials remain
 # available for authorized inference; scoped aliases also work.
 control_prefixes = (
-control_keys = {"CODESPACES_PAT", "SSH_ASKPASS", "SSH_AUTH_SOCK"}
+# Cloudflare's fallback key is for the trusted in-process router only.
+# Hermes/OpenCode/Codex do not need this extra ambient credential.
+control_keys = {
 ⋮----
 # Never let an autonomous prompt override process-critical variables.
 ⋮----
@@ -16314,9 +16316,29 @@ ready = ready and isinstance(wake, dict) and wake.get("mode") in {
 
 ## File: production_os_provider_config.py
 ````python
-"""Shared provider defaults for the Actions worker and its live diagnostics."""
+"""Shared provider defaults for the Actions worker and its live diagnostics.
+
+A Cloudflare Workers Free fallback is opt-in only: a configured API credential
+is not proof of an available zero-cost quota, and paid models are never selected.
+"""
+⋮----
+_CLOUDFLARE_FREE_MODEL = "@cf/zai-org/glm-4.7-flash"
+⋮----
+def _cloudflare_free_fallback(environ)
+⋮----
+"""Return a conservative OpenAI-compatible Workers AI coding fallback.
+
+    A Free-plan confirmation is required to prevent unintended metered use on
+    Workers Paid. The model is explicitly Free-eligible as of October 2026.
+    Never serialize the API token: ProviderSpec reads only its variable name.
+    """
+⋮----
+account = str(environ.get("CLOUDFLARE_ACCOUNT_ID") or "").strip().lower()
 ⋮----
 def configure(environ)
+⋮----
+providers = [
+free_fallback = _cloudflare_free_fallback(environ)
 ````
 
 ## File: production_os_resume_objectives.py

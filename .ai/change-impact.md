@@ -1,18 +1,25 @@
 # Change impact
 
-Base: e00f4afbb514b4029f634f68a4183cade16ed9d5
-Head: e4b6c554d0d9c396ae88fa6925634247b8f96203
+Base: 361a818150615a44452662731cbaa94c2d407169
+Head: b0cd423262325cce3fdc13cfca294525154944f9
 
 ## Changed files
-- M studio/agents/orchestrator.py
+- M .github/workflows/production-os-actions-worker.yml
+- M .github/workflows/production-os-live-diagnostics.yml
+- M docs/PRODUCTION_OS_WORKER.md
+- M studio/agents/adapters.py
+- M studio/production_os_provider_config.py
 - M tests/test_agent_router.py
+- M tests/test_production_os_live_diagnostics.py
 
 ## Affected areas
+- .github
+- docs
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_orchestrator.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

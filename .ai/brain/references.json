@@ -5,222 +5,796 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "_safe_rewrite_summary": {
+    "AgentRun": {
       "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 18,
-        "kind": "function",
+        "file": "studio/agents/adapters.py",
+        "line": 19,
+        "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/agents/orchestrator.py",
-          "line": 18,
-          "preview": "def _safe_rewrite_summary()->dict:",
+          "file": "studio/agents/adapters.py",
+          "line": 19,
+          "preview": "class AgentRun:",
           "definition_candidate": true
         },
         {
-          "file": "studio/agents/orchestrator.py",
-          "line": 298,
-          "preview": "safe_rewrite_summary=_safe_rewrite_summary(),",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "_contextual_routing_state": {
-      "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 23,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 23,
-          "preview": "def _contextual_routing_state()->tuple[dict,list[tuple[str,float]]]:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 290,
-          "preview": "contextual_routing,weighted_contexts=_contextual_routing_state()",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "_verification_seconds": {
-      "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 41,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/agents/orchestrator.py",
+          "file": "studio/agents/adapters.py",
           "line": 41,
-          "preview": "def _verification_seconds()->float:",
+          "preview": ") -> AgentRun:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/adapters.py",
+          "line": 132,
+          "preview": "return AgentRun(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 15,
+          "preview": "from agents.adapters import AgentAdapter, AgentRun",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 250,
+          "preview": "return AgentRun(\"opencode\", 0, 1.0, stdout, \"\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 307,
+          "preview": "AgentRun(\"hermes\", 0, 1.0, incomplete, \"\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 309,
+          "preview": "hermes_good = AgentRun(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 318,
+          "preview": "return_value=AgentRun(\"hermes\", 0, 1.0, \"\", \"\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 328,
+          "preview": "AgentRun(\"codex\", 0, 1.0, incomplete, \"\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 330,
+          "preview": "self.assertTrue(_completion_verified(AgentRun(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 346,
+          "preview": "run = AgentRun(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 366,
+          "preview": "run = AgentRun(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 400,
+          "preview": "run = AgentRun(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 474,
+          "preview": "run_result = AgentRun(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 14
+    },
+    "AgentAdapter": {
+      "definition": {
+        "file": "studio/agents/adapters.py",
+        "line": 27,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/agents/adapters.py",
+          "line": 27,
+          "preview": "class AgentAdapter:",
           "definition_candidate": true
         },
         {
           "file": "studio/agents/orchestrator.py",
-          "line": 302,
-          "preview": "verification_seconds=_verification_seconds(),",
+          "line": 6,
+          "preview": "from .adapters import AgentAdapter",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 329,
+          "preview": "run=AgentAdapter(decision.agent).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 414,
+          "preview": "run=AgentAdapter(spec).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 15,
+          "preview": "from agents.adapters import AgentAdapter, AgentRun",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 184,
+          "preview": "adapter = AgentAdapter(AgentSpec(name, name, frozenset({\"repo_analysis\"})))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 223,
+          "preview": "codex = AgentAdapter(AgentSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 274,
+          "preview": "\"agents.orchestrator.AgentAdapter.run\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 285,
+          "preview": "\"agents.orchestrator.AgentAdapter.run\", return_value=verified",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 317,
+          "preview": "\"agents.orchestrator.AgentAdapter.run\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 356,
+          "preview": "\"agents.orchestrator.AgentAdapter.run\", return_value=run",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 384,
+          "preview": "\"agents.orchestrator.AgentAdapter.run\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 418,
+          "preview": "\"agents.orchestrator.AgentAdapter.run\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 462,
+          "preview": "\"agents.orchestrator.AgentAdapter.run\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_router.py",
+          "line": 499,
+          "preview": "\"agents.orchestrator.AgentAdapter.run\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_codex_output_retention.py",
+          "line": 13,
+          "preview": "from agents.adapters import AgentAdapter",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_codex_output_retention.py",
+          "line": 41,
+          "preview": "\"agents.adapters.AgentAdapter.probe\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_codex_output_retention.py",
+          "line": 47,
+          "preview": "run = AgentAdapter(spec).run(",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 2
+      "occurrence_count": 18
     },
-    "_agent_execution_seconds": {
+    "__init__": {
       "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 48,
+        "file": "studio/agents/adapters.py",
+        "line": 28,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/agents/orchestrator.py",
-          "line": 48,
-          "preview": "def _agent_execution_seconds(perf:dict,role:str)->dict[str,float]:",
+          "file": "studio/agents/adapters.py",
+          "line": 28,
+          "preview": "def __init__(self, spec: AgentSpec):",
           "definition_candidate": true
         },
         {
-          "file": "studio/agents/orchestrator.py",
-          "line": 301,
-          "preview": "execution_seconds=_agent_execution_seconds(perf,role),",
+          "file": "studio/agents/registry.py",
+          "line": 73,
+          "preview": "def __init__(self, specs: Iterable[AgentSpec] = _DEFAULTS):",
           "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "_opencode_runtime": {
-      "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 56,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 56,
-          "preview": "def _opencode_runtime(prompt:str)->tuple[list[str],dict[str,str]]:",
-          "definition_candidate": true
         },
         {
-          "file": "studio/agents/orchestrator.py",
-          "line": 140,
-          "preview": "return _opencode_runtime(prompt)",
+          "file": "studio/core.py",
+          "line": 329,
+          "preview": "def __init__(self, status, *, pending_accepted=False):",
           "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "omniroute_available_base": {
-      "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 89,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 89,
-          "preview": "def omniroute_available_base()->str|None:",
-          "definition_candidate": true
         },
         {
-          "file": "studio/agents/orchestrator.py",
+          "file": "studio/core.py",
+          "line": 334,
+          "preview": "super().__init__('API HTTP ' + str(status))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 345,
+          "preview": "def __init__(self, base, key):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 434,
+          "preview": "def __init__(self, limit, avoid_providers=()):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 919,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_isolated_validation.py",
           "line": 120,
-          "preview": "base=omniroute_available_base()",
+          "preview": "(root/\"studio/__init__.py\").write_text(\"\")",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 352,
-          "preview": "\"agents.orchestrator.omniroute_available_base\", return_value=None",
+          "file": "studio/generic_capability_isolated_validation.py",
+          "line": 121,
+          "preview": "(root/\"studio/capabilities/__init__.py\").write_text(\"\")",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 379,
-          "preview": "\"agents.orchestrator.omniroute_available_base\",",
+          "file": "studio/generic_capability_isolated_validation.py",
+          "line": 122,
+          "preview": "(root/\"tests/__init__.py\").write_text(\"\")",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 413,
-          "preview": "\"agents.orchestrator.omniroute_available_base\",",
+          "file": "studio/generic_repository.py",
+          "line": 24,
+          "preview": "def __init__(self,github,repo:str,project_id:str):",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 457,
-          "preview": "\"agents.orchestrator.omniroute_available_base\",",
+          "file": "studio/generic_smoke.py",
+          "line": 36,
+          "preview": "def __init__(self, github, target_repo, project_id):",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 494,
-          "preview": "\"agents.orchestrator.omniroute_available_base\",",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 7
-    },
-    "_runtime_invocation": {
-      "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 114,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 114,
-          "preview": "def _runtime_invocation(name:str,prompt:str):",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 310,
-          "preview": "runtime=_runtime_invocation(decision.agent.name,prompt)",
+          "file": "studio/godot_session.py",
+          "line": 16,
+          "preview": "def __init__(self, root: Path):",
           "definition_candidate": false
         },
         {
-          "file": "studio/agents/orchestrator.py",
-          "line": 393,
-          "preview": "runtime=_runtime_invocation(name,prompt)",
+          "file": "studio/play_publisher.py",
+          "line": 38,
+          "preview": "def __init__(self, access_token: str, opener=urllib.request.urlopen):",
           "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "invocation_for": {
-      "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 137,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+        },
         {
-          "file": "studio/agents/orchestrator.py",
+          "file": "studio/production_os_worker.py",
+          "line": 218,
+          "preview": "def __init__(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_probe.py",
+          "line": 13,
+          "preview": "def __init__(self, out):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/run.py",
+          "line": 60,
+          "preview": "def __init__(self, repo):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/run.py",
+          "line": 61,
+          "preview": "super().__init__('https://api.github.com', os.environ.get('STUDIO_GITHUB_TOKEN', ''))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_artwork_stage.py",
+          "line": 12,
+          "preview": "def __init__(self,*args,**kwargs):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capability_registry_promotion_persist.py",
+          "line": 13,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capability_registry_review.py",
+          "line": 21,
+          "preview": "def __init__(self,pr,runs=None,statuses=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capability_review.py",
+          "line": 15,
+          "preview": "def __init__(self,pr,runs=None,statuses=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci_diagnostics.py",
+          "line": 10,
+          "preview": "def __init__(self, responses):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_engine_entry.py",
+          "line": 15,
+          "preview": "def __init__(self, size=1, default_paths=None, checkpoint_paths=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_research.py",
+          "line": 14,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_synthesis.py",
+          "line": 8,
+          "preview": "def __init__(self,payload): self.payload=payload; self.calls=[]",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_adaptive_quota_budget.py",
+          "line": 20,
+          "preview": "def __init__(self, base, key):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_capability_persist.py",
+          "line": 8,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 19,
+          "preview": "def __init__(self, base, key):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 11,
+          "preview": "def __init__(self, pulls=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_goal_store.py",
+          "line": 23,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_memory_store.py",
+          "line": 12,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 18,
+          "preview": "def __init__(self, responses): self.responses = list(responses); self.calls = []",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 20,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 52,
+          "preview": "def __init__(self,limit): self.calls=0; self.models_used={}",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 64,
+          "preview": "def __init__(self,root): self.root=root",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_repository_probe.py",
+          "line": 17,
+          "preview": "def __init__(self, root): self.root = root",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_visual_qa.py",
+          "line": 15,
+          "preview": "def __init__(self,limit): self.models_used={}",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_idempotent_model.py",
+          "line": 14,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_journeys.py",
+          "line": 58,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_journeys.py",
+          "line": 72,
+          "preview": "def __init__(self): self.calls, self.limit = 0, 9",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_journeys.py",
+          "line": 82,
+          "preview": "def __init__(self): self.calls, self.limit = 0, 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_journeys.py",
+          "line": 111,
+          "preview": "def __init__(self): self.calls, self.limit = 0, 2",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_journeys.py",
+          "line": 122,
+          "preview": "def __init__(self): self.calls, self.limit = 0, 10",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 12,
+          "preview": "def __init__(self, payload):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_stage.py",
+          "line": 56,
+          "preview": "def __init__(self,*a,**k): pass",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_privacy_stage.py",
+          "line": 41,
+          "preview": "def __init__(self,*a,**k): pass",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 19,
+          "preview": "def __init__(self, base, key):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 36,
+          "preview": "def __init__(self, *args):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 52,
+          "preview": "def __init__(self, base, key):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_local_e2e.py",
+          "line": 21,
+          "preview": "def __init__(self, jobs=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 11,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 14,
+          "preview": "def __init__(self, statuses=(\"succeeded\",)):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_cli.py",
+          "line": 13,
+          "preview": "def __init__(self, base_url, token):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 43,
+          "preview": "def __init__(self, job):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 84,
+          "preview": "def __init__(self, status, payload=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 21,
+          "preview": "def __init__(self, base, key):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release.py",
+          "line": 11,
+          "preview": "def __init__(self, root, fail_at=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 28,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 39,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 158,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 251,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 312,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 371,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 431,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 484,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 538,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 595,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 660,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 740,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_repair.py",
+          "line": 28,
+          "preview": "def __init__(self, limit):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_repair.py",
+          "line": 110,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_repair.py",
           "line": 117,
-          "preview": "invocation=invocation_for(name,prompt)",
+          "preview": "def __init__(self, limit):",
           "definition_candidate": false
         },
         {
-          "file": "studio/agents/orchestrator.py",
-          "line": 137,
-          "preview": "def invocation_for(name:str,prompt:str)->tuple[list[str],dict[str,str]]|None:",
+          "file": "tests/test_release_repair.py",
+          "line": 180,
+          "preview": "def __init__(self, limit):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_agent.py",
+          "line": 13,
+          "preview": "def __init__(self, limit):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_agent.py",
+          "line": 31,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_agent.py",
+          "line": 39,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_stage.py",
+          "line": 43,
+          "preview": "def __init__(self, *a, **k):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 21,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 50,
+          "preview": "def __init__(self, limit):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 61,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 206,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 222,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 83
+    },
+    "probe": {
+      "definition": {
+        "file": "studio/agents/adapters.py",
+        "line": 31,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "scripts/preflight-production-os-worker.py",
+          "line": 45,
+          "preview": "probe = path / \".production-os-preflight\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "scripts/preflight-production-os-worker.py",
+          "line": 46,
+          "preview": "probe.write_text(\"ok\\n\", encoding=\"utf-8\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "scripts/preflight-production-os-worker.py",
+          "line": 47,
+          "preview": "probe.unlink()",
+          "definition_candidate": false
+        },
+        {
+          "file": "scripts/preflight-production-os-worker.py",
+          "line": 68,
+          "preview": "return False, f\"Codex CLI probe failed ({type(exc).__name__})\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "scripts/preflight-production-os-worker.py",
+          "line": 91,
+          "preview": "return False, f\"Asset Forge readiness probe failed ({type(exc).__name__})\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "scripts/preflight-production-os-worker.py",
+          "line": 93,
+          "preview": "return False, \"Asset Forge readiness probe returned non-zero\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "scripts/preflight-production-os-worker.py",
+          "line": 97,
+          "preview": "return False, \"Asset Forge readiness probe returned invalid JSON\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "scripts/preflight-production-os-worker.py",
+          "line": 99,
+          "preview": "return False, \"Asset Forge readiness probe returned invalid payload\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/adapters.py",
+          "line": 31,
+          "preview": "def probe(self) -> bool:",
           "definition_candidate": true
+        },
+        {
+          "file": "studio/agents/adapters.py",
+          "line": 42,
+          "preview": "if not self.probe():",
+          "definition_candidate": false
         },
         {
           "file": "studio/agents/orchestrator.py",
@@ -229,50 +803,512 @@
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 18,
-          "preview": "from agents.orchestrator import execute_named, invocation_for",
+          "file": "studio/core.py",
+          "line": 992,
+          "preview": "probe = Path(__file__).with_name('visual_test.dart').read_text().replace('APP_NAME', name).replace('JOURNEYS_BASE64', encoded_journeys(journeys))",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 151,
-          "preview": "argv,extra=invocation_for(\"opencode\",\"do work\")",
+          "file": "studio/core.py",
+          "line": 996,
+          "preview": "(self.root / 'test/__studio_visual_test.dart').write_text(probe)",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 291,
-          "preview": "hermes_argv, hermes_env = invocation_for(\"hermes\", \"inspect changes\")",
+          "file": "studio/generic_sandbox.py",
+          "line": 34,
+          "preview": "probe=subprocess.run([\"unshare\",\"--net\",\"true\"],env=env,stdin=subprocess.DEVNULL,",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 335,
-          "preview": "argv, extra = invocation_for(\"codex\", \"do work\")",
+          "file": "studio/generic_sandbox.py",
+          "line": 36,
+          "preview": "if probe.returncode==0:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 32,
+          "preview": "raise StudioError('Godot probe GitHub API URL is invalid')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 35,
+          "preview": "'User-Agent': 'ai-dev-server-godot-probe',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 45,
+          "preview": "raise StudioError('Public GitHub probe response exceeded limit')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 49,
+          "preview": "raise StudioError('Public GitHub probe returned invalid JSON') from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 51,
+          "preview": "raise StudioError('Public GitHub probe response must be an object')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 55,
+          "preview": "def probe(repo: str, commit: str, fetch_json=_get_json) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 57,
+          "preview": "raise StudioError('Godot probe repository is invalid')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 59,
+          "preview": "raise StudioError('Godot probe requires a full pinned commit SHA')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 66,
+          "preview": "with tempfile.TemporaryDirectory(prefix='studio-godot-probe-') as td:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 71,
+          "preview": "raise StudioError('Godot probe blob SHA is invalid')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 75,
+          "preview": "sandbox.create('probe')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 76,
+          "preview": "passed, logs = sandbox.gates('probe', [])",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_repository_probe.py",
+          "line": 94,
+          "preview": "result = probe(args.repository, args.commit)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 23,
+          "preview": "from repo_maintenance import probe as probe_repo_maintenance",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 24,
+          "preview": "from repo_version_probe import probe as probe_repo_versions",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 130,
+          "preview": "# access is required, and an explicitly requested wake probe must succeed.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 45,
+          "preview": "probe = (",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 50,
+          "preview": "\"page.set_content('<title>production-os-browser-probe</title>'); \"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 51,
+          "preview": "\"assert page.title()=='production-os-browser-probe'; \"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 56,
+          "preview": "[sys.executable, \"-c\", probe],",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 143,
+          "preview": "[executable, \"asset-forge-batch\", \"--probe\"],",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker_canary.py",
+          "line": 201,
+          "preview": "dashboard launch is idempotent by request_id, but this probe deliberately",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_probe.py",
+          "line": 34,
+          "preview": "config = json.loads(Path('control/provider-probe.json').read_text())",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repo_maintenance.py",
+          "line": 1,
+          "preview": "\"\"\"Bounded GitHub repository maintenance probe for architecture evidence.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repo_maintenance.py",
+          "line": 61,
+          "preview": "\"User-Agent\": \"ai-dev-server-maintenance-probe\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repo_maintenance.py",
+          "line": 75,
+          "preview": "def probe(repositories: list[str], *, token: str | None = None) -> dict[str, dict]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repo_version_probe.py",
+          "line": 1,
+          "preview": "\"\"\"Bounded GitHub semantic-version probe for replacement context.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repo_version_probe.py",
+          "line": 42,
+          "preview": "\"User-Agent\":\"ai-dev-server-version-probe\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/repo_version_probe.py",
+          "line": 58,
+          "preview": "def probe(repositories,token=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_codex_output_retention.py",
+          "line": 41,
+          "preview": "\"agents.adapters.AgentAdapter.probe\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_repository_probe.py",
+          "line": 31,
+          "preview": "godot_repository_probe.probe('dbrckk/Jumpy', 'main', fetch_json=lambda url: {})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_repository_probe.py",
+          "line": 67,
+          "preview": "result = godot_repository_probe.probe('dbrckk/Jumpy', 'f'*40, fetch_json=fetch)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 59,
+          "preview": "probe = WORKFLOW.index(\"Probe compatible Production-OS work\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 62,
+          "preview": "assert readiness < probe < install < android",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 123,
+          "preview": "assert \"Production-OS availability probe failed: HTTP\" in WORKFLOW",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 124,
+          "preview": "assert \"Production-OS availability probe returned invalid JSON\" in WORKFLOW",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 127,
+          "preview": "probe = WORKFLOW.split(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 130,
+          "preview": "assert \"opener = urllib.request.build_opener(_NoRedirect())\" in probe",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 131,
+          "preview": "assert \"with opener.open(request, timeout=10) as response:\" in probe",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 132,
+          "preview": "assert \"urllib.request.urlopen(request, timeout=10)\" not in probe",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 139,
+          "preview": "probe = WORKFLOW.index(\"Probe compatible Production-OS work\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 140,
+          "preview": "assert resolve < checkout < install < probe",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 191,
+          "preview": "probe = WORKFLOW.split(\"- name: Probe compatible Production-OS work\", 1)[1]",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 192,
+          "preview": "assert \"from production_os_worker import worker_capabilities\" in probe",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 193,
+          "preview": "assert 'base_env[\"PRODUCTION_OS_WORKER_SPECIALTIES\"] = \"\"' in probe",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 194,
+          "preview": "assert \"base_capabilities = worker_capabilities(base_env)\" in probe",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 195,
+          "preview": "assert '\"visual-asset-production\"' not in probe.split(\"def probe\", 1)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 272,
+          "preview": "assert \"production-os asset-forge-batch --probe\" in WORKFLOW",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_actions_worker_workflow.py",
+          "line": 274,
+          "preview": "assert \"if env -u PYTHONPATH production-os asset-forge-batch --probe; then\" in WORKFLOW",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_remote_asset_capability.py",
+          "line": 106,
+          "preview": "assert seen[\"command\"][-2:] == [\"asset-forge-batch\", \"--probe\"]",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 7
+      "occurrence_count": 65
     },
-    "_completion_verified": {
+    "run": {
       "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 152,
+        "file": "studio/agents/adapters.py",
+        "line": 34,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 170,
+          "preview": "proc = subprocess.run([sys.executable, str(artifact)], check=True,",
+          "definition_candidate": false
+        },
+        {
+          "file": "scripts/preflight-production-os-worker.py",
+          "line": 58,
+          "preview": "result = subprocess.run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "scripts/preflight-production-os-worker.py",
+          "line": 80,
+          "preview": "result = subprocess.run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "scripts/production-os-live-resume-proof.py",
+          "line": 3,
+          "preview": "Uses a unique synthetic workflow ID for this Actions run. Does not claim a",
+          "definition_candidate": false
+        },
+        {
+          "file": "scripts/production-os-live-resume-proof.py",
+          "line": 40,
+          "preview": "from run import GitHub",
+          "definition_candidate": false
+        },
+        {
+          "file": "scripts/production-os-live-resume-proof.py",
+          "line": 52,
+          "preview": "raise RuntimeError(\"Live resume proof requires an authenticated GitHub Actions run\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/adaptive_phase_policy.py",
+          "line": 53,
+          "preview": "\"\"\"Decide whether a model review must run after trusted verification.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/adapters.py",
+          "line": 34,
+          "preview": "def run(",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/agents/adapters.py",
+          "line": 77,
+          "preview": "result = subprocess.run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/codex.py",
+          "line": 24,
+          "preview": "an implementation run into a read-only review.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 61,
+          "preview": "argv=[\"opencode\",\"run\",\"--auto\",\"--format\",\"json\"]",
+          "definition_candidate": false
+        },
+        {
           "file": "studio/agents/orchestrator.py",
           "line": 152,
           "preview": "def _completion_verified(run)->bool:",
-          "definition_candidate": true
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 153,
+          "preview": "\"\"\"Do not accept an agent run without its supported completion receipt.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 159,
+          "preview": "if run.returncode != 0:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 161,
+          "preview": "if run.agent == \"codex\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 164,
+          "preview": "for line in run.stdout_tail.splitlines():",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 172,
+          "preview": "if run.agent == \"hermes\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 176,
+          "preview": "for line in run.stdout_tail.splitlines():",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 191,
+          "preview": "if run.agent != \"opencode\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 193,
+          "preview": "for line in run.stdout_tail.splitlines():",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 213,
+          "preview": "def _run_evidence(run,capacity_source:str|None=None)->dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 214,
+          "preview": "evidence={\"agent\":run.agent,\"returncode\":run.returncode,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 215,
+          "preview": "\"duration_seconds\":run.duration_seconds,\"stdout_tail\":run.stdout_tail,\"stderr_tail\":run.stderr_tail}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 216,
+          "preview": "if run.agent in {\"opencode\", \"hermes\", \"codex\"}:",
+          "definition_candidate": false
         },
         {
           "file": "studio/agents/orchestrator.py",
           "line": 217,
           "preview": "evidence[\"completion_verified\"] = _completion_verified(run)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 218,
+          "preview": "if run.returncode == 0 and not evidence[\"completion_verified\"]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 222,
+          "preview": "if run.agent==\"codex\":",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 223,
+          "preview": "usage=parse_codex_usage(run.stdout_tail)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 329,
+          "preview": "run=AgentAdapter(decision.agent).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)",
           "definition_candidate": false
         },
         {
@@ -283,97 +1319,26 @@
         },
         {
           "file": "studio/agents/orchestrator.py",
-          "line": 418,
-          "preview": "ok=_completion_verified(run)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_agent_router.py",
-          "line": 245,
-          "preview": "from agents.orchestrator import _completion_verified",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_agent_router.py",
-          "line": 250,
-          "preview": "self.assertFalse(_completion_verified(evidence(\"\")))",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_agent_router.py",
-          "line": 251,
-          "preview": "self.assertFalse(_completion_verified(evidence(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_agent_router.py",
-          "line": 254,
-          "preview": "self.assertFalse(_completion_verified(evidence(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_agent_router.py",
-          "line": 257,
-          "preview": "self.assertFalse(_completion_verified(evidence(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_agent_router.py",
-          "line": 261,
-          "preview": "self.assertFalse(_completion_verified(evidence(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_agent_router.py",
-          "line": 270,
-          "preview": "self.assertTrue(_completion_verified(verified))",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_agent_router.py",
-          "line": 304,
-          "preview": "self.assertFalse(_completion_verified(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_agent_router.py",
-          "line": 313,
-          "preview": "self.assertTrue(_completion_verified(hermes_good))",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_agent_router.py",
-          "line": 325,
-          "preview": "self.assertFalse(_completion_verified(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_agent_router.py",
-          "line": 328,
-          "preview": "self.assertTrue(_completion_verified(AgentRun(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 15
-    },
-    "_run_evidence": {
-      "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 213,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 213,
-          "preview": "def _run_evidence(run,capacity_source:str|None=None)->dict:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
           "line": 331,
           "preview": "evidence=_run_evidence(run,capacity_source)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 335,
+          "preview": "if ok: return {\"status\":\"passed\",\"selected\":run.agent,\"attempts\":attempts}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 414,
+          "preview": "run=AgentAdapter(spec).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/agents/orchestrator.py",
+          "line": 418,
+          "preview": "ok=_completion_verified(run)",
           "definition_candidate": false
         },
         {
@@ -381,128 +1346,485 @@
           "line": 419,
           "preview": "evidence=_run_evidence(run,capacity_source)",
           "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "_reserve_agent_budget": {
-      "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 229,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 229,
-          "preview": "def _reserve_agent_budget(name:str,prompt:str):",
-          "definition_candidate": true
         },
         {
           "file": "studio/agents/orchestrator.py",
-          "line": 314,
-          "preview": "budget=_reserve_agent_budget(decision.agent.name,prompt)",
+          "line": 422,
+          "preview": "return {\"status\":\"passed\" if ok else \"failed\",\"selected\":run.agent if ok else None,\"attempts\":[evidence]}",
           "definition_candidate": false
         },
         {
-          "file": "studio/agents/orchestrator.py",
-          "line": 396,
-          "preview": "budget=_reserve_agent_budget(name,prompt)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "_settle_agent_budget": {
-      "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 256,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 256,
-          "preview": "def _settle_agent_budget(capacity:dict|None,evidence:dict|None=None)->None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 332,
-          "preview": "_settle_agent_budget(budget,evidence)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 337,
-          "preview": "_settle_agent_budget(budget)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 416,
-          "preview": "_settle_agent_budget(budget)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 420,
-          "preview": "_settle_agent_budget(budget,evidence)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 5
-    },
-    "execute": {
-      "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 284,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/adaptation.py",
-          "line": 96,
-          "preview": "'Capability classification requires QA that the current registry cannot execute.')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 284,
-          "preview": "def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,timeout:int=1800)->dict:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 204,
-          "preview": "def execute(repo_root: Path, order: dict, candidate: dict, out: Path) -> dict:",
+          "file": "studio/android_signing.py",
+          "line": 112,
+          "preview": "runner=subprocess.run,",
           "definition_candidate": false
         },
         {
           "file": "studio/architecture_replacement_executor.py",
-          "line": 284,
-          "preview": "evidence=execute(Path(args.repo_root),order,candidate,out)",
+          "line": 4,
+          "preview": "Candidate code is materialized only in a detached worktree. Validation commands run",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 50,
+          "preview": "result=subprocess.run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 154,
+          "preview": "\"docker\",\"run\",\"--rm\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 191,
+          "preview": "run=_docker_command(root,command)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 194,
+          "preview": "\"returncode\":run.returncode,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 195,
+          "preview": "\"passed\":run.returncode==0,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 196,
+          "preview": "\"stdout_sha256\":hashlib.sha256((run.stdout or \"\").encode()).hexdigest(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 197,
+          "preview": "\"stderr_sha256\":hashlib.sha256((run.stderr or \"\").encode()).hexdigest(),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_executor.py",
+          "line": 211,
+          "preview": "with tempfile.TemporaryDirectory(prefix=\"replacement-run-\") as tmp:",
           "definition_candidate": false
         },
         {
           "file": "studio/architecture_replacement_pipeline.py",
-          "line": 14,
-          "preview": "from architecture_replacement_executor import execute as execute_candidate, ReplacementExecutionError",
+          "line": 20,
+          "preview": "def run(work_order_path: Path, repo_root: Path, out: Path) -> dict:",
           "definition_candidate": false
         },
         {
-          "file": "studio/architecture_replacement_rollback.py",
-          "line": 26,
-          "preview": "def execute(gate,authorization,token,repository,requester=_request):",
+          "file": "studio/architecture_replacement_pipeline.py",
+          "line": 55,
+          "preview": "result=run(Path(args.work_order),Path(args.repo_root),out)",
           "definition_candidate": false
         },
         {
-          "file": "studio/architecture_replacement_rollback.py",
-          "line": 102,
-          "preview": "result=execute(gate,authorization,os.environ.get(\"STUDIO_GITHUB_TOKEN\",\"\"),os.environ.get(\"GITHUB_REPOSITORY\",\"\"))",
+          "file": "studio/architecture_replacement_planner.py",
+          "line": 567,
+          "preview": "\"run unit, integration, visual and release regression gates\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_postmerge_pipeline.py",
+          "line": 32,
+          "preview": "def run(work_order_path: Path, merged_path: Path, package_path: Path, out: Path, token: str, repository: str) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_postmerge_pipeline.py",
+          "line": 105,
+          "preview": "result=run(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_pr_validator.py",
+          "line": 101,
+          "preview": "raise ReplacementPRValidationError(\"GitHub check-run evidence malformed\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_synthesis.py",
+          "line": 32,
+          "preview": "result=subprocess.run([\"git\",\"rev-parse\",\"HEAD\"],cwd=root,text=True,capture_output=True,check=False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_approval.py",
+          "line": 144,
+          "preview": "raise ApprovalProvenanceError(\"required GitHub checks lack a common workflow run\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_approval.py",
+          "line": 146,
+          "preview": "raise ApprovalProvenanceError(\"required checks do not bind attested workflow run\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_approval.py",
+          "line": 163,
+          "preview": "raise ApprovalProvenanceError(\"required GitHub check workflow run mismatch\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 78,
+          "preview": "def _workflow_path(run: dict) -> str | None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 79,
+          "preview": "if not isinstance(run,dict): return None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 80,
+          "preview": "raw=run.get(\"path\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 86,
+          "preview": "for run in runs if isinstance(runs,list) else []:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 87,
+          "preview": "if run.get(\"head_sha\")!=commit_sha or str(run.get(\"conclusion\") or \"\").lower()!=\"success\": continue",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 88,
+          "preview": "if run.get(\"name\")!=required_workflow_name or _workflow_path(run)!=required_workflow_path: continue",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 89,
+          "preview": "if required_run_id is not None and run.get(\"id\")!=required_run_id: continue",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 90,
+          "preview": "created=_timestamp(run.get(\"run_started_at\") or run.get(\"created_at\") or run.get(\"updated_at\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 92,
+          "preview": "candidates.append({**run,\"_validated_timestamp\":created})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 94,
+          "preview": "run=sorted(candidates,key=lambda x:int(x.get(\"id\") or 0),reverse=True)[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 95,
+          "preview": "return {\"id\":run.get(\"id\"),\"head_sha\":commit_sha,\"conclusion\":\"success\",\"name\":run.get(\"name\"),\"path\":_workflow_path(run),\"timestamp\":run.get(\"_validated_timestamp\")}",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_github_attestation.py",
+          "line": 119,
+          "preview": "if not isinstance(required_workflow_run_id,int): raise ApprovalProvenanceError(\"required checks do not share one workflow run\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration.py",
+          "line": 1,
+          "preview": "\"\"\"Dry-run and explicitly authorized migration of persisted replacement reputation policy.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration.py",
+          "line": 3,
+          "preview": "Policy migrations never silently promote a replacement. A dry-run computes the exact",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "line": 1,
+          "preview": "\"\"\"CLI for dry-run and explicitly authorized reputation policy migrations.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artifact_handoff.py",
+          "line": 1,
+          "preview": "\"\"\"Trusted selection of prior autonomous-run artifacts for release handoff.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_stage.py",
+          "line": 12,
+          "preview": "from run import GitHub",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_validation.py",
+          "line": 9,
+          "preview": "from .capabilities.asset_artwork import run",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_validation.py",
+          "line": 11,
+          "preview": "from capabilities.asset_artwork import run",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_validation.py",
+          "line": 45,
+          "preview": "first=run(context)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/artwork_validation.py",
+          "line": 46,
+          "preview": "second=run(context)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/asset_forge_bridge.py",
+          "line": 92,
+          "preview": "\"course\", \"run\", \"walk\", \"attack\", \"idle\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/billing_stage.py",
+          "line": 11,
+          "preview": "from run import GitHub",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capabilities/asset_artwork.py",
+          "line": 74,
+          "preview": "def run(context):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 60,
+          "preview": "run = getattr(module, \"run\", None)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 61,
+          "preview": "if not callable(run):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 62,
+          "preview": "raise CapabilityRuntimeError(\"provider must expose callable run(context)\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 63,
+          "preview": "return run",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 78,
+          "preview": "run = _load_provider(provider, Path(repo_root))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_runtime.py",
+          "line": 84,
+          "preview": "result_box[\"value\"] = (\"ok\", run(context))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_stage.py",
+          "line": 11,
+          "preview": "from run import GitHub",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 188,
+          "preview": "run for run in runs",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 189,
+          "preview": "if isinstance(run, dict)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 190,
+          "preview": "and str(run.get(\"status\") or \"\").lower() == \"completed\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 191,
+          "preview": "and str(run.get(\"conclusion\") or \"\").lower() in _FAILURES",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 196,
+          "preview": "key=lambda run: str(run.get(\"updated_at\") or run.get(\"created_at\") or \"\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 199,
+          "preview": "run = failed_runs[0]",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 200,
+          "preview": "run_id = run.get(\"id\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 233,
+          "preview": "html_url = str(run.get(\"html_url\") or \"\").strip()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 237,
+          "preview": "\"workflow\": str(run.get(\"name\") or \"\").strip()[:300] or None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 41,
+          "preview": "containers = subprocess.run(['docker', 'ps', '-aq', '--filter',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 42,
+          "preview": "'label=mobile-studio-run=' + run_id], capture_output=True, text=True,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 45,
+          "preview": "subprocess.run(['docker', 'rm', '-f', *containers],",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 922,
+          "preview": "def run(self, args, network=False, timeout=600):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 927,
+          "preview": "cmd = ['docker', 'run', '--name', name, '--rm', '--init', '--cap-drop=ALL', '--security-opt=no-new-privileges',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 935,
+          "preview": "raise StudioError('Invalid sandbox run identifier')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 936,
+          "preview": "cmd[2:2] = ['--label', 'mobile-studio-run=' + run_id]",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 941,
+          "preview": "r = subprocess.run(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 943,
+          "preview": "subprocess.run(['docker', 'rm', '-f', name], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 947,
+          "preview": "rc, log = self.run(['flutter', 'create', '--no-pub', '--platforms=android,ios', '--project-name', name, '.'], network=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 957,
+          "preview": "rc, out = self.run(args, network=True, timeout=600)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 964,
+          "preview": "rc, out = self.run(args, network=False, timeout=600)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 972,
+          "preview": "rc, out = self.run(args, network=False, timeout=600)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 1005,
+          "preview": "rc, out = self.run(args, network=network, timeout=900)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 21,
+          "preview": "return subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 67,
+          "preview": "created = subprocess.run(['avdmanager', 'create', 'avd', '-n', AVD_NAME, '-k', SYSTEM_IMAGE,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_qa.py",
+          "line": 125,
+          "preview": "shot = subprocess.run([adb, '-s', serial, 'exec-out', 'screencap', '-p'], stdout=handle,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_stage.py",
+          "line": 12,
+          "preview": "from run import GitHub",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/engine_detect.py",
+          "line": 10,
+          "preview": "from run import GitHub",
           "definition_candidate": false
         },
         {
@@ -512,879 +1834,167 @@
           "definition_candidate": false
         },
         {
-          "file": "studio/engine_entry.py",
-          "line": 12,
-          "preview": "from godot_preview import execute as execute_godot",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/engine_entry.py",
-          "line": 61,
-          "preview": "def execute(req: dict, root: Path, out: Path, github=None) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/engine_entry.py",
-          "line": 85,
-          "preview": "state = execute(req, Path(args.work), out)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_executor.py",
-          "line": 3,
-          "preview": "This module does not execute discovered code or weaken gates. It turns a trusted",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_isolated_runner.py",
-          "line": 1,
-          "preview": "\"\"\"Materialize, execute and score validated evolution candidates in isolation.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_isolated_runner.py",
-          "line": 86,
-          "preview": "def execute(repo_root,work_order,validated_candidate,out):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_isolated_runner.py",
-          "line": 113,
-          "preview": "order=json.loads(Path(args.work_order).read_text()); candidate=json.loads(Path(args.candidate).read_text()); evidence=execute(Path(args.repo_root),order,candidate,out); print(canon",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_research.py",
-          "line": 358,
-          "preview": "def execute(work_order: dict, out: Path, fetcher=fetch_url) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_research.py",
-          "line": 397,
-          "preview": "result = execute(work_order, out)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_daemon.py",
-          "line": 15,
-          "preview": "from fleet_supervisor_apply import execute as apply_supervisor",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_daemon.py",
-          "line": 16,
-          "preview": "from preemption_apply import execute as apply_preemption",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_supervisor_apply.py",
-          "line": 36,
-          "preview": "def execute(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fleet_supervisor_apply.py",
-          "line": 124,
-          "preview": "report = execute(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 31,
-          "preview": "from agents.orchestrator import execute as execute_agent, execute_named as execute_named_agent, ranked_agent_names, routing_trace_for",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_verifier_adaptation.py",
-          "line": 81,
-          "preview": "raise ValueError(\"bash verifier may only execute an existing project script\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_android_stage.py",
-          "line": 16,
-          "preview": "def execute(req: dict, root: Path, out: Path, github, runtime_installer=install,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_android_stage.py",
-          "line": 59,
-          "preview": "state=execute(req,Path(args.work),Path(args.out),GitHub(req['target_repo']))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_device_stage.py",
-          "line": 22,
-          "preview": "def execute(req: dict, root: Path, out: Path, github, device_validator=validate_debug_apk,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_device_stage.py",
-          "line": 83,
-          "preview": "state=execute(req,Path(args.work),Path(args.out),GitHub(req['target_repo']))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_final_review_stage.py",
-          "line": 10,
-          "preview": "def execute(req:dict,root:Path,out:Path,github,reviewer=review)->dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_final_review_stage.py",
-          "line": 41,
-          "preview": "req=request_check(json.loads(Path(a.request).read_text())); state=execute(req,Path(a.work),Path(a.out),GitHub(req['target_repo']))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_play_stage.py",
-          "line": 28,
-          "preview": "def execute(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_play_stage.py",
-          "line": 154,
-          "preview": "state = execute(req, Path(args.work), Path(args.out), GitHub(req[\"target_repo\"]))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_preview.py",
-          "line": 671,
-          "preview": "def execute(req: dict, root: Path, out: Path, github, model_factory=GodotModel, sandbox_factory=GodotSandbox) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_privacy_security_qa.py",
-          "line": 18,
-          "preview": "DANGEROUS_MARKERS=('OS.execute(','OS.shell_open(','JavaScriptBridge','GDExtension')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_privacy_security_stage.py",
-          "line": 10,
-          "preview": "def execute(req:dict,root:Path,out:Path,github,auditor=audit)->dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_privacy_security_stage.py",
-          "line": 46,
-          "preview": "req=request_check(json.loads(Path(a.request).read_text())); state=execute(req,Path(a.work),Path(a.out),GitHub(req['target_repo']))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_artifact_stage.py",
-          "line": 23,
-          "preview": "def execute(req:dict,root:Path,out:Path,github,runtime_installer=install,source_installer=install_source_template,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_artifact_stage.py",
-          "line": 79,
-          "preview": "req=request_check(json.loads(Path(args.request).read_text())); state=execute(req,Path(args.work),Path(args.out),GitHub(req['target_repo']))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_stage.py",
-          "line": 14,
-          "preview": "def execute(req:dict,root:Path,out:Path,github,validator=preflight)->dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_stage.py",
-          "line": 56,
-          "preview": "req=request_check(json.loads(Path(args.request).read_text())); state=execute(req,Path(args.work),Path(args.out),GitHub(req['target_repo']))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_runtime_journey_stage.py",
-          "line": 17,
-          "preview": "def execute(req:dict,root:Path,out:Path,github,runtime_installer=install,journey_runner=run_journeys)->dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_runtime_journey_stage.py",
-          "line": 35,
-          "preview": "state.update(status='godot_runtime_journey_qa_failed',blockers=['Godot acceptance journeys did not all execute successfully'])",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_runtime_journey_stage.py",
-          "line": 54,
-          "preview": "req=request_check(json.loads(Path(args.request).read_text())); state=execute(req,Path(args.work),Path(args.out),GitHub(req['target_repo']))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_session.py",
-          "line": 25,
-          "preview": "# not claim to execute user journeys. Runtime/device journey QA is a later gate.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_store_metadata_stage.py",
-          "line": 13,
-          "preview": "def execute(req:dict,root:Path,out:Path,github,builder=build)->dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_store_metadata_stage.py",
-          "line": 53,
-          "preview": "state=execute(req,Path(args.work),Path(args.out),GitHub(req['target_repo']))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_stage.py",
-          "line": 15,
-          "preview": "def execute(req:dict,root:Path,out:Path,github,visual_validator=capture_and_review)->dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_stage.py",
-          "line": 54,
-          "preview": "req=request_check(json.loads(Path(args.request).read_text())); state=execute(req,Path(args.work),Path(args.out),GitHub(req['target_repo']))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/improvement_dispatch.py",
-          "line": 58,
-          "preview": "\"decision\":\"execute\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/improvement_dispatch.py",
-          "line": 66,
-          "preview": "\"decision\":\"execute\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/improvement_executor.py",
-          "line": 40,
-          "preview": "def execute(goal_state):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/improvement_executor.py",
-          "line": 58,
-          "preview": "return execute",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/predictive_budget.py",
-          "line": 3,
-          "preview": "The estimator is intentionally deterministic and bounded. It does not execute",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/preemption_apply.py",
-          "line": 30,
-          "preview": "def execute(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1109,
-          "preview": "\"\"\"Claim and execute at most one Production-OS job.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1588,
-          "preview": "help=\"Claim and execute at most one job\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/project_context.py",
-          "line": 100,
-          "preview": "else 'Derive and execute the next trusted completion stage.')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/provider_probe.py",
-          "line": 9,
-          "preview": "from run import execute",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/provider_probe.py",
-          "line": 44,
-          "preview": "state = execute(req, Path('/tmp/provider-preview-app'), out, github=ArtifactProject(out))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/run.py",
-          "line": 359,
-          "preview": "def execute(req, root, out, github=None, model_factory=Model, sandbox_factory=Sandbox):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/run.py",
-          "line": 837,
-          "preview": "state = execute(json.loads(Path(args.request).read_text()), Path(args.work), Path(args.out))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/runtime_journeys.py",
-          "line": 1,
-          "preview": "\"\"\"Generate and execute immutable product journeys on an Android target device.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_rollback.py",
-          "line": 5,
-          "preview": "from architecture_replacement_rollback import ReplacementRollbackError, execute",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_replacement_rollback.py",
+          "file": "studio/evolution_automerge.py",
           "line": 27,
-          "preview": "result=execute(gate,auth,\"token\",\"owner/repo\",requester=requester)",
+          "preview": "def _trusted_check(run, repository):",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_architecture_replacement_rollback.py",
-          "line": 37,
-          "preview": "execute(gate,auth,\"token\",\"owner/repo\",requester=request)",
+          "file": "studio/evolution_automerge.py",
+          "line": 28,
+          "preview": "if not isinstance(run,dict): return False",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_ci.py",
-          "line": 136,
-          "preview": "with patch('ci_runner.subprocess.run') as execute:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci.py",
-          "line": 138,
-          "preview": "run_queue(root, root / 'out', execute)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci.py",
-          "line": 139,
-          "preview": "execute.assert_not_called()",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_evidence.py",
-          "line": 44,
-          "preview": "'notes': 'Metadata only; do not execute package code from this evidence step.',",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_executor.py",
-          "line": 60,
-          "preview": "request['resource_research'].append({'kind': 'arbitrary_shell', 'query': 'download and execute'})",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_research.py",
-          "line": 10,
-          "preview": "from evolution_research import FetchResult, ResearchBlocked, execute, research_task, _validate_network_url",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_research.py",
-          "line": 50,
-          "preview": "result = execute(self.work_order(), out, fetch)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_fleet_supervisor_apply.py",
+          "file": "studio/evolution_automerge.py",
           "line": 29,
-          "preview": "report = fsa.execute(\"out\", \"requests\", apply=False)",
+          "preview": "app=run.get('app')",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_fleet_supervisor_apply.py",
-          "line": 54,
-          "preview": "report = fsa.execute(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_fleet_supervisor_apply.py",
-          "line": 81,
-          "preview": "report = fsa.execute(\"out\", \"requests\", apply=True)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_fleet_supervisor_apply.py",
-          "line": 96,
-          "preview": "report = fsa.execute(\"out\", \"requests\", apply=True)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
+          "file": "studio/evolution_automerge.py",
           "line": 31,
-          "preview": "def execute(state):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 36,
-          "preview": "state = run_goal(goal_path, registry_path, execute, max_cycles=5)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 48,
-          "preview": "def execute(state):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 54,
-          "preview": "state = run_goal(goal_path, registry_path, execute, max_cycles=3)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 64,
-          "preview": "def execute(_state):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 74,
-          "preview": "goal_path, registry_path, execute,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 88,
-          "preview": "def execute(_state):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 95,
-          "preview": "goal_path, registry_path, execute, max_cycles=3,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 107,
-          "preview": "def execute(state):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 113,
-          "preview": "state = run_goal(goal_path, registry_path, execute, max_cycles=3)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 124,
-          "preview": "def execute(state):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 128,
-          "preview": "state = run_goal(goal_path, registry_path, execute, max_cycles=3)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 138,
-          "preview": "calls = {\"execute\": 0, \"adapt\": 0}",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 139,
-          "preview": "def execute(state):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 140,
-          "preview": "calls[\"execute\"] += 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 141,
-          "preview": "if calls[\"execute\"] == 1:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 148,
-          "preview": "state = run_goal(goal_path, registry_path, execute, adapt, max_cycles=6)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 159,
-          "preview": "def execute(state):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_goal_loop.py",
-          "line": 163,
-          "preview": "state = run_goal(goal_path, registry_path, execute, adapt, max_cycles=3)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_android_stage.py",
-          "line": 11,
-          "preview": "from godot_android_stage import execute",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_android_stage.py",
-          "line": 30,
-          "preview": "result=execute(REQ,root,out,FakeGitHub(),runtime,templates,exporter)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_android_stage.py",
-          "line": 42,
-          "preview": "execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub())",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_device_stage.py",
-          "line": 11,
-          "preview": "from godot_device_stage import execute",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_device_stage.py",
-          "line": 32,
-          "preview": "result=execute(REQ,root,out,FakeGitHub(),device_validator=validator)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_device_stage.py",
-          "line": 53,
-          "preview": "result=execute(REQ,root,out,FakeGitHub(),validator,runtime,templates,exporter)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_device_stage.py",
-          "line": 63,
-          "preview": "execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub())",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_device_stage.py",
-          "line": 73,
-          "preview": "execute(REQ,root,out,FakeGitHub(),device_validator=validator)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_play_stage.py",
-          "line": 12,
-          "preview": "from godot_play_stage import execute",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_play_stage.py",
-          "line": 55,
-          "preview": "result=execute(REQ,work,out,FakeGitHub(),env={\"STUDIO_PLAY_ACCESS_TOKEN\":\"x\"*40},publisher=publisher)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_play_stage.py",
-          "line": 70,
-          "preview": "result=execute(REQ,work,out,FakeGitHub(),env={},publisher=lambda **k:self.fail(\"network\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_play_stage.py",
-          "line": 83,
-          "preview": "result=execute(REQ,root/\"work\",root/\"out\",FakeGitHub(),env={\"STUDIO_PLAY_ACCESS_TOKEN\":\"x\"*40})",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_preview.py",
-          "line": 78,
-          "preview": "base=Path(td); state=godot_preview.execute(self.request(),base/'work',base/'out',github,FakeModel,FakeSandbox)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_preview.py",
-          "line": 379,
-          "preview": "resumed = godot_preview.execute(req, root/'work', root/'out', github,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_privacy_security_qa.py",
-          "line": 20,
-          "preview": "(root/'scripts').mkdir(); (root/'scripts'/'x.gd').write_text('OS.execute(\"x\")\\nvar u=\"http://example.com\"\\n')",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_release_artifact_stage.py",
-          "line": 10,
-          "preview": "from godot_release_artifact_stage import execute",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_release_artifact_stage.py",
-          "line": 29,
-          "preview": "result=execute(REQ,root/'work',root/'out',FakeGitHub(),runtime,source,builder,signer,env)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_release_artifact_stage.py",
-          "line": 39,
-          "preview": "result=execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub(),env={})",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_release_artifact_stage.py",
-          "line": 52,
-          "preview": "execute(REQ,root/'work',root/'out',FakeGitHub(),lambda p:p/'g',lambda p:p/'s',builder,lambda *a:{},env)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_release_stage.py",
-          "line": 8,
-          "preview": "from godot_release_stage import execute",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_release_stage.py",
-          "line": 22,
-          "preview": "result=execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub(),lambda root:evidence)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_release_stage.py",
-          "line": 32,
-          "preview": "result=execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub(),lambda root:evidence)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_release_stage.py",
-          "line": 42,
-          "preview": "result=execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub(),lambda root:evidence)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_runtime_journey_stage.py",
-          "line": 10,
-          "preview": "from godot_runtime_journey_stage import execute",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_runtime_journey_stage.py",
-          "line": 25,
-          "preview": "result=execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub(),installer,runner)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_runtime_journey_stage.py",
-          "line": 35,
-          "preview": "result=execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub(),lambda _:Path(td)/'godot',lambda *args:{'passed':False,'journeys_executed':False,'journey_count':1})",
+          "preview": "details=run.get('details_url')",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 120
     },
-    "ranked_agent_names": {
+    "_cloudflare_free_fallback": {
       "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 342,
+        "file": "studio/production_os_provider_config.py",
+        "line": 14,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/agents/orchestrator.py",
-          "line": 342,
-          "preview": "def ranked_agent_names(required:set[str],*,role:str,memory_path:Path,limit:int=2,preferred:str|None=None)->list[str]:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 31,
-          "preview": "from agents.orchestrator import execute as execute_agent, execute_named as execute_named_agent, ranked_agent_names, routing_trace_for",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 1317,
-          "preview": "preliminary_names = ranked_agent_names(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/release_repair.py",
-          "line": 11,
-          "preview": "from agents.orchestrator import execute_named as execute_named_agent, ranked_agent_names",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/release_repair.py",
-          "line": 74,
-          "preview": "return ranked_agent_names(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 5
-    },
-    "usable": {
-      "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 357,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/adaptive_phase_policy.py",
+          "file": "studio/production_os_provider_config.py",
           "line": 14,
-          "preview": "to model planning rather than inventing a plan without a usable objective.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 357,
-          "preview": "def usable(decision)->bool:",
+          "preview": "def _cloudflare_free_fallback(environ):",
           "definition_candidate": true
         },
         {
-          "file": "studio/agents/orchestrator.py",
-          "line": 374,
-          "preview": "if decision.agent.name==preferred_name and usable(decision)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 384,
-          "preview": "if decision.agent.name in names or not usable(decision):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_feedback.py",
-          "line": 101,
-          "preview": "# Legacy unscoped evidence remains usable only for legacy/unscoped callers.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_planner.py",
-          "line": 186,
-          "preview": "# Legacy observations without timestamps remain usable for sample-mass",
+          "file": "studio/production_os_provider_config.py",
+          "line": 52,
+          "preview": "free_fallback = _cloudflare_free_fallback(environ)",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 6
+      "occurrence_count": 2
     },
-    "execute_named": {
+    "configure": {
       "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 389,
+        "file": "studio/production_os_provider_config.py",
+        "line": 41,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/agents/orchestrator.py",
-          "line": 389,
-          "preview": "def execute_named(name:str,prompt:str,*,cwd:Path,timeout:int=1800)->dict:",
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 7,
+          "preview": "from production_os_provider_config import configure",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 39,
+          "preview": "configure(env)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_provider_config.py",
+          "line": 41,
+          "preview": "def configure(environ):",
           "definition_candidate": true
         },
         {
-          "file": "studio/generic_project.py",
-          "line": 31,
-          "preview": "from agents.orchestrator import execute as execute_agent, execute_named as execute_named_agent, ranked_agent_names, routing_trace_for",
+          "file": "studio/production_os_provider_config.py",
+          "line": 60,
+          "preview": "if __name__ == \"__main__\" and configure(os.environ):",
           "definition_candidate": false
         },
         {
-          "file": "studio/release_repair.py",
-          "line": 11,
-          "preview": "from agents.orchestrator import execute_named as execute_named_agent, ranked_agent_names",
+          "file": "studio/project_budget.py",
+          "line": 9,
+          "preview": "def configure(state: dict, req: dict) -> dict:",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 18,
-          "preview": "from agents.orchestrator import execute_named, invocation_for",
+          "file": "studio/release_stage_engine.py",
+          "line": 10,
+          "preview": "from project_budget import branch_should_stop, budget_status, can_spend, configure as configure_budget, record_repair_outcome",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 275,
-          "preview": "failed = execute_named(\"opencode\", \"edit this\", cwd=ROOT)",
+          "file": "studio/run.py",
+          "line": 19,
+          "preview": "from project_budget import budget_status, can_spend, configure as configure_budget, record_calls, apply_capacity_limit",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 285,
-          "preview": "succeeded = execute_named(\"opencode\", \"edit this\", cwd=ROOT)",
+          "file": "studio/security_stage.py",
+          "line": 14,
+          "preview": "from project_budget import budget_status, can_spend, configure as configure_budget, record_repair_outcome",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 318,
-          "preview": "silent = execute_named(\"hermes\", \"do work\", cwd=ROOT)",
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 9,
+          "preview": "from production_os_provider_config import configure",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 356,
-          "preview": "result = execute_named(\"codex\", \"do work\", cwd=ROOT)",
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 89,
+          "preview": "self.assertTrue(configure(env))",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 386,
-          "preview": "result = execute_named(\"codex\", \"do work\", cwd=ROOT)",
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 98,
+          "preview": "self.assertTrue(configure(cloudflare_env))",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 420,
-          "preview": "result = execute_named(\"codex\", \"do work\", cwd=ROOT)",
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 120,
+          "preview": "self.assertTrue(configure(disabled))",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 462,
-          "preview": "result = execute_named(\"codex\", \"do work\", cwd=ROOT)",
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 125,
+          "preview": "self.assertFalse(configure(env))",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_agent_router.py",
-          "line": 500,
-          "preview": "result = execute_named(\"codex\", \"do work\", cwd=ROOT)",
+          "file": "tests/test_project_budget.py",
+          "line": 12,
+          "preview": "configure,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_project_budget.py",
+          "line": 21,
+          "preview": "budget = configure(state, {\"max_calls\": 12, \"max_cycles\": 5})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_project_budget.py",
+          "line": 28,
+          "preview": "configure(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_project_budget.py",
+          "line": 43,
+          "preview": "configure(state, {\"max_calls\": 12, \"max_cycles\": 5})",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 12
-    },
-    "routing_trace_for": {
-      "definition": {
-        "file": "studio/agents/orchestrator.py",
-        "line": 425,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 425,
-          "preview": "def routing_trace_for(name:str,required:set[str],*,role:str,memory_path:Path)->dict|None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 31,
-          "preview": "from agents.orchestrator import execute as execute_agent, execute_named as execute_named_agent, ranked_agent_names, routing_trace_for",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 1677,
-          "preview": "route_trace = routing_trace_for(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
+      "occurrence_count": 17
     },
     "AgentRouterTests": {
       "definition": {
@@ -1937,61 +2547,61 @@
         },
         {
           "file": "tests/test_agent_router.py",
-          "line": 186,
+          "line": 187,
           "preview": "patch(\"shutil.which\", return_value=\"/usr/bin/\" + name),",
           "definition_candidate": false
         },
         {
           "file": "tests/test_agent_router.py",
-          "line": 226,
+          "line": 228,
           "preview": "patch(\"shutil.which\", return_value=\"/usr/bin/codex\"),",
           "definition_candidate": false
         },
         {
           "file": "tests/test_agent_router.py",
-          "line": 271,
+          "line": 273,
           "preview": "with patch(\"shutil.which\", return_value=\"/usr/bin/opencode\"), patch(",
           "definition_candidate": false
         },
         {
           "file": "tests/test_agent_router.py",
-          "line": 282,
+          "line": 284,
           "preview": "with patch(\"shutil.which\", return_value=\"/usr/bin/opencode\"), patch(",
           "definition_candidate": false
         },
         {
           "file": "tests/test_agent_router.py",
-          "line": 314,
+          "line": 316,
           "preview": "with patch(\"shutil.which\", return_value=\"/bin/hermes\"), patch(",
           "definition_candidate": false
         },
         {
           "file": "tests/test_agent_router.py",
-          "line": 351,
+          "line": 353,
           "preview": "with patch(\"shutil.which\", return_value=\"/bin/codex\"), patch(",
           "definition_candidate": false
         },
         {
           "file": "tests/test_agent_router.py",
-          "line": 378,
+          "line": 380,
           "preview": "with patch(\"shutil.which\", return_value=\"/bin/codex\"), patch(",
           "definition_candidate": false
         },
         {
           "file": "tests/test_agent_router.py",
-          "line": 412,
+          "line": 414,
           "preview": "with patch(\"shutil.which\", return_value=\"/bin/codex\"), patch(",
           "definition_candidate": false
         },
         {
           "file": "tests/test_agent_router.py",
-          "line": 455,
+          "line": 457,
           "preview": "\"shutil.which\", return_value=\"/bin/codex\"",
           "definition_candidate": false
         },
         {
           "file": "tests/test_agent_router.py",
-          "line": 492,
+          "line": 494,
           "preview": "\"shutil.which\", return_value=\"/bin/codex\"",
           "definition_candidate": false
         },
@@ -2265,14 +2875,14 @@
     "test_opencode_headless_exit_zero_needs_real_assistant_output": {
       "definition": {
         "file": "tests/test_agent_router.py",
-        "line": 244,
+        "line": 246,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_agent_router.py",
-          "line": 244,
+          "line": 246,
           "preview": "def test_opencode_headless_exit_zero_needs_real_assistant_output(self):",
           "definition_candidate": true
         }
@@ -2282,7 +2892,7 @@
     "evidence": {
       "definition": {
         "file": "tests/test_agent_router.py",
-        "line": 247,
+        "line": 249,
         "kind": "function",
         "language": "python"
       },
@@ -2337,13 +2947,13 @@
         },
         {
           "file": "studio/agents/adapters.py",
-          "line": 88,
+          "line": 93,
           "preview": "# extra_env, allowing inherited secrets to reach persistent evidence.",
           "definition_candidate": false
         },
         {
           "file": "studio/agents/adapters.py",
-          "line": 109,
+          "line": 114,
           "preview": "# would otherwise push it outside the 24k evidence tail.",
           "definition_candidate": false
         },
@@ -3013,14 +3623,14 @@
     "test_codex_invocation_uses_verified_headless_contract": {
       "definition": {
         "file": "tests/test_agent_router.py",
-        "line": 334,
+        "line": 336,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_agent_router.py",
-          "line": 334,
+          "line": 336,
           "preview": "def test_codex_invocation_uses_verified_headless_contract(self):",
           "definition_candidate": true
         }
@@ -3030,14 +3640,14 @@
     "test_codex_execute_named_exposes_token_usage": {
       "definition": {
         "file": "tests/test_agent_router.py",
-        "line": 343,
+        "line": 345,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_agent_router.py",
-          "line": 343,
+          "line": 345,
           "preview": "def test_codex_execute_named_exposes_token_usage(self):",
           "definition_candidate": true
         }
@@ -3047,14 +3657,14 @@
     "test_codex_execute_named_prefers_isolated_omniroute_profile_when_healthy": {
       "definition": {
         "file": "tests/test_agent_router.py",
-        "line": 363,
+        "line": 365,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_agent_router.py",
-          "line": 363,
+          "line": 365,
           "preview": "def test_codex_execute_named_prefers_isolated_omniroute_profile_when_healthy(self):",
           "definition_candidate": true
         }
@@ -3064,32 +3674,32 @@
     "fake_run": {
       "definition": {
         "file": "tests/test_agent_router.py",
-        "line": 373,
+        "line": 375,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_agent_router.py",
-          "line": 373,
+          "line": 375,
           "preview": "def fake_run(_adapter, argv, *, cwd, timeout, extra_env):",
           "definition_candidate": true
         },
         {
           "file": "tests/test_agent_router.py",
-          "line": 384,
+          "line": 386,
           "preview": "side_effect=fake_run,",
           "definition_candidate": false
         },
         {
           "file": "tests/test_agent_router.py",
-          "line": 407,
+          "line": 409,
           "preview": "def fake_run(_adapter, argv, *, cwd, timeout, extra_env):",
           "definition_candidate": false
         },
         {
           "file": "tests/test_agent_router.py",
-          "line": 418,
+          "line": 420,
           "preview": "side_effect=fake_run,",
           "definition_candidate": false
         },
@@ -3147,14 +3757,14 @@
     "test_codex_execute_named_uses_chatgpt_profile_when_omniroute_is_unavailable": {
       "definition": {
         "file": "tests/test_agent_router.py",
-        "line": 397,
+        "line": 399,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_agent_router.py",
-          "line": 397,
+          "line": 399,
           "preview": "def test_codex_execute_named_uses_chatgpt_profile_when_omniroute_is_unavailable(self):",
           "definition_candidate": true
         }
@@ -3164,14 +3774,14 @@
     "test_codex_execute_named_stops_when_project_token_envelope_is_exhausted": {
       "definition": {
         "file": "tests/test_agent_router.py",
-        "line": 428,
+        "line": 430,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_agent_router.py",
-          "line": 428,
+          "line": 430,
           "preview": "def test_codex_execute_named_stops_when_project_token_envelope_is_exhausted(self):",
           "definition_candidate": true
         }
@@ -3181,15 +3791,974 @@
     "test_codex_execute_named_settles_reported_usage_in_project_ledger": {
       "definition": {
         "file": "tests/test_agent_router.py",
-        "line": 471,
+        "line": 473,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_agent_router.py",
-          "line": 471,
+          "line": 473,
           "preview": "def test_codex_execute_named_settles_reported_usage_in_project_ledger(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "LiveDiagnosticsTests": {
+      "definition": {
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "line": 13,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 13,
+          "preview": "class LiveDiagnosticsTests(unittest.TestCase):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_provider_fallback_recovers_gone_model_and_output_excludes_secrets": {
+      "definition": {
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "line": 14,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 14,
+          "preview": "def test_provider_fallback_recovers_gone_model_and_output_excludes_secrets(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "FakeAPI": {
+      "definition": {
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "line": 18,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_ci_diagnostics.py",
+          "line": 9,
+          "preview": "class FakeAPI:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci_diagnostics.py",
+          "line": 20,
+          "preview": "api = FakeAPI([",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci_diagnostics.py",
+          "line": 80,
+          "preview": "api = FakeAPI([",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_synthesis.py",
+          "line": 6,
+          "preview": "class FakeAPI:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_synthesis.py",
+          "line": 18,
+          "preview": "root=Path(tmp); order=root/'order.json'; order.write_text(json.dumps(self.order())); research=root/'research.json'; research.write_text(json.dumps(self.research())); api=FakeAPI(se",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_synthesis.py",
+          "line": 21,
+          "preview": "with self.assertRaises(CandidateRejected): synthesize(self.order(),self.research(),api=FakeAPI(candidate),model='test-model')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_evolution_synthesis.py",
+          "line": 23,
+          "preview": "api=FakeAPI(self.candidate())",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 16,
+          "preview": "class FakeAPI:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 32,
+          "preview": "obj.api = FakeAPI(responses)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 246,
+          "preview": "fallback_api = FakeAPI([completion(product_value())])",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 262,
+          "preview": "fallback_api = FakeAPI([completion(product_value())])",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 277,
+          "preview": "fallback_api = FakeAPI([completion(product_value())])",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 297,
+          "preview": "fallback_api = FakeAPI([completion(patch_value)])",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 331,
+          "preview": "fallback_api = FakeAPI([completion(product_value())])",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 18,
+          "preview": "class FakeAPI:",
+          "definition_candidate": true
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 26,
+          "preview": "result = diagnose(api_factory=FakeAPI, providers=providers, environ={})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 35,
+          "preview": "class FakeAPI:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 42,
+          "preview": "result = diagnose(api_factory=FakeAPI, providers=[provider], environ={})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 46,
+          "preview": "with patch.object(FakeAPI, 'call', return_value=response):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 47,
+          "preview": "self.assertFalse(diagnose(api_factory=FakeAPI, providers=[provider], environ={})['inference_ready'])",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 51,
+          "preview": "class FakeAPI:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 57,
+          "preview": "result = diagnose(api_factory=FakeAPI, providers=[], environ={",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 22
+    },
+    "call": {
+      "definition": {
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "line": 21,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/adaptive_phase_policy.py",
+          "line": 10,
+          "preview": "\"\"\"Decide whether a model planning call is worth its round budget.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/adaptive_phase_policy.py",
+          "line": 12,
+          "preview": "A skipped planning call still produces the stable plan schema consumed by",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/adaptive_role_allocator.py",
+          "line": 48,
+          "preview": "\"\"\"Return whether this round is worth spending a model call on planning.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_merge.py",
+          "line": 3,
+          "preview": "This is the only replacement component allowed to call GitHub's merge endpoint. It requires",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_merge_gate.py",
+          "line": 3,
+          "preview": "This module is read-only. It does not call GitHub and does not merge. Its output can only",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_pr_package.py",
+          "line": 3,
+          "preview": "This module does not call GitHub, does not push, and does not merge. It emits the exact",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_synthesis.py",
+          "line": 126,
+          "preview": "return api.call(\"POST\",\"/chat/completions\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_synthesis.py",
+          "line": 143,
+          "preview": "return routed.call(\"POST\",\"/chat/completions\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 158,
+          "preview": "tree=github.call(\"POST\",github.repo+\"/git/trees\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 188,
+          "preview": "commit=github.call(\"POST\",github.repo+\"/git/commits\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 196,
+          "preview": "github.call(\"POST\",github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+branch,\"sha\":commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_registry_promotion_persist.py",
+          "line": 197,
+          "preview": "pr=github.call(\"POST\",github.repo+\"/pulls\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_budget.py",
+          "line": 1,
+          "preview": "\"\"\"Scale autonomous model-call budget from available free capacity.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 174,
+          "preview": "payload = api.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_diagnostics.py",
+          "line": 204,
+          "preview": "jobs_payload = api.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 399,
+          "preview": "def call(self, method, path, data=None, timeout_seconds=300, max_attempts=3):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 463,
+          "preview": "# One schema/truncation repair, charged against the global model-call budget.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 491,
+          "preview": "raise StudioError('Model call budget exhausted; checkpoint retained')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 729,
+          "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_candidate.py",
+          "line": 42,
+          "preview": "FORBIDDEN_CALLS = {'eval','exec','compile','__import__','os.system','os.popen','subprocess.call',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_synthesis.py",
+          "line": 32,
+          "preview": "response=api.call('POST','/chat/completions',params)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_synthesis.py",
+          "line": 45,
+          "preview": "response=routed_api.call('POST','/chat/completions',params)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fault_injection_smoke.py",
+          "line": 30,
+          "preview": "api.call(\"POST\", \"/chat/completions\", {}, timeout_seconds=30)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_isolated_validation.py",
+          "line": 69,
+          "preview": "raise IsolatedCapabilityValidationError(label+\" uses forbidden call\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_persist.py",
+          "line": 90,
+          "preview": "tree=github.call(\"POST\",github.repo+\"/git/trees\",{\"base_tree\":base_tree,\"tree\":entries})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_persist.py",
+          "line": 108,
+          "preview": "commit=github.call(\"POST\",github.repo+\"/git/commits\",{\"message\":\"Persist validated capability candidate: \"+capability,\"tree\":tree_sha,\"parents\":[baseline_sha]})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_persist.py",
+          "line": 112,
+          "preview": "github.call(\"POST\",github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+branch,\"sha\":commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_persist.py",
+          "line": 113,
+          "preview": "pr=github.call(\"POST\",github.repo+\"/pulls\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_capability_synthesis.py",
+          "line": 49,
+          "preview": "response = api.call(\"POST\", \"/chat/completions\", params)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 10,
+          "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 312,
+          "preview": "# *output* tokens per call, exhausting the project before any code landed.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 726,
+          "preview": "raise StudioError(\"Generic model call quota timed out\") from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 131,
+          "preview": "# each planning/implementation call: a single prompt can consume most of",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 45,
+          "preview": "init=self.github.call(\"PUT\",self.github.repo+\"/contents/README.md\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 162,
+          "preview": "created = self.github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 254,
+          "preview": "tree=self.github.call(\"POST\",self.github.repo+\"/git/trees\",{\"base_tree\":base_tree,\"tree\":entries})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 255,
+          "preview": "commit=self.github.call(\"POST\",self.github.repo+\"/git/commits\",{\"message\":message,\"tree\":tree[\"sha\"],\"parents\":[base_sha]})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 259,
+          "preview": "self.github.call(\"PATCH\",self.github.repo+\"/git/refs/heads/\"+self.branch,{\"sha\":commit[\"sha\"],\"force\":False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 261,
+          "preview": "self.github.call(\"POST\",self.github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+self.branch,\"sha\":commit[\"sha\"]})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_agent_performance_store.py",
+          "line": 61,
+          "preview": "tree=github.call(\"POST\",github.repo+\"/git/trees\",{\"base_tree\":base_tree,\"tree\":[{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_agent_performance_store.py",
+          "line": 64,
+          "preview": "commit=github.call(\"POST\",github.repo+\"/git/commits\",{\"message\":\"Persist agent performance memory\",\"tree\":tree[\"sha\"],\"parents\":[parent]})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_agent_performance_store.py",
+          "line": 67,
+          "preview": "github.call(\"POST\",github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+STATE_BRANCH,\"sha\":sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_agent_performance_store.py",
+          "line": 69,
+          "preview": "github.call(\"PATCH\",github.repo+\"/git/refs/heads/\"+STATE_BRANCH,{\"sha\":sha,\"force\":False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_audit_store.py",
+          "line": 115,
+          "preview": "tree = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_audit_store.py",
+          "line": 131,
+          "preview": "commit = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_audit_store.py",
+          "line": 144,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_audit_store.py",
+          "line": 150,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_stats_store.py",
+          "line": 122,
+          "preview": "tree = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_stats_store.py",
+          "line": 138,
+          "preview": "commit = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_stats_store.py",
+          "line": 151,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_artifact_cas_stats_store.py",
+          "line": 157,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_contextual_strategy_efficiency_store.py",
+          "line": 111,
+          "preview": "tree=github.call(\"POST\",github.repo+\"/git/trees\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_contextual_strategy_efficiency_store.py",
+          "line": 118,
+          "preview": "commit=github.call(\"POST\",github.repo+\"/git/commits\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_contextual_strategy_efficiency_store.py",
+          "line": 127,
+          "preview": "github.call(\"POST\",github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+STATE_BRANCH,\"sha\":commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_contextual_strategy_efficiency_store.py",
+          "line": 129,
+          "preview": "github.call(\"PATCH\",github.repo+\"/git/refs/heads/\"+STATE_BRANCH,{\"sha\":commit_sha,\"force\":False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_execution_checkpoint_store.py",
+          "line": 94,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_execution_checkpoint_store.py",
+          "line": 106,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_execution_checkpoint_store.py",
+          "line": 115,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {\"ref\": \"refs/heads/\" + STATE_BRANCH, \"sha\": commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_execution_checkpoint_store.py",
+          "line": 117,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {\"sha\": commit_sha, \"force\": False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_full_gate_cache_store.py",
+          "line": 116,
+          "preview": "tree = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_full_gate_cache_store.py",
+          "line": 132,
+          "preview": "commit = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_full_gate_cache_store.py",
+          "line": 145,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_full_gate_cache_store.py",
+          "line": 151,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_goal_store.py",
+          "line": 244,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {\"base_tree\": base_tree, \"tree\": entries})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_goal_store.py",
+          "line": 248,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_goal_store.py",
+          "line": 257,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_goal_store.py",
+          "line": 262,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_memory_store.py",
+          "line": 86,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_memory_store.py",
+          "line": 98,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_memory_store.py",
+          "line": 107,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_memory_store.py",
+          "line": 112,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_phase_cost_baseline_store.py",
+          "line": 102,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_phase_cost_baseline_store.py",
+          "line": 114,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_phase_cost_baseline_store.py",
+          "line": 123,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {\"ref\": \"refs/heads/\" + STATE_BRANCH, \"sha\": commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_phase_cost_baseline_store.py",
+          "line": 125,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {\"sha\": commit_sha, \"force\": False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_health_store.py",
+          "line": 123,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_health_store.py",
+          "line": 135,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_health_store.py",
+          "line": 144,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_health_store.py",
+          "line": 149,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_metrics_store.py",
+          "line": 95,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_metrics_store.py",
+          "line": 107,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_metrics_store.py",
+          "line": 116,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {\"ref\": \"refs/heads/\" + STATE_BRANCH, \"sha\": commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_provider_metrics_store.py",
+          "line": 118,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {\"sha\": commit_sha, \"force\": False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_quick_gate_cache_store.py",
+          "line": 131,
+          "preview": "tree = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_quick_gate_cache_store.py",
+          "line": 147,
+          "preview": "commit = github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_quick_gate_cache_store.py",
+          "line": 160,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_quick_gate_cache_store.py",
+          "line": 166,
+          "preview": "github.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_routing_history_store.py",
+          "line": 114,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_routing_history_store.py",
+          "line": 126,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_routing_history_store.py",
+          "line": 135,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {\"ref\": \"refs/heads/\" + STATE_BRANCH, \"sha\": commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_routing_history_store.py",
+          "line": 137,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {\"sha\": commit_sha, \"force\": False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_strategy_efficiency_store.py",
+          "line": 103,
+          "preview": "tree=github.call(\"POST\",github.repo+\"/git/trees\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_strategy_efficiency_store.py",
+          "line": 110,
+          "preview": "commit=github.call(\"POST\",github.repo+\"/git/commits\",{",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_strategy_efficiency_store.py",
+          "line": 119,
+          "preview": "github.call(\"POST\",github.repo+\"/git/refs\",{\"ref\":\"refs/heads/\"+STATE_BRANCH,\"sha\":commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_strategy_efficiency_store.py",
+          "line": 121,
+          "preview": "github.call(\"PATCH\",github.repo+\"/git/refs/heads/\"+STATE_BRANCH,{\"sha\":commit_sha,\"force\":False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_verification_cost_store.py",
+          "line": 96,
+          "preview": "tree = github.call(\"POST\", github.repo + \"/git/trees\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_verification_cost_store.py",
+          "line": 108,
+          "preview": "commit = github.call(\"POST\", github.repo + \"/git/commits\", {",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_verification_cost_store.py",
+          "line": 117,
+          "preview": "github.call(\"POST\", github.repo + \"/git/refs\", {\"ref\": \"refs/heads/\" + STATE_BRANCH, \"sha\": commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_verification_cost_store.py",
+          "line": 119,
+          "preview": "github.call(\"PATCH\", github.repo + \"/git/refs/heads/\" + STATE_BRANCH, {\"sha\": commit_sha, \"force\": False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_model.py",
+          "line": 199,
+          "preview": "raise StudioError('Model call budget exhausted; checkpoint retained')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_model.py",
+          "line": 317,
+          "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 656,
+          "preview": "tree = github.call('POST', github.repo + '/git/trees', {'base_tree':base_tree,'tree':entries})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 660,
+          "preview": "commit = github.call('POST', github.repo + '/git/commits', {'message':'Godot studio: ' + state['status'],'tree':tree_sha,'parents':[parent]})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 665,
+          "preview": "github.call('PATCH', github.repo + '/git/refs/heads/' + branch, {'sha':commit_sha,'force':False})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_preview.py",
+          "line": 667,
+          "preview": "github.call('POST', github.repo + '/git/refs', {'ref':'refs/heads/' + branch,'sha':commit_sha})",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/local_model_benchmark.py",
+          "line": 59,
+          "preview": "response = api.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 110,
+          "preview": "def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 121,
+          "preview": "return api.call('POST', '/chat/completions', params, **transport)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_model_usage.py",
+          "line": 199,
+          "preview": "response = api.call('POST', '/chat/completions', payload, **transport)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/portfolio_scan.py",
+          "line": 43,
+          "preview": "batch = api.call(\"GET\", f\"/user/repos?affiliation=owner&per_page=100&page={page}&sort=updated\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/portfolio_scan.py",
+          "line": 60,
+          "preview": "batch = public.call(\"GET\", f\"/users/{quote(owner)}/repos?per_page=100&page={page}&sort=updated\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/portfolio_scan.py",
+          "line": 76,
+          "preview": "branch=api.call(\"GET\",\"/repos/\"+full+\"/branches/\"+quote(default))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/portfolio_scan.py",
+          "line": 80,
+          "preview": "tree=api.call(\"GET\",\"/repos/\"+full+\"/git/trees/\"+sha+\"?recursive=1\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/portfolio_scan.py",
+          "line": 88,
+          "preview": "blob=api.call(\"GET\",\"/repos/\"+full+\"/git/blobs/\"+readme[\"sha\"])",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 23,
+          "preview": "result = client.call(\"GET\", \"/readyz\", timeout_seconds=min(30, remaining))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 56,
+          "preview": "response = api_factory(provider.base, provider.key).call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 80,
+          "preview": "operator_client.call(\"GET\", \"/v1/dashboard/device-sessions\", timeout_seconds=(30 if diagnose_wake else 10))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 86,
+          "preview": "readiness = operator_client.call(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_resume_objectives.py",
+          "line": 23,
+          "preview": "return self.call(\"GET\", path, timeout_seconds=30)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_health.py",
+          "line": 172,
+          "preview": "Only post-verification outcomes should call this function. This prevents",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 120
+    },
+    "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready": {
+      "definition": {
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "line": 33,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 33,
+          "preview": "def test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_operator_probe_is_read_only_and_no_token_is_reported": {
+      "definition": {
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "line": 49,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 49,
+          "preview": "def test_operator_probe_is_read_only_and_no_token_is_reported(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_defaults_preserve_explicit_configuration_and_other_providers": {
+      "definition": {
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "line": 87,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 87,
+          "preview": "def test_defaults_preserve_explicit_configuration_and_other_providers(self):",
           "definition_candidate": true
         }
       ],

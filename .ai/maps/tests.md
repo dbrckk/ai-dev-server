@@ -8784,6 +8784,12 @@ env = {'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1/'}
 ⋮----
 models = [p['model'] for p in json.loads(env['STUDIO_PROVIDERS_JSON'])]
 ⋮----
+cloudflare_env = {
+⋮----
+configured = json.loads(cloudflare_env['STUDIO_PROVIDERS_JSON'])
+⋮----
+disabled = {
+⋮----
 before = dict(env)
 ```
 

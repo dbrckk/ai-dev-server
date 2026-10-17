@@ -1914,6 +1914,9 @@ jobs:
       STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
       STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
       STUDIO_PROVIDERS_JSON: ${{ vars.STUDIO_PROVIDERS_JSON }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      STUDIO_CLOUDFLARE_FREE_TIER_ONLY: ${{ vars.STUDIO_CLOUDFLARE_FREE_TIER_ONLY || '0' }}
       STUDIO_VISION_MODEL: ${{ vars.STUDIO_VISION_MODEL }}
       STUDIO_PERSIST_REMOTE: '1'
       PYTHONPATH: studio
@@ -2692,6 +2695,9 @@ jobs:
           STUDIO_MODEL: ${{ vars.STUDIO_MODEL || 'nvidia/nemotron-3-super-120b-a12b' }}
           STUDIO_CODE_MODEL: ${{ vars.STUDIO_CODE_MODEL }}
           STUDIO_PROVIDERS_JSON: ${{ vars.STUDIO_PROVIDERS_JSON }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          STUDIO_CLOUDFLARE_FREE_TIER_ONLY: ${{ vars.STUDIO_CLOUDFLARE_FREE_TIER_ONLY || '0' }}
         run: python studio/production_os_live_diagnostics.py
 ````
 
@@ -6113,7 +6119,9 @@ env = os.environ.copy()
 # or host Git/SSH authentication. Model-provider credentials remain
 # available for authorized inference; scoped aliases also work.
 control_prefixes = (
-control_keys = {"CODESPACES_PAT", "SSH_ASKPASS", "SSH_AUTH_SOCK"}
+# Cloudflare's fallback key is for the trusted in-process router only.
+# Hermes/OpenCode/Codex do not need this extra ambient credential.
+control_keys = {
 ⋮----
 # Never let an autonomous prompt override process-critical variables.
 ⋮----
@@ -22024,9 +22032,29 @@ ready = ready and isinstance(wake, dict) and wake.get("mode") in {
 
 ## File: studio/production_os_provider_config.py
 ````python
-"""Shared provider defaults for the Actions worker and its live diagnostics."""
+"""Shared provider defaults for the Actions worker and its live diagnostics.
+
+A Cloudflare Workers Free fallback is opt-in only: a configured API credential
+is not proof of an available zero-cost quota, and paid models are never selected.
+"""
+⋮----
+_CLOUDFLARE_FREE_MODEL = "@cf/zai-org/glm-4.7-flash"
+⋮----
+def _cloudflare_free_fallback(environ)
+⋮----
+"""Return a conservative OpenAI-compatible Workers AI coding fallback.
+
+    A Free-plan confirmation is required to prevent unintended metered use on
+    Workers Paid. The model is explicitly Free-eligible as of October 2026.
+    Never serialize the API token: ProviderSpec reads only its variable name.
+    """
+⋮----
+account = str(environ.get("CLOUDFLARE_ACCOUNT_ID") or "").strip().lower()
 ⋮----
 def configure(environ)
+⋮----
+providers = [
+free_fallback = _cloudflare_free_fallback(environ)
 ````
 
 ## File: studio/production_os_resume_objectives.py
@@ -34894,6 +34922,12 @@ def test_defaults_preserve_explicit_configuration_and_other_providers(self)
 env = {'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1/'}
 ⋮----
 models = [p['model'] for p in json.loads(env['STUDIO_PROVIDERS_JSON'])]
+⋮----
+cloudflare_env = {
+⋮----
+configured = json.loads(cloudflare_env['STUDIO_PROVIDERS_JSON'])
+⋮----
+disabled = {
 ⋮----
 before = dict(env)
 ````

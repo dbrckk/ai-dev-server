@@ -106,22 +106,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-17T08:36:43Z
+Generated: 2026-10-17T13:03:28Z
 
 ### Git
 - Branch: `main`
-- Head: `e4b6c554d0d9`
-- Commit date: 2026-10-17T04:36:25-04:00
-- Commit: fix(agents): require Hermes and Codex terminal receipts before success (#334)
+- Head: `b0cd42326232`
+- Commit date: 2026-10-17T09:03:18-04:00
+- Commit: feat(providers): opt-in Cloudflare Workers Free coding fallback (#335)
 - Tracked files: 865
 
 ### Recently changed files
-- `studio/agents/orchestrator.py`
-- `tests/test_agent_router.py`
+- `.github/workflows/production-os-actions-worker.yml`
+- `.github/workflows/production-os-live-diagnostics.yml`
+- `docs/PRODUCTION_OS_WORKER.md`
 - `studio/agents/adapters.py`
-- `studio/godot_model.py`
-- `studio/native_model_usage.py`
-- `tests/test_godot_model.py`
+- `studio/production_os_provider_config.py`
+- `tests/test_agent_router.py`
+- `tests/test_production_os_live_diagnostics.py`
+- `studio/agents/orchestrator.py`
 
 ### Project signals
 - No common build descriptor detected

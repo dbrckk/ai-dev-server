@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 3,
     "requested_max_files": 12,
-    "score_margin": 10,
+    "score_margin": 6,
     "tier": "narrow",
-    "top_score": 45
+    "top_score": 39
   },
   "cache": {
-    "fingerprint": "e8051106b07d94b3e074e44e099c41ed03e80e92e3574b926e60c0945d8f1552",
+    "fingerprint": "b7a3a38ef43de85e8142f66877975e9f3fdc48552c9c41b6154afe25e8728393",
     "hit": false
   },
-  "candidate_count": 102,
+  "candidate_count": 103,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -23,48 +23,14 @@
       ],
       "path": "studio/multi_engine_orchestrator.py",
       "reasons": [
-        "impact",
         "search-index"
       ],
-      "score": 45,
+      "score": 39,
       "symbols": [
         "_detect",
         "_remaining",
         "_run_stage",
         "run_project"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine",
-        "game"
-      ],
-      "path": "tests/test_orchestrator.py",
-      "reasons": [
-        "impact",
-        "search-index"
-      ],
-      "score": 35,
-      "symbols": [
-        "GitHubRunnerTests",
-        "OrchestratorTests",
-        "missing_report",
-        "payload_for",
-        "request",
-        "test_adaptation_without_baseline_has_no_promotable_work_order",
-        "test_adapter_reports_complete_only_after_machine_completion",
-        "test_asset_forge_batch_receipt_marks_regenerated_quality",
-        "test_asset_forge_failure_receipt_marks_low_quality",
-        "test_full_pipeline_reaches_finished",
-        "test_multi_asset_request_uses_transactional_asset_forge_batch",
-        "test_non_main_is_rejected_before_generation",
-        "test_premium_visual_request_prefetches_asset_forge_before_preview",
-        "test_research_failure_prevents_synthesis",
-        "test_scheduler_rewind_can_revisit_release_build_boundedly",
-        "test_stage_return_code_two_is_human_action_not_failure",
-        "test_successful_stage_must_advance",
-        "test_unregistered_stage_research_then_synthesis"
       ]
     },
     {
@@ -99,6 +65,34 @@
         "test_raster_quality_policy_can_be_overridden_per_task",
         "test_route_includes_repository_delivery_target",
         "test_routes_premium_visual_task"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine",
+        "game"
+      ],
+      "path": "tests/test_github_runner_persistent.py",
+      "reasons": [
+        "search-index"
+      ],
+      "score": 33,
+      "symbols": [
+        "GithubRunnerPersistentTests",
+        "completed_cycle",
+        "fake_native_project",
+        "fake_persistent_project",
+        "request",
+        "test_blocked_state_preserves_reason",
+        "test_human_action_is_not_reported_complete",
+        "test_invalid_memory_ingestion_blocks_state_checkpoint",
+        "test_promotion_handoff_rejects_cross_candidate_validation",
+        "test_promotion_required_handoff_is_sealed_and_non_promoting",
+        "test_published_round_remote_api_failure_stops_without_leaking_response",
+        "test_remote_checkpoint_ingests_memory_before_state_persistence",
+        "test_run_uses_persistent_goal_engine",
+        "test_transient_capacity_exhaustion_is_reported_without_terminal_goal_block"
       ]
     }
   ],

@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "e4b6c554d0d9c396ae88fa6925634247b8f96203",
-  "head": "b0cd423262325cce3fdc13cfca294525154944f9",
+  "base": "b0cd423262325cce3fdc13cfca294525154944f9",
+  "head": "af72b35c1288620719d7c87df69137450926eab9",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": ".github/workflows/production-os-actions-worker.yml",
+      "path": ".github/workflows/production-os-live-diagnostics.yml",
       "status": "M"
     },
     {
-      "path": ".github/workflows/production-os-live-diagnostics.yml",
+      "path": "control/production-os-diagnostics-kick.json",
       "status": "M"
     },
     {
@@ -18,15 +18,15 @@
       "status": "M"
     },
     {
-      "path": "studio/agents/adapters.py",
+      "path": "studio/capacity_budget.py",
       "status": "M"
     },
     {
-      "path": "studio/production_os_provider_config.py",
+      "path": "studio/production_os_live_diagnostics.py",
       "status": "M"
     },
     {
-      "path": "tests/test_agent_router.py",
+      "path": "tests/test_capacity_budget.py",
       "status": "M"
     },
     {
@@ -35,326 +35,295 @@
     }
   ],
   "changed_source_files": [
-    "studio/agents/adapters.py",
-    "studio/production_os_provider_config.py",
-    "tests/test_agent_router.py",
+    "studio/capacity_budget.py",
+    "studio/production_os_live_diagnostics.py",
+    "tests/test_capacity_budget.py",
     "tests/test_production_os_live_diagnostics.py"
   ],
   "impacted_files": [
-    "studio/agents/adapters.py",
-    "studio/agents/orchestrator.py",
+    "studio/capacity_budget.py",
+    "studio/generic_project.py",
     "studio/production_os_live_diagnostics.py",
-    "studio/production_os_provider_config.py",
-    "tests/test_agent_router.py",
-    "tests/test_codex_output_retention.py",
+    "studio/run.py",
+    "tests/test_capacity_budget.py",
     "tests/test_production_os_live_diagnostics.py"
   ],
   "impacted_symbols": [
     {
-      "name": "AgentRun",
-      "kind": "class",
-      "file": "studio/agents/adapters.py",
-      "line": 19
-    },
-    {
-      "name": "AgentAdapter",
-      "kind": "class",
-      "file": "studio/agents/adapters.py",
-      "line": 27
-    },
-    {
-      "name": "__init__",
+      "name": "multiplier",
       "kind": "function",
-      "file": "studio/agents/adapters.py",
-      "line": 28
+      "file": "studio/capacity_budget.py",
+      "line": 12
     },
     {
-      "name": "probe",
+      "name": "expanded_call_limit",
       "kind": "function",
-      "file": "studio/agents/adapters.py",
-      "line": 31
+      "file": "studio/capacity_budget.py",
+      "line": 50
     },
     {
-      "name": "run",
+      "name": "_snapshot",
       "kind": "function",
-      "file": "studio/agents/adapters.py",
-      "line": 34
+      "file": "studio/generic_project.py",
+      "line": 128
     },
     {
-      "name": "_safe_rewrite_summary",
+      "name": "_apply",
       "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 18
+      "file": "studio/generic_project.py",
+      "line": 195
     },
     {
-      "name": "_contextual_routing_state",
+      "name": "_prepare_architecture",
       "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 23
+      "file": "studio/generic_project.py",
+      "line": 218
     },
     {
-      "name": "_verification_seconds",
+      "name": "_record_architecture",
       "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 41
+      "file": "studio/generic_project.py",
+      "line": 251
     },
     {
-      "name": "_agent_execution_seconds",
+      "name": "_browser_validation_contract",
       "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 48
+      "file": "studio/generic_project.py",
+      "line": 270
     },
     {
-      "name": "_opencode_runtime",
+      "name": "_valid_browser_test_url",
       "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 56
+      "file": "studio/generic_project.py",
+      "line": 278
     },
     {
-      "name": "omniroute_available_base",
+      "name": "_valid_browser_screenshot",
       "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 89
+      "file": "studio/generic_project.py",
+      "line": 292
     },
     {
-      "name": "_runtime_invocation",
+      "name": "_run_browser_validation",
       "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 114
+      "file": "studio/generic_project.py",
+      "line": 325
     },
     {
-      "name": "invocation_for",
+      "name": "_mobile_validation_contract",
       "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 137
+      "file": "studio/generic_project.py",
+      "line": 483
     },
     {
-      "name": "_completion_verified",
+      "name": "_verify_android_emulator_evidence",
       "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 152
+      "file": "studio/generic_project.py",
+      "line": 491
     },
     {
-      "name": "_run_evidence",
+      "name": "_run_mobile_validation",
       "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 213
+      "file": "studio/generic_project.py",
+      "line": 559
     },
     {
-      "name": "_reserve_agent_budget",
+      "name": "_existing_worker_canary_verification",
       "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 229
+      "file": "studio/generic_project.py",
+      "line": 730
     },
     {
-      "name": "_settle_agent_budget",
+      "name": "_save_published_checkpoint",
       "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 256
+      "file": "studio/generic_project.py",
+      "line": 775
     },
     {
-      "name": "execute",
+      "name": "run_project",
       "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 284
+      "file": "studio/generic_project.py",
+      "line": 789
     },
     {
-      "name": "ranked_agent_names",
+      "name": "evaluate_model_candidate",
       "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 342
-    },
-    {
-      "name": "usable",
-      "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 357
-    },
-    {
-      "name": "execute_named",
-      "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 389
-    },
-    {
-      "name": "routing_trace_for",
-      "kind": "function",
-      "file": "studio/agents/orchestrator.py",
-      "line": 425
+      "file": "studio/generic_project.py",
+      "line": 1418
     },
     {
       "name": "_warm_operator_connection",
       "kind": "function",
       "file": "studio/production_os_live_diagnostics.py",
-      "line": 11
+      "line": 12
+    },
+    {
+      "name": "_provider_family",
+      "kind": "function",
+      "file": "studio/production_os_live_diagnostics.py",
+      "line": 38
+    },
+    {
+      "name": "_safe_increment_source",
+      "kind": "function",
+      "file": "studio/production_os_live_diagnostics.py",
+      "line": 50
+    },
+    {
+      "name": "interpret",
+      "kind": "function",
+      "file": "studio/production_os_live_diagnostics.py",
+      "line": 66
     },
     {
       "name": "diagnose",
       "kind": "function",
       "file": "studio/production_os_live_diagnostics.py",
-      "line": 37
+      "line": 81
     },
     {
       "name": "main",
       "kind": "function",
       "file": "studio/production_os_live_diagnostics.py",
-      "line": 124
+      "line": 211
     },
     {
-      "name": "_cloudflare_free_fallback",
-      "kind": "function",
-      "file": "studio/production_os_provider_config.py",
-      "line": 14
-    },
-    {
-      "name": "configure",
-      "kind": "function",
-      "file": "studio/production_os_provider_config.py",
-      "line": 41
-    },
-    {
-      "name": "AgentRouterTests",
+      "name": "GitHub",
       "kind": "class",
-      "file": "tests/test_agent_router.py",
-      "line": 22
+      "file": "studio/run.py",
+      "line": 59
     },
     {
-      "name": "setUp",
+      "name": "__init__",
       "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 23
-    },
-    {
-      "name": "test_free_preference_changes_ranking",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 30
-    },
-    {
-      "name": "test_paid_can_win_when_free_preference_disabled",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 35
-    },
-    {
-      "name": "test_unavailable_agent_is_not_selected",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 40
-    },
-    {
-      "name": "which",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 41
-    },
-    {
-      "name": "test_learned_agent_weights_affect_ranking_and_trace",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 47
-    },
-    {
-      "name": "test_architecture_discipline_penalizes_repeatedly_risky_agent",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
+      "file": "studio/run.py",
       "line": 60
     },
     {
-      "name": "test_contextual_memory_changes_agent_score",
+      "name": "get",
       "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 82
+      "file": "studio/run.py",
+      "line": 65
     },
     {
-      "name": "test_cost_aware_utility_prefers_faster_agent_when_context_quality_is_equal",
+      "name": "restore",
       "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 112
+      "file": "studio/run.py",
+      "line": 67
     },
     {
-      "name": "test_opencode_invocation_uses_secret_alias",
+      "name": "publish",
       "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 144
+      "file": "studio/run.py",
+      "line": 140
     },
     {
-      "name": "test_external_agent_isolates_control_plane_credentials",
+      "name": "_load_architecture_replacement_work_orders",
       "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 157
+      "file": "studio/run.py",
+      "line": 194
     },
     {
-      "name": "test_opencode_headless_exit_zero_needs_real_assistant_output",
+      "name": "_load_architecture_replacement_plan",
       "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 246
+      "file": "studio/run.py",
+      "line": 222
     },
     {
-      "name": "evidence",
+      "name": "_load_architecture_obsolescence",
       "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 249
+      "file": "studio/run.py",
+      "line": 251
     },
     {
-      "name": "test_codex_invocation_uses_verified_headless_contract",
+      "name": "_load_architecture_benchmark",
       "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 336
+      "file": "studio/run.py",
+      "line": 279
     },
     {
-      "name": "test_codex_execute_named_exposes_token_usage",
+      "name": "_load_star_recommendations",
       "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 345
+      "file": "studio/run.py",
+      "line": 306
     },
     {
-      "name": "test_codex_execute_named_prefers_isolated_omniroute_profile_when_healthy",
+      "name": "context",
       "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 365
+      "file": "studio/run.py",
+      "line": 341
     },
     {
-      "name": "fake_run",
+      "name": "execute",
       "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 375
+      "file": "studio/run.py",
+      "line": 359
     },
     {
-      "name": "test_codex_execute_named_uses_chatgpt_profile_when_omniroute_is_unavailable",
+      "name": "clear_preview_evidence",
       "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 399
+      "file": "studio/run.py",
+      "line": 360
     },
     {
-      "name": "fake_run",
+      "name": "current_flutter_contexts",
       "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 409
-    },
-    {
-      "name": "test_codex_execute_named_stops_when_project_token_envelope_is_exhausted",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
-      "line": 430
-    },
-    {
-      "name": "test_codex_execute_named_settles_reported_usage_in_project_ledger",
-      "kind": "function",
-      "file": "tests/test_agent_router.py",
+      "file": "studio/run.py",
       "line": 473
     },
     {
-      "name": "CodexAdapterOutputRetentionTests",
-      "kind": "class",
-      "file": "tests/test_codex_output_retention.py",
-      "line": 18
+      "name": "record_verified_implementation",
+      "kind": "function",
+      "file": "studio/run.py",
+      "line": 499
     },
     {
-      "name": "test_codex_terminal_usage_event_survives_large_trailing_output",
+      "name": "checkpoint",
       "kind": "function",
-      "file": "tests/test_codex_output_retention.py",
-      "line": 19
+      "file": "studio/run.py",
+      "line": 565
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/run.py",
+      "line": 824
+    },
+    {
+      "name": "CapacityBudgetTests",
+      "kind": "class",
+      "file": "tests/test_capacity_budget.py",
+      "line": 10
+    },
+    {
+      "name": "test_unmetered_capacity_expands_budget_most",
+      "kind": "function",
+      "file": "tests/test_capacity_budget.py",
+      "line": 11
+    },
+    {
+      "name": "test_large_pooled_quota_expands_budget",
+      "kind": "function",
+      "file": "tests/test_capacity_budget.py",
+      "line": 20
+    },
+    {
+      "name": "test_low_remaining_pool_does_not_expand_budget",
+      "kind": "function",
+      "file": "tests/test_capacity_budget.py",
+      "line": 38
+    },
+    {
+      "name": "test_explicit_user_limit_is_never_expanded",
+      "kind": "function",
+      "file": "tests/test_capacity_budget.py",
+      "line": 92
+    },
+    {
+      "name": "test_automatic_limit_is_absolutely_capped",
+      "kind": "function",
+      "file": "tests/test_capacity_budget.py",
+      "line": 101
     },
     {
       "name": "LiveDiagnosticsTests",
@@ -390,60 +359,60 @@
       "name": "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready",
       "kind": "function",
       "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 33
+      "line": 41
     },
     {
       "name": "FakeAPI",
       "kind": "class",
       "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 35
+      "line": 50
     },
     {
       "name": "__init__",
       "kind": "function",
       "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 36
+      "line": 51
     },
     {
       "name": "call",
       "kind": "function",
       "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 38
+      "line": 53
     },
     {
       "name": "test_operator_probe_is_read_only_and_no_token_is_reported",
       "kind": "function",
       "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 49
+      "line": 64
     },
     {
       "name": "FakeAPI",
       "kind": "class",
       "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 51
+      "line": 66
     },
     {
       "name": "__init__",
       "kind": "function",
       "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 52
+      "line": 67
     },
     {
       "name": "call",
       "kind": "function",
       "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 54
+      "line": 69
     },
     {
       "name": "test_defaults_preserve_explicit_configuration_and_other_providers",
       "kind": "function",
       "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 87
+      "line": 102
     }
   ],
   "selected_tests": [
-    "tests/test_agent_router.py",
-    "tests/test_codex_output_retention.py",
+    "tests/test_capacity_budget.py",
+    "tests/test_ci.py",
     "tests/test_diagnostics.py",
     "tests/test_production_os_live_diagnostics.py"
   ]

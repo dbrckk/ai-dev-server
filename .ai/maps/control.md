@@ -113,8 +113,10 @@ request.json
 ## File: production-os-diagnostics-kick.json
 ```json
 {
-  "sequence": 15,
-  "reason": "Bounded provider, operator-access and worker-wake preflight before Jumpy real GDScript canary 34, after Godot PRs 308 and 309; no project mutation"
+  "sequence": 17,
+  "reason": "Post-merge bounded provider attribution and non-executing Python code-generation smoke; check Cloudflare Free configuration; no queue claim",
+  "target": "cloudflare-workers-free-fallback",
+  "worker_resume_allowed": false
 }
 ```
 

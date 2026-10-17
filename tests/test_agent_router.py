@@ -186,11 +186,23 @@ class AgentRouterTests(unittest.TestCase):
                 patch("shutil.which", return_value="/usr/bin/" + name),
                 patch("agents.adapters.subprocess.run",
                       return_value=subprocess.CompletedProcess(
-                          [name, "run"], 0, "finished", "")) as child,
+                          [name, "run"], 0,
+                          "begin " + "x" * 24000 + "provider-model-key"
+                          + " / scoped-model-key / finished",
+                          "provider-model-key in stderr; scoped-model-key",
+                      )) as child,
             ):
                 result = adapter.run([name, "run"], cwd=ROOT,
                                      extra_env=overrides, timeout=10)
             self.assertEqual(result.returncode, 0)
+            # The inherited provider secret crosses the 24k tail boundary:
+            # redact before slicing, not afterward.
+            self.assertLessEqual(len(result.stdout_tail), 24000)
+            self.assertIn("[REDACTED]", result.stdout_tail)
+            self.assertIn("[REDACTED]", result.stderr_tail)
+            for value in ("provider-model-key", "scoped-model-key"):
+                self.assertNotIn(value, result.stdout_tail)
+                self.assertNotIn(value, result.stderr_tail)
             child_env = child.call_args.kwargs["env"]
             for secret in (
                 "GITHUB_TOKEN", "GH_TOKEN", "STUDIO_GITHUB_TOKEN",

@@ -267,7 +267,7 @@ class AgentRouterTests(unittest.TestCase):
             ), incomplete)
         hermes_good = AgentRun(
             "hermes", 0, 1.0,
-            '{"type":"system","subtype":"init"}\\n'
+            '{"type":"system","subtype":"init"}\n'
             '{"type":"result","exit_code":0,"text":"Reviewed code"}',
             "",
         )

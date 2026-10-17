@@ -83,8 +83,21 @@ class AgentAdapter:
         except subprocess.TimeoutExpired as exc:
             raise RuntimeError(f"Agent timed out: {self.spec.name}") from exc
         duration = time.monotonic() - started
-        stdout=result.stdout[-24000:]
-        stderr=result.stderr[-24000:]
+        # The subprocess inherits model-provider credentials such as
+        # OMNIROUTE_API_KEY and OPENAI_API_KEY. Previous masking only examined
+        # extra_env, allowing inherited secrets to reach persistent evidence.
+        # Redact the *full* output before tail truncation; otherwise slicing
+        # at the 24k boundary can expose a partial credential.
+        secret_suffixes = ("_KEY", "_TOKEN", "_SECRET", "_PASSWORD", "_CREDENTIAL")
+        secret_names = {"HF_TOKEN", "GITHUB_TOKEN", "CODESPACES_PAT"}
+        redactions = {
+            value for key, value in env.items()
+            if isinstance(value, str) and value
+            and (key.upper().endswith(secret_suffixes)
+                 or key.upper() in secret_names)
+        }
+        stdout = result.stdout
+        stderr = result.stderr
         if self.spec.name == "codex":
             terminal_event = None
             for raw_line in result.stdout.splitlines():
@@ -97,13 +110,13 @@ class AgentAdapter:
                     continue
                 if isinstance(event, dict) and event.get("type") == "turn.completed":
                     terminal_event = line
-            if terminal_event and terminal_event not in stdout:
-                budget = max(0, 24000 - len(terminal_event) - 1)
-                stdout = terminal_event + "\n" + stdout[-budget:]
-        for key,value in (extra_env or {}).items():
-            if value and any(mark in key.upper() for mark in ("KEY","TOKEN","SECRET","PASSWORD")):
-                stdout=stdout.replace(value,"[REDACTED]")
-                stderr=stderr.replace(value,"[REDACTED]")
+            if terminal_event and terminal_event not in stdout[-24000:]:
+                stdout = terminal_event + "\n" + stdout
+        for value in sorted(redactions, key=len, reverse=True):
+            stdout = stdout.replace(value, "[REDACTED]")
+            stderr = stderr.replace(value, "[REDACTED]")
+        stdout = stdout[-24000:]
+        stderr = stderr[-24000:]
         return AgentRun(
             agent=self.spec.name,
             returncode=result.returncode,

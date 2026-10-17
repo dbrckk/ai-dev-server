@@ -141,19 +141,53 @@ def invocation_for(name:str,prompt:str)->tuple[list[str],dict[str,str]]|None:
     if name=="codex":
         return codex_invocation(prompt)
     if name=="hermes":
-        return (["hermes","chat","--toolsets","file","-q",prompt],{"HERMES_YOLO_MODE":"1"})
+        # Hermes' documented stream-json one-shot emits a terminal "result"
+        # record with an exit_code. Plain stdout/progress is not a receipt.
+        return (["hermes", "chat", "--oneshot", "--format", "stream-json",
+                 "--toolsets", "file", "-q", prompt],
+                {"HERMES_YOLO_MODE": "1"})
     return None
 
 
 def _completion_verified(run)->bool:
-    """A zero exit code alone is not proof an OpenCode JSON run completed.
+    """Do not accept an agent run without its supported completion receipt.
 
-    Certain headless OpenCode versions can emit only step_start (or nothing)
-    and exit 0. Reject this as unverified instead of silently marking a code
-    change successful. Other registered agents retain their existing contract.
+    OpenCode requires non-synthetic assistant text; Codex requires a completed
+    JSONL turn; Hermes requires its final successful stream-json result.
+    An empty process exit 0 does not prove a model completed any work.
     """
     if run.returncode != 0:
         return False
+    if run.agent == "codex":
+        # The Codex CLI's authenticated JSONL terminal turn is the only
+        # completion receipt. Exit 0 without turn.completed is inconclusive.
+        for line in run.stdout_tail.splitlines():
+            try:
+                event = json.loads(line)
+            except (json.JSONDecodeError, TypeError):
+                continue
+            if isinstance(event, dict) and event.get("type") == "turn.completed":
+                return True
+        return False
+    if run.agent == "hermes":
+        # Hermes --format stream-json always finishes with a result record.
+        # A text delta, banner or empty zero-exit process is not completion.
+        terminal = None
+        for line in run.stdout_tail.splitlines():
+            try:
+                event = json.loads(line)
+            except (json.JSONDecodeError, TypeError):
+                continue
+            if isinstance(event, dict) and event.get("type") == "result":
+                terminal = event
+        return (
+            isinstance(terminal, dict)
+            and type(terminal.get("exit_code")) is int
+            and terminal["exit_code"] == 0
+            and not terminal.get("error")
+            and isinstance(terminal.get("text"), str)
+            and bool(terminal["text"].strip())
+        )
     if run.agent != "opencode":
         return True
     for line in run.stdout_tail.splitlines():
@@ -179,10 +213,10 @@ def _completion_verified(run)->bool:
 def _run_evidence(run,capacity_source:str|None=None)->dict:
     evidence={"agent":run.agent,"returncode":run.returncode,
         "duration_seconds":run.duration_seconds,"stdout_tail":run.stdout_tail,"stderr_tail":run.stderr_tail}
-    if run.agent=="opencode":
-        evidence["completion_verified"]=_completion_verified(run)
-        if run.returncode==0 and not evidence["completion_verified"]:
-            evidence["failure_reason"]="unverified-headless-output"
+    if run.agent in {"opencode", "hermes", "codex"}:
+        evidence["completion_verified"] = _completion_verified(run)
+        if run.returncode == 0 and not evidence["completion_verified"]:
+            evidence["failure_reason"] = "unverified-headless-output"
     if capacity_source is not None:
         evidence["capacity_source"]=capacity_source
     if run.agent=="codex":

@@ -286,6 +286,51 @@ class AgentRouterTests(unittest.TestCase):
         self.assertEqual(succeeded["status"], "passed")
         self.assertTrue(succeeded["attempts"][0]["completion_verified"])
 
+        # Hermes is explicitly one-shot and emits a terminal stream-json
+        # result; a progress event or zero exit alone cannot certify work.
+        hermes_argv, hermes_env = invocation_for("hermes", "inspect changes")
+        self.assertEqual(hermes_argv[:5], [
+            "hermes", "chat", "--oneshot", "--format", "stream-json"
+        ])
+        self.assertIn("--toolsets", hermes_argv)
+        self.assertEqual(hermes_env["HERMES_YOLO_MODE"], "1")
+        for incomplete in (
+            "", "plain output without a receipt",
+            '{"type":"text","text":"I might be done"}',
+            '{"type":"result","exit_code":1,"text":"partially completed"}',
+            '{"type":"result","exit_code":0,"text":""}',
+            '{"type":"result","exit_code":0,"text":"done","error":"provider rejected"}',
+        ):
+            self.assertFalse(_completion_verified(
+                AgentRun("hermes", 0, 1.0, incomplete, "")
+            ), incomplete)
+        hermes_good = AgentRun(
+            "hermes", 0, 1.0,
+            '{"type":"system","subtype":"init"}\n'
+            '{"type":"result","exit_code":0,"text":"Reviewed code"}',
+            "",
+        )
+        self.assertTrue(_completion_verified(hermes_good))
+        with patch("shutil.which", return_value="/bin/hermes"), patch(
+            "agents.orchestrator.AgentAdapter.run",
+            return_value=AgentRun("hermes", 0, 1.0, "", ""),
+        ):
+            silent = execute_named("hermes", "do work", cwd=ROOT)
+        self.assertEqual(silent["status"], "failed")
+
+        # Codex needs a completed JSONL turn, not just an empty exit 0 or
+        # progress event without a terminal receipt.
+        for incomplete in ("", '{"type":"turn.started"}',
+                           '{"type":"turn.failed","error":"provider"}'):
+            self.assertFalse(_completion_verified(
+                AgentRun("codex", 0, 1.0, incomplete, "")
+            ), incomplete)
+        self.assertTrue(_completion_verified(AgentRun(
+            "codex", 0, 1.0,
+            '{"type":"turn.completed","usage":{"input_tokens":1,"output_tokens":1}}',
+            "",
+        )))
+
     def test_codex_invocation_uses_verified_headless_contract(self):
         argv, extra = invocation_for("codex", "do work")
 

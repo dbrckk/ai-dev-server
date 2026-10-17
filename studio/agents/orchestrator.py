@@ -145,9 +145,44 @@ def invocation_for(name:str,prompt:str)->tuple[list[str],dict[str,str]]|None:
     return None
 
 
+def _completion_verified(run)->bool:
+    """A zero exit code alone is not proof an OpenCode JSON run completed.
+
+    Certain headless OpenCode versions can emit only step_start (or nothing)
+    and exit 0. Reject this as unverified instead of silently marking a code
+    change successful. Other registered agents retain their existing contract.
+    """
+    if run.returncode != 0:
+        return False
+    if run.agent != "opencode":
+        return True
+    for line in run.stdout_tail.splitlines():
+        try:
+            event=json.loads(line)
+        except (json.JSONDecodeError,TypeError):
+            continue
+        if not isinstance(event,dict) or event.get("type") != "text":
+            continue
+        part=event.get("part")
+        if not isinstance(part,dict) or part.get("type") != "text":
+            continue
+        if part.get("synthetic") is True:
+            continue
+        metadata=part.get("metadata")
+        if isinstance(metadata,dict) and metadata.get("compaction_continue") is True:
+            continue
+        if isinstance(part.get("text"),str) and part["text"].strip():
+            return True
+    return False
+
+
 def _run_evidence(run,capacity_source:str|None=None)->dict:
     evidence={"agent":run.agent,"returncode":run.returncode,
         "duration_seconds":run.duration_seconds,"stdout_tail":run.stdout_tail,"stderr_tail":run.stderr_tail}
+    if run.agent=="opencode":
+        evidence["completion_verified"]=_completion_verified(run)
+        if run.returncode==0 and not evidence["completion_verified"]:
+            evidence["failure_reason"]="unverified-headless-output"
     if capacity_source is not None:
         evidence["capacity_source"]=capacity_source
     if run.agent=="codex":
@@ -258,7 +293,7 @@ def execute(prompt:str,required:set[str],*,role:str,cwd:Path,memory_path:Path,ti
             invocation,capacity_source=runtime
             argv,extra_env=invocation
             run=AgentAdapter(decision.agent).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)
-            ok=run.returncode==0
+            ok=_completion_verified(run)
             evidence=_run_evidence(run,capacity_source)
             _settle_agent_budget(budget,evidence)
             evidence["status"]="passed" if ok else "failed"
@@ -346,7 +381,7 @@ def execute_named(name:str,prompt:str,*,cwd:Path,timeout:int=1800)->dict:
     except RuntimeError as exc:
         _settle_agent_budget(budget)
         return {"status":"unavailable","selected":None,"attempts":[{"agent":name,"status":"error","error":str(exc)[:1000]}]}
-    ok=run.returncode==0
+    ok=_completion_verified(run)
     evidence=_run_evidence(run,capacity_source)
     _settle_agent_budget(budget,evidence)
     evidence["status"]="passed" if ok else "failed"

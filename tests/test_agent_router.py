@@ -214,6 +214,33 @@ class AgentRouterTests(unittest.TestCase):
             self.assertEqual(child_env["OPENCODE_STUDIO_API_KEY"], "scoped-model-key")
             self.assertEqual(child_env["OMNIROUTE_API_KEY"], "provider-model-key")
 
+        # Preserve Codex accounting events when long output forces the
+        # completed turn outside the normal tail; never reveal model keys.
+        completed = ('{"type":"turn.completed","usage":{"input_tokens":3,'
+                     '"output_tokens":2},"diagnostic":"provider-model-key"}')
+        codex = AgentAdapter(AgentSpec(
+            "codex", "codex", frozenset({"code_editing"})
+        ))
+        with (
+            patch.dict(os.environ, inherited, clear=True),
+            patch("shutil.which", return_value="/usr/bin/codex"),
+            patch("agents.adapters.subprocess.run",
+                  return_value=subprocess.CompletedProcess(
+                      ["codex", "exec"], 0,
+                      completed + "\\n" + "x" * 25000,
+                      "provider-model-key",
+                  )),
+        ):
+            codex_result = codex.run(["codex", "exec"], cwd=ROOT)
+        self.assertLessEqual(len(codex_result.stdout_tail), 24000)
+        self.assertIn("turn.completed", codex_result.stdout_tail)
+        self.assertNotIn("provider-model-key", codex_result.stdout_tail)
+        self.assertNotIn("provider-model-key", codex_result.stderr_tail)
+        from agents.codex import parse_codex_usage
+        self.assertEqual(
+            parse_codex_usage(codex_result.stdout_tail)["total_tokens"], 5
+        )
+
     def test_opencode_headless_exit_zero_needs_real_assistant_output(self):
         from agents.orchestrator import _completion_verified
 

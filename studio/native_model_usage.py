@@ -108,11 +108,14 @@ def _reported(response):
 
 
 def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=None,
-         timeout_seconds=None, minimum_output_tokens=1):
+         timeout_seconds=None, minimum_output_tokens=1, future_stage_reserve_tokens=0):
     # Caller-specified floor is an admission check, not an extra quota grant.
     # Do not submit a completion that cannot possibly fit a useful response.
     if type(minimum_output_tokens) is not int or minimum_output_tokens < 1:
         raise ValueError('minimum_output_tokens must be a positive integer')
+    if (type(future_stage_reserve_tokens) is not int
+            or not 0 <= future_stage_reserve_tokens <= 1_000_000):
+        raise ValueError('future_stage_reserve_tokens must be a bounded non-negative integer')
     transport = {} if timeout_seconds is None else {'timeout_seconds': timeout_seconds}
     if getattr(type(api), 'supports_bounded_retries', False) is True:
         transport['max_attempts'] = 1
@@ -164,7 +167,15 @@ def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=Non
                     raise NativeAccountingError('Configured native capacity ledger invalid') from None
             active = load_active(ledger_path)
         remaining = envelope - consumed_tokens(active, project_id=project_id) - reserved_tokens(active, project_id=project_id)
-        output_limit = min(output_limit, remaining - prompt_allowance)
+        # This is a planning-stage admission guard, not a second charge or
+        # additional token quota. Keep a bounded slice of the existing
+        # project envelope available for subsequent source implementation.
+        # Settlement accounts only the current call's actual/estimated usage.
+        unguarded_output_limit = min(output_limit, remaining - prompt_allowance)
+        output_limit = min(
+            output_limit,
+            remaining - prompt_allowance - future_stage_reserve_tokens,
+        )
         if output_limit >= minimum_output_tokens:
             reservation = reserve(ledger_path, project_id=project_id, provider='native:'+provider,
                 estimated_tokens=prompt_allowance+output_limit, provider_remaining_tokens=None,
@@ -172,7 +183,13 @@ def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=Non
         if output_limit < minimum_output_tokens or reservation.get('admitted') is not True:
             with exclusive(path):
                 value = _load(path); value['capacity_exhausted'] = True; _save(path, value)
-            raise NativeCapacityError('project_envelope_exhausted')
+            reason = (
+                'project_future_stage_reserve'
+                if (future_stage_reserve_tokens and output_limit < minimum_output_tokens
+                    and unguarded_output_limit >= minimum_output_tokens)
+                else 'project_envelope_exhausted'
+            )
+            raise NativeCapacityError(reason)
     payload['max_tokens'] = output_limit
     if 'reasoning_budget' in payload:
         payload['reasoning_budget'] = min(int(payload['reasoning_budget']), output_limit)

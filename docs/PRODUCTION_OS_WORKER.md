@@ -412,3 +412,47 @@ single file, committed e1d7a4063b5b2581be1c6f334456684aaeec13d9 in
 exposed zero token/API/commit execution counters before these corrections. This
 is proof of a small hosted coding delivery, not an Android or complex-project
 release. Historical missing usage cannot be reconstructed.
+
+
+## Optional Cloudflare Workers Free coding fallback (October 2026)
+
+The scheduled Production-OS Actions worker and the read-only live diagnostics can
+use `@cf/zai-org/glm-4.7-flash` through Cloudflare's OpenAI-compatible
+`/ai/v1/chat/completions` endpoint as an **optional fallback**. This does not
+replace the current NVIDIA primary, does not make claims about sustained
+inference capacity, and does not restart any failed star-list v3 integration.
+
+**Safe enablement on `dbrckk/ai-dev-server`:**
+
+- Repository Actions secret `CLOUDFLARE_API_TOKEN`: an appropriately scoped
+  Workers AI token; never paste the token into a variable, issue, or log.
+- Repository Actions variable `CLOUDFLARE_ACCOUNT_ID`: the 32-character
+  hexadecimal account ID.
+- Repository Actions variable `STUDIO_CLOUDFLARE_FREE_TIER_ONLY=1` **only after
+  confirming that the account is on Workers Free**, rather than Workers Paid
+  where consumption beyond the free allowance can incur charges.
+- Keep `STUDIO_PROVIDERS_JSON` empty to use the built-in default fallback
+  chain. If it contains a custom provider list, it is authoritative and is
+  **not** modified automatically.
+
+No fallback is injected if any opt-in requirement is absent or malformed;
+only the specific Free-eligible GLM model is configured (not a paid-only
+frontier model). The API token is referenced by its environment-variable name
+and never serialized into `STUDIO_PROVIDERS_JSON`.
+
+Cloudflare [documents](https://developers.cloudflare.com/workers-ai/platform/pricing/)
+10,000 free Neurons/day, resetting at 00:00 UTC; Neurons are **not** code-task
+tokens. Free allowance exhaustion and model availability failures are possible.
+See the [official model eligibility notice](https://developers.cloudflare.com/changelog/post/2026-07-28-models-require-workers-paid/)
+and [OpenAI-compatible API configuration](https://developers.cloudflare.com/workers-ai/configuration/open-ai-compatibility/).
+The fallback is not marked `unmetered` or assigned a fictional monthly quota.
+
+After the variables are configured, execute
+**Actions > Production-OS Live Diagnostics > Run workflow**. The probe sends
+a bounded, non-mutating inference request and checks operator connectivity;
+the output is intentionally redacted. A successful probe proves only a small
+request worked at that time. It does **not** establish an available 90,000-token
+portfolio envelope, a stable authenticated quota, valid coding patches, or a
+finished target integration. Keep the star-list final-v3 fleet pause until
+capacity, worker execution, source delivery, target tests and CI are separately
+verified. Do not bypass stop markers or enable an automatic production merge.

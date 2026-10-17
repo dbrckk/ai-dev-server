@@ -227,7 +227,7 @@ class AgentRouterTests(unittest.TestCase):
             patch("agents.adapters.subprocess.run",
                   return_value=subprocess.CompletedProcess(
                       ["codex", "exec"], 0,
-                      completed + "\\n" + "x" * 25000,
+                      completed + "\n" + "x" * 25000,
                       "provider-model-key",
                   )),
         ):

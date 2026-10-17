@@ -98,7 +98,15 @@ class AgentAdapter:
         }
         stdout = result.stdout
         stderr = result.stderr
+        ordered_redactions = sorted(redactions, key=len, reverse=True)
+        for value in ordered_redactions:
+            stdout = stdout.replace(value, "[REDACTED]")
+            stderr = stderr.replace(value, "[REDACTED]")
+        stdout = stdout[-24000:]
+        stderr = stderr[-24000:]
         if self.spec.name == "codex":
+            # Preserve the last terminal usage event even if large output
+            # would otherwise push it outside the 24k evidence tail.
             terminal_event = None
             for raw_line in result.stdout.splitlines():
                 line = raw_line.strip()
@@ -110,13 +118,12 @@ class AgentAdapter:
                     continue
                 if isinstance(event, dict) and event.get("type") == "turn.completed":
                     terminal_event = line
-            if terminal_event and terminal_event not in stdout[-24000:]:
-                stdout = terminal_event + "\n" + stdout
-        for value in sorted(redactions, key=len, reverse=True):
-            stdout = stdout.replace(value, "[REDACTED]")
-            stderr = stderr.replace(value, "[REDACTED]")
-        stdout = stdout[-24000:]
-        stderr = stderr[-24000:]
+            if terminal_event:
+                for value in ordered_redactions:
+                    terminal_event = terminal_event.replace(value, "[REDACTED]")
+                if terminal_event not in stdout:
+                    budget = max(0, 24000 - len(terminal_event) - 1)
+                    stdout = terminal_event + "\n" + stdout[-budget:]
         return AgentRun(
             agent=self.spec.name,
             returncode=result.returncode,

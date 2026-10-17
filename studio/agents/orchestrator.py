@@ -141,7 +141,11 @@ def invocation_for(name:str,prompt:str)->tuple[list[str],dict[str,str]]|None:
     if name=="codex":
         return codex_invocation(prompt)
     if name=="hermes":
-        return (["hermes","chat","--toolsets","file","-q",prompt],{"HERMES_YOLO_MODE":"1"})
+        # Hermes' documented stream-json one-shot emits a terminal "result"
+        # record with an exit_code. Plain stdout/progress is not a receipt.
+        return (["hermes", "chat", "--oneshot", "--format", "stream-json",
+                 "--toolsets", "file", "-q", prompt],
+                {"HERMES_YOLO_MODE": "1"})
     return None
 
 
@@ -154,6 +158,36 @@ def _completion_verified(run)->bool:
     """
     if run.returncode != 0:
         return False
+    if run.agent == "codex":
+        # The Codex CLI's authenticated JSONL terminal turn is the only
+        # completion receipt. Exit 0 without turn.completed is inconclusive.
+        for line in run.stdout_tail.splitlines():
+            try:
+                event = json.loads(line)
+            except (json.JSONDecodeError, TypeError):
+                continue
+            if isinstance(event, dict) and event.get("type") == "turn.completed":
+                return True
+        return False
+    if run.agent == "hermes":
+        # Hermes --format stream-json always finishes with a result record.
+        # A text delta, banner or empty zero-exit process is not completion.
+        terminal = None
+        for line in run.stdout_tail.splitlines():
+            try:
+                event = json.loads(line)
+            except (json.JSONDecodeError, TypeError):
+                continue
+            if isinstance(event, dict) and event.get("type") == "result":
+                terminal = event
+        return (
+            isinstance(terminal, dict)
+            and type(terminal.get("exit_code")) is int
+            and terminal["exit_code"] == 0
+            and not terminal.get("error")
+            and isinstance(terminal.get("text"), str)
+            and bool(terminal["text"].strip())
+        )
     if run.agent != "opencode":
         return True
     for line in run.stdout_tail.splitlines():

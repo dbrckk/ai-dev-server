@@ -89,6 +89,36 @@ class LiveDiagnosticsTests(unittest.TestCase):
         self.assertTrue(configure(env))
         models = [p['model'] for p in json.loads(env['STUDIO_PROVIDERS_JSON'])]
         self.assertEqual(models, ['nvidia/nemotron-3.5-lightning-30b-a3b', 'poolside/laguna-xs-2.1'])
+        cloudflare_env = {
+            'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1',
+            'STUDIO_CLOUDFLARE_FREE_TIER_ONLY': '1',
+            'CLOUDFLARE_ACCOUNT_ID': 'a' * 32,
+            'CLOUDFLARE_API_TOKEN': 'sensitive-cloudflare-key',
+        }
+        self.assertTrue(configure(cloudflare_env))
+        self.assertNotIn('sensitive-cloudflare-key', cloudflare_env['STUDIO_PROVIDERS_JSON'])
+        configured = json.loads(cloudflare_env['STUDIO_PROVIDERS_JSON'])
+        self.assertEqual(len(configured), 3)
+        self.assertEqual(configured[2]['model'], '@cf/zai-org/glm-4.7-flash')
+        self.assertEqual(configured[2]['key_env'], 'CLOUDFLARE_API_TOKEN')
+        self.assertEqual(
+            configured[2]['base'],
+            'https://api.cloudflare.com/client/v4/accounts/' + 'a' * 32 + '/ai/v1',
+        )
+        for excluded in (
+            {'STUDIO_CLOUDFLARE_FREE_TIER_ONLY': '0'},
+            {'CLOUDFLARE_ACCOUNT_ID': 'invalid'},
+            {'CLOUDFLARE_API_TOKEN': ''},
+        ):
+            disabled = {
+                'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1',
+                'STUDIO_CLOUDFLARE_FREE_TIER_ONLY': '1',
+                'CLOUDFLARE_ACCOUNT_ID': 'a' * 32,
+                'CLOUDFLARE_API_TOKEN': 'sensitive-cloudflare-key',
+            }
+            disabled.update(excluded)
+            self.assertTrue(configure(disabled))
+            self.assertEqual(len(json.loads(disabled['STUDIO_PROVIDERS_JSON'])), 2)
         for env in ({'STUDIO_API_BASE': 'https://another.example/v1'},
                     {'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1', 'STUDIO_PROVIDERS_JSON': '[]'}):
             before = dict(env)

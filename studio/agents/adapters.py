@@ -56,7 +56,12 @@ class AgentAdapter:
             "GITHUB_", "GH_", "STUDIO_", "PRODUCTION_OS_",
             "ASSET_FORGE_GITHUB_", "GIT_",
         )
-        control_keys = {"CODESPACES_PAT", "SSH_ASKPASS", "SSH_AUTH_SOCK"}
+        # Cloudflare's fallback key is for the trusted in-process router only.
+        # Hermes/OpenCode/Codex do not need this extra ambient credential.
+        control_keys = {
+            "CODESPACES_PAT", "SSH_ASKPASS", "SSH_AUTH_SOCK",
+            "CLOUDFLARE_API_TOKEN",
+        }
         for key in list(env):
             if key.startswith(control_prefixes) or key in control_keys:
                 env.pop(key, None)

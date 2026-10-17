@@ -412,9 +412,25 @@ started = time.monotonic()
 result = subprocess.run(
 ⋮----
 duration = time.monotonic() - started
-stdout=result.stdout[-24000:]
-stderr=result.stderr[-24000:]
+# The subprocess inherits model-provider credentials such as
+# OMNIROUTE_API_KEY and OPENAI_API_KEY. Previous masking only examined
+# extra_env, allowing inherited secrets to reach persistent evidence.
+# Redact the *full* output before tail truncation; otherwise slicing
+# at the 24k boundary can expose a partial credential.
+secret_suffixes = ("_KEY", "_TOKEN", "_SECRET", "_PASSWORD", "_CREDENTIAL")
+secret_names = {"HF_TOKEN", "GITHUB_TOKEN", "CODESPACES_PAT"}
+redactions = {
+stdout = result.stdout
+stderr = result.stderr
+ordered_redactions = sorted(redactions, key=len, reverse=True)
 ⋮----
+stdout = stdout.replace(value, "[REDACTED]")
+stderr = stderr.replace(value, "[REDACTED]")
+stdout = stdout[-24000:]
+stderr = stderr[-24000:]
+⋮----
+# Preserve the last terminal usage event even if large output
+# would otherwise push it outside the 24k evidence tail.
 terminal_event = None
 ⋮----
 line = raw_line.strip()
@@ -423,11 +439,10 @@ event = json.loads(line)
 ⋮----
 terminal_event = line
 ⋮----
+terminal_event = terminal_event.replace(value, "[REDACTED]")
+⋮----
 budget = max(0, 24000 - len(terminal_event) - 1)
 stdout = terminal_event + "\n" + stdout[-budget:]
-⋮----
-stdout=stdout.replace(value,"[REDACTED]")
-stderr=stderr.replace(value,"[REDACTED]")
 ````
 
 ## File: agents/codex.py

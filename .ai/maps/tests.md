@@ -629,7 +629,17 @@ adapter = AgentAdapter(AgentSpec(name, name, frozenset({"repo_analysis"})))
 ⋮----
 result = adapter.run([name, "run"], cwd=ROOT,
 ⋮----
+# The inherited provider secret crosses the 24k tail boundary:
+# redact before slicing, not afterward.
+⋮----
 child_env = child.call_args.kwargs["env"]
+⋮----
+# Preserve Codex accounting events when long output forces the
+# completed turn outside the normal tail; never reveal model keys.
+completed = ('{"type":"turn.completed","usage":{"input_tokens":3,'
+codex = AgentAdapter(AgentSpec(
+⋮----
+codex_result = codex.run(["codex", "exec"], cwd=ROOT)
 ⋮----
 def test_opencode_headless_exit_zero_needs_real_assistant_output(self)
 ⋮----

@@ -463,4 +463,67 @@ class GodotModelTests(unittest.TestCase):
                                   minimum_output_tokens=0)
 
 
+        # A bounded project must not spend its implementation allowance on
+        # planning. Exercise worst-case providers with no reported usage:
+        # the reservation estimate becomes the final ledger charge.
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            journal = root / 'shield-usage.json'
+            ledger = root / 'shield-ledger.json'
+            plan = root / 'shield-plan.json'
+            plan.write_text(json.dumps({
+                'projects': [{'id': 'jumpy', 'token_envelope': 6000}],
+            }))
+            with patch.dict(os.environ, {
+                'STUDIO_NATIVE_MODEL_USAGE_PATH': str(journal),
+                'STUDIO_CAPACITY_PLAN_PATH': str(plan),
+                'STUDIO_CAPACITY_LEDGER_PATH': str(ledger),
+                'STUDIO_PROJECT_ID': 'jumpy',
+            }):
+                subject = model([])
+                subject.providers = (subject.providers[0],)
+                with self.assertRaisesRegex(StudioError, 'project_future_stage_reserve'):
+                    subject.ask('product', 'fix settings tap guard')
+                self.assertEqual(subject.api.calls, [])
+                self.assertEqual(snapshot()['usage']['runs'], 0)
+                self.assertEqual(consumed_tokens(load(ledger), project_id='jumpy'), 0)
+
+                # With the same source and a sufficient real envelope, the
+                # planning reservations shrink instead of charging arbitrary
+                # additional tokens. Product, design and code can complete.
+                plan.write_text(json.dumps({
+                    'projects': [{'id': 'jumpy', 'token_envelope': 10000}],
+                }))
+                subject = model([
+                    completion(product_value()),
+                    completion({'direction': 'focused'}),
+                    completion({'edits': [{
+                        'path': 'scripts/main.gd',
+                        'find': 'if settings_open:',
+                        'replace': 'if not settings_open:',
+                    }]}),
+                ])
+                subject.providers = (subject.providers[0],)
+                subject.ask('product', 'fix settings tap guard')
+                subject.ask('design', 'minimal settings design')
+                result = subject.ask(
+                    'implementation',
+                    '{"files_mode":"bounded_exact_match_source_excerpts"}',
+                )
+                self.assertIn('edits', result)
+                self.assertEqual(len(subject.api.calls), 3)
+                self.assertLess(subject.api.calls[0][2]['max_tokens'], 3072)
+                self.assertGreaterEqual(subject.api.calls[0][2]['max_tokens'], 768)
+                self.assertGreaterEqual(subject.api.calls[1][2]['max_tokens'], 640)
+                self.assertGreaterEqual(subject.api.calls[2][2]['max_tokens'], 1536)
+                self.assertLessEqual(
+                    consumed_tokens(load(ledger), project_id='jumpy'), 10000,
+                )
+                with self.assertRaisesRegex(ValueError, 'bounded non-negative'):
+                    accounted_call(
+                        subject.api, {'max_tokens': 100, 'messages': []},
+                        'primary', future_stage_reserve_tokens=-1,
+                    )
+
+
 if __name__ == '__main__': unittest.main()

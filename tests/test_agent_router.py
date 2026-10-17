@@ -170,6 +170,7 @@ class AgentRouterTests(unittest.TestCase):
             "SSH_ASKPASS": "ssh-askpass-secret",
             "SSH_AUTH_SOCK": "/private/socket",
             "OMNIROUTE_API_KEY": "provider-model-key",
+            "CLOUDFLARE_API_TOKEN": "cloudflare-fallback-secret",
         }
         overrides = {
             "PRODUCTION_OS_OPERATOR_TOKEN": "override-operator",
@@ -209,6 +210,7 @@ class AgentRouterTests(unittest.TestCase):
                 "PRODUCTION_OS_OPERATOR_TOKEN", "PRODUCTION_OS_WORKER_TOKEN",
                 "PRODUCTION_OS_URL", "ASSET_FORGE_GITHUB_TOKEN", "GIT_ASKPASS",
                 "SSH_ASKPASS", "SSH_AUTH_SOCK", "GIT_CONFIG_COUNT", "STUDIO_API_KEY",
+                "CLOUDFLARE_API_TOKEN",
             ):
                 self.assertNotIn(secret, child_env, (name, secret))
             self.assertEqual(child_env["OPENCODE_STUDIO_API_KEY"], "scoped-model-key")

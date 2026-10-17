@@ -6256,6 +6256,21 @@ def invocation_for(name:str,prompt:str)->tuple[list[str],dict[str,str]]|None
 ⋮----
 # Only invocation contracts verified against upstream CLIs are enabled.
 ⋮----
+def _completion_verified(run)->bool
+⋮----
+"""A zero exit code alone is not proof an OpenCode JSON run completed.
+
+    Certain headless OpenCode versions can emit only step_start (or nothing)
+    and exit 0. Reject this as unverified instead of silently marking a code
+    change successful. Other registered agents retain their existing contract.
+    """
+⋮----
+event=json.loads(line)
+⋮----
+part=event.get("part")
+⋮----
+metadata=part.get("metadata")
+⋮----
 def _run_evidence(run,capacity_source:str|None=None)->dict
 ⋮----
 evidence={"agent":run.agent,"returncode":run.returncode,
@@ -6304,7 +6319,7 @@ runtime=_runtime_invocation(decision.agent.name,prompt)
 budget=_reserve_agent_budget(decision.agent.name,prompt)
 ⋮----
 run=AgentAdapter(decision.agent).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)
-ok=run.returncode==0
+ok=_completion_verified(run)
 evidence=_run_evidence(run,capacity_source)
 ⋮----
 def ranked_agent_names(required:set[str],*,role:str,memory_path:Path,limit:int=2,preferred:str|None=None)->list[str]
@@ -26697,6 +26712,16 @@ adapter = AgentAdapter(AgentSpec(name, name, frozenset({"repo_analysis"})))
 result = adapter.run([name, "run"], cwd=ROOT,
 ⋮----
 child_env = child.call_args.kwargs["env"]
+⋮----
+def test_opencode_headless_exit_zero_needs_real_assistant_output(self)
+⋮----
+def evidence(stdout)
+⋮----
+verified = evidence(
+⋮----
+failed = execute_named("opencode", "edit this", cwd=ROOT)
+⋮----
+succeeded = execute_named("opencode", "edit this", cwd=ROOT)
 ⋮----
 def test_codex_invocation_uses_verified_headless_contract(self)
 ⋮----

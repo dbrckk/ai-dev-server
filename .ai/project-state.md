@@ -106,18 +106,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-16T20:47:58Z
+Generated: 2026-10-17T07:24:53Z
 
 ### Git
 - Branch: `main`
-- Head: `0d7b31ded1e5`
-- Commit date: 2026-10-16T16:47:49-04:00
-- Commit: fix(agents): prevent Hermes and OpenCode subprocesses inheriting Production-OS credentials (#331)
+- Head: `af7f5d7798a4`
+- Commit date: 2026-10-17T03:24:43-04:00
+- Commit: fix(agents): reject silent empty OpenCode headless successes (#332)
 - Tracked files: 865
 
 ### Recently changed files
-- `studio/agents/adapters.py`
+- `studio/agents/orchestrator.py`
 - `tests/test_agent_router.py`
+- `studio/agents/adapters.py`
 - `studio/godot_model.py`
 - `studio/native_model_usage.py`
 - `tests/test_godot_model.py`

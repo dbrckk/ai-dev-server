@@ -5,40 +5,153 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "AgentRun": {
+    "_safe_rewrite_summary": {
       "source": {
-        "file": "studio/agents/adapters.py",
-        "start": 19,
-        "end": 24
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "AgentAdapter": {
-      "source": {
-        "file": "studio/agents/adapters.py",
-        "start": 27,
-        "end": 113
+        "file": "studio/agents/orchestrator.py",
+        "start": 18,
+        "end": 20
       },
       "symbol_dependencies": [
         {
-          "symbol": "AgentRun",
-          "definitions": [
-            {
-              "file": "studio/agents/adapters.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "AgentSpec",
+          "symbol": "get",
           "definitions": [
             {
               "file": "studio/agents/registry.py",
-              "line": 10,
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_contextual_routing_state": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 23,
+        "end": 38
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_verification_seconds": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 41,
+        "end": 45
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_agent_execution_seconds": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 48,
+        "end": 54
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "all",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_opencode_runtime": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 56,
+        "end": 87
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "omniroute_available_base": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 89,
+        "end": 111
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "OmniRouteCapacityError",
+          "definitions": [
+            {
+              "file": "studio/omniroute_capacity.py",
+              "line": 20,
               "kind": "class",
               "language": "python"
             }
@@ -46,52 +159,422 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "GitHub",
+          "symbol": "authenticated_usage",
           "definitions": [
             {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
+              "file": "studio/omniroute_capacity.py",
+              "line": 51,
+              "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "class_like"
+          "relation": "imported_module"
         },
         {
-          "symbol": "Model",
+          "symbol": "get",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 433,
-              "kind": "class",
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "class_like"
+          "relation": "imported_module"
         },
         {
-          "symbol": "__init__",
+          "symbol": "snapshot",
           "definitions": [
             {
-              "file": "studio/agents/adapters.py",
-              "line": 28,
+              "file": "studio/capacity_ledger.py",
+              "line": 536,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "_runtime_invocation": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 114,
+        "end": 134
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "codex_invocation",
+          "definitions": [
+            {
+              "file": "studio/agents/codex.py",
+              "line": 18,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "codex_omniroute_invocation",
+          "definitions": [
+            {
+              "file": "studio/agents/codex.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "invocation_for",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 137,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "omniroute_available_base",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 89,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "invocation_for": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 137,
+        "end": 145
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_opencode_runtime",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "codex_invocation",
+          "definitions": [
+            {
+              "file": "studio/agents/codex.py",
+              "line": 18,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_completion_verified": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 148,
+        "end": 176
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "Reject",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 158,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_run_evidence": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 179,
+        "end": 192
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_completion_verified",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 148,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "parse_codex_usage",
+          "definitions": [
+            {
+              "file": "studio/agents/codex.py",
+              "line": 113,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_reserve_agent_budget": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 195,
+        "end": 219
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_settle_agent_budget": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 222,
+        "end": 247
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "execute": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 250,
+        "end": 305
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AgentAdapter",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 27,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_agent_execution_seconds",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 48,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_completion_verified",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 148,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_contextual_routing_state",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 23,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reserve_agent_budget",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 195,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_run_evidence",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 179,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_runtime_invocation",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 114,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_safe_rewrite_summary",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 18,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_settle_agent_budget",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 222,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_verification_seconds",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "all",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         },
         {
           "symbol": "available",
@@ -112,6 +595,30 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "bonus",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "eligible",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "get",
           "definitions": [
             {
@@ -124,11 +631,463 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "learned_weights",
+          "definitions": [
+            {
+              "file": "studio/routing_history.py",
+              "line": 94,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 6,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 42,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/contextual_routing_memory.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rank_agents",
+          "definitions": [
+            {
+              "file": "studio/agents/router.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 19
+    },
+    "ranked_agent_names": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 308,
+        "end": 353
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "all",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "available",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/agents/registry.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "bonus",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "eligible",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "invocation_for",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 137,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "learned_weights",
+          "definitions": [
+            {
+              "file": "studio/routing_history.py",
+              "line": 94,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 6,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 42,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/contextual_routing_memory.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "probe",
           "definitions": [
             {
               "file": "studio/agents/adapters.py",
               "line": 31,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rank_agents",
+          "definitions": [
+            {
+              "file": "studio/agents/router.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "usable",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 323,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 11
+    },
+    "usable": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 323,
+        "end": 443
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AgentAdapter",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 27,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_completion_verified",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 148,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reserve_agent_budget",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 195,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_run_evidence",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 179,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_runtime_invocation",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 114,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_settle_agent_budget",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 222,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "all",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "available",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/agents/registry.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "bonus",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "eligible",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "execute_named",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 355,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "invocation_for",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 137,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "learned_weights",
+          "definitions": [
+            {
+              "file": "studio/routing_history.py",
+              "line": 94,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 6,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 42,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/contextual_routing_memory.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "probe",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 31,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rank_agents",
+          "definitions": [
+            {
+              "file": "studio/agents/router.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "routing_trace_for",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 391,
               "kind": "function",
               "language": "python"
             }
@@ -145,115 +1104,89 @@
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 9
-    },
-    "__init__": {
-      "source": {
-        "file": "studio/agents/adapters.py",
-        "start": 28,
-        "end": 29
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "AgentSpec",
-          "definitions": [
-            {
-              "file": "studio/agents/registry.py",
-              "line": 10,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 19
     },
-    "probe": {
+    "execute_named": {
       "source": {
-        "file": "studio/agents/adapters.py",
-        "start": 31,
-        "end": 32
+        "file": "studio/agents/orchestrator.py",
+        "start": 355,
+        "end": 388
       },
       "symbol_dependencies": [
         {
-          "symbol": "available",
-          "definitions": [
-            {
-              "file": "studio/agents/registry.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/agents/registry.py",
-              "line": 82,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "run": {
-      "source": {
-        "file": "studio/agents/adapters.py",
-        "start": 34,
-        "end": 113
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "AgentRun",
+          "symbol": "AgentAdapter",
           "definitions": [
             {
               "file": "studio/agents/adapters.py",
-              "line": 19,
+              "line": 27,
               "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_completion_verified",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 148,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
         },
         {
-          "symbol": "GitHub",
+          "symbol": "_reserve_agent_budget",
           "definitions": [
             {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
+              "file": "studio/agents/orchestrator.py",
+              "line": 195,
+              "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "class_like"
+          "relation": "same_file"
         },
         {
-          "symbol": "Model",
+          "symbol": "_run_evidence",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 433,
-              "kind": "class",
+              "file": "studio/agents/orchestrator.py",
+              "line": 179,
+              "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "class_like"
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_runtime_invocation",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 114,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_settle_agent_budget",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 222,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         },
         {
           "symbol": "available",
@@ -286,16 +1219,110 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "probe",
+          "symbol": "run",
           "definitions": [
             {
               "file": "studio/agents/adapters.py",
-              "line": 31,
+              "line": 34,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 9
+    },
+    "routing_trace_for": {
+      "source": {
+        "file": "studio/agents/orchestrator.py",
+        "start": 391,
+        "end": 406
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "all",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 76,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "bonus",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "studio/agents/registry.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "learned_weights",
+          "definitions": [
+            {
+              "file": "studio/routing_history.py",
+              "line": 94,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load",
+          "definitions": [
+            {
+              "file": "studio/agents/performance.py",
+              "line": 6,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 42,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/contextual_routing_memory.py",
+              "line": 20,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rank_agents",
+          "definitions": [
+            {
+              "file": "studio/agents/router.py",
+              "line": 121,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         }
       ],
       "dependency_count": 6
@@ -304,7 +1331,7 @@
       "source": {
         "file": "tests/test_agent_router.py",
         "start": 22,
-        "end": 380
+        "end": 425
       },
       "symbol_dependencies": [
         {
@@ -356,6 +1383,18 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "_completion_verified",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 148,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "choose_agent",
           "definitions": [
             {
@@ -380,11 +1419,23 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "evidence",
+          "definitions": [
+            {
+              "file": "tests/test_agent_router.py",
+              "line": 208,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
           "symbol": "execute_named",
           "definitions": [
             {
               "file": "studio/agents/orchestrator.py",
-              "line": 320,
+              "line": 355,
               "kind": "function",
               "language": "python"
             }
@@ -396,13 +1447,13 @@
           "definitions": [
             {
               "file": "tests/test_agent_router.py",
-              "line": 244,
+              "line": 289,
               "kind": "function",
               "language": "python"
             },
             {
               "file": "tests/test_agent_router.py",
-              "line": 278,
+              "line": 323,
               "kind": "function",
               "language": "python"
             }
@@ -522,7 +1573,7 @@
           "definitions": [
             {
               "file": "tests/test_agent_router.py",
-              "line": 214,
+              "line": 259,
               "kind": "function",
               "language": "python"
             }
@@ -534,7 +1585,7 @@
           "definitions": [
             {
               "file": "tests/test_agent_router.py",
-              "line": 234,
+              "line": 279,
               "kind": "function",
               "language": "python"
             }
@@ -546,7 +1597,7 @@
           "definitions": [
             {
               "file": "tests/test_agent_router.py",
-              "line": 342,
+              "line": 387,
               "kind": "function",
               "language": "python"
             }
@@ -558,7 +1609,7 @@
           "definitions": [
             {
               "file": "tests/test_agent_router.py",
-              "line": 299,
+              "line": 344,
               "kind": "function",
               "language": "python"
             }
@@ -570,7 +1621,7 @@
           "definitions": [
             {
               "file": "tests/test_agent_router.py",
-              "line": 268,
+              "line": 313,
               "kind": "function",
               "language": "python"
             }
@@ -582,7 +1633,7 @@
           "definitions": [
             {
               "file": "tests/test_agent_router.py",
-              "line": 205,
+              "line": 250,
               "kind": "function",
               "language": "python"
             }
@@ -650,6 +1701,18 @@
           "relation": "same_file"
         },
         {
+          "symbol": "test_opencode_headless_exit_zero_needs_real_assistant_output",
+          "definitions": [
+            {
+              "file": "tests/test_agent_router.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
           "symbol": "test_opencode_invocation_uses_secret_alias",
           "definitions": [
             {
@@ -698,7 +1761,7 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 32
+      "dependency_count": 35
     },
     "setUp": {
       "source": {
@@ -1170,11 +2233,277 @@
       ],
       "dependency_count": 4
     },
-    "test_codex_invocation_uses_verified_headless_contract": {
+    "test_opencode_headless_exit_zero_needs_real_assistant_output": {
       "source": {
         "file": "tests/test_agent_router.py",
         "start": 205,
-        "end": 212
+        "end": 248
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AgentAdapter",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 27,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "AgentRun",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_completion_verified",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 148,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "evidence",
+          "definitions": [
+            {
+              "file": "tests/test_agent_router.py",
+              "line": 208,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "execute_named",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 355,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "which",
+          "definitions": [
+            {
+              "file": "tests/test_agent_router.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "evidence": {
+      "source": {
+        "file": "tests/test_agent_router.py",
+        "start": 208,
+        "end": 328
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "AgentAdapter",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 27,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "AgentRun",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 19,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_completion_verified",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 148,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "execute_named",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 355,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "fake_run",
+          "definitions": [
+            {
+              "file": "tests/test_agent_router.py",
+              "line": 289,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_agent_router.py",
+              "line": 323,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "invocation_for",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 137,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "omniroute_available_base",
+          "definitions": [
+            {
+              "file": "studio/agents/orchestrator.py",
+              "line": 89,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/agents/adapters.py",
+              "line": 34,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_codex_execute_named_exposes_token_usage",
+          "definitions": [
+            {
+              "file": "tests/test_agent_router.py",
+              "line": 259,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_codex_execute_named_prefers_isolated_omniroute_profile_when_healthy",
+          "definitions": [
+            {
+              "file": "tests/test_agent_router.py",
+              "line": 279,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_codex_execute_named_uses_chatgpt_profile_when_omniroute_is_unavailable",
+          "definitions": [
+            {
+              "file": "tests/test_agent_router.py",
+              "line": 313,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_codex_invocation_uses_verified_headless_contract",
+          "definitions": [
+            {
+              "file": "tests/test_agent_router.py",
+              "line": 250,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "which",
+          "definitions": [
+            {
+              "file": "tests/test_agent_router.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 13
+    },
+    "test_codex_invocation_uses_verified_headless_contract": {
+      "source": {
+        "file": "tests/test_agent_router.py",
+        "start": 250,
+        "end": 257
       },
       "symbol_dependencies": [
         {
@@ -1195,8 +2524,8 @@
     "test_codex_execute_named_exposes_token_usage": {
       "source": {
         "file": "tests/test_agent_router.py",
-        "start": 214,
-        "end": 231
+        "start": 259,
+        "end": 276
       },
       "symbol_dependencies": [
         {
@@ -1228,7 +2557,7 @@
           "definitions": [
             {
               "file": "studio/agents/orchestrator.py",
-              "line": 320,
+              "line": 355,
               "kind": "function",
               "language": "python"
             }
@@ -1277,8 +2606,8 @@
     "test_codex_execute_named_prefers_isolated_omniroute_profile_when_healthy": {
       "source": {
         "file": "tests/test_agent_router.py",
-        "start": 234,
-        "end": 266
+        "start": 279,
+        "end": 311
       },
       "symbol_dependencies": [
         {
@@ -1310,7 +2639,7 @@
           "definitions": [
             {
               "file": "studio/agents/orchestrator.py",
-              "line": 320,
+              "line": 355,
               "kind": "function",
               "language": "python"
             }
@@ -1322,13 +2651,13 @@
           "definitions": [
             {
               "file": "tests/test_agent_router.py",
-              "line": 244,
+              "line": 289,
               "kind": "function",
               "language": "python"
             },
             {
               "file": "tests/test_agent_router.py",
-              "line": 278,
+              "line": 323,
               "kind": "function",
               "language": "python"
             }
@@ -1377,8 +2706,8 @@
     "fake_run": {
       "source": {
         "file": "tests/test_agent_router.py",
-        "start": 244,
-        "end": 364
+        "start": 289,
+        "end": 409
       },
       "symbol_dependencies": [
         {
@@ -1410,7 +2739,7 @@
           "definitions": [
             {
               "file": "studio/agents/orchestrator.py",
-              "line": 320,
+              "line": 355,
               "kind": "function",
               "language": "python"
             }
@@ -1470,7 +2799,7 @@
           "definitions": [
             {
               "file": "tests/test_agent_router.py",
-              "line": 342,
+              "line": 387,
               "kind": "function",
               "language": "python"
             }
@@ -1482,7 +2811,7 @@
           "definitions": [
             {
               "file": "tests/test_agent_router.py",
-              "line": 299,
+              "line": 344,
               "kind": "function",
               "language": "python"
             }
@@ -1494,7 +2823,7 @@
           "definitions": [
             {
               "file": "tests/test_agent_router.py",
-              "line": 268,
+              "line": 313,
               "kind": "function",
               "language": "python"
             }
@@ -1519,8 +2848,8 @@
     "test_codex_execute_named_uses_chatgpt_profile_when_omniroute_is_unavailable": {
       "source": {
         "file": "tests/test_agent_router.py",
-        "start": 268,
-        "end": 296
+        "start": 313,
+        "end": 341
       },
       "symbol_dependencies": [
         {
@@ -1552,7 +2881,7 @@
           "definitions": [
             {
               "file": "studio/agents/orchestrator.py",
-              "line": 320,
+              "line": 355,
               "kind": "function",
               "language": "python"
             }
@@ -1564,13 +2893,13 @@
           "definitions": [
             {
               "file": "tests/test_agent_router.py",
-              "line": 244,
+              "line": 289,
               "kind": "function",
               "language": "python"
             },
             {
               "file": "tests/test_agent_router.py",
-              "line": 278,
+              "line": 323,
               "kind": "function",
               "language": "python"
             }
@@ -1619,8 +2948,8 @@
     "test_codex_execute_named_stops_when_project_token_envelope_is_exhausted": {
       "source": {
         "file": "tests/test_agent_router.py",
-        "start": 299,
-        "end": 340
+        "start": 344,
+        "end": 385
       },
       "symbol_dependencies": [
         {
@@ -1640,7 +2969,7 @@
           "definitions": [
             {
               "file": "studio/agents/orchestrator.py",
-              "line": 320,
+              "line": 355,
               "kind": "function",
               "language": "python"
             }
@@ -1713,8 +3042,8 @@
     "test_codex_execute_named_settles_reported_usage_in_project_ledger": {
       "source": {
         "file": "tests/test_agent_router.py",
-        "start": 342,
-        "end": 380
+        "start": 387,
+        "end": 425
       },
       "symbol_dependencies": [
         {
@@ -1758,7 +3087,7 @@
           "definitions": [
             {
               "file": "studio/agents/orchestrator.py",
-              "line": 320,
+              "line": 355,
               "kind": "function",
               "language": "python"
             }

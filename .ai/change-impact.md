@@ -1,10 +1,10 @@
 # Change impact
 
-Base: 3b1a1997dc234dea2ce358f908cb5384f62394eb
-Head: 0d7b31ded1e5c81a4929bca470b1764de9fca341
+Base: 08c104498cbe38c1c29bb1933210bcf2f9554267
+Head: af7f5d7798a491e80dfbd282c7c0f656a9a0ab55
 
 ## Changed files
-- M studio/agents/adapters.py
+- M studio/agents/orchestrator.py
 - M tests/test_agent_router.py
 
 ## Affected areas
@@ -12,7 +12,7 @@ Head: 0d7b31ded1e5c81a4929bca470b1764de9fca341
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_orchestrator.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

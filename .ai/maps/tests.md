@@ -631,6 +631,16 @@ result = adapter.run([name, "run"], cwd=ROOT,
 ⋮----
 child_env = child.call_args.kwargs["env"]
 ⋮----
+def test_opencode_headless_exit_zero_needs_real_assistant_output(self)
+⋮----
+def evidence(stdout)
+⋮----
+verified = evidence(
+⋮----
+failed = execute_named("opencode", "edit this", cwd=ROOT)
+⋮----
+succeeded = execute_named("opencode", "edit this", cwd=ROOT)
+⋮----
 def test_codex_invocation_uses_verified_headless_contract(self)
 ⋮----
 def test_codex_execute_named_exposes_token_usage(self)

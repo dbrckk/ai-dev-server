@@ -2,27 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "perf(actions): skip heavy worker setup when no compatible work exists",
-      "terms": [
-        "actions",
-        "compatible",
-        "exists",
-        "heavy",
-        "no",
-        "perf",
-        "setup",
-        "skip",
-        "when",
-        "work",
-        "worker"
-      ],
-      "tests": [],
-      "useful": [
-        "tests/test_production_os_actions_worker_workflow.py"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "fix(actions): surface rejected Production-OS worker credentials early",
       "terms": [
         "actions",
@@ -1404,6 +1383,27 @@
         "studio/agents/adapters.py",
         "tests/test_agent_router.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "Verify real startup and correct generic inference plus execution commit telemetry",
+      "terms": [
+        "commit",
+        "correct",
+        "execution",
+        "generic",
+        "inference",
+        "plus",
+        "real",
+        "startup",
+        "telemetry",
+        "verify"
+      ],
+      "tests": [],
+      "useful": [
+        "studio/agents/orchestrator.py",
+        "tests/test_agent_router.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1960,6 +1960,7 @@
     "commit": {
       "integration_tests/test_production_os_server_integration.py": 4,
       "studio/agents/adapters.py": 4,
+      "studio/agents/orchestrator.py": 4,
       "studio/core.py": 12,
       "studio/engine_patch.py": 4,
       "studio/generic_model.py": 16,
@@ -1973,7 +1974,7 @@
       "studio/production_os_review_canary.py": 4,
       "studio/production_os_worker.py": 4,
       "studio/production_os_worker_canary.py": 12,
-      "tests/test_agent_router.py": 4,
+      "tests/test_agent_router.py": 8,
       "tests/test_engine_patch.py": 4,
       "tests/test_generic_model_capacity.py": 4,
       "tests/test_generic_repository_pull_request.py": 4,
@@ -2069,6 +2070,7 @@
     "correct": {
       "integration_tests/test_production_os_server_integration.py": 4,
       "studio/agents/adapters.py": 4,
+      "studio/agents/orchestrator.py": 4,
       "studio/core.py": 12,
       "studio/engine_patch.py": 4,
       "studio/generic_model.py": 16,
@@ -2082,7 +2084,7 @@
       "studio/production_os_review_canary.py": 4,
       "studio/production_os_worker.py": 4,
       "studio/production_os_worker_canary.py": 12,
-      "tests/test_agent_router.py": 4,
+      "tests/test_agent_router.py": 8,
       "tests/test_engine_patch.py": 4,
       "tests/test_generic_model_capacity.py": 4,
       "tests/test_generic_repository_pull_request.py": 4,
@@ -2291,6 +2293,7 @@
     "execution": {
       "integration_tests/test_production_os_server_integration.py": 4,
       "studio/agents/adapters.py": 4,
+      "studio/agents/orchestrator.py": 4,
       "studio/asset_forge_bridge.py": 4,
       "studio/core.py": 12,
       "studio/engine_patch.py": 4,
@@ -2305,7 +2308,7 @@
       "studio/production_os_review_canary.py": 4,
       "studio/production_os_worker.py": 4,
       "studio/production_os_worker_canary.py": 12,
-      "tests/test_agent_router.py": 4,
+      "tests/test_agent_router.py": 8,
       "tests/test_asset_forge_bridge.py": 4,
       "tests/test_engine_patch.py": 4,
       "tests/test_generic_model_capacity.py": 4,
@@ -2496,6 +2499,7 @@
     "generic": {
       "integration_tests/test_production_os_server_integration.py": 4,
       "studio/agents/adapters.py": 4,
+      "studio/agents/orchestrator.py": 4,
       "studio/core.py": 12,
       "studio/engine_patch.py": 4,
       "studio/generic_model.py": 16,
@@ -2509,7 +2513,7 @@
       "studio/production_os_review_canary.py": 4,
       "studio/production_os_worker.py": 4,
       "studio/production_os_worker_canary.py": 12,
-      "tests/test_agent_router.py": 4,
+      "tests/test_agent_router.py": 8,
       "tests/test_engine_patch.py": 4,
       "tests/test_generic_model_capacity.py": 4,
       "tests/test_generic_repository_pull_request.py": 4,
@@ -2624,6 +2628,7 @@
     "inference": {
       "integration_tests/test_production_os_server_integration.py": 4,
       "studio/agents/adapters.py": 4,
+      "studio/agents/orchestrator.py": 4,
       "studio/asset_forge_bridge.py": 12,
       "studio/core.py": 12,
       "studio/engine_patch.py": 4,
@@ -2638,7 +2643,7 @@
       "studio/production_os_review_canary.py": 4,
       "studio/production_os_worker.py": 4,
       "studio/production_os_worker_canary.py": 12,
-      "tests/test_agent_router.py": 4,
+      "tests/test_agent_router.py": 8,
       "tests/test_asset_forge_bridge.py": 12,
       "tests/test_engine_patch.py": 4,
       "tests/test_generic_model_capacity.py": 4,
@@ -2924,6 +2929,7 @@
     "plus": {
       "integration_tests/test_production_os_server_integration.py": 4,
       "studio/agents/adapters.py": 4,
+      "studio/agents/orchestrator.py": 4,
       "studio/core.py": 12,
       "studio/engine_patch.py": 4,
       "studio/generic_model.py": 16,
@@ -2937,7 +2943,7 @@
       "studio/production_os_review_canary.py": 4,
       "studio/production_os_worker.py": 4,
       "studio/production_os_worker_canary.py": 12,
-      "tests/test_agent_router.py": 4,
+      "tests/test_agent_router.py": 8,
       "tests/test_engine_patch.py": 4,
       "tests/test_generic_model_capacity.py": 4,
       "tests/test_generic_repository_pull_request.py": 4,
@@ -3234,6 +3240,7 @@
     "real": {
       "integration_tests/test_production_os_server_integration.py": 4,
       "studio/agents/adapters.py": 4,
+      "studio/agents/orchestrator.py": 4,
       "studio/capacity_ledger.py": 4,
       "studio/core.py": 12,
       "studio/engine_patch.py": 4,
@@ -3251,7 +3258,7 @@
       "studio/production_os_worker.py": 4,
       "studio/production_os_worker_canary.py": 12,
       "studio/provider_router.py": 4,
-      "tests/test_agent_router.py": 4,
+      "tests/test_agent_router.py": 8,
       "tests/test_capacity_ledger.py": 4,
       "tests/test_engine_patch.py": 4,
       "tests/test_generic_model_capacity.py": 8,
@@ -3541,6 +3548,7 @@
     "startup": {
       "integration_tests/test_production_os_server_integration.py": 4,
       "studio/agents/adapters.py": 4,
+      "studio/agents/orchestrator.py": 4,
       "studio/core.py": 12,
       "studio/engine_patch.py": 4,
       "studio/generic_model.py": 16,
@@ -3554,7 +3562,7 @@
       "studio/production_os_review_canary.py": 4,
       "studio/production_os_worker.py": 4,
       "studio/production_os_worker_canary.py": 12,
-      "tests/test_agent_router.py": 4,
+      "tests/test_agent_router.py": 8,
       "tests/test_engine_patch.py": 4,
       "tests/test_generic_model_capacity.py": 4,
       "tests/test_generic_repository_pull_request.py": 4,
@@ -3644,7 +3652,7 @@
       "integration_tests/test_production_os_server_integration.py": 4,
       "studio/agents/adapters.py": 4,
       "studio/agents/codex.py": 4,
-      "studio/agents/orchestrator.py": 4,
+      "studio/agents/orchestrator.py": 8,
       "studio/capacity_scheduler.py": 4,
       "studio/core.py": 16,
       "studio/engine_patch.py": 4,
@@ -3662,7 +3670,7 @@
       "studio/production_os_review_canary.py": 4,
       "studio/production_os_worker.py": 8,
       "studio/production_os_worker_canary.py": 16,
-      "tests/test_agent_router.py": 8,
+      "tests/test_agent_router.py": 12,
       "tests/test_capacity_scheduler_omniroute.py": 4,
       "tests/test_codex_adapter.py": 4,
       "tests/test_engine_patch.py": 4,
@@ -3820,6 +3828,7 @@
       "scripts/preflight-production-os-worker.py": 4,
       "scripts/production-os-live-resume-proof.py": 4,
       "studio/agents/adapters.py": 4,
+      "studio/agents/orchestrator.py": 4,
       "studio/asset_forge_bridge.py": 12,
       "studio/autonomous_project.py": 8,
       "studio/capacity_ledger.py": 4,
@@ -3843,7 +3852,7 @@
       "studio/production_os_worker.py": 20,
       "studio/production_os_worker_canary.py": 16,
       "studio/provider_router.py": 4,
-      "tests/test_agent_router.py": 4,
+      "tests/test_agent_router.py": 8,
       "tests/test_asset_forge_bridge.py": 8,
       "tests/test_autonomous_project.py": 8,
       "tests/test_browser_validation_contract.py": 4,

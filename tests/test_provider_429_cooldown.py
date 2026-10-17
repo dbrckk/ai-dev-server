@@ -9,6 +9,7 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 import generic_model
+from godot_model import GodotModel
 from core import APIError, Model
 from provider_health import eligible, load as load_health
 from provider_router import ProviderSpec
@@ -106,6 +107,48 @@ class Provider429CooldownTests(unittest.TestCase):
                 before = _ProviderAPI.calls.count("https://model.invalid/bad")
                 self.assertEqual(model._ask("product", "Return JSON", ()), {"ok": True})
                 self.assertEqual(_ProviderAPI.calls.count("https://model.invalid/bad"), before)
+
+        # Godot uses its own provider adapter. It must also quarantine a
+        # rate-limited model immediately and fall back without another 429.
+        _ProviderAPI.calls = []
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "godot-health.json"
+            with (
+                patch.dict(os.environ, {"STUDIO_PROVIDER_HEALTH_PATH": str(path)}, clear=True),
+                patch("provider_router.load_providers", return_value=_providers()),
+                patch("core.API", _ProviderAPI),
+            ):
+                subject = GodotModel(limit=4)
+                self.assertEqual(subject._ask_godot("design", "Minimal JSON"), {"ok": True})
+                self.assertEqual(_ProviderAPI.calls, [
+                    "https://model.invalid/bad", "https://model.invalid/good",
+                ])
+                self.assertFalse(eligible(path, "rate-limited"))
+                self.assertTrue(eligible(path, "fallback"))
+                self.assertEqual(
+                    load_health(path)["rate-limited"]["consecutive_failures"], 1,
+                )
+                self.assertEqual(subject._ask_godot("design", "Minimal JSON"), {"ok": True})
+                self.assertEqual(_ProviderAPI.calls.count("https://model.invalid/bad"), 1)
+                self.assertEqual(subject.providers_used["design"], "fallback")
+
+        # Provider 503 is not equivalent to quota/rate exhaustion: retain the
+        # standard threshold, allowing recovery rather than immediate ban.
+        _ProviderAPI.calls = []
+        _ProviderAPI.bad_status = 503
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "godot-server-health.json"
+            with (
+                patch.dict(os.environ, {"STUDIO_PROVIDER_HEALTH_PATH": str(path)}, clear=True),
+                patch("provider_router.load_providers", return_value=_providers()),
+                patch("core.API", _ProviderAPI),
+            ):
+                subject = GodotModel(limit=3)
+                self.assertEqual(subject._ask_godot("design", "Minimal JSON"), {"ok": True})
+                self.assertTrue(eligible(path, "rate-limited"))
+                self.assertEqual(
+                    load_health(path)["rate-limited"]["consecutive_failures"], 1,
+                )
 
 
 if __name__ == "__main__":

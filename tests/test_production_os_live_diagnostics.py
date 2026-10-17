@@ -5,7 +5,7 @@ from contextlib import redirect_stdout
 from unittest.mock import patch
 
 from core import APIError, StudioError
-from production_os_live_diagnostics import diagnose, main
+from production_os_live_diagnostics import diagnose, main, _safe_increment_source
 from production_os_provider_config import configure
 from provider_router import ProviderSpec
 
@@ -22,6 +22,8 @@ class LiveDiagnosticsTests(unittest.TestCase):
                 calls.append((method, path, data, kwargs))
                 if data and data['model'] == 'old':
                     raise APIError(410)
+                if data and 'Write only Python code' in data['messages'][0]['content']:
+                    return {'choices': [{'message': {'content': 'def increment(value):\n    return value + 1\n'}}]}
                 return {'choices': [{'message': {'content': '{"ready":true,"private":"credential remote text"}'}}]}
         result = diagnose(api_factory=FakeAPI, providers=providers, environ={})
         self.assertTrue(result['inference_ready'])
@@ -29,8 +31,21 @@ class LiveDiagnosticsTests(unittest.TestCase):
         self.assertEqual(len(calls), 2)
         self.assertTrue(all(c[0:2] == ('POST', '/chat/completions') for c in calls))
         self.assertNotIn('credential', json.dumps(result))
+        self.assertEqual(result['providers'][0]['provider_family'], 'other')
+        smoke = diagnose(api_factory=FakeAPI, providers=providers,
+                         environ={'PRODUCTION_OS_DIAGNOSE_CODE_SMOKE': '1'})
+        self.assertEqual(smoke['coding_smoke']['status'], 'ready')
+        self.assertEqual(smoke['coding_smoke']['provider_index'], 1)
+        self.assertNotIn('credential', json.dumps(smoke))
 
     def test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready(self):
+        self.assertTrue(_safe_increment_source('def increment(value):\n    return value + 1'))
+        for unsafe in ('__import__("os").system("id")',
+                       'def increment(value):\n    return eval("value+1")',
+                       'def increment(value):\n    return 11',
+                       'def increment(value):\n    return value + 2',
+                       'def increment(value):\n    import os\n    return value + 1'):
+            self.assertFalse(_safe_increment_source(unsafe))
         provider = ProviderSpec('p', 'https://provider.example/v1', 'key', 'product', code_model='code')
         class FakeAPI:
             def __init__(self, *args):

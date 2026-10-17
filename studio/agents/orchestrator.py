@@ -150,11 +150,11 @@ def invocation_for(name:str,prompt:str)->tuple[list[str],dict[str,str]]|None:
 
 
 def _completion_verified(run)->bool:
-    """A zero exit code alone is not proof an OpenCode JSON run completed.
+    """Do not accept an agent run without its supported completion receipt.
 
-    Certain headless OpenCode versions can emit only step_start (or nothing)
-    and exit 0. Reject this as unverified instead of silently marking a code
-    change successful. Other registered agents retain their existing contract.
+    OpenCode requires non-synthetic assistant text; Codex requires a completed
+    JSONL turn; Hermes requires its final successful stream-json result.
+    An empty process exit 0 does not prove a model completed any work.
     """
     if run.returncode != 0:
         return False
@@ -213,10 +213,10 @@ def _completion_verified(run)->bool:
 def _run_evidence(run,capacity_source:str|None=None)->dict:
     evidence={"agent":run.agent,"returncode":run.returncode,
         "duration_seconds":run.duration_seconds,"stdout_tail":run.stdout_tail,"stderr_tail":run.stderr_tail}
-    if run.agent=="opencode":
-        evidence["completion_verified"]=_completion_verified(run)
-        if run.returncode==0 and not evidence["completion_verified"]:
-            evidence["failure_reason"]="unverified-headless-output"
+    if run.agent in {"opencode", "hermes", "codex"}:
+        evidence["completion_verified"] = _completion_verified(run)
+        if run.returncode == 0 and not evidence["completion_verified"]:
+            evidence["failure_reason"] = "unverified-headless-output"
     if capacity_source is not None:
         evidence["capacity_source"]=capacity_source
     if run.agent=="codex":

@@ -2022,6 +2022,23 @@
       "path": "scripts/production-os-live-resume-proof.py"
     },
     {
+      "dependencies": [
+        "studio/agents/__init__.py",
+        "studio/agents/adapters.py",
+        "studio/agents/codex.py",
+        "studio/agents/orchestrator.py",
+        "studio/agents/registry.py",
+        "studio/agents/router.py",
+        "studio/capacity_ledger.py",
+        "studio/core.py",
+        "studio/orchestrator.py"
+      ],
+      "dependents": [],
+      "in_degree": 0,
+      "out_degree": 9,
+      "path": "tests/test_agent_router.py"
+    },
+    {
       "dependencies": [],
       "dependents": [
         "studio/agents/workspace.py",
@@ -2069,26 +2086,9 @@
       "in_degree": 7,
       "out_degree": 1,
       "path": "studio/evolution_candidate.py"
-    },
-    {
-      "dependencies": [
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "studio/core.py",
-        "studio/generic_model.py",
-        "studio/github_provider_metrics_store.py",
-        "studio/godot_model.py",
-        "studio/provider_router.py",
-        "studio/unified_routing_score.py",
-        "tests/test_provider_metrics.py"
-      ],
-      "in_degree": 7,
-      "out_degree": 1,
-      "path": "studio/provider_metrics.py"
     }
   ],
-  "edge_count": 1927,
+  "edge_count": 1928,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 636,
   "schema_version": 1

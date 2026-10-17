@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "af7f5d7798a491e80dfbd282c7c0f656a9a0ab55",
-  "head": "3e2609658499aa1f47e6ecc6acba07a1c13e9937",
+  "base": "3e2609658499aa1f47e6ecc6acba07a1c13e9937",
+  "head": "e4b6c554d0d9c396ae88fa6925634247b8f96203",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "studio/agents/adapters.py",
+      "path": "studio/agents/orchestrator.py",
       "status": "M"
     },
     {
@@ -15,46 +15,24 @@
     }
   ],
   "changed_source_files": [
-    "studio/agents/adapters.py",
+    "studio/agents/orchestrator.py",
     "tests/test_agent_router.py"
   ],
   "impacted_files": [
-    "studio/agents/adapters.py",
     "studio/agents/orchestrator.py",
+    "studio/ci_runner.py",
+    "studio/generic_project.py",
+    "studio/multi_engine_orchestrator.py",
+    "studio/release_repair.py",
     "tests/test_agent_router.py",
-    "tests/test_codex_output_retention.py"
+    "tests/test_evolution_automerge_orchestration.py",
+    "tests/test_evolution_pending.py",
+    "tests/test_evolution_persist.py",
+    "tests/test_orchestrator.py",
+    "tests/test_orchestrator_automerge.py",
+    "tests/test_star_recommendations.py"
   ],
   "impacted_symbols": [
-    {
-      "name": "AgentRun",
-      "kind": "class",
-      "file": "studio/agents/adapters.py",
-      "line": 19
-    },
-    {
-      "name": "AgentAdapter",
-      "kind": "class",
-      "file": "studio/agents/adapters.py",
-      "line": 27
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/agents/adapters.py",
-      "line": 28
-    },
-    {
-      "name": "probe",
-      "kind": "function",
-      "file": "studio/agents/adapters.py",
-      "line": 31
-    },
-    {
-      "name": "run",
-      "kind": "function",
-      "file": "studio/agents/adapters.py",
-      "line": 34
-    },
     {
       "name": "_safe_rewrite_summary",
       "kind": "function",
@@ -107,55 +85,295 @@
       "name": "_completion_verified",
       "kind": "function",
       "file": "studio/agents/orchestrator.py",
-      "line": 148
+      "line": 152
     },
     {
       "name": "_run_evidence",
       "kind": "function",
       "file": "studio/agents/orchestrator.py",
-      "line": 179
+      "line": 213
     },
     {
       "name": "_reserve_agent_budget",
       "kind": "function",
       "file": "studio/agents/orchestrator.py",
-      "line": 195
+      "line": 229
     },
     {
       "name": "_settle_agent_budget",
       "kind": "function",
       "file": "studio/agents/orchestrator.py",
-      "line": 222
+      "line": 256
     },
     {
       "name": "execute",
       "kind": "function",
       "file": "studio/agents/orchestrator.py",
-      "line": 250
+      "line": 284
     },
     {
       "name": "ranked_agent_names",
       "kind": "function",
       "file": "studio/agents/orchestrator.py",
-      "line": 308
+      "line": 342
     },
     {
       "name": "usable",
       "kind": "function",
       "file": "studio/agents/orchestrator.py",
-      "line": 323
+      "line": 357
     },
     {
       "name": "execute_named",
       "kind": "function",
       "file": "studio/agents/orchestrator.py",
-      "line": 355
+      "line": 389
     },
     {
       "name": "routing_trace_for",
       "kind": "function",
       "file": "studio/agents/orchestrator.py",
-      "line": 391
+      "line": 425
+    },
+    {
+      "name": "bounded_run",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 23
+    },
+    {
+      "name": "_admission_for_project",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 52
+    },
+    {
+      "name": "_heartbeat_loop",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 63
+    },
+    {
+      "name": "save_report",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 73
+    },
+    {
+      "name": "_run_registered_stages",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 79
+    },
+    {
+      "name": "_run_project_for_queue",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 88
+    },
+    {
+      "name": "run_queue",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 108
+    },
+    {
+      "name": "main",
+      "kind": "function",
+      "file": "studio/ci_runner.py",
+      "line": 183
+    },
+    {
+      "name": "_snapshot",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 128
+    },
+    {
+      "name": "_apply",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 195
+    },
+    {
+      "name": "_prepare_architecture",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 218
+    },
+    {
+      "name": "_record_architecture",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 251
+    },
+    {
+      "name": "_browser_validation_contract",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 270
+    },
+    {
+      "name": "_valid_browser_test_url",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 278
+    },
+    {
+      "name": "_valid_browser_screenshot",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 292
+    },
+    {
+      "name": "_run_browser_validation",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 325
+    },
+    {
+      "name": "_mobile_validation_contract",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 483
+    },
+    {
+      "name": "_verify_android_emulator_evidence",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 491
+    },
+    {
+      "name": "_run_mobile_validation",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 559
+    },
+    {
+      "name": "_existing_worker_canary_verification",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 730
+    },
+    {
+      "name": "_save_published_checkpoint",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 775
+    },
+    {
+      "name": "run_project",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 789
+    },
+    {
+      "name": "evaluate_model_candidate",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 1418
+    },
+    {
+      "name": "_remaining",
+      "kind": "function",
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 15
+    },
+    {
+      "name": "_detect",
+      "kind": "function",
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 21
+    },
+    {
+      "name": "_run_stage",
+      "kind": "function",
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 36
+    },
+    {
+      "name": "run_project",
+      "kind": "function",
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 42
+    },
+    {
+      "name": "_persist_caches",
+      "kind": "function",
+      "file": "studio/release_repair.py",
+      "line": 27
+    },
+    {
+      "name": "_context",
+      "kind": "function",
+      "file": "studio/release_repair.py",
+      "line": 44
+    },
+    {
+      "name": "_agent_memory_path",
+      "kind": "function",
+      "file": "studio/release_repair.py",
+      "line": 67
+    },
+    {
+      "name": "_agent_candidates",
+      "kind": "function",
+      "file": "studio/release_repair.py",
+      "line": 72
+    },
+    {
+      "name": "_validate_agent_scope",
+      "kind": "function",
+      "file": "studio/release_repair.py",
+      "line": 84
+    },
+    {
+      "name": "_run_agent",
+      "kind": "function",
+      "file": "studio/release_repair.py",
+      "line": 97
+    },
+    {
+      "name": "_strategy_prior",
+      "kind": "function",
+      "file": "studio/release_repair.py",
+      "line": 121
+    },
+    {
+      "name": "_model_mutation",
+      "kind": "function",
+      "file": "studio/release_repair.py",
+      "line": 128
+    },
+    {
+      "name": "_agent_mutation",
+      "kind": "function",
+      "file": "studio/release_repair.py",
+      "line": 152
+    },
+    {
+      "name": "_hybrid_mutation",
+      "kind": "function",
+      "file": "studio/release_repair.py",
+      "line": 162
+    },
+    {
+      "name": "_agent_to_model_mutation",
+      "kind": "function",
+      "file": "studio/release_repair.py",
+      "line": 168
+    },
+    {
+      "name": "attempt",
+      "kind": "function",
+      "file": "studio/release_repair.py",
+      "line": 177
+    },
+    {
+      "name": "_restore",
+      "kind": "function",
+      "file": "studio/release_repair.py",
+      "line": 371
     },
     {
       "name": "AgentRouterTests",
@@ -245,65 +463,503 @@
       "name": "test_codex_invocation_uses_verified_headless_contract",
       "kind": "function",
       "file": "tests/test_agent_router.py",
-      "line": 289
+      "line": 334
     },
     {
       "name": "test_codex_execute_named_exposes_token_usage",
       "kind": "function",
       "file": "tests/test_agent_router.py",
-      "line": 298
+      "line": 343
     },
     {
       "name": "test_codex_execute_named_prefers_isolated_omniroute_profile_when_healthy",
       "kind": "function",
       "file": "tests/test_agent_router.py",
-      "line": 318
+      "line": 363
     },
     {
       "name": "fake_run",
       "kind": "function",
       "file": "tests/test_agent_router.py",
-      "line": 328
+      "line": 373
     },
     {
       "name": "test_codex_execute_named_uses_chatgpt_profile_when_omniroute_is_unavailable",
       "kind": "function",
       "file": "tests/test_agent_router.py",
-      "line": 352
+      "line": 397
     },
     {
       "name": "fake_run",
       "kind": "function",
       "file": "tests/test_agent_router.py",
-      "line": 362
+      "line": 407
     },
     {
       "name": "test_codex_execute_named_stops_when_project_token_envelope_is_exhausted",
       "kind": "function",
       "file": "tests/test_agent_router.py",
-      "line": 383
+      "line": 428
     },
     {
       "name": "test_codex_execute_named_settles_reported_usage_in_project_ledger",
       "kind": "function",
       "file": "tests/test_agent_router.py",
-      "line": 426
+      "line": 471
     },
     {
-      "name": "CodexAdapterOutputRetentionTests",
+      "name": "EvolutionAutoMergeOrchestrationTests",
       "kind": "class",
-      "file": "tests/test_codex_output_retention.py",
+      "file": "tests/test_evolution_automerge_orchestration.py",
+      "line": 12
+    },
+    {
+      "name": "test_restarted_runner_merges_pending_promotion_without_regeneration",
+      "kind": "function",
+      "file": "tests/test_evolution_automerge_orchestration.py",
+      "line": 13
+    },
+    {
+      "name": "test_restarted_runner_waits_without_regenerating_when_checks_are_running",
+      "kind": "function",
+      "file": "tests/test_evolution_automerge_orchestration.py",
+      "line": 28
+    },
+    {
+      "name": "test_blocked_pending_proof_fails_closed_without_regeneration",
+      "kind": "function",
+      "file": "tests/test_evolution_automerge_orchestration.py",
+      "line": 41
+    },
+    {
+      "name": "order",
+      "kind": "function",
+      "file": "tests/test_evolution_pending.py",
+      "line": 16
+    },
+    {
+      "name": "branch",
+      "kind": "function",
+      "file": "tests/test_evolution_pending.py",
+      "line": 17
+    },
+    {
+      "name": "pr",
+      "kind": "function",
+      "file": "tests/test_evolution_pending.py",
       "line": 18
     },
     {
-      "name": "test_codex_terminal_usage_event_survives_large_trailing_output",
+      "name": "EvolutionPendingTests",
+      "kind": "class",
+      "file": "tests/test_evolution_pending.py",
+      "line": 21
+    },
+    {
+      "name": "test_no_pr_and_no_branch_allows_new_evolution",
       "kind": "function",
-      "file": "tests/test_codex_output_retention.py",
+      "file": "tests/test_evolution_pending.py",
+      "line": 22
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_evolution_pending.py",
+      "line": 23
+    },
+    {
+      "name": "test_open_pr_recovers_branch_name_sha_proof",
+      "kind": "function",
+      "file": "tests/test_evolution_pending.py",
+      "line": 30
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_evolution_pending.py",
+      "line": 31
+    },
+    {
+      "name": "test_force_moved_branch_is_orphaned",
+      "kind": "function",
+      "file": "tests/test_evolution_pending.py",
+      "line": 39
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_evolution_pending.py",
+      "line": 40
+    },
+    {
+      "name": "test_pr_head_not_equal_encoded_sha_is_orphaned",
+      "kind": "function",
+      "file": "tests/test_evolution_pending.py",
+      "line": 47
+    },
+    {
+      "name": "test_multiple_candidate_prs_fail_closed",
+      "kind": "function",
+      "file": "tests/test_evolution_pending.py",
+      "line": 52
+    },
+    {
+      "name": "test_merged_pr_survives_deleted_branch",
+      "kind": "function",
+      "file": "tests/test_evolution_pending.py",
+      "line": 57
+    },
+    {
+      "name": "test_orchestrator_maps_open_pr_to_pending_merge",
+      "kind": "function",
+      "file": "tests/test_evolution_pending.py",
+      "line": 62
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_evolution_pending.py",
+      "line": 65
+    },
+    {
+      "name": "EvolutionPersistTests",
+      "kind": "class",
+      "file": "tests/test_evolution_persist.py",
+      "line": 17
+    },
+    {
+      "name": "fixture",
+      "kind": "function",
+      "file": "tests/test_evolution_persist.py",
+      "line": 18
+    },
+    {
+      "name": "api",
+      "kind": "function",
+      "file": "tests/test_evolution_persist.py",
+      "line": 28
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_evolution_persist.py",
+      "line": 30
+    },
+    {
+      "name": "test_new_branch_encodes_exact_approved_commit_sha",
+      "kind": "function",
+      "file": "tests/test_evolution_persist.py",
+      "line": 45
+    },
+    {
+      "name": "test_existing_identical_content_bound_branch_is_idempotent",
+      "kind": "function",
+      "file": "tests/test_evolution_persist.py",
+      "line": 52
+    },
+    {
+      "name": "test_force_moved_existing_branch_is_rejected",
+      "kind": "function",
+      "file": "tests/test_evolution_persist.py",
+      "line": 58
+    },
+    {
+      "name": "test_existing_branch_with_different_tree_is_rejected",
+      "kind": "function",
+      "file": "tests/test_evolution_persist.py",
+      "line": 64
+    },
+    {
+      "name": "test_modified_promoted_file_is_rejected_before_network",
+      "kind": "function",
+      "file": "tests/test_evolution_persist.py",
+      "line": 70
+    },
+    {
+      "name": "test_github_orchestrator_requires_persistence_evidence",
+      "kind": "function",
+      "file": "tests/test_evolution_persist.py",
+      "line": 77
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_evolution_persist.py",
+      "line": 81
+    },
+    {
+      "name": "test_non_github_provider_does_not_attempt_github_persistence",
+      "kind": "function",
+      "file": "tests/test_evolution_persist.py",
+      "line": 86
+    },
+    {
+      "name": "OrchestratorTests",
+      "kind": "class",
+      "file": "tests/test_orchestrator.py",
       "line": 19
+    },
+    {
+      "name": "payload_for",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 20
+    },
+    {
+      "name": "missing_report",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 35
+    },
+    {
+      "name": "test_premium_visual_request_prefetches_asset_forge_before_preview",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 43
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 52
+    },
+    {
+      "name": "test_multi_asset_request_uses_transactional_asset_forge_batch",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 86
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 98
+    },
+    {
+      "name": "test_asset_forge_batch_receipt_marks_regenerated_quality",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 129
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 140
+    },
+    {
+      "name": "test_asset_forge_failure_receipt_marks_low_quality",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 174
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 185
+    },
+    {
+      "name": "test_full_pipeline_reaches_finished",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 203
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 207
+    },
+    {
+      "name": "test_unregistered_stage_research_then_synthesis",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 218
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 221
+    },
+    {
+      "name": "test_research_failure_prevents_synthesis",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 255
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 258
+    },
+    {
+      "name": "test_adaptation_without_baseline_has_no_promotable_work_order",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 271
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 274
+    },
+    {
+      "name": "test_stage_return_code_two_is_human_action_not_failure",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 283
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 286
+    },
+    {
+      "name": "test_scheduler_rewind_can_revisit_release_build_boundedly",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 310
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 319
+    },
+    {
+      "name": "test_successful_stage_must_advance",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 371
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 374
+    },
+    {
+      "name": "GitHubRunnerTests",
+      "kind": "class",
+      "file": "tests/test_orchestrator.py",
+      "line": 383
+    },
+    {
+      "name": "request",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 384
+    },
+    {
+      "name": "test_non_main_is_rejected_before_generation",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 390
+    },
+    {
+      "name": "test_adapter_reports_complete_only_after_machine_completion",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 394
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator.py",
+      "line": 397
+    },
+    {
+      "name": "OrchestratorAutoMergeTests",
+      "kind": "class",
+      "file": "tests/test_orchestrator_automerge.py",
+      "line": 15
+    },
+    {
+      "name": "test_github_automerge_uses_local_persistence_proof",
+      "kind": "function",
+      "file": "tests/test_orchestrator_automerge.py",
+      "line": 16
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_orchestrator_automerge.py",
+      "line": 22
+    },
+    {
+      "name": "test_non_github_provider_never_attempts_automerge",
+      "kind": "function",
+      "file": "tests/test_orchestrator_automerge.py",
+      "line": 34
+    },
+    {
+      "name": "StarScannerTests",
+      "kind": "class",
+      "file": "tests/test_star_recommendations.py",
+      "line": 47
+    },
+    {
+      "name": "test_structured_catalog_ranking_respects_constraints",
+      "kind": "function",
+      "file": "tests/test_star_recommendations.py",
+      "line": 48
+    },
+    {
+      "name": "test_markdown_parser_accepts_scored_rows",
+      "kind": "function",
+      "file": "tests/test_star_recommendations.py",
+      "line": 67
+    },
+    {
+      "name": "test_project_recommendation_writes_evidence",
+      "kind": "function",
+      "file": "tests/test_star_recommendations.py",
+      "line": 71
+    },
+    {
+      "name": "test_run_loads_bounded_recommendation_evidence",
+      "kind": "function",
+      "file": "tests/test_star_recommendations.py",
+      "line": 90
+    },
+    {
+      "name": "test_model_context_contains_recommendations_as_data",
+      "kind": "function",
+      "file": "tests/test_star_recommendations.py",
+      "line": 116
+    },
+    {
+      "name": "test_load_architecture_benchmark_is_bounded",
+      "kind": "function",
+      "file": "tests/test_star_recommendations.py",
+      "line": 128
+    },
+    {
+      "name": "test_load_replacement_work_orders_is_bounded",
+      "kind": "function",
+      "file": "tests/test_star_recommendations.py",
+      "line": 148
+    },
+    {
+      "name": "test_recommendation_context_uses_project_brief",
+      "kind": "function",
+      "file": "tests/test_star_recommendations.py",
+      "line": 169
     }
   ],
   "selected_tests": [
     "tests/test_agent_router.py",
-    "tests/test_codex_output_retention.py"
+    "tests/test_evolution_automerge_orchestration.py",
+    "tests/test_evolution_pending.py",
+    "tests/test_evolution_persist.py",
+    "tests/test_multi_engine_orchestrator.py",
+    "tests/test_orchestrator.py",
+    "tests/test_orchestrator_automerge.py",
+    "tests/test_star_recommendations.py"
   ]
 }

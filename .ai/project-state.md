@@ -106,24 +106,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-17T08:33:27Z
+Generated: 2026-10-17T08:36:43Z
 
 ### Git
 - Branch: `main`
-- Head: `3e2609658499`
-- Commit date: 2026-10-17T04:33:09-04:00
-- Commit: fix(agents): redact inherited AI provider keys from Hermes/OpenCode logs (#333)
+- Head: `e4b6c554d0d9`
+- Commit date: 2026-10-17T04:36:25-04:00
+- Commit: fix(agents): require Hermes and Codex terminal receipts before success (#334)
 - Tracked files: 865
 
 ### Recently changed files
-- `studio/agents/adapters.py`
-- `tests/test_agent_router.py`
 - `studio/agents/orchestrator.py`
+- `tests/test_agent_router.py`
+- `studio/agents/adapters.py`
 - `studio/godot_model.py`
 - `studio/native_model_usage.py`
 - `tests/test_godot_model.py`
-- `studio/godot_preview.py`
-- `tests/test_godot_preview.py`
 
 ### Project signals
 - No common build descriptor detected

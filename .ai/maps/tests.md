@@ -651,6 +651,16 @@ failed = execute_named("opencode", "edit this", cwd=ROOT)
 ⋮----
 succeeded = execute_named("opencode", "edit this", cwd=ROOT)
 ⋮----
+# Hermes is explicitly one-shot and emits a terminal stream-json
+# result; a progress event or zero exit alone cannot certify work.
+⋮----
+hermes_good = AgentRun(
+⋮----
+silent = execute_named("hermes", "do work", cwd=ROOT)
+⋮----
+# Codex needs a completed JSONL turn, not just an empty exit 0 or
+# progress event without a terminal receipt.
+⋮----
 def test_codex_invocation_uses_verified_headless_contract(self)
 ⋮----
 def test_codex_execute_named_exposes_token_usage(self)

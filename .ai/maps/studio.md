@@ -561,14 +561,28 @@ def invocation_for(name:str,prompt:str)->tuple[list[str],dict[str,str]]|None
 ⋮----
 # Only invocation contracts verified against upstream CLIs are enabled.
 ⋮----
+# Hermes' documented stream-json one-shot emits a terminal "result"
+# record with an exit_code. Plain stdout/progress is not a receipt.
+⋮----
 def _completion_verified(run)->bool
 ⋮----
-"""A zero exit code alone is not proof an OpenCode JSON run completed.
+"""Do not accept an agent run without its supported completion receipt.
 
-    Certain headless OpenCode versions can emit only step_start (or nothing)
-    and exit 0. Reject this as unverified instead of silently marking a code
-    change successful. Other registered agents retain their existing contract.
+    OpenCode requires non-synthetic assistant text; Codex requires a completed
+    JSONL turn; Hermes requires its final successful stream-json result.
+    An empty process exit 0 does not prove a model completed any work.
     """
+⋮----
+# The Codex CLI's authenticated JSONL terminal turn is the only
+# completion receipt. Exit 0 without turn.completed is inconclusive.
+⋮----
+event = json.loads(line)
+⋮----
+# Hermes --format stream-json always finishes with a result record.
+# A text delta, banner or empty zero-exit process is not completion.
+terminal = None
+⋮----
+terminal = event
 ⋮----
 event=json.loads(line)
 ⋮----

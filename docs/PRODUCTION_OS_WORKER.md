@@ -456,3 +456,26 @@ portfolio envelope, a stable authenticated quota, valid coding patches, or a
 finished target integration. Keep the star-list final-v3 fleet pause until
 capacity, worker execution, source delivery, target tests and CI are separately
 verified. Do not bypass stop markers or enable an automatic production merge.
+
+
+## Redacted coding smoke for free-provider qualification
+
+The live diagnostics workflow sets `PRODUCTION_OS_DIAGNOSE_CODE_SMOKE=1` and
+issues **at most one additional 384-output-token coding request** after its
+existing provider JSON readiness checks. It prefers a verified
+`cloudflare_workers_free` provider when enabled and responsive, otherwise
+a ready configured provider. Model-generated Python is parsed and evaluated
+through a tiny restrictive AST interpreter with deterministic examples; the
+source is **never executed** in the trusted Actions process. The report shows
+only public provider families (`cloudflare_workers_free`, `nvidia_nim`,
+`other`) and bounded statuses, never account IDs, endpoints, token values,
+model responses or generated source. `cloudflare_free_configured=false` means
+that Cloudflare has **not** been registered for this workflow, regardless of
+other successful inference checks.
+
+A passing `coding_smoke.status=ready` verifies a very small code-generation
+behavior at that moment, **not** autonomous repository modification, a
+persistent token budget, compatibility with large contexts, or a verified
+PR/integration. A failed code smoke makes `diagnostic_ready=false` only when
+explicitly enabled. No production job is claimed and the fleet pause remains
+in force until actual implementation, tests, CI and quota checks succeed.

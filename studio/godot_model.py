@@ -340,7 +340,17 @@ class GodotModel(Model):
                 if metrics_path is not None:
                     record_provider_latency(metrics_path, provider.name, role, elapsed)
                 if health_path is not None:
-                    record_provider_failure(health_path, provider.name)
+                    # HTTP 429 indicates the provider has already rejected
+                    # this request for rate/quota pressure. Cool it down
+                    # immediately, as the generic/Flutter adapters do, rather
+                    # than repeatedly burning free calls on the same route.
+                    # Preserve the standard three-strike threshold for 5xx
+                    # errors or ambiguous transport failures.
+                    record_provider_failure(
+                        health_path, provider.name,
+                        **({'threshold': 1} if isinstance(exc, core.APIError)
+                           and exc.status == 429 else {}),
+                    )
                 last_error = exc
                 continue
             elapsed = time.monotonic() - started

@@ -5210,9 +5210,14 @@ best_ratio = 0.0
 ⋮----
 quota = row.get("monthly_quota")
 ⋮----
-ratio = float(quota.get("remaining_ratio", 0.0) or 0.0)
+raw_ratio = quota.get("remaining_ratio", 0.0)
+# Corrupt or unverified quota telemetry must never unlock more
+# model calls. Python's min/max handle NaN in an order-dependent way,
+# which can otherwise promote NaN to a 100% available free pool.
 ⋮----
-best_ratio = max(best_ratio, max(0.0, min(1.0, ratio)))
+ratio = float(raw_ratio)
+⋮----
+best_ratio = max(best_ratio, ratio)
 ⋮----
 base = max(1, int(base_limit))
 ⋮----
@@ -16266,17 +16271,37 @@ remaining = deadline - clock()
 ⋮----
 result = client.call("GET", "/readyz", timeout_seconds=min(30, remaining))
 ⋮----
+def _provider_family(provider)
+⋮----
+"""Public, bounded category; never print arbitrary provider names or URLs."""
+⋮----
+def _safe_increment_source(source)
+⋮----
+"""Check generated Python behavior by interpreting a tiny safe AST, never exec."""
+⋮----
+tree = ast.parse(source)
+⋮----
+fn = tree.body[0]
+⋮----
+def interpret(expr, value)
+⋮----
 def diagnose(*, api_factory=API, providers=None, environ=None)
 ⋮----
 env = os.environ if environ is None else environ
 ⋮----
 providers = load_providers() if providers is None else providers
-result = {"schema_version": 1, "providers": [], "operator_access": "not_configured"}
+result = {"schema_version": 1, "providers": [], "operator_access": "not_configured",
+# Limit live calls, but always include the opt-in Cloudflare fallback if present.
+selected = list(providers[:3])
+⋮----
+free = next((p for p in providers[3:] if _provider_family(p) == "cloudflare_workers_free"), None)
+⋮----
+selected = (selected[:2] + [free]) if len(selected) == 3 else (selected + [free])
 # Same model selection for product and implementation as the real worker.
 ⋮----
 model = provider.model_for(role)
 ⋮----
-record = {"provider_index": index, "role": role, "status": "unavailable"}
+record = {"provider_index": index, "provider_family": _provider_family(provider),
 ⋮----
 params = {
 ⋮----
@@ -16300,6 +16325,18 @@ readiness = operator_client.call(
 wake = readiness.get("worker_wake") if isinstance(readiness, dict) else None
 allowed = {
 ⋮----
+ready_indices = [
+⋮----
+# One additional request, no retries. Only the source AST is inspected;
+# generated code is never run on the trusted Actions runner.
+code_smoke = {"status": "no_ready_provider"}
+⋮----
+chosen = next(
+provider = selected[chosen]
+code_smoke = {"provider_index": chosen,
+⋮----
+source = message.get("content") if isinstance(message, dict) else None
+⋮----
 def main()
 ⋮----
 result = diagnose()
@@ -16309,6 +16346,8 @@ result = {"schema_version": 1, "inference_ready": False, "configuration": "inval
 # access is required, and an explicitly requested wake probe must succeed.
 # Scheduled fallback remains a supported (reported) operating mode.
 ready = result.get("inference_ready") is True and result.get("operator_access") == "ready"
+⋮----
+ready = ready and result.get("coding_smoke", {}).get("status") == "ready"
 ⋮----
 wake = result.get("worker_wake")
 ready = ready and isinstance(wake, dict) and wake.get("mode") in {

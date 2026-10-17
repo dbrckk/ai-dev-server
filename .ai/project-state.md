@@ -106,24 +106,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-17T13:03:28Z
+Generated: 2026-10-17T17:16:48Z
 
 ### Git
 - Branch: `main`
-- Head: `b0cd42326232`
-- Commit date: 2026-10-17T09:03:18-04:00
-- Commit: feat(providers): opt-in Cloudflare Workers Free coding fallback (#335)
+- Head: `af72b35c1288`
+- Commit date: 2026-10-17T13:16:37-04:00
+- Commit: fix(capacity): fail closed on corrupt free-quota fractions (#338)
 - Tracked files: 865
 
 ### Recently changed files
-- `.github/workflows/production-os-actions-worker.yml`
+- `studio/capacity_budget.py`
+- `tests/test_capacity_budget.py`
+- `control/production-os-diagnostics-kick.json`
 - `.github/workflows/production-os-live-diagnostics.yml`
 - `docs/PRODUCTION_OS_WORKER.md`
+- `studio/production_os_live_diagnostics.py`
+- `tests/test_production_os_live_diagnostics.py`
+- `.github/workflows/production-os-actions-worker.yml`
 - `studio/agents/adapters.py`
 - `studio/production_os_provider_config.py`
 - `tests/test_agent_router.py`
-- `tests/test_production_os_live_diagnostics.py`
-- `studio/agents/orchestrator.py`
 
 ### Project signals
 - No common build descriptor detected

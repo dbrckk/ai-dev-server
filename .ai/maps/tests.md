@@ -3430,6 +3430,14 @@ def test_large_pooled_quota_expands_budget(self)
 ⋮----
 def test_low_remaining_pool_does_not_expand_budget(self)
 ⋮----
+# Free-budget multipliers must fail closed on unreliable telemetry.
+# No new test functions: extend the existing low-capacity case.
+⋮----
+invalid_plan = cb.expanded_call_limit(
+⋮----
+# Invalid providers must not hide a second genuinely available pool.
+mixed = cb.expanded_call_limit(
+⋮----
 def test_explicit_user_limit_is_never_expanded(self)
 ⋮----
 def test_automatic_limit_is_absolutely_capped(self)
@@ -8757,6 +8765,8 @@ class FakeAPI
 def __init__(self, base, key)
 def call(self, method, path, data=None, **kwargs)
 result = diagnose(api_factory=FakeAPI, providers=providers, environ={})
+⋮----
+smoke = diagnose(api_factory=FakeAPI, providers=providers,
 ⋮----
 def test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready(self)
 ⋮----

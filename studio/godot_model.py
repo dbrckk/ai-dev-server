@@ -329,9 +329,19 @@ class GodotModel(Model):
                     3072 if role == 'implementation' else
                     1024
                 )
+                # Before source generation, prevent product/design output
+                # reservations from consuming the capacity required by
+                # later stages. A finite envelope still governs every call.
+                # Product also leaves room for design; design leaves room
+                # for implementation. No paid provider or quota increase.
+                future_floor = (
+                    8192 if role == 'product' else
+                    5120 if role == 'design' else 0
+                )
                 response = accounted_call(
                     api, params, provider.name,
                     minimum_output_tokens=output_floor,
+                    future_stage_reserve_tokens=future_floor,
                 )
             except NativeAccountingError:
                 raise

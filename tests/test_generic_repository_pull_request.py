@@ -30,7 +30,7 @@ class FakeGitHub:
                 "state":"open",
                 "draft":True,
                 "html_url":"https://github.com/owner/repo/pull/17",
-                "head":{"ref":"studio/mp-abc", "repo":{"full_name":"owner/repo"}},
+                "head":{"ref":"studio/mp-abc", "sha":"a" * 40, "repo":{"full_name":"owner/repo"}},
                 "base":{"ref":"main", "repo":{"full_name":"owner/repo"}},
             }
             self.pulls.append(created)
@@ -49,6 +49,7 @@ def test_ensure_pull_request_creates_one_for_managed_branch():
     result = repository.ensure_pull_request(
         title="Managed project",
         body="Automated",
+        expected_sha="a" * 40,
     )
 
     assert result == {
@@ -73,7 +74,7 @@ def test_ensure_pull_request_creates_one_for_managed_branch():
         "state":"open",
         "draft":True,
         "html_url":"https://github.com/owner/repo/pull/17",
-        "head":{"ref":"studio/mp-abc", "repo":{"full_name":"owner/repo"}},
+        "head":{"ref":"studio/mp-abc", "sha":"a" * 40, "repo":{"full_name":"owner/repo"}},
         "base":{"ref":"main", "repo":{"full_name":"owner/repo"}},
     }
     invalid_receipts = [
@@ -86,6 +87,7 @@ def test_ensure_pull_request_creates_one_for_managed_branch():
         {**valid, "head":{"ref":"studio/mp-abc", "repo":{"full_name":"other/repo"}}},
         {**valid, "base":{"ref":"main", "repo":{"full_name":"other/repo"}}},
         {**valid, "state":"closed"},
+        {**valid, "head":{"ref":"studio/mp-abc", "sha":"b" * 40, "repo":{"full_name":"owner/repo"}}},
     ]
     for malformed in invalid_receipts:
         candidate = FakeGitHub()
@@ -93,6 +95,7 @@ def test_ensure_pull_request_creates_one_for_managed_branch():
             try:
                 GenericRepository(candidate, "owner/repo", "mp-abc").ensure_pull_request(
                     title="Managed project",
+                    expected_sha="a" * 40,
                 )
             except StudioError as exc:
                 assert str(exc) == "Generic review pull request receipt unverified"
@@ -106,7 +109,7 @@ def test_ensure_pull_request_reuses_existing_exact_branch_pr():
             "number":23,
             "state":"open",
             "html_url":"https://github.com/owner/repo/pull/23",
-            "head":{"ref":"studio/mp-abc", "repo":{"full_name":"owner/repo"}},
+            "head":{"ref":"studio/mp-abc", "sha":"a" * 40, "repo":{"full_name":"owner/repo"}},
             "base":{"ref":"main", "repo":{"full_name":"owner/repo"}},
         }
     ])
@@ -116,13 +119,23 @@ def test_ensure_pull_request_reuses_existing_exact_branch_pr():
         "mp-abc",
     )
 
-    first = repository.ensure_pull_request(title="Managed project")
-    second = repository.ensure_pull_request(title="Managed project")
+    first = repository.ensure_pull_request(title="Managed project", expected_sha="a" * 40)
+    second = repository.ensure_pull_request(title="Managed project", expected_sha="a" * 40)
 
     assert first["number"] == 23
     assert first["reused"] is True
     assert second["number"] == 23
     assert second["reused"] is True
+    assert not any(call[0] == "POST" for call in github.calls)
+
+    # A stale PR at the same head/base must block delivery, never cause a
+    # duplicate POST or count as the newly published checkpoint.
+    try:
+        repository.ensure_pull_request(title="Managed project", expected_sha="b" * 40)
+    except StudioError as exc:
+        assert str(exc) == "Generic review pull request head revision unverified"
+    else:
+        raise AssertionError("Stale open PR was accepted as the published checkpoint")
     assert not any(call[0] == "POST" for call in github.calls)
 
 

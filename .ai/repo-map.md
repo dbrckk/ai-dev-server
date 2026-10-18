@@ -22287,7 +22287,7 @@ _REPOSITORY = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
 _WORKFLOW_ID = re.compile(r"[a-f0-9]{32}")
 _TERMINAL_FAILURES = {"failed", "cancelled", "canceled"}
 ⋮----
-def dispatch_worker_after_enqueue(*, token, repository, urlopen=urllib.request.urlopen)
+def dispatch_worker_after_enqueue(*, token, repository, urlopen=None)
 ⋮----
 """Dispatch the restricted same-repository worker after the task is queued.
 
@@ -22297,6 +22297,10 @@ def dispatch_worker_after_enqueue(*, token, repository, urlopen=urllib.request.u
     """
 ⋮----
 request = urllib.request.Request(
+# Never follow redirects when sending the GitHub Actions bearer token.
+# Keep injectable transport for the existing isolated canary checks.
+⋮----
+urlopen = urllib.request.build_opener(NoRedirect()).open
 ⋮----
 def validate_control(payload)
 ⋮----
@@ -35379,6 +35383,11 @@ gameplay_result = run_canary(gameplay_client, {
 ⋮----
 guard_client = FakeClient()
 guard_result = run_canary(guard_client, {
+⋮----
+# A bearer-authenticated GitHub dispatch must reject redirects,
+# even if an unexpected HTTP 3xx response points off-site.
+⋮----
+request = opener.return_value.open.call_args.args[0]
 ⋮----
 def test_wait_observes_real_terminal_success(self)
 ⋮----

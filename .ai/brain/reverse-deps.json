@@ -1672,6 +1672,7 @@
         "tests/test_production_os_live_diagnostics.py",
         "tests/test_production_os_result_contract.py",
         "tests/test_production_os_worker.py",
+        "tests/test_production_os_worker_canary.py",
         "tests/test_project_context.py",
         "tests/test_provider_429_cooldown.py",
         "tests/test_release.py",
@@ -1686,7 +1687,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 222,
+      "in_degree": 223,
       "out_degree": 18
     },
     "studio/cost_drift.py": {
@@ -7213,11 +7214,13 @@
     },
     "tests/test_production_os_worker_canary.py": {
       "dependencies": [
-        "studio/production_os_worker_canary.py"
+        "studio/core.py",
+        "studio/production_os_worker_canary.py",
+        "tests/test_studio.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 3
     },
     "tests/test_production_os_worker_cli.py": {
       "dependencies": [
@@ -7857,6 +7860,7 @@
         "tests/test_godot_runtime.py",
         "tests/test_memory_bridge.py",
         "tests/test_orchestrator.py",
+        "tests/test_production_os_worker_canary.py",
         "tests/test_provider_monthly_quota.py",
         "tests/test_provider_router.py",
         "tests/test_release_candidate_search.py",
@@ -7865,7 +7869,7 @@
         "tests/test_strict_task_claim_store.py",
         "tests/test_task_lease.py"
       ],
-      "in_degree": 110,
+      "in_degree": 111,
       "out_degree": 3
     },
     "tests/test_task_claim_store.py": {

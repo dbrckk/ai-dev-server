@@ -108,23 +108,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-18T19:54:06Z
+Generated: 2026-10-18T21:14:10Z
 
 ### Git
 - Branch: `main`
-- Head: `95f654372167`
-- Commit date: 2026-10-18T15:53:55-04:00
-- Commit: fix(publish): verify exact managed branch SHA before checkpoint (#351)
+- Head: `5358c574a41f`
+- Commit date: 2026-10-18T17:13:58-04:00
+- Commit: fix(security): refuse redirects on authenticated canary dispatch (#352)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/production_os_worker_canary.py`
+- `tests/test_production_os_worker_canary.py`
 - `studio/generic_repository.py`
 - `tests/test_repository_branch_identity.py`
 - `studio/generic_project.py`
 - `tests/test_generic_repository_pull_request.py`
-- `studio/production_os_worker_canary.py`
-- `tests/test_production_os_worker_canary.py`
-- `.github/workflows/production-os-worker-canary.yml`
 
 ### Project signals
 - No common build descriptor detected

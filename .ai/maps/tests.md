@@ -9127,6 +9127,11 @@ gameplay_result = run_canary(gameplay_client, {
 guard_client = FakeClient()
 guard_result = run_canary(guard_client, {
 ⋮----
+# A bearer-authenticated GitHub dispatch must reject redirects,
+# even if an unexpected HTTP 3xx response points off-site.
+⋮----
+request = opener.return_value.open.call_args.args[0]
+⋮----
 def test_wait_observes_real_terminal_success(self)
 ⋮----
 client = FakeClient(("queued", "running", "succeeded"))

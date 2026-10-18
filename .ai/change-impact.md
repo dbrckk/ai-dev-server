@@ -1,18 +1,18 @@
 # Change impact
 
-Base: 6cc47e3a921a03873f2bc154568536d6f2ae4e9b
-Head: 95f6543721674799011cf79ed44062f9c30921eb
+Base: 52d9895961f22e12399a7edab4dd4960381b3038
+Head: 5358c574a41ffb36710929923120a373b275b0c0
 
 ## Changed files
-- M studio/generic_repository.py
-- M tests/test_repository_branch_identity.py
+- M studio/production_os_worker_canary.py
+- M tests/test_production_os_worker_canary.py
 
 ## Affected areas
 - studio
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_production_os_worker_canary.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

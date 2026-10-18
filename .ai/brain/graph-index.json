@@ -201,6 +201,7 @@
         "tests/test_engine_entry.py",
         "tests/test_evolution_rollback.py",
         "tests/test_generic_model_capacity.py",
+        "tests/test_generic_repository_pull_request.py",
         "tests/test_generic_worker_canary_resume.py",
         "tests/test_github_full_gate_cache_store.py",
         "tests/test_goal_loop.py",
@@ -250,7 +251,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 221,
+      "in_degree": 222,
       "out_degree": 18,
       "path": "studio/core.py"
     },
@@ -313,7 +314,6 @@
         "studio/generic_capability_synthesis.py",
         "studio/generic_model.py",
         "studio/generic_project.py",
-        "studio/generic_repository.py",
         "studio/generic_verify.py",
         "studio/github_artifact_cas_audit_store.py",
         "studio/github_artifact_cas_stats_store.py",
@@ -333,6 +333,7 @@
         "studio/github_verification_cost_store.py",
         "studio/global_admission.py",
         "studio/goal_loop.py",
+        "studio/godot_android_export.py",
         "studio/godot_model.py",
         "studio/godot_preview.py",
         "studio/godot_visual_qa.py",
@@ -1619,26 +1620,6 @@
     },
     {
       "dependencies": [
-        "studio/core.py",
-        "studio/generic_policy.py",
-        "tests/test_journeys.py",
-        "tests/test_studio.py"
-      ],
-      "dependents": [
-        "studio/generic_project.py",
-        "studio/generic_smoke.py",
-        "studio/production_os_review_canary.py",
-        "tests/test_generic_published_checkpoint.py",
-        "tests/test_generic_repository_pull_request.py",
-        "tests/test_generic_worker_canary_resume.py",
-        "tests/test_repository_branch_identity.py"
-      ],
-      "in_degree": 7,
-      "out_degree": 4,
-      "path": "studio/generic_repository.py"
-    },
-    {
-      "dependencies": [
         "studio/capability_candidate_validator.py",
         "studio/capability_synthesis.py",
         "studio/core.py",
@@ -1752,6 +1733,25 @@
       "in_degree": 8,
       "out_degree": 2,
       "path": "studio/telemetry.py"
+    },
+    {
+      "dependencies": [
+        "studio/core.py",
+        "studio/generic_policy.py",
+        "tests/test_journeys.py"
+      ],
+      "dependents": [
+        "studio/generic_project.py",
+        "studio/generic_smoke.py",
+        "studio/production_os_review_canary.py",
+        "tests/test_generic_published_checkpoint.py",
+        "tests/test_generic_repository_pull_request.py",
+        "tests/test_generic_worker_canary_resume.py",
+        "tests/test_repository_branch_identity.py"
+      ],
+      "in_degree": 7,
+      "out_degree": 3,
+      "path": "studio/generic_repository.py"
     },
     {
       "dependencies": [
@@ -2094,7 +2094,7 @@
       "path": "studio/evolution_candidate.py"
     }
   ],
-  "edge_count": 1934,
+  "edge_count": 1935,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 636,
   "schema_version": 1

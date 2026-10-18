@@ -1,18 +1,18 @@
 # Change impact
 
-Base: ccc376c2cb82ce4ec0e97006fe7b05ee0ef3a3bb
-Head: e655a06081cd54b5c46f16bff72db54ef96e9bcc
+Base: bf70eda58523359b18e7351d88cec6f8efa05ae7
+Head: ea458633410b9dfb53a915c1ebc0d037d20336d0
 
 ## Changed files
-- M studio/production_os_worker_canary.py
-- M tests/test_production_os_worker_canary.py
+- M studio/generic_repository.py
+- M tests/test_generic_repository_pull_request.py
 
 ## Affected areas
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_production_os_worker_canary.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

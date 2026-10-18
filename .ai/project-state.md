@@ -108,23 +108,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-18T15:59:47Z
+Generated: 2026-10-18T16:21:49Z
 
 ### Git
 - Branch: `main`
-- Head: `e655a06081cd`
-- Commit date: 2026-10-18T11:59:37-04:00
-- Commit: fix(canary): distinguish accepted launches from completed workflows (#348)
+- Head: `ea458633410b`
+- Commit date: 2026-10-18T12:21:39-04:00
+- Commit: fix(review): reject unverified direct GitHub draft PR receipts (#349)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/generic_repository.py`
+- `tests/test_generic_repository_pull_request.py`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
 - `.github/workflows/production-os-worker-canary.yml`
 - `studio/production_os_review_canary.py`
 - `tests/test_generic_worker_canary_resume.py`
-- `studio/generic_repository.py`
-- `tests/test_generic_repository_pull_request.py`
 
 ### Project signals
 - No common build descriptor detected

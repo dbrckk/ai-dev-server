@@ -5,11 +5,11 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "dispatch_worker_after_enqueue": {
+    "GenericRepository": {
       "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 20,
-        "end": 54
+        "file": "studio/generic_repository.py",
+        "start": 24,
+        "end": 284
       },
       "symbol_dependencies": [
         {
@@ -35,171 +35,13 @@
             }
           ],
           "relation": "class_like"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "validate_control": {
-      "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 57,
-        "end": 76
-      },
-      "symbol_dependencies": [
+        },
         {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "canary_instruction": {
-      "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 79,
-        "end": 122
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "create",
+          "symbol": "NoRedirect",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 950,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "launch_canary": {
-      "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 125,
-        "end": 164
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "canary_instruction",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 79,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "launch",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "submit",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 34,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_control",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 57,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "wait_for_workflow": {
-      "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 167,
-        "end": 191
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "wait_for_readiness": {
-      "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 195,
-        "end": 223
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "API",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 343,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
+              "line": 339,
               "kind": "class",
               "language": "python"
             }
@@ -219,57 +61,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "get",
+          "symbol": "__init__",
           "definitions": [
             {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "launch",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "run_canary": {
-      "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 226,
-        "end": 256
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "launch_canary",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 125,
+              "file": "studio/generic_repository.py",
+              "line": 25,
               "kind": "function",
               "language": "python"
             }
@@ -277,45 +73,47 @@
           "relation": "same_file"
         },
         {
-          "symbol": "wait_for_workflow",
+          "symbol": "_find_open_pull_request",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 167,
+              "file": "studio/generic_repository.py",
+              "line": 88,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "main": {
-      "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 259,
-        "end": 379
-      },
-      "symbol_dependencies": [
+        },
         {
-          "symbol": "OperatorClient",
+          "symbol": "_tree",
           "definitions": [
             {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 21,
-              "kind": "class",
+              "file": "studio/generic_repository.py",
+              "line": 29,
+              "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
         },
         {
-          "symbol": "canonical",
+          "symbol": "await_trusted_review",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 132,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "call",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 38,
+              "line": 399,
               "kind": "function",
               "language": "python"
             }
@@ -323,23 +121,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "dispatch_worker_after_enqueue",
+          "symbol": "create",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 20,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 22,
+              "file": "studio/core.py",
+              "line": 950,
               "kind": "function",
               "language": "python"
             }
@@ -347,11 +133,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "launch",
+          "symbol": "editable",
           "definitions": [
             {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 28,
+              "file": "studio/generic_policy.py",
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
@@ -359,11 +145,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "run_canary",
+          "symbol": "ensure_pull_request",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 226,
+              "file": "studio/generic_repository.py",
+              "line": 158,
               "kind": "function",
               "language": "python"
             }
@@ -371,33 +157,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "wait_for_readiness",
+          "symbol": "publish",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 195,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 7
-    },
-    "FakeClient": {
-      "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 13,
-        "end": 33
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 30,
+              "file": "studio/generic_repository.py",
+              "line": 254,
               "kind": "function",
               "language": "python"
             }
@@ -405,84 +169,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "submit",
+          "symbol": "request_trusted_review_handoff",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 20,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "__init__": {
-      "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 14,
-        "end": 18
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "submit": {
-      "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 20,
-        "end": 28
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "get": {
-      "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 30,
-        "end": 33
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "WorkerCanaryTests": {
-      "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 36,
-        "end": 172
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "FakeClient",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 13,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "canary_instruction",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 79,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "clock",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 140,
+              "file": "studio/generic_repository.py",
+              "line": 205,
               "kind": "function",
               "language": "python"
             }
@@ -490,154 +181,43 @@
           "relation": "same_file"
         },
         {
-          "symbol": "dispatch_worker_after_enqueue",
+          "symbol": "restore",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 20,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_canary",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 226,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "sleep",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 142,
+              "file": "studio/generic_repository.py",
+              "line": 35,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "test_canary_instruction_is_bounded_and_sequence_specific",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 55,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_control_is_strict",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 37,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_launch_is_idempotent_and_uses_dashboard_api",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 81,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 151,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_wait_is_bounded",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 164,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_wait_observes_real_terminal_success",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 137,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "validate_control",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 57,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_workflow",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 167,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
       "dependency_count": 14
     },
-    "test_control_is_strict": {
+    "__init__": {
       "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 37,
-        "end": 53
+        "file": "studio/generic_repository.py",
+        "start": 25,
+        "end": 27
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_tree": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 29,
+        "end": 33
       },
       "symbol_dependencies": [
         {
-          "symbol": "validate_control",
+          "symbol": "StudioError",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 57,
-              "kind": "function",
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
               "language": "python"
             }
           ],
@@ -646,65 +226,43 @@
       ],
       "dependency_count": 1
     },
-    "test_canary_instruction_is_bounded_and_sequence_specific": {
+    "restore": {
       "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 55,
-        "end": 79
+        "file": "studio/generic_repository.py",
+        "start": 35,
+        "end": 86
       },
       "symbol_dependencies": [
         {
-          "symbol": "canary_instruction",
+          "symbol": "StudioError",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 79,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_control",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 57,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_launch_is_idempotent_and_uses_dashboard_api": {
-      "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 81,
-        "end": 135
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "FakeClient",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 13,
+              "file": "studio/core.py",
+              "line": 35,
               "kind": "class",
               "language": "python"
             }
           ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_tree",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
           "relation": "same_file"
         },
         {
-          "symbol": "dispatch_worker_after_enqueue",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 20,
+              "file": "studio/core.py",
+              "line": 399,
               "kind": "function",
               "language": "python"
             }
@@ -712,69 +270,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "run_canary",
+          "symbol": "editable",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 226,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_wait_observes_real_terminal_success": {
-      "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 137,
-        "end": 149
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "FakeClient",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 13,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "clock",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 140,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "sleep",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 142,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "wait_for_workflow",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 167,
+              "file": "studio/generic_policy.py",
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
@@ -784,43 +284,135 @@
       ],
       "dependency_count": 4
     },
-    "clock": {
+    "_find_open_pull_request": {
       "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 140,
-        "end": 260
+        "file": "studio/generic_repository.py",
+        "start": 88,
+        "end": 130
       },
       "symbol_dependencies": [
         {
-          "symbol": "FakeClient",
+          "symbol": "StudioError",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 13,
+              "file": "studio/core.py",
+              "line": 35,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
-        },
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "await_trusted_review": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 132,
+        "end": 156
+      },
+      "symbol_dependencies": [
         {
-          "symbol": "run_canary",
+          "symbol": "GitHub",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 226,
-              "kind": "function",
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "sleep",
+          "symbol": "_find_open_pull_request",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 142,
+              "file": "studio/generic_repository.py",
+              "line": 88,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "ensure_pull_request": {
+      "source": {
+        "file": "studio/generic_repository.py",
+        "start": 158,
+        "end": 203
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_find_open_pull_request",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 88,
               "kind": "function",
               "language": "python"
             }
@@ -828,47 +420,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_canary_workflow_verifies_terminal_worker_completion",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 179,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 151,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_wait_is_bounded",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 164,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "wait_for_workflow",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 167,
+              "file": "studio/core.py",
+              "line": 399,
               "kind": "function",
               "language": "python"
             }
@@ -876,45 +432,69 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 7
+      "dependency_count": 4
     },
-    "sleep": {
+    "request_trusted_review_handoff": {
       "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 142,
-        "end": 262
+        "file": "studio/generic_repository.py",
+        "start": 205,
+        "end": 252
       },
       "symbol_dependencies": [
         {
-          "symbol": "FakeClient",
+          "symbol": "GitHub",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 13,
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "class_like"
         },
         {
-          "symbol": "clock",
+          "symbol": "NoRedirect",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 140,
-              "kind": "function",
+              "file": "studio/core.py",
+              "line": 339,
+              "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "run_canary",
+          "symbol": "StudioError",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 226,
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "create",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 950,
               "kind": "function",
               "language": "python"
             }
@@ -922,93 +502,57 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "test_canary_workflow_verifies_terminal_worker_completion",
+          "symbol": "publish",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 179,
+              "file": "studio/generic_repository.py",
+              "line": 254,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 151,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_wait_is_bounded",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 164,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "wait_for_workflow",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 167,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
-      "dependency_count": 7
+      "dependency_count": 5
     },
-    "test_terminal_failure_returns_without_retrying_mutation": {
+    "publish": {
       "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 151,
-        "end": 162
+        "file": "studio/generic_repository.py",
+        "start": 254,
+        "end": 284
       },
       "symbol_dependencies": [
         {
-          "symbol": "FakeClient",
+          "symbol": "StudioError",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 13,
+              "file": "studio/core.py",
+              "line": 35,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "clock",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 140,
+              "file": "studio/core.py",
+              "line": 399,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "run_canary",
+          "symbol": "editable",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 226,
+              "file": "studio/generic_policy.py",
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
@@ -1018,60 +562,421 @@
       ],
       "dependency_count": 3
     },
-    "test_wait_is_bounded": {
+    "FakeGitHub": {
       "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 164,
-        "end": 172
+        "file": "tests/test_generic_repository_pull_request.py",
+        "start": 11,
+        "end": 38
       },
       "symbol_dependencies": [
         {
-          "symbol": "FakeClient",
+          "symbol": "__init__",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 13,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "clock",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 140,
+              "file": "studio/core.py",
+              "line": 329,
               "kind": "function",
               "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "wait_for_workflow",
-          "definitions": [
+            },
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 167,
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 434,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 923,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/generic_repository.py",
+              "line": 25,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 17,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
       "dependency_count": 3
     },
-    "test_canary_workflow_verifies_terminal_worker_completion": {
+    "get": {
       "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 179,
-        "end": 195
+        "file": "tests/test_generic_repository_pull_request.py",
+        "start": 17,
+        "end": 23
       },
       "symbol_dependencies": [],
       "dependency_count": 0
+    },
+    "call": {
+      "source": {
+        "file": "tests/test_generic_repository_pull_request.py",
+        "start": 25,
+        "end": 38
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_ensure_pull_request_creates_one_for_managed_branch": {
+      "source": {
+        "file": "tests/test_generic_repository_pull_request.py",
+        "start": 41,
+        "end": 100
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeGitHub",
+          "definitions": [
+            {
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "GenericRepository",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ensure_pull_request",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 158,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "test_ensure_pull_request_reuses_existing_exact_branch_pr": {
+      "source": {
+        "file": "tests/test_generic_repository_pull_request.py",
+        "start": 103,
+        "end": 126
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeGitHub",
+          "definitions": [
+            {
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "GenericRepository",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ensure_pull_request",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 158,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_ensure_pull_request_ignores_other_studio_branch": {
+      "source": {
+        "file": "tests/test_generic_repository_pull_request.py",
+        "start": 129,
+        "end": 279
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeGitHub",
+          "definitions": [
+            {
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "GenericRepository",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_find_open_pull_request",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 88,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "await_trusted_review",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 132,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ensure_pull_request",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 158,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "finish_target_actions",
+          "definitions": [
+            {
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 203,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "request_trusted_review_handoff",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "finish_target_actions": {
+      "source": {
+        "file": "tests/test_generic_repository_pull_request.py",
+        "start": 203,
+        "end": 323
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeGitHub",
+          "definitions": [
+            {
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 11,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "GenericRepository",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 24,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "await_trusted_review",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 132,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "tests/test_generic_repository_pull_request.py",
+              "line": 25,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "request_trusted_review_handoff",
+          "definitions": [
+            {
+              "file": "studio/generic_repository.py",
+              "line": 205,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
     }
   }
 }

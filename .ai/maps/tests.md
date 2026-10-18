@@ -5493,6 +5493,13 @@ result = repository.ensure_pull_request(
 ⋮----
 posts = [
 ⋮----
+# A POST receipt does not prove delivery unless GitHub attests the exact
+# branch, target, draft state and numeric URL. Stay fail-closed.
+valid = {
+invalid_receipts = [
+⋮----
+candidate = FakeGitHub()
+⋮----
 def test_ensure_pull_request_reuses_existing_exact_branch_pr()
 ⋮----
 github = FakeGitHub([

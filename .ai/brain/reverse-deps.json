@@ -1636,6 +1636,7 @@
         "tests/test_engine_entry.py",
         "tests/test_evolution_rollback.py",
         "tests/test_generic_model_capacity.py",
+        "tests/test_generic_repository_pull_request.py",
         "tests/test_generic_worker_canary_resume.py",
         "tests/test_github_full_gate_cache_store.py",
         "tests/test_goal_loop.py",
@@ -1685,7 +1686,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 221,
+      "in_degree": 222,
       "out_degree": 18
     },
     "studio/cost_drift.py": {
@@ -2417,8 +2418,7 @@
       "dependencies": [
         "studio/core.py",
         "studio/generic_policy.py",
-        "tests/test_journeys.py",
-        "tests/test_studio.py"
+        "tests/test_journeys.py"
       ],
       "dependents": [
         "studio/generic_project.py",
@@ -2430,7 +2430,7 @@
         "tests/test_repository_branch_identity.py"
       ],
       "in_degree": 7,
-      "out_degree": 4
+      "out_degree": 3
     },
     "studio/generic_sandbox.py": {
       "dependencies": [
@@ -2833,7 +2833,8 @@
     "studio/godot_android_export.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/godot_runtime.py"
+        "studio/godot_runtime.py",
+        "tests/test_studio.py"
       ],
       "dependents": [
         "studio/godot_android_stage.py",
@@ -2843,7 +2844,7 @@
         "tests/test_godot_android_export.py"
       ],
       "in_degree": 5,
-      "out_degree": 2
+      "out_degree": 3
     },
     "studio/godot_android_stage.py": {
       "dependencies": [
@@ -6288,11 +6289,12 @@
     },
     "tests/test_generic_repository_pull_request.py": {
       "dependencies": [
+        "studio/core.py",
         "studio/generic_repository.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 1
+      "out_degree": 2
     },
     "tests/test_generic_structural_verify.py": {
       "dependencies": [
@@ -7804,7 +7806,6 @@
         "studio/generic_capability_synthesis.py",
         "studio/generic_model.py",
         "studio/generic_project.py",
-        "studio/generic_repository.py",
         "studio/generic_verify.py",
         "studio/github_artifact_cas_audit_store.py",
         "studio/github_artifact_cas_stats_store.py",
@@ -7824,6 +7825,7 @@
         "studio/github_verification_cost_store.py",
         "studio/global_admission.py",
         "studio/goal_loop.py",
+        "studio/godot_android_export.py",
         "studio/godot_model.py",
         "studio/godot_preview.py",
         "studio/godot_visual_qa.py",

@@ -15528,6 +15528,17 @@ created = self.github.call(
 ⋮----
 # Autonomous code is never ready for unreviewed merging.
 ⋮----
+# A successful POST alone is not a verified review destination.
+# Match the exact GitHub PR identity, branch and draft state before
+# allowing downstream workflow status to count this as delivered.
+pr_number = created.get("number") if isinstance(created, dict) else None
+pr_head = created.get("head") if isinstance(created, dict) else None
+pr_base = created.get("base") if isinstance(created, dict) else None
+pr_head = pr_head if isinstance(pr_head, dict) else {}
+pr_base = pr_base if isinstance(pr_base, dict) else {}
+head_repo = pr_head.get("repo") if isinstance(pr_head.get("repo"), dict) else {}
+base_repo = pr_base.get("repo") if isinstance(pr_base.get("repo"), dict) else {}
+⋮----
 def request_trusted_review_handoff(self, commit_sha: str) -> dict
 ⋮----
 """Ask an explicitly opted-in target to create its own draft PR.
@@ -31723,6 +31734,13 @@ repository = GenericRepository(
 result = repository.ensure_pull_request(
 ⋮----
 posts = [
+⋮----
+# A POST receipt does not prove delivery unless GitHub attests the exact
+# branch, target, draft state and numeric URL. Stay fail-closed.
+valid = {
+invalid_receipts = [
+⋮----
+candidate = FakeGitHub()
 ⋮----
 def test_ensure_pull_request_reuses_existing_exact_branch_pr()
 ⋮----

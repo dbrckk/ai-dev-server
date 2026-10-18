@@ -1,163 +1,262 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "c3aabeb348be64664c7227edf39a2699cff86c58",
-  "head": "e655a06081cd54b5c46f16bff72db54ef96e9bcc",
+  "base": "e655a06081cd54b5c46f16bff72db54ef96e9bcc",
+  "head": "ea458633410b9dfb53a915c1ebc0d037d20336d0",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "studio/production_os_worker_canary.py",
+      "path": "studio/generic_repository.py",
       "status": "M"
     },
     {
-      "path": "tests/test_production_os_worker_canary.py",
+      "path": "tests/test_generic_repository_pull_request.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "studio/production_os_worker_canary.py",
-    "tests/test_production_os_worker_canary.py"
+    "studio/generic_repository.py",
+    "tests/test_generic_repository_pull_request.py"
   ],
   "impacted_files": [
-    "studio/production_os_worker_canary.py",
-    "tests/test_production_os_worker_canary.py"
+    "studio/generic_project.py",
+    "studio/generic_repository.py",
+    "studio/production_os_review_canary.py",
+    "tests/test_generic_repository_pull_request.py",
+    "tests/test_repository_branch_identity.py"
   ],
   "impacted_symbols": [
     {
-      "name": "dispatch_worker_after_enqueue",
+      "name": "_snapshot",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 20
+      "file": "studio/generic_project.py",
+      "line": 128
     },
     {
-      "name": "validate_control",
+      "name": "_apply",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 57
-    },
-    {
-      "name": "canary_instruction",
-      "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 79
-    },
-    {
-      "name": "launch_canary",
-      "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 125
-    },
-    {
-      "name": "wait_for_workflow",
-      "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 167
-    },
-    {
-      "name": "wait_for_readiness",
-      "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
+      "file": "studio/generic_project.py",
       "line": 195
     },
     {
-      "name": "run_canary",
+      "name": "_prepare_architecture",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 226
+      "file": "studio/generic_project.py",
+      "line": 218
     },
     {
-      "name": "main",
+      "name": "_record_architecture",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 259
+      "file": "studio/generic_project.py",
+      "line": 251
     },
     {
-      "name": "FakeClient",
+      "name": "_browser_validation_contract",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 270
+    },
+    {
+      "name": "_valid_browser_test_url",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 278
+    },
+    {
+      "name": "_valid_browser_screenshot",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 292
+    },
+    {
+      "name": "_run_browser_validation",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 325
+    },
+    {
+      "name": "_mobile_validation_contract",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 483
+    },
+    {
+      "name": "_verify_android_emulator_evidence",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 491
+    },
+    {
+      "name": "_run_mobile_validation",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 559
+    },
+    {
+      "name": "_existing_worker_canary_verification",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 730
+    },
+    {
+      "name": "_save_published_checkpoint",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 775
+    },
+    {
+      "name": "run_project",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 789
+    },
+    {
+      "name": "evaluate_model_candidate",
+      "kind": "function",
+      "file": "studio/generic_project.py",
+      "line": 1418
+    },
+    {
+      "name": "GenericRepository",
       "kind": "class",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 13
+      "file": "studio/generic_repository.py",
+      "line": 24
     },
     {
       "name": "__init__",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 14
+      "file": "studio/generic_repository.py",
+      "line": 25
     },
     {
-      "name": "submit",
+      "name": "_tree",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 20
+      "file": "studio/generic_repository.py",
+      "line": 29
+    },
+    {
+      "name": "restore",
+      "kind": "function",
+      "file": "studio/generic_repository.py",
+      "line": 35
+    },
+    {
+      "name": "_find_open_pull_request",
+      "kind": "function",
+      "file": "studio/generic_repository.py",
+      "line": 88
+    },
+    {
+      "name": "await_trusted_review",
+      "kind": "function",
+      "file": "studio/generic_repository.py",
+      "line": 132
+    },
+    {
+      "name": "ensure_pull_request",
+      "kind": "function",
+      "file": "studio/generic_repository.py",
+      "line": 158
+    },
+    {
+      "name": "request_trusted_review_handoff",
+      "kind": "function",
+      "file": "studio/generic_repository.py",
+      "line": 205
+    },
+    {
+      "name": "publish",
+      "kind": "function",
+      "file": "studio/generic_repository.py",
+      "line": 254
+    },
+    {
+      "name": "contract",
+      "kind": "function",
+      "file": "studio/production_os_review_canary.py",
+      "line": 21
+    },
+    {
+      "name": "run",
+      "kind": "function",
+      "file": "studio/production_os_review_canary.py",
+      "line": 53
+    },
+    {
+      "name": "FakeGitHub",
+      "kind": "class",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 11
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 12
     },
     {
       "name": "get",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 30
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 17
     },
     {
-      "name": "WorkerCanaryTests",
+      "name": "call",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 25
+    },
+    {
+      "name": "test_ensure_pull_request_creates_one_for_managed_branch",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 41
+    },
+    {
+      "name": "test_ensure_pull_request_reuses_existing_exact_branch_pr",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 103
+    },
+    {
+      "name": "test_ensure_pull_request_ignores_other_studio_branch",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 129
+    },
+    {
+      "name": "finish_target_actions",
+      "kind": "function",
+      "file": "tests/test_generic_repository_pull_request.py",
+      "line": 203
+    },
+    {
+      "name": "RepositoryBranchIdentityTests",
       "kind": "class",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 36
+      "file": "tests/test_repository_branch_identity.py",
+      "line": 21
     },
     {
-      "name": "test_control_is_strict",
+      "name": "test_request_check_accepts_safe_repository_branch_identity",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 37
+      "file": "tests/test_repository_branch_identity.py",
+      "line": 22
     },
     {
-      "name": "test_canary_instruction_is_bounded_and_sequence_specific",
+      "name": "test_request_check_rejects_unsafe_repository_branch_identity",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 55
+      "file": "tests/test_repository_branch_identity.py",
+      "line": 34
     },
     {
-      "name": "test_launch_is_idempotent_and_uses_dashboard_api",
+      "name": "test_generic_repository_branch_is_independent_from_execution_request_id",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 81
-    },
-    {
-      "name": "test_wait_observes_real_terminal_success",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 137
-    },
-    {
-      "name": "clock",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 140
-    },
-    {
-      "name": "sleep",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 142
-    },
-    {
-      "name": "test_terminal_failure_returns_without_retrying_mutation",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 151
-    },
-    {
-      "name": "test_wait_is_bounded",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 164
-    },
-    {
-      "name": "test_canary_workflow_verifies_terminal_worker_completion",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 179
+      "file": "tests/test_repository_branch_identity.py",
+      "line": 44
     }
   ],
   "selected_tests": [
-    "tests/test_production_os_worker.py",
-    "tests/test_production_os_worker_canary.py"
+    "tests/test_generic_repository_pull_request.py",
+    "tests/test_repository_branch_identity.py"
   ]
 }

@@ -6427,6 +6427,9 @@ selected_model = ''
 selected_provider = None
 selected_provider_spec = None
 ⋮----
+# Each actual provider attempt consumes one unit of max_calls;
+# failovers must not silently multiply remote free-model calls.
+⋮----
 selected_model = provider.model_for(role, bool(screenshots))
 # Reuse the primary client created at construction time. Besides
 # avoiding needless client churn, this keeps dependency injection
@@ -12210,6 +12213,9 @@ elapsed = 0.0
 last_error = None
 primary_provider = self.providers[0] if self.providers else None
 compact_source = 'bounded_exact_match_source_excerpts' in context
+⋮----
+# Count every provider attempted, including failed free-tier
+# failovers, against the global model call ceiling.
 ⋮----
 selected_model = provider.model_for(role, False)
 api = self.api if primary_provider is not None and provider == primary_provider else core.API(provider.base, provider.key)

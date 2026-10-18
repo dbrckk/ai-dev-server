@@ -106,27 +106,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-18T08:40:16Z
+Generated: 2026-10-18T09:32:32Z
 
 ### Git
 - Branch: `main`
-- Head: `295a3c9e6736`
-- Commit date: 2026-10-18T04:39:55-04:00
-- Commit: fix(godot): quarantine rate-limited free providers immediately (#339)
+- Head: `cb8fd494c2ef`
+- Commit date: 2026-10-18T05:32:22-04:00
+- Commit: fix(core): count provider failovers against Flutter model call ceiling (#341)
 - Tracked files: 865
 
 ### Recently changed files
-- `studio/godot_model.py`
+- `studio/core.py`
 - `tests/test_provider_429_cooldown.py`
-- `studio/native_model_usage.py`
+- `studio/godot_model.py`
 - `tests/test_godot_model.py`
+- `studio/native_model_usage.py`
 - `studio/capacity_budget.py`
 - `tests/test_capacity_budget.py`
-- `control/production-os-diagnostics-kick.json`
-- `.github/workflows/production-os-live-diagnostics.yml`
-- `docs/PRODUCTION_OS_WORKER.md`
-- `studio/production_os_live_diagnostics.py`
-- `tests/test_production_os_live_diagnostics.py`
 
 ### Project signals
 - No common build descriptor detected

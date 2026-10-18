@@ -6463,6 +6463,11 @@ def test_structured_godot_call_falls_back_to_secondary_provider(self)
 subject = model([StudioError('API unavailable or timed out')])
 fallback_api = FakeAPI([completion(product_value())])
 ⋮----
+self.assertEqual(subject.calls, 2)  # failed primary + successful fallback
+⋮----
+# A single free call remains: no second provider may be contacted.
+subject = model([StudioError('API unavailable or timed out')], limit=1)
+⋮----
 # A successful HTTP call with malformed JSON is not successful
 # inference. The bounded repair tries an alternate provider instead
 # of requesting the same malformed completion twice.
@@ -9755,6 +9760,14 @@ model = Model(limit=4)
 result = model._ask("product", "Return JSON", ())
 ⋮----
 before = _ProviderAPI.calls.count("https://model.invalid/bad")
+⋮----
+self.assertEqual(model.calls, 3)  # failed primary + two fallback calls
+⋮----
+# With max_calls=1, no second provider request is authorized after 429.
+⋮----
+path = Path(td) / "strict-budget-health.json"
+⋮----
+model = Model(limit=1)
 ⋮----
 # Godot uses its own provider adapter. It must also quarantine a
 # rate-limited model immediately and fall back without another 429.

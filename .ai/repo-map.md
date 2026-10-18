@@ -12146,6 +12146,9 @@ selected_model = ''
 selected_provider = None
 selected_provider_spec = None
 ⋮----
+# Each actual provider attempt consumes one unit of max_calls;
+# failovers must not silently multiply remote free-model calls.
+⋮----
 selected_model = provider.model_for(role, bool(screenshots))
 # Reuse the primary client created at construction time. Besides
 # avoiding needless client churn, this keeps dependency injection
@@ -17929,6 +17932,9 @@ elapsed = 0.0
 last_error = None
 primary_provider = self.providers[0] if self.providers else None
 compact_source = 'bounded_exact_match_source_excerpts' in context
+⋮----
+# Count every provider attempted, including failed free-tier
+# failovers, against the global model call ceiling.
 ⋮----
 selected_model = provider.model_for(role, False)
 api = self.api if primary_provider is not None and provider == primary_provider else core.API(provider.base, provider.key)
@@ -32659,6 +32665,11 @@ def test_structured_godot_call_falls_back_to_secondary_provider(self)
 subject = model([StudioError('API unavailable or timed out')])
 fallback_api = FakeAPI([completion(product_value())])
 ⋮----
+self.assertEqual(subject.calls, 2)  # failed primary + successful fallback
+⋮----
+# A single free call remains: no second provider may be contacted.
+subject = model([StudioError('API unavailable or timed out')], limit=1)
+⋮----
 # A successful HTTP call with malformed JSON is not successful
 # inference. The bounded repair tries an alternate provider instead
 # of requesting the same malformed completion twice.
@@ -35951,6 +35962,14 @@ model = Model(limit=4)
 result = model._ask("product", "Return JSON", ())
 ⋮----
 before = _ProviderAPI.calls.count("https://model.invalid/bad")
+⋮----
+self.assertEqual(model.calls, 3)  # failed primary + two fallback calls
+⋮----
+# With max_calls=1, no second provider request is authorized after 429.
+⋮----
+path = Path(td) / "strict-budget-health.json"
+⋮----
+model = Model(limit=1)
 ⋮----
 # Godot uses its own provider adapter. It must also quarantine a
 # rate-limited model immediately and fall back without another 429.

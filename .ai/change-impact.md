@@ -1,10 +1,10 @@
 # Change impact
 
-Base: f9825d848f3bd0b28f448bbf51058a0fe0623fa2
-Head: 295a3c9e6736af7e7d1c776a70467e2c45e2d344
+Base: 54d874e4aae102595c916e68e1aadfc6e3ebc732
+Head: cb8fd494c2ef3548b554721643acc6f9de0f4c11
 
 ## Changed files
-- M studio/godot_model.py
+- M studio/core.py
 - M tests/test_provider_429_cooldown.py
 
 ## Affected areas
@@ -12,7 +12,7 @@ Head: 295a3c9e6736af7e7d1c776a70467e2c45e2d344
 - tests
 
 ## Related test candidates
-- tests/test_godot_model.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

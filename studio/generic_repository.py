@@ -289,8 +289,22 @@ class GenericRepository:
         commit=self.github.call("POST",self.github.repo+"/git/commits",{"message":message,"tree":tree["sha"],"parents":[base_sha]})
         refs=self.github.get("/git/matching-refs/heads/"+self.branch)
         exists=any(r.get("ref")=="refs/heads/"+self.branch for r in refs if isinstance(r,dict))
+        commit_sha = commit.get("sha") if isinstance(commit, dict) else None
+        if not isinstance(commit_sha, str) or not re.fullmatch(r"[a-f0-9]{40}", commit_sha):
+            raise StudioError("Generic publication commit receipt invalid")
         if exists:
-            self.github.call("PATCH",self.github.repo+"/git/refs/heads/"+self.branch,{"sha":commit["sha"],"force":False})
+            self.github.call("PATCH",self.github.repo+"/git/refs/heads/"+self.branch,{"sha":commit_sha,"force":False})
         else:
-            self.github.call("POST",self.github.repo+"/git/refs",{"ref":"refs/heads/"+self.branch,"sha":commit["sha"]})
-        return commit["sha"]
+            self.github.call("POST",self.github.repo+"/git/refs",{"ref":"refs/heads/"+self.branch,"sha":commit_sha})
+        # The mutation response alone cannot prove the managed branch moved.
+        # Fail closed before checkpoint completion, review handoff or success.
+        published_refs = self.github.get("/git/matching-refs/heads/" + self.branch)
+        if not isinstance(published_refs, list) or not any(
+            isinstance(ref, dict)
+            and ref.get("ref") == "refs/heads/" + self.branch
+            and isinstance(ref.get("object"), dict)
+            and ref["object"].get("sha") == commit_sha
+            for ref in published_refs
+        ):
+            raise StudioError("Generic publication branch SHA unverified")
+        return commit_sha

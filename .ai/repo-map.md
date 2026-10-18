@@ -15578,6 +15578,11 @@ tree=self.github.call("POST",self.github.repo+"/git/trees",{"base_tree":base_tre
 commit=self.github.call("POST",self.github.repo+"/git/commits",{"message":message,"tree":tree["sha"],"parents":[base_sha]})
 ⋮----
 exists=any(r.get("ref")=="refs/heads/"+self.branch for r in refs if isinstance(r,dict))
+commit_sha = commit.get("sha") if isinstance(commit, dict) else None
+⋮----
+# The mutation response alone cannot prove the managed branch moved.
+# Fail closed before checkpoint completion, review handoff or success.
+published_refs = self.github.get("/git/matching-refs/heads/" + self.branch)
 ````
 
 ## File: studio/generic_sandbox.py
@@ -37111,6 +37116,26 @@ def test_request_check_rejects_unsafe_repository_branch_identity(self)
 def test_generic_repository_branch_is_independent_from_execution_request_id(self)
 ⋮----
 repository = GenericRepository(
+⋮----
+# Extend the existing branch-identity contract: a successful ref
+# mutation cannot mark a checkpoint as published until GitHub reads
+# back the exact new commit from the managed branch.
+⋮----
+root = Path(temp_dir)
+⋮----
+tree_sha = "c" * 40
+github = Mock()
+⋮----
+current = {"sha": base_sha}
+⋮----
+def get(path)
+⋮----
+def call(method, path, payload)
+⋮----
+producer = GenericRepository(github, "owner/repo", "mp-abcdef123456")
+advance_branch = False
+⋮----
+advance_branch = True
 ````
 
 ## File: tests/test_repository_research_provider.py

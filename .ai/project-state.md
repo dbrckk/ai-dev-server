@@ -108,24 +108,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-18T17:20:52Z
+Generated: 2026-10-18T19:54:06Z
 
 ### Git
 - Branch: `main`
-- Head: `a0326e963102`
-- Commit date: 2026-10-18T13:20:37-04:00
-- Commit: fix(review): require exact published checkpoint SHA for generic PR delivery (#350)
+- Head: `95f654372167`
+- Commit date: 2026-10-18T15:53:55-04:00
+- Commit: fix(publish): verify exact managed branch SHA before checkpoint (#351)
 - Tracked files: 865
 
 ### Recently changed files
-- `studio/generic_project.py`
 - `studio/generic_repository.py`
+- `tests/test_repository_branch_identity.py`
+- `studio/generic_project.py`
 - `tests/test_generic_repository_pull_request.py`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
 - `.github/workflows/production-os-worker-canary.yml`
-- `studio/production_os_review_canary.py`
-- `tests/test_generic_worker_canary_resume.py`
 
 ### Project signals
 - No common build descriptor detected

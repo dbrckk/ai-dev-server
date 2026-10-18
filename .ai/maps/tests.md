@@ -10863,6 +10863,26 @@ def test_request_check_rejects_unsafe_repository_branch_identity(self)
 def test_generic_repository_branch_is_independent_from_execution_request_id(self)
 ⋮----
 repository = GenericRepository(
+⋮----
+# Extend the existing branch-identity contract: a successful ref
+# mutation cannot mark a checkpoint as published until GitHub reads
+# back the exact new commit from the managed branch.
+⋮----
+root = Path(temp_dir)
+⋮----
+tree_sha = "c" * 40
+github = Mock()
+⋮----
+current = {"sha": base_sha}
+⋮----
+def get(path)
+⋮----
+def call(method, path, payload)
+⋮----
+producer = GenericRepository(github, "owner/repo", "mp-abcdef123456")
+advance_branch = False
+⋮----
+advance_branch = True
 ```
 
 ## File: test_repository_research_provider.py

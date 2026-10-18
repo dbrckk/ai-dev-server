@@ -1,12 +1,11 @@
 # Change impact
 
-Base: a31311aef049d4040bcaa703af947a07c7e1a18a
-Head: a0326e96310216ed6e026758457e16014fa4fab4
+Base: 6cc47e3a921a03873f2bc154568536d6f2ae4e9b
+Head: 95f6543721674799011cf79ed44062f9c30921eb
 
 ## Changed files
-- M studio/generic_project.py
 - M studio/generic_repository.py
-- M tests/test_generic_repository_pull_request.py
+- M tests/test_repository_branch_identity.py
 
 ## Affected areas
 - studio

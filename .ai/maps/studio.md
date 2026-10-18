@@ -9859,6 +9859,11 @@ tree=self.github.call("POST",self.github.repo+"/git/trees",{"base_tree":base_tre
 commit=self.github.call("POST",self.github.repo+"/git/commits",{"message":message,"tree":tree["sha"],"parents":[base_sha]})
 ⋮----
 exists=any(r.get("ref")=="refs/heads/"+self.branch for r in refs if isinstance(r,dict))
+commit_sha = commit.get("sha") if isinstance(commit, dict) else None
+⋮----
+# The mutation response alone cannot prove the managed branch moved.
+# Fail closed before checkpoint completion, review handoff or success.
+published_refs = self.github.get("/git/matching-refs/heads/" + self.branch)
 ````
 
 ## File: generic_sandbox.py

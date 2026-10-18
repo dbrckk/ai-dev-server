@@ -350,7 +350,13 @@ class GodotModel(Model):
                 if metrics_path is not None:
                     record_provider_latency(metrics_path, provider.name, role, elapsed)
                 if health_path is not None:
-                    record_provider_failure(health_path, provider.name)
+                    # A confirmed provider HTTP 429 warrants immediate
+                    # cooldown; retain the normal threshold for other errors.
+                    record_provider_failure(
+                        health_path, provider.name,
+                        **({'threshold': 1} if isinstance(exc, core.APIError)
+                           and exc.status == 429 else {}),
+                    )
                 last_error = exc
                 continue
             elapsed = time.monotonic() - started

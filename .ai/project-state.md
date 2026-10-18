@@ -106,16 +106,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-18T10:00:23Z
+Generated: 2026-10-18T10:39:29Z
 
 ### Git
 - Branch: `main`
-- Head: `f20ff67ead21`
-- Commit date: 2026-10-18T06:00:13-04:00
-- Commit: feat(agents): adopt concise Karpathy-inspired surgical coding guidance (#342)
+- Head: `5fec1d415724`
+- Commit date: 2026-10-18T06:39:18-04:00
+- Commit: fix(generic): respect configured pytest verification (#343)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/generic_verify.py`
+- `tests/test_generic_toolchain.py`
 - `AGENTS.md`
 - `studio/core.py`
 - `studio/generic_project.py`
@@ -124,7 +126,6 @@ Generated: 2026-10-18T10:00:23Z
 - `tests/test_godot_model.py`
 - `tests/test_studio.py`
 - `tests/test_provider_429_cooldown.py`
-- `studio/native_model_usage.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -1,24 +1,18 @@
 # Change impact
 
-Base: 2d306b91db07002c10d81dddfbbfc9e900a29510
-Head: f20ff67ead219f87f28f440d9dbbe5a4dbd10491
+Base: 8fa6d12b33737a1c8e75c9d633553e576d8d52d8
+Head: 5fec1d415724e49eabcd196b7de1676dcc00499b
 
 ## Changed files
-- M AGENTS.md
-- M studio/core.py
-- M studio/generic_project.py
-- M studio/godot_model.py
-- M tests/test_adaptive_planning_runtime.py
-- M tests/test_godot_model.py
-- M tests/test_studio.py
+- M studio/generic_verify.py
+- M tests/test_generic_toolchain.py
 
 ## Affected areas
-- (root)
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_godot_model.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

@@ -10029,6 +10029,17 @@ data = json.loads(package.read_text())
 data = {}
 scripts = data.get("scripts") if isinstance(data, dict) else {}
 ⋮----
+pyproject = root / "pyproject.toml"
+⋮----
+# Never silently substitute unittest for an explicitly configured
+# pytest project: unittest discovery may report zero tests even when
+# the repository contains a large, healthy pytest suite.
+uses_pytest = (root / "pytest.ini").is_file()
+⋮----
+config = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+tool = config.get("tool") if isinstance(config, dict) else None
+uses_pytest = isinstance(tool, dict) and "pytest" in tool
+⋮----
 venv_pytest=root/".studio-venv/bin/pytest"
 venv_python=root/".studio-venv/bin/python"
 ⋮----

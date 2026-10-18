@@ -5578,6 +5578,13 @@ def test_detects_node_and_python(self)
 ⋮----
 root=Path(td); (root/"package.json").write_text("{}"); (root/"pyproject.toml").write_text("[project]\nname='x'\n")
 ⋮----
+# A real pytest-configured repository must not fall back to
+# unittest discovery (which may return zero tests).
+⋮----
+root = Path(td)
+⋮----
+venv = root/".studio-venv/bin/python"
+⋮----
 def test_npm_bootstrap_is_lockfile_bound_and_ignores_scripts(self)
 ⋮----
 root=Path(td); (root/"package.json").write_text("{}"); (root/"package-lock.json").write_text("{}")

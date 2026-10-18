@@ -15748,6 +15748,17 @@ data = json.loads(package.read_text())
 data = {}
 scripts = data.get("scripts") if isinstance(data, dict) else {}
 ⋮----
+pyproject = root / "pyproject.toml"
+⋮----
+# Never silently substitute unittest for an explicitly configured
+# pytest project: unittest discovery may report zero tests even when
+# the repository contains a large, healthy pytest suite.
+uses_pytest = (root / "pytest.ini").is_file()
+⋮----
+config = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+tool = config.get("tool") if isinstance(config, dict) else None
+uses_pytest = isinstance(tool, dict) and "pytest" in tool
+⋮----
 venv_pytest=root/".studio-venv/bin/pytest"
 venv_python=root/".studio-venv/bin/python"
 ⋮----
@@ -31779,6 +31790,13 @@ class GenericToolchainTests(unittest.TestCase)
 def test_detects_node_and_python(self)
 ⋮----
 root=Path(td); (root/"package.json").write_text("{}"); (root/"pyproject.toml").write_text("[project]\nname='x'\n")
+⋮----
+# A real pytest-configured repository must not fall back to
+# unittest discovery (which may return zero tests).
+⋮----
+root = Path(td)
+⋮----
+venv = root/".studio-venv/bin/python"
 ⋮----
 def test_npm_bootstrap_is_lockfile_bound_and_ignores_scripts(self)
 ⋮----

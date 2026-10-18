@@ -249,8 +249,10 @@ def run_canary(client, control, *, wait_seconds=0, poll_seconds=10.0,
         result["result"] = outcome
         result["succeeded"] = outcome.get("status") == "succeeded"
     else:
+        # An acknowledged submission is not terminal worker success.
+        # Preserve the distinction for status consumers and CI receipts.
         result["result"] = {"status": "launched"}
-        result["succeeded"] = True
+        result["succeeded"] = None
     return result
 
 
@@ -287,7 +289,10 @@ def main(argv=None):
         print(canonical({"status": "unavailable", "error_type": type(exc).__name__}))
         return 1
     print("Production-OS worker canary: " + canonical(result))
-    return 0 if result.get("succeeded") else 1
+    # A non-blocking CLI launch can exit successfully without claiming
+    # the workflow actually finished. Blocking mode still requires success.
+    launched_only = result.get("result", {}).get("status") == "launched"
+    return 0 if result.get("succeeded") is True or launched_only else 1
 
 
 if __name__ == "__main__":

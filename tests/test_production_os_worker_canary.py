@@ -85,7 +85,8 @@ class WorkerCanaryTests(unittest.TestCase):
             client, {"sequence": 4, "repository": "dbrckk/repo-standards"},
             dispatch=lambda: (dispatches.append(len(client.submissions)), "accepted")[1],
         )
-        self.assertTrue(result["succeeded"])
+        self.assertIsNone(result["succeeded"])
+        self.assertEqual(result["result"], {"status": "launched"})
         path, payload = client.submissions[0]
         self.assertEqual(path, "/v1/dashboard/launch")
         self.assertEqual(payload["repository"], "dbrckk/repo-standards")
@@ -101,6 +102,7 @@ class WorkerCanaryTests(unittest.TestCase):
             dispatch=lambda: (dispatches.append(len(fallback.submissions)), "accepted")[1],
         )
         self.assertEqual(fallback_result["actions_worker_wake"], "accepted")
+        self.assertIsNone(fallback_result["succeeded"])
         self.assertEqual(dispatches, [1])  # dispatch only after successful admission
         available = FakeClient(wake_status="not_needed")
         available_result = run_canary(
@@ -108,6 +110,7 @@ class WorkerCanaryTests(unittest.TestCase):
             dispatch=lambda: self.fail("persistent worker needs no dispatch"),
         )
         self.assertEqual(available_result["actions_worker_wake"], "not_needed")
+        self.assertIsNone(available_result["succeeded"])
         gameplay_client = FakeClient()
         gameplay_result = run_canary(gameplay_client, {
             "sequence": 32, "repository": "dbrckk/Jumpy",

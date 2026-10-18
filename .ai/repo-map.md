@@ -15526,6 +15526,8 @@ existing = self._find_open_pull_request()
 default = self.default_branch
 created = self.github.call(
 ⋮----
+# Autonomous code is never ready for unreviewed merging.
+⋮----
 def request_trusted_review_handoff(self, commit_sha: str) -> dict
 ⋮----
 """Ask an explicitly opted-in target to create its own draft PR.

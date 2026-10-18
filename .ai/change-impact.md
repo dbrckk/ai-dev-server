@@ -1,7 +1,7 @@
 # Change impact
 
-Base: af374705d7a5f6ecf95118b11858a21da7d8b263
-Head: bbd863fd5646081489f4183841129c42840e13db
+Base: d1bcf803605098c7636a55b230b52a333c570f86
+Head: bc046bf81977c8c53ec2a693ac194ca9e7416d0d
 
 ## Changed files
 - M studio/generic_repository.py

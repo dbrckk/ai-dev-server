@@ -106,13 +106,13 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-18T11:20:56Z
+Generated: 2026-10-18T12:26:50Z
 
 ### Git
 - Branch: `main`
-- Head: `bbd863fd5646`
-- Commit date: 2026-10-18T07:20:45-04:00
-- Commit: feat(review): enable trusted Ai-trading draft PR handoff (#344)
+- Head: `bc046bf81977`
+- Commit date: 2026-10-18T08:26:37-04:00
+- Commit: fix(review): make direct autonomous GitHub PRs draft by default (#345)
 - Tracked files: 865
 
 ### Recently changed files

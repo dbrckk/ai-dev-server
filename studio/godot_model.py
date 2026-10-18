@@ -31,7 +31,9 @@ GODOT_ROLE = {
         'Preserve working behavior, implement the requested scope completely, keep code deterministic where practical, '
         'and never add credentials or pretend external services exist. Implement every acceptance-journey key as the exact '
         'Node.name of one unique runtime node. Interactive journey nodes must use the matching Godot Control type; never fake '
-        'selectors only for tests. Runtime node names are part of the acceptance contract.'
+        'selectors only for tests. Runtime node names are part of the acceptance contract. '
+        'Ground edits in actual supplied source, not assumptions; prefer the smallest targeted fix and preserve unrelated '
+        'gameplay, comments and formatting. Do not invent verification evidence or speculative changes.'
     ),
     'tests': (
         'Senior Godot 4.7 QA engineer: add concrete GDScript tests under tests/. Test real project behavior and regressions; '

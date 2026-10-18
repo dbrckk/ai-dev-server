@@ -89,10 +89,19 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
         checkpoint_observer(dict(checkpoint))
 
     try:
-        pr = repo.ensure_pull_request(
+        repo.ensure_pull_request(
             title="Review Production-OS Jumpy delivery canary",
             body="Verified, exact-content checkpoint only. Review before merging.",
         )
+        # The PR creation response (or an old PR on the same branch) does
+        # not prove this specific checkpoint reached review. Confirm the
+        # exact published SHA independently before marking delivery complete.
+        confirmed = repo.await_trusted_review(sha)
+        pr = confirmed if confirmed is not None else {
+            "state": "unavailable",
+            "reason": "review_commit_unverified",
+            "head": repo.branch,
+        }
     except StudioError as exc:
         denied = any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
         handoff = repo.request_trusted_review_handoff(sha) if denied else None

@@ -122,6 +122,11 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
                     "number": 42, "state": "open",
                     "url": "https://github.com/dbrckk/Jumpy/pull/42",
                 }
+                instance.await_trusted_review.return_value = {
+                    "number": 42, "state": "open",
+                    "url": "https://github.com/dbrckk/Jumpy/pull/42",
+                    "handoff_confirmed": True,
+                }
                 result = run_review_canary(
                     req, out, work, checkpoint_observer=observed.append,
                 )
@@ -131,7 +136,21 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
                 self.assertEqual(result["status"], "complete")
                 self.assertEqual(result["report"]["checkpoint_commit"], published)
                 self.assertEqual(result["report"]["pull_request"]["number"], 42)
+                instance.await_trusted_review.assert_called_once_with(published)
                 self.assertEqual(result["report"]["rounds"][0]["changed_files"], [path])
+                # An old PR number/URL without this exact published commit
+                # must not finish the delivery canary.
+                instance.await_trusted_review.return_value = None
+                rejected = run_review_canary(
+                    req, Path(temp) / "unverified-out",
+                    Path(temp) / "unverified-work",
+                )
+                self.assertEqual(rejected["status"], "blocked")
+                self.assertEqual(
+                    rejected["report"]["pull_request"]["reason"],
+                    "review_commit_unverified",
+                )
+                self.assertFalse(rejected["report"]["completion"]["finished"])
         with tempfile.TemporaryDirectory() as temp:
             with patch("production_os_review_canary.GitHub"), patch(
                 "production_os_review_canary.GenericRepository"

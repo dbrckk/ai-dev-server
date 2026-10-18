@@ -106,7 +106,7 @@ class StudioTests(unittest.TestCase):
             self.assertFalse(list(Path(outside).iterdir()))
     def test_verdict_fail_closed(self):
         self.assertIn('Ground changes in supplied source', ROLES['implementation'])
-        self.assertIn('never weaken tests', ROLES['implementation'])
+        self.assertIn('Never weaken tests', ROLES['implementation'])
         for v in [{'passed': True, 'blockers': ['bad']}, {'passed': False, 'blockers': []}, {'passed': 'true', 'blockers': []}, {'passed': True}]:
             with self.assertRaises(StudioError):
                 verdict(v)

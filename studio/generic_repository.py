@@ -168,6 +168,8 @@ class GenericRepository:
                 "head":self.branch,
                 "base":default,
                 "body":str(body or "")[:12000],
+                # Autonomous code is never ready for unreviewed merging.
+                "draft":True,
             },
         )
         if not isinstance(created, dict) or created.get("number") is None:

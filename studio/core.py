@@ -489,7 +489,6 @@ class Model:
     def _ask(self, role, context, screenshots=()):
         if self.calls >= self.limit:
             raise StudioError('Model call budget exhausted; checkpoint retained')
-        self.calls += 1
         if len(context.encode()) > 500000:
             raise StudioError('Context exceeds configured safety limit')
         content = [{'type': 'text', 'text': context}]
@@ -710,6 +709,11 @@ class Model:
         selected_provider = None
         selected_provider_spec = None
         for provider_index, provider in enumerate(provider_candidates):
+            # Each actual provider attempt consumes one unit of max_calls;
+            # failovers must not silently multiply remote free-model calls.
+            if self.calls >= self.limit:
+                raise StudioError('Model call budget exhausted; checkpoint retained')
+            self.calls += 1
             selected_model = provider.model_for(role, bool(screenshots))
             # Reuse the primary client created at construction time. Besides
             # avoiding needless client churn, this keeps dependency injection

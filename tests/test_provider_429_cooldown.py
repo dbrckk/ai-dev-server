@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 import generic_model
 from godot_model import GodotModel
-from core import APIError, Model
+from core import APIError, Model, StudioError
 from provider_health import eligible, load as load_health
 from provider_router import ProviderSpec
 
@@ -107,6 +107,23 @@ class Provider429CooldownTests(unittest.TestCase):
                 before = _ProviderAPI.calls.count("https://model.invalid/bad")
                 self.assertEqual(model._ask("product", "Return JSON", ()), {"ok": True})
                 self.assertEqual(_ProviderAPI.calls.count("https://model.invalid/bad"), before)
+                self.assertEqual(model.calls, 3)  # failed primary + two fallback calls
+
+        # With max_calls=1, no second provider request is authorized after 429.
+        _ProviderAPI.calls = []
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "strict-budget-health.json"
+            with (
+                patch.dict(os.environ, {"STUDIO_PROVIDER_HEALTH_PATH": str(path)}, clear=True),
+                patch("provider_router.load_providers", return_value=_providers()),
+                patch("core.API", _ProviderAPI),
+            ):
+                model = Model(limit=1)
+                with self.assertRaisesRegex(StudioError, 'Model call budget exhausted'):
+                    model._ask("product", "Return JSON", ())
+                self.assertEqual(model.calls, 1)
+                self.assertEqual(_ProviderAPI.calls, ["https://model.invalid/bad"])
+                self.assertFalse(eligible(path, "rate-limited"))
 
         # Godot uses its own provider adapter. It must also quarantine a
         # rate-limited model immediately and fall back without another 429.

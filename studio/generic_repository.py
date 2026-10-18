@@ -155,10 +155,21 @@ class GenericRepository:
                 time.sleep(15)
         return None
 
-    def ensure_pull_request(self, *, title: str, body: str = "") -> dict:
-        existing = self._find_open_pull_request()
+    def ensure_pull_request(self, *, title: str, body: str = "", expected_sha: str | None = None) -> dict:
+        # A prior PR at the same branch is not proof that this checkpoint
+        # reached review. Pin both reuse and direct creation to its exact SHA.
+        if expected_sha is not None and (
+            not isinstance(expected_sha, str)
+            or not re.fullmatch(r"[a-f0-9]{40}", expected_sha)
+        ):
+            raise StudioError("Generic review commit SHA invalid")
+        existing = self._find_open_pull_request(expected_sha=expected_sha)
         if existing is not None:
             return existing
+        if expected_sha is not None and self._find_open_pull_request() is not None:
+            # GitHub allows only one open PR per same head/base. Do not
+            # create a duplicate or misreport a stale PR as this checkpoint.
+            raise StudioError("Generic review pull request head revision unverified")
         default = self.default_branch
         created = self.github.call(
             "POST",
@@ -188,6 +199,7 @@ class GenericRepository:
             or created.get("draft") is not True
             or created.get("state") != "open"
             or pr_head.get("ref") != self.branch
+            or (expected_sha is not None and pr_head.get("sha") != expected_sha)
             or pr_base.get("ref") != default
             or str(head_repo.get("full_name") or "").casefold() != self.repo.casefold()
             or str(base_repo.get("full_name") or "").casefold() != self.repo.casefold()

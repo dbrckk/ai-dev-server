@@ -2,6 +2,8 @@ import sys
 from pathlib import Path
 
 import unittest
+import tempfile
+from unittest.mock import Mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
@@ -52,6 +54,49 @@ class RepositoryBranchIdentityTests(unittest.TestCase):
             repository.branch,
             "studio/mp-abcdef123456",
         )
+
+        # Extend the existing branch-identity contract: a successful ref
+        # mutation cannot mark a checkpoint as published until GitHub reads
+        # back the exact new commit from the managed branch.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "README.md").write_text("Changed\\n", encoding="utf-8")
+            base_sha, commit_sha = "a" * 40, "b" * 40
+            tree_sha = "c" * 40
+            github = Mock()
+            github.repo = "/repos/owner/repo"
+            current = {"sha": base_sha}
+
+            def get(path):
+                if path == "/git/commits/" + base_sha:
+                    return {"tree": {"sha": tree_sha}}
+                if path == "/git/matching-refs/heads/studio/mp-abcdef123456":
+                    return [{"ref": "refs/heads/studio/mp-abcdef123456",
+                             "object": {"sha": current["sha"]}}]
+                raise AssertionError(path)
+
+            def call(method, path, payload):
+                if path.endswith("/git/trees"):
+                    return {"sha": tree_sha}
+                if path.endswith("/git/commits"):
+                    return {"sha": commit_sha}
+                if path.endswith("/git/refs/heads/studio/mp-abcdef123456"):
+                    if current["sha"] != base_sha:
+                        raise AssertionError("Already updated")
+                    if advance_branch:
+                        current["sha"] = payload["sha"]
+                    return {"ref": "refs/heads/studio/mp-abcdef123456"}
+                raise AssertionError((method, path))
+
+            github.get.side_effect = get
+            github.call.side_effect = call
+            producer = GenericRepository(github, "owner/repo", "mp-abcdef123456")
+            advance_branch = False
+            with self.assertRaisesRegex(StudioError, "branch SHA unverified"):
+                producer.publish(base_sha, root, "checkpoint")
+            advance_branch = True
+            self.assertEqual(producer.publish(base_sha, root, "checkpoint"), commit_sha)
+
 
 
 if __name__ == "__main__":

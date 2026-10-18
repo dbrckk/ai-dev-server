@@ -1,18 +1,19 @@
 # Change impact
 
-Base: d5df93fa492591df9122bd2bf355ccae54db9d5c
-Head: af72b35c1288620719d7c87df69137450926eab9
+Base: 49a149a6334f89a6d783795027dcdf62e92aa6a3
+Head: 7c2bdecef25b73a6d363a63c728c3f8fe92ea36c
 
 ## Changed files
-- M studio/capacity_budget.py
-- M tests/test_capacity_budget.py
+- M studio/godot_model.py
+- M studio/native_model_usage.py
+- M tests/test_godot_model.py
 
 ## Affected areas
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_capacity_budget.py
+- tests/test_godot_model.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

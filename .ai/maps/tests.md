@@ -6534,6 +6534,21 @@ subject = model([])
 # capacity suffices. No budget is artificially increased.
 ⋮----
 subject = model([completion({'edits': [{
+⋮----
+# A bounded project must not spend its implementation allowance on
+# planning. Exercise worst-case providers with no reported usage:
+# the reservation estimate becomes the final ledger charge.
+⋮----
+root = Path(td)
+journal = root / 'shield-usage.json'
+ledger = root / 'shield-ledger.json'
+plan = root / 'shield-plan.json'
+⋮----
+# With the same source and a sufficient real envelope, the
+# planning reservations shrink instead of charging arbitrary
+# additional tokens. Product, design and code can complete.
+⋮----
+result = subject.ask(
 ```
 
 ## File: test_godot_play_stage.py

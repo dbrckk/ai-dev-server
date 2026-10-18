@@ -12222,6 +12222,12 @@ started = time.monotonic()
 # Enforce a conservative minimum after prompt headroom, without
 # granting additional tokens or changing the requested ceiling.
 output_floor = (
+# Before source generation, prevent product/design output
+# reservations from consuming the capacity required by
+# later stages. A finite envelope still governs every call.
+# Product also leaves room for design; design leaves room
+# for implementation. No paid provider or quota increase.
+future_floor = (
 response = accounted_call(
 ⋮----
 elapsed = time.monotonic() - started
@@ -14684,11 +14690,17 @@ saved = json.loads(ledger_path.read_text())
 ⋮----
 active = load_active(ledger_path)
 remaining = envelope - consumed_tokens(active, project_id=project_id) - reserved_tokens(active, project_id=project_id)
-output_limit = min(output_limit, remaining - prompt_allowance)
+# This is a planning-stage admission guard, not a second charge or
+# additional token quota. Keep a bounded slice of the existing
+# project envelope available for subsequent source implementation.
+# Settlement accounts only the current call's actual/estimated usage.
+unguarded_output_limit = min(output_limit, remaining - prompt_allowance)
+output_limit = min(
 ⋮----
 reservation = reserve(ledger_path, project_id=project_id, provider='native:'+provider,
 ⋮----
 value = _load(path); value['capacity_exhausted'] = True; _save(path, value)
+reason = (
 ⋮----
 estimate = prompt_estimate + output_limit if estimated_tokens is None else max(1, int(estimated_tokens))
 ⋮----

@@ -5,42 +5,11 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "multiplier": {
+    "GodotModel": {
       "source": {
-        "file": "studio/capacity_budget.py",
-        "start": 12,
-        "end": 47
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "expanded_call_limit": {
-      "source": {
-        "file": "studio/capacity_budget.py",
-        "start": 50,
-        "end": 81
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "multiplier",
-          "definitions": [
-            {
-              "file": "studio/capacity_budget.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "_warm_operator_connection": {
-      "source": {
-        "file": "studio/production_os_live_diagnostics.py",
-        "start": 12,
-        "end": 35
+        "file": "studio/godot_model.py",
+        "start": 85,
+        "end": 429
       },
       "symbol_dependencies": [
         {
@@ -66,6 +35,78 @@
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "Model",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 433,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "NativeAccountingError",
+          "definitions": [
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PatchPolicyError",
+          "definitions": [
+            {
+              "file": "studio/engine_patch.py",
+              "line": 13,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProtocolError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 336,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Provider",
+          "definitions": [
+            {
+              "file": "tests/test_unified_routing_score.py",
+              "line": 12,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "QA",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 236,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
         },
         {
           "symbol": "StudioError",
@@ -80,6 +121,66 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "_ask_godot",
+          "definitions": [
+            {
+              "file": "studio/godot_model.py",
+              "line": 195,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "allowed",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 210,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/godot_model.py",
+              "line": 86,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "augment",
+          "definitions": [
+            {
+              "file": "studio/learning_context.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "budget_eligible",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 404,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "call",
           "definitions": [
             {
@@ -87,49 +188,250 @@
               "line": 399,
               "kind": "function",
               "language": "python"
+            },
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 110,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "candidates_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 330,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "eligible",
+          "definitions": [
+            {
+              "file": "studio/provider_health.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "estimate_call_cost",
+          "definitions": [
+            {
+              "file": "studio/provider_cost.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "model_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "quota_status",
+          "definitions": [
+            {
+              "file": "studio/provider_monthly_quota.py",
+              "line": 95,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "record",
+          "definitions": [
+            {
+              "file": "studio/provider_cost.py",
+              "line": 70,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/provider_metrics.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/provider_monthly_quota.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_journeys",
+          "definitions": [
+            {
+              "file": "studio/journeys.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
             }
           ],
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 22
     },
-    "_provider_family": {
+    "ask": {
       "source": {
-        "file": "studio/production_os_live_diagnostics.py",
-        "start": 38,
-        "end": 47
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_safe_increment_source": {
-      "source": {
-        "file": "studio/production_os_live_diagnostics.py",
-        "start": 50,
-        "end": 78
+        "file": "studio/godot_model.py",
+        "start": 86,
+        "end": 193
       },
       "symbol_dependencies": [
         {
-          "symbol": "interpret",
+          "symbol": "Model",
           "definitions": [
             {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 66,
+              "file": "studio/core.py",
+              "line": 433,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "PatchPolicyError",
+          "definitions": [
+            {
+              "file": "studio/engine_patch.py",
+              "line": 13,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProtocolError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 336,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "QA",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 236,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_ask_godot",
+          "definitions": [
+            {
+              "file": "studio/godot_model.py",
+              "line": 195,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
+        },
+        {
+          "symbol": "allowed",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 210,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "augment",
+          "definitions": [
+            {
+              "file": "studio/learning_context.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "eligible",
+          "definitions": [
+            {
+              "file": "studio/provider_health.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "validate_journeys",
+          "definitions": [
+            {
+              "file": "studio/journeys.py",
+              "line": 7,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 10
     },
-    "interpret": {
+    "_ask_godot": {
       "source": {
-        "file": "studio/production_os_live_diagnostics.py",
-        "start": 66,
-        "end": 186
+        "file": "studio/godot_model.py",
+        "start": 195,
+        "end": 429
       },
       "symbol_dependencies": [
         {
@@ -157,23 +459,47 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "GitHub",
+          "symbol": "Model",
           "definitions": [
             {
-              "file": "studio/run.py",
-              "line": 59,
+              "file": "studio/core.py",
+              "line": 433,
               "kind": "class",
               "language": "python"
-            },
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "NativeAccountingError",
+          "definitions": [
             {
-              "file": "tests/test_capability_registry_review.py",
+              "file": "studio/native_model_usage.py",
               "line": 20,
               "kind": "class",
               "language": "python"
-            },
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProtocolError",
+          "definitions": [
             {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
+              "file": "studio/core.py",
+              "line": 336,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "Provider",
+          "definitions": [
+            {
+              "file": "tests/test_unified_routing_score.py",
+              "line": 12,
               "kind": "class",
               "language": "python"
             }
@@ -181,35 +507,23 @@
           "relation": "class_like"
         },
         {
-          "symbol": "_provider_family",
-          "definitions": [
-            {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_warm_operator_connection",
-          "definitions": [
-            {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "allowed",
+          "symbol": "StudioError",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 210,
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "budget_eligible",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 404,
               "kind": "function",
               "language": "python"
             }
@@ -224,16 +538,10 @@
               "line": 399,
               "kind": "function",
               "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "configure",
-          "definitions": [
+            },
             {
-              "file": "studio/production_os_provider_config.py",
-              "line": 41,
+              "file": "studio/native_model_usage.py",
+              "line": 110,
               "kind": "function",
               "language": "python"
             }
@@ -241,23 +549,35 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "diagnose",
-          "definitions": [
-            {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 81,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "load_providers",
+          "symbol": "candidates_for",
           "definitions": [
             {
               "file": "studio/provider_router.py",
-              "line": 293,
+              "line": 330,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "eligible",
+          "definitions": [
+            {
+              "file": "studio/provider_health.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "estimate_call_cost",
+          "definitions": [
+            {
+              "file": "studio/provider_cost.py",
+              "line": 56,
               "kind": "function",
               "language": "python"
             }
@@ -277,418 +597,58 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "run",
+          "symbol": "quota_status",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 922,
+              "file": "studio/provider_monthly_quota.py",
+              "line": 95,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 12
-    },
-    "diagnose": {
-      "source": {
-        "file": "studio/production_os_live_diagnostics.py",
-        "start": 81,
-        "end": 208
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "API",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 343,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         },
         {
-          "symbol": "APIError",
+          "symbol": "record",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
+              "file": "studio/provider_cost.py",
+              "line": 70,
+              "kind": "function",
               "language": "python"
             },
             {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
+              "file": "studio/provider_metrics.py",
+              "line": 55,
+              "kind": "function",
               "language": "python"
             },
             {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "_provider_family",
-          "definitions": [
-            {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_safe_increment_source",
-          "definitions": [
-            {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_warm_operator_connection",
-          "definitions": [
-            {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "allowed",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 210,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "configure",
-          "definitions": [
-            {
-              "file": "studio/production_os_provider_config.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load_providers",
-          "definitions": [
-            {
-              "file": "studio/provider_router.py",
-              "line": 293,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "model_for",
-          "definitions": [
-            {
-              "file": "studio/provider_router.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 922,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 12
-    },
-    "main": {
-      "source": {
-        "file": "studio/production_os_live_diagnostics.py",
-        "start": 211,
-        "end": 331
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "diagnose",
-          "definitions": [
-            {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 81,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "CapacityBudgetTests": {
-      "source": {
-        "file": "tests/test_capacity_budget.py",
-        "start": 10,
-        "end": 107
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "expanded_call_limit",
-          "definitions": [
-            {
-              "file": "studio/capacity_budget.py",
+              "file": "studio/provider_monthly_quota.py",
               "line": 50,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "multiplier",
-          "definitions": [
-            {
-              "file": "studio/capacity_budget.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_automatic_limit_is_absolutely_capped",
-          "definitions": [
-            {
-              "file": "tests/test_capacity_budget.py",
-              "line": 101,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_explicit_user_limit_is_never_expanded",
-          "definitions": [
-            {
-              "file": "tests/test_capacity_budget.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_large_pooled_quota_expands_budget",
-          "definitions": [
-            {
-              "file": "tests/test_capacity_budget.py",
-              "line": 20,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_low_remaining_pool_does_not_expand_budget",
-          "definitions": [
-            {
-              "file": "tests/test_capacity_budget.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_unmetered_capacity_expands_budget_most",
-          "definitions": [
-            {
-              "file": "tests/test_capacity_budget.py",
-              "line": 11,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         }
       ],
-      "dependency_count": 7
+      "dependency_count": 15
     },
-    "test_unmetered_capacity_expands_budget_most": {
+    "NativeAccountingError": {
       "source": {
-        "file": "tests/test_capacity_budget.py",
-        "start": 11,
-        "end": 18
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "expanded_call_limit",
-          "definitions": [
-            {
-              "file": "studio/capacity_budget.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "multiplier",
-          "definitions": [
-            {
-              "file": "studio/capacity_budget.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_large_pooled_quota_expands_budget": {
-      "source": {
-        "file": "tests/test_capacity_budget.py",
+        "file": "studio/native_model_usage.py",
         "start": 20,
-        "end": 36
+        "end": 21
       },
       "symbol_dependencies": [
         {
-          "symbol": "expanded_call_limit",
+          "symbol": "StudioError",
           "definitions": [
             {
-              "file": "studio/capacity_budget.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "multiplier",
-          "definitions": [
-            {
-              "file": "studio/capacity_budget.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_low_remaining_pool_does_not_expand_budget": {
-      "source": {
-        "file": "tests/test_capacity_budget.py",
-        "start": 38,
-        "end": 90
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "expanded_call_limit",
-          "definitions": [
-            {
-              "file": "studio/capacity_budget.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "multiplier",
-          "definitions": [
-            {
-              "file": "studio/capacity_budget.py",
-              "line": 12,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "test_explicit_user_limit_is_never_expanded": {
-      "source": {
-        "file": "tests/test_capacity_budget.py",
-        "start": 92,
-        "end": 99
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "expanded_call_limit",
-          "definitions": [
-            {
-              "file": "studio/capacity_budget.py",
-              "line": 50,
-              "kind": "function",
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
               "language": "python"
             }
           ],
@@ -697,33 +657,174 @@
       ],
       "dependency_count": 1
     },
-    "test_automatic_limit_is_absolutely_capped": {
+    "NativeCapacityError": {
       "source": {
-        "file": "tests/test_capacity_budget.py",
-        "start": 101,
+        "file": "studio/native_model_usage.py",
+        "start": 24,
+        "end": 25
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "NativeAccountingError",
+          "definitions": [
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_path": {
+      "source": {
+        "file": "studio/native_model_usage.py",
+        "start": 28,
+        "end": 30
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_empty": {
+      "source": {
+        "file": "studio/native_model_usage.py",
+        "start": 33,
+        "end": 38
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_load": {
+      "source": {
+        "file": "studio/native_model_usage.py",
+        "start": 41,
+        "end": 58
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "NativeAccountingError",
+          "definitions": [
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_empty",
+          "definitions": [
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 33,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "snapshot": {
+      "source": {
+        "file": "studio/native_model_usage.py",
+        "start": 61,
+        "end": 76
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_load",
+          "definitions": [
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_path",
+          "definitions": [
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "exclusive",
+          "definitions": [
+            {
+              "file": "studio/file_lock.py",
+              "line": 16,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "_save": {
+      "source": {
+        "file": "studio/native_model_usage.py",
+        "start": 79,
+        "end": 83
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "NativeAccountingError",
+          "definitions": [
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "write_text",
+          "definitions": [
+            {
+              "file": "studio/atomic_file.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "_reported": {
+      "source": {
+        "file": "studio/native_model_usage.py",
+        "start": 86,
         "end": 107
       },
-      "symbol_dependencies": [
-        {
-          "symbol": "expanded_call_limit",
-          "definitions": [
-            {
-              "file": "studio/capacity_budget.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
+      "symbol_dependencies": [],
+      "dependency_count": 0
     },
-    "LiveDiagnosticsTests": {
+    "call": {
       "source": {
-        "file": "tests/test_production_os_live_diagnostics.py",
-        "start": 13,
-        "end": 141
+        "file": "studio/native_model_usage.py",
+        "start": 110,
+        "end": 252
       },
       "symbol_dependencies": [
         {
@@ -739,23 +840,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "FakeAPI",
+          "symbol": "NativeAccountingError",
           "definitions": [
             {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 50,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 66,
+              "file": "studio/native_model_usage.py",
+              "line": 20,
               "kind": "class",
               "language": "python"
             }
@@ -763,29 +852,171 @@
           "relation": "same_file"
         },
         {
-          "symbol": "ProviderSpec",
+          "symbol": "NativeCapacityError",
           "definitions": [
             {
-              "file": "studio/provider_router.py",
-              "line": 23,
+              "file": "studio/native_model_usage.py",
+              "line": 24,
               "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "Provider",
+          "definitions": [
+            {
+              "file": "tests/test_unified_routing_score.py",
+              "line": 12,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "_load",
+          "definitions": [
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_path",
+          "definitions": [
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 28,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reported",
+          "definitions": [
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 86,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_save",
+          "definitions": [
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 79,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "consumed_tokens",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 110,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "StudioError",
+          "symbol": "exclusive",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
+              "file": "studio/file_lock.py",
+              "line": 16,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
+        {
+          "symbol": "load_active",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 46,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "project_envelope",
+          "definitions": [
+            {
+              "file": "studio/capacity_runtime.py",
+              "line": 8,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "reserve",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "reserved_tokens",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 97,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "settle",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 209,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 15
+    },
+    "FakeAPI": {
+      "source": {
+        "file": "tests/test_godot_model.py",
+        "start": 16,
+        "end": 23
+      },
+      "symbol_dependencies": [
         {
           "symbol": "__init__",
           "definitions": [
@@ -817,11 +1048,184 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_safe_increment_source",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 50,
+              "file": "tests/test_godot_model.py",
+              "line": 19,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "__init__": {
+      "source": {
+        "file": "tests/test_godot_model.py",
+        "start": 18,
+        "end": 18
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "completion": {
+      "source": {
+        "file": "tests/test_godot_model.py",
+        "start": 26,
+        "end": 27
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "model": {
+      "source": {
+        "file": "tests/test_godot_model.py",
+        "start": 30,
+        "end": 46
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "FakeAPI",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "GodotModel",
+          "definitions": [
+            {
+              "file": "studio/godot_model.py",
+              "line": 85,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "product_value": {
+      "source": {
+        "file": "tests/test_godot_model.py",
+        "start": 49,
+        "end": 51
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "GodotModelTests": {
+      "source": {
+        "file": "tests/test_godot_model.py",
+        "start": 54,
+        "end": 526
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FakeAPI",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "QA",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 236,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "allowed",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 210,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 460,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/godot_model.py",
+              "line": 86,
               "kind": "function",
               "language": "python"
             }
@@ -832,20 +1236,8 @@
           "symbol": "call",
           "definitions": [
             {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 69,
+              "file": "tests/test_godot_model.py",
+              "line": 19,
               "kind": "function",
               "language": "python"
             }
@@ -853,11 +1245,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "configure",
+          "symbol": "candidates_for",
           "definitions": [
             {
-              "file": "studio/production_os_provider_config.py",
-              "line": 41,
+              "file": "studio/provider_router.py",
+              "line": 330,
               "kind": "function",
               "language": "python"
             }
@@ -865,11 +1257,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "diagnose",
+          "symbol": "completion",
           "definitions": [
             {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 81,
+              "file": "tests/test_godot_model.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "consumed_tokens",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 110,
               "kind": "function",
               "language": "python"
             }
@@ -877,10 +1281,100 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "test_defaults_preserve_explicit_configuration_and_other_providers",
+          "symbol": "load",
           "definitions": [
             {
-              "file": "tests/test_production_os_live_diagnostics.py",
+              "file": "studio/capacity_ledger.py",
+              "line": 42,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "model",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "product_value",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "snapshot",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 536,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 61,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_budget_is_shared_and_fail_closed",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 342,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_implementation_uses_godot_prompt_and_scope",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 134,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_nvidia_source_generation_requests_json_mode",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 55,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_product_prompt_requires_literal_json_step_objects",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
               "line": 102,
               "kind": "function",
               "language": "python"
@@ -889,11 +1383,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready",
+          "symbol": "test_product_uses_godot_planning_contract_not_flutter_execution_claims",
           "definitions": [
             {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 41,
+              "file": "tests/test_godot_model.py",
+              "line": 90,
               "kind": "function",
               "language": "python"
             }
@@ -901,11 +1395,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_operator_probe_is_read_only_and_no_token_is_reported",
+          "symbol": "test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary",
           "definitions": [
             {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 64,
+              "file": "tests/test_godot_model.py",
+              "line": 328,
               "kind": "function",
               "language": "python"
             }
@@ -913,11 +1407,35 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_provider_fallback_recovers_gone_model_and_output_excludes_secrets",
+          "symbol": "test_structured_godot_call_falls_back_to_secondary_provider",
           "definitions": [
             {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 14,
+              "file": "tests/test_godot_model.py",
+              "line": 244,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_test_role_rejects_non_test_path_then_repairs_once",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 158,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_truncated_patch_retry_requests_a_smaller_complete_change",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 198,
               "kind": "function",
               "language": "python"
             }
@@ -925,51 +1443,15 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 13
+      "dependency_count": 24
     },
-    "test_provider_fallback_recovers_gone_model_and_output_excludes_secrets": {
+    "test_nvidia_source_generation_requests_json_mode": {
       "source": {
-        "file": "tests/test_production_os_live_diagnostics.py",
-        "start": 14,
-        "end": 39
+        "file": "tests/test_godot_model.py",
+        "start": 55,
+        "end": 88
       },
       "symbol_dependencies": [
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "FakeAPI",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 50,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 66,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
         {
           "symbol": "ProviderSpec",
           "definitions": [
@@ -983,29 +1465,17 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "__init__",
+          "symbol": "ask",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 329,
+              "line": 460,
               "kind": "function",
               "language": "python"
             },
             {
-              "file": "studio/core.py",
-              "line": 345,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 434,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 919,
+              "file": "studio/godot_model.py",
+              "line": 86,
               "kind": "function",
               "language": "python"
             }
@@ -1016,20 +1486,8 @@
           "symbol": "call",
           "definitions": [
             {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 69,
+              "file": "tests/test_godot_model.py",
+              "line": 19,
               "kind": "function",
               "language": "python"
             }
@@ -1037,679 +1495,389 @@
           "relation": "same_file"
         },
         {
-          "symbol": "diagnose",
+          "symbol": "completion",
           "definitions": [
             {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 81,
+              "file": "tests/test_godot_model.py",
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
+        },
+        {
+          "symbol": "model",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "product_value",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
       "dependency_count": 6
     },
-    "FakeAPI": {
+    "test_product_uses_godot_planning_contract_not_flutter_execution_claims": {
       "source": {
-        "file": "tests/test_production_os_live_diagnostics.py",
-        "start": 18,
-        "end": 138
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "ProviderSpec",
-          "definitions": [
-            {
-              "file": "studio/provider_router.py",
-              "line": 23,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 345,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 434,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 919,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_safe_increment_source",
-          "definitions": [
-            {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 69,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "configure",
-          "definitions": [
-            {
-              "file": "studio/production_os_provider_config.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "diagnose",
-          "definitions": [
-            {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 81,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_defaults_preserve_explicit_configuration_and_other_providers",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 102,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_operator_probe_is_read_only_and_no_token_is_reported",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 64,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 11
-    },
-    "__init__": {
-      "source": {
-        "file": "tests/test_production_os_live_diagnostics.py",
-        "start": 19,
-        "end": 139
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "FakeAPI",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 50,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 66,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ProviderSpec",
-          "definitions": [
-            {
-              "file": "studio/provider_router.py",
-              "line": 23,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_safe_increment_source",
-          "definitions": [
-            {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 69,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "configure",
-          "definitions": [
-            {
-              "file": "studio/production_os_provider_config.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "diagnose",
-          "definitions": [
-            {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 81,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_defaults_preserve_explicit_configuration_and_other_providers",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 102,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_operator_probe_is_read_only_and_no_token_is_reported",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 64,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 11
-    },
-    "call": {
-      "source": {
-        "file": "tests/test_production_os_live_diagnostics.py",
-        "start": 21,
-        "end": 141
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "FakeAPI",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 50,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 66,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ProviderSpec",
-          "definitions": [
-            {
-              "file": "studio/provider_router.py",
-              "line": 23,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 345,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 434,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 919,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_safe_increment_source",
-          "definitions": [
-            {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "configure",
-          "definitions": [
-            {
-              "file": "studio/production_os_provider_config.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "diagnose",
-          "definitions": [
-            {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 81,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_defaults_preserve_explicit_configuration_and_other_providers",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 102,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_operator_probe_is_read_only_and_no_token_is_reported",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 64,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 11
-    },
-    "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready": {
-      "source": {
-        "file": "tests/test_production_os_live_diagnostics.py",
-        "start": 41,
-        "end": 62
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "FakeAPI",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 50,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 66,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "ProviderSpec",
-          "definitions": [
-            {
-              "file": "studio/provider_router.py",
-              "line": 23,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "__init__",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 329,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 345,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 434,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 919,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_safe_increment_source",
-          "definitions": [
-            {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 50,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 69,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "diagnose",
-          "definitions": [
-            {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 81,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 7
-    },
-    "test_operator_probe_is_read_only_and_no_token_is_reported": {
-      "source": {
-        "file": "tests/test_production_os_live_diagnostics.py",
-        "start": 64,
+        "file": "tests/test_godot_model.py",
+        "start": 90,
         "end": 100
       },
       "symbol_dependencies": [
         {
-          "symbol": "APIError",
+          "symbol": "ask",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 328,
+              "line": 460,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/godot_model.py",
+              "line": 86,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "completion",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "model",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "product_value",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_product_prompt_requires_literal_json_step_objects": {
+      "source": {
+        "file": "tests/test_godot_model.py",
+        "start": 102,
+        "end": 132
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 460,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/godot_model.py",
+              "line": 86,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 19,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "completion",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "model",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "product_value",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "test_implementation_uses_godot_prompt_and_scope": {
+      "source": {
+        "file": "tests/test_godot_model.py",
+        "start": 134,
+        "end": 156
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 460,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/godot_model.py",
+              "line": 86,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "completion",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "model",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 3
+    },
+    "test_test_role_rejects_non_test_path_then_repairs_once": {
+      "source": {
+        "file": "tests/test_godot_model.py",
+        "start": 158,
+        "end": 196
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "QA",
+          "definitions": [
+            {
+              "file": "tests/test_studio.py",
+              "line": 236,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "class_like"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 460,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/godot_model.py",
+              "line": 86,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "completion",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "model",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_truncated_patch_retry_requests_a_smaller_complete_change": {
+      "source": {
+        "file": "tests/test_godot_model.py",
+        "start": 198,
+        "end": 242
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 460,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/godot_model.py",
+              "line": 86,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "completion",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "model",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "product_value",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "test_structured_godot_call_falls_back_to_secondary_provider": {
+      "source": {
+        "file": "tests/test_godot_model.py",
+        "start": 244,
+        "end": 326
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 343,
               "kind": "class",
               "language": "python"
             }
@@ -1720,20 +1888,8 @@
           "symbol": "FakeAPI",
           "definitions": [
             {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 18,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 50,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 66,
+              "file": "tests/test_godot_model.py",
+              "line": 16,
               "kind": "class",
               "language": "python"
             }
@@ -1753,29 +1909,29 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "__init__",
+          "symbol": "allowed",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 329,
+              "line": 210,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 460,
               "kind": "function",
               "language": "python"
             },
             {
-              "file": "studio/core.py",
-              "line": 345,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 434,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/core.py",
-              "line": 919,
+              "file": "studio/godot_model.py",
+              "line": 86,
               "kind": "function",
               "language": "python"
             }
@@ -1786,20 +1942,8 @@
           "symbol": "call",
           "definitions": [
             {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 53,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_production_os_live_diagnostics.py",
-              "line": 69,
+              "file": "tests/test_godot_model.py",
+              "line": 19,
               "kind": "function",
               "language": "python"
             }
@@ -1807,33 +1951,265 @@
           "relation": "same_file"
         },
         {
-          "symbol": "diagnose",
+          "symbol": "completion",
           "definitions": [
             {
-              "file": "studio/production_os_live_diagnostics.py",
-              "line": 81,
+              "file": "tests/test_godot_model.py",
+              "line": 26,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "imported_module"
+          "relation": "same_file"
+        },
+        {
+          "symbol": "model",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "product_value",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
         }
       ],
-      "dependency_count": 6
+      "dependency_count": 9
     },
-    "test_defaults_preserve_explicit_configuration_and_other_providers": {
+    "test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary": {
       "source": {
-        "file": "tests/test_production_os_live_diagnostics.py",
-        "start": 102,
-        "end": 141
+        "file": "tests/test_godot_model.py",
+        "start": 328,
+        "end": 340
       },
       "symbol_dependencies": [
         {
-          "symbol": "configure",
+          "symbol": "API",
           "definitions": [
             {
-              "file": "studio/production_os_provider_config.py",
-              "line": 41,
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FakeAPI",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 16,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 460,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/godot_model.py",
+              "line": 86,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "candidates_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 330,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "completion",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "model",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "product_value",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "test_budget_is_shared_and_fail_closed": {
+      "source": {
+        "file": "tests/test_godot_model.py",
+        "start": 342,
+        "end": 526
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 460,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/godot_model.py",
+              "line": 86,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 19,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "completion",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 26,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "consumed_tokens",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 110,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 42,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "model",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 30,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "product_value",
+          "definitions": [
+            {
+              "file": "tests/test_godot_model.py",
+              "line": 49,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "snapshot",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 536,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 61,
               "kind": "function",
               "language": "python"
             }
@@ -1841,7 +2217,7 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 9
     }
   }
 }

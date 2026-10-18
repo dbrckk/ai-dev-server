@@ -106,16 +106,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-17T17:16:48Z
+Generated: 2026-10-18T08:24:20Z
 
 ### Git
 - Branch: `main`
-- Head: `af72b35c1288`
-- Commit date: 2026-10-17T13:16:37-04:00
-- Commit: fix(capacity): fail closed on corrupt free-quota fractions (#338)
+- Head: `7c2bdecef25b`
+- Commit date: 2026-10-18T04:24:11-04:00
+- Commit: fix(godot): preserve free inference capacity for implementation (#337)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/godot_model.py`
+- `studio/native_model_usage.py`
+- `tests/test_godot_model.py`
 - `studio/capacity_budget.py`
 - `tests/test_capacity_budget.py`
 - `control/production-os-diagnostics-kick.json`
@@ -123,10 +126,6 @@ Generated: 2026-10-17T17:16:48Z
 - `docs/PRODUCTION_OS_WORKER.md`
 - `studio/production_os_live_diagnostics.py`
 - `tests/test_production_os_live_diagnostics.py`
-- `.github/workflows/production-os-actions-worker.yml`
-- `studio/agents/adapters.py`
-- `studio/production_os_provider_config.py`
-- `tests/test_agent_router.py`
 
 ### Project signals
 - No common build descriptor detected

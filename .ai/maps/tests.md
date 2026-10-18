@@ -5504,8 +5504,11 @@ def test_ensure_pull_request_reuses_existing_exact_branch_pr()
 ⋮----
 github = FakeGitHub([
 ⋮----
-first = repository.ensure_pull_request(title="Managed project")
-second = repository.ensure_pull_request(title="Managed project")
+first = repository.ensure_pull_request(title="Managed project", expected_sha="a" * 40)
+second = repository.ensure_pull_request(title="Managed project", expected_sha="a" * 40)
+⋮----
+# A stale PR at the same head/base must block delivery, never cause a
+# duplicate POST or count as the newly published checkpoint.
 ⋮----
 def test_ensure_pull_request_ignores_other_studio_branch()
 ⋮----

@@ -15519,9 +15519,15 @@ confirmed = self._find_open_pull_request(expected_sha=expected_sha)
 ⋮----
 confirmed = None
 ⋮----
-def ensure_pull_request(self, *, title: str, body: str = "") -> dict
+def ensure_pull_request(self, *, title: str, body: str = "", expected_sha: str | None = None) -> dict
 ⋮----
-existing = self._find_open_pull_request()
+# A prior PR at the same branch is not proof that this checkpoint
+# reached review. Pin both reuse and direct creation to its exact SHA.
+⋮----
+existing = self._find_open_pull_request(expected_sha=expected_sha)
+⋮----
+# GitHub allows only one open PR per same head/base. Do not
+# create a duplicate or misreport a stale PR as this checkpoint.
 ⋮----
 default = self.default_branch
 created = self.github.call(
@@ -31746,8 +31752,11 @@ def test_ensure_pull_request_reuses_existing_exact_branch_pr()
 ⋮----
 github = FakeGitHub([
 ⋮----
-first = repository.ensure_pull_request(title="Managed project")
-second = repository.ensure_pull_request(title="Managed project")
+first = repository.ensure_pull_request(title="Managed project", expected_sha="a" * 40)
+second = repository.ensure_pull_request(title="Managed project", expected_sha="a" * 40)
+⋮----
+# A stale PR at the same head/base must block delivery, never cause a
+# duplicate POST or count as the newly published checkpoint.
 ⋮----
 def test_ensure_pull_request_ignores_other_studio_branch()
 ⋮----

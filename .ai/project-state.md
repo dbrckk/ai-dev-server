@@ -108,16 +108,17 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-18T16:21:49Z
+Generated: 2026-10-18T17:20:52Z
 
 ### Git
 - Branch: `main`
-- Head: `ea458633410b`
-- Commit date: 2026-10-18T12:21:39-04:00
-- Commit: fix(review): reject unverified direct GitHub draft PR receipts (#349)
+- Head: `a0326e963102`
+- Commit date: 2026-10-18T13:20:37-04:00
+- Commit: fix(review): require exact published checkpoint SHA for generic PR delivery (#350)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/generic_project.py`
 - `studio/generic_repository.py`
 - `tests/test_generic_repository_pull_request.py`
 - `studio/production_os_worker_canary.py`

@@ -1,9 +1,10 @@
 # Change impact
 
-Base: bf70eda58523359b18e7351d88cec6f8efa05ae7
-Head: ea458633410b9dfb53a915c1ebc0d037d20336d0
+Base: a31311aef049d4040bcaa703af947a07c7e1a18a
+Head: a0326e96310216ed6e026758457e16014fa4fab4
 
 ## Changed files
+- M studio/generic_project.py
 - M studio/generic_repository.py
 - M tests/test_generic_repository_pull_request.py
 

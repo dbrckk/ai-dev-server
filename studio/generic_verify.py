@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import shutil
 import time
+import tomllib
 
 from generic_policy import MAX_FILE_BYTES, SECRET_RE, editable
 
@@ -124,19 +125,37 @@ def discover(root: Path) -> list[list[str]]:
             commands.append(["npm", "test", "--", "--runInBand"])
         if isinstance(scripts, dict) and "build" in scripts and shutil.which("npm"):
             commands.append(["npm", "run", "build"])
-    if (root / "pyproject.toml").is_file() or (root / "requirements.txt").is_file():
+    pyproject = root / "pyproject.toml"
+    if pyproject.is_file() or (root / "requirements.txt").is_file():
+        # Never silently substitute unittest for an explicitly configured
+        # pytest project: unittest discovery may report zero tests even when
+        # the repository contains a large, healthy pytest suite.
+        uses_pytest = (root / "pytest.ini").is_file()
+        if pyproject.is_file() and not uses_pytest:
+            try:
+                config = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+                tool = config.get("tool") if isinstance(config, dict) else None
+                uses_pytest = isinstance(tool, dict) and "pytest" in tool
+            except (OSError, UnicodeError, ValueError):
+                pass
         venv_pytest=root/".studio-venv/bin/pytest"
         venv_python=root/".studio-venv/bin/python"
         if venv_pytest.is_file():
             commands.append([str(venv_pytest), "-q"])
         elif venv_python.is_file():
-            commands.append([str(venv_python), "-m", "unittest", "discover"])
+            commands.append(
+                [str(venv_python), "-m", "pytest", "-q"]
+                if uses_pytest else [str(venv_python), "-m", "unittest", "discover"]
+            )
         elif (root/"uv.lock").is_file() and shutil.which("uv"):
             commands.append(["uv","run","pytest","-q"])
         elif shutil.which("pytest"):
             commands.append(["pytest", "-q"])
         elif shutil.which("python"):
-            commands.append(["python", "-m", "unittest", "discover"])
+            commands.append(
+                ["python", "-m", "pytest", "-q"]
+                if uses_pytest else ["python", "-m", "unittest", "discover"]
+            )
     if (root / "go.mod").is_file() and shutil.which("go"):
         commands.append(["go", "test", "./..."])
     if (root / "Cargo.toml").is_file() and shutil.which("cargo"):

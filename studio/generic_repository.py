@@ -117,7 +117,7 @@ class GenericRepository:
                 and (expected_sha is None or head.get("sha") == expected_sha)
                 and type(pr.get("number")) is int
                 and isinstance(pr.get("html_url"), str)
-                and pr["html_url"].startswith("https://github.com/" + self.repo + "/pull/")
+                and pr["html_url"] == "https://github.com/" + self.repo + "/pull/" + str(pr["number"])
             ):
                 return {
                     "number":pr["number"],
@@ -172,12 +172,31 @@ class GenericRepository:
                 "draft":True,
             },
         )
-        if not isinstance(created, dict) or created.get("number") is None:
-            raise StudioError("Generic pull request creation failed")
+        # A successful POST alone is not a verified review destination.
+        # Match the exact GitHub PR identity, branch and draft state before
+        # allowing downstream workflow status to count this as delivered.
+        pr_number = created.get("number") if isinstance(created, dict) else None
+        pr_head = created.get("head") if isinstance(created, dict) else None
+        pr_base = created.get("base") if isinstance(created, dict) else None
+        pr_head = pr_head if isinstance(pr_head, dict) else {}
+        pr_base = pr_base if isinstance(pr_base, dict) else {}
+        head_repo = pr_head.get("repo") if isinstance(pr_head.get("repo"), dict) else {}
+        base_repo = pr_base.get("repo") if isinstance(pr_base.get("repo"), dict) else {}
+        if (
+            type(pr_number) is not int or pr_number < 1
+            or created.get("html_url") != "https://github.com/" + self.repo + "/pull/" + str(pr_number)
+            or created.get("draft") is not True
+            or created.get("state") != "open"
+            or pr_head.get("ref") != self.branch
+            or pr_base.get("ref") != default
+            or str(head_repo.get("full_name") or "").casefold() != self.repo.casefold()
+            or str(base_repo.get("full_name") or "").casefold() != self.repo.casefold()
+        ):
+            raise StudioError("Generic review pull request receipt unverified")
         return {
-            "number":created.get("number"),
-            "state":created.get("state") or "open",
-            "url":created.get("html_url"),
+            "number":pr_number,
+            "state":"open",
+            "url":created["html_url"],
             "head":self.branch,
             "base":default,
             "reused":False,

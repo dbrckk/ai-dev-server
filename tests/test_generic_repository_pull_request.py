@@ -5,6 +5,7 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 from generic_repository import GenericRepository
+from core import StudioError
 
 
 class FakeGitHub:
@@ -27,6 +28,7 @@ class FakeGitHub:
             created = {
                 "number":17,
                 "state":"open",
+                "draft":True,
                 "html_url":"https://github.com/owner/repo/pull/17",
                 "head":{"ref":"studio/mp-abc", "repo":{"full_name":"owner/repo"}},
                 "base":{"ref":"main", "repo":{"full_name":"owner/repo"}},
@@ -63,6 +65,39 @@ def test_ensure_pull_request_creates_one_for_managed_branch():
     ]
     assert len(posts) == 1
     assert posts[0][2]["draft"] is True
+
+    # A POST receipt does not prove delivery unless GitHub attests the exact
+    # branch, target, draft state and numeric URL. Stay fail-closed.
+    valid = {
+        "number":17,
+        "state":"open",
+        "draft":True,
+        "html_url":"https://github.com/owner/repo/pull/17",
+        "head":{"ref":"studio/mp-abc", "repo":{"full_name":"owner/repo"}},
+        "base":{"ref":"main", "repo":{"full_name":"owner/repo"}},
+    }
+    invalid_receipts = [
+        {**valid, "number":True},
+        {**valid, "html_url":"https://github.com/other/repo/pull/17"},
+        {**valid, "html_url":"https://github.com/owner/repo/pull/17extra"},
+        {**valid, "draft":False},
+        {**valid, "draft":None},
+        {**valid, "head":{"ref":"studio/another", "repo":{"full_name":"owner/repo"}}},
+        {**valid, "head":{"ref":"studio/mp-abc", "repo":{"full_name":"other/repo"}}},
+        {**valid, "base":{"ref":"main", "repo":{"full_name":"other/repo"}}},
+        {**valid, "state":"closed"},
+    ]
+    for malformed in invalid_receipts:
+        candidate = FakeGitHub()
+        with patch.object(candidate, "call", return_value=malformed):
+            try:
+                GenericRepository(candidate, "owner/repo", "mp-abc").ensure_pull_request(
+                    title="Managed project",
+                )
+            except StudioError as exc:
+                assert str(exc) == "Generic review pull request receipt unverified"
+            else:
+                raise AssertionError("Malformed GitHub PR receipt was accepted")
 
 
 def test_ensure_pull_request_reuses_existing_exact_branch_pr():

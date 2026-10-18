@@ -8,7 +8,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from core import APIError, StudioError, canonical
+from core import APIError, StudioError, NoRedirect, canonical
 from production_os_resume_objectives import OperatorClient
 
 
@@ -17,7 +17,7 @@ _WORKFLOW_ID = re.compile(r"[a-f0-9]{32}")
 _TERMINAL_FAILURES = {"failed", "cancelled", "canceled"}
 
 
-def dispatch_worker_after_enqueue(*, token, repository, urlopen=urllib.request.urlopen):
+def dispatch_worker_after_enqueue(*, token, repository, urlopen=None):
     """Dispatch the restricted same-repository worker after the task is queued.
 
     GitHub grants this canary workflow only actions:write and contents:read.
@@ -41,6 +41,10 @@ def dispatch_worker_after_enqueue(*, token, repository, urlopen=urllib.request.u
             "User-Agent": "production-os-worker-canary",
         },
     )
+    # Never follow redirects when sending the GitHub Actions bearer token.
+    # Keep injectable transport for the existing isolated canary checks.
+    if urlopen is None:
+        urlopen = urllib.request.build_opener(NoRedirect()).open
     try:
         with urlopen(request, timeout=20) as response:
             if response.status != 204:

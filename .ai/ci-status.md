@@ -1,14 +1,14 @@
 # CI status
 
-Summary: 2 success / 0 failure / 6 active
+Summary: 1 success / 0 failure / 7 active
 
-- CI: in_progress / pending (5fec1d41)
-- Validate AI Dev Server: in_progress / pending (5fec1d41)
-- Mobile Studio Real Build: in_progress / pending (5fec1d41)
-- Fault Injection Gate: completed / success (5fec1d41)
-- Resilience Soak: completed / success (5fec1d41)
-- Production-OS worker integration: in_progress / pending (5fec1d41)
-- Multi-Engine E2E Benchmark: in_progress / pending (5fec1d41)
-- Mobile Studio Real Build: in_progress / pending (cb786fe3)
+- Production-OS worker integration: in_progress / pending (bbd863fd)
+- Resilience Soak: in_progress / pending (bbd863fd)
+- Validate AI Dev Server: in_progress / pending (bbd863fd)
+- Fault Injection Gate: in_progress / pending (bbd863fd)
+- Multi-Engine E2E Benchmark: queued / pending (bbd863fd)
+- Mobile Studio Real Build: queued / pending (bbd863fd)
+- CI: queued / pending (bbd863fd)
+- Multi-Engine E2E Benchmark: completed / success (af374705)
 
 > Generated summary only; inspect GitHub Actions for full logs when needed.

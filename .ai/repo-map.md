@@ -31756,6 +31756,15 @@ exact = jumpy_producer.await_trusted_review(sha)
 ⋮----
 dispatched = jumpy_producer.request_trusted_review_handoff(sha)
 request = opener.return_value.open.call_args.args[0]
+⋮----
+# Ai-trading must opt in through its own independently reviewed
+# default-branch workflow. No automatic merge or forged PR proof.
+trading = FakeGitHub([{
+⋮----
+trading_producer = GenericRepository(trading, "dbrckk/Ai-trading", "mp-" + "a" * 24)
+attested = trading_producer.await_trusted_review(sha)
+⋮----
+requested = trading_producer.request_trusted_review_handoff(sha)
 ````
 
 ## File: tests/test_generic_structural_verify.py

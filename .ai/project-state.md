@@ -106,16 +106,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-18T10:39:29Z
+Generated: 2026-10-18T11:20:56Z
 
 ### Git
 - Branch: `main`
-- Head: `5fec1d415724`
-- Commit date: 2026-10-18T06:39:18-04:00
-- Commit: fix(generic): respect configured pytest verification (#343)
+- Head: `bbd863fd5646`
+- Commit date: 2026-10-18T07:20:45-04:00
+- Commit: feat(review): enable trusted Ai-trading draft PR handoff (#344)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/generic_repository.py`
+- `tests/test_generic_repository_pull_request.py`
 - `studio/generic_verify.py`
 - `tests/test_generic_toolchain.py`
 - `AGENTS.md`

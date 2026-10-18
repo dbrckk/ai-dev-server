@@ -1,11 +1,11 @@
 # Change impact
 
-Base: 8fa6d12b33737a1c8e75c9d633553e576d8d52d8
-Head: 5fec1d415724e49eabcd196b7de1676dcc00499b
+Base: af374705d7a5f6ecf95118b11858a21da7d8b263
+Head: bbd863fd5646081489f4183841129c42840e13db
 
 ## Changed files
-- M studio/generic_verify.py
-- M tests/test_generic_toolchain.py
+- M studio/generic_repository.py
+- M tests/test_generic_repository_pull_request.py
 
 ## Affected areas
 - studio

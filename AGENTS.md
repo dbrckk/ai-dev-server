@@ -33,6 +33,17 @@ Before substantial work:
 19. Read `.ai/repo-map.md` only as a final broad-context fallback.
 20. Fetch only task-relevant source files or line ranges.
 
+## Focused coding discipline (Karpathy-inspired)
+
+Adapted from the MIT-licensed [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills/tree/main/skills/karpathy-guidelines).
+The runtime uses **short, role-specific instructions**, not the full skill text on every inference request:
+- Verify assumptions against authoritative source and surface genuine blockers rather than inventing an API, test result or requirement.
+- Prefer the simplest correct change; avoid speculative architecture and unrelated work.
+- Make surgical edits, preserving unrelated comments, formatting and working behavior.
+- Define observable acceptance conditions and report only verification actually executed.
+
+These are behavioral guidance, **not** proof of completion or a replacement for existing CI/security gates. Do not paste the upstream skill into every model context: that spends tokens unnecessarily.
+
 Repository-specific rules:
 - Preserve existing architecture and public interfaces unless the task requires a change.
 - Prefer the smallest coherent change.

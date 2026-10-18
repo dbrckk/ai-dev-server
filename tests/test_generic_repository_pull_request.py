@@ -62,6 +62,7 @@ def test_ensure_pull_request_creates_one_for_managed_branch():
         if call[0] == "POST"
     ]
     assert len(posts) == 1
+    assert posts[0][2]["draft"] is True
 
 
 def test_ensure_pull_request_reuses_existing_exact_branch_pr():

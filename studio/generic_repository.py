@@ -18,6 +18,7 @@ MAX_TOTAL=6_000_000
 TRUSTED_REVIEW_TARGETS = frozenset({
     "dbrckk/repo-standards",
     "dbrckk/Jumpy",
+    "dbrckk/Ai-trading",
 })
 
 class GenericRepository:

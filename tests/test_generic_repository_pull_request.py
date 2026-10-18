@@ -216,3 +216,29 @@ def test_ensure_pull_request_ignores_other_studio_branch():
     assert request.full_url == "https://api.github.com/repos/dbrckk/Jumpy/dispatches"
     assert b'production_os_review_handoff' in request.data
     assert GenericRepository(FakeGitHub(), "owner/repo", "mp-" + "a" * 24).request_trusted_review_handoff(sha) == {"status": "not_configured"}
+
+    # Ai-trading must opt in through its own independently reviewed
+    # default-branch workflow. No automatic merge or forged PR proof.
+    trading = FakeGitHub([{
+        **confirmed,
+        "html_url": "https://github.com/dbrckk/Ai-trading/pull/145",
+        "head": {
+            "ref": branch,
+            "sha": sha,
+            "repo": {"full_name": "dbrckk/Ai-trading"},
+        },
+        "base": {"ref": "main", "repo": {"full_name": "dbrckk/Ai-trading"}},
+    }])
+    trading.repo = "/repos/dbrckk/Ai-trading"
+    trading.key = "test-only-credential"
+    trading_producer = GenericRepository(trading, "dbrckk/Ai-trading", "mp-" + "a" * 24)
+    attested = trading_producer.await_trusted_review(sha)
+    assert attested["url"] == "https://github.com/dbrckk/Ai-trading/pull/145"
+    assert attested["handoff_confirmed"] is True
+    with patch("generic_repository.urllib.request.build_opener") as opener:
+        opener.return_value.open.return_value.__enter__.return_value.status = 204
+        requested = trading_producer.request_trusted_review_handoff(sha)
+        request = opener.return_value.open.call_args.args[0]
+    assert requested == {"status": "accepted"}
+    assert request.full_url == "https://api.github.com/repos/dbrckk/Ai-trading/dispatches"
+

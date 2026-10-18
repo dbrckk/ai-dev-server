@@ -108,25 +108,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-18T15:34:32Z
+Generated: 2026-10-18T15:59:47Z
 
 ### Git
 - Branch: `main`
-- Head: `c3aabeb348be`
-- Commit date: 2026-10-18T11:34:12-04:00
-- Commit: fix(canary): avoid duplicate GitHub Actions worker dispatch (#347)
+- Head: `e655a06081cd`
+- Commit date: 2026-10-18T11:59:37-04:00
+- Commit: fix(canary): distinguish accepted launches from completed workflows (#348)
 - Tracked files: 865
 
 ### Recently changed files
-- `.github/workflows/production-os-worker-canary.yml`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
+- `.github/workflows/production-os-worker-canary.yml`
 - `studio/production_os_review_canary.py`
 - `tests/test_generic_worker_canary_resume.py`
 - `studio/generic_repository.py`
 - `tests/test_generic_repository_pull_request.py`
-- `studio/generic_verify.py`
-- `tests/test_generic_toolchain.py`
 
 ### Project signals
 - No common build descriptor detected

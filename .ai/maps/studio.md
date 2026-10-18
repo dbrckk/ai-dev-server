@@ -16624,6 +16624,9 @@ wake = result["worker_wake"]
 ⋮----
 outcome = wait_for_workflow(
 ⋮----
+# An acknowledged submission is not terminal worker success.
+# Preserve the distinction for status consumers and CI receipts.
+⋮----
 def main(argv=None)
 ⋮----
 parser = argparse.ArgumentParser()
@@ -16640,6 +16643,10 @@ dispatch = None
 ⋮----
 dispatch = lambda: dispatch_worker_after_enqueue(
 result = run_canary(
+⋮----
+# A non-blocking CLI launch can exit successfully without claiming
+# the workflow actually finished. Blocking mode still requires success.
+launched_only = result.get("result", {}).get("status") == "launched"
 ````
 
 ## File: production_os_worker.py

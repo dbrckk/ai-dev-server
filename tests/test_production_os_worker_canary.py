@@ -11,8 +11,9 @@ from production_os_worker_canary import (
 
 
 class FakeClient:
-    def __init__(self, statuses=("succeeded",)):
+    def __init__(self, statuses=("succeeded",), wake_status="dispatched"):
         self.statuses = list(statuses)
+        self.wake_status = wake_status
         self.submissions = []
         self.lookups = []
 
@@ -23,7 +24,7 @@ class FakeClient:
                 "project_id": "a" * 32,
                 "current_workflow_id": "b" * 32,
             },
-            "launch": {"worker_wake": {"status": "dispatched"}},
+            "launch": {"worker_wake": {"status": self.wake_status}},
         }
 
     def get(self, path):
@@ -92,8 +93,21 @@ class WorkerCanaryTests(unittest.TestCase):
         self.assertNotIn("launch_profile", payload)
         self.assertNotIn("token_budget", payload)
         self.assertEqual(result["worker_wake"], "dispatched")
-        self.assertEqual(result["actions_worker_wake"], "accepted")
-        self.assertEqual(dispatches, [1])  # no dispatch before successful admission
+        self.assertEqual(result["actions_worker_wake"], "already_dispatched")
+        self.assertEqual(dispatches, [])  # the control plane already woke a worker
+        fallback = FakeClient(wake_status="scheduled_fallback")
+        fallback_result = run_canary(
+            fallback, {"sequence": 6, "repository": "dbrckk/repo-standards"},
+            dispatch=lambda: (dispatches.append(len(fallback.submissions)), "accepted")[1],
+        )
+        self.assertEqual(fallback_result["actions_worker_wake"], "accepted")
+        self.assertEqual(dispatches, [1])  # dispatch only after successful admission
+        available = FakeClient(wake_status="not_needed")
+        available_result = run_canary(
+            available, {"sequence": 7, "repository": "dbrckk/repo-standards"},
+            dispatch=lambda: self.fail("persistent worker needs no dispatch"),
+        )
+        self.assertEqual(available_result["actions_worker_wake"], "not_needed")
         gameplay_client = FakeClient()
         gameplay_result = run_canary(gameplay_client, {
             "sequence": 32, "repository": "dbrckk/Jumpy",
@@ -169,8 +183,8 @@ def test_canary_workflow_verifies_terminal_worker_completion():
     assert "contents: read" in workflow
     assert "secrets.GITHUB_TOKEN" in workflow
     assert "PRODUCTION_OS_CANARY_DISPATCH_TOKEN" in workflow
-    # The canary enqueues first, then dispatches explicitly. A push-triggered
-    # worker would race the queue and duplicate the trusted dispatch.
+    # The canary enqueues first and dispatches only if the control plane did
+    # not already wake a worker. A push trigger would race the queue.
     worker_workflow = Path(".github/workflows/production-os-actions-worker.yml").read_text(
         encoding="utf-8"
     )

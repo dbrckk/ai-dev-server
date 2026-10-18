@@ -227,7 +227,16 @@ def run_canary(client, control, *, wait_seconds=0, poll_seconds=10.0,
                clock=time.monotonic, sleeper=time.sleep, dispatch=None):
     result = launch_canary(client, control)
     if dispatch is not None:
-        result["actions_worker_wake"] = dispatch()
+        # The control plane may have dispatched the same Actions worker while
+        # admitting the job. Only use the canary's privileged dispatch when
+        # that wake did not happen and no persistent worker is available.
+        wake = result["worker_wake"]
+        if wake == "dispatched":
+            result["actions_worker_wake"] = "already_dispatched"
+        elif wake == "not_needed":
+            result["actions_worker_wake"] = "not_needed"
+        else:
+            result["actions_worker_wake"] = dispatch()
     if wait_seconds:
         outcome = wait_for_workflow(
             client,

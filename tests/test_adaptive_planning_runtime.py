@@ -122,6 +122,14 @@ class AdaptivePlanningRuntimeTests(unittest.TestCase):
         self.assertLess(source.index("planning_required("), source.index("planning_phase_decision("))
         self.assertLess(source.index("planning_phase_decision("), source.index("PLAN_SYSTEM,"))
 
+        # The operational planner, model patcher and CLI agent all use the
+        # focused coding rules, rather than simply referring to a document.
+        self.assertIn("Define observable done_when checks", source)
+        self.assertIn("Make the smallest change that meets the objective", source)
+        self.assertIn("preserve unrelated code, comments, formatting", source)
+        self.assertIn("touch only lines needed for the objective", source)
+        self.assertIn("never claim unrun checks", source)
+
     def test_round_state_persists_planning_decision_telemetry(self):
         source = GENERIC_PROJECT.read_text(encoding="utf-8")
 

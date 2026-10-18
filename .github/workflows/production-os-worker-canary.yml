@@ -35,8 +35,8 @@ jobs:
         with:
           python-version: '3.12'
 
-      # A distinct workflow_dispatch is accepted after the API confirms queueing;
-      # unlike simultaneous push triggers, the worker cannot race ahead of the job.
+      # The control plane may already dispatch a worker while queueing. This
+      # workflow_dispatch is a fallback only when no worker was woken.
       - name: Launch and verify real Production-OS worker canary
         run: >-
           python studio/production_os_worker_canary.py

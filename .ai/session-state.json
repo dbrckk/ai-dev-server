@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-16",
+  "updated_at": "2026-10-18",
   "task": "Verify real startup and correct generic inference plus execution commit telemetry",
   "base_commit": "1cb258facb9fcd2877de97e677a83f7ccb72785f",
   "branch": "feat/canary-jumpy-settings-tap-guard-20261015",
@@ -107,7 +107,7 @@
   "current_work": [
     "PR #309 merged f4137d62598333b52dc1988ef8aca2c3978247fe with 7 successful exact-head workflows; bounded Godot planning context now on ai-dev-server/main",
     "Add strict Jumpy-only settings tap guard source-code canary scenario; extend existing tests and qualify exact-head CI before triggering",
-    "After merge increment control canary sequence 33\u219234 and choose jumpy_settings_tap_guard to verify real model-generated GDScript patch (not marker file)",
+    "After merge increment control canary sequence 33→34 and choose jumpy_settings_tap_guard to verify real model-generated GDScript patch (not marker file)",
     "Review actual worker model capacity, change diff, Jumpy headless CI and PR before claiming source-code delivery. Never merge Jumpy checkpoint automatically."
   ],
   "merged_changes": [
@@ -407,5 +407,23 @@
     },
     "validation": "38 selected tests pass; review/CI pending",
     "remaining": "No source delivery or Android readiness. Raw provider reply unavailable; regression uses synthetic invalid envelope. Do not blindly repeat canary; outer-cycle stop-loss still needs assessment."
+  },
+  "latest_qualification": {
+    "scenario": "deterministic hosted worker to trusted draft PR without inference",
+    "canary_run": 39129978378,
+    "worker_run": 39129991255,
+    "redundant_worker_run": 39129993272,
+    "worker_artifact": 12138165262,
+    "target_pr": "dbrckk/Jumpy#36",
+    "target_commit": "e4bc63ccf4ddf1f5c8678aa209794c13e9bee160",
+    "target_exact_sha_ci_run": 39130096902,
+    "provider_runs": 0,
+    "provider_tokens": 0,
+    "limit": "Marker file proves delivery plumbing, not autonomous source-code repair; PR-triggered CI is action_required and the separate exact-SHA dispatch CI succeeded."
+  },
+  "latest_followup": {
+    "task": "Avoid duplicate canary Actions dispatch after control-plane wake",
+    "branch": "fix/canary-single-worker-wake",
+    "validation": "Selected existing canary test and compile pass locally; exact-head CI pending"
   }
 }

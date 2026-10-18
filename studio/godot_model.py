@@ -199,7 +199,6 @@ class GodotModel(Model):
             raise StudioError('Model call budget exhausted; checkpoint retained')
         if len(context.encode()) > 500000:
             raise StudioError('Context exceeds configured safety limit')
-        self.calls += 1
 
         provider_candidates = tuple(
             provider
@@ -289,6 +288,11 @@ class GodotModel(Model):
         compact_source = 'bounded_exact_match_source_excerpts' in context
 
         for provider in provider_candidates:
+            # Count every provider attempted, including failed free-tier
+            # failovers, against the global model call ceiling.
+            if self.calls >= self.limit:
+                raise StudioError('Model call budget exhausted; checkpoint retained')
+            self.calls += 1
             selected_model = provider.model_for(role, False)
             api = self.api if primary_provider is not None and provider == primary_provider else core.API(provider.base, provider.key)
             params = {

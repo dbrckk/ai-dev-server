@@ -252,6 +252,18 @@ class GodotModelTests(unittest.TestCase):
         self.assertEqual(fallback_api.calls[0][2]['model'], 'fallback-general')
         self.assertIn('Godot mobile game product lead', fallback_api.calls[0][2]['messages'][0]['content'])
         api_factory.assert_called_once_with('https://fallback.test/v1', 'fallback-key')
+        self.assertEqual(subject.calls, 2)  # failed primary + successful fallback
+
+        # A single free call remains: no second provider may be contacted.
+        subject = model([StudioError('API unavailable or timed out')], limit=1)
+        fallback_api = FakeAPI([completion(product_value())])
+        fallback_api.base = 'https://fallback.test/v1'
+        with patch('core.API', return_value=fallback_api):
+            with self.assertRaisesRegex(StudioError, 'Model call budget exhausted'):
+                subject.ask('product', 'plan game')
+        self.assertEqual(subject.calls, 1)
+        self.assertEqual(len(subject.api.calls), 1)
+        self.assertEqual(fallback_api.calls, [])
 
         # A successful HTTP call with malformed JSON is not successful
         # inference. The bounded repair tries an alternate provider instead

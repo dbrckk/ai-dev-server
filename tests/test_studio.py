@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
-from core import StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict
+from core import ROLES, StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict
 from run import execute, GitHub
 from queue import matrix
 
@@ -105,6 +105,8 @@ class StudioTests(unittest.TestCase):
                 apply_patch(root, PATCH)
             self.assertFalse(list(Path(outside).iterdir()))
     def test_verdict_fail_closed(self):
+        self.assertIn('Ground changes in supplied source', ROLES['implementation'])
+        self.assertIn('never weaken tests', ROLES['implementation'])
         for v in [{'passed': True, 'blockers': ['bad']}, {'passed': False, 'blockers': []}, {'passed': 'true', 'blockers': []}, {'passed': True}]:
             with self.assertRaises(StudioError):
                 verdict(v)

@@ -1,5 +1,8 @@
 from pathlib import Path
 import unittest
+from unittest.mock import patch
+
+from core import NoRedirect
 
 from production_os_worker_canary import (
     canary_instruction,
@@ -133,6 +136,24 @@ class WorkerCanaryTests(unittest.TestCase):
         self.assertIn("settings_open", guard_client.submissions[0][1]["instruction"])
         with self.assertRaises(ValueError):
             dispatch_worker_after_enqueue(token="not-used", repository="untrusted/repo")
+
+        # A bearer-authenticated GitHub dispatch must reject redirects,
+        # even if an unexpected HTTP 3xx response points off-site.
+        with patch("production_os_worker_canary.urllib.request.build_opener") as opener:
+            opener.return_value.open.return_value.__enter__.return_value.status = 204
+            self.assertEqual(
+                dispatch_worker_after_enqueue(
+                    token="test-only-token", repository="dbrckk/ai-dev-server"
+                ), "accepted",
+            )
+            self.assertEqual(opener.call_count, 1)
+            self.assertIsInstance(opener.call_args.args[0], NoRedirect)
+            request = opener.return_value.open.call_args.args[0]
+            self.assertEqual(
+                request.full_url,
+                "https://api.github.com/repos/dbrckk/ai-dev-server/actions/workflows/"
+                "production-os-actions-worker.yml/dispatches",
+            )
 
     def test_wait_observes_real_terminal_success(self):
         client = FakeClient(("queued", "running", "succeeded"))

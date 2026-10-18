@@ -2610,6 +2610,7 @@ Objective and current plan:
                         "and UI-validation stages. Do not merge until required "
                         "checks and promotion gates are green."
                     ),
+                    expected_sha=base_sha,
                 )
                 state["pull_request"] = pull_request
             except StudioError as exc:

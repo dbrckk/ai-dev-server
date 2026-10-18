@@ -1,12 +1,11 @@
 # Change impact
 
-Base: 49a149a6334f89a6d783795027dcdf62e92aa6a3
-Head: 7c2bdecef25b73a6d363a63c728c3f8fe92ea36c
+Base: f9825d848f3bd0b28f448bbf51058a0fe0623fa2
+Head: 295a3c9e6736af7e7d1c776a70467e2c45e2d344
 
 ## Changed files
 - M studio/godot_model.py
-- M studio/native_model_usage.py
-- M tests/test_godot_model.py
+- M tests/test_provider_429_cooldown.py
 
 ## Affected areas
 - studio

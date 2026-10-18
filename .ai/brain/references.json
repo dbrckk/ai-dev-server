@@ -42,9 +42,27 @@
           "line": 31,
           "preview": "obj = GodotModel.__new__(GodotModel)",
           "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 12,
+          "preview": "from godot_model import GodotModel",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 121,
+          "preview": "subject = GodotModel(limit=4)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 146,
+          "preview": "subject = GodotModel(limit=3)",
+          "definition_candidate": false
         }
       ],
-      "occurrence_count": 5
+      "occurrence_count": 8
     },
     "ask": {
       "definition": {
@@ -602,19 +620,19 @@
         },
         {
           "file": "tests/test_provider_429_cooldown.py",
-          "line": 63,
+          "line": 64,
           "preview": "result, metadata = generic_model.ask(\"system\", \"user\", role=\"product\")",
           "definition_candidate": false
         },
         {
           "file": "tests/test_provider_429_cooldown.py",
-          "line": 73,
+          "line": 74,
           "preview": "again, metadata = generic_model.ask(\"system\", \"user\", role=\"product\")",
           "definition_candidate": false
         },
         {
           "file": "tests/test_provider_429_cooldown.py",
-          "line": 88,
+          "line": 89,
           "preview": "result, _ = generic_model.ask(\"system\", \"user\", role=\"product\")",
           "definition_candidate": false
         },
@@ -718,1674 +736,672 @@
           "line": 195,
           "preview": "def _ask_godot(",
           "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "NativeAccountingError": {
-      "definition": {
-        "file": "studio/native_model_usage.py",
-        "line": 20,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/core.py",
-          "line": 729,
-          "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
-          "definition_candidate": false
         },
         {
-          "file": "studio/core.py",
-          "line": 737,
-          "preview": "except NativeAccountingError:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 10,
-          "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 675,
-          "preview": "isinstance(exc, NativeAccountingError)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 689,
-          "preview": "if isinstance(exc, NativeAccountingError):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_model.py",
-          "line": 317,
-          "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_model.py",
-          "line": 346,
-          "preview": "except NativeAccountingError:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 20,
-          "preview": "class NativeAccountingError(StudioError):",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 24,
-          "preview": "class NativeCapacityError(NativeAccountingError):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 58,
-          "preview": "raise NativeAccountingError('Native usage checkpoint missing or invalid') from None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 83,
-          "preview": "raise NativeAccountingError('Native usage checkpoint unavailable') from None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 142,
-          "preview": "raise NativeAccountingError('Configured native project capacity plan missing or invalid')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 167,
-          "preview": "raise NativeAccountingError('Configured native capacity ledger invalid') from None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 250,
-          "preview": "except NativeAccountingError as exc:",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 14
-    },
-    "NativeCapacityError": {
-      "definition": {
-        "file": "studio/native_model_usage.py",
-        "line": 24,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/autonomous_project.py",
-          "line": 301,
-          "preview": "from native_model_usage import NativeCapacityError",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_project.py",
-          "line": 304,
-          "preview": "isinstance(exc, (StudioError, NativeCapacityError))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 24,
-          "preview": "class NativeCapacityError(NativeAccountingError):",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 192,
-          "preview": "raise NativeCapacityError(reason)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_project.py",
-          "line": 183,
-          "preview": "from native_model_usage import NativeCapacityError",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_autonomous_project.py",
-          "line": 187,
-          "preview": "raise NativeCapacityError(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "_path": {
-      "definition": {
-        "file": "studio/native_model_usage.py",
-        "line": 28,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/artifact_cas_audit.py",
-          "line": 13,
-          "preview": "def _path() -> Path | None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artifact_cas_audit.py",
-          "line": 19,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artifact_cas_audit.py",
-          "line": 42,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artifact_cas_stats.py",
-          "line": 12,
-          "preview": "def _path() -> Path | None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artifact_cas_stats.py",
-          "line": 18,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artifact_cas_stats.py",
-          "line": 36,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/full_gate_cache.py",
-          "line": 26,
-          "preview": "def _path() -> Path | None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/full_gate_cache.py",
-          "line": 74,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/full_gate_cache.py",
-          "line": 99,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_execution_checkpoint_store.py",
-          "line": 26,
-          "preview": "def _path(project_id: str) -> str:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_execution_checkpoint_store.py",
-          "line": 50,
-          "preview": "target = _path(project_id)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_execution_checkpoint_store.py",
-          "line": 97,
-          "preview": "\"path\": _path(project_id),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/immutable_artifact_cache.py",
-          "line": 21,
-          "preview": "def _path() -> Path | None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/immutable_artifact_cache.py",
-          "line": 169,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/immutable_artifact_cache.py",
-          "line": 261,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 28,
-          "preview": "def _path():",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 62,
-          "preview": "path = Path(path) if path else _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
+          "file": "tests/test_provider_429_cooldown.py",
           "line": 122,
-          "preview": "path = _path()",
+          "preview": "self.assertEqual(subject._ask_godot(\"design\", \"Minimal JSON\"), {\"ok\": True})",
           "definition_candidate": false
         },
         {
-          "file": "studio/persistent_quick_gate_cache.py",
-          "line": 17,
-          "preview": "def _path() -> Path | None:",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 131,
+          "preview": "self.assertEqual(subject._ask_godot(\"design\", \"Minimal JSON\"), {\"ok\": True})",
           "definition_candidate": false
         },
         {
-          "file": "studio/persistent_quick_gate_cache.py",
-          "line": 36,
-          "preview": "path = _path()",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 147,
+          "preview": "self.assertEqual(subject._ask_godot(\"design\", \"Minimal JSON\"), {\"ok\": True})",
           "definition_candidate": false
-        },
+        }
+      ],
+      "occurrence_count": 5
+    },
+    "_ProviderAPI": {
+      "definition": {
+        "file": "tests/test_provider_429_cooldown.py",
+        "line": 18,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
         {
-          "file": "studio/persistent_quick_gate_cache.py",
-          "line": 54,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/repair_strategy.py",
-          "line": 49,
-          "preview": "def _path() -> Path | None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/repair_strategy.py",
-          "line": 55,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/repair_strategy.py",
-          "line": 117,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/strict_task_claim_store.py",
-          "line": 16,
-          "preview": "def _path() -> Path | None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/strict_task_claim_store.py",
-          "line": 37,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/strict_task_claim_store.py",
-          "line": 63,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/strict_task_claim_store.py",
-          "line": 82,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/task_claim_store.py",
-          "line": 16,
-          "preview": "def _path() -> Path | None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/task_claim_store.py",
-          "line": 35,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/task_claim_store.py",
-          "line": 61,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/task_claim_store.py",
-          "line": 80,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/telemetry.py",
-          "line": 19,
-          "preview": "def _path() -> Path | None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/telemetry.py",
-          "line": 25,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/workflow_checkpoint.py",
+          "file": "tests/test_provider_429_cooldown.py",
           "line": 18,
-          "preview": "def _path() -> Path | None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/workflow_checkpoint.py",
-          "line": 50,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/workflow_checkpoint.py",
-          "line": 63,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/workflow_checkpoint.py",
-          "line": 88,
-          "preview": "path = _path()",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 38
-    },
-    "_empty": {
-      "definition": {
-        "file": "studio/native_model_usage.py",
-        "line": 33,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/capacity_efficiency.py",
-          "line": 15,
-          "preview": "def _empty() -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_efficiency.py",
-          "line": 21,
-          "preview": "return _empty()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_efficiency.py",
-          "line": 25,
-          "preview": "return _empty()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_efficiency.py",
-          "line": 27,
-          "preview": "return _empty()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_ledger.py",
-          "line": 17,
-          "preview": "def _empty() -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_ledger.py",
-          "line": 24,
-          "preview": "return _empty()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_ledger.py",
-          "line": 28,
-          "preview": "return _empty()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_ledger.py",
-          "line": 30,
-          "preview": "return _empty()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 33,
-          "preview": "def _empty():",
+          "preview": "class _ProviderAPI:",
           "definition_candidate": true
         },
         {
-          "file": "studio/native_model_usage.py",
-          "line": 43,
-          "preview": "return _empty()",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 53,
+          "preview": "_ProviderAPI.calls = []",
           "definition_candidate": false
         },
         {
-          "file": "studio/native_model_usage.py",
-          "line": 51,
-          "preview": "for k in _empty()['usage'] if k not in ('agents', 'models')))",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 54,
+          "preview": "_ProviderAPI.bad_status = 429",
           "definition_candidate": false
         },
         {
-          "file": "studio/recovery_controller.py",
-          "line": 15,
-          "preview": "def _empty() -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/recovery_controller.py",
-          "line": 21,
-          "preview": "return _empty()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/recovery_controller.py",
-          "line": 25,
-          "preview": "return _empty()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/recovery_controller.py",
-          "line": 27,
-          "preview": "return _empty()",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 15
-    },
-    "_load": {
-      "definition": {
-        "file": "studio/native_model_usage.py",
-        "line": 41,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/architecture_replacement_postmerge_pipeline.py",
-          "line": 23,
-          "preview": "def _load(path: Path, label: str) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_postmerge_pipeline.py",
-          "line": 33,
-          "preview": "work_order=_load(work_order_path,\"work order\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_postmerge_pipeline.py",
-          "line": 34,
-          "preview": "merged=_load(merged_path,\"merged evidence\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_postmerge_pipeline.py",
-          "line": 35,
-          "preview": "package=_load(package_path,\"PR package\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration_cli.py",
-          "line": 23,
-          "preview": "def _load(path: Path, label: str) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration_cli.py",
-          "line": 61,
-          "preview": "registry=_load(Path(args.registry),\"registry\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration_cli.py",
+          "file": "tests/test_provider_429_cooldown.py",
           "line": 62,
-          "preview": "learning=_load(Path(args.learning),\"learning\") if args.learning else None",
+          "preview": "patch(\"generic_model.API\", _ProviderAPI),",
           "definition_candidate": false
         },
         {
-          "file": "studio/architecture_reputation_policy_migration_cli.py",
-          "line": 72,
-          "preview": "plan=_load(Path(args.plan),\"migration plan\")",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 67,
+          "preview": "self.assertEqual(_ProviderAPI.calls, [",
           "definition_candidate": false
         },
         {
-          "file": "studio/architecture_reputation_policy_migration_cli.py",
-          "line": 93,
-          "preview": "registry=_load(registry_path,\"registry\")",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 77,
+          "preview": "self.assertEqual(_ProviderAPI.calls[-1], \"https://model.invalid/good\")",
           "definition_candidate": false
         },
         {
-          "file": "studio/architecture_reputation_policy_migration_cli.py",
-          "line": 94,
-          "preview": "plan=_load(Path(args.plan),\"migration plan\")",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 78,
+          "preview": "self.assertEqual(_ProviderAPI.calls.count(\"https://model.invalid/bad\"), 1)",
           "definition_candidate": false
         },
         {
-          "file": "studio/architecture_reputation_policy_migration_cli.py",
-          "line": 95,
-          "preview": "authorization=_load(Path(args.authorization),\"authorization\")",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 81,
+          "preview": "_ProviderAPI.bad_status = 503",
           "definition_candidate": false
         },
         {
-          "file": "studio/architecture_reputation_policy_migration_cli.py",
-          "line": 96,
-          "preview": "approval=_load(Path(args.approval),\"approval provenance\") if args.approval else None",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 87,
+          "preview": "patch(\"generic_model.API\", _ProviderAPI),",
           "definition_candidate": false
         },
         {
-          "file": "studio/architecture_reputation_policy_migration_cli.py",
-          "line": 97,
-          "preview": "ledger=_load(Path(args.ledger),\"approval ledger\") if args.ledger else None",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 100,
+          "preview": "patch(\"core.API\", _ProviderAPI),",
           "definition_candidate": false
         },
         {
-          "file": "studio/architecture_reputation_policy_migration_cli.py",
-          "line": 99,
-          "preview": "github_attestation=_load(Path(args.github_attestation),\"GitHub attestation\")",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 106,
+          "preview": "self.assertIn(\"https://model.invalid/good\", _ProviderAPI.calls)",
           "definition_candidate": false
         },
         {
-          "file": "studio/native_model_usage.py",
-          "line": 41,
-          "preview": "def _load(path):",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 66,
-          "preview": "value = _load(path)",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 107,
+          "preview": "before = _ProviderAPI.calls.count(\"https://model.invalid/bad\")",
           "definition_candidate": false
         },
         {
-          "file": "studio/native_model_usage.py",
-          "line": 126,
-          "preview": "_save(path, _load(path))  # Verify storage before submitting inference.",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 109,
+          "preview": "self.assertEqual(_ProviderAPI.calls.count(\"https://model.invalid/bad\"), before)",
           "definition_candidate": false
         },
         {
-          "file": "studio/native_model_usage.py",
-          "line": 185,
-          "preview": "value = _load(path); value['capacity_exhausted'] = True; _save(path, value)",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 113,
+          "preview": "_ProviderAPI.calls = []",
           "definition_candidate": false
         },
         {
-          "file": "studio/native_model_usage.py",
-          "line": 199,
-          "preview": "value = _load(path); usage = value['usage']",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 119,
+          "preview": "patch(\"core.API\", _ProviderAPI),",
           "definition_candidate": false
         },
         {
-          "file": "studio/native_model_usage.py",
-          "line": 237,
-          "preview": "value = _load(path); usage = value['usage']",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 123,
+          "preview": "self.assertEqual(_ProviderAPI.calls, [",
           "definition_candidate": false
         },
         {
-          "file": "studio/native_model_usage.py",
-          "line": 246,
-          "preview": "value = _load(path); usage = value['usage']",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 132,
+          "preview": "self.assertEqual(_ProviderAPI.calls.count(\"https://model.invalid/bad\"), 1)",
           "definition_candidate": false
         },
         {
-          "file": "studio/recovery_controller.py",
-          "line": 19,
-          "preview": "def _load(path: Path) -> dict:",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 137,
+          "preview": "_ProviderAPI.calls = []",
           "definition_candidate": false
         },
         {
-          "file": "studio/recovery_controller.py",
-          "line": 52,
-          "preview": "data = _load(path)",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 138,
+          "preview": "_ProviderAPI.bad_status = 503",
           "definition_candidate": false
         },
         {
-          "file": "studio/routing_calibration.py",
-          "line": 10,
-          "preview": "def _load(path: Path) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/routing_calibration.py",
-          "line": 56,
-          "preview": "audit = _load(audit_path)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/routing_calibration.py",
-          "line": 57,
-          "preview": "outcomes = [_load(path) for path in outcome_paths]",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 144,
+          "preview": "patch(\"core.API\", _ProviderAPI),",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 26
+      "occurrence_count": 20
     },
-    "snapshot": {
+    "__init__": {
       "definition": {
-        "file": "studio/native_model_usage.py",
-        "line": 61,
+        "file": "tests/test_provider_429_cooldown.py",
+        "line": 22,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/agents/orchestrator.py",
-          "line": 98,
-          "preview": "snapshot=fetch_omniroute_summary(",
+          "file": "studio/agents/adapters.py",
+          "line": 28,
+          "preview": "def __init__(self, spec: AgentSpec):",
           "definition_candidate": false
         },
         {
-          "file": "studio/agents/orchestrator.py",
-          "line": 106,
-          "preview": "not snapshot.authenticated_usage",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 107,
-          "preview": "or snapshot.remaining_tokens is None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 108,
-          "preview": "or int(snapshot.remaining_tokens) <= 0",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/workspace.py",
-          "line": 8,
-          "preview": "def snapshot(root:Path)->dict[str,str]:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/workspace.py",
-          "line": 17,
-          "preview": "if total>MAX_SNAPSHOT_BYTES: raise ValueError(\"Agent workspace snapshot too large\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/workspace.py",
-          "line": 22,
-          "preview": "after=snapshot(root)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/workspace.py",
-          "line": 39,
-          "preview": "current=snapshot(root)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_project.py",
-          "line": 319,
-          "preview": "from native_model_usage import snapshot as native_snapshot",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_ledger.py",
-          "line": 536,
-          "preview": "def snapshot(path: Path, *, now: float | None = None) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_scheduler.py",
-          "line": 433,
-          "preview": "snapshot = fetch_omniroute_summary(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_scheduler.py",
-          "line": 438,
-          "preview": "live_row = snapshot.provider_row(\"omniroute\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_scheduler.py",
-          "line": 441,
-          "preview": "\"authenticated_usage\": snapshot.authenticated_usage,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_scheduler.py",
-          "line": 442,
-          "preview": "\"steady_recurring_tokens\": snapshot.steady_recurring_tokens,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_scheduler.py",
-          "line": 443,
-          "preview": "\"used_this_month\": snapshot.used_this_month,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_scheduler.py",
-          "line": 444,
-          "preview": "\"remaining_tokens\": snapshot.remaining_tokens,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_scheduler.py",
-          "line": 445,
-          "preview": "\"catalog_updated_at\": snapshot.catalog_updated_at,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_scheduler.py",
-          "line": 446,
-          "preview": "\"catalog_source\": snapshot.catalog_source,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_status.py",
-          "line": 1,
-          "preview": "\"\"\"Safe capacity snapshot for reports; never exposes provider keys.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_status.py",
-          "line": 10,
-          "preview": "def snapshot(quota_path: Path | None = None) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/cost_drift.py",
-          "line": 82,
-          "preview": "def snapshot(self) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_qa.py",
+          "file": "studio/agents/registry.py",
           "line": 73,
-          "preview": "'-no-snapshot', '-no-boot-anim', '-gpu', 'swiftshader_indirect'],",
+          "preview": "def __init__(self, specs: Iterable[AgentSpec] = _DEFAULTS):",
           "definition_candidate": false
         },
         {
-          "file": "studio/existing_project.py",
-          "line": 1,
-          "preview": "\"\"\"Plan and materialize a bounded existing mobile repository snapshot.",
+          "file": "studio/core.py",
+          "line": 329,
+          "preview": "def __init__(self, status, *, pending_accepted=False):",
           "definition_candidate": false
         },
         {
-          "file": "studio/fleet_daemon.py",
-          "line": 11,
-          "preview": "from capacity_ledger import snapshot as capacity_ledger_snapshot",
+          "file": "studio/core.py",
+          "line": 334,
+          "preview": "super().__init__('API HTTP ' + str(status))",
           "definition_candidate": false
         },
         {
-          "file": "studio/fleet_daemon.py",
-          "line": 13,
-          "preview": "from fleet_metrics import append as append_metrics, snapshot",
+          "file": "studio/core.py",
+          "line": 345,
+          "preview": "def __init__(self, base, key):",
           "definition_candidate": false
         },
         {
-          "file": "studio/fleet_daemon.py",
-          "line": 35,
-          "preview": "metric_row = snapshot(root)",
+          "file": "studio/core.py",
+          "line": 434,
+          "preview": "def __init__(self, limit, avoid_providers=()):",
           "definition_candidate": false
         },
         {
-          "file": "studio/fleet_metrics.py",
-          "line": 30,
-          "preview": "def snapshot(root: Path | str = \"studio-output\", *, ts: float | None = None) -> dict:",
+          "file": "studio/core.py",
+          "line": 919,
+          "preview": "def __init__(self, root):",
           "definition_candidate": false
         },
         {
-          "file": "studio/fleet_metrics.py",
-          "line": 85,
-          "preview": "result = append(Path(args.history), snapshot(args.root))",
+          "file": "studio/generic_capability_isolated_validation.py",
+          "line": 120,
+          "preview": "(root/\"studio/__init__.py\").write_text(\"\")",
           "definition_candidate": false
         },
         {
-          "file": "studio/flutter_workspace.py",
-          "line": 17,
-          "preview": "def snapshot(root: Path) -> dict[str, str]:",
+          "file": "studio/generic_capability_isolated_validation.py",
+          "line": 121,
+          "preview": "(root/\"studio/capabilities/__init__.py\").write_text(\"\")",
           "definition_candidate": false
         },
         {
-          "file": "studio/flutter_workspace.py",
-          "line": 33,
-          "preview": "raise StudioError(\"Flutter repair workspace snapshot too large\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/flutter_workspace.py",
-          "line": 39,
-          "preview": "after = snapshot(root)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/flutter_workspace.py",
-          "line": 59,
-          "preview": "current = snapshot(root)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/full_gate_cache.py",
-          "line": 11,
-          "preview": "from flutter_workspace import snapshot as flutter_snapshot",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 32,
-          "preview": "from agents.workspace import snapshot as snapshot_agent_workspace, validate_delta as validate_agent_delta, restore as restore_agent_workspace",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 64,
-          "preview": "from capacity_status import snapshot as capacity_snapshot",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 69,
-          "preview": "snapshot as local_model_reputation_snapshot,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 74,
-          "preview": "snapshot as local_model_specialization_snapshot,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 123,
-          "preview": "Judge whether the user's objective is complete from the repository snapshot and actual verification results.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 133,
-          "preview": "# runs retain the prior snapshot limit.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 1012,
-          "preview": "# request. Prefer real source files in a compact bounded snapshot;",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 1014,
-          "preview": "snapshot = _snapshot(work, 24_000 if catalog_integration else 420_000, source_first=catalog_integration)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 1036,
-          "preview": "file_count=len(snapshot[\"files\"]),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 1037,
-          "preview": "source_bytes=int(snapshot[\"bytes\"]),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 1094,
-          "preview": "\"repository\": snapshot,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 1235,
-          "preview": "\"global_cost\":cost_controller.snapshot(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 2542,
-          "preview": "\"run_cost\": cost_controller.snapshot(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 2543,
-          "preview": "\"cost_drift\": drift_detector.snapshot(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 2586,
-          "preview": "state[\"model_calls_this_cycle\"] = int(cost_controller.snapshot().get(\"model_calls\", 0))",
+          "file": "studio/generic_capability_isolated_validation.py",
+          "line": 122,
+          "preview": "(root/\"tests/__init__.py\").write_text(\"\")",
           "definition_candidate": false
         },
         {
           "file": "studio/generic_repository.py",
-          "line": 1,
-          "preview": "\"\"\"Bounded GitHub snapshot/publish backend for generic projects.\"\"\"",
+          "line": 24,
+          "preview": "def __init__(self,github,repo:str,project_id:str):",
           "definition_candidate": false
         },
         {
-          "file": "studio/github_runner.py",
-          "line": 1121,
-          "preview": "from native_model_usage import snapshot as native_snapshot",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_device_qa.py",
-          "line": 61,
-          "preview": "return subprocess.Popen(['emulator','-avd',AVD_NAME,'-no-window','-no-audio','-no-snapshot',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/local_model_reputation.py",
-          "line": 232,
-          "preview": "def snapshot(data: dict) -> list[dict]:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/local_model_specialization.py",
-          "line": 149,
-          "preview": "def snapshot(data: dict) -> list[dict]:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 61,
-          "preview": "def snapshot(path=None):",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 409,
-          "preview": "\"\"\"Return a safe global token-capacity snapshot for Production-OS.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 418,
-          "preview": "snapshot = fetch_summary(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 435,
-          "preview": "authenticated = bool(snapshot.authenticated_usage)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 441,
-          "preview": "int(snapshot.steady_recurring_tokens)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 443,
-          "preview": "else int(snapshot.steady_recurring_tokens)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 446,
-          "preview": "int(snapshot.used_this_month)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 447,
-          "preview": "if snapshot.used_this_month is not None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 451,
-          "preview": "int(snapshot.remaining_tokens)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 452,
-          "preview": "if snapshot.remaining_tokens is not None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 455,
-          "preview": "\"catalog_updated_at\": snapshot.catalog_updated_at,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 456,
-          "preview": "\"catalog_source\": snapshot.catalog_source,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1234,
-          "preview": "from native_model_usage import snapshot as native_snapshot",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/provider_health.py",
-          "line": 192,
-          "preview": "snapshot = {}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/provider_health.py",
-          "line": 198,
-          "preview": "snapshot[provider] = {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/provider_health.py",
-          "line": 207,
-          "preview": "return snapshot",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/quick_gate_cache.py",
-          "line": 26,
-          "preview": "def workspace_hash(snapshot: dict[str, str]) -> str:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/quick_gate_cache.py",
-          "line": 31,
-          "preview": "for path, content in snapshot.items()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/release_candidate_search.py",
-          "line": 12,
-          "preview": "snapshot as snapshot_workspace,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/release_repair.py",
-          "line": 12,
-          "preview": "from flutter_workspace import snapshot as snapshot_agent_workspace, restore as restore_agent_workspace, delta as validate_agent_delta",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/release_repair.py",
-          "line": 371,
-          "preview": "def _restore(root: Path, snapshot: dict[str, bytes | None]) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/release_repair.py",
-          "line": 372,
-          "preview": "for rel, original in snapshot.items():",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/run.py",
-          "line": 33,
-          "preview": "from capacity_status import snapshot as capacity_snapshot",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/run.py",
-          "line": 37,
-          "preview": "snapshot as local_model_reputation_snapshot,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/run.py",
-          "line": 42,
-          "preview": "snapshot as local_model_specialization_snapshot,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/run_cost_controller.py",
-          "line": 60,
-          "preview": "def snapshot(self) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/security_agent.py",
-          "line": 59,
-          "preview": "snapshot = {}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/security_agent.py",
-          "line": 62,
-          "preview": "snapshot[item[\"path\"]] = path.read_bytes() if path.is_file() else None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/security_agent.py",
-          "line": 73,
-          "preview": "for rel, original in snapshot.items():",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_agent_workspace.py",
-          "line": 5,
-          "preview": "from agents.workspace import snapshot,validate_delta,restore",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_agent_workspace.py",
-          "line": 11,
-          "preview": "before=snapshot(root); (root/\"a.py\").write_text(\"x=2\\n\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_agent_workspace.py",
-          "line": 16,
-          "preview": "before=snapshot(root); (root/\"a.py\").unlink()",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_capacity_ledger.py",
-          "line": 101,
-          "preview": "self.assertEqual(ledger.snapshot(path, now=12)[\"reserved_tokens\"], 0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_capacity_scheduler_omniroute.py",
-          "line": 18,
-          "preview": "snapshot = OmniRouteCapacitySnapshot(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_capacity_scheduler_omniroute.py",
-          "line": 48,
-          "preview": "return_value=snapshot,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_cost_drift.py",
-          "line": 66,
-          "preview": "self.assertEqual(len(d.snapshot()[\"samples\"]), 20)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_fleet_daemon.py",
-          "line": 14,
-          "preview": "patch(\"fleet_daemon.snapshot\", return_value={\"ts\": 1, \"healthy\": 1}), \\",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_fleet_daemon.py",
-          "line": 30,
-          "preview": "patch(\"fleet_daemon.snapshot\", return_value={\"ts\": 1, \"healthy\": 1}), \\",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_fleet_daemon.py",
-          "line": 46,
-          "preview": "patch(\"fleet_daemon.snapshot\", return_value={\"ts\": 1, \"healthy\": 1}), \\",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_fleet_daemon.py",
-          "line": 68,
-          "preview": "patch(\"fleet_daemon.snapshot\", return_value={\"ts\": 1, \"healthy\": 2}), \\",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_fleet_metrics.py",
-          "line": 43,
-          "preview": "row = fleet_metrics.snapshot(\"ignored\", ts=100.0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_model_capacity.py",
-          "line": 62,
-          "preview": "from native_model_usage import snapshot",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_model_capacity.py",
-          "line": 63,
-          "preview": "journal = snapshot()['usage']",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_model_capacity.py",
-          "line": 67,
-          "preview": "self.assertEqual(snapshot()['usage']['total_tokens'], 225)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_model_capacity.py",
-          "line": 68,
-          "preview": "self.assertEqual(snapshot()['usage']['estimated_calls'], 0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 346,
-          "preview": "from native_model_usage import snapshot",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 359,
-          "preview": "usage=snapshot()['usage']",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 368,
-          "preview": "self.assertTrue(snapshot()['capacity_exhausted'])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 369,
-          "preview": "self.assertEqual(snapshot()['usage']['runs'],1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 414,
-          "preview": "self.assertFalse(snapshot()['capacity_exhausted'])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 442,
-          "preview": "self.assertEqual(snapshot()['usage']['runs'], 0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 443,
-          "preview": "self.assertTrue(snapshot()['capacity_exhausted'])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 459,
-          "preview": "self.assertEqual(snapshot()['usage']['runs'], 1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 488,
-          "preview": "self.assertEqual(snapshot()['usage']['runs'], 0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_omniroute_capacity.py",
-          "line": 27,
-          "preview": "snapshot = parse_summary({",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_omniroute_capacity.py",
-          "line": 35,
-          "preview": "self.assertEqual(snapshot.steady_recurring_tokens, 1_000_000)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_omniroute_capacity.py",
+          "file": "studio/generic_smoke.py",
           "line": 36,
-          "preview": "self.assertEqual(snapshot.used_this_month, 250_000)",
+          "preview": "def __init__(self, github, target_repo, project_id):",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_omniroute_capacity.py",
-          "line": 37,
-          "preview": "self.assertEqual(snapshot.remaining_tokens, 750_000)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_omniroute_capacity.py",
-          "line": 38,
-          "preview": "self.assertTrue(snapshot.authenticated_usage)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_omniroute_capacity.py",
-          "line": 39,
-          "preview": "self.assertEqual(snapshot.provider_row()[\"available_tokens\"], 750_000)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_omniroute_capacity.py",
-          "line": 42,
-          "preview": "snapshot = parse_summary({",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_omniroute_capacity.py",
-          "line": 50,
-          "preview": "self.assertFalse(snapshot.authenticated_usage)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_omniroute_capacity.py",
-          "line": 51,
-          "preview": "self.assertEqual(snapshot.provider_row()[\"available_tokens\"], 0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_omniroute_capacity.py",
-          "line": 52,
-          "preview": "self.assertEqual(snapshot.steady_recurring_tokens, 1_000_000)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_omniroute_capacity.py",
-          "line": 71,
-          "preview": "snapshot = fetch_summary(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_omniroute_capacity.py",
-          "line": 81,
-          "preview": "self.assertEqual(snapshot.remaining_tokens, 60)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_omniroute_capacity.py",
-          "line": 95,
-          "preview": "snapshot = fetch_summary(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 120
-    },
-    "_save": {
-      "definition": {
-        "file": "studio/native_model_usage.py",
-        "line": 79,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/candidate_portfolio_learning.py",
-          "line": 26,
-          "preview": "def _save(path: Path, data: dict) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/candidate_portfolio_learning.py",
-          "line": 77,
-          "preview": "_save(path, data)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/contextual_routing_memory.py",
-          "line": 51,
-          "preview": "def _save(path: Path, data: dict) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/contextual_routing_memory.py",
-          "line": 92,
-          "preview": "_save(path, data)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/contextual_strategy_efficiency.py",
-          "line": 48,
-          "preview": "def _save(path:Path,data:dict)->None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/contextual_strategy_efficiency.py",
-          "line": 91,
-          "preview": "_save(path,data)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/local_model_benchmark.py",
+          "file": "studio/godot_session.py",
           "line": 16,
-          "preview": "def _save(path: Path, data: dict) -> None:",
+          "preview": "def __init__(self, root: Path):",
           "definition_candidate": false
         },
         {
-          "file": "studio/local_model_benchmark.py",
-          "line": 149,
-          "preview": "_save(out_path, results)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/local_model_reputation.py",
-          "line": 65,
-          "preview": "def _save(path: Path, data: dict) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/local_model_reputation.py",
-          "line": 122,
-          "preview": "_save(path, data)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/local_model_reputation.py",
-          "line": 158,
-          "preview": "_save(path, data)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/local_model_specialization.py",
-          "line": 45,
-          "preview": "def _save(path: Path, data: dict) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/local_model_specialization.py",
-          "line": 98,
-          "preview": "_save(path, data)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/model_portfolio_learning.py",
-          "line": 61,
-          "preview": "def _save(path: Path, data: dict) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/model_portfolio_learning.py",
-          "line": 92,
-          "preview": "_save(path, data)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 79,
-          "preview": "def _save(path, value):",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 126,
-          "preview": "_save(path, _load(path))  # Verify storage before submitting inference.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 185,
-          "preview": "value = _load(path); value['capacity_exhausted'] = True; _save(path, value)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 204,
-          "preview": "_save(path, value)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 243,
-          "preview": "_save(path, value)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/native_model_usage.py",
-          "line": 249,
-          "preview": "_save(path, value)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/phase_cost_baseline.py",
-          "line": 45,
-          "preview": "def _save(path: Path, data: dict) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/phase_cost_baseline.py",
-          "line": 83,
-          "preview": "_save(path, data)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/provider_cost.py",
+          "file": "studio/play_publisher.py",
           "line": 38,
-          "preview": "def _save(path: Path, data: dict) -> None:",
+          "preview": "def __init__(self, access_token: str, opener=urllib.request.urlopen):",
           "definition_candidate": false
         },
         {
-          "file": "studio/provider_cost.py",
-          "line": 83,
-          "preview": "_save(path, data)",
+          "file": "studio/production_os_worker.py",
+          "line": 218,
+          "preview": "def __init__(",
           "definition_candidate": false
         },
         {
-          "file": "studio/provider_health.py",
-          "line": 64,
-          "preview": "def _save(path: Path, data: dict) -> None:",
+          "file": "studio/provider_probe.py",
+          "line": 13,
+          "preview": "def __init__(self, out):",
           "definition_candidate": false
         },
         {
-          "file": "studio/provider_health.py",
-          "line": 113,
-          "preview": "_save(path, data)",
+          "file": "studio/run.py",
+          "line": 60,
+          "preview": "def __init__(self, repo):",
           "definition_candidate": false
         },
         {
-          "file": "studio/provider_health.py",
-          "line": 142,
-          "preview": "_save(path, data)",
+          "file": "studio/run.py",
+          "line": 61,
+          "preview": "super().__init__('https://api.github.com', os.environ.get('STUDIO_GITHUB_TOKEN', ''))",
           "definition_candidate": false
         },
         {
-          "file": "studio/provider_metrics.py",
-          "line": 37,
-          "preview": "def _save(path: Path, data: dict) -> None:",
+          "file": "tests/test_artwork_stage.py",
+          "line": 12,
+          "preview": "def __init__(self,*args,**kwargs):",
           "definition_candidate": false
         },
         {
-          "file": "studio/provider_metrics.py",
-          "line": 64,
-          "preview": "_save(path, data)",
+          "file": "tests/test_capability_registry_promotion_persist.py",
+          "line": 13,
+          "preview": "def __init__(self):",
           "definition_candidate": false
         },
         {
-          "file": "studio/provider_monthly_quota.py",
-          "line": 32,
-          "preview": "def _save(path: Path, data: dict) -> None:",
+          "file": "tests/test_capability_registry_review.py",
+          "line": 21,
+          "preview": "def __init__(self,pr,runs=None,statuses=None):",
           "definition_candidate": false
         },
         {
-          "file": "studio/provider_monthly_quota.py",
-          "line": 81,
-          "preview": "_save(path, data)",
+          "file": "tests/test_capability_review.py",
+          "line": 15,
+          "preview": "def __init__(self,pr,runs=None,statuses=None):",
           "definition_candidate": false
         },
         {
-          "file": "studio/routing_history.py",
-          "line": 47,
-          "preview": "def _save(path: Path, events: list[dict]) -> None:",
+          "file": "tests/test_ci_diagnostics.py",
+          "line": 10,
+          "preview": "def __init__(self, responses):",
           "definition_candidate": false
         },
         {
-          "file": "studio/routing_history.py",
-          "line": 90,
-          "preview": "_save(path, events)",
+          "file": "tests/test_engine_entry.py",
+          "line": 15,
+          "preview": "def __init__(self, size=1, default_paths=None, checkpoint_paths=None):",
           "definition_candidate": false
         },
         {
-          "file": "studio/safe_rewrite_learning.py",
-          "line": 55,
-          "preview": "def _save(path: Path, data: dict) -> None:",
+          "file": "tests/test_evolution_research.py",
+          "line": 14,
+          "preview": "def __init__(self):",
           "definition_candidate": false
         },
         {
-          "file": "studio/safe_rewrite_learning.py",
-          "line": 101,
-          "preview": "_save(path, data)",
+          "file": "tests/test_evolution_synthesis.py",
+          "line": 8,
+          "preview": "def __init__(self,payload): self.payload=payload; self.calls=[]",
           "definition_candidate": false
         },
         {
-          "file": "studio/safe_rewrite_learning.py",
-          "line": 122,
-          "preview": "_save(path, data)",
+          "file": "tests/test_generic_adaptive_quota_budget.py",
+          "line": 20,
+          "preview": "def __init__(self, base, key):",
           "definition_candidate": false
         },
         {
-          "file": "studio/strategy_efficiency.py",
+          "file": "tests/test_generic_capability_persist.py",
+          "line": 8,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 19,
+          "preview": "def __init__(self, base, key):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 11,
+          "preview": "def __init__(self, pulls=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_goal_store.py",
+          "line": 23,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_memory_store.py",
+          "line": 12,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 18,
+          "preview": "def __init__(self, responses): self.responses = list(responses); self.calls = []",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 20,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
           "line": 52,
-          "preview": "def _save(path: Path, data: dict) -> None:",
+          "preview": "def __init__(self,limit): self.calls=0; self.models_used={}",
           "definition_candidate": false
         },
         {
-          "file": "studio/strategy_efficiency.py",
-          "line": 102,
-          "preview": "_save(path, data)",
+          "file": "tests/test_godot_preview.py",
+          "line": 64,
+          "preview": "def __init__(self,root): self.root=root",
           "definition_candidate": false
         },
         {
-          "file": "studio/verification_cost.py",
-          "line": 42,
-          "preview": "def _save(path: Path, data: dict) -> None:",
+          "file": "tests/test_godot_repository_probe.py",
+          "line": 17,
+          "preview": "def __init__(self, root): self.root = root",
           "definition_candidate": false
         },
         {
-          "file": "studio/verification_cost.py",
-          "line": 73,
-          "preview": "_save(path, data)",
+          "file": "tests/test_godot_visual_qa.py",
+          "line": 15,
+          "preview": "def __init__(self,limit): self.models_used={}",
           "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 41
-    },
-    "_reported": {
-      "definition": {
-        "file": "studio/native_model_usage.py",
-        "line": 86,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
+        },
         {
-          "file": "studio/native_model_usage.py",
-          "line": 86,
-          "preview": "def _reported(response):",
+          "file": "tests/test_idempotent_model.py",
+          "line": 14,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_journeys.py",
+          "line": 58,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_journeys.py",
+          "line": 72,
+          "preview": "def __init__(self): self.calls, self.limit = 0, 9",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_journeys.py",
+          "line": 82,
+          "preview": "def __init__(self): self.calls, self.limit = 0, 1",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_journeys.py",
+          "line": 111,
+          "preview": "def __init__(self): self.calls, self.limit = 0, 2",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_journeys.py",
+          "line": 122,
+          "preview": "def __init__(self): self.calls, self.limit = 0, 10",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_omniroute_capacity.py",
+          "line": 12,
+          "preview": "def __init__(self, payload):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_stage.py",
+          "line": 56,
+          "preview": "def __init__(self,*a,**k): pass",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_privacy_stage.py",
+          "line": 41,
+          "preview": "def __init__(self,*a,**k): pass",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 19,
+          "preview": "def __init__(self, base, key):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 51,
+          "preview": "def __init__(self, *args):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 67,
+          "preview": "def __init__(self, base, key):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_local_e2e.py",
+          "line": 21,
+          "preview": "def __init__(self, jobs=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_resume_objectives.py",
+          "line": 11,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_canary.py",
+          "line": 14,
+          "preview": "def __init__(self, statuses=(\"succeeded\",)):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_cli.py",
+          "line": 13,
+          "preview": "def __init__(self, base_url, token):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 43,
+          "preview": "def __init__(self, job):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 84,
+          "preview": "def __init__(self, status, payload=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 22,
+          "preview": "def __init__(self, base, key):",
           "definition_candidate": true
         },
         {
-          "file": "studio/native_model_usage.py",
-          "line": 217,
-          "preview": "reported = _reported(response)",
+          "file": "tests/test_release.py",
+          "line": 11,
+          "preview": "def __init__(self, root, fail_at=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 28,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 39,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 158,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 251,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 312,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 371,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 431,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 484,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 538,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 595,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 660,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_candidate_search.py",
+          "line": 740,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_repair.py",
+          "line": 28,
+          "preview": "def __init__(self, limit):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_repair.py",
+          "line": 110,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_repair.py",
+          "line": 117,
+          "preview": "def __init__(self, limit):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release_repair.py",
+          "line": 180,
+          "preview": "def __init__(self, limit):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_agent.py",
+          "line": 13,
+          "preview": "def __init__(self, limit):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_agent.py",
+          "line": 31,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_agent.py",
+          "line": 39,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_stage.py",
+          "line": 43,
+          "preview": "def __init__(self, *a, **k):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 21,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 50,
+          "preview": "def __init__(self, limit):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 61,
+          "preview": "def __init__(self, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 206,
+          "preview": "def __init__(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 222,
+          "preview": "def __init__(self):",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 2
+      "occurrence_count": 83
     },
     "call": {
       "definition": {
-        "file": "studio/native_model_usage.py",
-        "line": 110,
+        "file": "tests/test_provider_429_cooldown.py",
+        "line": 25,
         "kind": "function",
         "language": "python"
       },
@@ -3036,7 +2052,7 @@
           "file": "studio/native_model_usage.py",
           "line": 110,
           "preview": "def call(api, params, provider, *, capacity_reserved=False, estimated_tokens=None,",
-          "definition_candidate": true
+          "definition_candidate": false
         },
         {
           "file": "studio/native_model_usage.py",
@@ -3113,2398 +2129,175 @@
       ],
       "occurrence_count": 120
     },
-    "FakeAPI": {
+    "_providers": {
       "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 16,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_ci_diagnostics.py",
-          "line": 9,
-          "preview": "class FakeAPI:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci_diagnostics.py",
-          "line": 20,
-          "preview": "api = FakeAPI([",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci_diagnostics.py",
-          "line": 80,
-          "preview": "api = FakeAPI([",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_synthesis.py",
-          "line": 6,
-          "preview": "class FakeAPI:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_synthesis.py",
-          "line": 18,
-          "preview": "root=Path(tmp); order=root/'order.json'; order.write_text(json.dumps(self.order())); research=root/'research.json'; research.write_text(json.dumps(self.research())); api=FakeAPI(se",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_synthesis.py",
-          "line": 21,
-          "preview": "with self.assertRaises(CandidateRejected): synthesize(self.order(),self.research(),api=FakeAPI(candidate),model='test-model')",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_synthesis.py",
-          "line": 23,
-          "preview": "api=FakeAPI(self.candidate())",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 16,
-          "preview": "class FakeAPI:",
-          "definition_candidate": true
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 32,
-          "preview": "obj.api = FakeAPI(responses)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 246,
-          "preview": "fallback_api = FakeAPI([completion(product_value())])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 262,
-          "preview": "fallback_api = FakeAPI([completion(product_value())])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 277,
-          "preview": "fallback_api = FakeAPI([completion(product_value())])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 297,
-          "preview": "fallback_api = FakeAPI([completion(patch_value)])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 331,
-          "preview": "fallback_api = FakeAPI([completion(product_value())])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_live_diagnostics.py",
-          "line": 18,
-          "preview": "class FakeAPI:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_live_diagnostics.py",
-          "line": 28,
-          "preview": "result = diagnose(api_factory=FakeAPI, providers=providers, environ={})",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_live_diagnostics.py",
-          "line": 35,
-          "preview": "smoke = diagnose(api_factory=FakeAPI, providers=providers,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_live_diagnostics.py",
-          "line": 50,
-          "preview": "class FakeAPI:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_live_diagnostics.py",
-          "line": 57,
-          "preview": "result = diagnose(api_factory=FakeAPI, providers=[provider], environ={})",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_live_diagnostics.py",
-          "line": 61,
-          "preview": "with patch.object(FakeAPI, 'call', return_value=response):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_live_diagnostics.py",
-          "line": 62,
-          "preview": "self.assertFalse(diagnose(api_factory=FakeAPI, providers=[provider], environ={})['inference_ready'])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_live_diagnostics.py",
-          "line": 66,
-          "preview": "class FakeAPI:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_live_diagnostics.py",
-          "line": 72,
-          "preview": "result = diagnose(api_factory=FakeAPI, providers=[], environ={",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 23
-    },
-    "__init__": {
-      "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 18,
+        "file": "tests/test_provider_429_cooldown.py",
+        "line": 38,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/agents/adapters.py",
-          "line": 28,
-          "preview": "def __init__(self, spec: AgentSpec):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/registry.py",
-          "line": 73,
-          "preview": "def __init__(self, specs: Iterable[AgentSpec] = _DEFAULTS):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 329,
-          "preview": "def __init__(self, status, *, pending_accepted=False):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 334,
-          "preview": "super().__init__('API HTTP ' + str(status))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 345,
-          "preview": "def __init__(self, base, key):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 434,
-          "preview": "def __init__(self, limit, avoid_providers=()):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 919,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_isolated_validation.py",
-          "line": 120,
-          "preview": "(root/\"studio/__init__.py\").write_text(\"\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_isolated_validation.py",
-          "line": 121,
-          "preview": "(root/\"studio/capabilities/__init__.py\").write_text(\"\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_isolated_validation.py",
-          "line": 122,
-          "preview": "(root/\"tests/__init__.py\").write_text(\"\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_repository.py",
-          "line": 24,
-          "preview": "def __init__(self,github,repo:str,project_id:str):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_smoke.py",
-          "line": 36,
-          "preview": "def __init__(self, github, target_repo, project_id):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_session.py",
-          "line": 16,
-          "preview": "def __init__(self, root: Path):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/play_publisher.py",
+          "file": "tests/test_provider_429_cooldown.py",
           "line": 38,
-          "preview": "def __init__(self, access_token: str, opener=urllib.request.urlopen):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 218,
-          "preview": "def __init__(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/provider_probe.py",
-          "line": 13,
-          "preview": "def __init__(self, out):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/run.py",
-          "line": 60,
-          "preview": "def __init__(self, repo):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/run.py",
-          "line": 61,
-          "preview": "super().__init__('https://api.github.com', os.environ.get('STUDIO_GITHUB_TOKEN', ''))",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_artwork_stage.py",
-          "line": 12,
-          "preview": "def __init__(self,*args,**kwargs):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_capability_registry_promotion_persist.py",
-          "line": 13,
-          "preview": "def __init__(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_capability_registry_review.py",
-          "line": 21,
-          "preview": "def __init__(self,pr,runs=None,statuses=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_capability_review.py",
-          "line": 15,
-          "preview": "def __init__(self,pr,runs=None,statuses=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_ci_diagnostics.py",
-          "line": 10,
-          "preview": "def __init__(self, responses):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_engine_entry.py",
-          "line": 15,
-          "preview": "def __init__(self, size=1, default_paths=None, checkpoint_paths=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_research.py",
-          "line": 14,
-          "preview": "def __init__(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_synthesis.py",
-          "line": 8,
-          "preview": "def __init__(self,payload): self.payload=payload; self.calls=[]",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_adaptive_quota_budget.py",
-          "line": 20,
-          "preview": "def __init__(self, base, key):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_capability_persist.py",
-          "line": 8,
-          "preview": "def __init__(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_model_capacity.py",
-          "line": 19,
-          "preview": "def __init__(self, base, key):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_repository_pull_request.py",
-          "line": 11,
-          "preview": "def __init__(self, pulls=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_github_goal_store.py",
-          "line": 23,
-          "preview": "def __init__(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_github_memory_store.py",
-          "line": 12,
-          "preview": "def __init__(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 18,
-          "preview": "def __init__(self, responses): self.responses = list(responses); self.calls = []",
+          "preview": "def _providers():",
           "definition_candidate": true
         },
         {
-          "file": "tests/test_godot_preview.py",
-          "line": 20,
-          "preview": "def __init__(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_preview.py",
-          "line": 52,
-          "preview": "def __init__(self,limit): self.calls=0; self.models_used={}",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_preview.py",
-          "line": 64,
-          "preview": "def __init__(self,root): self.root=root",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_repository_probe.py",
-          "line": 17,
-          "preview": "def __init__(self, root): self.root = root",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_visual_qa.py",
-          "line": 15,
-          "preview": "def __init__(self,limit): self.models_used={}",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_idempotent_model.py",
-          "line": 14,
-          "preview": "def __init__(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_journeys.py",
-          "line": 58,
-          "preview": "def __init__(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_journeys.py",
-          "line": 72,
-          "preview": "def __init__(self): self.calls, self.limit = 0, 9",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_journeys.py",
-          "line": 82,
-          "preview": "def __init__(self): self.calls, self.limit = 0, 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_journeys.py",
-          "line": 111,
-          "preview": "def __init__(self): self.calls, self.limit = 0, 2",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_journeys.py",
-          "line": 122,
-          "preview": "def __init__(self): self.calls, self.limit = 0, 10",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_omniroute_capacity.py",
-          "line": 12,
-          "preview": "def __init__(self, payload):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_play_stage.py",
-          "line": 56,
-          "preview": "def __init__(self,*a,**k): pass",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_privacy_stage.py",
-          "line": 41,
-          "preview": "def __init__(self,*a,**k): pass",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_live_diagnostics.py",
-          "line": 19,
-          "preview": "def __init__(self, base, key):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_live_diagnostics.py",
-          "line": 51,
-          "preview": "def __init__(self, *args):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_live_diagnostics.py",
-          "line": 67,
-          "preview": "def __init__(self, base, key):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 21,
-          "preview": "def __init__(self, jobs=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_resume_objectives.py",
-          "line": 11,
-          "preview": "def __init__(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_canary.py",
-          "line": 14,
-          "preview": "def __init__(self, statuses=(\"succeeded\",)):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_cli.py",
-          "line": 13,
-          "preview": "def __init__(self, base_url, token):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 43,
-          "preview": "def __init__(self, job):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 84,
-          "preview": "def __init__(self, status, payload=None):",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 61,
+          "preview": "patch(\"generic_model.load_providers\", return_value=_providers()),",
           "definition_candidate": false
         },
         {
           "file": "tests/test_provider_429_cooldown.py",
-          "line": 21,
-          "preview": "def __init__(self, base, key):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release.py",
-          "line": 11,
-          "preview": "def __init__(self, root, fail_at=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_candidate_search.py",
-          "line": 28,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_candidate_search.py",
-          "line": 39,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_candidate_search.py",
-          "line": 158,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_candidate_search.py",
-          "line": 251,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_candidate_search.py",
-          "line": 312,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_candidate_search.py",
-          "line": 371,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_candidate_search.py",
-          "line": 431,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_candidate_search.py",
-          "line": 484,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_candidate_search.py",
-          "line": 538,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_candidate_search.py",
-          "line": 595,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_candidate_search.py",
-          "line": 660,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_candidate_search.py",
-          "line": 740,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_repair.py",
-          "line": 28,
-          "preview": "def __init__(self, limit):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_repair.py",
-          "line": 110,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_repair.py",
-          "line": 117,
-          "preview": "def __init__(self, limit):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_release_repair.py",
-          "line": 180,
-          "preview": "def __init__(self, limit):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_security_agent.py",
-          "line": 13,
-          "preview": "def __init__(self, limit):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_security_agent.py",
-          "line": 31,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_security_agent.py",
-          "line": 39,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_security_stage.py",
-          "line": 43,
-          "preview": "def __init__(self, *a, **k):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_studio.py",
-          "line": 21,
-          "preview": "def __init__(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_studio.py",
-          "line": 50,
-          "preview": "def __init__(self, limit):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_studio.py",
-          "line": 61,
-          "preview": "def __init__(self, root):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_studio.py",
-          "line": 206,
-          "preview": "def __init__(self):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_studio.py",
-          "line": 222,
-          "preview": "def __init__(self):",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 83
-    },
-    "completion": {
-      "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 26,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/adaptation.py",
-          "line": 3,
-          "preview": "This module never executes downloaded code. It turns unsupported completion work",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptation.py",
-          "line": 69,
-          "preview": "completion = report.get('completion', {}) if isinstance(report, dict) else {}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptation.py",
-          "line": 72,
-          "preview": "next_stage = completion.get('next_stage') if isinstance(completion, dict) else None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptation.py",
-          "line": 84,
-          "preview": "if isinstance(completion, dict) and not completion.get('finished') and not next_stage:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptation.py",
           "line": 86,
-          "preview": "'The project is unfinished but the completion contract supplied no next stage.')",
+          "preview": "patch(\"generic_model.load_providers\", return_value=_providers()),",
           "definition_candidate": false
         },
         {
-          "file": "studio/adaptation.py",
-          "line": 107,
-          "preview": "blockers = _clean_strings(completion.get('blockers') if isinstance(completion, dict) else [])",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 57,
-          "preview": "failed or ambiguous verification can never be converted into completion.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 153,
-          "preview": "\"\"\"Do not accept an agent run without its supported completion receipt.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 163,
-          "preview": "# completion receipt. Exit 0 without turn.completed is inconclusive.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 174,
-          "preview": "# A text delta, banner or empty zero-exit process is not completion.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_evaluator.py",
-          "line": 26,
-          "preview": "(report.get(\"completion\") or {}).get(\"blockers\",[]) if isinstance(report.get(\"completion\"),dict) else [],",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_outcome.py",
-          "line": 36,
-          "preview": "completion = 50.0 if successful else 0.0",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_outcome.py",
-          "line": 41,
-          "preview": "return round(completion + blocker_score + cycle_score + round_score + call_score, 3)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 24,
-          "preview": "Do not edit studio/, CI workflows, secrets, completion policy, security policy, or governance files.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artwork_stage.py",
-          "line": 1,
-          "preview": "\"\"\"Validate generated Play Store artwork before privacy/security completion.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artwork_stage.py",
-          "line": 10,
-          "preview": "from completion import apply_completion, next_stage",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artwork_stage.py",
-          "line": 67,
-          "preview": "'next_stage':state.get('completion',{}).get('next_stage'),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_project.py",
-          "line": 120,
-          "preview": "completion = report.get(\"completion\") if isinstance(report, dict) else None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_project.py",
-          "line": 121,
-          "preview": "if not isinstance(completion, dict) or completion.get(\"finished\") is not True:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_project.py",
-          "line": 122,
-          "preview": "return {\"blocked_reason\": \"orchestrator reported complete without completion evidence\"}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_project.py",
-          "line": 330,
-          "preview": "translated[\"learning_summary\"] = \"Verified completion evidence for goal \" + goal_id",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_project.py",
-          "line": 331,
-          "preview": "translated[\"learning_tags\"] = [\"goal-cycle\",\"verified-completion\"]",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/billing_stage.py",
-          "line": 9,
-          "preview": "from completion import apply_completion, next_stage",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/billing_stage.py",
-          "line": 55,
-          "preview": "'next_stage': state.get('completion', {}).get('next_stage'),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_stage.py",
-          "line": 9,
-          "preview": "from completion import apply_completion, next_stage",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_stage.py",
-          "line": 49,
-          "preview": "'next_stage': state.get('completion', {}).get('next_stage'),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
-          "line": 1,
-          "preview": "\"\"\"CircleCI queue adapter using the shared autonomous completion pipeline.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/completion.py",
-          "line": 53,
-          "preview": "\"\"\"Return a deterministic completion assessment without inventing evidence.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/completion.py",
-          "line": 104,
-          "preview": "state[\"completion\"] = report",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 31,
-          "preview": "'review': 'Independent senior mobile reviewer: inspect implementation against every acceptance criterion, security, data durability, accessibility and maintainability. List concret",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 824,
-          "preview": "raise ProtocolError('Provider returned invalid completion envelope')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 827,
-          "preview": "raise ProtocolError('Provider returned invalid completion choice')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_stage.py",
-          "line": 8,
-          "preview": "from completion import apply_completion, next_stage",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_stage.py",
-          "line": 54,
-          "preview": "'next_stage': state.get('completion', {}).get('next_stage'),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_candidate.py",
-          "line": 4,
-          "preview": "adapter, tests and a benchmark fixture. It cannot edit completion/security/privacy",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_candidate.py",
-          "line": 22,
-          "preview": "'studio/completion.py','studio/core.py','studio/security_audit.py','studio/privacy_audit.py',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_synthesis.py",
-          "line": 11,
-          "preview": "Do not modify completion/security/privacy/orchestration/CI policy. Do not include credentials.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 107,
-          "preview": "completion = max(token_count(\"completion_tokens\"), token_count(\"output_tokens\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 108,
-          "preview": "total = max(token_count(\"total_tokens\"), prompt + completion)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 113,
-          "preview": "if prompt + completion < total:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 114,
-          "preview": "remainder = total - prompt - completion",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 116,
-          "preview": "completion += remainder",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 119,
-          "preview": "return prompt, completion, total",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 547,
-          "preview": "# NIM exposes JSON-object completion mode, and a plain completion",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 113,
-          "preview": "Choose \"verify\" when tests/build/runtime evidence can now resolve uncertainty. Never claim completion here.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 876,
-          "preview": "\"completion\": {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 2667,
-          "preview": "\"completion\": {\"finished\": True, \"next_stage\": None, \"blockers\": []},",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 2681,
-          "preview": "\"completion\": {\"finished\": False, \"next_stage\": \"generic_continue\", \"blockers\": [\"verified work remains\"]},",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_smoke.py",
-          "line": 80,
-          "preview": "\"reason\":\"Trusted verification determines completion in this fixed fixture.\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_smoke.py",
-          "line": 128,
-          "preview": "and report.get(\"completion\",{}).get(\"finished\") is True",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_verify.py",
-          "line": 23,
-          "preview": "material, and (for JSON) remains syntactically valid. Semantic completion is still",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 1,
-          "preview": "\"\"\"GitHub Actions adapter for the provider-neutral autonomous completion pipeline.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_android_stage.py",
-          "line": 26,
-          "preview": "completion = state.get('completion')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_android_stage.py",
-          "line": 27,
-          "preview": "if not isinstance(completion, dict) or completion.get('finished') is not False or completion.get('next_stage') != 'godot_android_export_qa':",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_android_stage.py",
-          "line": 38,
-          "preview": "state['completion'] = {'finished':False,'next_stage':'godot_android_export_qa','reason':'Android export evidence incomplete.'}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_android_stage.py",
-          "line": 47,
-          "preview": "state['completion'] = {'finished':False,'next_stage':'godot_device_qa',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_device_stage.py",
-          "line": 32,
-          "preview": "completion=state.get('completion'); export_state=state.get('android_export')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_device_stage.py",
-          "line": 33,
-          "preview": "if (not isinstance(completion,dict) or completion.get('finished') is not False or",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_device_stage.py",
-          "line": 34,
-          "preview": "completion.get('next_stage')!='godot_device_qa' or not isinstance(export_state,dict) or",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_device_stage.py",
-          "line": 50,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_device_qa','reason':'Device QA requires a verified local APK.'}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_device_stage.py",
-          "line": 63,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_device_qa','reason':'Install/launch/runtime smoke evidence incomplete.'}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_device_stage.py",
-          "line": 73,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_runtime_journey_qa',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_final_review_stage.py",
-          "line": 17,
-          "preview": "completion=state.get('completion')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_final_review_stage.py",
-          "line": 18,
-          "preview": "if not isinstance(completion,dict) or completion.get('finished') is not False or completion.get('next_stage')!='godot_final_review_qa':",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_final_review_stage.py",
-          "line": 23,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_final_review_qa','reason':'Final technical release evidence is incomplete.'}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_final_review_stage.py",
-          "line": 34,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_play_submission',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_model.py",
-          "line": 402,
-          "preview": "raise ProtocolError('Provider returned invalid completion envelope')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_model.py",
-          "line": 405,
-          "preview": "raise ProtocolError('Provider returned invalid completion choice')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_play_stage.py",
-          "line": 20,
-          "preview": "state[\"completion\"] = {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_play_stage.py",
-          "line": 49,
-          "preview": "completion = state.get(\"completion\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_play_stage.py",
-          "line": 51,
-          "preview": "not isinstance(completion, dict)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_play_stage.py",
-          "line": 52,
-          "preview": "or completion.get(\"finished\") is not False",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_play_stage.py",
-          "line": 53,
-          "preview": "or completion.get(\"next_stage\") != \"godot_play_submission\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_play_stage.py",
-          "line": 131,
-          "preview": "state[\"completion\"] = {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_play_stage.py",
-          "line": 157,
-          "preview": "return 0 if state.get(\"completion\", {}).get(\"finished\") is True else 1",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_preview.py",
-          "line": 566,
-          "preview": "if state.get('completion', {}).get('next_stage') == 'godot_preview_identical_failure_stop_loss':",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_preview.py",
-          "line": 567,
-          "preview": "state.pop('completion', None)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_preview.py",
-          "line": 575,
-          "preview": "state['completion'] = {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_preview.py",
-          "line": 697,
-          "preview": "if state.get('completion', {}).get('next_stage') == 'godot_preview_identical_failure_stop_loss':",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_preview.py",
-          "line": 698,
-          "preview": "state.pop('completion', None)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_preview.py",
-          "line": 705,
-          "preview": "state['completion'] = {'finished': False, 'next_stage': 'godot_preview_cycle_budget_exhausted'}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_preview.py",
-          "line": 885,
-          "preview": "state['completion'] = {'finished':False,'next_stage':'godot_android_export_qa',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_privacy_security_stage.py",
-          "line": 17,
-          "preview": "completion=state.get('completion'); coverage=state.get('coverage') or {}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_privacy_security_stage.py",
-          "line": 18,
-          "preview": "if (not isinstance(completion,dict) or completion.get('finished') is not False or completion.get('next_stage')!='godot_privacy_security_qa'",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_privacy_security_stage.py",
-          "line": 24,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_privacy_security_qa','reason':'Privacy/security evidence incomplete.'}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_privacy_security_stage.py",
-          "line": 38,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_final_review_qa',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_artifact_stage.py",
-          "line": 31,
-          "preview": "completion=state.get('completion'); preflight=state.get('release_preflight')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_artifact_stage.py",
-          "line": 32,
-          "preview": "if (not isinstance(completion,dict) or completion.get('finished') is not False or completion.get('next_stage')!='godot_release_artifact_qa'",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_artifact_stage.py",
-          "line": 39,
-          "preview": "state['release_status']='human_action_required'; state['completion']={'finished':False,'next_stage':'godot_release_qa','reason':'Release signing credentials are no longer available",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_artifact_stage.py",
-          "line": 48,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_release_artifact_qa','reason':'Offline unsigned AAB evidence incomplete.'}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_artifact_stage.py",
-          "line": 70,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_store_metadata_qa',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_stage.py",
-          "line": 21,
-          "preview": "completion=state.get('completion'); coverage=state.get('coverage') or {}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_stage.py",
-          "line": 22,
-          "preview": "if (not isinstance(completion,dict) or completion.get('finished') is not False or completion.get('next_stage')!='godot_release_qa'",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_stage.py",
-          "line": 30,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_release_qa','reason':'Play release preset requirements are not satisfied.'}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_stage.py",
-          "line": 37,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_release_qa',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_stage.py",
-          "line": 47,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_release_artifact_qa',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_runtime_journey_stage.py",
-          "line": 24,
-          "preview": "completion=state.get('completion')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_runtime_journey_stage.py",
-          "line": 25,
-          "preview": "if not isinstance(completion,dict) or completion.get('finished') is not False or completion.get('next_stage')!='godot_runtime_journey_qa':",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_runtime_journey_stage.py",
-          "line": 36,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_runtime_journey_qa','reason':'Runtime journey evidence incomplete.'}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_runtime_journey_stage.py",
-          "line": 46,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_visual_qa',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_session.py",
-          "line": 4,
-          "preview": "remain separate completion capabilities and are not implied by a successful headless gate.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_store_metadata_stage.py",
-          "line": 20,
-          "preview": "completion=state.get('completion'); coverage=state.get('coverage') or {}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_store_metadata_stage.py",
-          "line": 21,
-          "preview": "if (not isinstance(completion,dict) or completion.get('finished') is not False or",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_store_metadata_stage.py",
-          "line": 22,
-          "preview": "completion.get('next_stage')!='godot_store_metadata_qa' or",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_store_metadata_stage.py",
-          "line": 29,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_store_metadata_qa','reason':'Play listing evidence incomplete.'}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_store_metadata_stage.py",
-          "line": 44,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_privacy_security_qa',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_stage.py",
-          "line": 22,
-          "preview": "completion=state.get('completion'); coverage=state.get('coverage') or {}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_stage.py",
-          "line": 23,
-          "preview": "if (not isinstance(completion,dict) or completion.get('finished') is not False or completion.get('next_stage')!='godot_visual_qa'",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_stage.py",
-          "line": 35,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_visual_qa','reason':'Android-rendered visual evidence was rejected.'}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_stage.py",
-          "line": 46,
-          "preview": "state['completion']={'finished':False,'next_stage':'godot_release_qa',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/improvement_verifier.py",
-          "line": 13,
-          "preview": "completion=report.get(\"completion\") if isinstance(report,dict) else None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/improvement_verifier.py",
-          "line": 14,
-          "preview": "return isinstance(completion,dict) and completion.get(\"finished\") is True",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
+          "file": "tests/test_provider_429_cooldown.py",
           "line": 99,
-          "preview": "completion=report.get('completion')",
+          "preview": "patch(\"provider_router.load_providers\", return_value=_providers()),",
           "definition_candidate": false
         },
         {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 101,
-          "preview": "if not isinstance(completion,dict) or completion.get('finished') is not False or completion.get('next_stage')!=next_stage:",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 118,
+          "preview": "patch(\"provider_router.load_providers\", return_value=_providers()),",
           "definition_candidate": false
         },
         {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 102,
-          "preview": "raise StudioError('Godot stage returned invalid completion transition: '+current_stage)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 116,
-          "preview": "completion=report.get('completion')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 117,
-          "preview": "if report.get('engine')!='godot' or not isinstance(completion,dict) or completion.get('finished') is not False:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 120,
-          "preview": "if completion.get('next_stage')!='godot_release_qa' or report.get('release_status')!='human_action_required':",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 123,
-          "preview": "if report.get('status')!='godot_release_preflight_validated' or completion.get('next_stage')!='godot_release_artifact_qa':",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 131,
-          "preview": "completion=report.get('completion')",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 143,
+          "preview": "patch(\"provider_router.load_providers\", return_value=_providers()),",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 120
+      "occurrence_count": 6
     },
-    "model": {
+    "Provider429CooldownTests": {
       "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 30,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "scripts/production-os-live-resume-proof.py",
-          "line": 4,
-          "preview": "production job, invoke a coding model, or write to the target repo main branch.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 10,
-          "preview": "\"\"\"Decide whether a model planning call is worth its round budget.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 14,
-          "preview": "to model planning rather than inventing a plan without a usable objective.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 27,
-          "preview": "\"reason\": \"invalid brief requires model planning\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 33,
-          "preview": "\"reason\": \"adaptive policy skipped model planning\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 53,
-          "preview": "\"\"\"Decide whether a model review must run after trusted verification.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 55,
-          "preview": "Skipping the model reviewer is allowed only for rounds the adaptive role",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 73,
-          "preview": "\"trusted model review was required but its phase quota \"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 89,
-          "preview": "\"adaptive policy skipped model review after trusted verification\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 91,
-          "preview": "else \"adaptive model review was skipped, but trusted verification did not pass\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 100,
-          "preview": "\"adaptive role allocation skipped model review after trusted verification\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 102,
-          "preview": "else \"adaptive model review was skipped, but trusted verification did not pass\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_role_allocator.py",
-          "line": 1,
-          "preview": "\"\"\"Bounded adaptive allocation of model roles for one autonomous round.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_role_allocator.py",
-          "line": 48,
-          "preview": "\"\"\"Return whether this round is worth spending a model call on planning.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_role_allocator.py",
-          "line": 76,
-          "preview": "reason = \"single implementation model\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/adapters.py",
-          "line": 91,
-          "preview": "# The subprocess inherits model-provider credentials such as",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/codex.py",
-          "line": 87,
-          "preview": "'model=\"auto\"',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 57,
-          "preview": "model=os.environ.get(\"STUDIO_CODE_MODEL\") or os.environ.get(\"STUDIO_MODEL\",\"\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 62,
-          "preview": "if model and base and key:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 79,
-          "preview": "\"models\":{model:{}},",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 85,
-          "preview": "argv.extend([\"--model\",\"studio/\"+model])",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 157,
-          "preview": "An empty process exit 0 does not prove a model completed any work.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/android_signing.py",
-          "line": 3,
-          "preview": "Project/model-controlled code never receives signing credentials. Existing JAR",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_change_guard.py",
-          "line": 1,
-          "preview": "\"\"\"Fail-closed guard for architecture-sensitive model patches.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_candidate.py",
-          "line": 1,
-          "preview": "\"\"\"Validate model-generated replacement candidates before isolated execution.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 121,
-          "preview": "def _response(messages,api=None,model=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 123,
-          "preview": "selected=model or os.environ.get(\"STUDIO_CODE_MODEL\") or os.environ.get(\"STUDIO_MODEL\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 125,
-          "preview": "raise StudioError(\"replacement synthesis model missing\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 127,
-          "preview": "\"model\":selected,\"stream\":False,\"max_tokens\":16000,\"messages\":messages",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 140,
-          "preview": "selected=model or provider.model_for(\"implementation\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 144,
-          "preview": "\"model\":selected,\"stream\":False,\"max_tokens\":16000,\"messages\":messages",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 152,
-          "preview": "def synthesize(order,root,api=None,model=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 157,
-          "preview": "response=_response(messages,api=api,model=model)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 167,
-          "preview": "raise ReplacementCandidateRejected(\"replacement model output invalid\") from None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 171,
-          "preview": "def consume(order_path,root,out,api=None,model=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 173,
-          "preview": "candidate=synthesize(order,Path(root),api=api,model=model)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/asset_forge_bridge.py",
-          "line": 10,
-          "preview": "\"3d\", \"model\", \"models\", \"mesh\", \"meshes\", \"animation\", \"animations\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/asset_forge_bridge.py",
-          "line": 51,
-          "preview": "if \"3d\" in text or \"mesh\" in text or \"model\" in text:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/asset_forge_bridge.py",
-          "line": 99,
-          "preview": "is_3d = any(term in lower for term in (\"3d\", \"3-d\", \"mesh\", \"model\", \"mod\u00e8le 3d\", \"modele 3d\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_project.py",
-          "line": 215,
-          "preview": "\"STUDIO_NATIVE_MODEL_USAGE_PATH\": autonomy_root / \"native-model-usage.json\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_budget.py",
-          "line": 1,
-          "preview": "\"\"\"Scale autonomous model-call budget from available free capacity.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_budget.py",
-          "line": 31,
-          "preview": "# model calls. Python's min/max handle NaN in an order-dependent way,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_efficiency.py",
-          "line": 36,
-          "preview": "def _key(project_id: str, provider: str, model: str) -> str:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_efficiency.py",
-          "line": 37,
-          "preview": "return \"::\".join((project_id, provider, model))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_efficiency.py",
-          "line": 45,
-          "preview": "model: str,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_efficiency.py",
-          "line": 51,
-          "preview": "model_name = str(model).strip()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_efficiency.py",
-          "line": 62,
-          "preview": "\"model\": model_name,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_efficiency.py",
-          "line": 82,
-          "preview": "\"model\": model_name,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_efficiency.py",
-          "line": 136,
-          "preview": "rows.sort(key=lambda row: (-float(row[\"risk_adjusted_score\"]), -int(row[\"samples\"]), row[\"provider\"], row[\"model\"]))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_efficiency.py",
-          "line": 190,
-          "preview": "model: str,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_efficiency.py",
-          "line": 206,
-          "preview": "if row.get(\"provider\") == provider and row.get(\"model\") == model",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_efficiency.py",
-          "line": 227,
-          "preview": "model: str,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_efficiency.py",
-          "line": 238,
-          "preview": "and row.get(\"model\") == model",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_ledger.py",
-          "line": 50,
-          "preview": "the existing lock. This read-only view prevents the model router from",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_ledger.py",
-          "line": 82,
-          "preview": "\"model\": row.get(\"model\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_ledger.py",
-          "line": 384,
-          "preview": "model: str | None = None,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_ledger.py",
-          "line": 413,
-          "preview": "if model is not None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_ledger.py",
-          "line": 414,
-          "preview": "row[\"model\"] = str(model).strip() or row.get(\"model\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capacity_status.py",
-          "line": 28,
-          "preview": "\"model\": provider.model,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 1,
-          "preview": "\"\"\"Bounded mobile studio. Standard library only; model output is data, never shell.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 25,
-          "preview": "'product': 'Senior mobile product lead: turn the brief into prioritized acceptance criteria, real user journeys, data model, scope, assumptions and external blockers. Never invent ",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 80,
-          "preview": "raise StudioError('max_project_repair_calls exceeds project model budget')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 444,
-          "preview": "self.model = primary.model",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 445,
-          "preview": "self.code_model = primary.code_model or primary.model",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 463,
-          "preview": "# One schema/truncation repair, charged against the global model-call budget.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 616,
-          "preview": "model=model_name,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 628,
-          "preview": "model=model_name,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 636,
-          "preview": "model=model_name,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 698,
-          "preview": "'model': provider.model_for(role, bool(screenshots)),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 723,
-          "preview": "params = {'model': selected_model, 'stream': False,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 728,
-          "preview": "print('Model role: ' + role + '; provider: ' + provider.name + '; model: ' + selected_model, flush=True)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 745,
-          "preview": "model=selected_model,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 776,
-          "preview": "'model': selected_model,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 818,
-          "preview": "model=selected_model,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 842,
-          "preview": "raise ValueError('Duplicate model JSON key')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 882,
-          "preview": "model=selected_model,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 991,
-          "preview": "# Trusted test is reinstated every round; model cannot edit its reserved name.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/engine_patch.py",
-          "line": 1,
-          "preview": "\"\"\"Trusted engine-aware validation for model-generated source patches.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/engine_patch.py",
-          "line": 22,
-          "preview": "# replacement avoids asking a free model to echo a whole existing script.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_synthesis.py",
-          "line": 24,
-          "preview": "def synthesize(order,research,api=None,model=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_synthesis.py",
-          "line": 28,
-          "preview": "selected=model or os.environ.get('STUDIO_CODE_MODEL') or os.environ.get('STUDIO_MODEL','nvidia/nemotron-3-super-120b-a12b')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_synthesis.py",
-          "line": 29,
-          "preview": "if not selected: raise StudioError('Evolution synthesis model missing')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_synthesis.py",
-          "line": 30,
-          "preview": "params={'model':selected,'stream':False,'max_tokens':16000,'messages':messages}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_synthesis.py",
-          "line": 40,
-          "preview": "selected=model or provider.model_for('implementation')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_synthesis.py",
-          "line": 42,
-          "preview": "params={'model':selected,'stream':False,'max_tokens':16000,'messages':messages}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_synthesis.py",
-          "line": 58,
-          "preview": "except (KeyError,IndexError,TypeError,AttributeError,json.JSONDecodeError): raise CandidateRejected('Evolution model returned invalid structured output') from None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_synthesis.py",
-          "line": 60,
-          "preview": "def consume(order_path:Path,research_path:Path,out:Path,api=None,model=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_synthesis.py",
-          "line": 61,
-          "preview": "order=json.loads(order_path.read_text()); research=json.loads(research_path.read_text()); validated=synthesize(order,research,api=api,model=model); out.mkdir(parents=True,exist_ok=",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/existing_project.py",
-          "line": 4,
-          "preview": "metadata and uses project_engine policy to decide what may enter the model workspace.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/fault_injection_smoke.py",
-          "line": 69,
-          "preview": "key = operation_key(\"fault-injection\", {\"step\": \"model\"})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/free_capacity_recommendations.py",
-          "line": 11,
-          "preview": "\"local model serving\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/free_capacity_recommendations.py",
-          "line": 15,
-          "preview": "\"model routing\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_synthesis.py",
-          "line": 3,
-          "preview": "The model output is data only. Synthesized code is never imported, executed,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_synthesis.py",
-          "line": 28,
-          "preview": "def _proposal(request, *, api=None, model=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_synthesis.py",
-          "line": 33,
-          "preview": "selected = model or os.environ.get(\"STUDIO_CODE_MODEL\") or os.environ.get(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_synthesis.py",
-          "line": 37,
-          "preview": "raise StudioError(\"Capability synthesis model missing\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_synthesis.py",
-          "line": 39,
-          "preview": "\"model\": selected,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_synthesis.py",
-          "line": 58,
-          "preview": "def synthesize_from_memory(memory, project_id, capability, *, api=None, model=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_capability_synthesis.py",
-          "line": 63,
-          "preview": "lambda request: _proposal(request, api=api, model=model),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 1,
-          "preview": "\"\"\"Provider-routed structured model calls for generic projects.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 72,
-          "preview": "raise ProtocolError(\"Generic model response truncated\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 78,
-          "preview": "raise ProtocolError(\"Generic model returned invalid JSON\") from None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 80,
-          "preview": "raise ProtocolError(\"Generic model JSON must be an object\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 284,
-          "preview": "# Verified failures are tracked per provider/model/role. Respect that",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 286,
-          "preview": "# a healthy provider's unusable coding model is selected repeatedly.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 294,
-          "preview": "model=provider.model_for(role),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 375,
-          "preview": "model=provider.model_for(role),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 381,
-          "preview": "model=provider.model_for(role),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 388,
-          "preview": "model=provider.model_for(role),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 400,
-          "preview": "model=provider.model_for(role),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 408,
-          "preview": "model=provider.model_for(role),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 534,
-          "preview": "model = provider.model_for(role)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 538,
-          "preview": "\"model\": model,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 551,
-          "preview": "if api.base == \"https://integrate.api.nvidia.com/v1\" and model.startswith(\"nvidia/nemotron-3-\"):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 625,
-          "preview": "model=model,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 645,
-          "preview": "\"model\": model,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 646,
-          "preview": "\"independent_preference_met\": provider.name not in avoid_providers and model not in avoid_models,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 695,
-          "preview": "model=model,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 706,
-          "preview": "# spending two more independent model calls to learn it.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_model.py",
-          "line": 726,
-          "preview": "raise StudioError(\"Generic model call quota timed out\") from None",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 120
-    },
-    "product_value": {
-      "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 49,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 49,
-          "preview": "def product_value():",
-          "definition_candidate": true
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 58,
-          "preview": "completion(product_value()),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 91,
-          "preview": "subject = model([completion(product_value())])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 105,
-          "preview": "rejected = product_value()",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 107,
-          "preview": "accepted = product_value()",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 231,
-          "preview": "('product', product_value()),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 246,
-          "preview": "fallback_api = FakeAPI([completion(product_value())])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 262,
-          "preview": "fallback_api = FakeAPI([completion(product_value())])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 274,
-          "preview": "bad_plan = product_value()",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 277,
-          "preview": "fallback_api = FakeAPI([completion(product_value())])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 320,
-          "preview": "subject = model([malformed, completion(product_value())])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 329,
-          "preview": "subject = model([completion(product_value())])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 331,
-          "preview": "fallback_api = FakeAPI([completion(product_value())])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 354,
-          "preview": "reply=completion(product_value())",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 396,
-          "preview": "completion(product_value()),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 498,
-          "preview": "completion(product_value()),",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 16
-    },
-    "GodotModelTests": {
-      "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 54,
+        "file": "tests/test_provider_429_cooldown.py",
+        "line": 51,
         "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_godot_model.py",
-          "line": 54,
-          "preview": "class GodotModelTests(unittest.TestCase):",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 51,
+          "preview": "class Provider429CooldownTests(unittest.TestCase):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_nvidia_source_generation_requests_json_mode": {
+    "setUp": {
       "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 55,
+        "file": "tests/test_provider_429_cooldown.py",
+        "line": 52,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_godot_model.py",
-          "line": 55,
-          "preview": "def test_nvidia_source_generation_requests_json_mode(self):",
+          "file": "tests/test_agent_router.py",
+          "line": 23,
+          "preview": "def setUp(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_architecture_replacement_reputation_state_machine.py",
+          "line": 10,
+          "preview": "def setUp(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 41,
+          "preview": "def setUp(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_ci.py",
+          "line": 166,
+          "preview": "def setUp(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_adaptive_quota_budget.py",
+          "line": 35,
+          "preview": "def setUp(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_baseline.py",
+          "line": 12,
+          "preview": "def setUp(self):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 52,
+          "preview": "def setUp(self):",
+          "definition_candidate": true
+        },
+        {
+          "file": "tests/test_repo_maintenance.py",
+          "line": 11,
+          "preview": "def setUp(self):",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 8
+    },
+    "test_generic_model_uses_fallback_and_skips_429_provider_next_call": {
+      "definition": {
+        "file": "tests/test_provider_429_cooldown.py",
+        "line": 56,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 56,
+          "preview": "def test_generic_model_uses_fallback_and_skips_429_provider_next_call(self):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_product_uses_godot_planning_contract_not_flutter_execution_claims": {
+    "test_generic_server_error_preserves_standard_three_failure_threshold": {
       "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 90,
+        "file": "tests/test_provider_429_cooldown.py",
+        "line": 80,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_godot_model.py",
-          "line": 90,
-          "preview": "def test_product_uses_godot_planning_contract_not_flutter_execution_claims(self):",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 80,
+          "preview": "def test_generic_server_error_preserves_standard_three_failure_threshold(self):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_product_prompt_requires_literal_json_step_objects": {
+    "test_flutter_model_provider_cooldown_and_independent_fallback": {
       "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 102,
+        "file": "tests/test_provider_429_cooldown.py",
+        "line": 94,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_godot_model.py",
-          "line": 102,
-          "preview": "def test_product_prompt_requires_literal_json_step_objects(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_implementation_uses_godot_prompt_and_scope": {
-      "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 134,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 134,
-          "preview": "def test_implementation_uses_godot_prompt_and_scope(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_test_role_rejects_non_test_path_then_repairs_once": {
-      "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 158,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 158,
-          "preview": "def test_test_role_rejects_non_test_path_then_repairs_once(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_truncated_patch_retry_requests_a_smaller_complete_change": {
-      "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 198,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 198,
-          "preview": "def test_truncated_patch_retry_requests_a_smaller_complete_change(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_structured_godot_call_falls_back_to_secondary_provider": {
-      "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 244,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 244,
-          "preview": "def test_structured_godot_call_falls_back_to_secondary_provider(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary": {
-      "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 328,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 328,
-          "preview": "def test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary(self):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "test_budget_is_shared_and_fail_closed": {
-      "definition": {
-        "file": "tests/test_godot_model.py",
-        "line": 342,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 342,
-          "preview": "def test_budget_is_shared_and_fail_closed(self):",
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 94,
+          "preview": "def test_flutter_model_provider_cooldown_and_independent_fallback(self):",
           "definition_candidate": true
         }
       ],

@@ -9755,6 +9755,20 @@ model = Model(limit=4)
 result = model._ask("product", "Return JSON", ())
 ⋮----
 before = _ProviderAPI.calls.count("https://model.invalid/bad")
+⋮----
+# Godot uses its own provider adapter. It must also quarantine a
+# rate-limited model immediately and fall back without another 429.
+⋮----
+path = Path(td) / "godot-health.json"
+⋮----
+subject = GodotModel(limit=4)
+⋮----
+# Provider 503 is not equivalent to quota/rate exhaustion: retain the
+# standard threshold, allowing recovery rather than immediate ban.
+⋮----
+path = Path(td) / "godot-server-health.json"
+⋮----
+subject = GodotModel(limit=3)
 ```
 
 ## File: test_provider_cost.py

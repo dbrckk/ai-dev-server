@@ -12232,6 +12232,9 @@ response = accounted_call(
 ⋮----
 elapsed = time.monotonic() - started
 ⋮----
+# A confirmed provider HTTP 429 warrants immediate
+# cooldown; retain the normal threshold for other errors.
+⋮----
 last_error = exc
 ⋮----
 selected_provider = provider

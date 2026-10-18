@@ -106,17 +106,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-18T08:24:20Z
+Generated: 2026-10-18T08:40:16Z
 
 ### Git
 - Branch: `main`
-- Head: `7c2bdecef25b`
-- Commit date: 2026-10-18T04:24:11-04:00
-- Commit: fix(godot): preserve free inference capacity for implementation (#337)
+- Head: `295a3c9e6736`
+- Commit date: 2026-10-18T04:39:55-04:00
+- Commit: fix(godot): quarantine rate-limited free providers immediately (#339)
 - Tracked files: 865
 
 ### Recently changed files
 - `studio/godot_model.py`
+- `tests/test_provider_429_cooldown.py`
 - `studio/native_model_usage.py`
 - `tests/test_godot_model.py`
 - `studio/capacity_budget.py`

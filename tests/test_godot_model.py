@@ -140,6 +140,8 @@ class GodotModelTests(unittest.TestCase):
         self.assertIn('Godot 4.7', system)
         self.assertNotIn('Senior Flutter engineering team', system)
         self.assertIn('strongly prefer concise exact-match edits', system)
+        self.assertIn('Ground edits in actual supplied source', system)
+        self.assertIn('Do not invent verification evidence', system)
         self.assertEqual(subject.calls, 1)
         subject.api.responses.append(completion({'edits': [{
             'path': 'scripts/main.gd', 'find': 'if settings_open:',

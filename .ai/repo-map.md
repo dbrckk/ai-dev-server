@@ -2835,8 +2835,8 @@ jobs:
         with:
           python-version: '3.12'
 
-      # A distinct workflow_dispatch is accepted after the API confirms queueing;
-      # unlike simultaneous push triggers, the worker cannot race ahead of the job.
+      # The control plane may already dispatch a worker while queueing. This
+      # workflow_dispatch is a fallback only when no worker was woken.
       - name: Launch and verify real Production-OS worker canary
         run: >-
           python studio/production_os_worker_canary.py
@@ -22240,12 +22240,16 @@ verification = {
 checkpoint = advance_checkpoint(
 checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
 ⋮----
-pr = repo.ensure_pull_request(
+# The PR creation response (or an old PR on the same branch) does
+# not prove this specific checkpoint reached review. Confirm the
+# exact published SHA independently before marking delivery complete.
+confirmed = repo.await_trusted_review(sha)
+pr = confirmed if confirmed is not None else {
 ⋮----
 denied = any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
 handoff = repo.request_trusted_review_handoff(sha) if denied else None
 confirmed = (
-pr = confirmed if confirmed is not None else {
+⋮----
 delivered = type(pr.get("number")) is int and isinstance(pr.get("url"), str) and (
 ⋮----
 checkpoint = advance_checkpoint(checkpoint, phase="complete")
@@ -22331,6 +22335,11 @@ response = client.get("/readyz")
 remaining = deadline - float(clock())
 ⋮----
 result = launch_canary(client, control)
+⋮----
+# The control plane may have dispatched the same Actions worker while
+# admitting the job. Only use the canary's privileged dispatch when
+# that wake did not happen and no persistent worker is available.
+wake = result["worker_wake"]
 ⋮----
 outcome = wait_for_workflow(
 ⋮----
@@ -31873,6 +31882,11 @@ observed = []
 instance = repository.return_value
 ⋮----
 result = run_review_canary(
+⋮----
+# An old PR number/URL without this exact published commit
+# must not finish the delivery canary.
+⋮----
+rejected = run_review_canary(
 ````
 
 ## File: tests/test_github_artifact_cas_audit_store.py
@@ -35287,7 +35301,7 @@ def test_managed_history_cannot_be_relaunched_as_legacy(self)
 ````python
 class FakeClient
 ⋮----
-def __init__(self, statuses=("succeeded",))
+def __init__(self, statuses=("succeeded",), wake_status="dispatched")
 ⋮----
 def submit(self, path, payload)
 ⋮----
@@ -35313,7 +35327,14 @@ client = FakeClient()
 dispatches = []
 result = run_canary(
 ⋮----
-self.assertEqual(dispatches, [1])  # no dispatch before successful admission
+self.assertEqual(dispatches, [])  # the control plane already woke a worker
+fallback = FakeClient(wake_status="scheduled_fallback")
+fallback_result = run_canary(
+⋮----
+self.assertEqual(dispatches, [1])  # dispatch only after successful admission
+available = FakeClient(wake_status="not_needed")
+available_result = run_canary(
+⋮----
 gameplay_client = FakeClient()
 gameplay_result = run_canary(gameplay_client, {
 ⋮----
@@ -35340,8 +35361,8 @@ def test_canary_workflow_verifies_terminal_worker_completion()
 ⋮----
 workflow = Path(".github/workflows/production-os-worker-canary.yml").read_text(encoding="utf-8")
 ⋮----
-# The canary enqueues first, then dispatches explicitly. A push-triggered
-# worker would race the queue and duplicate the trusted dispatch.
+# The canary enqueues first and dispatches only if the control plane did
+# not already wake a worker. A push trigger would race the queue.
 worker_workflow = Path(".github/workflows/production-os-actions-worker.yml").read_text(
 ````
 

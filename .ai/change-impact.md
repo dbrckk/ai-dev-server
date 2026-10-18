@@ -1,18 +1,20 @@
 # Change impact
 
-Base: d1bcf803605098c7636a55b230b52a333c570f86
-Head: bc046bf81977c8c53ec2a693ac194ca9e7416d0d
+Base: 4cb74442967402fafeb1dd740d70a1776f8e3044
+Head: c3aabeb348be64664c7227edf39a2699cff86c58
 
 ## Changed files
-- M studio/generic_repository.py
-- M tests/test_generic_repository_pull_request.py
+- M .github/workflows/production-os-worker-canary.yml
+- M studio/production_os_worker_canary.py
+- M tests/test_production_os_worker_canary.py
 
 ## Affected areas
+- .github
 - studio
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_production_os_worker_canary.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

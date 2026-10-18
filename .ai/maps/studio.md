@@ -16521,12 +16521,16 @@ verification = {
 checkpoint = advance_checkpoint(
 checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
 ⋮----
-pr = repo.ensure_pull_request(
+# The PR creation response (or an old PR on the same branch) does
+# not prove this specific checkpoint reached review. Confirm the
+# exact published SHA independently before marking delivery complete.
+confirmed = repo.await_trusted_review(sha)
+pr = confirmed if confirmed is not None else {
 ⋮----
 denied = any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
 handoff = repo.request_trusted_review_handoff(sha) if denied else None
 confirmed = (
-pr = confirmed if confirmed is not None else {
+⋮----
 delivered = type(pr.get("number")) is int and isinstance(pr.get("url"), str) and (
 ⋮----
 checkpoint = advance_checkpoint(checkpoint, phase="complete")
@@ -16612,6 +16616,11 @@ response = client.get("/readyz")
 remaining = deadline - float(clock())
 ⋮----
 result = launch_canary(client, control)
+⋮----
+# The control plane may have dispatched the same Actions worker while
+# admitting the job. Only use the canary's privileged dispatch when
+# that wake did not happen and no persistent worker is available.
+wake = result["worker_wake"]
 ⋮----
 outcome = wait_for_workflow(
 ⋮----

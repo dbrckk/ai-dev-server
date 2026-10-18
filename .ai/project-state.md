@@ -108,28 +108,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-18T12:26:50Z
+Generated: 2026-10-18T15:34:32Z
 
 ### Git
 - Branch: `main`
-- Head: `bc046bf81977`
-- Commit date: 2026-10-18T08:26:37-04:00
-- Commit: fix(review): make direct autonomous GitHub PRs draft by default (#345)
+- Head: `c3aabeb348be`
+- Commit date: 2026-10-18T11:34:12-04:00
+- Commit: fix(canary): avoid duplicate GitHub Actions worker dispatch (#347)
 - Tracked files: 865
 
 ### Recently changed files
+- `.github/workflows/production-os-worker-canary.yml`
+- `studio/production_os_worker_canary.py`
+- `tests/test_production_os_worker_canary.py`
+- `studio/production_os_review_canary.py`
+- `tests/test_generic_worker_canary_resume.py`
 - `studio/generic_repository.py`
 - `tests/test_generic_repository_pull_request.py`
 - `studio/generic_verify.py`
 - `tests/test_generic_toolchain.py`
-- `AGENTS.md`
-- `studio/core.py`
-- `studio/generic_project.py`
-- `studio/godot_model.py`
-- `tests/test_adaptive_planning_runtime.py`
-- `tests/test_godot_model.py`
-- `tests/test_studio.py`
-- `tests/test_provider_429_cooldown.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -5658,6 +5658,11 @@ observed = []
 instance = repository.return_value
 ⋮----
 result = run_review_canary(
+⋮----
+# An old PR number/URL without this exact published commit
+# must not finish the delivery canary.
+⋮----
+rejected = run_review_canary(
 ```
 
 ## File: test_github_artifact_cas_audit_store.py
@@ -9072,7 +9077,7 @@ def test_managed_history_cannot_be_relaunched_as_legacy(self)
 ```python
 class FakeClient
 ⋮----
-def __init__(self, statuses=("succeeded",))
+def __init__(self, statuses=("succeeded",), wake_status="dispatched")
 ⋮----
 def submit(self, path, payload)
 ⋮----
@@ -9098,7 +9103,14 @@ client = FakeClient()
 dispatches = []
 result = run_canary(
 ⋮----
-self.assertEqual(dispatches, [1])  # no dispatch before successful admission
+self.assertEqual(dispatches, [])  # the control plane already woke a worker
+fallback = FakeClient(wake_status="scheduled_fallback")
+fallback_result = run_canary(
+⋮----
+self.assertEqual(dispatches, [1])  # dispatch only after successful admission
+available = FakeClient(wake_status="not_needed")
+available_result = run_canary(
+⋮----
 gameplay_client = FakeClient()
 gameplay_result = run_canary(gameplay_client, {
 ⋮----
@@ -9125,8 +9137,8 @@ def test_canary_workflow_verifies_terminal_worker_completion()
 ⋮----
 workflow = Path(".github/workflows/production-os-worker-canary.yml").read_text(encoding="utf-8")
 ⋮----
-# The canary enqueues first, then dispatches explicitly. A push-triggered
-# worker would race the queue and duplicate the trusted dispatch.
+# The canary enqueues first and dispatches only if the control plane did
+# not already wake a worker. A push trigger would race the queue.
 worker_workflow = Path(".github/workflows/production-os-actions-worker.yml").read_text(
 ```
 

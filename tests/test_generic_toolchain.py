@@ -22,7 +22,7 @@ class GenericToolchainTests(unittest.TestCase):
         ):
             root = Path(td)
             (root/"pyproject.toml").write_text(
-                '[tool.pytest.ini_options]\\ntestpaths = ["tests"]\\n',
+                '[tool.pytest.ini_options]\ntestpaths = ["tests"]\n',
                 encoding="utf-8",
             )
             self.assertEqual(discover_verifiers(root), [["python", "-m", "pytest", "-q"]])
@@ -32,9 +32,10 @@ class GenericToolchainTests(unittest.TestCase):
             self.assertEqual(discover_verifiers(root), [[str(venv), "-m", "pytest", "-q"]])
             venv.unlink()
             (root/"pyproject.toml").write_text(
-                '[project]\\nname = "unittest-project"\\n', encoding="utf-8",
+                '[project]\nname = "unittest-project"\n', encoding="utf-8",
             )
             self.assertEqual(discover_verifiers(root), [["python", "-m", "unittest", "discover"]])
+
     def test_npm_bootstrap_is_lockfile_bound_and_ignores_scripts(self):
         with tempfile.TemporaryDirectory() as td, patch("shutil.which", return_value="/usr/bin/npm"):
             root=Path(td); (root/"package.json").write_text("{}"); (root/"package-lock.json").write_text("{}")

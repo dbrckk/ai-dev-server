@@ -1,18 +1,24 @@
 # Change impact
 
-Base: 54d874e4aae102595c916e68e1aadfc6e3ebc732
-Head: cb8fd494c2ef3548b554721643acc6f9de0f4c11
+Base: 2d306b91db07002c10d81dddfbbfc9e900a29510
+Head: f20ff67ead219f87f28f440d9dbbe5a4dbd10491
 
 ## Changed files
+- M AGENTS.md
 - M studio/core.py
-- M tests/test_provider_429_cooldown.py
+- M studio/generic_project.py
+- M studio/godot_model.py
+- M tests/test_adaptive_planning_runtime.py
+- M tests/test_godot_model.py
+- M tests/test_studio.py
 
 ## Affected areas
+- (root)
 - studio
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_godot_model.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

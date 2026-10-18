@@ -2006,7 +2006,7 @@
         {
           "file": "tests/test_studio.py",
           "line": 10,
-          "preview": "from core import StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
+          "preview": "from core import ROLES, StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
           "definition_candidate": false
         },
         {
@@ -2334,13 +2334,13 @@
         },
         {
           "file": "studio/godot_model.py",
-          "line": 57,
+          "line": 59,
           "preview": "'Only NEW or full-source tests/*.gd entries are allowed; never return edits, '",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 174,
+          "line": 176,
           "preview": "'The QA role may write only tests/*.gd; exact edits are not allowed.')",
           "definition_candidate": false
         },
@@ -2682,7 +2682,7 @@
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 327,
+          "line": 329,
           "preview": "self.assertIn('exact edits are not allowed', repair)",
           "definition_candidate": false
         },
@@ -2820,7 +2820,7 @@
         {
           "file": "tests/test_studio.py",
           "line": 10,
-          "preview": "from core import StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
+          "preview": "from core import ROLES, StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
           "definition_candidate": false
         },
         {
@@ -3004,7 +3004,7 @@
         {
           "file": "tests/test_studio.py",
           "line": 10,
-          "preview": "from core import StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
+          "preview": "from core import ROLES, StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
           "definition_candidate": false
         },
         {
@@ -3398,18 +3398,18 @@
         {
           "file": "tests/test_studio.py",
           "line": 10,
-          "preview": "from core import StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
+          "preview": "from core import ROLES, StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 110,
+          "line": 112,
           "preview": "verdict(v)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 128,
+          "line": 130,
           "preview": "self.assertEqual(state['architecture_evaluation']['verdict'], 'retain')",
           "definition_candidate": false
         },
@@ -3582,13 +3582,13 @@
         },
         {
           "file": "studio/godot_model.py",
-          "line": 361,
+          "line": 363,
           "preview": "**({'threshold': 1} if isinstance(exc, core.APIError)",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 406,
+          "line": 408,
           "preview": "if isinstance(last_error, core.APIError):",
           "definition_candidate": false
         },
@@ -3727,24 +3727,24 @@
         {
           "file": "tests/test_studio.py",
           "line": 10,
-          "preview": "from core import StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
+          "preview": "from core import ROLES, StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 212,
+          "line": 214,
           "preview": "raise APIError(409)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 227,
+          "line": 229,
           "preview": "raise APIError(403)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 230,
+          "line": 232,
           "preview": "with tempfile.TemporaryDirectory() as d, self.assertRaises(APIError):",
           "definition_candidate": false
         },
@@ -4259,13 +4259,13 @@
         },
         {
           "file": "tests/test_studio.py",
-          "line": 206,
+          "line": 208,
           "preview": "def __init__(self):",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 222,
+          "line": 224,
           "preview": "def __init__(self):",
           "definition_candidate": false
         }
@@ -4390,55 +4390,55 @@
         },
         {
           "file": "studio/godot_model.py",
-          "line": 113,
+          "line": 115,
           "preview": "except (ProtocolError, PatchPolicyError, ValueError) as exc:",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 120,
+          "line": 122,
           "preview": "isinstance(exc, ProtocolError) and error != 'Model response truncated'",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 412,
+          "line": 414,
           "preview": "raise ProtocolError('Provider returned invalid completion envelope')",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 415,
+          "line": 417,
           "preview": "raise ProtocolError('Provider returned invalid completion choice')",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 417,
+          "line": 419,
           "preview": "raise ProtocolError('Model response truncated')",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 419,
+          "line": 421,
           "preview": "raise ProtocolError('Model response did not complete normally')",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 422,
+          "line": 424,
           "preview": "raise ProtocolError('Provider returned empty text content')",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 432,
+          "line": 434,
           "preview": "except ProtocolError:",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 439,
+          "line": 441,
           "preview": "raise ProtocolError('Provider returned invalid structured output') from None",
           "definition_candidate": false
         },
@@ -4837,7 +4837,7 @@
         },
         {
           "file": "studio/godot_model.py",
-          "line": 297,
+          "line": 299,
           "preview": "api = self.api if primary_provider is not None and provider == primary_provider else core.API(provider.base, provider.key)",
           "definition_candidate": false
         },
@@ -5095,49 +5095,49 @@
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 245,
+          "line": 247,
           "preview": "subject = model([StudioError('API unavailable or timed out')])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 248,
+          "line": 250,
           "preview": "with patch('core.API', return_value=fallback_api) as api_factory:",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 258,
+          "line": 260,
           "preview": "subject = model([StudioError('API unavailable or timed out')], limit=1)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 261,
+          "line": 263,
           "preview": "with patch('core.API', return_value=fallback_api):",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 276,
+          "line": 278,
           "preview": "with patch('core.API', return_value=fallback_api):",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 291,
+          "line": 293,
           "preview": "with patch('core.API', return_value=fallback_api):",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 311,
+          "line": 313,
           "preview": "with patch('core.API', return_value=fallback_api):",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 346,
+          "line": 348,
           "preview": "patch('core.API', return_value=fallback_api) as api_factory:",
           "definition_candidate": false
         },
@@ -5240,12 +5240,12 @@
         {
           "file": "tests/test_studio.py",
           "line": 10,
-          "preview": "from core import StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
+          "preview": "from core import ROLES, StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 114,
+          "line": 116,
           "preview": "API(url, 'key')",
           "definition_candidate": false
         },
@@ -5999,31 +5999,31 @@
         },
         {
           "file": "studio/godot_model.py",
-          "line": 199,
+          "line": 201,
           "preview": "raise StudioError('Model call budget exhausted; checkpoint retained')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_model.py",
-          "line": 292,
-          "preview": "# failovers, against the global model call ceiling.",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
           "line": 294,
+          "preview": "# failovers, against the global model call ceiling.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_model.py",
+          "line": 296,
           "preview": "raise StudioError('Model call budget exhausted; checkpoint retained')",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 321,
+          "line": 323,
           "preview": "from native_model_usage import call as accounted_call, NativeAccountingError",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 338,
+          "line": 340,
           "preview": "# later stages. A finite envelope still governs every call.",
           "definition_candidate": false
         },
@@ -6196,61 +6196,61 @@
         },
         {
           "file": "studio/godot_model.py",
-          "line": 85,
+          "line": 87,
           "preview": "class GodotModel(Model):",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 120,
+          "line": 122,
           "preview": "isinstance(exc, ProtocolError) and error != 'Model response truncated'",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 134,
+          "line": 136,
           "preview": "error == 'Model response truncated'",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 149,
+          "line": 151,
           "preview": "elif error == 'Model response truncated' and role in ('implementation', 'tests'):",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 155,
+          "line": 157,
           "preview": "elif error == 'Model response truncated' and role in ('product', 'design'):",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 199,
+          "line": 201,
           "preview": "raise StudioError('Model call budget exhausted; checkpoint retained')",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 294,
+          "line": 296,
           "preview": "raise StudioError('Model call budget exhausted; checkpoint retained')",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 320,
+          "line": 322,
           "preview": "print('Model role: ' + role + '; provider: ' + provider.name + '; model: ' + selected_model, flush=True)",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 417,
+          "line": 419,
           "preview": "raise ProtocolError('Model response truncated')",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 419,
+          "line": 421,
           "preview": "raise ProtocolError('Model response did not complete normally')",
           "definition_candidate": false
         },
@@ -6316,7 +6316,7 @@
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 262,
+          "line": 264,
           "preview": "with self.assertRaisesRegex(StudioError, 'Model call budget exhausted'):",
           "definition_candidate": false
         },
@@ -6503,7 +6503,7 @@
         {
           "file": "tests/test_studio.py",
           "line": 10,
-          "preview": "from core import StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
+          "preview": "from core import ROLES, StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
           "definition_candidate": false
         },
         {
@@ -6627,13 +6627,13 @@
         },
         {
           "file": "studio/godot_model.py",
-          "line": 86,
+          "line": 88,
           "preview": "def ask(self, role, context, screenshots=()):",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 98,
+          "line": 100,
           "preview": "return super().ask(role, context, screenshots)",
           "definition_candidate": false
         },
@@ -6819,181 +6819,181 @@
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 148,
+          "line": 150,
           "preview": "result = subject.ask('implementation', 'fix one input bug')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 155,
+          "line": 157,
           "preview": "subject.ask('implementation', '{\"files_mode\":\"bounded_exact_match_source_excerpts\"}')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 163,
+          "line": 165,
           "preview": "result = subject.ask('tests', 'write regression')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 169,
+          "line": 171,
           "preview": "subject.ask('tests', '{\"files_mode\":\"bounded_exact_match_source_excerpts\"}')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 187,
+          "line": 189,
           "preview": "corrected = subject.ask('tests', 'write settings regression')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 204,
+          "line": 206,
           "preview": "result = subject.ask('implementation', 'improve game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 221,
+          "line": 223,
           "preview": "result = subject.ask('implementation', compact)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 237,
+          "line": 239,
           "preview": "subject.ask(role, 'plan a minimal input fix')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 249,
+          "line": 251,
           "preview": "result = subject.ask('product', 'plan game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 263,
+          "line": 265,
           "preview": "subject.ask('product', 'plan game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 277,
+          "line": 279,
           "preview": "result = subject.ask('product', 'plan game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 292,
+          "line": 294,
           "preview": "good_plan = subject.ask('product', 'plan concise gameplay')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 312,
+          "line": 314,
           "preview": "repaired = subject.ask('implementation', 'fix settings input')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 323,
+          "line": 325,
           "preview": "subject.ask(role, 'fix settings input')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 334,
+          "line": 336,
           "preview": "result = subject.ask('product', 'plan game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 347,
+          "line": 349,
           "preview": "result = subject.ask('product', 'plan game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 357,
+          "line": 359,
           "preview": "subject.ask('implementation', 'x')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 370,
+          "line": 372,
           "preview": "subject=model([reply]); subject.ask('product','plan game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 378,
+          "line": 380,
           "preview": "subject.ask('product','plan game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 385,
+          "line": 387,
           "preview": "subject.ask('product','plan game')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 389,
+          "line": 391,
           "preview": "subject.ask('product','plan game')",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 414,
-          "preview": "subject.ask('product', 'fix one input bug')",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 415,
-          "preview": "subject.ask('design', 'minimal settings overlay')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
           "line": 416,
+          "preview": "subject.ask('product', 'fix one input bug')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 417,
+          "preview": "subject.ask('design', 'minimal settings overlay')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 418,
           "preview": "source_patch = subject.ask('implementation', 'implement the guarded input')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 451,
+          "line": 453,
           "preview": "subject.ask('implementation', compact)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 468,
+          "line": 470,
           "preview": "self.assertIn('edits', subject.ask('implementation', compact))",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 498,
+          "line": 500,
           "preview": "subject.ask('product', 'fix settings tap guard')",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 519,
-          "preview": "subject.ask('product', 'fix settings tap guard')",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 520,
-          "preview": "subject.ask('design', 'minimal settings design')",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
           "line": 521,
+          "preview": "subject.ask('product', 'fix settings tap guard')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 522,
+          "preview": "subject.ask('design', 'minimal settings design')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 523,
           "preview": "result = subject.ask(",
           "definition_candidate": false
         },
@@ -7131,43 +7131,43 @@
         },
         {
           "file": "tests/test_studio.py",
-          "line": 159,
+          "line": 161,
           "preview": "def ask(self, role, context, screenshots=()):",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 160,
+          "line": 162,
           "preview": "r = super().ask(role, context, screenshots)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 167,
+          "line": 169,
           "preview": "def ask(self, role, context, screenshots=()):",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 237,
+          "line": 239,
           "preview": "def ask(self, role, context, screenshots=()):",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 242,
+          "line": 244,
           "preview": "return super().ask(role, context, screenshots)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 247,
+          "line": 249,
           "preview": "def ask(self, role, context, screenshots=()):",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 250,
+          "line": 252,
           "preview": "return super().ask(role, context, screenshots)",
           "definition_candidate": false
         },
@@ -7417,7 +7417,7 @@
         {
           "file": "tests/test_studio.py",
           "line": 10,
-          "preview": "from core import StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
+          "preview": "from core import ROLES, StudioError, API, APIError, Model, Sandbox, allowed, apply_patch, patch_check, request_check, verdict",
           "definition_candidate": false
         }
       ],
@@ -9137,42 +9137,1071 @@
         },
         {
           "file": "tests/test_studio.py",
-          "line": 138,
+          "line": 140,
           "preview": "def gates(self, name, journeys):",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 139,
+          "line": 141,
           "preview": "passed, logs = super().gates(name, journeys)",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 151,
+          "line": 153,
           "preview": "def gates(self, name, journeys):",
           "definition_candidate": false
         },
         {
           "file": "tests/test_studio.py",
-          "line": 152,
+          "line": 154,
           "preview": "super().gates(name, journeys)",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 99
     },
+    "_snapshot": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 128,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_project.py",
+          "line": 128,
+          "preview": "def _snapshot(root: Path, limit_bytes: int = 420_000, *, source_first: bool = False) -> dict:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1014,
+          "preview": "snapshot = _snapshot(work, 24_000 if catalog_integration else 420_000, source_first=catalog_integration)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1268,
+          "preview": "\"repository\": _snapshot(work, 24_000 if catalog_integration else 420_000, source_first=catalog_integration),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1568,
+          "preview": "\"repository\":_snapshot(work,260_000),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1714,
+          "preview": "\"repository\":_snapshot(work,260_000),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 2067,
+          "preview": "\"repository\": _snapshot(work, 320_000),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 2191,
+          "preview": "\"repository\": _snapshot(work, 300_000),",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 7
+    },
+    "_apply": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 195,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_project.py",
+          "line": 195,
+          "preview": "def _apply(",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1466,
+          "preview": "model_changed = _apply(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1845,
+          "preview": "changed.extend(_apply(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1877,
+          "preview": "changed.extend(_apply(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1999,
+          "preview": "changed.extend(_apply(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 2027,
+          "preview": "changed.extend(_apply(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "_prepare_architecture": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 218,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_project.py",
+          "line": 218,
+          "preview": "def _prepare_architecture(req: dict, out: Path, state: dict) -> Path:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 916,
+          "preview": "architecture_root = _prepare_architecture(req, out, state)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_architecture.py",
+          "line": 41,
+          "preview": "root = gp._prepare_architecture(req, Path(td) / \"project\", state)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
+    "_record_architecture": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 251,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_project.py",
+          "line": 251,
+          "preview": "def _record_architecture(state: dict, out: Path, architecture_root: Path) -> None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 2588,
+          "preview": "_record_architecture(state, out, architecture_root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_architecture.py",
+          "line": 72,
+          "preview": "gp._record_architecture(state, out, Path(td))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_architecture.py",
+          "line": 93,
+          "preview": "gp._record_architecture(state, Path(td) / \"project\", Path(td))",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "_browser_validation_contract": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 270,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_project.py",
+          "line": 270,
+          "preview": "def _browser_validation_contract(req: dict) -> dict | None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 326,
+          "preview": "contract = _browser_validation_contract(req)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_valid_browser_test_url": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 278,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_project.py",
+          "line": 278,
+          "preview": "def _valid_browser_test_url(value: str | None) -> bool:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 377,
+          "preview": "tested_url_valid = _valid_browser_test_url(tested_url)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_valid_browser_screenshot": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 292,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_project.py",
+          "line": 292,
+          "preview": "def _valid_browser_screenshot(path: Path) -> bool:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 401,
+          "preview": "and _valid_browser_screenshot(candidate)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 631,
+          "preview": "and _valid_browser_screenshot(candidate)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
+    "_run_browser_validation": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 325,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_project.py",
+          "line": 325,
+          "preview": "def _run_browser_validation(req: dict, work: Path, out: Path) -> dict | None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 2274,
+          "preview": "browser_validation = _run_browser_validation(req, work, out)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_browser_validation_contract.py",
+          "line": 10,
+          "preview": "from generic_project import _run_browser_validation",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_browser_validation_contract.py",
+          "line": 102,
+          "preview": "result = _run_browser_validation(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_browser_validation_contract.py",
+          "line": 121,
+          "preview": "result = _run_browser_validation(request(), work, out)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_browser_validation_contract.py",
+          "line": 144,
+          "preview": "result = _run_browser_validation(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_browser_validation_contract.py",
+          "line": 168,
+          "preview": "result = _run_browser_validation(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_browser_validation_contract.py",
+          "line": 195,
+          "preview": "result = _run_browser_validation(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 8
+    },
+    "_mobile_validation_contract": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 483,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_project.py",
+          "line": 483,
+          "preview": "def _mobile_validation_contract(req: dict) -> dict | None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 560,
+          "preview": "contract = _mobile_validation_contract(req)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_verify_android_emulator_evidence": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 491,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_project.py",
+          "line": 491,
+          "preview": "def _verify_android_emulator_evidence(",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 646,
+          "preview": "adb_verification = _verify_android_emulator_evidence(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_mobile_validation_contract.py",
+          "line": 12,
+          "preview": "from generic_project import _run_mobile_validation, _verify_android_emulator_evidence",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_mobile_validation_contract.py",
+          "line": 93,
+          "preview": "\"generic_project._verify_android_emulator_evidence\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_mobile_validation_contract.py",
+          "line": 128,
+          "preview": "result = _verify_android_emulator_evidence(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_mobile_validation_contract.py",
+          "line": 159,
+          "preview": "result = _verify_android_emulator_evidence(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 6
+    },
+    "_run_mobile_validation": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 559,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_project.py",
+          "line": 559,
+          "preview": "def _run_mobile_validation(req: dict, work: Path, out: Path) -> dict | None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 2279,
+          "preview": "mobile_validation = _run_mobile_validation(req, work, out)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_mobile_validation_contract.py",
+          "line": 12,
+          "preview": "from generic_project import _run_mobile_validation, _verify_android_emulator_evidence",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_mobile_validation_contract.py",
+          "line": 102,
+          "preview": "result = _run_mobile_validation(request(), work, out)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_mobile_validation_contract.py",
+          "line": 118,
+          "preview": "result = _run_mobile_validation(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 5
+    },
+    "_existing_worker_canary_verification": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 730,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_project.py",
+          "line": 730,
+          "preview": "def _existing_worker_canary_verification(req: dict, work: Path) -> dict | None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 852,
+          "preview": "existing_canary_verification = _existing_worker_canary_verification(req, work)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_checkpoint.py",
+          "line": 82,
+          "preview": "\"generic_project._existing_worker_canary_verification\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_worker_canary_resume.py",
+          "line": 9,
+          "preview": "from generic_project import _existing_worker_canary_verification",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_worker_canary_resume.py",
+          "line": 43,
+          "preview": "result = _existing_worker_canary_verification(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_worker_canary_resume.py",
+          "line": 62,
+          "preview": "_existing_worker_canary_verification(self._request(), root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_worker_canary_resume.py",
+          "line": 77,
+          "preview": "_existing_worker_canary_verification(wrong_repo, root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_worker_canary_resume.py",
+          "line": 82,
+          "preview": "_existing_worker_canary_verification(incomplete, root)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 8
+    },
+    "_save_published_checkpoint": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 775,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_project.py",
+          "line": 775,
+          "preview": "def _save_published_checkpoint(path: Path, checkpoint: dict, observer=None) -> None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 861,
+          "preview": "_save_published_checkpoint(checkpoint_path, checkpoint, checkpoint_observer)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 2601,
+          "preview": "_save_published_checkpoint(checkpoint_path, checkpoint, checkpoint_observer)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_checkpoint.py",
+          "line": 14,
+          "preview": "from generic_project import _save_published_checkpoint, run_project",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_checkpoint.py",
+          "line": 35,
+          "preview": "_save_published_checkpoint(path, checkpoint, observer)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_checkpoint.py",
+          "line": 51,
+          "preview": "_save_published_checkpoint(path, checkpoint, seen.append)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_checkpoint.py",
+          "line": 69,
+          "preview": "_save_published_checkpoint(path, checkpoint, failure)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_checkpoint.py",
+          "line": 113,
+          "preview": "_save_published_checkpoint(path, checkpoint)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_round_checkpoint.py",
+          "line": 13,
+          "preview": "from generic_project import _save_published_checkpoint",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_round_checkpoint.py",
+          "line": 41,
+          "preview": "_save_published_checkpoint(first, published_one, persist)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_round_checkpoint.py",
+          "line": 46,
+          "preview": "_save_published_checkpoint(first, published_two, persist)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_round_checkpoint.py",
+          "line": 64,
+          "preview": "_save_published_checkpoint(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_round_checkpoint.py",
+          "line": 79,
+          "preview": "_save_published_checkpoint(path, checkpoint, called.append)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_round_checkpoint.py",
+          "line": 96,
+          "preview": "_save_published_checkpoint(path, checkpoint, unavailable)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 14
+    },
+    "run_project": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 789,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 180,
+          "preview": "output_root=root / 'output', run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "integration_tests/test_production_os_server_integration.py",
+          "line": 192,
+          "preview": "output_root=root / 'output', run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/autonomous_project.py",
+          "line": 242,
+          "preview": "from .multi_engine_orchestrator import run_project as run_once",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/autonomous_project.py",
+          "line": 244,
+          "preview": "from multi_engine_orchestrator import run_project as run_once",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 16,
+          "preview": "from orchestrator import run_project, run_registered_stages as _shared_run_registered_stages",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/ci_runner.py",
+          "line": 90,
+          "preview": "return run_project(project['file'], project_out, work, runner, deadline, clock, baseline_sha)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 789,
+          "preview": "def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic, checkpoint_observer=None)",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_smoke.py",
+          "line": 116,
+          "preview": "result=generic_project.run_project(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 53,
+          "preview": "from multi_engine_orchestrator import run_project as run_multi_engine_project",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 10,
+          "preview": "from orchestrator import load_report, run_project as run_flutter_project",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 11,
+          "preview": "from generic_project import run_project as run_generic_project",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/multi_engine_orchestrator.py",
+          "line": 42,
+          "preview": "def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None,checkpoint_observer=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/orchestrator.py",
+          "line": 449,
+          "preview": "def run_project(request_path,project_out,work,runner,deadline,clock=time.monotonic,baseline_sha=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1098,
+          "preview": "run_project=None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1110,
+          "preview": "if run_project is None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1111,
+          "preview": "from github_runner import run as run_project",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1348,
+          "preview": "summary = run_project(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_checkpoint.py",
+          "line": 14,
+          "preview": "from generic_project import _save_published_checkpoint, run_project",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_checkpoint.py",
+          "line": 93,
+          "preview": "result = run_project(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 11,
+          "preview": "from multi_engine_orchestrator import run_project",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 28,
+          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 50,
+          "preview": "response = run_project(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 78,
+          "preview": "run_project(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 148,
+          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 155,
+          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 166,
+          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 174,
+          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 182,
+          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 187,
+          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 197,
+          "preview": "run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 203,
+          "preview": "run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_multi_engine_orchestrator.py",
+          "line": 210,
+          "preview": "run_project(str(req),root/'out',str(root/'work'),runner,100,lambda:0,'a'*40)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 13,
+          "preview": "from orchestrator import run_project, run_registered_stages",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 70,
+          "preview": "result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 120,
+          "preview": "result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 167,
+          "preview": "result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 197,
+          "preview": "result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 211,
+          "preview": "result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 243,
+          "preview": "result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 265,
+          "preview": "result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 278,
+          "preview": "result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, None)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 305,
+          "preview": "result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_orchestrator.py",
+          "line": 380,
+          "preview": "run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_local_e2e.py",
+          "line": 170,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_local_e2e.py",
+          "line": 350,
+          "preview": "client, run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 33,
+          "preview": "run_project=runner, capabilities=['python'], runner_retry_attempts=0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 58,
+          "preview": "run_project=lambda *a, **kw: self.fail('must not run'),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 84,
+          "preview": "run_project=runner, capabilities=['python'])",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 99,
+          "preview": "run_project=lambda *a, **kw: None, capabilities=['python'], **kwargs)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_recovery.py",
+          "line": 109,
+          "preview": "run_project=lambda *a, **kw: {'status': 'complete', 'finished': True},",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 599,
+          "preview": "run_project=lambda *args, **kwargs: self.fail(\"runner must not execute\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 616,
+          "preview": "run_project=lambda *args, **kwargs: self.fail(\"runner must not execute\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 663,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 695,
+          "preview": "run_project=runner, clock=lambda: 10.0,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 717,
+          "preview": "run_project=runner, clock=lambda: 10.0,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 743,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 794,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 856,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 880,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 970,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 1006,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 1039,
+          "preview": "run_project=runner, clock=lambda: 10.0,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 1065,
+          "preview": "run_project=runner, clock=lambda: 10.0,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 1087,
+          "preview": "run_project=runner, clock=lambda: 10.0,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 1111,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 1254,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 1296,
+          "preview": "run_project=runner,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 1317,
+          "preview": "run_project=runner, clock=lambda: 10.0,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 1339,
+          "preview": "run_project=runner, clock=lambda: elapsed[0],",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 1367,
+          "preview": "run_project=runner, clock=lambda: 10.0,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_worker_runtime.py",
+          "line": 1390,
+          "preview": "run_project=lambda *a, **kw: None,",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 71
+    },
+    "evaluate_model_candidate": {
+      "definition": {
+        "file": "studio/generic_project.py",
+        "line": 1418,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/generic_project.py",
+          "line": 1418,
+          "preview": "def evaluate_model_candidate(",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1583,
+          "preview": "evaluate_model_candidate()",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1767,
+          "preview": "candidate = evaluate_model_candidate(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 3
+    },
     "GodotModel": {
       "definition": {
         "file": "studio/godot_model.py",
-        "line": 85,
+        "line": 87,
         "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/godot_model.py",
-          "line": 85,
+          "line": 87,
           "preview": "class GodotModel(Model):",
           "definition_candidate": true
         },
@@ -9224,20 +10253,20 @@
     "_ask_godot": {
       "definition": {
         "file": "studio/godot_model.py",
-        "line": 195,
+        "line": 197,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "studio/godot_model.py",
-          "line": 105,
+          "line": 107,
           "preview": "value = self._ask_godot(",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 195,
+          "line": 197,
           "preview": "def _ask_godot(",
           "definition_candidate": true
         },
@@ -9261,6 +10290,125 @@
         }
       ],
       "occurrence_count": 5
+    },
+    "AdaptivePlanningRuntimeTests": {
+      "definition": {
+        "file": "tests/test_adaptive_planning_runtime.py",
+        "line": 13,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_adaptive_planning_runtime.py",
+          "line": 13,
+          "preview": "class AdaptivePlanningRuntimeTests(unittest.TestCase):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_planning_requirement_is_shared_with_role_allocator": {
+      "definition": {
+        "file": "tests/test_adaptive_planning_runtime.py",
+        "line": 14,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_adaptive_planning_runtime.py",
+          "line": 14,
+          "preview": "def test_planning_requirement_is_shared_with_role_allocator(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_planning_budget_pressure_is_exposed_for_telemetry": {
+      "definition": {
+        "file": "tests/test_adaptive_planning_runtime.py",
+        "line": 35,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_adaptive_planning_runtime.py",
+          "line": 35,
+          "preview": "def test_planning_budget_pressure_is_exposed_for_telemetry(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_planning_policy_reports_stable_reason": {
+      "definition": {
+        "file": "tests/test_adaptive_planning_runtime.py",
+        "line": 49,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_adaptive_planning_runtime.py",
+          "line": 49,
+          "preview": "def test_planning_policy_reports_stable_reason(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_planning_policy_skips_only_when_safe_and_has_deterministic_plan": {
+      "definition": {
+        "file": "tests/test_adaptive_planning_runtime.py",
+        "line": 71,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_adaptive_planning_runtime.py",
+          "line": 71,
+          "preview": "def test_planning_policy_skips_only_when_safe_and_has_deterministic_plan(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_generic_runtime_wires_preplanning_decision_before_plan_model": {
+      "definition": {
+        "file": "tests/test_adaptive_planning_runtime.py",
+        "line": 100,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_adaptive_planning_runtime.py",
+          "line": 100,
+          "preview": "def test_generic_runtime_wires_preplanning_decision_before_plan_model(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_round_state_persists_planning_decision_telemetry": {
+      "definition": {
+        "file": "tests/test_adaptive_planning_runtime.py",
+        "line": 133,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_adaptive_planning_runtime.py",
+          "line": 133,
+          "preview": "def test_round_state_persists_planning_decision_telemetry(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
     },
     "FakeAPI": {
       "definition": {
@@ -9326,37 +10474,37 @@
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 246,
+          "line": 248,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 259,
+          "line": 261,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 274,
+          "line": 276,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 289,
+          "line": 291,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 309,
+          "line": 311,
           "preview": "fallback_api = FakeAPI([completion(patch_value)])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 343,
+          "line": 345,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
@@ -9823,13 +10971,13 @@
         },
         {
           "file": "studio/godot_model.py",
-          "line": 412,
+          "line": 414,
           "preview": "raise ProtocolError('Provider returned invalid completion envelope')",
           "definition_candidate": false
         },
         {
           "file": "studio/godot_model.py",
-          "line": 415,
+          "line": 417,
           "preview": "raise ProtocolError('Provider returned invalid completion choice')",
           "definition_candidate": false
         },
@@ -10919,73 +12067,73 @@
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 231,
+          "line": 233,
           "preview": "('product', product_value()),",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 246,
+          "line": 248,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 259,
+          "line": 261,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 274,
+          "line": 276,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 286,
+          "line": 288,
           "preview": "bad_plan = product_value()",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 289,
+          "line": 291,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 332,
+          "line": 334,
           "preview": "subject = model([malformed, completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 341,
+          "line": 343,
           "preview": "subject = model([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 343,
+          "line": 345,
           "preview": "fallback_api = FakeAPI([completion(product_value())])",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 366,
+          "line": 368,
           "preview": "reply=completion(product_value())",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 408,
+          "line": 410,
           "preview": "completion(product_value()),",
           "definition_candidate": false
         },
         {
           "file": "tests/test_godot_model.py",
-          "line": 510,
+          "line": 512,
           "preview": "completion(product_value()),",
           "definition_candidate": false
         }
@@ -11080,14 +12228,14 @@
     "test_test_role_rejects_non_test_path_then_repairs_once": {
       "definition": {
         "file": "tests/test_godot_model.py",
-        "line": 158,
+        "line": 160,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_godot_model.py",
-          "line": 158,
+          "line": 160,
           "preview": "def test_test_role_rejects_non_test_path_then_repairs_once(self):",
           "definition_candidate": true
         }
@@ -11097,14 +12245,14 @@
     "test_truncated_patch_retry_requests_a_smaller_complete_change": {
       "definition": {
         "file": "tests/test_godot_model.py",
-        "line": 198,
+        "line": 200,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_godot_model.py",
-          "line": 198,
+          "line": 200,
           "preview": "def test_truncated_patch_retry_requests_a_smaller_complete_change(self):",
           "definition_candidate": true
         }
@@ -11114,14 +12262,14 @@
     "test_structured_godot_call_falls_back_to_secondary_provider": {
       "definition": {
         "file": "tests/test_godot_model.py",
-        "line": 244,
+        "line": 246,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_godot_model.py",
-          "line": 244,
+          "line": 246,
           "preview": "def test_structured_godot_call_falls_back_to_secondary_provider(self):",
           "definition_candidate": true
         }
@@ -11131,14 +12279,14 @@
     "test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary": {
       "definition": {
         "file": "tests/test_godot_model.py",
-        "line": 340,
+        "line": 342,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_godot_model.py",
-          "line": 340,
+          "line": 342,
           "preview": "def test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary(self):",
           "definition_candidate": true
         }
@@ -11148,344 +12296,1886 @@
     "test_budget_is_shared_and_fail_closed": {
       "definition": {
         "file": "tests/test_godot_model.py",
-        "line": 354,
+        "line": 356,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
           "file": "tests/test_godot_model.py",
-          "line": 354,
+          "line": 356,
           "preview": "def test_budget_is_shared_and_fail_closed(self):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "_ProviderAPI": {
+    "FakeGitHub": {
       "definition": {
-        "file": "tests/test_provider_429_cooldown.py",
-        "line": 18,
+        "file": "tests/test_studio.py",
+        "line": 20,
         "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 18,
-          "preview": "class _ProviderAPI:",
-          "definition_candidate": true
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 53,
-          "preview": "_ProviderAPI.calls = []",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 54,
-          "preview": "_ProviderAPI.bad_status = 429",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 62,
-          "preview": "patch(\"generic_model.API\", _ProviderAPI),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 67,
-          "preview": "self.assertEqual(_ProviderAPI.calls, [",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 77,
-          "preview": "self.assertEqual(_ProviderAPI.calls[-1], \"https://model.invalid/good\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 78,
-          "preview": "self.assertEqual(_ProviderAPI.calls.count(\"https://model.invalid/bad\"), 1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 81,
-          "preview": "_ProviderAPI.bad_status = 503",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 87,
-          "preview": "patch(\"generic_model.API\", _ProviderAPI),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 100,
-          "preview": "patch(\"core.API\", _ProviderAPI),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 106,
-          "preview": "self.assertIn(\"https://model.invalid/good\", _ProviderAPI.calls)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 107,
-          "preview": "before = _ProviderAPI.calls.count(\"https://model.invalid/bad\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
+          "file": "studio/fault_injection_smoke.py",
           "line": 109,
-          "preview": "self.assertEqual(_ProviderAPI.calls.count(\"https://model.invalid/bad\"), before)",
+          "preview": "class FakeGitHub:",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 113,
-          "preview": "_ProviderAPI.calls = []",
+          "file": "studio/fault_injection_smoke.py",
+          "line": 122,
+          "preview": "inspect_registry_review(FakeGitHub(), review)",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 119,
-          "preview": "patch(\"core.API\", _ProviderAPI),",
+          "file": "tests/test_artwork_stage.py",
+          "line": 11,
+          "preview": "class FakeGitHub:",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 125,
-          "preview": "self.assertEqual(_ProviderAPI.calls, [\"https://model.invalid/bad\"])",
+          "file": "tests/test_artwork_stage.py",
+          "line": 55,
+          "preview": "with patch(\"studio.artwork_stage.GitHub\",FakeGitHub):",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_provider_429_cooldown.py",
+          "file": "tests/test_artwork_stage.py",
+          "line": 70,
+          "preview": "with patch(\"studio.artwork_stage.GitHub\",FakeGitHub):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capability_registry_promotion_persist.py",
+          "line": 12,
+          "preview": "class FakeGitHub:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capability_registry_promotion_persist.py",
+          "line": 120,
+          "preview": "gh=FakeGitHub()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capability_registry_promotion_persist.py",
+          "line": 132,
+          "preview": "gh=FakeGitHub()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capability_registry_promotion_persist.py",
+          "line": 146,
+          "preview": "gh=FakeGitHub()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_capability_registry_promotion_persist.py",
+          "line": 158,
+          "preview": "gh=FakeGitHub(); r=review(gh); r[\"candidate_id\"]=\"other\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_engine_entry.py",
+          "line": 14,
+          "preview": "class FakeGitHub:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_engine_entry.py",
+          "line": 39,
+          "preview": "gh = FakeGitHub(size=0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_engine_entry.py",
+          "line": 43,
+          "preview": "gh = FakeGitHub(default_paths=['README.md', '.gitignore'])",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_engine_entry.py",
+          "line": 47,
+          "preview": "self.assertEqual(detect_engine(REQ, FakeGitHub(default_paths=['pubspec.yaml','lib/app.dart'])), 'flutter')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_engine_entry.py",
+          "line": 50,
+          "preview": "self.assertEqual(detect_engine(REQ, FakeGitHub(default_paths=['project.godot','scripts/main.gd'])), 'godot')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_engine_entry.py",
+          "line": 54,
+          "preview": "detect_engine(REQ, FakeGitHub(default_paths=['pubspec.yaml','project.godot']))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_engine_entry.py",
+          "line": 57,
+          "preview": "gh = FakeGitHub(default_paths=['pubspec.yaml'], checkpoint_paths=['project.godot','scripts/main.gd'])",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_engine_entry.py",
+          "line": 63,
+          "preview": "detect_engine(REQ, FakeGitHub(default_paths=['package.json','src/index.js'])),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_capability_persist.py",
+          "line": 7,
+          "preview": "class FakeGitHub:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_capability_persist.py",
+          "line": 94,
+          "preview": "gh=FakeGitHub()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_capability_persist.py",
+          "line": 108,
+          "preview": "gh=FakeGitHub(); bad=validation(); bad[\"candidate_id\"]=\"other\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_capability_persist.py",
+          "line": 116,
+          "preview": "gh=FakeGitHub()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_capability_persist.py",
+          "line": 124,
+          "preview": "gh=FakeGitHub()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_round_checkpoint.py",
+          "line": 17,
+          "preview": "from test_github_goal_store import FakeGitHub",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_round_checkpoint.py",
+          "line": 22,
+          "preview": "remote = FakeGitHub()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_round_checkpoint.py",
+          "line": 56,
+          "preview": "remote = FakeGitHub()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 10,
+          "preview": "class FakeGitHub:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 40,
+          "preview": "github = FakeGitHub()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 68,
+          "preview": "github = FakeGitHub([",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 94,
+          "preview": "github = FakeGitHub([",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 138,
+          "preview": "target = FakeGitHub([{",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 192,
+          "preview": "jumpy = FakeGitHub([{",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_repository_pull_request.py",
+          "line": 218,
+          "preview": "assert GenericRepository(FakeGitHub(), \"owner/repo\", \"mp-\" + \"a\" * 24).request_trusted_review_handoff(sha) == {\"status\": \"not_configured\"}",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_goal_store.py",
+          "line": 22,
+          "preview": "class FakeGitHub:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_goal_store.py",
+          "line": 80,
+          "preview": "gh=FakeGitHub()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_goal_store.py",
+          "line": 89,
+          "preview": "self.assertIsNone(load(FakeGitHub(),\"demo\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_goal_store.py",
+          "line": 93,
+          "preview": "load(FakeGitHub(),\"../escape\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_goal_store.py",
+          "line": 162,
+          "preview": "gh=FakeGitHub(); save(gh,\"demo\",goal(),new_registry(),new_backlog())",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_goal_store.py",
+          "line": 173,
+          "preview": "gh=FakeGitHub()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_memory_store.py",
+          "line": 11,
+          "preview": "class FakeGitHub:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_memory_store.py",
+          "line": 75,
+          "preview": "self.assertEqual(load(FakeGitHub())[\"entries\"],[])",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_memory_store.py",
+          "line": 78,
+          "preview": "gh=FakeGitHub(); memory=populated()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_memory_store.py",
+          "line": 84,
+          "preview": "gh=FakeGitHub(); memory=populated(); save(gh,memory)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_github_memory_store.py",
+          "line": 90,
+          "preview": "gh=FakeGitHub(); save(gh,populated())",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_android_stage.py",
+          "line": 15,
+          "preview": "class FakeGitHub: pass",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_android_stage.py",
+          "line": 30,
+          "preview": "result=execute(REQ,root,out,FakeGitHub(),runtime,templates,exporter)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_android_stage.py",
+          "line": 42,
+          "preview": "execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub())",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 15,
+          "preview": "class FakeGitHub: pass",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 32,
+          "preview": "result=execute(REQ,root,out,FakeGitHub(),device_validator=validator)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 53,
+          "preview": "result=execute(REQ,root,out,FakeGitHub(),validator,runtime,templates,exporter)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 63,
+          "preview": "execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub())",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 73,
+          "preview": "execute(REQ,root,out,FakeGitHub(),device_validator=validator)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_play_stage.py",
+          "line": 33,
+          "preview": "class FakeGitHub: pass",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_play_stage.py",
+          "line": 55,
+          "preview": "result=execute(REQ,work,out,FakeGitHub(),env={\"STUDIO_PLAY_ACCESS_TOKEN\":\"x\"*40},publisher=publisher)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_play_stage.py",
+          "line": 70,
+          "preview": "result=execute(REQ,work,out,FakeGitHub(),env={},publisher=lambda **k:self.fail(\"network\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_play_stage.py",
+          "line": 83,
+          "preview": "result=execute(REQ,root/\"work\",root/\"out\",FakeGitHub(),env={\"STUDIO_PLAY_ACCESS_TOKEN\":\"x\"*40})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 19,
+          "preview": "class FakeGitHub:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 76,
+          "preview": "github=FakeGitHub()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 403,
+          "preview": "github=FakeGitHub(); github.branch_head='e'*40",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_artifact_stage.py",
+          "line": 15,
+          "preview": "class FakeGitHub: pass",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_artifact_stage.py",
+          "line": 29,
+          "preview": "result=execute(REQ,root/'work',root/'out',FakeGitHub(),runtime,source,builder,signer,env)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_artifact_stage.py",
+          "line": 39,
+          "preview": "result=execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub(),env={})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_artifact_stage.py",
+          "line": 52,
+          "preview": "execute(REQ,root/'work',root/'out',FakeGitHub(),lambda p:p/'g',lambda p:p/'s',builder,lambda *a:{},env)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_stage.py",
+          "line": 13,
+          "preview": "class FakeGitHub: pass",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_stage.py",
+          "line": 22,
+          "preview": "result=execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub(),lambda root:evidence)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_stage.py",
+          "line": 32,
+          "preview": "result=execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub(),lambda root:evidence)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_stage.py",
+          "line": 42,
+          "preview": "result=execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub(),lambda root:evidence)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime_journey_stage.py",
+          "line": 15,
+          "preview": "class FakeGitHub: pass",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime_journey_stage.py",
+          "line": 25,
+          "preview": "result=execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub(),installer,runner)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime_journey_stage.py",
+          "line": 35,
+          "preview": "result=execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub(),lambda _:Path(td)/'godot',lambda *args:{'passed':False,'journeys_executed':False,'journey_count':1})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime_journey_stage.py",
+          "line": 43,
+          "preview": "execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub())",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_visual_stage.py",
+          "line": 18,
+          "preview": "class FakeGitHub: pass",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_visual_stage.py",
+          "line": 28,
+          "preview": "result=execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub(),lambda *args:evidence)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_visual_stage.py",
+          "line": 37,
+          "preview": "result=execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub(),lambda *args:{'passed':False,'blockers':['clipping']})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_visual_stage.py",
+          "line": 46,
+          "preview": "execute(REQ,Path(td)/'work',Path(td)/'out',FakeGitHub(),lambda *args:{})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_stage.py",
+          "line": 55,
+          "preview": "class FakeGitHub:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_stage.py",
+          "line": 69,
+          "preview": "@patch(\"play_stage.GitHub\",FakeGitHub)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_stage.py",
+          "line": 94,
+          "preview": "@patch(\"play_stage.GitHub\",FakeGitHub)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_stage.py",
+          "line": 112,
+          "preview": "@patch(\"play_stage.GitHub\",FakeGitHub)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_privacy_stage.py",
+          "line": 40,
+          "preview": "class FakeGitHub:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_privacy_stage.py",
+          "line": 46,
+          "preview": "@patch(\"privacy_stage.GitHub\",FakeGitHub)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_privacy_stage.py",
+          "line": 72,
+          "preview": "@patch(\"privacy_stage.GitHub\",FakeGitHub)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_local_e2e.py",
+          "line": 16,
+          "preview": "from test_github_goal_store import FakeGitHub",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_local_e2e.py",
+          "line": 298,
+          "preview": "remote = FakeGitHub()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_local_e2e.py",
+          "line": 414,
+          "preview": "remote = FakeGitHub()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_stage.py",
+          "line": 42,
+          "preview": "class FakeGitHub:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_stage.py",
+          "line": 72,
+          "preview": "@patch(\"security_stage.GitHub\", FakeGitHub)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_stage.py",
+          "line": 107,
+          "preview": "@patch(\"security_stage.GitHub\", FakeGitHub)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_stage.py",
           "line": 130,
-          "preview": "_ProviderAPI.calls = []",
+          "preview": "@patch(\"security_stage.GitHub\", FakeGitHub)",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 136,
-          "preview": "patch(\"core.API\", _ProviderAPI),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 140,
-          "preview": "self.assertEqual(_ProviderAPI.calls, [",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 149,
-          "preview": "self.assertEqual(_ProviderAPI.calls.count(\"https://model.invalid/bad\"), 1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 154,
-          "preview": "_ProviderAPI.calls = []",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 155,
-          "preview": "_ProviderAPI.bad_status = 503",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
+          "file": "tests/test_security_stage.py",
           "line": 161,
-          "preview": "patch(\"core.API\", _ProviderAPI),",
+          "preview": "@patch(\"security_stage.GitHub\", FakeGitHub)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 20,
+          "preview": "class FakeGitHub:",
+          "definition_candidate": true
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 118,
+          "preview": "gh = gh or FakeGitHub()",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 23
+      "occurrence_count": 92
     },
-    "_providers": {
+    "restore": {
       "definition": {
-        "file": "tests/test_provider_429_cooldown.py",
-        "line": 38,
+        "file": "tests/test_studio.py",
+        "line": 25,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_provider_429_cooldown.py",
+          "file": "studio/agents/workspace.py",
+          "line": 37,
+          "preview": "def restore(root:Path,before:dict[str,str])->None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_pr_package.py",
+          "line": 83,
+          "preview": "\"strategy\":\"restore baseline manifest/lockfile/API usage from baseline_sha\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_work_order.py",
+          "line": 75,
+          "preview": "\"strategy\": \"restore baseline manifest, lockfile and API usage\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/billing_qa.py",
+          "line": 119,
+          "preview": "'A Play tester account/store-backed sandbox result is required for purchase success, cancellation and restore.',",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 247,
+          "preview": "raise RuntimeError('Unresolved patch recovery files; restore from a trusted checkpoint before reuse or publication')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/flutter_workspace.py",
+          "line": 57,
+          "preview": "def restore(root: Path, before: dict[str, str]) -> None:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 32,
+          "preview": "from agents.workspace import snapshot as snapshot_agent_workspace, validate_delta as validate_agent_delta, restore as restore_agent_workspace",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 803,
+          "preview": "base_sha, restore = repo.restore(work)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 867,
+          "preview": "\"restore\": restore,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 901,
+          "preview": "\"restore\": restore,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 34,
+          "preview": "def restore(self,root:Path)->tuple[str,dict]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_smoke.py",
+          "line": 39,
+          "preview": "def restore(self, work: Path):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 701,
+          "preview": "raise StudioError('Remote autonomous state restore failed: '+str(exc)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 703,
+          "preview": "raise StudioError('Remote project memory restore failed: '+str(exc)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 705,
+          "preview": "raise StudioError('Remote agent performance restore failed: '+str(exc)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 707,
+          "preview": "raise StudioError('Remote provider health restore failed: '+str(exc)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 709,
+          "preview": "raise StudioError('Remote provider metrics restore failed: '+str(exc)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 711,
+          "preview": "raise StudioError('Remote routing history restore failed: '+str(exc)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 713,
+          "preview": "raise StudioError('Remote verification cost restore failed: '+str(exc)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 715,
+          "preview": "raise StudioError('Remote phase cost baseline restore failed: '+str(exc)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 717,
+          "preview": "raise StudioError('Remote strategy efficiency restore failed: '+str(exc)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 719,
+          "preview": "raise StudioError('Remote contextual strategy efficiency restore failed: '+str(exc)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 721,
+          "preview": "raise StudioError('Remote quick gate cache restore failed: '+str(exc)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 723,
+          "preview": "raise StudioError('Remote full gate cache restore failed: '+str(exc)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 725,
+          "preview": "raise StudioError('Remote artifact CAS stats restore failed: '+str(exc)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 727,
+          "preview": "raise StudioError('Remote artifact CAS audit restore failed: '+str(exc)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/github_runner.py",
+          "line": 729,
+          "preview": "raise StudioError('Remote execution checkpoint restore failed: '+str(exc)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_baseline.py",
+          "line": 158,
+          "preview": "'Missing save must restore defaults']",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/immutable_artifact_cache.py",
+          "line": 144,
+          "preview": "def restore(root: Path, entry: dict, validation_key: str) -> dict:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/immutable_artifact_cache.py",
+          "line": 158,
+          "preview": "raise StudioError(\"Artifact cache restore verification failed\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/jumpy_save_checks.gd",
+          "line": 49,
+          "preview": "check(profile.data.coins == 0, \"Missing save must restore defaults\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/post_preview.py",
+          "line": 29,
+          "preview": "state, parent = github.restore(branch, saved)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/post_preview.py",
+          "line": 69,
+          "preview": "restored, parent = github.restore(branch, saved)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_review_canary.py",
+          "line": 61,
+          "preview": "base_sha, restore = repo.restore(work)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_review_canary.py",
+          "line": 123,
+          "preview": "\"restore\": restore,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker.py",
+          "line": 1030,
+          "preview": "if \" restore failed:\" in message:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_probe.py",
+          "line": 16,
+          "preview": "def restore(self, branch, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/release_candidate_search.py",
+          "line": 11,
+          "preview": "restore as restore_workspace,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/release_candidate_search.py",
+          "line": 21,
+          "preview": "restore as restore_artifacts,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/release_repair.py",
+          "line": 12,
+          "preview": "from flutter_workspace import snapshot as snapshot_agent_workspace, restore as restore_agent_workspace, delta as validate_agent_delta",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/run.py",
+          "line": 67,
+          "preview": "def restore(self, branch, root):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/run.py",
+          "line": 377,
+          "preview": "state, parent = github.restore(branch, saved_root)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_agent_workspace.py",
+          "line": 5,
+          "preview": "from agents.workspace import snapshot,validate_delta,restore",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_published_checkpoint.py",
+          "line": 85,
+          "preview": "repository.return_value.restore.return_value = (",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_worker_canary_resume.py",
+          "line": 118,
+          "preview": "instance.restore.return_value = (\"a\" * 40, {\"files\": 3})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_worker_canary_resume.py",
+          "line": 140,
+          "preview": "instance.restore.return_value = (\"a\" * 40, {\"files\": 3})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_android_stage.py",
+          "line": 20,
+          "preview": "def test_success_advances_only_to_device_qa(self, restore, publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_android_stage.py",
+          "line": 22,
+          "preview": "restore.return_value=(state,'a'*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_android_stage.py",
           "line": 38,
-          "preview": "def _providers():",
+          "preview": "def test_requires_validated_preview_checkpoint(self, restore):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_android_stage.py",
+          "line": 39,
+          "preview": "restore.return_value=({'engine':'godot','status':'pending','completion':{'finished':False,'next_stage':'preview'}},'a'*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 25,
+          "preview": "def test_matching_local_apk_advances_only_to_journey_qa(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 26,
+          "preview": "payload=b'a'*2000; digest=hashlib.sha256(payload).hexdigest(); restore.return_value=(state(digest),'a'*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 40,
+          "preview": "def test_missing_local_apk_is_reexported_and_rebound(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 41,
+          "preview": "restore.return_value=(state('a'*64),'a'*40,True); payload=b'z'*2000; digest=hashlib.sha256(payload).hexdigest()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 59,
+          "preview": "def test_requires_android_export_checkpoint(self,restore):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 60,
+          "preview": "restore.return_value=({'engine':'godot','status':'godot_preview_validated','completion':{'finished':False,'next_stage':'godot_android_export_qa'}},'a'*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 67,
+          "preview": "def test_device_cannot_spoof_journey_or_visual_evidence(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 68,
+          "preview": "payload=b'a'*2000; digest=hashlib.sha256(payload).hexdigest(); restore.return_value=(state(digest),'a'*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_play_stage.py",
+          "line": 43,
+          "preview": "def test_validate_only_finishes_requested_pipeline(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_play_stage.py",
+          "line": 49,
+          "preview": "restore.return_value=(state,\"a\"*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_play_stage.py",
+          "line": 63,
+          "preview": "def test_missing_token_is_human_action(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_play_stage.py",
+          "line": 69,
+          "preview": "restore.return_value=(state,\"a\"*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_play_stage.py",
+          "line": 77,
+          "preview": "def test_missing_exact_artifact_is_human_action(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_play_stage.py",
+          "line": 80,
+          "preview": "restore.return_value=(state,\"a\"*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_artifact_stage.py",
+          "line": 21,
+          "preview": "def test_success_advances_only_to_store_metadata(self,creds,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_artifact_stage.py",
+          "line": 22,
+          "preview": "restore.return_value=(dict(STATE),'a'*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_artifact_stage.py",
+          "line": 36,
+          "preview": "def test_lost_credentials_returns_to_human_action(self,creds,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_artifact_stage.py",
+          "line": 37,
+          "preview": "restore.return_value=(dict(STATE),'a'*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_artifact_stage.py",
+          "line": 46,
+          "preview": "def test_project_build_cannot_claim_signing_isolation_if_exposed(self,creds,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_artifact_stage.py",
+          "line": 47,
+          "preview": "restore.return_value=(dict(STATE),'a'*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_stage.py",
+          "line": 18,
+          "preview": "def test_missing_signing_is_human_action_not_success(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_stage.py",
+          "line": 19,
+          "preview": "restore.return_value=(dict(STATE),'a'*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_stage.py",
+          "line": 28,
+          "preview": "def test_signing_inputs_advance_only_to_aab_artifact(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_stage.py",
+          "line": 29,
+          "preview": "restore.return_value=(dict(STATE),'a'*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_stage.py",
+          "line": 38,
+          "preview": "def test_invalid_preset_stays_on_release_qa(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_stage.py",
+          "line": 39,
+          "preview": "restore.return_value=(dict(STATE),'a'*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime_journey_stage.py",
+          "line": 20,
+          "preview": "def test_all_journeys_advance_only_to_visual_qa(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime_journey_stage.py",
+          "line": 21,
+          "preview": "restore.return_value=({'engine':'godot','status':'godot_device_validated','product':{'journeys':JOURNEYS},'coverage':{'device_qa':True},'completion':{'finished':False,'next_stage':",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime_journey_stage.py",
+          "line": 32,
+          "preview": "def test_partial_success_stays_on_journey_stage(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime_journey_stage.py",
+          "line": 33,
+          "preview": "restore.return_value=({'engine':'godot','status':'godot_device_validated','product':{'journeys':JOURNEYS},'completion':{'finished':False,'next_stage':'godot_runtime_journey_qa'}},'",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime_journey_stage.py",
+          "line": 39,
+          "preview": "def test_requires_device_validated_checkpoint(self,restore):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime_journey_stage.py",
+          "line": 40,
+          "preview": "restore.return_value=({'engine':'godot','status':'godot_android_export_validated','completion':{'finished':False,'next_stage':'godot_device_qa'}},'a'*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_visual_stage.py",
+          "line": 23,
+          "preview": "def test_success_advances_only_to_release_qa(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_visual_stage.py",
+          "line": 24,
+          "preview": "restore.return_value=(dict(STATE),'a'*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_visual_stage.py",
+          "line": 34,
+          "preview": "def test_rejected_visual_stays_on_visual_qa(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_visual_stage.py",
+          "line": 35,
+          "preview": "restore.return_value=(dict(STATE),'a'*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_visual_stage.py",
+          "line": 41,
+          "preview": "def test_requires_real_journey_coverage(self,restore):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_visual_stage.py",
+          "line": 43,
+          "preview": "restore.return_value=(bad,'a'*40,True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_immutable_artifact_cache.py",
+          "line": 11,
+          "preview": "from immutable_artifact_cache import APK_REL, capture, restore, verify_entry, save, touch",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_immutable_artifact_cache.py",
+          "line": 45,
+          "preview": "result = restore(root, entry, key)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_immutable_artifact_cache.py",
+          "line": 73,
+          "preview": "restore(root, entry, \"d\" * 64)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 25,
+          "preview": "def restore(self, branch, root):",
           "definition_candidate": true
         },
         {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 61,
-          "preview": "patch(\"generic_model.load_providers\", return_value=_providers()),",
+          "file": "tests/test_studio.py",
+          "line": 220,
+          "preview": "self.assertEqual(gh.restore('studio/demo', Path(d)), (None, 'seed'))",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 86,
-          "preview": "patch(\"generic_model.load_providers\", return_value=_providers()),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 99,
-          "preview": "patch(\"provider_router.load_providers\", return_value=_providers()),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 118,
-          "preview": "patch(\"provider_router.load_providers\", return_value=_providers()),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 135,
-          "preview": "patch(\"provider_router.load_providers\", return_value=_providers()),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 160,
-          "preview": "patch(\"provider_router.load_providers\", return_value=_providers()),",
+          "file": "tests/test_studio.py",
+          "line": 233,
+          "preview": "Denied().restore('studio/demo', Path(d))",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 7
+      "occurrence_count": 94
     },
-    "Provider429CooldownTests": {
+    "publish": {
       "definition": {
-        "file": "tests/test_provider_429_cooldown.py",
-        "line": 51,
+        "file": "tests/test_studio.py",
+        "line": 34,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/artwork_stage.py",
+          "line": 51,
+          "preview": "sha=github.publish('studio/'+req['id'],parent,root,state)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/autonomous_project.py",
+          "line": 341,
+          "preview": "# this point. Persist only complete cycle boundaries: never publish",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/billing_stage.py",
+          "line": 39,
+          "preview": "sha = github.publish('studio/' + req['id'], parent, root, state)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capability_stage.py",
+          "line": 33,
+          "preview": "sha = github.publish('studio/' + req['id'], parent, root, state)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 195,
+          "preview": "publish = data['play_publish']",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 196,
+          "preview": "if not isinstance(publish, dict) or set(publish) - {'enabled', 'track', 'commit'}:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 198,
+          "preview": "enabled = publish.get('enabled', False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 199,
+          "preview": "track = publish.get('track', 'internal')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 200,
+          "preview": "commit = publish.get('commit', False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 306,
+          "preview": "raise RuntimeError('Patch rollback incomplete; do not publish workspace. Recovery files: ' + str(staging)) from None",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/device_stage.py",
+          "line": 39,
+          "preview": "sha = github.publish('studio/' + req['id'], parent, root, state)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 778,
+          "preview": "Callers must first publish the corresponding repository commit. An observer",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1285,
+          "preview": "Do not publish, deploy, push, commit, or ask the user questions. Work only on source/config/tests needed for the objective.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 2593,
+          "preview": "base_sha = repo.publish(base_sha, work, \"Autonomous generic project round \" + str(round_index))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 1,
+          "preview": "\"\"\"Bounded GitHub snapshot/publish backend for generic projects.\"\"\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 186,
+          "preview": "The source credential may publish commits but lack pull-request write",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_repository.py",
+          "line": 232,
+          "preview": "def publish(self,base_sha:str,root:Path,message:str)->str:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_smoke.py",
+          "line": 43,
+          "preview": "def publish(self, base_sha: str, work: Path, message: str):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_smoke.py",
+          "line": 45,
+          "preview": "raise RuntimeError(\"smoke publish missing implementation\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_verifier_adaptation.py",
+          "line": 17,
+          "preview": "Never install packages, curl/wget remote code, use a shell command string, alter git state, publish, deploy, or access secrets.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_verifier_adaptation.py",
+          "line": 27,
+          "preview": "\"-c\",\"--command\",\"eval\",\"exec\",\"install\",\"publish\",\"deploy\",\"release\",\"login\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/native_stage.py",
+          "line": 39,
+          "preview": "sha = github.publish('studio/' + req['id'], parent, root, state)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/notification_stage.py",
+          "line": 39,
+          "preview": "sha = github.publish('studio/' + req['id'], parent, root, state)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/performance_stage.py",
+          "line": 39,
+          "preview": "sha = github.publish('studio/' + req['id'], parent, root, state)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/platform_view_stage.py",
+          "line": 38,
+          "preview": "sha = github.publish('studio/' + req['id'], parent, root, state)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/play_stage.py",
+          "line": 182,
+          "preview": "sha = github.publish('studio/' + req['id'], parent, root, state)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/post_preview.py",
+          "line": 116,
+          "preview": "sha = github.publish(branch, parent, root, state)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/privacy_stage.py",
+          "line": 47,
+          "preview": "sha = github.publish('studio/' + req['id'], parent, root, state)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_review_canary.py",
+          "line": 71,
+          "preview": "sha = repo.publish(base_sha, work, \"Production-OS verified Jumpy delivery canary\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker_canary.py",
+          "line": 95,
+          "preview": "\"or publish Jumpy; report failure truthfully if model capacity is insufficient.\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_worker_canary.py",
+          "line": 111,
+          "preview": "\"review-branch checkpoint. Do not merge or publish the game.\"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_probe.py",
+          "line": 18,
+          "preview": "def publish(self, branch, parent, root, state):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/release_repair.py",
+          "line": 105,
+          "preview": "\"Do not commit, push, publish, deploy, or ask questions. \"",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/run.py",
+          "line": 140,
+          "preview": "def publish(self, branch, parent, root, state):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/run.py",
+          "line": 568,
+          "preview": "return github.publish(branch, parent_sha, root, state)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/security_stage.py",
+          "line": 162,
+          "preview": "sha = github.publish('studio/' + req['id'], parent, root, state)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/store_stage.py",
+          "line": 38,
+          "preview": "sha = github.publish('studio/' + req['id'], parent, root, state)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_artwork_stage.py",
+          "line": 14,
+          "preview": "def publish(self,branch,parent,root,state):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_worker_canary_resume.py",
+          "line": 119,
+          "preview": "instance.publish.return_value = published",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_worker_canary_resume.py",
+          "line": 129,
+          "preview": "self.assertEqual(instance.publish.call_count, 1)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_worker_canary_resume.py",
+          "line": 141,
+          "preview": "instance.publish.return_value = \"b\" * 40",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_android_stage.py",
+          "line": 20,
+          "preview": "def test_success_advances_only_to_device_qa(self, restore, publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 25,
+          "preview": "def test_matching_local_apk_advances_only_to_journey_qa(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 40,
+          "preview": "def test_missing_local_apk_is_reexported_and_rebound(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_device_stage.py",
+          "line": 67,
+          "preview": "def test_device_cannot_spoof_journey_or_visual_evidence(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_play_stage.py",
+          "line": 43,
+          "preview": "def test_validate_only_finishes_requested_pipeline(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_play_stage.py",
+          "line": 63,
+          "preview": "def test_missing_token_is_human_action(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_play_stage.py",
+          "line": 77,
+          "preview": "def test_missing_exact_artifact_is_human_action(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_artifact_stage.py",
+          "line": 21,
+          "preview": "def test_success_advances_only_to_store_metadata(self,creds,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_artifact_stage.py",
+          "line": 36,
+          "preview": "def test_lost_credentials_returns_to_human_action(self,creds,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_artifact_stage.py",
+          "line": 46,
+          "preview": "def test_project_build_cannot_claim_signing_isolation_if_exposed(self,creds,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_stage.py",
+          "line": 18,
+          "preview": "def test_missing_signing_is_human_action_not_success(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_stage.py",
+          "line": 28,
+          "preview": "def test_signing_inputs_advance_only_to_aab_artifact(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_release_stage.py",
+          "line": 38,
+          "preview": "def test_invalid_preset_stays_on_release_qa(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime_journey_stage.py",
+          "line": 20,
+          "preview": "def test_all_journeys_advance_only_to_visual_qa(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_runtime_journey_stage.py",
+          "line": 32,
+          "preview": "def test_partial_success_stays_on_journey_stage(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_visual_stage.py",
+          "line": 23,
+          "preview": "def test_success_advances_only_to_release_qa(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_visual_stage.py",
+          "line": 34,
+          "preview": "def test_rejected_visual_stays_on_visual_qa(self,restore,publish):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_patch_safety_rebuild.py",
+          "line": 69,
+          "preview": "gh.publish(\"studio/demo\",None,Path(td),{\"status\":\"blocked\",\"detail\":\"ghp_abcdef123456\"})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_patch_safety_rebuild.py",
+          "line": 82,
+          "preview": "gh.publish(\"studio/demo\",None,root,{\"status\":\"blocked\"})",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_play_stage.py",
+          "line": 57,
+          "preview": "def publish(self,*a,**k): return \"c\"*40",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_privacy_stage.py",
+          "line": 42,
+          "preview": "def publish(self,*a,**k): return \"c\"*40",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_stage.py",
+          "line": 46,
+          "preview": "def publish(self, *a, **k):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 34,
+          "preview": "def publish(self, branch, parent, root, state):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 64
+    },
+    "FakeModel": {
+      "definition": {
+        "file": "tests/test_studio.py",
+        "line": 47,
         "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_provider_429_cooldown.py",
+          "file": "tests/test_godot_preview.py",
           "line": 51,
-          "preview": "class Provider429CooldownTests(unittest.TestCase):",
-          "definition_candidate": true
-        }
-      ],
-      "occurrence_count": 1
-    },
-    "setUp": {
-      "definition": {
-        "file": "tests/test_provider_429_cooldown.py",
-        "line": 52,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_agent_router.py",
-          "line": 23,
-          "preview": "def setUp(self):",
+          "preview": "class FakeModel:",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_architecture_replacement_reputation_state_machine.py",
-          "line": 10,
-          "preview": "def setUp(self):",
+          "file": "tests/test_godot_preview.py",
+          "line": 78,
+          "preview": "base=Path(td); state=godot_preview.execute(self.request(),base/'work',base/'out',github,FakeModel,FakeSandbox)",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_ci.py",
-          "line": 41,
-          "preview": "def setUp(self):",
+          "file": "tests/test_godot_visual_qa.py",
+          "line": 14,
+          "preview": "class FakeModel:",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_ci.py",
-          "line": 166,
-          "preview": "def setUp(self):",
+          "file": "tests/test_godot_visual_qa.py",
+          "line": 64,
+          "preview": "result=qa.capture_and_review(source,self.journeys(),{'direction':'clean'},out,FakeModel,runtime,templates,exporter,runner,lambda _:None)",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_generic_adaptive_quota_budget.py",
-          "line": 35,
-          "preview": "def setUp(self):",
+          "file": "tests/test_godot_visual_qa.py",
+          "line": 82,
+          "preview": "qa.capture_and_review(source,self.journeys(),{'direction':'clean'},root/'out',FakeModel,runtime,templates,exporter,runner,lambda _:None)",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_godot_baseline.py",
-          "line": 12,
-          "preview": "def setUp(self):",
+          "file": "tests/test_idempotent_model.py",
+          "line": 13,
+          "preview": "class FakeModel:",
           "definition_candidate": false
         },
         {
-          "file": "tests/test_provider_429_cooldown.py",
+          "file": "tests/test_idempotent_model.py",
+          "line": 29,
+          "preview": "first_model = FakeModel()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_idempotent_model.py",
+          "line": 36,
+          "preview": "restarted_model = FakeModel()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_idempotent_model.py",
           "line": 52,
-          "preview": "def setUp(self):",
+          "preview": "model = FakeModel()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_agent.py",
+          "line": 12,
+          "preview": "class FakeModel:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_agent.py",
+          "line": 82,
+          "preview": "model_factory=FakeModel,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_security_agent.py",
+          "line": 105,
+          "preview": "model_factory=FakeModel,",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 47,
+          "preview": "class FakeModel:",
           "definition_candidate": true
         },
         {
-          "file": "tests/test_repo_maintenance.py",
-          "line": 11,
-          "preview": "def setUp(self):",
+          "file": "tests/test_studio.py",
+          "line": 117,
+          "preview": "def run_fixture(self, model=FakeModel, sandbox=FakeSandbox, gh=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 146,
+          "preview": "class NoVision(FakeModel):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 160,
+          "preview": "class Reject(FakeModel):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 168,
+          "preview": "class Broken(FakeModel):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 238,
+          "preview": "class QA(FakeModel):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 248,
+          "preview": "class NoTests(FakeModel):",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 8
+      "occurrence_count": 19
     },
-    "test_generic_model_uses_fallback_and_skips_429_provider_next_call": {
+    "FakeSandbox": {
       "definition": {
-        "file": "tests/test_provider_429_cooldown.py",
-        "line": 56,
-        "kind": "function",
+        "file": "tests/test_studio.py",
+        "line": 60,
+        "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 56,
-          "preview": "def test_generic_model_uses_fallback_and_skips_429_provider_next_call(self):",
+          "file": "tests/test_godot_preview.py",
+          "line": 63,
+          "preview": "class FakeSandbox:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_preview.py",
+          "line": 78,
+          "preview": "base=Path(td); state=godot_preview.execute(self.request(),base/'work',base/'out',github,FakeModel,FakeSandbox)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_repository_probe.py",
+          "line": 16,
+          "preview": "class FakeSandbox:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_repository_probe.py",
+          "line": 66,
+          "preview": "with patch.object(godot_repository_probe, 'GodotSandbox', FakeSandbox):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release.py",
+          "line": 10,
+          "preview": "class FakeSandbox:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release.py",
+          "line": 35,
+          "preview": "result = build_release(root, FakeSandbox(root))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_release.py",
+          "line": 47,
+          "preview": "sandbox = FakeSandbox(root, fail_at=2)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 60,
+          "preview": "class FakeSandbox:",
+          "definition_candidate": true
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 117,
+          "preview": "def run_fixture(self, model=FakeModel, sandbox=FakeSandbox, gh=None):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 139,
+          "preview": "class RepairSandbox(FakeSandbox):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_studio.py",
+          "line": 152,
+          "preview": "class Failed(FakeSandbox):",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 11
+    },
+    "StudioTests": {
+      "definition": {
+        "file": "tests/test_studio.py",
+        "line": 78,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_studio.py",
+          "line": 78,
+          "preview": "class StudioTests(unittest.TestCase):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_generic_server_error_preserves_standard_three_failure_threshold": {
+    "test_request_defaults": {
       "definition": {
-        "file": "tests/test_provider_429_cooldown.py",
-        "line": 80,
+        "file": "tests/test_studio.py",
+        "line": 79,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 80,
-          "preview": "def test_generic_server_error_preserves_standard_three_failure_threshold(self):",
+          "file": "tests/test_studio.py",
+          "line": 79,
+          "preview": "def test_request_defaults(self):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_flutter_model_provider_cooldown_and_independent_fallback": {
+    "test_request_rejects_injection_and_bad_types": {
       "definition": {
-        "file": "tests/test_provider_429_cooldown.py",
-        "line": 94,
+        "file": "tests/test_studio.py",
+        "line": 82,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_provider_429_cooldown.py",
-          "line": 94,
-          "preview": "def test_flutter_model_provider_cooldown_and_independent_fallback(self):",
+          "file": "tests/test_studio.py",
+          "line": 82,
+          "preview": "def test_request_rejects_injection_and_bad_types(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_paths": {
+      "definition": {
+        "file": "tests/test_studio.py",
+        "line": 86,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_studio.py",
+          "line": 86,
+          "preview": "def test_paths(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_patch_atomic_validation": {
+      "definition": {
+        "file": "tests/test_studio.py",
+        "line": 90,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_studio.py",
+          "line": 90,
+          "preview": "def test_patch_atomic_validation(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_duplicate_and_secrets": {
+      "definition": {
+        "file": "tests/test_studio.py",
+        "line": 96,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_studio.py",
+          "line": 96,
+          "preview": "def test_duplicate_and_secrets(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_symlink": {
+      "definition": {
+        "file": "tests/test_studio.py",
+        "line": 100,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_studio.py",
+          "line": 100,
+          "preview": "def test_symlink(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_verdict_fail_closed": {
+      "definition": {
+        "file": "tests/test_studio.py",
+        "line": 107,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_studio.py",
+          "line": 107,
+          "preview": "def test_verdict_fail_closed(self):",
           "definition_candidate": true
         }
       ],

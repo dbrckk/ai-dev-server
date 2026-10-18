@@ -1,12 +1,20 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "295a3c9e6736af7e7d1c776a70467e2c45e2d344",
-  "head": "cb8fd494c2ef3548b554721643acc6f9de0f4c11",
+  "base": "cb8fd494c2ef3548b554721643acc6f9de0f4c11",
+  "head": "f20ff67ead219f87f28f440d9dbbe5a4dbd10491",
   "index_mode": "incremental",
   "changed_files": [
     {
+      "path": "AGENTS.md",
+      "status": "M"
+    },
+    {
       "path": "studio/core.py",
+      "status": "M"
+    },
+    {
+      "path": "studio/generic_project.py",
       "status": "M"
     },
     {
@@ -14,19 +22,25 @@
       "status": "M"
     },
     {
+      "path": "tests/test_adaptive_planning_runtime.py",
+      "status": "M"
+    },
+    {
       "path": "tests/test_godot_model.py",
       "status": "M"
     },
     {
-      "path": "tests/test_provider_429_cooldown.py",
+      "path": "tests/test_studio.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
     "studio/core.py",
+    "studio/generic_project.py",
     "studio/godot_model.py",
+    "tests/test_adaptive_planning_runtime.py",
     "tests/test_godot_model.py",
-    "tests/test_provider_429_cooldown.py"
+    "tests/test_studio.py"
   ],
   "impacted_files": [
     "integration_tests/test_production_os_server_integration.py",
@@ -78,6 +92,7 @@
     "studio/generic_model.py",
     "studio/generic_project.py",
     "studio/generic_repository.py",
+    "studio/generic_smoke.py",
     "studio/generic_verifier_adaptation.py",
     "studio/github_full_gate_cache_store.py",
     "studio/github_runner.py",
@@ -147,6 +162,7 @@
     "studio/task_claim_store.py",
     "studio/telemetry.py",
     "studio/workflow_checkpoint.py",
+    "tests/test_adaptive_planning_runtime.py",
     "tests/test_android_signing.py",
     "tests/test_api_transport_retry.py",
     "tests/test_artifact_cas.py",
@@ -159,7 +175,10 @@
     "tests/test_durable_state.py",
     "tests/test_engine_entry.py",
     "tests/test_evolution_rollback.py",
+    "tests/test_generic_architecture.py",
     "tests/test_generic_model_capacity.py",
+    "tests/test_generic_published_checkpoint.py",
+    "tests/test_generic_published_round_checkpoint.py",
     "tests/test_generic_worker_canary_resume.py",
     "tests/test_github_full_gate_cache_store.py",
     "tests/test_godot_android_export.py",
@@ -2010,6 +2029,7 @@
   ],
   "selected_tests": [
     "integration_tests/test_production_os_server_integration.py",
+    "tests/test_adaptive_planning_runtime.py",
     "tests/test_android_signing.py",
     "tests/test_api_transport_retry.py",
     "tests/test_artifact_cas.py",
@@ -2022,7 +2042,10 @@
     "tests/test_durable_state.py",
     "tests/test_engine_entry.py",
     "tests/test_evolution_rollback.py",
+    "tests/test_generic_architecture.py",
     "tests/test_generic_model_capacity.py",
+    "tests/test_generic_published_checkpoint.py",
+    "tests/test_generic_published_round_checkpoint.py",
     "tests/test_generic_worker_canary_resume.py",
     "tests/test_github_full_gate_cache_store.py",
     "tests/test_godot_android_export.py",
@@ -2047,6 +2070,8 @@
     "tests/test_journeys.py",
     "tests/test_jumpy_v13_migration.py",
     "tests/test_local_api_security.py",
+    "tests/test_mobile_studio_provider_fallbacks.py",
+    "tests/test_mobile_studio_runtime_triggers.py",
     "tests/test_mobile_validation_contract.py",
     "tests/test_multi_engine_orchestrator.py",
     "tests/test_orchestrator.py",

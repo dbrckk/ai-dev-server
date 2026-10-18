@@ -486,6 +486,9 @@ tree = ast.parse(source)
 allocator_import = any(
 policy_import = any(
 ⋮----
+# The operational planner, model patcher and CLI agent all use the
+# focused coding rules, rather than simply referring to a document.
+⋮----
 def test_round_state_persists_planning_decision_telemetry(self)
 ```
 

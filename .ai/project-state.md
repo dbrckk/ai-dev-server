@@ -106,23 +106,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-18T09:32:32Z
+Generated: 2026-10-18T10:00:23Z
 
 ### Git
 - Branch: `main`
-- Head: `cb8fd494c2ef`
-- Commit date: 2026-10-18T05:32:22-04:00
-- Commit: fix(core): count provider failovers against Flutter model call ceiling (#341)
+- Head: `f20ff67ead21`
+- Commit date: 2026-10-18T06:00:13-04:00
+- Commit: feat(agents): adopt concise Karpathy-inspired surgical coding guidance (#342)
 - Tracked files: 865
 
 ### Recently changed files
+- `AGENTS.md`
 - `studio/core.py`
-- `tests/test_provider_429_cooldown.py`
+- `studio/generic_project.py`
 - `studio/godot_model.py`
+- `tests/test_adaptive_planning_runtime.py`
 - `tests/test_godot_model.py`
+- `tests/test_studio.py`
+- `tests/test_provider_429_cooldown.py`
 - `studio/native_model_usage.py`
-- `studio/capacity_budget.py`
-- `tests/test_capacity_budget.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -1,3 +1,9 @@
+## 2026-10-20 — public coding-smoke cost evidence
+
+- Reviewed hosted smoke 39493844133 artifact12296498396: one request, code_verified=true, 324 completion tokens, free catalog confirmed. The artifact did not record a reported-cost field.
+- Reproduced a proof bug: usage.cost=0.01 passed because only top-level market_cost was read. Now inspect all reported top-level/usage cost fields and upstream details; reject nonzero/malformed values and distinguish absent cost evidence. Also reject boolean catalog prices.
+- Existing diagnostic regression extended: 4 tests and 17 subtests pass. Original code returns passed for nested nonzero cost; corrected code returns blocked. CI/real hosted probe must rerun; no global providers changed.
+
 ## 2026-10-20 — explicit public anonymous provider opt-in
 
 - User-requested DSH review identified Kilo's public free gateway. Added explicit JSON anonymous=true support; remote anonymous endpoints require HTTPS, cannot declare key_env, and remain metered/zero declared quota by default. No automatic provider or hosted configuration change.

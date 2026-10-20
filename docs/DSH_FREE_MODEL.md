@@ -139,7 +139,9 @@ The resulting code is **never executed**. It is checked with the existing
 restricted AST-based `increment(value)` semantic verifier, and only
 redacted counters/status are retained in the `public-free-code-smoke`
 workflow artifact. Catalog uncertainty, transport errors, insufficient
-model output, or nonzero reported market cost fail closed. Trigger on
+model output, or nonzero reported costs fail closed. Cost evidence includes top-level and
+`usage` cost/market-cost fields plus upstream cost details; every present field
+must be numeric zero. Missing costs remain explicitly unreported. Trigger on
 changes to the probe/workflow or via manual GitHub Actions dispatch;
 there is **no scheduled consumption**.
 

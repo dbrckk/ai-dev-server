@@ -31,6 +31,8 @@ def _catalog_confirms_zero_cost(payload: object) -> bool:
         try:
             return (
                 "prompt" in prices and "completion" in prices
+                and type(prices["prompt"]) is not bool
+                and type(prices["completion"]) is not bool
                 and float(prices["prompt"]) == 0.0
                 and float(prices["completion"]) == 0.0
             )
@@ -85,15 +87,29 @@ def run() -> int:
             tokens = usage.get("completion_tokens")
             if type(tokens) is int and 0 <= tokens <= 512:
                 evidence["completion_tokens"] = tokens
-        cost = response.get("market_cost")
-        if cost is not None:
+        # Gateways report charge data either at the top level or in usage.
+        # Inspect every present field: a zero field cannot hide another charge.
+        costs = []
+        for container in (response, usage):
+            if isinstance(container, dict):
+                costs.extend(container[key] for key in ("market_cost", "cost") if key in container)
+        details = usage.get("cost_details") if isinstance(usage, dict) else None
+        if isinstance(details, dict):
+            costs.extend(details[key] for key in (
+                "upstream_inference_cost", "upstream_inference_prompt_cost",
+                "upstream_inference_completions_cost",
+            ) if key in details)
+        evidence["cost_reported"] = bool(costs)
+        if costs:
             try:
-                if float(cost) != 0.0:
-                    evidence["reason"] = "unexpected_nonzero_market_cost"
+                if any(type(cost) is bool or cost is None for cost in costs):
+                    raise ValueError("invalid cost type")
+                if any(float(cost) != 0.0 for cost in costs):
+                    evidence["reason"] = "unexpected_nonzero_cost"
                     return 1
-                evidence["reported_zero_market_cost"] = True
+                evidence["reported_zero_cost"] = True
             except (TypeError, ValueError, OverflowError):
-                evidence["reason"] = "invalid_market_cost"
+                evidence["reason"] = "invalid_cost"
                 return 1
 
         choices = response.get("choices")

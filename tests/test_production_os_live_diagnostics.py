@@ -38,6 +38,38 @@ class LiveDiagnosticsTests(unittest.TestCase):
         self.assertEqual(smoke['coding_smoke']['provider_index'], 1)
         self.assertNotIn('credential', json.dumps(smoke))
 
+        # The real public gateway reports costs inside usage, including
+        # separate upstream fields. None may be ignored in a free-code proof.
+        import tempfile
+        from pathlib import Path
+        import public_free_code_smoke as public_smoke
+        catalog = {"data": [{"id": public_smoke.MODEL, "isFree": True,
+                             "pricing": {"prompt": "0", "completion": "0"}}]}
+        cases = (
+            ({"usage": {"market_cost": 0}}, True),
+            ({"usage": {"cost": "0", "cost_details": {"upstream_inference_cost": 0}}}, True),
+            ({"usage": {"market_cost": 0.01}}, False),
+            ({"market_cost": 0, "usage": {"cost": 0.01}}, False),
+            ({"usage": {"cost": 0, "cost_details": {"upstream_inference_completions_cost": 0.01}}}, False),
+            ({"usage": {"cost": False}}, False),
+            ({"usage": {"cost": "NaN"}}, False),
+            ({"usage": {"cost": None}}, False),
+        )
+        for cost_fields, passed in cases:
+            with self.subTest(cost_fields=cost_fields), tempfile.TemporaryDirectory() as tmp:
+                output = Path(tmp) / "report.json"
+                response = {"choices": [{"message": {"content": 'def increment(value):\n    return value + 1'}}], **cost_fields}
+                with patch.object(public_smoke, "OUTPUT", output), patch.object(public_smoke, "API") as api, redirect_stdout(io.StringIO()):
+                    api.return_value.call.side_effect = [catalog, response]
+                    self.assertEqual(public_smoke.run(), 0 if passed else 1)
+                    self.assertEqual(api.return_value.call.call_count, 2)
+                report = json.loads(output.read_text())
+                self.assertEqual(report["code_verified"], passed)
+                self.assertTrue(report["cost_reported"])
+                self.assertEqual(report.get("reported_zero_cost", False), passed)
+        catalog["data"][0]["pricing"]["prompt"] = False
+        self.assertFalse(public_smoke._catalog_confirms_zero_cost(catalog))
+
     def test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready(self):
         self.assertTrue(_safe_increment_source('def increment(value):\n    return value + 1'))
         for unsafe in ('__import__("os").system("id")',

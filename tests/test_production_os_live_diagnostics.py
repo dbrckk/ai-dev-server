@@ -63,6 +63,10 @@ class LiveDiagnosticsTests(unittest.TestCase):
                     api.return_value.call.side_effect = [catalog, response]
                     self.assertEqual(public_smoke.run(), 0 if passed else 1)
                     self.assertEqual(api.return_value.call.call_count, 2)
+                    live_call = api.return_value.call.call_args_list[1]
+                    self.assertEqual(live_call.args[:2], ('POST', '/chat/completions'))
+                    self.assertEqual(live_call.args[2]['max_tokens'], 1024)
+                    self.assertEqual(live_call.kwargs['max_attempts'], 1)
                 report = json.loads(output.read_text())
                 self.assertEqual(report["code_verified"], passed)
                 self.assertTrue(report["cost_reported"])

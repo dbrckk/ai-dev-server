@@ -1,8 +1,9 @@
+import base64
 from pathlib import Path
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
-from core import NoRedirect
+from core import APIError, NoRedirect
 
 from production_os_worker_canary import (
     canary_instruction,
@@ -114,11 +115,21 @@ class WorkerCanaryTests(unittest.TestCase):
         )
         self.assertEqual(available_result["actions_worker_wake"], "not_needed")
         self.assertIsNone(available_result["succeeded"])
+        source_api = Mock()
+        vulnerable_source = (
+            'func _unhandled_input(event: InputEvent) -> void:\n'
+            '\tif state == "READY":\n\t\tstart_run()\n'
+            'func landing():\n\tjudgement = "PERFECT"\n\tjudgement = "CLUTCH"\n'
+        )
+        source_api.call.return_value = {
+            "type": "file", "encoding": "base64", "sha": "c" * 40,
+            "content": base64.b64encode(vulnerable_source.encode()).decode(),
+        }
         gameplay_client = FakeClient()
         gameplay_result = run_canary(gameplay_client, {
             "sequence": 32, "repository": "dbrckk/Jumpy",
             "scenario": "jumpy_landing_feedback",
-        })
+        }, source_api=source_api)
         self.assertEqual(gameplay_result["scenario"], "jumpy_landing_feedback")
         self.assertEqual(gameplay_client.submissions[0][1]["request_id"], "worker-canary-32")
         self.assertEqual(gameplay_client.submissions[0][1]["launch_profile"], "portfolio-integration")
@@ -128,12 +139,34 @@ class WorkerCanaryTests(unittest.TestCase):
         guard_result = run_canary(guard_client, {
             "sequence": 34, "repository": "dbrckk/Jumpy",
             "scenario": "jumpy_settings_tap_guard",
-        })
+        }, source_api=source_api)
         self.assertEqual(guard_result["scenario"], "jumpy_settings_tap_guard")
         self.assertEqual(guard_client.submissions[0][1]["request_id"], "worker-canary-34")
         self.assertEqual(guard_client.submissions[0][1]["launch_profile"], "portfolio-integration")
         self.assertEqual(guard_client.submissions[0][1]["token_budget"], 60000)
         self.assertIn("settings_open", guard_client.submissions[0][1]["instruction"])
+        self.assertEqual(guard_result["source_preflight"]["source_blob_sha"], "c" * 40)
+        self.assertEqual(source_api.call.call_args.kwargs, {"timeout_seconds": 15, "max_attempts": 1})
+        source_api.call.return_value["content"] = base64.b64encode(
+            (vulnerable_source.replace('if state == "READY":',
+                                       'if state == "READY" and not settings_open:')
+             + 'func show_landing_cue(message, color):\n\tpass\n').encode()
+        ).decode()
+        for scenario in ("jumpy_settings_tap_guard", "jumpy_landing_feedback"):
+            blocked_client = FakeClient()
+            blocked = run_canary(blocked_client, {
+                "sequence": 35, "repository": "dbrckk/Jumpy", "scenario": scenario,
+            }, source_api=source_api, wait_seconds=60,
+                dispatch=lambda: self.fail("obsolete objective must not wake worker"))
+            self.assertFalse(blocked["succeeded"])
+            self.assertEqual(blocked["result"]["reason"], "scenario_no_longer_applicable")
+            self.assertEqual(blocked_client.submissions, [])
+            self.assertEqual(blocked_client.lookups, [])
+        source_api.call.side_effect = APIError(503)
+        with self.assertRaises(APIError):
+            run_canary(blocked_client, {"sequence": 36, "repository": "dbrckk/Jumpy",
+                                       "scenario": "jumpy_settings_tap_guard"}, source_api=source_api)
+        self.assertEqual(blocked_client.submissions, [])
         with self.assertRaises(ValueError):
             dispatch_worker_after_enqueue(token="not-used", repository="untrusted/repo")
 
@@ -191,6 +224,16 @@ class WorkerCanaryTests(unittest.TestCase):
             sleeper=lambda seconds: now.__setitem__(0, now[0] + seconds),
         )
         self.assertEqual(result, {"status": "timed_out", "last_status": "running"})
+        for wait, poll in ((-1, 10), (7201, 10), (float("nan"), 10),
+                           (float("inf"), 10), (60, 0), (60, 61), (60, float("nan"))):
+            with self.subTest(wait=wait, poll=poll):
+                untouched = FakeClient()
+                with self.assertRaises(ValueError):
+                    run_canary(untouched, {"sequence": 1, "repository": "dbrckk/repo-standards"},
+                               wait_seconds=wait, poll_seconds=poll,
+                               dispatch=lambda: self.fail("invalid timing must not dispatch"))
+                self.assertEqual(untouched.submissions, [])
+                self.assertEqual(untouched.lookups, [])
 
 
 if __name__ == "__main__":

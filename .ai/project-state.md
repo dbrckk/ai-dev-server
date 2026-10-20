@@ -1,8 +1,9 @@
-## 2026-10-20 — public coding-smoke cost evidence
+## 2026-10-20 — reject obsolete source canaries before spending capacity
 
-- Reviewed hosted smoke 39493844133 artifact12296498396: one request, code_verified=true, 324 completion tokens, free catalog confirmed. The artifact did not record a reported-cost field.
-- Reproduced a proof bug: usage.cost=0.01 passed because only top-level market_cost was read. Now inspect all reported top-level/usage cost fields and upstream details; reject nonzero/malformed values and distinguish absent cost evidence. Also reject boolean catalog prices.
-- Existing diagnostic regression extended: 4 tests and 17 subtests pass. Original code returns passed for nested nonzero cost; corrected code returns blocked. CI/real hosted probe must rerun; no global providers changed.
+- Inspected current public Jumpy main: settings tap guard and landing cues are already implemented. Added a bounded source applicability GET before either old 60k source objective can enqueue. Both block with scenario_no_longer_applicable on live blob 1f4c52618356fe1bbd684a1a3f4d0b717073501e; no queue mutation, dispatch or model call. Unknown/unreadable source fails closed; no product-completion claim.
+- Reproduced invalid wait duration causing one queued task before ValueError. Shared polling validation now runs before launch; same reproduction queues zero tasks.
+- Existing targeted tests: 35 passed, 44 subtests passed. Actual public GitHub GET plus a mutation-refusing client exercised both obsolete scenarios. Exact-head CI pending.
+- PR355 and PR356 merged; PR355 postmerge nine workflows successful. PR356 postmerge seven of eight successful, mobile still running at observation. Anonymous capacity remains opt-in; actual useful model-authored source delivery is still unqualified.
 
 ## 2026-10-20 — explicit public anonymous provider opt-in
 
@@ -140,16 +141,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-20T20:32:35Z
+Generated: 2026-10-20T20:55:47Z
 
 ### Git
 - Branch: `main`
-- Head: `3bc4b6222203`
-- Commit date: 2026-10-20T16:32:23-04:00
-- Commit: feat(providers): opt-in anonymous HTTPS model gateways (#356)
+- Head: `dc523dca3472`
+- Commit date: 2026-10-20T16:55:32-04:00
+- Commit: fix(canary): refuse obsolete source objectives before enqueue (#358)
 - Tracked files: 866
 
 ### Recently changed files
+- `docs/PRODUCTION_OS_WORKER.md`
+- `studio/production_os_worker_canary.py`
+- `tests/test_production_os_worker_canary.py`
 - `docs/DSH_FREE_MODEL.md`
 - `studio/provider_router.py`
 - `tests/test_provider_router.py`
@@ -159,10 +163,7 @@ Generated: 2026-10-20T20:32:35Z
 - `tests/test_generic_published_checkpoint.py`
 - `tests/test_generic_repository_pull_request.py`
 - `tests/test_generic_worker_canary_resume.py`
-- `docs/PRODUCTION_OS_WORKER.md`
 - `studio/production_os_review_canary.py`
-- `studio/production_os_worker_canary.py`
-- `tests/test_production_os_worker_canary.py`
 
 ### Project signals
 - No common build descriptor detected

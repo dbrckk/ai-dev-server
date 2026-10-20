@@ -15,7 +15,7 @@ from execution_checkpoint import advance as advance_checkpoint, new as new_check
 from generic_repository import GenericRepository
 from run import GitHub
 
-_CANARY = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8})\.")
+_CANARY = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8}|1000000000)\.")
 
 
 def contract(req: dict) -> tuple[str, str] | None:

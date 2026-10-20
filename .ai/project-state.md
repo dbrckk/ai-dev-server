@@ -1,3 +1,10 @@
+## 2026-10-20 — optional DSH gateway and credential readiness
+
+- Reviewed user-provided Ebony-Vinyl/dsh-our-free-model at 5923ebef0f55578ca21bb5555b7ba5adb51aef21. Kilo catalog read: 401 entries, 18 explicitly free; no inference, no unlimited-capacity claim.
+- Found and fixed local JSON providers remaining eligible with a missing declared key_env. Missing/blank credentials now exclude them; intentionally keyless local servers omit key_env.
+- Documented optional local gateway configuration with unmetered=false, no invented quota, real model discovery and machine-local scope. No hosted provider configuration changed.
+- Qualification: 19 existing tests and 6 subtests passed; real authenticated loopback HTTP catalog and missing-key exclusion passed. DSH host/model generation remains unverified. Exact-head CI pending.
+
 ## 2026-10-20 — canary sequence boundary consistency
 
 - Reproduced: control validation accepts sequence 1000000000, while both marker consumers rejected it and fell through to normal autonomous execution.

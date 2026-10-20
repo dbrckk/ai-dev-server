@@ -1,0 +1,55 @@
+{
+  "requested_model": "kilo-auto/free",
+  "reported_model": "nvidia/nemotron-3.5-super-vl:free",
+  "usage": {
+    "prompt_tokens": 489,
+    "completion_tokens": 1003,
+    "total_tokens": 1492,
+    "cost": 0,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0,
+      "upstream_inference_prompt_cost": 0,
+      "upstream_inference_completions_cost": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 941,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "finish_reason": "stop",
+  "max_tokens": 1024,
+  "max_attempts": 1,
+  "source_sha256": "a5b11226be891f91d4ebe4633ad86aff6870ae7284f78da26e91732617463496",
+  "patch_sha256": "522c1baf9a593f9797ede094d0142f92cf67cb2ae76c02339ffa20949ec966de",
+  "schema_version": 1,
+  "observed_on": "2026-10-20",
+  "target_repository": "dbrckk/ai-dev-server",
+  "target_visibility": "public",
+  "target_path": "studio/production_os_live_diagnostics.py",
+  "base_commit": "d28b09e",
+  "transport": "existing core.API, fixed HTTPS Kilo public gateway, empty credential, one POST without retry",
+  "free_preflight": "fresh catalog isFree=true and zero prompt/completion prices",
+  "proposed_edit": {
+    "old": "or len(fn.args.args) != 1 or fn.args.args[0].arg != \"value\"",
+    "new": "or len(fn.args.args) != 1 or fn.args.args[0].arg != \"value\" or fn.args.args[0].annotation is not None"
+  },
+  "validation": {
+    "before": "existing regression extended; annotated argument accepted and regression failed",
+    "after": "23 tests and 20 subtests passed; exact proposed source edit applied",
+    "hosted_ci": "pending"
+  },
+  "limits": [
+    "model identity and cost are gateway-reported",
+    "not a hosted Production-OS queue-to-worker run",
+    "not sustained quota or arbitrary coding-quality proof",
+    "no private content sent; no provider-generated executable code run"
+  ]
+}

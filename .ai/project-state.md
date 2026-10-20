@@ -1,3 +1,9 @@
+## 2026-10-20 — bounded public model-authored source correction
+
+- Reproduced _safe_increment_source accepting parameter annotations (including calls) despite the diagnostic's deliberately restricted function contract. No generated code is executed, but the readiness proof was overly permissive.
+- One anonymous Kilo request, after live isFree/zero-price checks, received a minimal exact source edit rejecting annotations. Sent only the public function; applied the exact proposed edit after review. Gateway reported nvidia/nemotron-3.5-super-vl:free, 1492 total tokens (1003 completion), cost=0, stop. Output cap1024; no retry.
+- Extended an existing test: failed before correction, then 23 tests and 20 subtests passed. Provenance saved in docs/qualification/public-model-diagnostic-fix-20261020.json. Exact-head CI pending. This proves a bounded source-edit proposal, not a hosted Production-OS job or durable capacity.
+
 ## 2026-10-20 — explicit public anonymous provider opt-in
 
 - User-requested DSH review identified Kilo's public free gateway. Added explicit JSON anonymous=true support; remote anonymous endpoints require HTTPS, cannot declare key_env, and remain metered/zero declared quota by default. No automatic provider or hosted configuration change.

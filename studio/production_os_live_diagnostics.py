@@ -57,7 +57,7 @@ def _safe_increment_source(source):
             return False
         fn = tree.body[0]
         if (fn.name != "increment" or fn.decorator_list or fn.returns is not None
-                or len(fn.args.args) != 1 or fn.args.args[0].arg != "value"
+                or len(fn.args.args) != 1 or fn.args.args[0].arg != "value" or fn.args.args[0].annotation is not None
                 or fn.args.defaults or fn.args.kwonlyargs or fn.args.posonlyargs
                 or fn.args.vararg or fn.args.kwarg or len(fn.body) != 1
                 or not isinstance(fn.body[0], ast.Return)):

@@ -86,7 +86,16 @@ class GenericPublishedCheckpointTests(unittest.TestCase):
                     "a" * 40, {"status": "restored"},
                 )
 
+                repository.return_value.ensure_pull_request.return_value = {
+                    "number": 1, "state": "open", "url": "https://github.com/owner/app/pull/1",
+                }
+
                 def observer(value):
+                    repository.return_value.ensure_pull_request.assert_called_once_with(
+                        title="Review resumed Production-OS worker canary",
+                        body="Verified existing marker; review the restored checkpoint before merging.",
+                        expected_sha="a" * 40,
+                    )
                     self.assertEqual(load(checkpoint_path), value)
                     observed.append(value)
 

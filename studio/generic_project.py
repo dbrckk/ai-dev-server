@@ -851,21 +851,47 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
 
     existing_canary_verification = _existing_worker_canary_verification(req, work)
     if existing_canary_verification is not None:
+        # Restored file content proves implementation only, not review delivery.
+        # Reuse/create the review with the same exact-SHA guard as normal rounds.
+        try:
+            pull_request = repo.ensure_pull_request(
+                title="Review resumed Production-OS worker canary",
+                body="Verified existing marker; review the restored checkpoint before merging.",
+                expected_sha=base_sha,
+            )
+            delivered = True
+        except StudioError as exc:
+            denied = any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
+            handoff = repo.request_trusted_review_handoff(base_sha) if denied else None
+            confirmed = (
+                repo.await_trusted_review(base_sha)
+                if isinstance(handoff, dict) and handoff.get("status") == "accepted"
+                else None
+            )
+            delivered = confirmed is not None
+            pull_request = confirmed if delivered else {
+                "state": "unavailable",
+                "reason": "pull_request_write_denied" if denied else "pull_request_unavailable",
+                "head": repo.branch,
+                **({"review_handoff": handoff} if isinstance(handoff, dict) else {}),
+            }
+        blockers = [] if delivered else ["GitHub review PR not confirmed"]
+        next_stage = None if delivered else "review_handoff"
         checkpoint = advance_checkpoint(
             checkpoint,
             base_sha=base_sha,
             round_index=max(1, int(checkpoint.get("round", 0))),
-            phase="complete",
+            phase="complete" if delivered else "published",
             last_verification=existing_canary_verification,
         )
         _save_published_checkpoint(checkpoint_path, checkpoint, checkpoint_observer)
         report = {
             "engine": "generic",
-            "status": "complete",
+            "status": "complete" if delivered else "blocked",
             "target_repo": req["target_repo"],
             "rounds": [],
             "restore": restore,
-            "blockers": [],
+            "blockers": blockers,
             "checkpoint_commit": base_sha,
             "verification": existing_canary_verification,
             "execution_checkpoint": {
@@ -874,19 +900,20 @@ def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None,
                 "base_sha": checkpoint["base_sha"],
             },
             "completion": {
-                "finished": True,
-                "next_stage": None,
-                "blockers": [],
+                "finished": delivered,
+                "next_stage": next_stage,
+                "blockers": blockers,
             },
-            "release_status": "verified_project_complete",
+            "pull_request": pull_request,
+            "release_status": "verified_project_complete" if delivered else "verified_branch_review_blocked",
             "resume_mode": "existing_worker_canary_proof",
         }
         (out / "generic-report.json").parent.mkdir(parents=True, exist_ok=True)
         (out / "generic-report.json").write_text(canonical(report))
         return {
-            "status": "complete",
+            "status": "complete" if delivered else "blocked",
             "report": report,
-            "next_stage": None,
+            "next_stage": next_stage,
         }
 
     resume_round = checkpoint.get("round", 0) if checkpoint.get("phase") in {"published", "complete"} else 0

@@ -1,3 +1,4 @@
+import os
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -6,7 +7,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
-from generic_project import _existing_worker_canary_verification
+from generic_project import _existing_worker_canary_verification, run_project
 from production_os_review_canary import contract as review_contract, run as run_review_canary
 from production_os_worker_canary import canary_instruction, validate_control
 from core import StudioError
@@ -52,6 +53,39 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
                     result["files"][0]["path"],
                     ".production-os/worker-canary-2.txt",
                 )
+
+                # A restored marker must still reach review at its exact SHA.
+                for failure in (None, "API HTTP 403", "Generic review pull request head revision unverified", "confirmed handoff", "pending handoff"):
+                    with self.subTest(failure=failure), patch.dict(os.environ), patch(
+                        "generic_project.GitHub"
+                    ), patch("generic_project.GenericRepository") as repository:
+                        repo = repository.return_value
+                        repo.restore.return_value = ("a" * 40, {"files": 1})
+                        repo.branch = "studio/canary-resume"
+                        repo.ensure_pull_request.side_effect = StudioError(
+                            "API HTTP 403" if failure in {"confirmed handoff", "pending handoff"} else failure
+                        ) if failure else None
+                        repo.ensure_pull_request.return_value = {
+                            "number": 7, "state": "open",
+                            "url": "https://github.com/dbrckk/repo-standards/pull/7",
+                        }
+                        handoff = failure in {"confirmed handoff", "pending handoff"}
+                        delivered = failure is None or failure == "confirmed handoff"
+                        repo.request_trusted_review_handoff.return_value = {"status": "accepted" if handoff else "unavailable"}
+                        repo.await_trusted_review.return_value = (
+                            repo.ensure_pull_request.return_value if delivered else None
+                        )
+                        observed = []
+                        request = {**self._request(), "id": "canary-resume"}
+                        outcome = run_project(request, root / "output", root,
+                                              checkpoint_observer=observed.append)
+                        self.assertEqual(outcome["status"], "complete" if delivered else "blocked")
+                        self.assertEqual(outcome["report"]["completion"]["finished"], delivered)
+                        self.assertEqual(observed[-1]["phase"], "complete" if delivered else "published")
+                        self.assertEqual(repo.ensure_pull_request.call_args.kwargs["expected_sha"], "a" * 40)
+                        repo.publish.assert_not_called()
+                        if handoff:
+                            repo.await_trusted_review.assert_called_once_with("a" * 40)
 
     def test_rejects_wrong_content(self):
         with tempfile.TemporaryDirectory() as td:

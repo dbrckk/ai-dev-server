@@ -479,3 +479,9 @@ persistent token budget, compatibility with large contexts, or a verified
 PR/integration. A failed code smoke makes `diagnostic_ready=false` only when
 explicitly enabled. No production job is claimed and the fleet pause remains
 in force until actual implementation, tests, CI and quota checks succeed.
+
+## Optional DSH local model gateway
+
+See [DSH gateway setup and qualification](DSH_FREE_MODEL.md) for the optional
+`dsh-our-free-model` integration, credential requirements and explicit external
+quota accounting. It is not enabled automatically on hosted workers.

@@ -193,7 +193,9 @@ def _json_specs(raw: str) -> list[ProviderSpec]:
             raise ValueError("Provider key_env must be a non-empty string when provided")
         if key_env:
             key = os.environ.get(key_env, "")
-            if not key and not local_base:
+            # A configured credential is required even for a loopback proxy.
+            # Keyless local inference is expressed by omitting key_env.
+            if not key.strip():
                 continue
         else:
             if not local_base:

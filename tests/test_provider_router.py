@@ -90,8 +90,21 @@ class ProviderRouterTests(unittest.TestCase):
             "key_env": "MISSING_KEY",
             "model": "free-model",
         }]
-        with patch.dict(os.environ, {"STUDIO_PROVIDERS_JSON": json.dumps(config)}, clear=True):
-            self.assertEqual(load_providers(), ())
+        for base in ("https://fallback.invalid/v1", "http://127.0.0.1:18899/v1"):
+            config[0]["base"] = base
+            config[0]["unmetered"] = False
+            for key in (None, "", "   "):
+                env = {"STUDIO_PROVIDERS_JSON": json.dumps(config)}
+                if key is not None:
+                    env["MISSING_KEY"] = key
+                with self.subTest(base=base, key=repr(key)), patch.dict(os.environ, env, clear=True):
+                    self.assertEqual(load_providers(), ())
+            with patch.dict(os.environ, {
+                "STUDIO_PROVIDERS_JSON": json.dumps(config), "MISSING_KEY": "gateway-key",
+            }, clear=True):
+                provider, = load_providers()
+                self.assertEqual(provider.key, "gateway-key")
+                self.assertFalse(provider.unmetered)
 
     def test_free_fallback_can_rank_before_primary(self):
         config = [{

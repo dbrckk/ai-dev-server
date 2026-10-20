@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 3,
     "requested_max_files": 12,
-    "score_margin": 6,
+    "score_margin": 4,
     "tier": "narrow",
     "top_score": 39
   },
   "cache": {
-    "fingerprint": "462076f6ff00e498272db7ec9fea25925cc77f1d35e383d95f5cad83e4d637f1",
+    "fingerprint": "c131c23af5716ee905b755f48d5f43716ff44ef66623f9dbd453dc04da953852",
     "hit": false
   },
-  "candidate_count": 109,
+  "candidate_count": 95,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -31,6 +31,26 @@
         "_remaining",
         "_run_stage",
         "run_project"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine",
+        "game"
+      ],
+      "path": "tests/test_generic_worker_canary_resume.py",
+      "reasons": [
+        "impact",
+        "search-index"
+      ],
+      "score": 35,
+      "symbols": [
+        "ExistingWorkerCanaryVerificationTests",
+        "_request",
+        "test_accepts_exact_existing_canary_with_or_without_final_newline",
+        "test_rejects_non_canary_repository_or_missing_contract",
+        "test_rejects_wrong_content"
       ]
     },
     {
@@ -65,34 +85,6 @@
         "test_raster_quality_policy_can_be_overridden_per_task",
         "test_route_includes_repository_delivery_target",
         "test_routes_premium_visual_task"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine",
-        "game"
-      ],
-      "path": "tests/test_github_runner_persistent.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 33,
-      "symbols": [
-        "GithubRunnerPersistentTests",
-        "completed_cycle",
-        "fake_native_project",
-        "fake_persistent_project",
-        "request",
-        "test_blocked_state_preserves_reason",
-        "test_human_action_is_not_reported_complete",
-        "test_invalid_memory_ingestion_blocks_state_checkpoint",
-        "test_promotion_handoff_rejects_cross_candidate_validation",
-        "test_promotion_required_handoff_is_sealed_and_non_promoting",
-        "test_published_round_remote_api_failure_stops_without_leaking_response",
-        "test_remote_checkpoint_ingests_memory_before_state_persistence",
-        "test_run_uses_persistent_goal_engine",
-        "test_transient_capacity_exhaustion_is_reported_without_terminal_goal_block"
       ]
     }
   ],

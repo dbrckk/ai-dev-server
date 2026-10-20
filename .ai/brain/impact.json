@@ -1,1178 +1,211 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "822e541c61216106b59aa17e5e6dc318fb922ca0",
-  "head": "3bc4b6222203d57d6f7c33e99ec40a76e2cb1ad6",
+  "base": "3bc4b6222203d57d6f7c33e99ec40a76e2cb1ad6",
+  "head": "dc523dca3472ba31061acd2c64201748f71c9d27",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "docs/DSH_FREE_MODEL.md",
+      "path": "docs/PRODUCTION_OS_WORKER.md",
       "status": "M"
     },
     {
-      "path": "studio/provider_router.py",
+      "path": "studio/production_os_worker_canary.py",
       "status": "M"
     },
     {
-      "path": "tests/test_provider_router.py",
+      "path": "tests/test_production_os_worker_canary.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "studio/provider_router.py",
-    "tests/test_provider_router.py"
+    "studio/production_os_worker_canary.py",
+    "tests/test_production_os_worker_canary.py"
   ],
   "impacted_files": [
-    "studio/architecture_replacement_synthesis.py",
-    "studio/capacity_status.py",
-    "studio/core.py",
-    "studio/evolution_synthesis.py",
-    "studio/fleet_capacity.py",
-    "studio/generic_model.py",
-    "studio/generic_project.py",
-    "studio/godot_model.py",
-    "studio/production_os_live_diagnostics.py",
-    "studio/provider_router.py",
-    "studio/readiness.py",
-    "tests/test_fleet_capacity.py",
-    "tests/test_generic_adaptive_quota_budget.py",
-    "tests/test_generic_model_capacity.py",
-    "tests/test_godot_model.py",
-    "tests/test_production_os_live_diagnostics.py",
-    "tests/test_provider_429_cooldown.py",
-    "tests/test_provider_router.py"
+    "studio/production_os_worker_canary.py",
+    "tests/test_generic_worker_canary_resume.py",
+    "tests/test_production_os_worker_canary.py"
   ],
   "impacted_symbols": [
     {
-      "name": "_baseline_sha",
+      "name": "dispatch_worker_after_enqueue",
       "kind": "function",
-      "file": "studio/architecture_replacement_synthesis.py",
-      "line": 31
-    },
-    {
-      "name": "_collect_context",
-      "kind": "function",
-      "file": "studio/architecture_replacement_synthesis.py",
-      "line": 38
-    },
-    {
-      "name": "_prompt",
-      "kind": "function",
-      "file": "studio/architecture_replacement_synthesis.py",
-      "line": 91
-    },
-    {
-      "name": "_response",
-      "kind": "function",
-      "file": "studio/architecture_replacement_synthesis.py",
-      "line": 121
-    },
-    {
-      "name": "synthesize",
-      "kind": "function",
-      "file": "studio/architecture_replacement_synthesis.py",
-      "line": 152
-    },
-    {
-      "name": "consume",
-      "kind": "function",
-      "file": "studio/architecture_replacement_synthesis.py",
-      "line": 171
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/architecture_replacement_synthesis.py",
-      "line": 181
-    },
-    {
-      "name": "snapshot",
-      "kind": "function",
-      "file": "studio/capacity_status.py",
-      "line": 10
-    },
-    {
-      "name": "StudioError",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 35
-    },
-    {
-      "name": "canonical",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 38
-    },
-    {
-      "name": "request_check",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 41
-    },
-    {
-      "name": "allowed",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 210
-    },
-    {
-      "name": "patch_check",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 224
-    },
-    {
-      "name": "require_clean_patch_workspace",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 244
-    },
-    {
-      "name": "apply_patch",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 249
-    },
-    {
-      "name": "ensure_directory",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 264
-    },
-    {
-      "name": "verdict",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 320
-    },
-    {
-      "name": "APIError",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 328
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 329
-    },
-    {
-      "name": "ProtocolError",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 336
-    },
-    {
-      "name": "NoRedirect",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 339
-    },
-    {
-      "name": "redirect_request",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 340
-    },
-    {
-      "name": "API",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 343
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 345
-    },
-    {
-      "name": "_response",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 363
-    },
-    {
-      "name": "call",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 399
-    },
-    {
-      "name": "Model",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 433
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 434
-    },
-    {
-      "name": "ask",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 460
-    },
-    {
-      "name": "_ask",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 489
-    },
-    {
-      "name": "unique_object",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 842
-    },
-    {
-      "name": "Sandbox",
-      "kind": "class",
-      "file": "studio/core.py",
-      "line": 922
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 923
-    },
-    {
-      "name": "run",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 926
-    },
-    {
-      "name": "create",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 950
-    },
-    {
-      "name": "quick_dependency_gate",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 958
-    },
-    {
-      "name": "quick_analyze_gate",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 965
-    },
-    {
-      "name": "quick_test_gate",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 972
-    },
-    {
-      "name": "quick_gates",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 980
-    },
-    {
-      "name": "gates",
-      "kind": "function",
-      "file": "studio/core.py",
-      "line": 994
-    },
-    {
-      "name": "_context",
-      "kind": "function",
-      "file": "studio/evolution_synthesis.py",
-      "line": 17
-    },
-    {
-      "name": "synthesize",
-      "kind": "function",
-      "file": "studio/evolution_synthesis.py",
-      "line": 24
-    },
-    {
-      "name": "consume",
-      "kind": "function",
-      "file": "studio/evolution_synthesis.py",
-      "line": 60
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/evolution_synthesis.py",
-      "line": 62
-    },
-    {
-      "name": "_runtime_state",
-      "kind": "function",
-      "file": "studio/fleet_capacity.py",
-      "line": 28
-    },
-    {
-      "name": "_project_rows",
-      "kind": "function",
-      "file": "studio/fleet_capacity.py",
-      "line": 39
-    },
-    {
-      "name": "_preemption_evidence",
-      "kind": "function",
-      "file": "studio/fleet_capacity.py",
-      "line": 201
-    },
-    {
-      "name": "_capacity_band",
-      "kind": "function",
-      "file": "studio/fleet_capacity.py",
-      "line": 225
-    },
-    {
-      "name": "_provider_rows",
-      "kind": "function",
-      "file": "studio/fleet_capacity.py",
-      "line": 240
-    },
-    {
-      "name": "plan",
-      "kind": "function",
-      "file": "studio/fleet_capacity.py",
-      "line": 286
-    },
-    {
-      "name": "persist",
-      "kind": "function",
-      "file": "studio/fleet_capacity.py",
-      "line": 426
-    },
-    {
-      "name": "_decode",
-      "kind": "function",
-      "file": "studio/generic_model.py",
-      "line": 68
-    },
-    {
-      "name": "_reported_usage_tokens",
-      "kind": "function",
-      "file": "studio/generic_model.py",
-      "line": 85
-    },
-    {
-      "name": "token_count",
-      "kind": "function",
-      "file": "studio/generic_model.py",
-      "line": 100
-    },
-    {
-      "name": "_bounded_model_token_budget",
-      "kind": "function",
-      "file": "studio/generic_model.py",
-      "line": 122
-    },
-    {
-      "name": "ask",
-      "kind": "function",
-      "file": "studio/generic_model.py",
-      "line": 173
-    },
-    {
-      "name": "_snapshot",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 128
-    },
-    {
-      "name": "_apply",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 195
-    },
-    {
-      "name": "_prepare_architecture",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 218
-    },
-    {
-      "name": "_record_architecture",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 251
-    },
-    {
-      "name": "_browser_validation_contract",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 270
-    },
-    {
-      "name": "_valid_browser_test_url",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 278
-    },
-    {
-      "name": "_valid_browser_screenshot",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 292
-    },
-    {
-      "name": "_run_browser_validation",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 325
-    },
-    {
-      "name": "_mobile_validation_contract",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 483
-    },
-    {
-      "name": "_verify_android_emulator_evidence",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 491
-    },
-    {
-      "name": "_run_mobile_validation",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 559
-    },
-    {
-      "name": "_existing_worker_canary_verification",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 730
-    },
-    {
-      "name": "_save_published_checkpoint",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 775
-    },
-    {
-      "name": "run_project",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 789
-    },
-    {
-      "name": "evaluate_model_candidate",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 1445
-    },
-    {
-      "name": "GodotModel",
-      "kind": "class",
-      "file": "studio/godot_model.py",
-      "line": 87
-    },
-    {
-      "name": "ask",
-      "kind": "function",
-      "file": "studio/godot_model.py",
-      "line": 88
-    },
-    {
-      "name": "_ask_godot",
-      "kind": "function",
-      "file": "studio/godot_model.py",
-      "line": 197
-    },
-    {
-      "name": "_warm_operator_connection",
-      "kind": "function",
-      "file": "studio/production_os_live_diagnostics.py",
-      "line": 12
-    },
-    {
-      "name": "_provider_family",
-      "kind": "function",
-      "file": "studio/production_os_live_diagnostics.py",
-      "line": 38
-    },
-    {
-      "name": "_safe_increment_source",
-      "kind": "function",
-      "file": "studio/production_os_live_diagnostics.py",
-      "line": 50
-    },
-    {
-      "name": "interpret",
-      "kind": "function",
-      "file": "studio/production_os_live_diagnostics.py",
-      "line": 66
-    },
-    {
-      "name": "diagnose",
-      "kind": "function",
-      "file": "studio/production_os_live_diagnostics.py",
-      "line": 81
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/production_os_live_diagnostics.py",
-      "line": 211
-    },
-    {
-      "name": "ProviderSpec",
-      "kind": "class",
-      "file": "studio/provider_router.py",
-      "line": 23
-    },
-    {
-      "name": "model_for",
-      "kind": "function",
-      "file": "studio/provider_router.py",
-      "line": 38
-    },
-    {
-      "name": "_is_local_base",
-      "kind": "function",
-      "file": "studio/provider_router.py",
-      "line": 49
-    },
-    {
-      "name": "_bool",
-      "kind": "function",
-      "file": "studio/provider_router.py",
-      "line": 63
-    },
-    {
-      "name": "_auto_omniroute",
-      "kind": "function",
-      "file": "studio/provider_router.py",
-      "line": 71
-    },
-    {
-      "name": "_primary",
-      "kind": "function",
-      "file": "studio/provider_router.py",
-      "line": 104
-    },
-    {
-      "name": "_json_specs",
-      "kind": "function",
-      "file": "studio/provider_router.py",
-      "line": 166
-    },
-    {
-      "name": "_local_capacity_specs",
-      "kind": "function",
-      "file": "studio/provider_router.py",
-      "line": 252
-    },
-    {
-      "name": "load_providers",
-      "kind": "function",
-      "file": "studio/provider_router.py",
-      "line": 302
-    },
-    {
-      "name": "sort_key",
-      "kind": "function",
-      "file": "studio/provider_router.py",
-      "line": 331
-    },
-    {
-      "name": "candidates_for",
-      "kind": "function",
-      "file": "studio/provider_router.py",
-      "line": 339
-    },
-    {
-      "name": "budget_eligible",
-      "kind": "function",
-      "file": "studio/provider_router.py",
-      "line": 413
-    },
-    {
-      "name": "check",
-      "kind": "function",
-      "file": "studio/readiness.py",
-      "line": 25
-    },
-    {
-      "name": "FleetCapacityTests",
-      "kind": "class",
-      "file": "tests/test_fleet_capacity.py",
-      "line": 14
-    },
-    {
-      "name": "test_project_demand_uses_explicit_capacity_request",
-      "kind": "function",
-      "file": "tests/test_fleet_capacity.py",
-      "line": 15
-    },
-    {
-      "name": "test_project_demand_uses_configured_call_upper_bound",
-      "kind": "function",
-      "file": "tests/test_fleet_capacity.py",
-      "line": 27
-    },
-    {
-      "name": "test_known_monthly_quota_is_reported_as_remaining_capacity",
-      "kind": "function",
-      "file": "tests/test_fleet_capacity.py",
-      "line": 40
-    },
-    {
-      "name": "test_provider_capacity_subtracts_inflight_reservations",
-      "kind": "function",
-      "file": "tests/test_fleet_capacity.py",
-      "line": 69
-    },
-    {
-      "name": "test_project_pressure_uses_committed_tokens_against_previous_envelope",
-      "kind": "function",
-      "file": "tests/test_fleet_capacity.py",
-      "line": 98
-    },
-    {
-      "name": "test_explicit_fleet_quota_path_is_used_for_provider_capacity",
-      "kind": "function",
-      "file": "tests/test_fleet_capacity.py",
-      "line": 129
-    },
-    {
-      "name": "test_project_rows_include_verified_efficiency_multiplier",
-      "kind": "function",
-      "file": "tests/test_fleet_capacity.py",
-      "line": 152
-    },
-    {
-      "name": "test_project_rows_apply_stagnation_pause_and_throttle",
-      "kind": "function",
-      "file": "tests/test_fleet_capacity.py",
-      "line": 180
-    },
-    {
-      "name": "test_paused_project_gets_bounded_recovery_after_context_change",
-      "kind": "function",
-      "file": "tests/test_fleet_capacity.py",
-      "line": 218
-    },
-    {
-      "name": "test_capacity_band_ignores_small_quota_drift",
-      "kind": "function",
-      "file": "tests/test_fleet_capacity.py",
-      "line": 263
-    },
-    {
-      "name": "test_persist_writes_machine_readable_plan",
-      "kind": "function",
-      "file": "tests/test_fleet_capacity.py",
-      "line": 273
-    },
-    {
-      "name": "CaptureAPI",
-      "kind": "class",
-      "file": "tests/test_generic_adaptive_quota_budget.py",
-      "line": 17
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "tests/test_generic_adaptive_quota_budget.py",
-      "line": 20
-    },
-    {
-      "name": "call",
-      "kind": "function",
-      "file": "tests/test_generic_adaptive_quota_budget.py",
-      "line": 23
-    },
-    {
-      "name": "AdaptiveQuotaBudgetTests",
-      "kind": "class",
-      "file": "tests/test_generic_adaptive_quota_budget.py",
-      "line": 34
-    },
-    {
-      "name": "setUp",
-      "kind": "function",
-      "file": "tests/test_generic_adaptive_quota_budget.py",
-      "line": 35
-    },
-    {
-      "name": "_quota",
-      "kind": "function",
-      "file": "tests/test_generic_adaptive_quota_budget.py",
-      "line": 38
-    },
-    {
-      "name": "_run",
-      "kind": "function",
-      "file": "tests/test_generic_adaptive_quota_budget.py",
-      "line": 46
-    },
-    {
-      "name": "test_partially_used_free_quota_uses_smaller_real_max_tokens",
-      "kind": "function",
-      "file": "tests/test_generic_adaptive_quota_budget.py",
-      "line": 85
-    },
-    {
-      "name": "test_small_project_envelope_reduces_requested_tokens_and_reservation",
-      "kind": "function",
-      "file": "tests/test_generic_adaptive_quota_budget.py",
-      "line": 95
-    },
-    {
-      "name": "test_true_exhaustion_never_invokes_the_provider",
-      "kind": "function",
-      "file": "tests/test_generic_adaptive_quota_budget.py",
-      "line": 110
-    },
-    {
-      "name": "test_exhausted_provider_is_not_misreported_as_project_limit",
-      "kind": "function",
-      "file": "tests/test_generic_adaptive_quota_budget.py",
-      "line": 116
-    },
-    {
-      "name": "test_genuinely_exhausted_project_envelope_has_precise_reason",
-      "kind": "function",
-      "file": "tests/test_generic_adaptive_quota_budget.py",
-      "line": 125
-    },
-    {
-      "name": "test_noncritical_reserve_is_preserved_but_review_may_use_it",
-      "kind": "function",
-      "file": "tests/test_generic_adaptive_quota_budget.py",
-      "line": 133
-    },
-    {
-      "name": "test_code_requires_bounded_minimum_and_does_not_fake_completion",
-      "kind": "function",
-      "file": "tests/test_generic_adaptive_quota_budget.py",
-      "line": 144
-    },
-    {
-      "name": "_FakeAPI",
-      "kind": "class",
-      "file": "tests/test_generic_model_capacity.py",
-      "line": 15
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "tests/test_generic_model_capacity.py",
-      "line": 19
-    },
-    {
-      "name": "call",
-      "kind": "function",
-      "file": "tests/test_generic_model_capacity.py",
-      "line": 22
-    },
-    {
-      "name": "GenericModelCapacityTests",
-      "kind": "class",
-      "file": "tests/test_generic_model_capacity.py",
-      "line": 28
-    },
-    {
-      "name": "_provider",
-      "kind": "function",
-      "file": "tests/test_generic_model_capacity.py",
-      "line": 29
-    },
-    {
-      "name": "_env",
-      "kind": "function",
-      "file": "tests/test_generic_model_capacity.py",
-      "line": 39
-    },
-    {
-      "name": "test_success_settles_transactional_reservation_with_actual_usage",
-      "kind": "function",
-      "file": "tests/test_generic_model_capacity.py",
-      "line": 46
-    },
-    {
-      "name": "test_protocol_failure_settles_consumed_tokens_without_double_release",
-      "kind": "function",
-      "file": "tests/test_generic_model_capacity.py",
-      "line": 78
-    },
-    {
-      "name": "test_transport_failure_releases_open_reservation",
-      "kind": "function",
-      "file": "tests/test_generic_model_capacity.py",
-      "line": 100
-    },
-    {
-      "name": "test_denied_reservation_skips_provider_call",
-      "kind": "function",
-      "file": "tests/test_generic_model_capacity.py",
-      "line": 123
-    },
-    {
-      "name": "FakeAPI",
-      "kind": "class",
-      "file": "tests/test_godot_model.py",
-      "line": 16
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 18
-    },
-    {
-      "name": "call",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 19
-    },
-    {
-      "name": "completion",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 26
-    },
-    {
-      "name": "model",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 30
-    },
-    {
-      "name": "product_value",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 49
-    },
-    {
-      "name": "GodotModelTests",
-      "kind": "class",
-      "file": "tests/test_godot_model.py",
-      "line": 54
-    },
-    {
-      "name": "test_nvidia_source_generation_requests_json_mode",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 55
-    },
-    {
-      "name": "test_product_uses_godot_planning_contract_not_flutter_execution_claims",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 90
-    },
-    {
-      "name": "test_product_prompt_requires_literal_json_step_objects",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 102
-    },
-    {
-      "name": "test_implementation_uses_godot_prompt_and_scope",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 134
-    },
-    {
-      "name": "test_test_role_rejects_non_test_path_then_repairs_once",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 160
-    },
-    {
-      "name": "test_truncated_patch_retry_requests_a_smaller_complete_change",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 200
-    },
-    {
-      "name": "test_structured_godot_call_falls_back_to_secondary_provider",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 246
-    },
-    {
-      "name": "test_ranked_fallback_uses_its_own_api_client_when_it_beats_primary",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 342
-    },
-    {
-      "name": "test_budget_is_shared_and_fail_closed",
-      "kind": "function",
-      "file": "tests/test_godot_model.py",
-      "line": 356
-    },
-    {
-      "name": "LiveDiagnosticsTests",
-      "kind": "class",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 13
-    },
-    {
-      "name": "test_provider_fallback_recovers_gone_model_and_output_excludes_secrets",
-      "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 14
-    },
-    {
-      "name": "FakeAPI",
-      "kind": "class",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 18
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 19
-    },
-    {
-      "name": "call",
-      "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
+      "file": "studio/production_os_worker_canary.py",
       "line": 21
     },
     {
-      "name": "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready",
+      "name": "validate_control",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 41
+      "file": "studio/production_os_worker_canary.py",
+      "line": 62
     },
     {
-      "name": "FakeAPI",
-      "kind": "class",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 50
-    },
-    {
-      "name": "__init__",
+      "name": "canary_instruction",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 51
+      "file": "studio/production_os_worker_canary.py",
+      "line": 84
     },
     {
-      "name": "call",
+      "name": "source_canary_preflight",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 53
-    },
-    {
-      "name": "test_operator_probe_is_read_only_and_no_token_is_reported",
-      "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 64
-    },
-    {
-      "name": "FakeAPI",
-      "kind": "class",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 66
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 67
-    },
-    {
-      "name": "call",
-      "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 69
-    },
-    {
-      "name": "test_defaults_preserve_explicit_configuration_and_other_providers",
-      "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 102
-    },
-    {
-      "name": "_ProviderAPI",
-      "kind": "class",
-      "file": "tests/test_provider_429_cooldown.py",
-      "line": 18
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "tests/test_provider_429_cooldown.py",
-      "line": 22
-    },
-    {
-      "name": "call",
-      "kind": "function",
-      "file": "tests/test_provider_429_cooldown.py",
-      "line": 25
-    },
-    {
-      "name": "_providers",
-      "kind": "function",
-      "file": "tests/test_provider_429_cooldown.py",
-      "line": 38
-    },
-    {
-      "name": "Provider429CooldownTests",
-      "kind": "class",
-      "file": "tests/test_provider_429_cooldown.py",
-      "line": 51
-    },
-    {
-      "name": "setUp",
-      "kind": "function",
-      "file": "tests/test_provider_429_cooldown.py",
-      "line": 52
-    },
-    {
-      "name": "test_generic_model_uses_fallback_and_skips_429_provider_next_call",
-      "kind": "function",
-      "file": "tests/test_provider_429_cooldown.py",
-      "line": 56
-    },
-    {
-      "name": "test_generic_server_error_preserves_standard_three_failure_threshold",
-      "kind": "function",
-      "file": "tests/test_provider_429_cooldown.py",
-      "line": 80
-    },
-    {
-      "name": "test_flutter_model_provider_cooldown_and_independent_fallback",
-      "kind": "function",
-      "file": "tests/test_provider_429_cooldown.py",
-      "line": 94
-    },
-    {
-      "name": "ProviderRouterTests",
-      "kind": "class",
-      "file": "tests/test_provider_router.py",
-      "line": 16
-    },
-    {
-      "name": "test_discovered_local_capacity_becomes_provider_specs",
-      "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 17
-    },
-    {
-      "name": "test_autodiscovers_omniroute_only_when_no_explicit_provider_exists",
-      "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 41
-    },
-    {
-      "name": "test_explicit_primary_skips_omniroute_autodiscovery",
-      "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 59
-    },
-    {
-      "name": "test_primary_provider_is_loaded",
-      "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 72
-    },
-    {
-      "name": "test_missing_fallback_secret_skips_provider",
-      "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 86
-    },
-    {
-      "name": "test_free_fallback_can_rank_before_primary",
-      "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 109
-    },
-    {
-      "name": "test_local_endpoint_is_unmetered_by_default",
-      "kind": "function",
-      "file": "tests/test_provider_router.py",
+      "file": "studio/production_os_worker_canary.py",
       "line": 130
     },
     {
-      "name": "test_local_primary_can_be_keyless",
+      "name": "launch_canary",
       "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 140
+      "file": "studio/production_os_worker_canary.py",
+      "line": 169
     },
     {
-      "name": "test_local_json_provider_can_be_keyless",
+      "name": "_polling_parameters",
       "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 151
+      "file": "studio/production_os_worker_canary.py",
+      "line": 218
     },
     {
-      "name": "test_remote_endpoint_is_metered_by_default",
+      "name": "wait_for_workflow",
       "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 186
+      "file": "studio/production_os_worker_canary.py",
+      "line": 228
     },
     {
-      "name": "test_unmetered_can_be_explicit_for_remote_self_hosted_gateway",
+      "name": "wait_for_readiness",
       "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 214
+      "file": "studio/production_os_worker_canary.py",
+      "line": 251
     },
     {
-      "name": "test_omniroute_endpoint_gets_current_recurring_quota_by_default",
+      "name": "run_canary",
       "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 225
+      "file": "studio/production_os_worker_canary.py",
+      "line": 282
     },
     {
-      "name": "test_paid_budget_exhaustion_keeps_pooled_free_quota_provider",
+      "name": "main",
       "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 236
+      "file": "studio/production_os_worker_canary.py",
+      "line": 319
     },
     {
-      "name": "test_paid_budget_exhaustion_keeps_only_unmetered",
-      "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 259
+      "name": "ExistingWorkerCanaryVerificationTests",
+      "kind": "class",
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 16
     },
     {
-      "name": "test_paid_budget_not_exhausted_keeps_all",
+      "name": "_request",
       "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 283
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 17
     },
     {
-      "name": "test_role_specific_model_overrides_default",
+      "name": "test_accepts_exact_existing_canary_with_or_without_final_newline",
       "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 295
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 35
     },
     {
-      "name": "test_json_provider_accepts_role_models",
+      "name": "test_rejects_wrong_content",
       "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 315
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 90
     },
     {
-      "name": "test_vision_candidates_exclude_text_only_provider",
+      "name": "test_rejects_non_canary_repository_or_missing_contract",
       "kind": "function",
-      "file": "tests/test_provider_router.py",
-      "line": 335
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 100
+    },
+    {
+      "name": "FakeClient",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 17
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 18
+    },
+    {
+      "name": "submit",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 24
+    },
+    {
+      "name": "get",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 34
+    },
+    {
+      "name": "WorkerCanaryTests",
+      "kind": "class",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 40
+    },
+    {
+      "name": "test_control_is_strict",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 41
+    },
+    {
+      "name": "test_canary_instruction_is_bounded_and_sequence_specific",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 59
+    },
+    {
+      "name": "test_launch_is_idempotent_and_uses_dashboard_api",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 85
+    },
+    {
+      "name": "test_wait_observes_real_terminal_success",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 191
+    },
+    {
+      "name": "clock",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 194
+    },
+    {
+      "name": "sleep",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 196
+    },
+    {
+      "name": "test_terminal_failure_returns_without_retrying_mutation",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 205
+    },
+    {
+      "name": "test_wait_is_bounded",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 218
+    },
+    {
+      "name": "test_canary_workflow_verifies_terminal_worker_completion",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 243
     }
   ],
   "selected_tests": [
-    "tests/test_fleet_capacity.py",
-    "tests/test_generic_adaptive_quota_budget.py",
-    "tests/test_generic_model_capacity.py",
-    "tests/test_godot_model.py",
-    "tests/test_production_os_live_diagnostics.py",
-    "tests/test_provider_429_cooldown.py",
-    "tests/test_provider_router.py"
+    "tests/test_generic_worker_canary_resume.py",
+    "tests/test_production_os_worker.py",
+    "tests/test_production_os_worker_canary.py"
   ]
 }

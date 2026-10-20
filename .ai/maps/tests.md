@@ -9143,11 +9143,17 @@ self.assertEqual(dispatches, [1])  # dispatch only after successful admission
 available = FakeClient(wake_status="not_needed")
 available_result = run_canary(
 ⋮----
+source_api = Mock()
+vulnerable_source = (
+⋮----
 gameplay_client = FakeClient()
 gameplay_result = run_canary(gameplay_client, {
 ⋮----
 guard_client = FakeClient()
 guard_result = run_canary(guard_client, {
+⋮----
+blocked_client = FakeClient()
+blocked = run_canary(blocked_client, {
 ⋮----
 # A bearer-authenticated GitHub dispatch must reject redirects,
 # even if an unexpected HTTP 3xx response points off-site.
@@ -9169,6 +9175,8 @@ client = FakeClient(("running", "failed"))
 def test_wait_is_bounded(self)
 ⋮----
 client = FakeClient(("running",))
+⋮----
+untouched = FakeClient()
 ⋮----
 def test_canary_workflow_verifies_terminal_worker_completion()
 ⋮----

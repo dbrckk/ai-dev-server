@@ -1,12 +1,12 @@
 # Change impact
 
-Base: e4da07344ba15735ebe6593006b65d89736ada67
-Head: 3bc4b6222203d57d6f7c33e99ec40a76e2cb1ad6
+Base: d28b09e4641f059e9040d63c7303884d8ada7b03
+Head: dc523dca3472ba31061acd2c64201748f71c9d27
 
 ## Changed files
-- M docs/DSH_FREE_MODEL.md
-- M studio/provider_router.py
-- M tests/test_provider_router.py
+- M docs/PRODUCTION_OS_WORKER.md
+- M studio/production_os_worker_canary.py
+- M tests/test_production_os_worker_canary.py
 
 ## Affected areas
 - docs
@@ -14,7 +14,7 @@ Head: 3bc4b6222203d57d6f7c33e99ec40a76e2cb1ad6
 - tests
 
 ## Related test candidates
-- tests/test_provider_router.py
+- tests/test_production_os_worker_canary.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

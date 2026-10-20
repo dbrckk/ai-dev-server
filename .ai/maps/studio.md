@@ -16607,9 +16607,32 @@ def canary_instruction(sequence, scenario="file")
 path = f".production-os/worker-canary-{sequence}.txt"
 content = f"production-os-worker-canary sequence {sequence}"
 ⋮----
-def launch_canary(client, control)
+def source_canary_preflight(control, *, api=None)
+⋮----
+"""Reject obsolete source objectives before any queue mutation or inference.
+
+    This is a conservative applicability check, not a claim of product success.
+    Marker-only canaries keep their existing path and need no source request.
+    """
 ⋮----
 scenario = control.get("scenario", "file")
+⋮----
+api = API("https://api.github.com", os.environ.get("PRODUCTION_OS_CANARY_DISPATCH_TOKEN", ""))
+response = api.call(
+⋮----
+source = base64.b64decode("".join(response["content"].split()), validate=True).decode("utf-8")
+⋮----
+function = re.search(r"(?ms)^func _unhandled_input\([^\n]*\n(.*?)(?=^func |\Z)", source)
+applicable = bool(function and re.search(
+⋮----
+# Existing cue machinery makes the old additive task ambiguous. Select
+# a fresh verified objective instead of spending another 60k envelope.
+applicable = ("func show_landing_cue(" not in source
+⋮----
+def launch_canary(client, control, *, source_api=None)
+⋮----
+preflight = source_canary_preflight(control, api=source_api)
+⋮----
 payload = {
 ⋮----
 # Actual gameplay changes need several planning, coding and validation
@@ -16627,6 +16650,8 @@ project_id = str(project.get("project_id") or "")
 wake = response.get("launch")
 wake = wake.get("worker_wake") if isinstance(wake, dict) else None
 wake_status = str(wake.get("status") or "unknown") if isinstance(wake, dict) else "unknown"
+⋮----
+def _polling_parameters(timeout_seconds, poll_seconds)
 ⋮----
 timeout = float(timeout_seconds)
 poll = float(poll_seconds)
@@ -16652,7 +16677,9 @@ response = client.get("/readyz")
 ⋮----
 remaining = deadline - float(clock())
 ⋮----
-result = launch_canary(client, control)
+# Invalid monitoring parameters must not leave a real task queued.
+⋮----
+result = launch_canary(client, control, source_api=source_api)
 ⋮----
 # The control plane may have dispatched the same Actions worker while
 # admitting the job. Only use the canary's privileged dispatch when

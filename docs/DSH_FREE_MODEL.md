@@ -124,3 +124,28 @@ The configured anonymous provider also successfully fetched the real catalog
 through the worker's existing API transport. This proves a bounded request and
 catalog path, not tool-use reliability, coding quality, durable capacity, or a
 hosted worker-to-PR delivery. No deployment variables were changed.
+
+## Independent hosted free-code smoke (synthetic data only)
+
+The read-only-scope GitHub Actions workflow
+[`public-free-code-smoke.yml`](../.github/workflows/public-free-code-smoke.yml)
+checks the live `kilo-auto/free` entry is still marked `isFree: true`
+with exactly zero prompt and completion catalog prices **before** making
+any generation request. It then makes **at most one** public synthetic
+Python-code request with a 512-completion-token ceiling and no API key,
+private file, source snippet, repository credential, or operator token.
+
+The resulting code is **never executed**. It is checked with the existing
+restricted AST-based `increment(value)` semantic verifier, and only
+redacted counters/status are retained in the `public-free-code-smoke`
+workflow artifact. Catalog uncertainty, transport errors, insufficient
+model output, or nonzero reported market cost fail closed. Trigger on
+changes to the probe/workflow or via manual GitHub Actions dispatch;
+there is **no scheduled consumption**.
+
+A passing check only demonstrates a small anonymous model-authored
+source response on GitHub Actions at that point in time. It is **not**
+authorization to transmit private projects, a promise of sustainable
+capacity, or proof that Production-OS produced a target-branch commit,
+draft PR, and independent build. Those separate delivery gates still
+apply.

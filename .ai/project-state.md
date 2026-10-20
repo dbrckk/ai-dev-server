@@ -5,6 +5,12 @@
 - Production-OS healthz/readyz returned HTTP 200 with database reachable. This is point-in-time evidence; useful model-authored source delivery and sustained free capacity remain unproved.
 - PR355 conflict resolved; merged-source suite 1845 tests and 178 subtests passed. Final-head hosted mobile/multi-engine checks still pending. PR354 postmerge all eight workflows pass.
 
+## 2026-10-20 — resumed marker requires review delivery
+
+- Reproduced false completion: the generic existing-marker shortcut skipped PR verification entirely, even if review access was denied or the PR pointed at a stale SHA.
+- Resume now calls the exact-SHA PR guard and supports the existing trusted handoff. A queued handoff alone leaves status blocked, checkpoint published and next_stage=review_handoff; only confirmed review permits completion. No model call or marker republishing is required.
+- Extended the existing resume regression for direct success, denied access, stale review, confirmed handoff and pending handoff, with/without final newline: 18 tests and 17 subtests passed. Full local diagnostics additionally exposed contradictory legacy asset assertions; aligned them with existing runtime thresholds. Added all eight function-style test files to the existing pytest integration workflow because the policy-pinned primary CI uses unittest. Fresh Python environment with only pytest: 1845 tests and 172 subtests passed; all eight function-style modules are included in the integration workflow. Production-OS full suite: 1307 passed, 17 skipped. Six real authenticated Production-OS server integration tests passed. Exact-head CI pending.
+
 ## 2026-10-20 — optional DSH gateway and credential readiness
 
 - Reviewed user-provided Ebony-Vinyl/dsh-our-free-model at 5923ebef0f55578ca21bb5555b7ba5adb51aef21. Kilo catalog read: 401 entries, 18 explicitly free; no inference, no unlimited-capacity claim.

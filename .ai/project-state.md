@@ -1,3 +1,10 @@
+## 2026-10-20 — explicit public anonymous provider opt-in
+
+- User-requested DSH review identified Kilo's public free gateway. Added explicit JSON anonymous=true support; remote anonymous endpoints require HTTPS, cannot declare key_env, and remain metered/zero declared quota by default. No automatic provider or hosted configuration change.
+- 37 existing routing/budget/health/cooldown tests and 11 subtests pass. The configured provider fetched the real HTTPS model catalog with no credential. Two synthetic JSON-only generation probes after live zero-price/free checks: 128-token cap exhausted in reasoning, 512-token cap yielded exact JSON with declared zero market cost. No private/project source sent.
+- Production-OS healthz/readyz returned HTTP 200 with database reachable. This is point-in-time evidence; useful model-authored source delivery and sustained free capacity remain unproved.
+- PR355 conflict resolved; merged-source suite 1845 tests and 178 subtests passed. Final-head hosted mobile/multi-engine checks still pending. PR354 postmerge all eight workflows pass.
+
 ## 2026-10-20 — resumed marker requires review delivery
 
 - Reproduced false completion: the generic existing-marker shortcut skipped PR verification entirely, even if review access was denied or the PR pointed at a stale SHA.

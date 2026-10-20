@@ -177,7 +177,7 @@ def _json_specs(raw: str) -> list[ProviderSpec]:
         if not isinstance(item, dict):
             raise ValueError("Provider entries must be objects")
         allowed = {
-            "name", "base", "key_env", "model", "code_model", "vision_model",
+            "name", "base", "key_env", "anonymous", "model", "code_model", "vision_model",
             "priority", "free_preferred", "input_cost_per_million", "output_cost_per_million", "unmetered", "monthly_token_quota", "role_models",
         }
         if set(item) - allowed:
@@ -191,6 +191,13 @@ def _json_specs(raw: str) -> list[ProviderSpec]:
         local_base = _is_local_base(base)
         if key_env is not None and (not isinstance(key_env, str) or not key_env.strip()):
             raise ValueError("Provider key_env must be a non-empty string when provided")
+        anonymous = item.get("anonymous", False)
+        if type(anonymous) is not bool:
+            raise ValueError("Provider anonymous must be a boolean")
+        if anonymous and key_env is not None:
+            raise ValueError("Anonymous providers cannot declare key_env")
+        if anonymous and not local_base and urlsplit(base).scheme != "https":
+            raise ValueError("Anonymous remote providers require HTTPS")
         if key_env:
             key = os.environ.get(key_env, "")
             # A configured credential is required even for a loopback proxy.
@@ -198,7 +205,7 @@ def _json_specs(raw: str) -> list[ProviderSpec]:
             if not key.strip():
                 continue
         else:
-            if not local_base:
+            if not local_base and not anonymous:
                 raise ValueError("Remote providers require key_env")
             key = ""
         priority = item.get("priority", 50)

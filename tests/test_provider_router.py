@@ -193,6 +193,24 @@ class ProviderRouterTests(unittest.TestCase):
             providers = load_providers()
         self.assertFalse(providers[0].unmetered)
 
+        # Public gateways need an explicit anonymous opt-in; no fake key and
+        # no inferred unlimited quota merely because authentication is absent.
+        config = {"name": "public-free", "base": "https://gateway.invalid/v1",
+                  "model": "advertised-free", "anonymous": True}
+        with patch.dict(os.environ, {"STUDIO_PROVIDERS_JSON": json.dumps([config])}, clear=True):
+            provider, = load_providers()
+            self.assertEqual(provider.key, "")
+            self.assertFalse(provider.unmetered)
+            self.assertEqual(provider.monthly_token_quota, 0)
+        for override in ({"anonymous": "true"}, {"anonymous": 1},
+                         {"anonymous": False}, {"key_env": "SECRET"},
+                         {"base": "http://gateway.invalid/v1"}):
+            with self.subTest(override=override), patch.dict(os.environ, {
+                "STUDIO_PROVIDERS_JSON": json.dumps([{**config, **override}]),
+            }, clear=True):
+                with self.assertRaises(ValueError):
+                    load_providers()
+
     def test_unmetered_can_be_explicit_for_remote_self_hosted_gateway(self):
         env = {
             "STUDIO_API_KEY": "gateway-key",

@@ -134,31 +134,29 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-20T19:29:11Z
+Generated: 2026-10-20T20:32:35Z
 
 ### Git
 - Branch: `main`
-- Head: `822e541c6121`
-- Commit date: 2026-10-20T15:28:59-04:00
-- Commit: fix(worker): require exact review proof on resumed canary (#355)
+- Head: `3bc4b6222203`
+- Commit date: 2026-10-20T16:32:23-04:00
+- Commit: feat(providers): opt-in anonymous HTTPS model gateways (#356)
 - Tracked files: 866
 
 ### Recently changed files
+- `docs/DSH_FREE_MODEL.md`
+- `studio/provider_router.py`
+- `tests/test_provider_router.py`
 - `.github/workflows/production-os-worker-integration.yml`
 - `studio/generic_project.py`
 - `tests/test_asset_forge_bridge.py`
 - `tests/test_generic_published_checkpoint.py`
 - `tests/test_generic_repository_pull_request.py`
 - `tests/test_generic_worker_canary_resume.py`
-- `docs/DSH_FREE_MODEL.md`
 - `docs/PRODUCTION_OS_WORKER.md`
-- `studio/provider_router.py`
-- `tests/test_provider_router.py`
 - `studio/production_os_review_canary.py`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
-- `studio/generic_repository.py`
-- `tests/test_repository_branch_identity.py`
 
 ### Project signals
 - No common build descriptor detected

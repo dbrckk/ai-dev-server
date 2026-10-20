@@ -17862,6 +17862,8 @@ model = item.get("model")
 ⋮----
 local_base = _is_local_base(base)
 ⋮----
+anonymous = item.get("anonymous", False)
+⋮----
 key = os.environ.get(key_env, "")
 # A configured credential is required even for a loopback proxy.
 # Keyless local inference is expressed by omitting key_env.

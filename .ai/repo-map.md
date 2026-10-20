@@ -23591,6 +23591,8 @@ model = item.get("model")
 ⋮----
 local_base = _is_local_base(base)
 ⋮----
+anonymous = item.get("anonymous", False)
+⋮----
 key = os.environ.get(key_env, "")
 # A configured credential is required even for a loopback proxy.
 # Keyless local inference is expressed by omitting key_env.
@@ -36268,6 +36270,10 @@ def test_local_json_provider_can_be_keyless(self)
 # hostname; they must not bypass remote-provider credential checks.
 ⋮----
 def test_remote_endpoint_is_metered_by_default(self)
+⋮----
+# Public gateways need an explicit anonymous opt-in; no fake key and
+# no inferred unlimited quota merely because authentication is absent.
+config = {"name": "public-free", "base": "https://gateway.invalid/v1",
 ⋮----
 def test_unmetered_can_be_explicit_for_remote_self_hosted_gateway(self)
 ⋮----

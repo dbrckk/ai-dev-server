@@ -1,8 +1,9 @@
-## 2026-10-20 — bounded public model-authored source correction
+## 2026-10-20 — reject obsolete source canaries before spending capacity
 
-- Reproduced _safe_increment_source accepting parameter annotations (including calls) despite the diagnostic's deliberately restricted function contract. No generated code is executed, but the readiness proof was overly permissive.
-- One anonymous Kilo request, after live isFree/zero-price checks, received a minimal exact source edit rejecting annotations. Sent only the public function; applied the exact proposed edit after review. Gateway reported nvidia/nemotron-3.5-super-vl:free, 1492 total tokens (1003 completion), cost=0, stop. Output cap1024; no retry.
-- Extended an existing test: failed before correction, then 23 tests and 20 subtests passed. Provenance saved in docs/qualification/public-model-diagnostic-fix-20261020.json. Exact-head CI pending. This proves a bounded source-edit proposal, not a hosted Production-OS job or durable capacity.
+- Inspected current public Jumpy main: settings tap guard and landing cues are already implemented. Added a bounded source applicability GET before either old 60k source objective can enqueue. Both block with scenario_no_longer_applicable on live blob 1f4c52618356fe1bbd684a1a3f4d0b717073501e; no queue mutation, dispatch or model call. Unknown/unreadable source fails closed; no product-completion claim.
+- Reproduced invalid wait duration causing one queued task before ValueError. Shared polling validation now runs before launch; same reproduction queues zero tasks.
+- Existing targeted tests: 35 passed, 44 subtests passed. Actual public GitHub GET plus a mutation-refusing client exercised both obsolete scenarios. Exact-head CI pending.
+- PR355 and PR356 merged; PR355 postmerge nine workflows successful. PR356 postmerge seven of eight successful, mobile still running at observation. Anonymous capacity remains opt-in; actual useful model-authored source delivery is still unqualified.
 
 ## 2026-10-20 — explicit public anonymous provider opt-in
 
@@ -140,16 +141,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-20T20:32:35Z
+Generated: 2026-10-20T20:55:47Z
 
 ### Git
 - Branch: `main`
-- Head: `3bc4b6222203`
-- Commit date: 2026-10-20T16:32:23-04:00
-- Commit: feat(providers): opt-in anonymous HTTPS model gateways (#356)
+- Head: `dc523dca3472`
+- Commit date: 2026-10-20T16:55:32-04:00
+- Commit: fix(canary): refuse obsolete source objectives before enqueue (#358)
 - Tracked files: 866
 
 ### Recently changed files
+- `docs/PRODUCTION_OS_WORKER.md`
+- `studio/production_os_worker_canary.py`
+- `tests/test_production_os_worker_canary.py`
 - `docs/DSH_FREE_MODEL.md`
 - `studio/provider_router.py`
 - `tests/test_provider_router.py`
@@ -159,10 +163,7 @@ Generated: 2026-10-20T20:32:35Z
 - `tests/test_generic_published_checkpoint.py`
 - `tests/test_generic_repository_pull_request.py`
 - `tests/test_generic_worker_canary_resume.py`
-- `docs/PRODUCTION_OS_WORKER.md`
 - `studio/production_os_review_canary.py`
-- `studio/production_os_worker_canary.py`
-- `tests/test_production_os_worker_canary.py`
 
 ### Project signals
 - No common build descriptor detected

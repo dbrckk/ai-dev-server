@@ -1,3 +1,9 @@
+## 2026-10-20 — canary sequence boundary consistency
+
+- Reproduced: control validation accepts sequence 1000000000, while both marker consumers rejected it and fell through to normal autonomous execution.
+- Both recognizers now include exactly that upper boundary; values above it remain rejected. Existing regression exercises actual producer instructions at 1, 999999999, 1000000000, 0 and 1000000001 for both consumers.
+- Local qualification: 10 existing tests and 18 subtests passed. No inference calls or remote task launches. Exact-head CI pending.
+
 # Project state
 
 - **2026-10-18 hosted review delivery and duplicate wake:** Production-OS canary 38 ran from an isolated Actions `workflow_dispatch` branch with the deterministic `file` scenario. Canary run `39129978378` succeeded. Hosted worker `39129991255` published Jumpy commit `e4bc63ccf4ddf1f5c8678aa209794c13e9bee160`; the trusted target receiver opened draft PR #36 and exact-SHA Godot validation run `39130096902` succeeded. Worker artifact `12138165262` records `complete`, confirmed handoff, and zero model runs/tokens. The PR-triggered run is `action_required`, so only the separate exact-SHA dispatch gate is proven. A second worker `39129993272` was redundantly woken and reported `compatible_work_count=0` in artifact `12136744302`. Branch `fix/canary-single-worker-wake` skips the canary's extra dispatch when Production-OS reports `dispatched` or `not_needed`; an existing test now exercises both skip and fallback paths. No model calls or Jumpy source changes were made by this proof; meaningful autonomous code delivery remains open.

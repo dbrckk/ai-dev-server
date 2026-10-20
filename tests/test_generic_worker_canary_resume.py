@@ -8,6 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "studio"))
 
 from generic_project import _existing_worker_canary_verification
 from production_os_review_canary import contract as review_contract, run as run_review_canary
+from production_os_worker_canary import canary_instruction, validate_control
 from core import StudioError
 
 
@@ -81,6 +82,31 @@ class ExistingWorkerCanaryVerificationTests(unittest.TestCase):
             self.assertIsNone(
                 _existing_worker_canary_verification(incomplete, root)
             )
+
+        # The producer and both consumers must agree at the inclusive limit.
+        for sequence in (1, 999_999_999, 1_000_000_000, 0, 1_000_000_001):
+            with self.subTest(sequence=sequence), tempfile.TemporaryDirectory() as td:
+                valid = 1 <= sequence <= 1_000_000_000
+                control = {"sequence": sequence, "repository": "dbrckk/Jumpy"}
+                if valid:
+                    self.assertEqual(validate_control(control)[0], sequence)
+                else:
+                    with self.assertRaises(ValueError):
+                        validate_control(control)
+                request = self._request(sequence)
+                request["brief"] = canary_instruction(sequence)
+                relative = f".production-os/worker-canary-{sequence}.txt"
+                line = f"production-os-worker-canary sequence {sequence}"
+                root = Path(td)
+                target = root / relative
+                target.parent.mkdir(parents=True)
+                target.write_text(line + "\n", encoding="utf-8")
+                self.assertEqual(
+                    _existing_worker_canary_verification(request, root) is not None,
+                    valid,
+                )
+                request["target_repo"] = "dbrckk/Jumpy"
+                self.assertEqual(review_contract(request), (relative, line) if valid else None)
 
         # Extend the existing canary regression: Jumpy's exact marker-only
         # request must bypass the expensive Godot game-production pipeline.

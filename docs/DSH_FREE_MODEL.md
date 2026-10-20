@@ -76,3 +76,51 @@ source task with the selected model. Existing retry/cooldown, budget, validation
 commit and review checks still apply. This integration has been checked through
 real authenticated loopback HTTP with a diagnostic server; a running DSH host
 and model-authored delivery have not been verified here.
+
+## Optional direct anonymous gateway
+
+The router also accepts `"anonymous": true` for an explicitly configured
+public gateway. This is opt-in, requires HTTPS for remote endpoints, and cannot
+be combined with `key_env`. Existing authenticated and keyless local providers
+retain their previous configuration. No default production provider is added.
+
+For public, nonsensitive experiments only, a currently advertised Kilo free
+model can be configured without installing a DSH host:
+
+```json
+{
+  "name": "kilo-public-free",
+  "base": "https://api.kilo.ai/api/gateway",
+  "anonymous": true,
+  "model": "kilo-auto/free",
+  "code_model": "kilo-auto/free",
+  "priority": 40,
+  "free_preferred": true,
+  "unmetered": false,
+  "monthly_token_quota": 0
+}
+```
+
+Add the object to an explicitly chosen `STUDIO_PROVIDERS_JSON` array. Confirm
+`isFree: true` and zero prompt/completion prices from the live catalog before
+use; the router's `anonymous` flag is authentication configuration, not a pricing
+verifier. It does not bypass capacity reservations, cooldowns or budget checks.
+Do not send credentials, private repositories or private tool output to this lane.
+
+### Bounded live observation, 2026-10-20
+
+Two requests sent only a synthetic JSON echo instruction, without credentials
+or project content, after checking the live catalog's free flag and prices:
+
+- At `max_tokens=128`, the service returned empty content: 128 completion tokens,
+  including 123 reasoning tokens. HTTP success alone was not usable output.
+- At `max_tokens=512`, it returned the requested JSON, `finish_reason=stop`,
+  190 completion tokens including 174 reasoning tokens.
+- Both responses identified `stealth/glyph-cluster` behind `kilo-auto/free` and
+  reported `market_cost=0`. The underlying model identity was not independently
+  verified; automatic routing may change.
+
+The configured anonymous provider also successfully fetched the real catalog
+through the worker's existing API transport. This proves a bounded request and
+catalog path, not tool-use reliability, coding quality, durable capacity, or a
+hosted worker-to-PR delivery. No deployment variables were changed.

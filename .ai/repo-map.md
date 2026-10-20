@@ -14927,7 +14927,7 @@ reason = str(
 ⋮----
 reason = "mobile-validation-failed"
 ⋮----
-_WORKER_CANARY_RE = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8})\.")
+_WORKER_CANARY_RE = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8}|1000000000)\.")
 ⋮----
 def _existing_worker_canary_verification(req: dict, work: Path) -> dict | None
 ⋮----
@@ -22229,7 +22229,7 @@ This does not run a game-development model, alter Godot source or generalize
 repository_dispatch to untrusted targets. It proves branch -> review PR delivery.
 """
 ⋮----
-_CANARY = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8})\.")
+_CANARY = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8}|1000000000)\.")
 ⋮----
 def contract(req: dict) -> tuple[str, str] | None
 ⋮----
@@ -31907,6 +31907,18 @@ def test_rejects_non_canary_repository_or_missing_contract(self)
 wrong_repo = self._request()
 ⋮----
 incomplete = self._request()
+⋮----
+# The producer and both consumers must agree at the inclusive limit.
+⋮----
+valid = 1 <= sequence <= 1_000_000_000
+control = {"sequence": sequence, "repository": "dbrckk/Jumpy"}
+⋮----
+request = self._request(sequence)
+⋮----
+relative = f".production-os/worker-canary-{sequence}.txt"
+line = f"production-os-worker-canary sequence {sequence}"
+⋮----
+target = root / relative
 ⋮----
 # Extend the existing canary regression: Jumpy's exact marker-only
 # request must bypass the expensive Godot game-production pipeline.

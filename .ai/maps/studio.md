@@ -9208,7 +9208,7 @@ reason = str(
 ⋮----
 reason = "mobile-validation-failed"
 ⋮----
-_WORKER_CANARY_RE = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8})\.")
+_WORKER_CANARY_RE = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8}|1000000000)\.")
 ⋮----
 def _existing_worker_canary_verification(req: dict, work: Path) -> dict | None
 ⋮----
@@ -16510,7 +16510,7 @@ This does not run a game-development model, alter Godot source or generalize
 repository_dispatch to untrusted targets. It proves branch -> review PR delivery.
 """
 ⋮----
-_CANARY = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8})\.")
+_CANARY = re.compile(r"^Production-OS worker canary ([1-9][0-9]{0,8}|1000000000)\.")
 ⋮----
 def contract(req: dict) -> tuple[str, str] | None
 ⋮----

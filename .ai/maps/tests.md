@@ -5651,6 +5651,18 @@ wrong_repo = self._request()
 ⋮----
 incomplete = self._request()
 ⋮----
+# The producer and both consumers must agree at the inclusive limit.
+⋮----
+valid = 1 <= sequence <= 1_000_000_000
+control = {"sequence": sequence, "repository": "dbrckk/Jumpy"}
+⋮----
+request = self._request(sequence)
+⋮----
+relative = f".production-os/worker-canary-{sequence}.txt"
+line = f"production-os-worker-canary sequence {sequence}"
+⋮----
+target = root / relative
+⋮----
 # Extend the existing canary regression: Jumpy's exact marker-only
 # request must bypass the expensive Godot game-production pipeline.
 # Nearby or adversarial instructions keep normal engine routing.

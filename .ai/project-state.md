@@ -114,21 +114,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-18T21:14:10Z
+Generated: 2026-10-20T11:35:35Z
 
 ### Git
 - Branch: `main`
-- Head: `5358c574a41f`
-- Commit date: 2026-10-18T17:13:58-04:00
-- Commit: fix(security): refuse redirects on authenticated canary dispatch (#352)
+- Head: `ec24f0f4f7c7`
+- Commit date: 2026-10-20T07:35:24-04:00
+- Commit: fix(worker): recognize inclusive canary sequence limit (#353)
 - Tracked files: 865
 
 ### Recently changed files
+- `studio/generic_project.py`
+- `studio/production_os_review_canary.py`
+- `tests/test_generic_worker_canary_resume.py`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
 - `studio/generic_repository.py`
 - `tests/test_repository_branch_identity.py`
-- `studio/generic_project.py`
 - `tests/test_generic_repository_pull_request.py`
 
 ### Project signals

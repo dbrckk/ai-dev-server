@@ -132,7 +132,7 @@ The read-only-scope GitHub Actions workflow
 checks the live `kilo-auto/free` entry is still marked `isFree: true`
 with exactly zero prompt and completion catalog prices **before** making
 any generation request. It then makes **at most one** public synthetic
-Python-code request with a 512-completion-token ceiling and no API key,
+Python-code request with a 1024-completion-token ceiling and no API key,
 private file, source snippet, repository credential, or operator token.
 
 The resulting code is **never executed**. It is checked with the existing

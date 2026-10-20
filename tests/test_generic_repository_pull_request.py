@@ -240,6 +240,7 @@ def test_ensure_pull_request_ignores_other_studio_branch():
     # PR must still match the exact commit and the destination repository.
     jumpy = FakeGitHub([{
         **confirmed,
+        "number": 42,
         "html_url": "https://github.com/dbrckk/Jumpy/pull/42",
         "head": {
             "ref": branch,
@@ -270,6 +271,7 @@ def test_ensure_pull_request_ignores_other_studio_branch():
     # default-branch workflow. No automatic merge or forged PR proof.
     trading = FakeGitHub([{
         **confirmed,
+        "number": 145,
         "html_url": "https://github.com/dbrckk/Ai-trading/pull/145",
         "head": {
             "ref": branch,

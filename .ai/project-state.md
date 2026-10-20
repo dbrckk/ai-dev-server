@@ -2,7 +2,7 @@
 
 - Reproduced false completion: the generic existing-marker shortcut skipped PR verification entirely, even if review access was denied or the PR pointed at a stale SHA.
 - Resume now calls the exact-SHA PR guard and supports the existing trusted handoff. A queued handoff alone leaves status blocked, checkpoint published and next_stage=review_handoff; only confirmed review permits completion. No model call or marker republishing is required.
-- Extended the existing resume regression for direct success, denied access, stale review, confirmed handoff and pending handoff, with/without final newline: 15 tests and 17 subtests passed. Broader diagnostics and CI pending.
+- Extended the existing resume regression for direct success, denied access, stale review, confirmed handoff and pending handoff, with/without final newline: 18 tests and 17 subtests passed. Broader diagnostics and CI pending.
 
 ## 2026-10-20 — canary sequence boundary consistency
 

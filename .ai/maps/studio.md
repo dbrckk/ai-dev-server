@@ -9269,6 +9269,19 @@ checkpoint = new_checkpoint(req["id"], "generic", base_sha)
 ⋮----
 existing_canary_verification = _existing_worker_canary_verification(req, work)
 ⋮----
+# Restored file content proves implementation only, not review delivery.
+# Reuse/create the review with the same exact-SHA guard as normal rounds.
+⋮----
+pull_request = repo.ensure_pull_request(
+delivered = True
+⋮----
+denied = any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
+handoff = repo.request_trusted_review_handoff(base_sha) if denied else None
+confirmed = (
+delivered = confirmed is not None
+pull_request = confirmed if delivered else {
+blockers = [] if delivered else ["GitHub review PR not confirmed"]
+next_stage = None if delivered else "review_handoff"
 checkpoint = advance_checkpoint(
 ⋮----
 report = {
@@ -9703,8 +9716,6 @@ browser_reason = str(
 mobile_reason = str(
 ⋮----
 base_sha = repo.publish(base_sha, work, "Autonomous generic project round " + str(round_index))
-⋮----
-pull_request = repo.ensure_pull_request(
 ⋮----
 # The coding checkpoint is durable even when a restricted
 # GitHub token cannot create the review PR. Do not hide the

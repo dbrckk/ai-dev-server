@@ -5643,6 +5643,17 @@ target = root / ".production-os" / "worker-canary-2.txt"
 ⋮----
 result = _existing_worker_canary_verification(
 ⋮----
+# A restored marker must still reach review at its exact SHA.
+⋮----
+repo = repository.return_value
+⋮----
+handoff = failure in {"confirmed handoff", "pending handoff"}
+delivered = failure is None or failure == "confirmed handoff"
+⋮----
+observed = []
+request = {**self._request(), "id": "canary-resume"}
+outcome = run_project(request, root / "output", root,
+⋮----
 def test_rejects_wrong_content(self)
 ⋮----
 def test_rejects_non_canary_repository_or_missing_contract(self)
@@ -5675,7 +5686,6 @@ req = {
 out = Path(temp) / "out"
 work = Path(temp) / "work"
 published = "b" * 40
-observed = []
 ⋮----
 instance = repository.return_value
 ⋮----

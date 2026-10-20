@@ -2922,6 +2922,16 @@ jobs:
           tests/test_production_os_worker_preflight.py
           tests/test_production_os_worker_runtime.py
           tests/test_production_os_worker_recovery.py
+          tests/test_generic_worker_canary_resume.py
+          tests/test_generic_repository_pull_request.py
+          tests/test_generic_published_checkpoint.py
+          tests/test_generic_published_round_checkpoint.py
+          tests/test_execution_checkpoint.py
+          tests/test_asset_forge_bridge.py
+          tests/test_asset_forge_installer.py
+          tests/test_imagen_codex_installer.py
+          tests/test_ci_diagnostics.py
+          tests/test_production_os_worker_canary.py
 
       - name: Verify authenticated real server integration
         env:
@@ -14988,6 +14998,19 @@ checkpoint = new_checkpoint(req["id"], "generic", base_sha)
 ⋮----
 existing_canary_verification = _existing_worker_canary_verification(req, work)
 ⋮----
+# Restored file content proves implementation only, not review delivery.
+# Reuse/create the review with the same exact-SHA guard as normal rounds.
+⋮----
+pull_request = repo.ensure_pull_request(
+delivered = True
+⋮----
+denied = any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
+handoff = repo.request_trusted_review_handoff(base_sha) if denied else None
+confirmed = (
+delivered = confirmed is not None
+pull_request = confirmed if delivered else {
+blockers = [] if delivered else ["GitHub review PR not confirmed"]
+next_stage = None if delivered else "review_handoff"
 checkpoint = advance_checkpoint(
 ⋮----
 report = {
@@ -15422,8 +15445,6 @@ browser_reason = str(
 mobile_reason = str(
 ⋮----
 base_sha = repo.publish(base_sha, work, "Autonomous generic project round " + str(round_index))
-⋮----
-pull_request = repo.ensure_pull_request(
 ⋮----
 # The coding checkpoint is durable even when a restricted
 # GitHub token cannot create the review PR. Do not hide the
@@ -31902,6 +31923,17 @@ target = root / ".production-os" / "worker-canary-2.txt"
 ⋮----
 result = _existing_worker_canary_verification(
 ⋮----
+# A restored marker must still reach review at its exact SHA.
+⋮----
+repo = repository.return_value
+⋮----
+handoff = failure in {"confirmed handoff", "pending handoff"}
+delivered = failure is None or failure == "confirmed handoff"
+⋮----
+observed = []
+request = {**self._request(), "id": "canary-resume"}
+outcome = run_project(request, root / "output", root,
+⋮----
 def test_rejects_wrong_content(self)
 ⋮----
 def test_rejects_non_canary_repository_or_missing_contract(self)
@@ -31934,7 +31966,6 @@ req = {
 out = Path(temp) / "out"
 work = Path(temp) / "work"
 published = "b" * 40
-observed = []
 ⋮----
 instance = repository.return_value
 ⋮----

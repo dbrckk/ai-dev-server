@@ -17852,6 +17852,8 @@ model = item.get("model")
 local_base = _is_local_base(base)
 ⋮----
 key = os.environ.get(key_env, "")
+# A configured credential is required even for a loopback proxy.
+# Keyless local inference is expressed by omitting key_env.
 ⋮----
 key = ""
 priority = item.get("priority", 50)

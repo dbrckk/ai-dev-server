@@ -9962,6 +9962,8 @@ def test_missing_fallback_secret_skips_provider(self)
 ⋮----
 config = [{
 ⋮----
+env = {"STUDIO_PROVIDERS_JSON": json.dumps(config)}
+⋮----
 def test_free_fallback_can_rank_before_primary(self)
 ⋮----
 providers = load_providers(prefer_free=True)

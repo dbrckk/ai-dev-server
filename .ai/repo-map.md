@@ -23571,6 +23571,8 @@ model = item.get("model")
 local_base = _is_local_base(base)
 ⋮----
 key = os.environ.get(key_env, "")
+# A configured credential is required even for a loopback proxy.
+# Keyless local inference is expressed by omitting key_env.
 ⋮----
 key = ""
 priority = item.get("priority", 50)
@@ -36218,6 +36220,8 @@ def test_primary_provider_is_loaded(self)
 def test_missing_fallback_secret_skips_provider(self)
 ⋮----
 config = [{
+⋮----
+env = {"STUDIO_PROVIDERS_JSON": json.dumps(config)}
 ⋮----
 def test_free_fallback_can_rank_before_primary(self)
 ⋮----

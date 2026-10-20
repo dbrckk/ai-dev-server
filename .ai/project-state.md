@@ -121,16 +121,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-20T11:35:35Z
+Generated: 2026-10-20T15:03:47Z
 
 ### Git
 - Branch: `main`
-- Head: `ec24f0f4f7c7`
-- Commit date: 2026-10-20T07:35:24-04:00
-- Commit: fix(worker): recognize inclusive canary sequence limit (#353)
-- Tracked files: 865
+- Head: `ccb433553856`
+- Commit date: 2026-10-20T11:03:36-04:00
+- Commit: fix(providers): require declared local gateway credentials (#354)
+- Tracked files: 866
 
 ### Recently changed files
+- `docs/DSH_FREE_MODEL.md`
+- `docs/PRODUCTION_OS_WORKER.md`
+- `studio/provider_router.py`
+- `tests/test_provider_router.py`
 - `studio/generic_project.py`
 - `studio/production_os_review_canary.py`
 - `tests/test_generic_worker_canary_resume.py`

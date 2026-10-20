@@ -5,2991 +5,1620 @@
   "semantic": false,
   "note": "Occurrences are lexical word matches; verify source/LSP/compiler data before relying on them.",
   "symbols": {
-    "_snapshot": {
+    "ProviderSpec": {
       "definition": {
-        "file": "studio/generic_project.py",
-        "line": 128,
-        "kind": "function",
+        "file": "studio/provider_router.py",
+        "line": 23,
+        "kind": "class",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/generic_project.py",
-          "line": 128,
-          "preview": "def _snapshot(root: Path, limit_bytes: int = 420_000, *, source_first: bool = False) -> dict:",
+          "file": "studio/production_os_provider_config.py",
+          "line": 19,
+          "preview": "Never serialize the API token: ProviderSpec reads only its variable name.",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 23,
+          "preview": "class ProviderSpec:",
           "definition_candidate": true
         },
         {
-          "file": "studio/generic_project.py",
-          "line": 1014,
-          "preview": "snapshot = _snapshot(work, 24_000 if catalog_integration else 420_000, source_first=catalog_integration)",
+          "file": "studio/provider_router.py",
+          "line": 71,
+          "preview": "def _auto_omniroute() -> ProviderSpec | None:",
           "definition_candidate": false
         },
         {
-          "file": "studio/generic_project.py",
-          "line": 1268,
-          "preview": "\"repository\": _snapshot(work, 24_000 if catalog_integration else 420_000, source_first=catalog_integration),",
+          "file": "studio/provider_router.py",
+          "line": 91,
+          "preview": "return ProviderSpec(",
           "definition_candidate": false
         },
         {
-          "file": "studio/generic_project.py",
-          "line": 1568,
-          "preview": "\"repository\":_snapshot(work,260_000),",
+          "file": "studio/provider_router.py",
+          "line": 104,
+          "preview": "def _primary() -> ProviderSpec | None:",
           "definition_candidate": false
         },
         {
-          "file": "studio/generic_project.py",
-          "line": 1714,
-          "preview": "\"repository\":_snapshot(work,260_000),",
+          "file": "studio/provider_router.py",
+          "line": 145,
+          "preview": "return ProviderSpec(",
           "definition_candidate": false
         },
         {
-          "file": "studio/generic_project.py",
-          "line": 2067,
-          "preview": "\"repository\": _snapshot(work, 320_000),",
+          "file": "studio/provider_router.py",
+          "line": 166,
+          "preview": "def _json_specs(raw: str) -> list[ProviderSpec]:",
           "definition_candidate": false
         },
         {
-          "file": "studio/generic_project.py",
-          "line": 2191,
-          "preview": "\"repository\": _snapshot(work, 300_000),",
+          "file": "studio/provider_router.py",
+          "line": 220,
+          "preview": "specs.append(ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 245,
+          "preview": "def _local_capacity_specs() -> list[ProviderSpec]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 253,
+          "preview": "specs.append(ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 278,
+          "preview": "specs.append(ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 295,
+          "preview": "def load_providers(*, prefer_free: bool = True) -> tuple[ProviderSpec, ...]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 324,
+          "preview": "def sort_key(spec: ProviderSpec):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 337,
+          "preview": "providers: Iterable[ProviderSpec] | None = None,",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 338,
+          "preview": ") -> tuple[ProviderSpec, ...]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 407,
+          "preview": "providers: Iterable[ProviderSpec],",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 411,
+          "preview": ") -> tuple[ProviderSpec, ...]:",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_capacity.py",
+          "line": 11,
+          "preview": "from provider_router import ProviderSpec",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_capacity.py",
+          "line": 41,
+          "preview": "provider = ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_capacity.py",
+          "line": 70,
+          "preview": "provider = ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_capacity.py",
+          "line": 130,
+          "preview": "provider = ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_adaptive_quota_budget.py",
+          "line": 14,
+          "preview": "from provider_router import ProviderSpec",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_adaptive_quota_budget.py",
+          "line": 55,
+          "preview": "provider = ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 11,
+          "preview": "from provider_router import ProviderSpec",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 30,
+          "preview": "return ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 13,
+          "preview": "from provider_router import ProviderSpec",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 36,
+          "preview": "ProviderSpec('primary', 'https://example.test/v1', 'primary-key', 'general', code_model='code', priority=100),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 37,
+          "preview": "ProviderSpec('fallback', 'https://fallback.test/v1', 'fallback-key', 'fallback-general', code_model='fallback-code', priority=90),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 63,
+          "preview": "ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 10,
+          "preview": "from provider_router import ProviderSpec",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 16,
+          "preview": "providers = [ProviderSpec('gone', 'https://provider.example/v1', 'credential', 'old'),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 17,
+          "preview": "ProviderSpec('ready', 'https://provider.example/v1', 'credential', 'new')]",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_production_os_live_diagnostics.py",
+          "line": 49,
+          "preview": "provider = ProviderSpec('p', 'https://provider.example/v1', 'key', 'product', code_model='code')",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 15,
+          "preview": "from provider_router import ProviderSpec",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 40,
+          "preview": "ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 44,
+          "preview": "ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 13,
+          "preview": "from provider_router import candidates_for, load_providers, budget_eligible, ProviderSpec",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 42,
+          "preview": "auto = ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 220,
+          "preview": "ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 227,
+          "preview": "ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 243,
+          "preview": "ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 250,
+          "preview": "ProviderSpec(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 267,
+          "preview": "ProviderSpec(\"local\", \"http://127.0.0.1:11434/v1\", \"k\", \"local\", unmetered=True),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 268,
+          "preview": "ProviderSpec(\"paid\", \"https://paid.invalid/v1\", \"k\", \"paid\", unmetered=False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 278,
+          "preview": "provider = ProviderSpec(",
           "definition_candidate": false
         }
       ],
-      "occurrence_count": 7
+      "occurrence_count": 45
     },
-    "_apply": {
+    "model_for": {
       "definition": {
-        "file": "studio/generic_project.py",
-        "line": 195,
+        "file": "studio/provider_router.py",
+        "line": 38,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
+          "file": "studio/architecture_replacement_synthesis.py",
+          "line": 140,
+          "preview": "selected=model or provider.model_for(\"implementation\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 448,
+          "preview": "provider.model_for(\"visual\", True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 450,
+          "preview": "if provider.model_for(\"visual\", True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 611,
+          "preview": "model_name = provider.model_for(role, bool(screenshots))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 649,
+          "preview": "candidate_model = provider.model_for(role, bool(screenshots))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 683,
+          "preview": "or provider.model_for(role, bool(screenshots)) != implementation_model",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 697,
+          "preview": "'model': provider.model_for(role, bool(screenshots)),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 717,
+          "preview": "selected_model = provider.model_for(role, bool(screenshots))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_synthesis.py",
+          "line": 40,
+          "preview": "selected=model or provider.model_for('implementation')",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 294,
+          "preview": "model=provider.model_for(role),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 375,
+          "preview": "model=provider.model_for(role),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 381,
+          "preview": "model=provider.model_for(role),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 388,
+          "preview": "model=provider.model_for(role),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 400,
+          "preview": "model=provider.model_for(role),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 408,
+          "preview": "model=provider.model_for(role),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 417,
+          "preview": "provider.model_for(role),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 420,
+          "preview": "candidate_model = provider.model_for(role)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 523,
+          "preview": "if provider.name not in avoid_providers and provider.model_for(role) not in avoid_models",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 534,
+          "preview": "model = provider.model_for(role)",
+          "definition_candidate": false
+        },
+        {
           "file": "studio/generic_project.py",
-          "line": 195,
-          "preview": "def _apply(",
+          "line": 1330,
+          "preview": "(provider.name, provider.model_for(\"implementation\"))",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 1332,
+          "preview": "if provider.model_for(\"implementation\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_model.py",
+          "line": 274,
+          "preview": "'model': provider.model_for(role, False),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_model.py",
+          "line": 298,
+          "preview": "selected_model = provider.model_for(role, False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 97,
+          "preview": "model = provider.model_for(role)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 98,
+          "preview": "if role == \"implementation\" and model == provider.model_for(\"product\"):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 191,
+          "preview": "\"model\": provider.model_for(\"implementation\"),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 38,
+          "preview": "def model_for(self, role: str, screenshots: bool = False) -> str:",
           "definition_candidate": true
         },
         {
-          "file": "studio/generic_project.py",
-          "line": 1466,
-          "preview": "model_changed = _apply(",
+          "file": "studio/provider_router.py",
+          "line": 340,
+          "preview": "eligible = tuple(spec for spec in specs if spec.model_for(role, screenshots))",
           "definition_candidate": false
         },
         {
-          "file": "studio/generic_project.py",
-          "line": 1845,
-          "preview": "changed.extend(_apply(",
+          "file": "studio/provider_router.py",
+          "line": 343,
+          "preview": "for spec in specs if not spec.model_for(role, screenshots)",
           "definition_candidate": false
         },
         {
-          "file": "studio/generic_project.py",
-          "line": 1877,
-          "preview": "changed.extend(_apply(",
+          "file": "studio/provider_router.py",
+          "line": 376,
+          "preview": "model = spec.model_for(role, screenshots)",
           "definition_candidate": false
         },
         {
-          "file": "studio/generic_project.py",
-          "line": 1999,
-          "preview": "changed.extend(_apply(",
+          "file": "studio/provider_router.py",
+          "line": 391,
+          "preview": "\"winner_model\": ordered[0].model_for(role, screenshots) if ordered else None,",
           "definition_candidate": false
         },
         {
-          "file": "studio/generic_project.py",
-          "line": 2027,
-          "preview": "changed.extend(_apply(",
+          "file": "studio/provider_router.py",
+          "line": 395,
+          "preview": "\"model\": spec.model_for(role, screenshots),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 83,
+          "preview": "self.assertEqual(providers[0].model_for(\"implementation\"), \"coder\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 84,
+          "preview": "self.assertEqual(providers[0].model_for(\"visual\", True), \"vision\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 291,
+          "preview": "self.assertEqual(provider.model_for(\"product\"), \"general\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 292,
+          "preview": "self.assertEqual(provider.model_for(\"implementation\"), \"coder\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 293,
+          "preview": "self.assertEqual(provider.model_for(\"review\"), \"reviewer\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 294,
+          "preview": "self.assertEqual(provider.model_for(\"tests\"), \"test-specialist\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 295,
+          "preview": "self.assertEqual(provider.model_for(\"visual\", screenshots=True), \"visual-specialist\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 314,
+          "preview": "self.assertEqual(provider.model_for(\"review\"), \"reviewer\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 315,
+          "preview": "self.assertEqual(provider.model_for(\"tests\"), \"tester\")",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 41
+    },
+    "_is_local_base": {
+      "definition": {
+        "file": "studio/provider_router.py",
+        "line": 49,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/provider_router.py",
+          "line": 49,
+          "preview": "def _is_local_base(base: str) -> bool:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 75,
+          "preview": "if not _is_local_base(base):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 107,
+          "preview": "if not key and not _is_local_base(base):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 159,
+          "preview": "else (_is_local_base(base) and monthly_token_quota == 0)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 191,
+          "preview": "local_base = _is_local_base(base)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 235,
+          "preview": "_is_local_base(base)",
           "definition_candidate": false
         }
       ],
       "occurrence_count": 6
     },
-    "_prepare_architecture": {
+    "_bool": {
       "definition": {
-        "file": "studio/generic_project.py",
+        "file": "studio/provider_router.py",
+        "line": 63,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/local_capacity.py",
+          "line": 35,
+          "preview": "def _bool(value: object, default: bool = True) -> bool:",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/local_capacity.py",
+          "line": 107,
+          "preview": "if not _bool(os.environ.get(\"STUDIO_AUTO_DISCOVER_LOCAL_CAPACITY\", \"true\"), True):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 63,
+          "preview": "def _bool(value, default=True):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 72,
+          "preview": "if not _bool(os.environ.get(\"STUDIO_AUTO_DISCOVER_OMNIROUTE\", \"true\"), True):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 153,
+          "preview": "free_preferred=_bool(os.environ.get(\"STUDIO_PROVIDER_FREE\", \"true\")),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 157,
+          "preview": "_bool(explicit_unmetered, False)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 228,
+          "preview": "free_preferred=_bool(item.get(\"free_preferred\", True)),",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 232,
+          "preview": "_bool(item.get(\"unmetered\"), False)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 8
+    },
+    "_auto_omniroute": {
+      "definition": {
+        "file": "studio/provider_router.py",
+        "line": 71,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/provider_router.py",
+          "line": 71,
+          "preview": "def _auto_omniroute() -> ProviderSpec | None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 306,
+          "preview": "auto_omniroute = _auto_omniroute()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 52,
+          "preview": "\"provider_router._auto_omniroute\",",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 66,
+          "preview": "\"provider_router._auto_omniroute\"",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 4
+    },
+    "_primary": {
+      "definition": {
+        "file": "studio/provider_router.py",
+        "line": 104,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/provider_router.py",
+          "line": 104,
+          "preview": "def _primary() -> ProviderSpec | None:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 297,
+          "preview": "primary = _primary()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_json_specs": {
+      "definition": {
+        "file": "studio/provider_router.py",
+        "line": 166,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/provider_router.py",
+          "line": 166,
+          "preview": "def _json_specs(raw: str) -> list[ProviderSpec]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 309,
+          "preview": "specs.extend(_json_specs(explicit_json))",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "_local_capacity_specs": {
+      "definition": {
+        "file": "studio/provider_router.py",
+        "line": 245,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/provider_router.py",
+          "line": 245,
+          "preview": "def _local_capacity_specs() -> list[ProviderSpec]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 302,
+          "preview": "local_specs = _local_capacity_specs()",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "load_providers": {
+      "definition": {
+        "file": "studio/provider_router.py",
+        "line": 295,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/architecture_replacement_synthesis.py",
+          "line": 13,
+          "preview": "from provider_router import candidates_for, load_providers",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_synthesis.py",
+          "line": 131,
+          "preview": "providers=load_providers(prefer_free=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_status.py",
+          "line": 6,
+          "preview": "from provider_router import load_providers",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/capacity_status.py",
+          "line": 12,
+          "preview": "providers = load_providers(prefer_free=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 435,
+          "preview": "from provider_router import load_providers",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 437,
+          "preview": "self.providers = load_providers(prefer_free=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_synthesis.py",
+          "line": 6,
+          "preview": "from provider_router import candidates_for,load_providers",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_synthesis.py",
+          "line": 34,
+          "preview": "try: providers=load_providers(prefer_free=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_capacity.py",
+          "line": 13,
+          "preview": "from provider_router import load_providers",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/fleet_capacity.py",
+          "line": 255,
+          "preview": "for provider in load_providers(prefer_free=True):",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 11,
+          "preview": "from provider_router import candidates_for, load_providers, budget_eligible",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 184,
+          "preview": "providers = load_providers(prefer_free=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 88,
+          "preview": "from provider_router import load_providers as load_direct_providers, candidates_for as direct_candidates_for",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 9,
+          "preview": "from provider_router import load_providers",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/production_os_live_diagnostics.py",
+          "line": 84,
+          "preview": "providers = load_providers() if providers is None else providers",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 295,
+          "preview": "def load_providers(*, prefer_free: bool = True) -> tuple[ProviderSpec, ...]:",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 339,
+          "preview": "specs = tuple(providers) if providers is not None else load_providers(prefer_free=prefer_free)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/readiness.py",
+          "line": 10,
+          "preview": "from provider_router import load_providers",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/readiness.py",
+          "line": 52,
+          "preview": "providers = load_providers(prefer_free=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_capacity.py",
+          "line": 56,
+          "preview": "with patch(\"fleet_capacity.load_providers\", return_value=(provider,)), patch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_capacity.py",
+          "line": 85,
+          "preview": "with patch(\"fleet_capacity.load_providers\", return_value=(provider,)), patch(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_fleet_capacity.py",
+          "line": 145,
+          "preview": "with patch(\"fleet_capacity.load_providers\", return_value=(provider,)):",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_adaptive_quota_budget.py",
+          "line": 64,
+          "preview": "stack.enter_context(patch(\"generic_model.load_providers\", return_value=(provider,)))",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 60,
+          "preview": "with tempfile.TemporaryDirectory() as td, patch.dict(os.environ, {**self._env(), 'STUDIO_NATIVE_MODEL_USAGE_PATH':str(Path(td)/'usage.json')}, clear=True),              patch(\"gene",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 92,
+          "preview": "with patch.dict(os.environ, self._env(), clear=True),              patch(\"generic_model.load_providers\", return_value=(self._provider(),)),              patch(\"generic_model.load_p",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 109,
+          "preview": "patch(\"generic_model.load_providers\", return_value=(self._provider(),)), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 129,
+          "preview": "with patch.dict(os.environ, self._env(), clear=True),              patch(\"generic_model.load_providers\", return_value=(self._provider(),)),              patch(\"generic_model.load_p",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 152,
+          "preview": "patch(\"generic_model.load_providers\", return_value=(self._provider(),)), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 169,
+          "preview": "\"generic_model.load_providers\", return_value=(self._provider(),)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_generic_model_capacity.py",
+          "line": 186,
+          "preview": "patch(\"generic_model.load_providers\", return_value=(self._provider(),)), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 61,
+          "preview": "patch(\"generic_model.load_providers\", return_value=_providers()),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 86,
+          "preview": "patch(\"generic_model.load_providers\", return_value=_providers()),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 99,
+          "preview": "patch(\"provider_router.load_providers\", return_value=_providers()),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 118,
+          "preview": "patch(\"provider_router.load_providers\", return_value=_providers()),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 135,
+          "preview": "patch(\"provider_router.load_providers\", return_value=_providers()),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_429_cooldown.py",
+          "line": 160,
+          "preview": "patch(\"provider_router.load_providers\", return_value=_providers()),",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 13,
+          "preview": "from provider_router import candidates_for, load_providers, budget_eligible, ProviderSpec",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 32,
+          "preview": "providers = load_providers()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 55,
+          "preview": "providers = load_providers()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 68,
+          "preview": "providers = load_providers()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 81,
+          "preview": "providers = load_providers()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 101,
+          "preview": "self.assertEqual(load_providers(), ())",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 105,
+          "preview": "provider, = load_providers()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 127,
+          "preview": "providers = load_providers(prefer_free=True)",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 137,
+          "preview": "providers = load_providers()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 146,
+          "preview": "providers = load_providers()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 162,
+          "preview": "providers = load_providers()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 181,
+          "preview": "load_providers()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 184,
+          "preview": "self.assertEqual(load_providers()[0].name, \"ollama\")",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 193,
+          "preview": "providers = load_providers()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 204,
+          "preview": "providers = load_providers()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 214,
+          "preview": "providers = load_providers()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 312,
+          "preview": "providers = load_providers()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 330,
+          "preview": "providers = load_providers()",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_readiness.py",
+          "line": 23,
+          "preview": "with patch.dict(os.environ, {}, clear=True),                  patch(\"readiness.shutil.which\", return_value=\"/usr/bin/docker\"),                  patch(\"readiness.load_providers\", re",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_readiness.py",
+          "line": 44,
+          "preview": "with patch.dict(os.environ, env, clear=True),                  patch(\"readiness.shutil.which\", return_value=\"/usr/bin/docker\"),                  patch(\"readiness.load_providers\", r",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 56
+    },
+    "sort_key": {
+      "definition": {
+        "file": "studio/provider_router.py",
+        "line": 324,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/provider_router.py",
+          "line": 324,
+          "preview": "def sort_key(spec: ProviderSpec):",
+          "definition_candidate": true
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 329,
+          "preview": "return tuple(sorted(deduped.values(), key=sort_key))",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 2
+    },
+    "candidates_for": {
+      "definition": {
+        "file": "studio/provider_router.py",
+        "line": 332,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/architecture_replacement_synthesis.py",
+          "line": 13,
+          "preview": "from provider_router import candidates_for, load_providers",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/architecture_replacement_synthesis.py",
+          "line": 134,
+          "preview": "providers=candidates_for(\"implementation\",providers=providers)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 502,
+          "preview": "from provider_router import candidates_for, budget_eligible",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 529,
+          "preview": "provider for provider in candidates_for(role, screenshots=bool(screenshots), providers=self.providers)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_synthesis.py",
+          "line": 6,
+          "preview": "from provider_router import candidates_for,load_providers",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/evolution_synthesis.py",
+          "line": 36,
+          "preview": "providers=candidates_for('implementation',providers=providers)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 11,
+          "preview": "from provider_router import candidates_for, load_providers, budget_eligible",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 188,
+          "preview": "providers = candidates_for(role, providers=providers)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_project.py",
+          "line": 88,
+          "preview": "from provider_router import load_providers as load_direct_providers, candidates_for as direct_candidates_for",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_model.py",
+          "line": 15,
+          "preview": "from provider_router import budget_eligible, candidates_for",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_model.py",
+          "line": 207,
+          "preview": "for provider in candidates_for(role, screenshots=False, providers=self.providers)",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 332,
+          "preview": "def candidates_for(",
+          "definition_candidate": true
+        },
+        {
+          "file": "tests/test_godot_model.py",
+          "line": 347,
+          "preview": "with patch('godot_model.candidates_for', return_value=(fallback, primary)), \\",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 13,
+          "preview": "from provider_router import candidates_for, load_providers, budget_eligible, ProviderSpec",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 331,
+          "preview": "vision = candidates_for(\"visual\", screenshots=True, providers=providers)",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 15
+    },
+    "budget_eligible": {
+      "definition": {
+        "file": "studio/provider_router.py",
+        "line": 406,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "studio/core.py",
+          "line": 502,
+          "preview": "from provider_router import candidates_for, budget_eligible",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/core.py",
+          "line": 581,
+          "preview": "provider_candidates = budget_eligible(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 11,
+          "preview": "from provider_router import candidates_for, load_providers, budget_eligible",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/generic_model.py",
+          "line": 299,
+          "preview": "providers = budget_eligible(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_model.py",
+          "line": 15,
+          "preview": "from provider_router import budget_eligible, candidates_for",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/godot_model.py",
+          "line": 238,
+          "preview": "provider_candidates = budget_eligible(",
+          "definition_candidate": false
+        },
+        {
+          "file": "studio/provider_router.py",
+          "line": 406,
+          "preview": "def budget_eligible(",
+          "definition_candidate": true
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 13,
+          "preview": "from provider_router import candidates_for, load_providers, budget_eligible, ProviderSpec",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 234,
+          "preview": "eligible = budget_eligible(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 258,
+          "preview": "eligible = budget_eligible(",
+          "definition_candidate": false
+        },
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 270,
+          "preview": "eligible = budget_eligible(",
+          "definition_candidate": false
+        }
+      ],
+      "occurrence_count": 11
+    },
+    "ProviderRouterTests": {
+      "definition": {
+        "file": "tests/test_provider_router.py",
+        "line": 16,
+        "kind": "class",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 16,
+          "preview": "class ProviderRouterTests(unittest.TestCase):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_discovered_local_capacity_becomes_provider_specs": {
+      "definition": {
+        "file": "tests/test_provider_router.py",
+        "line": 17,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 17,
+          "preview": "def test_discovered_local_capacity_becomes_provider_specs(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_autodiscovers_omniroute_only_when_no_explicit_provider_exists": {
+      "definition": {
+        "file": "tests/test_provider_router.py",
+        "line": 41,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 41,
+          "preview": "def test_autodiscovers_omniroute_only_when_no_explicit_provider_exists(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_explicit_primary_skips_omniroute_autodiscovery": {
+      "definition": {
+        "file": "tests/test_provider_router.py",
+        "line": 59,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 59,
+          "preview": "def test_explicit_primary_skips_omniroute_autodiscovery(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_primary_provider_is_loaded": {
+      "definition": {
+        "file": "tests/test_provider_router.py",
+        "line": 72,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 72,
+          "preview": "def test_primary_provider_is_loaded(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_missing_fallback_secret_skips_provider": {
+      "definition": {
+        "file": "tests/test_provider_router.py",
+        "line": 86,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 86,
+          "preview": "def test_missing_fallback_secret_skips_provider(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_free_fallback_can_rank_before_primary": {
+      "definition": {
+        "file": "tests/test_provider_router.py",
+        "line": 109,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 109,
+          "preview": "def test_free_fallback_can_rank_before_primary(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_local_endpoint_is_unmetered_by_default": {
+      "definition": {
+        "file": "tests/test_provider_router.py",
+        "line": 130,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 130,
+          "preview": "def test_local_endpoint_is_unmetered_by_default(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_local_primary_can_be_keyless": {
+      "definition": {
+        "file": "tests/test_provider_router.py",
+        "line": 140,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 140,
+          "preview": "def test_local_primary_can_be_keyless(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_local_json_provider_can_be_keyless": {
+      "definition": {
+        "file": "tests/test_provider_router.py",
+        "line": 151,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 151,
+          "preview": "def test_local_json_provider_can_be_keyless(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_remote_endpoint_is_metered_by_default": {
+      "definition": {
+        "file": "tests/test_provider_router.py",
+        "line": 186,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 186,
+          "preview": "def test_remote_endpoint_is_metered_by_default(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_unmetered_can_be_explicit_for_remote_self_hosted_gateway": {
+      "definition": {
+        "file": "tests/test_provider_router.py",
+        "line": 196,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 196,
+          "preview": "def test_unmetered_can_be_explicit_for_remote_self_hosted_gateway(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_omniroute_endpoint_gets_current_recurring_quota_by_default": {
+      "definition": {
+        "file": "tests/test_provider_router.py",
+        "line": 207,
+        "kind": "function",
+        "language": "python"
+      },
+      "occurrences": [
+        {
+          "file": "tests/test_provider_router.py",
+          "line": 207,
+          "preview": "def test_omniroute_endpoint_gets_current_recurring_quota_by_default(self):",
+          "definition_candidate": true
+        }
+      ],
+      "occurrence_count": 1
+    },
+    "test_paid_budget_exhaustion_keeps_pooled_free_quota_provider": {
+      "definition": {
+        "file": "tests/test_provider_router.py",
         "line": 218,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/generic_project.py",
+          "file": "tests/test_provider_router.py",
           "line": 218,
-          "preview": "def _prepare_architecture(req: dict, out: Path, state: dict) -> Path:",
+          "preview": "def test_paid_budget_exhaustion_keeps_pooled_free_quota_provider(self):",
           "definition_candidate": true
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 916,
-          "preview": "architecture_root = _prepare_architecture(req, out, state)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_architecture.py",
-          "line": 41,
-          "preview": "root = gp._prepare_architecture(req, Path(td) / \"project\", state)",
-          "definition_candidate": false
         }
       ],
-      "occurrence_count": 3
+      "occurrence_count": 1
     },
-    "_record_architecture": {
+    "test_paid_budget_exhaustion_keeps_only_unmetered": {
       "definition": {
-        "file": "studio/generic_project.py",
-        "line": 251,
+        "file": "tests/test_provider_router.py",
+        "line": 241,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/generic_project.py",
-          "line": 251,
-          "preview": "def _record_architecture(state: dict, out: Path, architecture_root: Path) -> None:",
+          "file": "tests/test_provider_router.py",
+          "line": 241,
+          "preview": "def test_paid_budget_exhaustion_keeps_only_unmetered(self):",
           "definition_candidate": true
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 2588,
-          "preview": "_record_architecture(state, out, architecture_root)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_architecture.py",
-          "line": 72,
-          "preview": "gp._record_architecture(state, out, Path(td))",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_architecture.py",
-          "line": 93,
-          "preview": "gp._record_architecture(state, Path(td) / \"project\", Path(td))",
-          "definition_candidate": false
         }
       ],
-      "occurrence_count": 4
+      "occurrence_count": 1
     },
-    "_browser_validation_contract": {
+    "test_paid_budget_not_exhausted_keeps_all": {
       "definition": {
-        "file": "studio/generic_project.py",
-        "line": 270,
+        "file": "tests/test_provider_router.py",
+        "line": 265,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/generic_project.py",
-          "line": 270,
-          "preview": "def _browser_validation_contract(req: dict) -> dict | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 326,
-          "preview": "contract = _browser_validation_contract(req)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "_valid_browser_test_url": {
-      "definition": {
-        "file": "studio/generic_project.py",
-        "line": 278,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/generic_project.py",
-          "line": 278,
-          "preview": "def _valid_browser_test_url(value: str | None) -> bool:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 377,
-          "preview": "tested_url_valid = _valid_browser_test_url(tested_url)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "_valid_browser_screenshot": {
-      "definition": {
-        "file": "studio/generic_project.py",
-        "line": 292,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/generic_project.py",
-          "line": 292,
-          "preview": "def _valid_browser_screenshot(path: Path) -> bool:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 401,
-          "preview": "and _valid_browser_screenshot(candidate)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 631,
-          "preview": "and _valid_browser_screenshot(candidate)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "_run_browser_validation": {
-      "definition": {
-        "file": "studio/generic_project.py",
-        "line": 325,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/generic_project.py",
-          "line": 325,
-          "preview": "def _run_browser_validation(req: dict, work: Path, out: Path) -> dict | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 2274,
-          "preview": "browser_validation = _run_browser_validation(req, work, out)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_browser_validation_contract.py",
-          "line": 10,
-          "preview": "from generic_project import _run_browser_validation",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_browser_validation_contract.py",
-          "line": 102,
-          "preview": "result = _run_browser_validation(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_browser_validation_contract.py",
-          "line": 121,
-          "preview": "result = _run_browser_validation(request(), work, out)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_browser_validation_contract.py",
-          "line": 144,
-          "preview": "result = _run_browser_validation(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_browser_validation_contract.py",
-          "line": 168,
-          "preview": "result = _run_browser_validation(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_browser_validation_contract.py",
-          "line": 195,
-          "preview": "result = _run_browser_validation(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 8
-    },
-    "_mobile_validation_contract": {
-      "definition": {
-        "file": "studio/generic_project.py",
-        "line": 483,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/generic_project.py",
-          "line": 483,
-          "preview": "def _mobile_validation_contract(req: dict) -> dict | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 560,
-          "preview": "contract = _mobile_validation_contract(req)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 2
-    },
-    "_verify_android_emulator_evidence": {
-      "definition": {
-        "file": "studio/generic_project.py",
-        "line": 491,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/generic_project.py",
-          "line": 491,
-          "preview": "def _verify_android_emulator_evidence(",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 646,
-          "preview": "adb_verification = _verify_android_emulator_evidence(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_mobile_validation_contract.py",
-          "line": 12,
-          "preview": "from generic_project import _run_mobile_validation, _verify_android_emulator_evidence",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_mobile_validation_contract.py",
-          "line": 93,
-          "preview": "\"generic_project._verify_android_emulator_evidence\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_mobile_validation_contract.py",
-          "line": 128,
-          "preview": "result = _verify_android_emulator_evidence(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_mobile_validation_contract.py",
-          "line": 159,
-          "preview": "result = _verify_android_emulator_evidence(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 6
-    },
-    "_run_mobile_validation": {
-      "definition": {
-        "file": "studio/generic_project.py",
-        "line": 559,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/generic_project.py",
-          "line": 559,
-          "preview": "def _run_mobile_validation(req: dict, work: Path, out: Path) -> dict | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 2279,
-          "preview": "mobile_validation = _run_mobile_validation(req, work, out)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_mobile_validation_contract.py",
-          "line": 12,
-          "preview": "from generic_project import _run_mobile_validation, _verify_android_emulator_evidence",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_mobile_validation_contract.py",
-          "line": 102,
-          "preview": "result = _run_mobile_validation(request(), work, out)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_mobile_validation_contract.py",
-          "line": 118,
-          "preview": "result = _run_mobile_validation(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 5
-    },
-    "_existing_worker_canary_verification": {
-      "definition": {
-        "file": "studio/generic_project.py",
-        "line": 730,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/generic_project.py",
-          "line": 730,
-          "preview": "def _existing_worker_canary_verification(req: dict, work: Path) -> dict | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 852,
-          "preview": "existing_canary_verification = _existing_worker_canary_verification(req, work)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_published_checkpoint.py",
-          "line": 82,
-          "preview": "\"generic_project._existing_worker_canary_verification\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 9,
-          "preview": "from generic_project import _existing_worker_canary_verification",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 44,
-          "preview": "result = _existing_worker_canary_verification(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 63,
-          "preview": "_existing_worker_canary_verification(self._request(), root)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 78,
-          "preview": "_existing_worker_canary_verification(wrong_repo, root)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 83,
-          "preview": "_existing_worker_canary_verification(incomplete, root)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 105,
-          "preview": "_existing_worker_canary_verification(request, root) is not None,",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 9
-    },
-    "_save_published_checkpoint": {
-      "definition": {
-        "file": "studio/generic_project.py",
-        "line": 775,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/generic_project.py",
-          "line": 775,
-          "preview": "def _save_published_checkpoint(path: Path, checkpoint: dict, observer=None) -> None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 861,
-          "preview": "_save_published_checkpoint(checkpoint_path, checkpoint, checkpoint_observer)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 2601,
-          "preview": "_save_published_checkpoint(checkpoint_path, checkpoint, checkpoint_observer)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_published_checkpoint.py",
-          "line": 14,
-          "preview": "from generic_project import _save_published_checkpoint, run_project",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_published_checkpoint.py",
-          "line": 35,
-          "preview": "_save_published_checkpoint(path, checkpoint, observer)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_published_checkpoint.py",
-          "line": 51,
-          "preview": "_save_published_checkpoint(path, checkpoint, seen.append)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_published_checkpoint.py",
-          "line": 69,
-          "preview": "_save_published_checkpoint(path, checkpoint, failure)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_published_checkpoint.py",
-          "line": 113,
-          "preview": "_save_published_checkpoint(path, checkpoint)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_published_round_checkpoint.py",
-          "line": 13,
-          "preview": "from generic_project import _save_published_checkpoint",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_published_round_checkpoint.py",
-          "line": 41,
-          "preview": "_save_published_checkpoint(first, published_one, persist)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_published_round_checkpoint.py",
-          "line": 46,
-          "preview": "_save_published_checkpoint(first, published_two, persist)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_published_round_checkpoint.py",
-          "line": 64,
-          "preview": "_save_published_checkpoint(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_published_round_checkpoint.py",
-          "line": 79,
-          "preview": "_save_published_checkpoint(path, checkpoint, called.append)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_published_round_checkpoint.py",
-          "line": 96,
-          "preview": "_save_published_checkpoint(path, checkpoint, unavailable)",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 14
-    },
-    "run_project": {
-      "definition": {
-        "file": "studio/generic_project.py",
-        "line": 789,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 180,
-          "preview": "output_root=root / 'output', run_project=runner,",
-          "definition_candidate": false
-        },
-        {
-          "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 192,
-          "preview": "output_root=root / 'output', run_project=runner,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_project.py",
-          "line": 242,
-          "preview": "from .multi_engine_orchestrator import run_project as run_once",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/autonomous_project.py",
-          "line": 244,
-          "preview": "from multi_engine_orchestrator import run_project as run_once",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
-          "line": 16,
-          "preview": "from orchestrator import run_project, run_registered_stages as _shared_run_registered_stages",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
-          "line": 90,
-          "preview": "return run_project(project['file'], project_out, work, runner, deadline, clock, baseline_sha)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 789,
-          "preview": "def run_project(req: dict, out: Path, work: Path, portfolio: dict | None = None, max_rounds: int = 6, deadline: float | None = None, clock=time.monotonic, checkpoint_observer=None)",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/generic_smoke.py",
-          "line": 116,
-          "preview": "result=generic_project.run_project(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/github_runner.py",
-          "line": 53,
-          "preview": "from multi_engine_orchestrator import run_project as run_multi_engine_project",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 10,
-          "preview": "from orchestrator import load_report, run_project as run_flutter_project",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 11,
-          "preview": "from generic_project import run_project as run_generic_project",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 42,
-          "preview": "def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha=None,checkpoint_observer=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/orchestrator.py",
-          "line": 449,
-          "preview": "def run_project(request_path,project_out,work,runner,deadline,clock=time.monotonic,baseline_sha=None):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1098,
-          "preview": "run_project=None,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1110,
-          "preview": "if run_project is None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1111,
-          "preview": "from github_runner import run as run_project",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1348,
-          "preview": "summary = run_project(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_published_checkpoint.py",
-          "line": 14,
-          "preview": "from generic_project import _save_published_checkpoint, run_project",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_published_checkpoint.py",
-          "line": 93,
-          "preview": "result = run_project(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_multi_engine_orchestrator.py",
-          "line": 11,
-          "preview": "from multi_engine_orchestrator import run_project",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_multi_engine_orchestrator.py",
-          "line": 28,
-          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_multi_engine_orchestrator.py",
-          "line": 50,
-          "preview": "response = run_project(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_multi_engine_orchestrator.py",
-          "line": 78,
-          "preview": "run_project(",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_multi_engine_orchestrator.py",
-          "line": 148,
-          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_multi_engine_orchestrator.py",
-          "line": 155,
-          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_multi_engine_orchestrator.py",
-          "line": 166,
-          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_multi_engine_orchestrator.py",
-          "line": 174,
-          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_multi_engine_orchestrator.py",
-          "line": 182,
-          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_multi_engine_orchestrator.py",
-          "line": 187,
-          "preview": "result=run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_multi_engine_orchestrator.py",
-          "line": 197,
-          "preview": "run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_multi_engine_orchestrator.py",
-          "line": 203,
-          "preview": "run_project(str(req),out,str(root/'work'),runner,100,lambda:0,'a'*40)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_multi_engine_orchestrator.py",
-          "line": 210,
-          "preview": "run_project(str(req),root/'out',str(root/'work'),runner,100,lambda:0,'a'*40)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_orchestrator.py",
-          "line": 13,
-          "preview": "from orchestrator import run_project, run_registered_stages",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_orchestrator.py",
-          "line": 70,
-          "preview": "result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_orchestrator.py",
-          "line": 120,
-          "preview": "result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_orchestrator.py",
-          "line": 167,
-          "preview": "result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_orchestrator.py",
-          "line": 197,
-          "preview": "result=run_project(str(request),out,str(root/'work'),runner,1000,lambda:0,BASELINE)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_orchestrator.py",
-          "line": 211,
-          "preview": "result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_orchestrator.py",
-          "line": 243,
-          "preview": "result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_orchestrator.py",
+          "file": "tests/test_provider_router.py",
           "line": 265,
-          "preview": "result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_orchestrator.py",
-          "line": 278,
-          "preview": "result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, None)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_orchestrator.py",
-          "line": 305,
-          "preview": "result = run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_orchestrator.py",
-          "line": 380,
-          "preview": "run_project(str(request), out, str(root / 'work'), runner, 1000, lambda: 0, BASELINE)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 170,
-          "preview": "run_project=runner,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_local_e2e.py",
-          "line": 350,
-          "preview": "client, run_project=runner,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_recovery.py",
-          "line": 33,
-          "preview": "run_project=runner, capabilities=['python'], runner_retry_attempts=0)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_recovery.py",
-          "line": 58,
-          "preview": "run_project=lambda *a, **kw: self.fail('must not run'),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_recovery.py",
-          "line": 84,
-          "preview": "run_project=runner, capabilities=['python'])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_recovery.py",
-          "line": 99,
-          "preview": "run_project=lambda *a, **kw: None, capabilities=['python'], **kwargs)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_recovery.py",
-          "line": 109,
-          "preview": "run_project=lambda *a, **kw: {'status': 'complete', 'finished': True},",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 599,
-          "preview": "run_project=lambda *args, **kwargs: self.fail(\"runner must not execute\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 616,
-          "preview": "run_project=lambda *args, **kwargs: self.fail(\"runner must not execute\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 663,
-          "preview": "run_project=runner,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 695,
-          "preview": "run_project=runner, clock=lambda: 10.0,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 717,
-          "preview": "run_project=runner, clock=lambda: 10.0,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 743,
-          "preview": "run_project=runner,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 794,
-          "preview": "run_project=runner,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 856,
-          "preview": "run_project=runner,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 880,
-          "preview": "run_project=runner,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 970,
-          "preview": "run_project=runner,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 1006,
-          "preview": "run_project=runner,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 1039,
-          "preview": "run_project=runner, clock=lambda: 10.0,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 1065,
-          "preview": "run_project=runner, clock=lambda: 10.0,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 1087,
-          "preview": "run_project=runner, clock=lambda: 10.0,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 1111,
-          "preview": "run_project=runner,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 1254,
-          "preview": "run_project=runner,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 1296,
-          "preview": "run_project=runner,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 1317,
-          "preview": "run_project=runner, clock=lambda: 10.0,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 1339,
-          "preview": "run_project=runner, clock=lambda: elapsed[0],",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 1367,
-          "preview": "run_project=runner, clock=lambda: 10.0,",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_production_os_worker_runtime.py",
-          "line": 1390,
-          "preview": "run_project=lambda *a, **kw: None,",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 71
-    },
-    "evaluate_model_candidate": {
-      "definition": {
-        "file": "studio/generic_project.py",
-        "line": 1418,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/generic_project.py",
-          "line": 1418,
-          "preview": "def evaluate_model_candidate(",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 1583,
-          "preview": "evaluate_model_candidate()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 1767,
-          "preview": "candidate = evaluate_model_candidate(",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 3
-    },
-    "contract": {
-      "definition": {
-        "file": "studio/production_os_review_canary.py",
-        "line": 21,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "studio/adaptation.py",
-          "line": 86,
-          "preview": "'The project is unfinished but the completion contract supplied no next stage.')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/codex.py",
-          "line": 1,
-          "preview": "\"\"\"Verified non-interactive Codex CLI contract and telemetry parsing.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_contract.py",
-          "line": 134,
-          "preview": "argparse.ArgumentParser(description=\"Validate architecture automation safety contract\").parse_args(argv)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artwork_capability.py",
-          "line": 1,
-          "preview": "\"\"\"Provider-neutral artwork capability contract with deterministic fallback.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/billing_qa.py",
-          "line": 1,
-          "preview": "\"\"\"Trusted Play Billing QA contract.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/completion.py",
-          "line": 1,
-          "preview": "\"\"\"Definition-of-done contract for autonomous mobile generation.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 133,
-          "preview": "raise StudioError('Invalid skill learning tool contract')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 153,
-          "preview": "raise StudioError('Invalid Asset Forge tool contract')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 172,
-          "preview": "raise StudioError('Invalid browser validation tool contract')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 191,
-          "preview": "raise StudioError('Invalid mobile validation tool contract')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_benchmark.py",
-          "line": 109,
-          "preview": "raise BenchmarkRejected('Promotion gate contract malformed')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_candidate.py",
-          "line": 1,
-          "preview": "\"\"\"Fail-closed contract for synthesized factory-evolution candidates.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 274,
-          "preview": "contract = contracts.get(\"browser_validation\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 275,
-          "preview": "return contract if isinstance(contract, dict) else None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 326,
-          "preview": "contract = _browser_validation_contract(req)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 327,
-          "preview": "if contract is None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 330,
-          "preview": "script_rel = str(contract.get(\"script\") or \"\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 331,
-          "preview": "artifacts_rel = str(contract.get(\"artifacts_dir\") or \"\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 406,
-          "preview": "== str(contract.get(\"report_schema\") or \"\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 413,
-          "preview": "report_error = \"browser-validation-report-contract-invalid\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 466,
-          "preview": "\"runtime\":str(contract.get(\"runtime\") or \"\")[:120],",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 487,
-          "preview": "contract = contracts.get(\"mobile_validation\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 488,
-          "preview": "return contract if isinstance(contract, dict) else None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 560,
-          "preview": "contract = _mobile_validation_contract(req)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 561,
-          "preview": "if contract is None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 564,
-          "preview": "script_rel = str(contract.get(\"script\") or \"\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 565,
-          "preview": "artifacts_rel = str(contract.get(\"artifacts_dir\") or \"\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 636,
-          "preview": "== str(contract.get(\"report_schema\") or \"\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 644,
-          "preview": "report_error = \"mobile-validation-report-contract-invalid\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 707,
-          "preview": "\"runtime\":str(contract.get(\"runtime\") or \"\")[:120],",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 743,
-          "preview": "contract = (",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 746,
-          "preview": "if contract not in brief:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/generic_project.py",
-          "line": 761,
-          "preview": "\"reason\": \"existing Production-OS worker canary contract satisfied\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_android_stage.py",
-          "line": 28,
-          "preview": "raise StudioError('Godot Android checkpoint stage contract invalid')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_device_stage.py",
-          "line": 36,
-          "preview": "raise StudioError('Godot device checkpoint contract invalid')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_device_stage.py",
-          "line": 66,
-          "preview": "raise StudioError('Godot device QA returned invalid evidence contract')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_final_review_qa.py",
-          "line": 65,
-          "preview": "raise StudioError('Godot final review Data Safety attestation contract invalid')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_final_review_stage.py",
-          "line": 19,
-          "preview": "raise StudioError('Godot final review checkpoint contract invalid')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_model.py",
-          "line": 34,
-          "preview": "'selectors only for tests. Runtime node names are part of the acceptance contract. '",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_play_stage.py",
-          "line": 55,
-          "preview": "raise StudioError(\"Godot Play submission checkpoint contract invalid\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_preview.py",
-          "line": 59,
-          "preview": "# contract. Never trust excerpts or model-provided source as authority.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_preview.py",
-          "line": 526,
-          "preview": "'contract': (",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_privacy_security_stage.py",
-          "line": 20,
-          "preview": "raise StudioError('Godot privacy/security checkpoint contract invalid')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_privacy_security_stage.py",
-          "line": 29,
-          "preview": "raise StudioError('Godot privacy/security evidence contract invalid')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_artifact_stage.py",
-          "line": 34,
-          "preview": "raise StudioError('Godot release artifact checkpoint contract invalid')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_artifact_stage.py",
-          "line": 52,
-          "preview": "raise StudioError('Unsigned AAB build violated signing isolation contract')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_artifact_stage.py",
-          "line": 60,
-          "preview": "raise StudioError('Signed AAB evidence contract invalid')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_release_stage.py",
-          "line": 24,
-          "preview": "raise StudioError('Godot release checkpoint contract invalid')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_runtime_journey_stage.py",
-          "line": 26,
-          "preview": "raise StudioError('Godot runtime journey checkpoint contract invalid')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_runtime_journey_stage.py",
-          "line": 40,
-          "preview": "raise StudioError('Godot runtime journey evidence contract invalid')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_session.py",
-          "line": 24,
-          "preview": "# journeys are retained in the generic contract but headless Godot validation does",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_store_metadata_stage.py",
-          "line": 24,
-          "preview": "raise StudioError('Godot store metadata checkpoint contract invalid')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_store_metadata_stage.py",
-          "line": 33,
-          "preview": "raise StudioError('Godot store metadata evidence contract invalid')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_stage.py",
-          "line": 25,
-          "preview": "raise StudioError('Godot visual checkpoint contract invalid')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/godot_visual_stage.py",
-          "line": 40,
-          "preview": "raise StudioError('Godot visual QA returned invalid evidence contract')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 12,
-          "preview": "from production_os_review_canary import contract as jum_review_canary_contract, run as run_jumpy_review_canary",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/multi_engine_orchestrator.py",
-          "line": 44,
-          "preview": "# A delivery canary is an exact, authenticated Git checkpoint/PR contract,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_resume_objectives.py",
-          "line": 14,
-          "preview": "\"the optional skill_learning contract is supported, the pinned Git baseline \"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_review_canary.py",
-          "line": 1,
-          "preview": "\"\"\"Isolated, exact-contract GitHub delivery canary for opted-in Jumpy.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_review_canary.py",
-          "line": 21,
-          "preview": "def contract(req: dict) -> tuple[str, str] | None:",
-          "definition_candidate": true
-        },
-        {
-          "file": "studio/production_os_review_canary.py",
-          "line": 54,
-          "preview": "checked = contract(req)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_review_canary.py",
-          "line": 56,
-          "preview": "raise StudioError(\"Jumpy delivery canary contract was not verified\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_review_canary.py",
-          "line": 70,
-          "preview": "raise StudioError(\"Delivery canary file bytes did not match contract\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_review_canary.py",
-          "line": 75,
-          "preview": "\"reason\": \"exact Jumpy Git delivery canary contract\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 715,
-          "preview": "contract = (",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 721,
-          "preview": "isinstance(contract, dict)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 722,
-          "preview": "and contract.get(\"request_schema\") == \"asset-forge/production-request/v1\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 723,
-          "preview": "and contract.get(\"command\") == \"asset-forge fulfill\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 747,
-          "preview": "\"Represent asset work with the asset-forge/production-request/v1 contract. \"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/production_os_worker.py",
-          "line": 1024,
-          "preview": "\"Invalid skill learning tool contract\": \"skill_learning_contract_invalid\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/project_context.py",
-          "line": 171,
-          "preview": "Do not infer completion from a preview, successful compilation, or this prose file. Completion requires the trusted evidence contract.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/project_context.py",
-          "line": 195,
-          "preview": "5. Continue until the machine completion contract passes or a genuinely irreducible external prerequisite is identified.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/release_contract.py",
-          "line": 84,
-          "preview": "parser = argparse.ArgumentParser(description=\"Validate AI Dev Server release contract\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/security_stage.py",
-          "line": 1,
-          "preview": "\"\"\"Persist trusted security/SBOM evidence and close the completion contract.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_browser_validation_contract.py",
-          "line": 25,
-          "preview": "\"id\":\"pos-browser-contract\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_browser_validation_contract.py",
-          "line": 95,
-          "preview": "\"Invalid browser validation tool contract\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_browser_validation_contract.py",
-          "line": 153,
-          "preview": "\"browser-validation-report-contract-invalid\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_browser_validation_contract.py",
-          "line": 177,
-          "preview": "\"browser-validation-report-contract-invalid\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_continuous_improvement.py",
-          "line": 19,
-          "preview": "# keep later cycles possible by resolving via a fresh state event contract is not required",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_engine_patch.py",
-          "line": 22,
-          "preview": "# Compact output contract: exact text edits are accepted only for",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_published_checkpoint.py",
-          "line": 78,
-          "preview": "proof = {\"passed\": True, \"reason\": \"existing verified contract\"}",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_repository_pull_request.py",
-          "line": 238,
-          "preview": "# Extend the existing PR-delivery integration contract to the explicitly",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 10,
-          "preview": "from production_os_review_canary import contract as review_contract, run as run_review_canary",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_device_stage.py",
-          "line": 72,
-          "preview": "with self.assertRaisesRegex(StudioError,'invalid evidence contract'):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_final_review_qa.py",
-          "line": 55,
-          "preview": "with self.assertRaisesRegex(StudioError,'attestation contract'): gfr.review(root,out,state)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_model.py",
-          "line": 174,
-          "preview": "# initial system contract must clearly require files, and the single",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_preview.py",
-          "line": 260,
-          "preview": "self.assertIn('VERBATIM', retry['contract'])",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_repository_probe.py",
-          "line": 33,
-          "preview": "# Extend the existing contract: the Actions token only reaches the",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_godot_visual_stage.py",
-          "line": 45,
-          "preview": "with self.assertRaisesRegex(StudioError,'checkpoint contract'):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_mobile_validation_contract.py",
-          "line": 28,
-          "preview": "\"id\":\"pos-mobile-contract\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_mobile_validation_contract.py",
-          "line": 80,
-          "preview": "\"Invalid mobile validation tool contract\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_repository_branch_identity.py",
-          "line": 58,
-          "preview": "# Extend the existing branch-identity contract: a successful ref",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_request_contract.py",
-          "line": 22,
-          "preview": "contract = {'schema': 'production-os/learned-skill/v1', 'result_field': 'learned_skill',",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_request_contract.py",
-          "line": 25,
-          "preview": "value['tool_contracts'] = {'skill_learning': contract}",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_request_contract.py",
-          "line": 26,
-          "preview": "self.assertEqual(request_check(value)['tool_contracts']['skill_learning'], contract)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_request_contract.py",
-          "line": 37,
-          "preview": "with self.assertRaisesRegex(StudioError, 'skill learning tool contract'):",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 96
-    },
-    "run": {
-      "definition": {
-        "file": "studio/production_os_review_canary.py",
-        "line": 53,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "integration_tests/test_production_os_server_integration.py",
-          "line": 170,
-          "preview": "proc = subprocess.run([sys.executable, str(artifact)], check=True,",
-          "definition_candidate": false
-        },
-        {
-          "file": "scripts/preflight-production-os-worker.py",
-          "line": 58,
-          "preview": "result = subprocess.run(",
-          "definition_candidate": false
-        },
-        {
-          "file": "scripts/preflight-production-os-worker.py",
-          "line": 80,
-          "preview": "result = subprocess.run(",
-          "definition_candidate": false
-        },
-        {
-          "file": "scripts/production-os-live-resume-proof.py",
-          "line": 3,
-          "preview": "Uses a unique synthetic workflow ID for this Actions run. Does not claim a",
-          "definition_candidate": false
-        },
-        {
-          "file": "scripts/production-os-live-resume-proof.py",
-          "line": 40,
-          "preview": "from run import GitHub",
-          "definition_candidate": false
-        },
-        {
-          "file": "scripts/production-os-live-resume-proof.py",
-          "line": 52,
-          "preview": "raise RuntimeError(\"Live resume proof requires an authenticated GitHub Actions run\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/adaptive_phase_policy.py",
-          "line": 53,
-          "preview": "\"\"\"Decide whether a model review must run after trusted verification.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/adapters.py",
-          "line": 34,
-          "preview": "def run(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/adapters.py",
-          "line": 77,
-          "preview": "result = subprocess.run(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/codex.py",
-          "line": 24,
-          "preview": "an implementation run into a read-only review.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 61,
-          "preview": "argv=[\"opencode\",\"run\",\"--auto\",\"--format\",\"json\"]",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 152,
-          "preview": "def _completion_verified(run)->bool:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 153,
-          "preview": "\"\"\"Do not accept an agent run without its supported completion receipt.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 159,
-          "preview": "if run.returncode != 0:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 161,
-          "preview": "if run.agent == \"codex\":",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 164,
-          "preview": "for line in run.stdout_tail.splitlines():",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 172,
-          "preview": "if run.agent == \"hermes\":",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 176,
-          "preview": "for line in run.stdout_tail.splitlines():",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 191,
-          "preview": "if run.agent != \"opencode\":",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 193,
-          "preview": "for line in run.stdout_tail.splitlines():",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 213,
-          "preview": "def _run_evidence(run,capacity_source:str|None=None)->dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 214,
-          "preview": "evidence={\"agent\":run.agent,\"returncode\":run.returncode,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 215,
-          "preview": "\"duration_seconds\":run.duration_seconds,\"stdout_tail\":run.stdout_tail,\"stderr_tail\":run.stderr_tail}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 216,
-          "preview": "if run.agent in {\"opencode\", \"hermes\", \"codex\"}:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 217,
-          "preview": "evidence[\"completion_verified\"] = _completion_verified(run)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 218,
-          "preview": "if run.returncode == 0 and not evidence[\"completion_verified\"]:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 222,
-          "preview": "if run.agent==\"codex\":",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 223,
-          "preview": "usage=parse_codex_usage(run.stdout_tail)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 329,
-          "preview": "run=AgentAdapter(decision.agent).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 330,
-          "preview": "ok=_completion_verified(run)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 331,
-          "preview": "evidence=_run_evidence(run,capacity_source)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 335,
-          "preview": "if ok: return {\"status\":\"passed\",\"selected\":run.agent,\"attempts\":attempts}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 414,
-          "preview": "run=AgentAdapter(spec).run(argv,cwd=cwd,timeout=timeout,extra_env=extra_env)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 418,
-          "preview": "ok=_completion_verified(run)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 419,
-          "preview": "evidence=_run_evidence(run,capacity_source)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/agents/orchestrator.py",
-          "line": 422,
-          "preview": "return {\"status\":\"passed\" if ok else \"failed\",\"selected\":run.agent if ok else None,\"attempts\":[evidence]}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/android_signing.py",
-          "line": 112,
-          "preview": "runner=subprocess.run,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 4,
-          "preview": "Candidate code is materialized only in a detached worktree. Validation commands run",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 50,
-          "preview": "result=subprocess.run(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 154,
-          "preview": "\"docker\",\"run\",\"--rm\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 191,
-          "preview": "run=_docker_command(root,command)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 194,
-          "preview": "\"returncode\":run.returncode,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 195,
-          "preview": "\"passed\":run.returncode==0,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 196,
-          "preview": "\"stdout_sha256\":hashlib.sha256((run.stdout or \"\").encode()).hexdigest(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 197,
-          "preview": "\"stderr_sha256\":hashlib.sha256((run.stderr or \"\").encode()).hexdigest(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_executor.py",
-          "line": 211,
-          "preview": "with tempfile.TemporaryDirectory(prefix=\"replacement-run-\") as tmp:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_pipeline.py",
-          "line": 20,
-          "preview": "def run(work_order_path: Path, repo_root: Path, out: Path) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_pipeline.py",
-          "line": 55,
-          "preview": "result=run(Path(args.work_order),Path(args.repo_root),out)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_planner.py",
-          "line": 567,
-          "preview": "\"run unit, integration, visual and release regression gates\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_postmerge_pipeline.py",
-          "line": 32,
-          "preview": "def run(work_order_path: Path, merged_path: Path, package_path: Path, out: Path, token: str, repository: str) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_postmerge_pipeline.py",
-          "line": 105,
-          "preview": "result=run(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_pr_validator.py",
-          "line": 101,
-          "preview": "raise ReplacementPRValidationError(\"GitHub check-run evidence malformed\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_synthesis.py",
-          "line": 32,
-          "preview": "result=subprocess.run([\"git\",\"rev-parse\",\"HEAD\"],cwd=root,text=True,capture_output=True,check=False)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_approval.py",
-          "line": 144,
-          "preview": "raise ApprovalProvenanceError(\"required GitHub checks lack a common workflow run\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_approval.py",
-          "line": 146,
-          "preview": "raise ApprovalProvenanceError(\"required checks do not bind attested workflow run\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_approval.py",
-          "line": 163,
-          "preview": "raise ApprovalProvenanceError(\"required GitHub check workflow run mismatch\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 78,
-          "preview": "def _workflow_path(run: dict) -> str | None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 79,
-          "preview": "if not isinstance(run,dict): return None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 80,
-          "preview": "raw=run.get(\"path\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 86,
-          "preview": "for run in runs if isinstance(runs,list) else []:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 87,
-          "preview": "if run.get(\"head_sha\")!=commit_sha or str(run.get(\"conclusion\") or \"\").lower()!=\"success\": continue",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 88,
-          "preview": "if run.get(\"name\")!=required_workflow_name or _workflow_path(run)!=required_workflow_path: continue",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 89,
-          "preview": "if required_run_id is not None and run.get(\"id\")!=required_run_id: continue",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 90,
-          "preview": "created=_timestamp(run.get(\"run_started_at\") or run.get(\"created_at\") or run.get(\"updated_at\"))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 92,
-          "preview": "candidates.append({**run,\"_validated_timestamp\":created})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 94,
-          "preview": "run=sorted(candidates,key=lambda x:int(x.get(\"id\") or 0),reverse=True)[0]",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 95,
-          "preview": "return {\"id\":run.get(\"id\"),\"head_sha\":commit_sha,\"conclusion\":\"success\",\"name\":run.get(\"name\"),\"path\":_workflow_path(run),\"timestamp\":run.get(\"_validated_timestamp\")}",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_attestation.py",
-          "line": 119,
-          "preview": "if not isinstance(required_workflow_run_id,int): raise ApprovalProvenanceError(\"required checks do not share one workflow run\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration.py",
-          "line": 1,
-          "preview": "\"\"\"Dry-run and explicitly authorized migration of persisted replacement reputation policy.",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration.py",
-          "line": 3,
-          "preview": "Policy migrations never silently promote a replacement. A dry-run computes the exact",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_migration_cli.py",
-          "line": 1,
-          "preview": "\"\"\"CLI for dry-run and explicitly authorized reputation policy migrations.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artifact_handoff.py",
-          "line": 1,
-          "preview": "\"\"\"Trusted selection of prior autonomous-run artifacts for release handoff.\"\"\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artwork_stage.py",
-          "line": 12,
-          "preview": "from run import GitHub",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artwork_validation.py",
-          "line": 9,
-          "preview": "from .capabilities.asset_artwork import run",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artwork_validation.py",
-          "line": 11,
-          "preview": "from capabilities.asset_artwork import run",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artwork_validation.py",
-          "line": 45,
-          "preview": "first=run(context)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/artwork_validation.py",
-          "line": 46,
-          "preview": "second=run(context)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/asset_forge_bridge.py",
-          "line": 92,
-          "preview": "\"course\", \"run\", \"walk\", \"attack\", \"idle\",",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/billing_stage.py",
-          "line": 11,
-          "preview": "from run import GitHub",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capabilities/asset_artwork.py",
-          "line": 74,
-          "preview": "def run(context):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_runtime.py",
-          "line": 60,
-          "preview": "run = getattr(module, \"run\", None)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_runtime.py",
-          "line": 61,
-          "preview": "if not callable(run):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_runtime.py",
-          "line": 62,
-          "preview": "raise CapabilityRuntimeError(\"provider must expose callable run(context)\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_runtime.py",
-          "line": 63,
-          "preview": "return run",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_runtime.py",
-          "line": 78,
-          "preview": "run = _load_provider(provider, Path(repo_root))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_runtime.py",
-          "line": 84,
-          "preview": "result_box[\"value\"] = (\"ok\", run(context))",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/capability_stage.py",
-          "line": 11,
-          "preview": "from run import GitHub",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_diagnostics.py",
-          "line": 188,
-          "preview": "run for run in runs",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_diagnostics.py",
-          "line": 189,
-          "preview": "if isinstance(run, dict)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_diagnostics.py",
-          "line": 190,
-          "preview": "and str(run.get(\"status\") or \"\").lower() == \"completed\"",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_diagnostics.py",
-          "line": 191,
-          "preview": "and str(run.get(\"conclusion\") or \"\").lower() in _FAILURES",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_diagnostics.py",
-          "line": 196,
-          "preview": "key=lambda run: str(run.get(\"updated_at\") or run.get(\"created_at\") or \"\"),",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_diagnostics.py",
-          "line": 199,
-          "preview": "run = failed_runs[0]",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_diagnostics.py",
-          "line": 200,
-          "preview": "run_id = run.get(\"id\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_diagnostics.py",
-          "line": 233,
-          "preview": "html_url = str(run.get(\"html_url\") or \"\").strip()",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_diagnostics.py",
-          "line": 237,
-          "preview": "\"workflow\": str(run.get(\"name\") or \"\").strip()[:300] or None,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
-          "line": 41,
-          "preview": "containers = subprocess.run(['docker', 'ps', '-aq', '--filter',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
-          "line": 42,
-          "preview": "'label=mobile-studio-run=' + run_id], capture_output=True, text=True,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/ci_runner.py",
-          "line": 45,
-          "preview": "subprocess.run(['docker', 'rm', '-f', *containers],",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 926,
-          "preview": "def run(self, args, network=False, timeout=600):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 931,
-          "preview": "cmd = ['docker', 'run', '--name', name, '--rm', '--init', '--cap-drop=ALL', '--security-opt=no-new-privileges',",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 939,
-          "preview": "raise StudioError('Invalid sandbox run identifier')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 940,
-          "preview": "cmd[2:2] = ['--label', 'mobile-studio-run=' + run_id]",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 945,
-          "preview": "r = subprocess.run(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 947,
-          "preview": "subprocess.run(['docker', 'rm', '-f', name], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 951,
-          "preview": "rc, log = self.run(['flutter', 'create', '--no-pub', '--platforms=android,ios', '--project-name', name, '.'], network=True)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 961,
-          "preview": "rc, out = self.run(args, network=True, timeout=600)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 968,
-          "preview": "rc, out = self.run(args, network=False, timeout=600)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 976,
-          "preview": "rc, out = self.run(args, network=False, timeout=600)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/core.py",
-          "line": 1009,
-          "preview": "rc, out = self.run(args, network=network, timeout=900)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_qa.py",
-          "line": 21,
-          "preview": "return subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_qa.py",
-          "line": 67,
-          "preview": "created = subprocess.run(['avdmanager', 'create', 'avd', '-n', AVD_NAME, '-k', SYSTEM_IMAGE,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_qa.py",
-          "line": 125,
-          "preview": "shot = subprocess.run([adb, '-s', serial, 'exec-out', 'screencap', '-p'], stdout=handle,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/device_stage.py",
-          "line": 12,
-          "preview": "from run import GitHub",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/engine_detect.py",
-          "line": 10,
-          "preview": "from run import GitHub",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/engine_entry.py",
-          "line": 11,
-          "preview": "from run import GitHub, execute as execute_flutter",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 27,
-          "preview": "def _trusted_check(run, repository):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 28,
-          "preview": "if not isinstance(run,dict): return False",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 29,
-          "preview": "app=run.get('app')",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 31,
-          "preview": "details=run.get('details_url')",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 120
-    },
-    "ExistingWorkerCanaryVerificationTests": {
-      "definition": {
-        "file": "tests/test_generic_worker_canary_resume.py",
-        "line": 15,
-        "kind": "class",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 15,
-          "preview": "class ExistingWorkerCanaryVerificationTests(unittest.TestCase):",
+          "preview": "def test_paid_budget_not_exhausted_keeps_all(self):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "_request": {
+    "test_role_specific_model_overrides_default": {
       "definition": {
-        "file": "tests/test_generic_worker_canary_resume.py",
-        "line": 16,
+        "file": "tests/test_provider_router.py",
+        "line": 277,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "studio/architecture_replacement_merge.py",
-          "line": 13,
-          "preview": "from architecture_replacement_persist import _request",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_merge.py",
-          "line": 40,
-          "preview": "requester=_request,",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_persist.py",
-          "line": 22,
-          "preview": "def _request(url, token, method=\"GET\", payload=None, allow_404=False):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_persist.py",
-          "line": 70,
-          "preview": "pulls=_request(api+\"/pulls?\"+query,token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_persist.py",
-          "line": 115,
-          "preview": "base_commit=_request(api+\"/git/commits/\"+baseline_sha,token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_persist.py",
-          "line": 124,
-          "preview": "blob=_request(api+\"/git/blobs\",token,\"POST\",{",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_persist.py",
-          "line": 138,
-          "preview": "tree=_request(api+\"/git/trees\",token,\"POST\",{\"base_tree\":base_tree,\"tree\":tree_entries})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_persist.py",
-          "line": 143,
-          "preview": "commit=_request(api+\"/git/commits\",token,\"POST\",{",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_persist.py",
-          "line": 154,
-          "preview": "_request(api+\"/git/refs\",token,\"POST\",{\"ref\":\"refs/heads/\"+branch,\"sha\":commit_sha})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_persist.py",
-          "line": 167,
-          "preview": "pr=_request(api+\"/pulls\",token,\"POST\",{",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_postmerge.py",
-          "line": 15,
-          "preview": "from architecture_replacement_persist import _request",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_postmerge.py",
-          "line": 51,
-          "preview": "def verify(merged,package,token,repository,requester=_request):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_pr_validator.py",
-          "line": 13,
-          "preview": "from architecture_replacement_persist import _request, ReplacementPersistenceError",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_pr_validator.py",
-          "line": 47,
-          "preview": "def validate(review: dict, package: dict, persisted: dict, token: str, repository: str, requester=_request) -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_rollback.py",
-          "line": 11,
-          "preview": "from architecture_replacement_persist import _request",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_replacement_rollback.py",
-          "line": 26,
-          "preview": "def execute(gate,authorization,token,repository,requester=_request):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_collect.py",
-          "line": 12,
-          "preview": "from architecture_replacement_persist import _request, ReplacementPersistenceError",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_collect.py",
-          "line": 25,
-          "preview": "value=_request(api+f\"/contents/{encoded_path}?ref={urllib.parse.quote(commit_sha,safe='')}\",token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_collect.py",
-          "line": 63,
-          "preview": "pr=_request(api+f\"/pulls/{pull_request}\",token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_collect.py",
-          "line": 108,
-          "preview": "pr=_request(api+f\"/pulls/{pull_request}\",token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_collect.py",
-          "line": 115,
-          "preview": "commit=_request(api+f\"/commits/{commit_sha}\",token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_collect.py",
-          "line": 128,
-          "preview": "reviews=_request(api+f\"/pulls/{pull_request}/reviews?per_page=100\",token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_collect.py",
-          "line": 138,
-          "preview": "value=_request(api+f\"/collaborators/{urllib.parse.quote(login,safe='')}/permission\",token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_collect.py",
-          "line": 143,
-          "preview": "checks_response=_request(api+f\"/commits/{commit_sha}/check-runs?per_page=100\",token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/architecture_reputation_policy_github_collect.py",
-          "line": 157,
-          "preview": "runs_response=_request(api+\"/actions/runs?\"+query,token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 14,
-          "preview": "from evolution_persist import PersistenceError, _request",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 57,
-          "preview": "pr=_request(api+'/pulls/'+str(number),token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 60,
-          "preview": "files=_request(api+'/pulls/'+str(number)+'/files?per_page=100',token); allowed=_allowed_paths(candidate_id,gap)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 65,
-          "preview": "checks=_request(api+'/commits/'+head_sha+'/check-runs?per_page=100',token); runs=checks.get('check_runs') if isinstance(checks,dict) else None",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 74,
-          "preview": "pr=_request(api+'/pulls/'+str(number),token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_automerge.py",
-          "line": 77,
-          "preview": "merged=_request(api+'/pulls/'+str(number)+'/merge',token,'PUT',{'sha':head_sha,'merge_method':'merge','commit_title':'Promote autonomous capability: '+gap})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_pending.py",
-          "line": 12,
-          "preview": "from evolution_persist import PersistenceError, _branch_prefix, _request",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_pending.py",
-          "line": 21,
-          "preview": "pulls = _request(api + '/pulls?' + query, token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_pending.py",
-          "line": 38,
-          "preview": "refs = _request(api + '/git/matching-refs/heads/' + urllib.parse.quote(prefix, safe='/'), token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_pending.py",
-          "line": 51,
-          "preview": "ref = _request(api + '/git/ref/heads/' + urllib.parse.quote(branch, safe='/'), token, allow_404=True)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_persist.py",
-          "line": 22,
-          "preview": "def _request(url, token, method='GET', payload=None, allow_404=False):",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_persist.py",
-          "line": 56,
-          "preview": "refs = _request(url, token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_persist.py",
-          "line": 66,
-          "preview": "pulls = _request(api + '/pulls?' + query, token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_persist.py",
-          "line": 121,
-          "preview": "base_commit = _request(api + '/git/commits/' + baseline_sha, token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_persist.py",
-          "line": 128,
-          "preview": "blob = _request(api + '/git/blobs', token, 'POST', {'content': base64.b64encode(path.read_bytes()).decode(), 'encoding': 'base64'})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_persist.py",
-          "line": 132,
-          "preview": "tree = _request(api + '/git/trees', token, 'POST', {'base_tree': base_tree, 'tree': tree_entries})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_persist.py",
-          "line": 144,
-          "preview": "existing_commit = _request(api + '/git/commits/' + encoded_sha, token)",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_persist.py",
-          "line": 153,
-          "preview": "commit = _request(api + '/git/commits', token, 'POST', {'message': f'Promote autonomous capability {gap}', 'tree': tree_sha, 'parents': [baseline_sha]})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_persist.py",
-          "line": 157,
-          "preview": "_request(api + '/git/refs', token, 'POST', {'ref':'refs/heads/' + branch,'sha':commit_sha})",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/evolution_persist.py",
-          "line": 161,
-          "preview": "pr = _request(api + '/pulls', token, 'POST', {",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/play_publisher.py",
-          "line": 44,
-          "preview": "def _request(self, method: str, url: str, body: bytes | None = None, *, content_type=\"application/json\") -> dict:",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/play_publisher.py",
-          "line": 73,
-          "preview": "value = self._request(\"POST\", f\"{API_BASE}/applications/{package}/edits\", b\"{}\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/play_publisher.py",
-          "line": 85,
-          "preview": "value = self._request(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/play_publisher.py",
-          "line": 113,
-          "preview": "value = self._request(",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/play_publisher.py",
-          "line": 125,
-          "preview": "return self._request(\"POST\", f\"{API_BASE}/applications/{package}/edits/{edit}:validate\", b\"{}\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "studio/play_publisher.py",
-          "line": 130,
-          "preview": "return self._request(\"POST\", f\"{API_BASE}/applications/{package}/edits/{edit}:commit\", b\"{}\")",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 31,
-          "preview": "def _request(url,token,method=\"GET\",payload=None,allow_404=False):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 63,
-          "preview": "return _request",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 66,
-          "preview": "with patch.object(collector,\"_request\",side_effect=self.fake_request(False)):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 76,
-          "preview": "with patch.object(collector,\"_request\",side_effect=self.fake_request(True)):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 91,
-          "preview": "with patch.object(collector,\"_request\",side_effect=req):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 114,
-          "preview": "with patch.object(collector,\"_request\",side_effect=req):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 130,
-          "preview": "with patch.object(collector,\"_request\",side_effect=req):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 143,
-          "preview": "with patch.object(collector,\"_request\",side_effect=req):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 153,
-          "preview": "with patch.object(collector,\"_request\",side_effect=req):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 163,
-          "preview": "with patch.object(collector,\"_request\",side_effect=req):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_architecture_reputation_policy_github_collect.py",
-          "line": 175,
-          "preview": "with patch.object(collector,\"_request\",side_effect=req):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_automerge.py",
-          "line": 36,
-          "preview": "with patch('evolution_automerge.check_pending',return_value=pending()),patch('evolution_automerge._request',side_effect=request_for()):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_automerge.py",
-          "line": 46,
-          "preview": "with patch('evolution_automerge.check_pending',return_value=pending()),patch('evolution_automerge._request',side_effect=request_for(head='c'*40)):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_automerge.py",
-          "line": 51,
-          "preview": "with patch('evolution_automerge.check_pending',return_value=pending()),patch('evolution_automerge._request',side_effect=request_for(spoofed)):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_automerge.py",
-          "line": 57,
-          "preview": "with patch('evolution_automerge.check_pending',return_value=pending()),patch('evolution_automerge._request',side_effect=request_for(wrong)):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_automerge.py",
-          "line": 61,
-          "preview": "with patch('evolution_automerge.check_pending',return_value=pending()),patch('evolution_automerge._request',side_effect=request_for(extra='studio/orchestrator.py')):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_automerge.py",
-          "line": 66,
-          "preview": "with patch('evolution_automerge.check_pending',return_value=pending()),patch('evolution_automerge._request',side_effect=request_for(checks)):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_automerge.py",
-          "line": 73,
-          "preview": "with patch('evolution_automerge.check_pending',return_value=pending()),patch('evolution_automerge._request',side_effect=req):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_pending.py",
-          "line": 27,
-          "preview": "with patch('evolution_pending._request',side_effect=request): result=check(order(),'token','owner/repo')",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_pending.py",
-          "line": 35,
-          "preview": "with patch('evolution_pending._request',side_effect=request): result=check(order(),'token','owner/repo')",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_pending.py",
-          "line": 44,
-          "preview": "with patch('evolution_pending._request',side_effect=request): result=check(order(),'token','owner/repo')",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_pending.py",
-          "line": 48,
-          "preview": "with patch('evolution_pending._request',return_value=[pr(sha='c'*40)]):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_pending.py",
-          "line": 53,
-          "preview": "with patch('evolution_pending._request',return_value=[pr(number=9),pr(number=10)]):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_pending.py",
-          "line": 58,
-          "preview": "with patch('evolution_pending._request',return_value=[pr(state='closed',merged_at='2026-09-09T19:00:00Z')]):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_persist.py",
-          "line": 48,
-          "preview": "with patch('evolution_persist._request',side_effect=request): result=persist(root,applied,'token','owner/repo',BASELINE)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_persist.py",
-          "line": 55,
-          "preview": "with patch('evolution_persist._request',side_effect=request): result=persist(root,applied,'token','owner/repo',BASELINE)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_persist.py",
-          "line": 61,
-          "preview": "with patch('evolution_persist._request',side_effect=request):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_persist.py",
-          "line": 67,
-          "preview": "with patch('evolution_persist._request',side_effect=request):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_evolution_persist.py",
-          "line": 73,
-          "preview": "with patch('evolution_persist._request') as request:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 16,
-          "preview": "def _request(self, sequence=2):",
-          "definition_candidate": true
-        },
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 45,
-          "preview": "self._request(),",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 63,
-          "preview": "_existing_worker_canary_verification(self._request(), root)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 75,
-          "preview": "wrong_repo = self._request()",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 80,
-          "preview": "incomplete = self._request()",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 96,
-          "preview": "request = self._request(sequence)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_multi_project_canary.py",
-          "line": 14,
-          "preview": "def _request(self, root: Path, index: int) -> None:",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_multi_project_canary.py",
-          "line": 37,
-          "preview": "self._request(requests, index)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_request_priority.py",
-          "line": 10,
-          "preview": "def _request(**overrides):",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_request_priority.py",
-          "line": 24,
-          "preview": "self.assertEqual(request_check(_request())[\"priority\"], 50)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_request_priority.py",
-          "line": 27,
-          "preview": "self.assertEqual(request_check(_request(priority=100))[\"priority\"], 100)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_request_priority.py",
-          "line": 28,
-          "preview": "self.assertEqual(request_check(_request(priority=1))[\"priority\"], 1)",
-          "definition_candidate": false
-        },
-        {
-          "file": "tests/test_request_priority.py",
-          "line": 34,
-          "preview": "request_check(_request(priority=value))",
-          "definition_candidate": false
-        }
-      ],
-      "occurrence_count": 93
-    },
-    "test_accepts_exact_existing_canary_with_or_without_final_newline": {
-      "definition": {
-        "file": "tests/test_generic_worker_canary_resume.py",
-        "line": 34,
-        "kind": "function",
-        "language": "python"
-      },
-      "occurrences": [
-        {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 34,
-          "preview": "def test_accepts_exact_existing_canary_with_or_without_final_newline(self):",
+          "file": "tests/test_provider_router.py",
+          "line": 277,
+          "preview": "def test_role_specific_model_overrides_default(self):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_rejects_wrong_content": {
+    "test_json_provider_accepts_role_models": {
       "definition": {
-        "file": "tests/test_generic_worker_canary_resume.py",
-        "line": 56,
+        "file": "tests/test_provider_router.py",
+        "line": 297,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 56,
-          "preview": "def test_rejects_wrong_content(self):",
+          "file": "tests/test_provider_router.py",
+          "line": 297,
+          "preview": "def test_json_provider_accepts_role_models(self):",
           "definition_candidate": true
         }
       ],
       "occurrence_count": 1
     },
-    "test_rejects_non_canary_repository_or_missing_contract": {
+    "test_vision_candidates_exclude_text_only_provider": {
       "definition": {
-        "file": "tests/test_generic_worker_canary_resume.py",
-        "line": 66,
+        "file": "tests/test_provider_router.py",
+        "line": 317,
         "kind": "function",
         "language": "python"
       },
       "occurrences": [
         {
-          "file": "tests/test_generic_worker_canary_resume.py",
-          "line": 66,
-          "preview": "def test_rejects_non_canary_repository_or_missing_contract(self):",
+          "file": "tests/test_provider_router.py",
+          "line": 317,
+          "preview": "def test_vision_candidates_exclude_text_only_provider(self):",
           "definition_candidate": true
         }
       ],

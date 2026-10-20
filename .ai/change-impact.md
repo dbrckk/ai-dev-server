@@ -1,19 +1,21 @@
 # Change impact
 
-Base: e10a5a8b22d19e11c106eca488e19a5c68bdac4e
-Head: ec24f0f4f7c70be4adc4292392d4b0420d830838
+Base: ab5ad04f335a00ec28d7674a714e6279214a22ed
+Head: ccb43355385617d834aed4671731b0224de196cf
 
 ## Changed files
-- M studio/generic_project.py
-- M studio/production_os_review_canary.py
-- M tests/test_generic_worker_canary_resume.py
+- A docs/DSH_FREE_MODEL.md
+- M docs/PRODUCTION_OS_WORKER.md
+- M studio/provider_router.py
+- M tests/test_provider_router.py
 
 ## Affected areas
+- docs
 - studio
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_provider_router.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

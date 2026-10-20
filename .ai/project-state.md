@@ -4,6 +4,13 @@
 - Resume now calls the exact-SHA PR guard and supports the existing trusted handoff. A queued handoff alone leaves status blocked, checkpoint published and next_stage=review_handoff; only confirmed review permits completion. No model call or marker republishing is required.
 - Extended the existing resume regression for direct success, denied access, stale review, confirmed handoff and pending handoff, with/without final newline: 18 tests and 17 subtests passed. Full local diagnostics additionally exposed contradictory legacy asset assertions; aligned them with existing runtime thresholds. Added all eight function-style test files to the existing pytest integration workflow because the policy-pinned primary CI uses unittest. Fresh Python environment with only pytest: 1845 tests and 172 subtests passed; all eight function-style modules are included in the integration workflow. Production-OS full suite: 1307 passed, 17 skipped. Six real authenticated Production-OS server integration tests passed. Exact-head CI pending.
 
+## 2026-10-20 — optional DSH gateway and credential readiness
+
+- Reviewed user-provided Ebony-Vinyl/dsh-our-free-model at 5923ebef0f55578ca21bb5555b7ba5adb51aef21. Kilo catalog read: 401 entries, 18 explicitly free; no inference, no unlimited-capacity claim.
+- Found and fixed local JSON providers remaining eligible with a missing declared key_env. Missing/blank credentials now exclude them; intentionally keyless local servers omit key_env.
+- Documented optional local gateway configuration with unmetered=false, no invented quota, real model discovery and machine-local scope. No hosted provider configuration changed.
+- Qualification: 19 existing tests and 6 subtests passed; real authenticated loopback HTTP catalog and missing-key exclusion passed. DSH host/model generation remains unverified. Exact-head CI pending.
+
 ## 2026-10-20 — canary sequence boundary consistency
 
 - Reproduced: control validation accepts sequence 1000000000, while both marker consumers rejected it and fell through to normal autonomous execution.
@@ -120,16 +127,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-20T11:35:35Z
+Generated: 2026-10-20T15:03:47Z
 
 ### Git
 - Branch: `main`
-- Head: `ec24f0f4f7c7`
-- Commit date: 2026-10-20T07:35:24-04:00
-- Commit: fix(worker): recognize inclusive canary sequence limit (#353)
-- Tracked files: 865
+- Head: `ccb433553856`
+- Commit date: 2026-10-20T11:03:36-04:00
+- Commit: fix(providers): require declared local gateway credentials (#354)
+- Tracked files: 866
 
 ### Recently changed files
+- `docs/DSH_FREE_MODEL.md`
+- `docs/PRODUCTION_OS_WORKER.md`
+- `studio/provider_router.py`
+- `tests/test_provider_router.py`
 - `studio/generic_project.py`
 - `studio/production_os_review_canary.py`
 - `tests/test_generic_worker_canary_resume.py`

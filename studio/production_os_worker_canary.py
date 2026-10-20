@@ -1,5 +1,6 @@
 """Launch and verify a bounded live Production-OS worker canary."""
 import argparse
+import base64
 import json
 import os
 import re
@@ -8,7 +9,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from core import APIError, StudioError, NoRedirect, canonical
+from core import API, APIError, StudioError, NoRedirect, canonical
 from production_os_resume_objectives import OperatorClient
 
 
@@ -126,9 +127,54 @@ def canary_instruction(sequence, scenario="file"):
     )
 
 
-def launch_canary(client, control):
+def source_canary_preflight(control, *, api=None):
+    """Reject obsolete source objectives before any queue mutation or inference.
+
+    This is a conservative applicability check, not a claim of product success.
+    Marker-only canaries keep their existing path and need no source request.
+    """
+    _, repository = validate_control(control)
+    scenario = control.get("scenario", "file")
+    if scenario == "file":
+        return None
+    if api is None:
+        api = API("https://api.github.com", os.environ.get("PRODUCTION_OS_CANARY_DISPATCH_TOKEN", ""))
+    response = api.call(
+        "GET", "/repos/" + repository + "/contents/scripts/main.gd?ref=main",
+        timeout_seconds=15, max_attempts=1,
+    )
+    if (not isinstance(response, dict) or response.get("type") != "file"
+            or response.get("encoding") != "base64"
+            or not isinstance(response.get("content"), str)
+            or not re.fullmatch(r"[a-f0-9]{40}", str(response.get("sha") or ""))
+            or len(response["content"]) > 600_000):
+        raise RuntimeError("Canary source preflight returned invalid content")
+    source = base64.b64decode("".join(response["content"].split()), validate=True).decode("utf-8")
+    if scenario == "jumpy_settings_tap_guard":
+        function = re.search(r"(?ms)^func _unhandled_input\([^\n]*\n(.*?)(?=^func |\Z)", source)
+        applicable = bool(function and re.search(
+            r'(?m)^\tif state == "READY":\n\t\tstart_run\(\)', function.group(1),
+        ) and "settings_open" not in function.group(1))
+    else:
+        # Existing cue machinery makes the old additive task ambiguous. Select
+        # a fresh verified objective instead of spending another 60k envelope.
+        applicable = ("func show_landing_cue(" not in source
+                      and "ui.landing" not in source
+                      and 'judgement = "PERFECT"' in source
+                      and 'judgement = "CLUTCH"' in source)
+    return {"status": "applicable" if applicable else "scenario_no_longer_applicable",
+            "source_blob_sha": response["sha"], "path": "scripts/main.gd"}
+
+
+def launch_canary(client, control, *, source_api=None):
     sequence, repository = validate_control(control)
     scenario = control.get("scenario", "file")
+    preflight = source_canary_preflight(control, api=source_api)
+    if preflight is not None and preflight["status"] != "applicable":
+        return {"sequence": sequence, "scenario": scenario, "repository": repository,
+                "source_preflight": preflight,
+                "result": {"status": "blocked", "reason": "scenario_no_longer_applicable"},
+                "succeeded": False}
     payload = {
         "repository": repository,
         "instruction": canary_instruction(sequence, scenario),
@@ -165,19 +211,25 @@ def launch_canary(client, control):
         "project_id": project_id,
         "workflow_id": workflow_id,
         "worker_wake": wake_status,
+        **({"source_preflight": preflight} if preflight is not None else {}),
     }
 
 
-def wait_for_workflow(client, workflow_id, *, timeout_seconds, poll_seconds=10.0,
-                      clock=time.monotonic, sleeper=time.sleep):
-    if not _WORKFLOW_ID.fullmatch(str(workflow_id or "")):
-        raise ValueError("workflow id is invalid")
+def _polling_parameters(timeout_seconds, poll_seconds):
     timeout = float(timeout_seconds)
     poll = float(poll_seconds)
     if not 0 <= timeout <= 7200:
         raise ValueError("timeout must be between 0 and 7200 seconds")
     if not 1 <= poll <= 60:
         raise ValueError("poll interval must be between 1 and 60 seconds")
+    return timeout, poll
+
+
+def wait_for_workflow(client, workflow_id, *, timeout_seconds, poll_seconds=10.0,
+                      clock=time.monotonic, sleeper=time.sleep):
+    if not _WORKFLOW_ID.fullmatch(str(workflow_id or "")):
+        raise ValueError("workflow id is invalid")
+    timeout, poll = _polling_parameters(timeout_seconds, poll_seconds)
     deadline = float(clock()) + timeout
     last_status = "unknown"
     while True:
@@ -228,8 +280,12 @@ def wait_for_readiness(client, *, timeout_seconds=180.0, poll_seconds=5.0,
 
 
 def run_canary(client, control, *, wait_seconds=0, poll_seconds=10.0,
-               clock=time.monotonic, sleeper=time.sleep, dispatch=None):
-    result = launch_canary(client, control)
+               clock=time.monotonic, sleeper=time.sleep, dispatch=None, source_api=None):
+    # Invalid monitoring parameters must not leave a real task queued.
+    wait_seconds, poll_seconds = _polling_parameters(wait_seconds, poll_seconds)
+    result = launch_canary(client, control, source_api=source_api)
+    if result.get("result", {}).get("status") == "blocked":
+        return result
     if dispatch is not None:
         # The control plane may have dispatched the same Actions worker while
         # admitting the job. Only use the canary's privileged dispatch when

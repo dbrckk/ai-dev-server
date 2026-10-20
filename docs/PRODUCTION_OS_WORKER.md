@@ -485,3 +485,25 @@ in force until actual implementation, tests, CI and quota checks succeed.
 See [DSH gateway setup and qualification](DSH_FREE_MODEL.md) for the optional
 `dsh-our-free-model` integration, credential requirements and explicit external
 quota accounting. It is not enabled automatically on hosted workers.
+
+## Source-canary applicability and launch preflight
+
+Before enqueueing either historical Jumpy source scenario, the canary reads
+`scripts/main.gd` from public `main` through a bounded GitHub GET, with redirects
+refused. It records the observed source blob SHA. The settings scenario requires
+the known unguarded READY/start_run block; the landing scenario requires the
+original judgement code and no existing landing-cue machinery. Unrecognized or
+already modified source returns `result.status=blocked`, reason
+`scenario_no_longer_applicable`, and `succeeded=false`, without queue submission,
+worker dispatch, or model calls. Unreadable/malformed source also prevents launch.
+
+This is a conservative applicability check, not proof that the target product
+works. Source can change after the GET; ordinary worker validation and exact-SHA
+review remain required. Select a new, independently verified source objective
+when a historical scenario is no longer applicable. On 2026-10-20 both old Jumpy
+scenarios were blocked against blob `1f4c52618356fe1bbd684a1a3f4d0b717073501e`.
+Marker-only scenarios need no source GET.
+
+Polling durations are also validated before submission: wait 0–7200 seconds,
+poll 1–60 seconds, finite numeric values. Invalid durations must never leave a
+real queued task behind a failed CLI invocation.

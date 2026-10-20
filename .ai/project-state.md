@@ -1,3 +1,10 @@
+## 2026-10-20 — reject obsolete source canaries before spending capacity
+
+- Inspected current public Jumpy main: settings tap guard and landing cues are already implemented. Added a bounded source applicability GET before either old 60k source objective can enqueue. Both block with scenario_no_longer_applicable on live blob 1f4c52618356fe1bbd684a1a3f4d0b717073501e; no queue mutation, dispatch or model call. Unknown/unreadable source fails closed; no product-completion claim.
+- Reproduced invalid wait duration causing one queued task before ValueError. Shared polling validation now runs before launch; same reproduction queues zero tasks.
+- Existing targeted tests: 35 passed, 44 subtests passed. Actual public GitHub GET plus a mutation-refusing client exercised both obsolete scenarios. Exact-head CI pending.
+- PR355 and PR356 merged; PR355 postmerge nine workflows successful. PR356 postmerge seven of eight successful, mobile still running at observation. Anonymous capacity remains opt-in; actual useful model-authored source delivery is still unqualified.
+
 ## 2026-10-20 — explicit public anonymous provider opt-in
 
 - User-requested DSH review identified Kilo's public free gateway. Added explicit JSON anonymous=true support; remote anonymous endpoints require HTTPS, cannot declare key_env, and remain metered/zero declared quota by default. No automatic provider or hosted configuration change.

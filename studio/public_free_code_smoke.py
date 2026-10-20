@@ -61,7 +61,8 @@ def run() -> int:
             return 1
 
         # The *only* submitted content is a fixed, synthetic, public exercise.
-        # Reasoning tokens can consume most of a tiny answer; cap at 512.
+        # Free-tier reasoning may consume 512 tokens before any content. Keep
+        # a single request with a fixed 1024-token ceiling, never retry.
         evidence["requests_sent"] = 1
         response = client.call("POST", "/chat/completions", {
             "model": MODEL,
@@ -75,7 +76,7 @@ def run() -> int:
                     "imports, annotations, decorators, or other statements."
                 ),
             }],
-            "max_tokens": 512,
+            "max_tokens": 1024,
             "temperature": 0,
         }, timeout_seconds=45, max_attempts=1)
 
@@ -85,7 +86,7 @@ def run() -> int:
         usage = response.get("usage")
         if isinstance(usage, dict):
             tokens = usage.get("completion_tokens")
-            if type(tokens) is int and 0 <= tokens <= 512:
+            if type(tokens) is int and 0 <= tokens <= 1024:
                 evidence["completion_tokens"] = tokens
         # Gateways report charge data either at the top level or in usage.
         # Inspect every present field: a zero field cannot hide another charge.

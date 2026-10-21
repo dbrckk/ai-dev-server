@@ -11,6 +11,7 @@ from pathlib import Path
 
 from core import API, APIError, StudioError, NoRedirect, canonical
 from production_os_resume_objectives import OperatorClient
+from production_os_source_tasks import TASKS, instruction as source_instruction
 
 
 _REPOSITORY = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
@@ -62,7 +63,8 @@ def dispatch_worker_after_enqueue(*, token, repository, urlopen=None):
 def validate_control(payload):
     if not isinstance(payload, dict):
         raise ValueError("canary control must be an object")
-    if set(payload) not in ({"sequence", "repository"}, {"sequence", "repository", "scenario"}):
+    if set(payload) not in ({"sequence", "repository"}, {"sequence", "repository", "scenario"},
+                        {"sequence", "repository", "scenario", "task_id"}):
         raise ValueError("canary control fields are invalid")
     sequence = payload.get("sequence")
     if isinstance(sequence, bool) or not isinstance(sequence, int) or not 1 <= sequence <= 1_000_000_000:
@@ -74,14 +76,24 @@ def validate_control(payload):
     if owner in {".", ".."} or name in {".", ".."}:
         raise ValueError("canary repository is invalid")
     scenario = payload.get("scenario", "file")
-    if not isinstance(scenario, str) or scenario not in {"file", "jumpy_landing_feedback", "jumpy_settings_tap_guard", "jumpy_share_clipboard_guard"}:
+    if not isinstance(scenario, str) or scenario not in {"file", "jumpy_landing_feedback", "jumpy_settings_tap_guard", "jumpy_share_clipboard_guard", "approved_source_repair"}:
         raise ValueError("canary scenario is invalid")
     if scenario in {"jumpy_landing_feedback", "jumpy_settings_tap_guard", "jumpy_share_clipboard_guard"} and repository != "dbrckk/Jumpy":
         raise ValueError("gameplay scenario requires the trusted Jumpy repository")
+    if scenario == "approved_source_repair":
+        task_id = payload.get("task_id")
+        if not isinstance(task_id, str) or task_id not in TASKS or TASKS[task_id].repo != repository:
+            raise ValueError("source repair task/repository is not approved")
+    elif "task_id" in payload:
+        raise ValueError("task_id requires approved_source_repair")
     return sequence, repository
 
 
-def canary_instruction(sequence, scenario="file"):
+def canary_instruction(sequence, scenario="file", task_id=None):
+    if scenario == "approved_source_repair":
+        if not isinstance(task_id, str) or task_id not in TASKS:
+            raise ValueError("unknown source repair task")
+        return source_instruction(sequence, task_id)
     if scenario == "jumpy_share_clipboard_guard":
         return (
             f"Production-OS verified Jumpy source qualification {sequence}. "
@@ -158,8 +170,12 @@ def source_canary_preflight(control, *, api=None):
         return None
     if api is None:
         api = API("https://api.github.com", os.environ.get("PRODUCTION_OS_CANARY_DISPATCH_TOKEN", ""))
-    path = ("scripts/integrations.gd" if scenario == "jumpy_share_clipboard_guard"
-            else "scripts/main.gd")
+    if scenario == "approved_source_repair":
+        task = TASKS[control["task_id"]]
+        path = task.path
+    else:
+        path = ("scripts/integrations.gd" if scenario == "jumpy_share_clipboard_guard"
+                else "scripts/main.gd")
     response = api.call(
         "GET", "/repos/" + repository + "/contents/" + path + "?ref=main",
         timeout_seconds=15, max_attempts=1,
@@ -171,7 +187,9 @@ def source_canary_preflight(control, *, api=None):
             or len(response["content"]) > 600_000):
         raise RuntimeError("Canary source preflight returned invalid content")
     source = base64.b64decode("".join(response["content"].split()), validate=True).decode("utf-8")
-    if scenario == "jumpy_share_clipboard_guard":
+    if scenario == "approved_source_repair":
+        applicable = source.count(task.old_line + "\n") == 1
+    elif scenario == "jumpy_share_clipboard_guard":
         function = re.search(r"(?ms)^func share_score\([^\n]*\n(.*?)(?=^func |\Z)", source)
         applicable = bool(
             function
@@ -205,10 +223,10 @@ def launch_canary(client, control, *, source_api=None):
                 "succeeded": False}
     payload = {
         "repository": repository,
-        "instruction": canary_instruction(sequence, scenario),
+        "instruction": canary_instruction(sequence, scenario, control.get("task_id")),
         "request_id": f"worker-canary-{sequence}",
     }
-    if scenario in {"jumpy_landing_feedback", "jumpy_settings_tap_guard", "jumpy_share_clipboard_guard"}:
+    if scenario in {"jumpy_landing_feedback", "jumpy_settings_tap_guard", "jumpy_share_clipboard_guard", "approved_source_repair"}:
         # Actual gameplay changes need several planning, coding and validation
         # calls. The historical 30k one-tap default has failed before any
         # implementation; use the existing operator-only bounded profile.

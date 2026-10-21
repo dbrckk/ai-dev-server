@@ -270,6 +270,66 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
         with self.assertRaises(StudioError):
             apply_model_guard(fixed, answer)
 
+        # The second public target uses the same bounded one-source engine.
+        # A trusted source request must be exact; do not invoke the game engine.
+        from production_os_bounded_source_repair import (
+            contract as bounded_contract, apply_model_edit,
+        )
+        from production_os_source_tasks import TASKS, instruction
+        from production_os_worker_canary import canary_instruction as approved_instruction
+        task = TASKS["starlist_mcp_www_guard"]
+        request = {
+            **REQUEST,
+            "target_repo": task.repo,
+            "repository_branch_id": "mp-" + "a" * 24,
+            "production_os": {"workflow_id": "wf", "workflow_task_id": "implementation"},
+            "brief": instruction(41, task.task_id),
+        }
+        self.assertEqual(bounded_contract(request)[0], 41)
+        self.assertEqual(approved_instruction(41, "approved_source_repair", task.task_id), request["brief"])
+        for rejected in (
+            {**request, "target_repo": "other/repo"},
+            {**request, "brief": request["brief"] + " injected"},
+            {**request, "repository_branch_id": "studio/main"},
+            {**request, "production_os": {}},
+        ):
+            self.assertIsNone(bounded_contract(rejected))
+        source = (
+            "def check_websites(data, schema):\n"
+            "    for site in []:\n"
+            "        if site:\n"
+            "            if site:\n"
+            "                root = website.hostname.lower()\n"
+            "    return None\n"
+            "def other():\n    pass\n"
+        )
+        proposal = {"replacement_line": task.old_line + '.removeprefix("www.")'}
+        updated = apply_model_edit(source, proposal, task)
+        self.assertEqual(updated.replace(proposal["replacement_line"], task.old_line), source)
+        for rejected in (
+            {"replacement_line": '                root = __import__("os").system("env")'},
+            {"replacement_line": "                root = website.hostname.lower()\nother()"},
+            {"replacement_line": task.old_line},
+            {"replacement_line": "    " + proposal["replacement_line"]},
+            {"replacement_line": proposal["replacement_line"], "extra": "change"},
+        ):
+            with self.assertRaises(StudioError):
+                apply_model_edit(source, rejected, task)
+        with self.assertRaises(StudioError):
+            apply_model_edit(updated, proposal, task)
+        with tempfile.TemporaryDirectory() as td, patch(
+            "multi_engine_orchestrator.run_bounded_source"
+        ) as source_repair:
+            root = Path(td); req_path = root / "request.json"
+            req_path.write_text(json.dumps(request))
+            source_repair.return_value = {"status": "blocked", "report": {}, "next_stage": "exact_commit_target_ci"}
+            def never_detect(*args, **kwargs):
+                raise AssertionError("Trusted source task must not invoke game-generation")
+            observed = run_project(str(req_path), root / "out", str(root / "work"),
+                                   never_detect, 100, lambda: 0, "a" * 40)
+            self.assertEqual(observed["status"], "blocked")
+            source_repair.assert_called_once()
+
         # PR creation and GitHub_TOKEN pull_request checks do not prove that
         # the independent, exact-commit Godot validation has actually passed.
         from target_ci_verification import inspect_exact_commit_ci

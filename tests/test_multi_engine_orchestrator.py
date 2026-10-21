@@ -310,6 +310,7 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
             {"replacement_line": '                root = __import__("os").system("env")'},
             {"replacement_line": "                root = website.hostname.lower()\nother()"},
             {"replacement_line": task.old_line},
+            {"replacement_line": "    " + proposal["replacement_line"]},
             {"replacement_line": proposal["replacement_line"], "extra": "change"},
         ):
             with self.assertRaises(StudioError):

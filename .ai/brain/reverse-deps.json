@@ -2060,10 +2060,11 @@
         "tests/test_execution_checkpoint.py",
         "tests/test_generic_published_checkpoint.py",
         "tests/test_generic_published_round_checkpoint.py",
+        "tests/test_github_runner_persistent.py",
         "tests/test_multi_engine_orchestrator.py",
         "tests/test_preemption_apply.py"
       ],
-      "in_degree": 15,
+      "in_degree": 16,
       "out_degree": 0
     },
     "studio/existing_project.py": {
@@ -2783,9 +2784,12 @@
         "studio/multi_engine_orchestrator.py",
         "studio/native_model_usage.py",
         "studio/portfolio_scan.py",
+        "studio/production_os_bounded_source_repair.py",
+        "studio/production_os_jumpy_source_repair.py",
         "studio/project_memory.py",
         "studio/repository_research_provider.py",
         "studio/run.py",
+        "studio/source_delivery_checkpoint.py",
         "studio/stage_registry.py",
         "tests/test_multi_engine_orchestrator.py",
         "tests/test_studio.py",
@@ -2800,7 +2804,7 @@
         "tests/test_production_os_result_contract.py"
       ],
       "in_degree": 6,
-      "out_degree": 45
+      "out_degree": 48
     },
     "studio/github_strategy_efficiency_store.py": {
       "dependencies": [
@@ -3980,10 +3984,11 @@
       ],
       "dependents": [
         "studio/autonomous_project.py",
+        "studio/github_runner.py",
         "studio/multi_engine_orchestrator.py",
         "tests/test_multi_engine_orchestrator.py"
       ],
-      "in_degree": 3,
+      "in_degree": 4,
       "out_degree": 10
     },
     "studio/production_os_jumpy_source_repair.py": {
@@ -4002,10 +4007,11 @@
       ],
       "dependents": [
         "studio/autonomous_project.py",
+        "studio/github_runner.py",
         "studio/multi_engine_orchestrator.py",
         "tests/test_multi_engine_orchestrator.py"
       ],
-      "in_degree": 3,
+      "in_degree": 4,
       "out_degree": 11
     },
     "studio/production_os_live_diagnostics.py": {
@@ -4073,10 +4079,11 @@
       "dependents": [
         "studio/production_os_bounded_source_repair.py",
         "studio/production_os_worker_canary.py",
+        "tests/test_github_runner_persistent.py",
         "tests/test_multi_engine_orchestrator.py",
         "tests/test_production_os_worker_canary.py"
       ],
-      "in_degree": 4,
+      "in_degree": 5,
       "out_degree": 3
     },
     "studio/production_os_worker.py": {
@@ -4118,10 +4125,11 @@
       "dependents": [
         "studio/production_os_jumpy_source_repair.py",
         "tests/test_generic_worker_canary_resume.py",
+        "tests/test_github_runner_persistent.py",
         "tests/test_multi_engine_orchestrator.py",
         "tests/test_production_os_worker_canary.py"
       ],
-      "in_degree": 4,
+      "in_degree": 5,
       "out_degree": 6
     },
     "studio/project_budget.py": {
@@ -4877,11 +4885,13 @@
       ],
       "dependents": [
         "studio/autonomous_project.py",
+        "studio/github_runner.py",
         "studio/production_os_bounded_source_repair.py",
         "studio/production_os_jumpy_source_repair.py",
+        "tests/test_github_runner_persistent.py",
         "tests/test_production_os_worker_recovery.py"
       ],
-      "in_degree": 4,
+      "in_degree": 6,
       "out_degree": 3
     },
     "studio/stage_registry.py": {
@@ -6595,14 +6605,18 @@
     },
     "tests/test_github_runner_persistent.py": {
       "dependencies": [
+        "studio/execution_checkpoint.py",
         "studio/github_runner.py",
         "studio/goal_engine.py",
         "studio/goal_loop.py",
+        "studio/production_os_source_tasks.py",
+        "studio/production_os_worker_canary.py",
+        "studio/source_delivery_checkpoint.py",
         "studio/stage_registry.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 4
+      "out_degree": 8
     },
     "tests/test_github_runner_round_persistence.py": {
       "dependencies": [

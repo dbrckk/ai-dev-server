@@ -24,35 +24,6 @@
       ],
       "tests": [],
       "useful": [
-        "studio/generic_model.py",
-        "studio/github_runner.py",
-        "studio/production_os_live_diagnostics.py"
-      ]
-    },
-    {
-      "rejected": [],
-      "task": "Prevent verified Production-OS commits from being reported as runner failures due only to rejected optional GitHub telemetry writes.",
-      "terms": [
-        "as",
-        "being",
-        "commits",
-        "due",
-        "failures",
-        "from",
-        "github",
-        "only",
-        "optional",
-        "prevent",
-        "production-os",
-        "rejected",
-        "reported",
-        "runner",
-        "telemetry",
-        "verified",
-        "writes."
-      ],
-      "tests": [],
-      "useful": [
         "tests/test_production_os_actions_worker_workflow.py"
       ]
     },
@@ -1474,6 +1445,26 @@
         "tests/test_multi_engine_orchestrator.py",
         "tests/test_production_os_worker_recovery.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "Retain request-bound source publication proof when delivery is blocked",
+      "terms": [
+        "blocked",
+        "delivery",
+        "is",
+        "proof",
+        "publication",
+        "request-bound",
+        "retain",
+        "source",
+        "when"
+      ],
+      "tests": [],
+      "useful": [
+        "studio/github_runner.py",
+        "tests/test_github_runner_persistent.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1753,6 +1744,10 @@
     "bind": {
       "studio/generic_project.py": 4,
       "tests/test_browser_validation_contract.py": 4
+    },
+    "blocked": {
+      "studio/github_runner.py": 4,
+      "tests/test_github_runner_persistent.py": 4
     },
     "bounded": {
       "studio/agents/adapters.py": 4,
@@ -2283,9 +2278,10 @@
       "studio/generic_model.py": 4,
       "studio/generic_project.py": 4,
       "studio/generic_repository.py": 4,
-      "studio/github_runner.py": 4,
+      "studio/github_runner.py": 8,
       "studio/orchestrator.py": 4,
-      "tests/test_asset_forge_bridge.py": 4
+      "tests/test_asset_forge_bridge.py": 4,
+      "tests/test_github_runner_persistent.py": 4
     },
     "dependency": {
       "studio/asset_forge_bridge.py": 4,
@@ -2900,7 +2896,9 @@
       "tests/test_production_os_worker_runtime.py": 4
     },
     "is": {
+      "studio/github_runner.py": 4,
       "studio/production_os_worker.py": 4,
+      "tests/test_github_runner_persistent.py": 4,
       "tests/test_production_os_worker_cli.py": 4,
       "tests/test_production_os_worker_runtime.py": 4
     },
@@ -3390,11 +3388,19 @@
       "studio/github_runner.py": 4,
       "tests/test_generic_repository_pull_request.py": 4
     },
+    "proof": {
+      "studio/github_runner.py": 4,
+      "tests/test_github_runner_persistent.py": 4
+    },
     "props": {
       "studio/asset_forge_bridge.py": 4
     },
     "provider": {
       "tests/test_production_os_actions_worker_workflow.py": 4
+    },
+    "publication": {
+      "studio/github_runner.py": 4,
+      "tests/test_github_runner_persistent.py": 4
     },
     "pull": {
       "studio/generic_project.py": 4,
@@ -3614,6 +3620,10 @@
       "tests/test_generic_repository_pull_request.py": 4,
       "tests/test_production_os_actions_worker_workflow.py": 4
     },
+    "request-bound": {
+      "studio/github_runner.py": 4,
+      "tests/test_github_runner_persistent.py": 4
+    },
     "requests": {
       "studio/core.py": 4
     },
@@ -3654,7 +3664,7 @@
       "studio/agents/adapters.py": 4,
       "studio/autonomous_project.py": 8,
       "studio/core.py": 4,
-      "studio/github_runner.py": 8,
+      "studio/github_runner.py": 12,
       "studio/godot_model.py": 4,
       "studio/godot_preview.py": 4,
       "studio/multi_engine_orchestrator.py": 4,
@@ -3663,7 +3673,7 @@
       "tests/test_api_transport_retry.py": 4,
       "tests/test_autonomous_project.py": 8,
       "tests/test_codex_output_retention.py": 4,
-      "tests/test_github_runner_persistent.py": 4,
+      "tests/test_github_runner_persistent.py": 8,
       "tests/test_godot_model.py": 4,
       "tests/test_godot_preview.py": 4,
       "tests/test_multi_engine_orchestrator.py": 4
@@ -3785,6 +3795,10 @@
     },
     "skip": {
       "tests/test_production_os_actions_worker_workflow.py": 4
+    },
+    "source": {
+      "studio/github_runner.py": 4,
+      "tests/test_github_runner_persistent.py": 4
     },
     "specialist": {
       "studio/core.py": 4,
@@ -4249,6 +4263,8 @@
       "tests/test_production_os_worker_runtime.py": 12
     },
     "when": {
+      "studio/github_runner.py": 4,
+      "tests/test_github_runner_persistent.py": 4,
       "tests/test_production_os_actions_worker_workflow.py": 4
     },
     "while": {

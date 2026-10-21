@@ -11542,6 +11542,19 @@ sha = saved.get('commit_sha')
 ⋮----
 checkpoint_commit = sha
 ⋮----
+# Source delivery may throw after publishing but before returning a
+# report. Keep its bound publication proof for review, without copying
+# stale validation/CI success or changing the checkpoint or goal.
+⋮----
+approved = bounded_contract(request)
+source_path = approved[1].path if approved else (
+⋮----
+published = load_published_source(
+⋮----
+published = None
+⋮----
+checkpoint_commit = published['base_sha']
+⋮----
 missing=improvement_run['missing_capability']
 ⋮----
 adaptation_state=new_capability_adaptation_state(

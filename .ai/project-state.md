@@ -157,25 +157,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-21T18:16:37Z
+Generated: 2026-10-21T21:13:06Z
 
 ### Git
 - Branch: `main`
-- Head: `8c8301bae744`
-- Commit date: 2026-10-21T14:16:25-04:00
-- Commit: fix(worker): resume published source review and preserve safe diagnostics (#372)
+- Head: `84ace29b7db3`
+- Commit date: 2026-10-21T17:12:55-04:00
+- Commit: fix(worker): retain bound source publication proof in blocked results (#373)
 - Tracked files: 875
 
 ### Recently changed files
 - `docs/PRODUCTION_OS_WORKER.md`
-- `studio/autonomous_project.py`
 - `studio/github_runner.py`
+- `tests/test_github_runner_persistent.py`
+- `studio/autonomous_project.py`
 - `studio/goal_engine.py`
 - `studio/production_os_bounded_source_repair.py`
 - `studio/production_os_jumpy_source_repair.py`
 - `studio/production_os_worker.py`
 - `studio/source_delivery_checkpoint.py`
-- `tests/test_github_runner_persistent.py`
 - `tests/test_goal_engine.py`
 - `tests/test_multi_engine_orchestrator.py`
 - `tests/test_production_os_worker_recovery.py`
@@ -183,7 +183,6 @@ Generated: 2026-10-21T18:16:37Z
 - `studio/target_ci_verification.py`
 - `studio/generic_repository.py`
 - `tests/test_repository_branch_identity.py`
-- `tests/test_generic_repository_pull_request.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -5988,6 +5988,22 @@ expected = {"stage": stage, "http_status": status}
 ⋮----
 native = json.loads((out / "production-os-result.json").read_text())
 ⋮----
+# Delivery can throw after publication, before returning a report.
+# Retain only the bound source proof, never successful CI evidence.
+⋮----
+task = TASKS["starlist_mcp_www_guard"]
+cases = ((task.repo, task.path, instruction(41, task.task_id)),
+⋮----
+approved = {**correlated, "target_repo": repository, "brief": brief,
+⋮----
+checkpoint_path = out / ".autonomy/generic-execution-checkpoint.json"
+proof = {"target_repo": repository, "source_path": source_path,
+checkpoint = advance(new(approved["id"], "generic", "b" * 40),
+⋮----
+before = checkpoint_path.read_bytes()
+⋮----
+saved = {"status": "blocked", "blocked_reason": reason}
+⋮----
 def test_remote_checkpoint_ingests_memory_before_state_persistence(self)
 ⋮----
 order=[]

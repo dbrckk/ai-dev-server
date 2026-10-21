@@ -57,6 +57,21 @@ class WorkerCanaryTests(unittest.TestCase):
             with self.subTest(value=value), self.assertRaises(ValueError):
                 validate_control(value)
 
+        from production_os_source_tasks import TASKS
+        trusted = {"sequence": 41, "repository": "dbrckk/star-list",
+                   "scenario": "approved_source_repair",
+                   "task_id": "starlist_mcp_www_guard"}
+        self.assertEqual(validate_control(trusted), (41, "dbrckk/star-list"))
+        for wrong in (
+            {**trusted, "repository": "dbrckk/Jumpy"},
+            {**trusted, "task_id": "unknown"},
+            {**trusted, "task_id": "../unsafe"},
+            {**trusted, "scenario": "file"},
+        ):
+            with self.assertRaises(ValueError):
+                validate_control(wrong)
+        self.assertEqual(TASKS[trusted["task_id"]].path, "scripts/validate_websites.py")
+
     def test_canary_instruction_is_bounded_and_sequence_specific(self):
         instruction = canary_instruction(12)
         self.assertIn(".production-os/worker-canary-12.txt", instruction)
@@ -92,6 +107,12 @@ class WorkerCanaryTests(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             canary_instruction(32, "untrusted")
+        brief = canary_instruction(41, "approved_source_repair", "starlist_mcp_www_guard")
+        self.assertIn("source repair 41", brief)
+        self.assertIn("scripts/validate_websites.py", brief)
+        self.assertNotIn(".production-os/worker-canary", brief)
+        with self.assertRaises(ValueError):
+            canary_instruction(41, "approved_source_repair", "unknown")
 
     def test_launch_is_idempotent_and_uses_dashboard_api(self):
         client = FakeClient()

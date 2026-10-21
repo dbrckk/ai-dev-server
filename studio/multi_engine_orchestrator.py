@@ -10,6 +10,7 @@ from core import StudioError, request_check
 from orchestrator import load_report, run_project as run_flutter_project
 from generic_project import run_project as run_generic_project
 from production_os_review_canary import contract as jum_review_canary_contract, run as run_jumpy_review_canary
+from production_os_jumpy_source_repair import contract as jumpy_source_repair_contract, run as run_jumpy_source_repair
 
 
 def _remaining(deadline, clock):
@@ -48,6 +49,12 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
         canary_req=json.loads(Path(request_path).read_text())
     except (OSError,json.JSONDecodeError):
         raise StudioError('Project request is unreadable') from None
+    if jumpy_source_repair_contract(canary_req) is not None:
+        verified_repair = request_check(canary_req)
+        return run_jumpy_source_repair(
+            verified_repair, project_out, Path(work),
+            checkpoint_observer=checkpoint_observer,
+        )
     if jum_review_canary_contract(canary_req) is not None:
         verified_canary=request_check(canary_req)
         return run_jumpy_review_canary(

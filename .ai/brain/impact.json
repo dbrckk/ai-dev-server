@@ -1,188 +1,64 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "d97c37ead3b080a8263e7e8bdcb9f50c32fced99",
-  "head": "bc82897efb170c7ef5de923975c03429f03e71fb",
+  "base": "bc82897efb170c7ef5de923975c03429f03e71fb",
+  "head": "188868d182e191fd5a7712a337fa0060ebd3cdb6",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "studio/generic_repository.py",
+      "path": "studio/production_os_bounded_source_repair.py",
       "status": "M"
     },
     {
-      "path": "tests/test_repository_branch_identity.py",
+      "path": "studio/production_os_jumpy_source_repair.py",
+      "status": "M"
+    },
+    {
+      "path": "studio/target_ci_verification.py",
+      "status": "M"
+    },
+    {
+      "path": "tests/test_multi_engine_orchestrator.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "studio/generic_repository.py",
-    "tests/test_repository_branch_identity.py"
-  ],
-  "impacted_files": [
-    "studio/generic_project.py",
-    "studio/generic_repository.py",
     "studio/production_os_bounded_source_repair.py",
     "studio/production_os_jumpy_source_repair.py",
-    "studio/production_os_review_canary.py",
-    "tests/test_generic_repository_pull_request.py",
-    "tests/test_repository_branch_identity.py"
+    "studio/target_ci_verification.py",
+    "tests/test_multi_engine_orchestrator.py"
+  ],
+  "impacted_files": [
+    "studio/multi_engine_orchestrator.py",
+    "studio/production_os_bounded_source_repair.py",
+    "studio/production_os_jumpy_source_repair.py",
+    "studio/target_ci_verification.py",
+    "tests/test_multi_engine_orchestrator.py"
   ],
   "impacted_symbols": [
     {
-      "name": "_snapshot",
+      "name": "_remaining",
       "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 128
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 17
     },
     {
-      "name": "_apply",
+      "name": "_detect",
       "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 195
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 23
     },
     {
-      "name": "_prepare_architecture",
+      "name": "_run_stage",
       "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 218
-    },
-    {
-      "name": "_record_architecture",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 251
-    },
-    {
-      "name": "_browser_validation_contract",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 270
-    },
-    {
-      "name": "_valid_browser_test_url",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 278
-    },
-    {
-      "name": "_valid_browser_screenshot",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 292
-    },
-    {
-      "name": "_run_browser_validation",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 325
-    },
-    {
-      "name": "_mobile_validation_contract",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 483
-    },
-    {
-      "name": "_verify_android_emulator_evidence",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 491
-    },
-    {
-      "name": "_run_mobile_validation",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 559
-    },
-    {
-      "name": "_existing_worker_canary_verification",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 730
-    },
-    {
-      "name": "_save_published_checkpoint",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 775
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 38
     },
     {
       "name": "run_project",
       "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 789
-    },
-    {
-      "name": "evaluate_model_candidate",
-      "kind": "function",
-      "file": "studio/generic_project.py",
-      "line": 1445
-    },
-    {
-      "name": "GenericRepository",
-      "kind": "class",
-      "file": "studio/generic_repository.py",
-      "line": 25
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "studio/generic_repository.py",
-      "line": 26
-    },
-    {
-      "name": "_tree",
-      "kind": "function",
-      "file": "studio/generic_repository.py",
-      "line": 30
-    },
-    {
-      "name": "restore",
-      "kind": "function",
-      "file": "studio/generic_repository.py",
-      "line": 36
-    },
-    {
-      "name": "restore_approved_source",
-      "kind": "function",
-      "file": "studio/generic_repository.py",
-      "line": 89
-    },
-    {
-      "name": "publish_approved_source",
-      "kind": "function",
-      "file": "studio/generic_repository.py",
-      "line": 149
-    },
-    {
-      "name": "_find_open_pull_request",
-      "kind": "function",
-      "file": "studio/generic_repository.py",
-      "line": 221
-    },
-    {
-      "name": "await_trusted_review",
-      "kind": "function",
-      "file": "studio/generic_repository.py",
-      "line": 265
-    },
-    {
-      "name": "ensure_pull_request",
-      "kind": "function",
-      "file": "studio/generic_repository.py",
-      "line": 291
-    },
-    {
-      "name": "request_trusted_review_handoff",
-      "kind": "function",
-      "file": "studio/generic_repository.py",
-      "line": 350
-    },
-    {
-      "name": "publish",
-      "kind": "function",
-      "file": "studio/generic_repository.py",
-      "line": 399
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 44
     },
     {
       "name": "contract",
@@ -227,128 +103,177 @@
       "line": 92
     },
     {
-      "name": "contract",
+      "name": "inspect_exact_commit_ci",
       "kind": "function",
-      "file": "studio/production_os_review_canary.py",
-      "line": 21
-    },
-    {
-      "name": "run",
-      "kind": "function",
-      "file": "studio/production_os_review_canary.py",
-      "line": 53
-    },
-    {
-      "name": "FakeGitHub",
-      "kind": "class",
-      "file": "tests/test_generic_repository_pull_request.py",
+      "file": "studio/target_ci_verification.py",
       "line": 11
     },
     {
-      "name": "__init__",
+      "name": "wait_for_exact_commit_ci",
       "kind": "function",
-      "file": "tests/test_generic_repository_pull_request.py",
-      "line": 12
+      "file": "studio/target_ci_verification.py",
+      "line": 62
     },
     {
-      "name": "get",
+      "name": "finalize_source_delivery_evidence",
       "kind": "function",
-      "file": "tests/test_generic_repository_pull_request.py",
-      "line": 17
+      "file": "studio/target_ci_verification.py",
+      "line": 78
     },
     {
-      "name": "call",
-      "kind": "function",
-      "file": "tests/test_generic_repository_pull_request.py",
-      "line": 25
-    },
-    {
-      "name": "test_ensure_pull_request_creates_one_for_managed_branch",
-      "kind": "function",
-      "file": "tests/test_generic_repository_pull_request.py",
-      "line": 41
-    },
-    {
-      "name": "OneFileGitHub",
+      "name": "MultiEngineOrchestratorTests",
       "kind": "class",
-      "file": "tests/test_generic_repository_pull_request.py",
-      "line": 81
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 15
     },
     {
-      "name": "__init__",
+      "name": "request",
       "kind": "function",
-      "file": "tests/test_generic_repository_pull_request.py",
-      "line": 82
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 16
     },
     {
-      "name": "get",
+      "name": "test_flutter_delegates_unchanged",
       "kind": "function",
-      "file": "tests/test_generic_repository_pull_request.py",
-      "line": 87
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 20
     },
     {
-      "name": "call",
+      "name": "runner",
       "kind": "function",
-      "file": "tests/test_generic_repository_pull_request.py",
-      "line": 106
-    },
-    {
-      "name": "test_ensure_pull_request_reuses_existing_exact_branch_pr",
-      "kind": "function",
-      "file": "tests/test_generic_repository_pull_request.py",
-      "line": 180
-    },
-    {
-      "name": "test_ensure_pull_request_ignores_other_studio_branch",
-      "kind": "function",
-      "file": "tests/test_generic_repository_pull_request.py",
-      "line": 216
-    },
-    {
-      "name": "finish_target_actions",
-      "kind": "function",
-      "file": "tests/test_generic_repository_pull_request.py",
-      "line": 290
-    },
-    {
-      "name": "RepositoryBranchIdentityTests",
-      "kind": "class",
-      "file": "tests/test_repository_branch_identity.py",
-      "line": 23
-    },
-    {
-      "name": "test_request_check_accepts_safe_repository_branch_identity",
-      "kind": "function",
-      "file": "tests/test_repository_branch_identity.py",
+      "file": "tests/test_multi_engine_orchestrator.py",
       "line": 24
     },
     {
-      "name": "test_request_check_rejects_unsafe_repository_branch_identity",
+      "name": "test_generic_only_forwards_published_round_checkpoint_callback",
       "kind": "function",
-      "file": "tests/test_repository_branch_identity.py",
-      "line": 36
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 32
     },
     {
-      "name": "test_generic_repository_branch_is_independent_from_execution_request_id",
+      "name": "runner",
       "kind": "function",
-      "file": "tests/test_repository_branch_identity.py",
-      "line": 46
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 42
+    },
+    {
+      "name": "test_generic_without_callback_preserves_original_call",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 62
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 71
+    },
+    {
+      "name": "_runner",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 84
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 86
+    },
+    {
+      "name": "test_godot_stops_cleanly_when_release_keystore_is_missing",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 145
+    },
+    {
+      "name": "test_release_chain_reaches_human_play_submission_only",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 152
+    },
+    {
+      "name": "test_opt_in_play_validation_can_complete_godot_pipeline",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 159
+    },
+    {
+      "name": "test_credentials_lost_between_preflight_and_signing_return_to_human_action",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 171
+    },
+    {
+      "name": "test_each_failed_godot_stage_stays_on_itself",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 177
+    },
+    {
+      "name": "test_journey_stage_cannot_fake_execution_coverage",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 193
+    },
+    {
+      "name": "test_visual_stage_cannot_fake_visual_coverage",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 199
+    },
+    {
+      "name": "test_missing_detection_evidence_fails_closed",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 205
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 208
+    },
+    {
+      "name": "never_detect",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 233
+    },
+    {
+      "name": "never_detect",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 354
+    },
+    {
+      "name": "ReadOnlyGitHub",
+      "kind": "class",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 380
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 381
     },
     {
       "name": "get",
       "kind": "function",
-      "file": "tests/test_repository_branch_identity.py",
-      "line": 70
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 384
     },
     {
-      "name": "call",
+      "name": "inspect",
       "kind": "function",
-      "file": "tests/test_repository_branch_identity.py",
-      "line": 84
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 391
     }
   ],
   "selected_tests": [
-    "tests/test_generic_repository_pull_request.py",
-    "tests/test_repository_branch_identity.py"
+    "tests/test_ci.py",
+    "tests/test_multi_engine_orchestrator.py",
+    "tests/test_orchestrator.py"
   ]
 }

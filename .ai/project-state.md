@@ -141,26 +141,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-21T15:55:21Z
+Generated: 2026-10-21T16:57:06Z
 
 ### Git
 - Branch: `main`
-- Head: `bc82897efb17`
-- Commit date: 2026-10-21T11:55:09-04:00
-- Commit: fix(worker): preserve source executable bits during Git publication (#370)
+- Head: `188868d182e1`
+- Commit date: 2026-10-21T12:56:55-04:00
+- Commit: fix(worker): require target CI before marking source delivery passed (#369)
 - Tracked files: 874
 
 ### Recently changed files
+- `studio/production_os_bounded_source_repair.py`
+- `studio/production_os_jumpy_source_repair.py`
+- `studio/target_ci_verification.py`
+- `tests/test_multi_engine_orchestrator.py`
 - `studio/generic_repository.py`
 - `tests/test_repository_branch_identity.py`
-- `studio/production_os_bounded_source_repair.py`
 - `tests/test_generic_repository_pull_request.py`
 - `control/production-os-worker-canary.json`
-- `studio/multi_engine_orchestrator.py`
-- `studio/production_os_source_tasks.py`
-- `studio/production_os_worker_canary.py`
-- `tests/test_multi_engine_orchestrator.py`
-- `tests/test_production_os_worker_canary.py`
 
 ### Project signals
 - No common build descriptor detected

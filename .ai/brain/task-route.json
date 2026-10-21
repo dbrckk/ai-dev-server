@@ -4,15 +4,15 @@
     "expand_to": 12,
     "max_files": 3,
     "requested_max_files": 12,
-    "score_margin": 0,
+    "score_margin": 3,
     "tier": "narrow",
-    "top_score": 39
+    "top_score": 48
   },
   "cache": {
-    "fingerprint": "75fb31bdc167dcd733a7827eabd7d3c2cc2ea81791e30188153cbd87365ee722",
+    "fingerprint": "0913a5547967350db4d221b960715500fce57ec9994eb4268a79383e7290aef0",
     "hit": false
   },
-  "candidate_count": 99,
+  "candidate_count": 97,
   "fallback": "If bounded context is insufficient, expand only to budget.expand_to, then use architecture/segmented maps and targeted source search.",
   "files": [
     {
@@ -21,29 +21,13 @@
         "engine",
         "game"
       ],
-      "path": "studio/multi_engine_orchestrator.py",
-      "reasons": [
-        "search-index"
-      ],
-      "score": 39,
-      "symbols": [
-        "_detect",
-        "_remaining",
-        "_run_stage",
-        "run_project"
-      ]
-    },
-    {
-      "learning_score": 0,
-      "matched_terms": [
-        "engine",
-        "game"
-      ],
       "path": "tests/test_multi_engine_orchestrator.py",
       "reasons": [
+        "impact",
+        "recently-changed",
         "search-index"
       ],
-      "score": 39,
+      "score": 48,
       "symbols": [
         "MultiEngineOrchestratorTests",
         "ReadOnlyGitHub",
@@ -71,12 +55,32 @@
         "engine",
         "game"
       ],
-      "path": "studio/production_os_jumpy_source_repair.py",
+      "path": "studio/multi_engine_orchestrator.py",
       "reasons": [
         "impact",
         "search-index"
       ],
-      "score": 35,
+      "score": 45,
+      "symbols": [
+        "_detect",
+        "_remaining",
+        "_run_stage",
+        "run_project"
+      ]
+    },
+    {
+      "learning_score": 0,
+      "matched_terms": [
+        "engine",
+        "game"
+      ],
+      "path": "studio/production_os_jumpy_source_repair.py",
+      "reasons": [
+        "impact",
+        "recently-changed",
+        "search-index"
+      ],
+      "score": 38,
       "symbols": [
         "apply_model_guard",
         "contract",

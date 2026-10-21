@@ -16463,9 +16463,7 @@ ci = {"status": "pending", "reason": "review_pr_not_confirmed"}
 ⋮----
 ci = wait_for_exact_commit_ci(
 ⋮----
-complete = bool(confirmed and ci["status"] == "passed")
-⋮----
-checkpoint = advance_checkpoint(checkpoint, phase="complete", last_verification=evidence)
+checkpoint = advance_checkpoint(
 ⋮----
 blockers = [] if complete else [str(ci.get("reason") or "exact_commit_ci_not_confirmed")]
 report = {
@@ -16546,10 +16544,6 @@ pr_confirmed = (type(pr.get("number")) is int
 ci = {"status": "pending", "reason": "review_pr_not_confirmed"}
 ⋮----
 ci = wait_for_exact_commit_ci(
-⋮----
-qualified = pr_confirmed and ci["status"] == "passed"
-⋮----
-checkpoint = advance_checkpoint(checkpoint, phase="complete", last_verification=verification)
 ⋮----
 blockers = [] if qualified else [
 report = {
@@ -20843,6 +20837,15 @@ steps = job.get("steps")
 deadline = clock() + timeout_seconds
 ⋮----
 result = inspect_exact_commit_ci(github, commit_sha=commit_sha, branch=branch,
+⋮----
+"""Distinguish verified code edit from independently accepted delivery.
+
+    A draft PR, published commit, or in-progress workflow does not make a
+    source repair complete. Keep the pending/failed gate in sealed checkpoints.
+    """
+⋮----
+validated = dict(provisional)
+complete = pr_confirmed and ci["status"] == "passed"
 ````
 
 ## File: task_claim_store.py

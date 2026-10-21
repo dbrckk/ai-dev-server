@@ -8130,6 +8130,12 @@ source = (
 answer = {"guard_lines": [
 fixed = apply_model_guard(source, answer)
 ⋮----
+# A successful source edit or a draft PR is not a verified delivery.
+# Persist the exact CI gate in the execution checkpoint instead of
+# publishing a misleading local "passed" success.
+⋮----
+provisional = {"status": "pending", "passed": False,
+⋮----
 # The second public target uses the same bounded one-source engine.
 # A trusted source request must be exact; do not invoke the game engine.
 ⋮----

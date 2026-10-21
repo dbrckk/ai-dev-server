@@ -22308,9 +22308,7 @@ ci = {"status": "pending", "reason": "review_pr_not_confirmed"}
 ⋮----
 ci = wait_for_exact_commit_ci(
 ⋮----
-complete = bool(confirmed and ci["status"] == "passed")
-⋮----
-checkpoint = advance_checkpoint(checkpoint, phase="complete", last_verification=evidence)
+checkpoint = advance_checkpoint(
 ⋮----
 blockers = [] if complete else [str(ci.get("reason") or "exact_commit_ci_not_confirmed")]
 report = {
@@ -22391,10 +22389,6 @@ pr_confirmed = (type(pr.get("number")) is int
 ci = {"status": "pending", "reason": "review_pr_not_confirmed"}
 ⋮----
 ci = wait_for_exact_commit_ci(
-⋮----
-qualified = pr_confirmed and ci["status"] == "passed"
-⋮----
-checkpoint = advance_checkpoint(checkpoint, phase="complete", last_verification=verification)
 ⋮----
 blockers = [] if qualified else [
 report = {
@@ -26688,6 +26682,15 @@ steps = job.get("steps")
 deadline = clock() + timeout_seconds
 ⋮----
 result = inspect_exact_commit_ci(github, commit_sha=commit_sha, branch=branch,
+⋮----
+"""Distinguish verified code edit from independently accepted delivery.
+
+    A draft PR, published commit, or in-progress workflow does not make a
+    source repair complete. Keep the pending/failed gate in sealed checkpoints.
+    """
+⋮----
+validated = dict(provisional)
+complete = pr_confirmed and ci["status"] == "passed"
 ````
 
 ## File: studio/task_claim_store.py
@@ -34905,6 +34908,12 @@ result = run_project(str(req), root / "out", str(root / "work"),
 source = (
 answer = {"guard_lines": [
 fixed = apply_model_guard(source, answer)
+⋮----
+# A successful source edit or a draft PR is not a verified delivery.
+# Persist the exact CI gate in the execution checkpoint instead of
+# publishing a misleading local "passed" success.
+⋮----
+provisional = {"status": "pending", "passed": False,
 ⋮----
 # The second public target uses the same bounded one-source engine.
 # A trusted source request must be exact; do not invoke the game engine.

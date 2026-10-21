@@ -35,8 +35,8 @@ class GenericRepository:
         This guard is local and runs before GitHub restores or publishes data.
         """
         from production_os_source_tasks import TASKS
-        protected = {task.repo for task in TASKS.values()}
-        if (self.repo in protected
+        protected = {task.repo.casefold() for task in TASKS.values()}
+        if (self.repo.casefold() in protected
                 and re.fullmatch(r"studio/mp-[a-f0-9]{24}", self.branch)):
             raise StudioError(
                 "Approved source task branch is reserved; generic restore/publish denied"

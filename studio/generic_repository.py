@@ -86,6 +86,138 @@ class GenericRepository:
             raise StudioError("No editable text source could be restored")
         return source,{"source_sha":source,"files":count,"bytes":total}
 
+    def restore_approved_source(self, root: Path, path: str) -> tuple[str, dict]:
+        """Restore exactly one allowlisted public source file, not an entire repo.
+
+        Normal generic projects still use restore().  The separate
+        operator-approved source lane must not request hundreds of unrelated
+        blobs, spend quota reading them or publish incidental file changes.
+        """
+        if not editable(path) or not path.startswith("scripts/"):
+            raise StudioError("Approved source path rejected")
+        metadata = self.github.get("")
+        if (not isinstance(metadata, dict) or metadata.get("private") is not False
+                or metadata.get("archived") or metadata.get("default_branch") != "main"):
+            raise StudioError("Approved source must have a public main branch")
+        self.default_branch = "main"
+        refs = self.github.get("/git/matching-refs/heads/" + self.branch)
+        if not isinstance(refs, list):
+            raise StudioError("Approved branch refs unavailable")
+        matches = [r for r in refs if isinstance(r, dict)
+                   and r.get("ref") == "refs/heads/" + self.branch]
+        if len(matches) > 1:
+            raise StudioError("Approved source branch ref ambiguous")
+        if matches:
+            branch_head = matches[0].get("object")
+            if not isinstance(branch_head, dict):
+                raise StudioError("Approved source branch revision unavailable")
+            base_sha = branch_head.get("sha")
+        else:
+            base_sha = self.github.get("/branches/main").get("commit", {}).get("sha")
+        if not isinstance(base_sha, str) or not re.fullmatch(r"[a-f0-9]{40}", base_sha):
+            raise StudioError("Approved source revision invalid")
+        response = self.github.get("/contents/" + quote(path, safe="/") + "?ref=" + base_sha)
+        if (not isinstance(response, dict) or response.get("type") != "file"
+                or response.get("path") != path or response.get("encoding") != "base64"
+                or not isinstance(response.get("content"), str)
+                or type(response.get("size")) is not int
+                or not 1 <= response["size"] <= 400_000
+                or not isinstance(response.get("sha"), str)
+                or not re.fullmatch(r"[a-f0-9]{40}", response["sha"])):
+            raise StudioError("Approved source response invalid")
+        try:
+            raw = base64.b64decode(
+                "".join(response["content"].split()), validate=True,
+            )
+            content = raw.decode("utf-8")
+        except (ValueError, UnicodeError, base64.binascii.Error) as exc:
+            raise StudioError("Approved source encoding invalid") from exc
+        if len(raw) != response["size"] or SECRET.search(content) or "\\x00" in content:
+            raise StudioError("Approved source content unsafe")
+        destination = root / path
+        if any(item.is_symlink() for item in (root, *destination.parents)):
+            raise StudioError("Approved source directory unsafe")
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if destination.exists() or destination.is_symlink():
+            raise StudioError("Approved source workspace not empty")
+        destination.write_bytes(raw)
+        return base_sha, {
+            "source_sha": base_sha, "files": 1, "bytes": len(raw),
+            "source_blob_sha": response["sha"], "source_path": path,
+        }
+
+    def publish_approved_source(self, base_sha: str, root: Path, path: str,
+                                message: str) -> str:
+        """Publish only the approved file, verify the branch and exact diff."""
+        if (not editable(path) or not path.startswith("scripts/")
+                or not isinstance(base_sha, str)
+                or not re.fullmatch(r"[a-f0-9]{40}", base_sha)):
+            raise StudioError("Approved publication source invalid")
+        target = root / path
+        if (not target.is_file() or target.is_symlink()
+                or any(item.is_symlink() for item in (root, *target.parents))):
+            raise StudioError("Approved publication file missing or symlinked")
+        raw = target.read_bytes()
+        if not 1 <= len(raw) <= 400_000:
+            raise StudioError("Approved publication size invalid")
+        try:
+            content = raw.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise StudioError("Approved publication encoding invalid") from exc
+        if SECRET.search(content) or "\\x00" in content:
+            raise StudioError("Approved publication contains unsafe content")
+
+        refs = self.github.get("/git/matching-refs/heads/" + self.branch)
+        if not isinstance(refs, list):
+            raise StudioError("Approved publication refs unavailable")
+        existing = [r for r in refs if isinstance(r, dict)
+                    and r.get("ref") == "refs/heads/" + self.branch]
+        if len(existing) > 1:
+            raise StudioError("Approved publication ambiguous branch")
+        if existing:
+            obj = existing[0].get("object")
+            if not isinstance(obj, dict) or obj.get("sha") != base_sha:
+                raise StudioError("Approved publication branch moved")
+        elif self.github.get("/branches/main").get("commit", {}).get("sha") != base_sha:
+            raise StudioError("Approved publication main branch moved")
+        tree_sha = self.github.get("/git/commits/" + base_sha).get("tree", {}).get("sha")
+        if not isinstance(tree_sha, str) or not re.fullmatch(r"[a-f0-9]{40}", tree_sha):
+            raise StudioError("Approved publication base tree invalid")
+        tree = self.github.call("POST", self.github.repo + "/git/trees", {
+            "base_tree": tree_sha,
+            "tree": [{"path": path, "mode": "100644", "type": "blob", "content": content}],
+        })
+        if not isinstance(tree, dict) or not re.fullmatch(r"[a-f0-9]{40}", str(tree.get("sha") or "")):
+            raise StudioError("Approved publication tree invalid")
+        commit = self.github.call("POST", self.github.repo + "/git/commits", {
+            "message": str(message or "Approved source change")[:220],
+            "tree": tree["sha"], "parents": [base_sha],
+        })
+        sha = commit.get("sha") if isinstance(commit, dict) else None
+        if not isinstance(sha, str) or not re.fullmatch(r"[a-f0-9]{40}", sha):
+            raise StudioError("Approved publication commit invalid")
+        delta = self.github.get("/compare/" + base_sha + "..." + sha)
+        files = delta.get("files") if isinstance(delta, dict) else None
+        if (not isinstance(files, list) or len(files) != 1
+                or files[0].get("filename") != path
+                or files[0].get("status") != "modified"):
+            raise StudioError("Approved publication changed unexpected files")
+        if existing:
+            self.github.call("PATCH", self.github.repo + "/git/refs/heads/" + self.branch,
+                             {"sha": sha, "force": False})
+        else:
+            self.github.call("POST", self.github.repo + "/git/refs",
+                             {"ref": "refs/heads/" + self.branch, "sha": sha})
+        attested = self.github.get("/git/matching-refs/heads/" + self.branch)
+        if not isinstance(attested, list) or not any(
+            isinstance(ref, dict)
+            and ref.get("ref") == "refs/heads/" + self.branch
+            and isinstance(ref.get("object"), dict)
+            and ref["object"].get("sha") == sha for ref in attested
+        ):
+            raise StudioError("Approved publication exact branch SHA unverified")
+        return sha
+
     def _find_open_pull_request(self, *, expected_sha: str | None = None) -> dict | None:
         """Read-only lookup; optional SHA pins a trusted async review handoff."""
         metadata = self.github.get("")

@@ -67,6 +67,80 @@ def test_ensure_pull_request_creates_one_for_managed_branch():
     assert len(posts) == 1
     assert posts[0][2]["draft"] is True
 
+    # A bounded public source task must restore and publish only its one
+    # operator-approved source file, not hundreds of unrelated repository
+    # blobs. The target's own CI still validates the proposed patch later.
+    import base64
+    from tempfile import TemporaryDirectory
+    source_path = "scripts/validate_websites.py"
+    original = b"def check_websites(data, schema):\n    root = website.hostname.lower()\n"
+    base = "a" * 40
+    proposed_commit = "b" * 40
+    branch = "studio/mp-" + "f" * 24
+
+    class OneFileGitHub:
+        def __init__(self):
+            self.repo = "/repos/dbrckk/star-list"
+            self.calls = []
+            self.branch_sha = None
+            self.changed = [{"filename": source_path, "status": "modified"}]
+        def get(self, path):
+            self.calls.append(("GET", path))
+            if path == "":
+                return {"private": False, "archived": False, "default_branch": "main"}
+            if path == "/git/matching-refs/heads/" + branch:
+                return ([{"ref": "refs/heads/" + branch,
+                          "object": {"sha": self.branch_sha}}]
+                        if self.branch_sha else [])
+            if path == "/branches/main":
+                return {"commit": {"sha": base}}
+            if path == "/contents/" + source_path + "?ref=" + base:
+                return {"type": "file", "path": source_path, "encoding": "base64",
+                        "size": len(original), "sha": "e" * 40,
+                        "content": base64.b64encode(original).decode()}
+            if path == "/git/commits/" + base:
+                return {"tree": {"sha": "c" * 40}}
+            if path == "/compare/" + base + "..." + proposed_commit:
+                return {"files": self.changed}
+            raise AssertionError(path)
+        def call(self, method, path, payload):
+            self.calls.append((method, path))
+            if method == "POST" and path.endswith("/git/trees"):
+                assert len(payload["tree"]) == 1
+                assert payload["tree"][0]["path"] == source_path
+                return {"sha": "d" * 40}
+            if method == "POST" and path.endswith("/git/commits"):
+                assert payload["parents"] == [base]
+                return {"sha": proposed_commit}
+            if method == "POST" and path.endswith("/git/refs"):
+                self.branch_sha = payload["sha"]
+                return {}
+            raise AssertionError((method, path))
+
+    with TemporaryDirectory() as directory:
+        endpoint = OneFileGitHub()
+        bounded = GenericRepository(endpoint, "dbrckk/star-list", "mp-" + "f" * 24)
+        restored, evidence = bounded.restore_approved_source(Path(directory), source_path)
+        assert restored == base and evidence["files"] == 1
+        assert evidence["bytes"] == len(original)
+        assert not any("/git/blobs/" in call[1] for call in endpoint.calls)
+        modified = Path(directory) / source_path
+        modified.write_bytes(original + b"\n")
+        endpoint.changed = [{"filename": "unapproved.py", "status": "modified"}]
+        try:
+            bounded.publish_approved_source(restored, Path(directory),
+                                            source_path, "one file")
+        except StudioError as exc:
+            assert "unexpected files" in str(exc)
+        else:
+            raise AssertionError("Unapproved file change reached a review branch")
+        assert endpoint.branch_sha is None
+        endpoint.changed = [{"filename": source_path, "status": "modified"}]
+        published = bounded.publish_approved_source(
+            restored, Path(directory), source_path, "one file")
+        assert published == proposed_commit
+        assert endpoint.branch_sha == published
+
     # A POST receipt does not prove delivery unless GitHub attests the exact
     # branch, target, draft state and numeric URL. Stay fail-closed.
     valid = {

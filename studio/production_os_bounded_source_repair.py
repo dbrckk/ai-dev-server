@@ -106,7 +106,7 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     github = GitHub(task.repo)
     repo = GenericRepository(github, task.repo, req["repository_branch_id"])
-    base_sha, restore = repo.restore(work)
+    base_sha, restore = repo.restore_approved_source(work, task.path)
     target = work / task.path
     if not target.is_file() or target.is_symlink():
         raise StudioError("Approved source target missing or unsafe")
@@ -133,7 +133,8 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
     target.write_text(after, encoding="utf-8")
     if target.read_text(encoding="utf-8") != after:
         raise StudioError("Source edit write verification failed")
-    sha = repo.publish(base_sha, work, f"Source: approved model-authored repair {task.task_id} ({sequence})")
+    sha = repo.publish_approved_source(base_sha, work, task.path,
+        f"Source: approved model-authored repair {task.task_id} ({sequence})")
     evidence = {
         "status": "passed", "passed": True, "model_authored": True,
         "target_ci": "pending_exact_commit", "source_path": task.path,

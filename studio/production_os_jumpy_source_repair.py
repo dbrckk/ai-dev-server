@@ -16,6 +16,7 @@ from generic_model import ask
 from generic_repository import GenericRepository
 from production_os_worker_canary import canary_instruction
 from run import GitHub
+from target_ci_verification import wait_for_exact_commit_ci
 
 _TARGET = "dbrckk/Jumpy"
 _FILE = "scripts/integrations.gd"
@@ -170,20 +171,39 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
             "reason": "pull_request_write_denied" if denied else "pull_request_unavailable",
             **({"review_handoff": handoff} if handoff is not None else {}),
         }
-    delivered = (type(pr.get("number")) is int
-                 and pr.get("url") == f"https://github.com/dbrckk/Jumpy/pull/{pr['number']}")
-    if delivered:
-        checkpoint = advance_checkpoint(checkpoint, phase="complete")
+    pr_confirmed = (type(pr.get("number")) is int
+                    and pr.get("url") == f"https://github.com/dbrckk/Jumpy/pull/{pr['number']}")
+    ci = {"status": "pending", "reason": "review_pr_not_confirmed"}
+    if pr_confirmed:
+        ci = wait_for_exact_commit_ci(
+            github, commit_sha=sha, branch=repo.branch,
+            workflow_path=".github/workflows/validate.yml",
+            required_steps=(
+                "Verify dispatched checkpoint identity",
+                "Import and parse project",
+                "Smoke-test touch routing and HUD input passthrough",
+            ),
+        )
+    verification["target_ci"] = ci["status"]
+    if type(ci.get("run_id")) is int:
+        verification["target_ci_run_id"] = ci["run_id"]
+    qualified = pr_confirmed and ci["status"] == "passed"
+    if qualified:
+        checkpoint = advance_checkpoint(checkpoint, phase="complete", last_verification=verification)
         save_checkpoint(checkpoint_path, checkpoint)
         if checkpoint_observer is not None:
             checkpoint_observer(dict(checkpoint))
+    blockers = [] if qualified else [
+        str(ci.get("reason") or "Target CI is incomplete") if pr_confirmed
+        else "Source review PR not confirmed"
+    ]
     report = {
         "engine": "generic",
-        "status": "complete" if delivered else "blocked",
+        "status": "complete" if qualified else "blocked",
         "target_repo": _TARGET,
         "rounds": [{"round": 1, "changed_files": [_FILE], "verification": verification}],
         "restore": restore,
-        "blockers": [] if delivered else ["Source review PR not confirmed"],
+        "blockers": blockers,
         "checkpoint_commit": sha,
         "verification": verification,
         "pull_request": pr,
@@ -191,11 +211,11 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
             "round": checkpoint["round"], "phase": checkpoint["phase"], "base_sha": checkpoint["base_sha"],
         },
         "completion": {
-            "finished": delivered, "next_stage": None if delivered else "review_handoff",
-            "blockers": [] if delivered else ["Source review PR not confirmed"],
+            "finished": qualified, "next_stage": None if qualified else "exact_commit_target_ci",
+            "blockers": blockers,
         },
-        "release_status": "source_review_pending_exact_sha_ci" if delivered else "source_branch_review_blocked",
+        "release_status": "source_review_pending_human_approval" if qualified else "source_review_pending_exact_sha_ci",
         "resume_mode": "model_authored_jumpy_source_repair",
     }
     (out / "generic-report.json").write_text(canonical(report), encoding="utf-8")
-    return {"status": "complete" if delivered else "blocked", "report": report, "next_stage": None if delivered else "review_handoff"}
+    return {"status": "complete" if qualified else "blocked", "report": report, "next_stage": None if qualified else "exact_commit_target_ci"}

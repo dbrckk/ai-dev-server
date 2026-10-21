@@ -17,7 +17,7 @@ from generic_model import ask
 from generic_repository import GenericRepository
 from production_os_source_tasks import TASKS, SourceTask, instruction
 from run import GitHub
-from target_ci_verification import wait_for_exact_commit_ci
+from target_ci_verification import wait_for_exact_commit_ci, finalize_source_delivery_evidence
 
 _SEQUENCE = re.compile(
     r"^Production-OS approved bounded public source repair ([1-9][0-9]{0,9}) task ([a-z0-9_]+)\. "
@@ -136,7 +136,7 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
     sha = repo.publish_approved_source(base_sha, work, task.path,
         f"Source: approved model-authored repair {task.task_id} ({sequence})")
     evidence = {
-        "status": "passed", "passed": True, "model_authored": True,
+        "status": "pending", "passed": False, "source_validation": "passed", "model_authored": True,
         "target_ci": "pending_exact_commit", "source_path": task.path,
         "changed_files": [task.path],
         "model": str(provider.get("model") or "") if isinstance(provider, dict) else "",
@@ -173,15 +173,16 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
             required_steps=task.required_steps,
             timeout_seconds=500,
         )
-    evidence["target_ci"] = ci["status"]
-    if type(ci.get("run_id")) is int:
-        evidence["target_ci_run_id"] = ci["run_id"]
-    complete = bool(confirmed and ci["status"] == "passed")
-    if complete:
-        checkpoint = advance_checkpoint(checkpoint, phase="complete", last_verification=evidence)
-        save_checkpoint(checkpoint_path, checkpoint)
-        if checkpoint_observer is not None:
-            checkpoint_observer(dict(checkpoint))
+    evidence, complete = finalize_source_delivery_evidence(
+        evidence, ci, pr_confirmed=confirmed,
+    )
+    checkpoint = advance_checkpoint(
+        checkpoint, phase="complete" if complete else "published",
+        last_verification=evidence,
+    )
+    save_checkpoint(checkpoint_path, checkpoint)
+    if checkpoint_observer is not None:
+        checkpoint_observer(dict(checkpoint))
     blockers = [] if complete else [str(ci.get("reason") or "exact_commit_ci_not_confirmed")]
     report = {
         "engine": "generic", "target_repo": task.repo,

@@ -1,9 +1,9 @@
 {
   "version": 1,
   "updated_at": "2026-10-21",
-  "task": "Bound canary readiness and workflow-status reads by remaining monitoring budget",
-  "base_commit": "a40d667",
-  "branch": "fix/canary-read-deadlines",
+  "task": "Validate merged worker/control-plane stack and current hosted diagnostics",
+  "base_commit": "1831aab1bb38762741ce3a85d8ab6bb7c52e9a2b",
+  "branch": "chore/validate-live-stack",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -529,6 +529,21 @@
       "No fresh hosted source task or provider settings change",
       "No inference/project budget increase or target PR merge",
       "Select a new reviewed applicable source objective before generation; Jumpy37/star-list154 remain drafts"
+    ]
+  },
+  "validation_20261021_owner_requested": {
+    "source_merge": "623b1b142b61b7b8d111640cdfad8151f1616e45",
+    "source_postmerge": "8/8 workflows success, freshly observed",
+    "server_merge": "cd85b78ff9a4050366c061bde509d1b20e282d67",
+    "render_deploy": "dep-dbcjdlss728c73al7810 live at exact server merge",
+    "fresh_worker_pytest": "1845 passed, 199 subtests in28.23s",
+    "server_and_authenticated_integration": "Executing fresh checks; final evidence in associated PR",
+    "diagnostic_sequence": 18,
+    "diagnostic_status": "Pending trusted-main trigger after exact-head CI and merge",
+    "limits": [
+      "Synthetic configured-model smoke does not prove autonomous source delivery or sustained free capacity",
+      "Do not retry obsolete Jumpy/star-list objectives or activate sequence42",
+      "No provider/budget changes or target merge"
     ]
   }
 }

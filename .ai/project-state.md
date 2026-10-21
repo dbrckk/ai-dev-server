@@ -141,23 +141,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-21T12:45:33Z
+Generated: 2026-10-21T15:46:38Z
 
 ### Git
 - Branch: `main`
-- Head: `4e45cc94ee7b`
-- Commit date: 2026-10-21T08:45:22-04:00
-- Commit: fix(worker): require independent exact-SHA target CI before task completion (#364)
-- Tracked files: 872
+- Head: `d97c37ead3b0`
+- Commit date: 2026-10-21T11:46:20-04:00
+- Commit: perf(worker): single-file approved source restore and exact diff review (#368)
+- Tracked files: 874
 
 ### Recently changed files
-- `studio/production_os_jumpy_source_repair.py`
-- `studio/target_ci_verification.py`
-- `tests/test_multi_engine_orchestrator.py`
+- `studio/generic_repository.py`
+- `studio/production_os_bounded_source_repair.py`
+- `tests/test_generic_repository_pull_request.py`
 - `control/production-os-worker-canary.json`
 - `studio/multi_engine_orchestrator.py`
+- `studio/production_os_source_tasks.py`
 - `studio/production_os_worker_canary.py`
+- `tests/test_multi_engine_orchestrator.py`
 - `tests/test_production_os_worker_canary.py`
+- `studio/production_os_jumpy_source_repair.py`
+- `studio/target_ci_verification.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -374,11 +374,13 @@ studio/
   preemption_controller.py
   privacy_audit.py
   privacy_stage.py
+  production_os_bounded_source_repair.py
   production_os_jumpy_source_repair.py
   production_os_live_diagnostics.py
   production_os_provider_config.py
   production_os_resume_objectives.py
   production_os_review_canary.py
+  production_os_source_tasks.py
   production_os_worker_canary.py
   production_os_worker.py
   project_budget.py
@@ -3499,9 +3501,10 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-  "sequence": 40,
-  "repository": "dbrckk/Jumpy",
-  "scenario": "jumpy_share_clipboard_guard"
+    "sequence": 41,
+    "repository": "dbrckk/star-list",
+    "scenario": "approved_source_repair",
+    "task_id": "starlist_mcp_www_guard"
 }
 ````
 
@@ -15626,10 +15629,60 @@ text=base64.b64decode(blob["content"]).decode("utf-8")
 ⋮----
 target=root/path
 ⋮----
+def restore_approved_source(self, root: Path, path: str) -> tuple[str, dict]
+⋮----
+"""Restore exactly one allowlisted public source file, not an entire repo.
+
+        Normal generic projects still use restore().  The separate
+        operator-approved source lane must not request hundreds of unrelated
+        blobs, spend quota reading them or publish incidental file changes.
+        """
+⋮----
+metadata = self.github.get("")
+⋮----
+refs = self.github.get("/git/matching-refs/heads/" + self.branch)
+⋮----
+matches = [r for r in refs if isinstance(r, dict)
+⋮----
+branch_head = matches[0].get("object")
+⋮----
+base_sha = branch_head.get("sha")
+⋮----
+base_sha = self.github.get("/branches/main").get("commit", {}).get("sha")
+⋮----
+response = self.github.get("/contents/" + quote(path, safe="/") + "?ref=" + base_sha)
+⋮----
+raw = base64.b64decode(
+content = raw.decode("utf-8")
+⋮----
+destination = root / path
+⋮----
+"""Publish only the approved file, verify the branch and exact diff."""
+⋮----
+target = root / path
+⋮----
+raw = target.read_bytes()
+⋮----
+existing = [r for r in refs if isinstance(r, dict)
+⋮----
+obj = existing[0].get("object")
+⋮----
+tree_sha = self.github.get("/git/commits/" + base_sha).get("tree", {}).get("sha")
+⋮----
+tree = self.github.call("POST", self.github.repo + "/git/trees", {
+⋮----
+commit = self.github.call("POST", self.github.repo + "/git/commits", {
+sha = commit.get("sha") if isinstance(commit, dict) else None
+⋮----
+delta = self.github.get("/compare/" + base_sha + "..." + sha)
+files = delta.get("files") if isinstance(delta, dict) else None
+⋮----
+attested = self.github.get("/git/matching-refs/heads/" + self.branch)
+⋮----
 def _find_open_pull_request(self, *, expected_sha: str | None = None) -> dict | None
 ⋮----
 """Read-only lookup; optional SHA pins a trusted async review handoff."""
-metadata = self.github.get("")
+⋮----
 default = metadata.get("default_branch") if isinstance(metadata, dict) else None
 ⋮----
 owner = self.repo.split("/", 1)[0]
@@ -20425,6 +20478,8 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
 ⋮----
 canary_req=json.loads(Path(request_path).read_text())
 ⋮----
+checked = request_check(canary_req)
+⋮----
 verified_repair = request_check(canary_req)
 ⋮----
 verified_canary=request_check(canary_req)
@@ -22170,6 +22225,88 @@ state = advance(Path(args.request), Path(args.work), Path(args.out))
 evidence = state.get('release_evidence', {}).get('privacy_policy')
 ````
 
+## File: studio/production_os_bounded_source_repair.py
+````python
+"""Bounded, model-authored source repair of explicitly operator-approved public tasks.
+
+No generic arbitrary-file editing, test execution with secrets, implicit
+provider opt-in, PR merge or synthetic fallback.
+"""
+⋮----
+_SEQUENCE = re.compile(
+_BRANCH = re.compile(r"mp-[a-f0-9]{24}\Z")
+⋮----
+def contract(req: dict) -> tuple[int, SourceTask] | None
+⋮----
+match = _SEQUENCE.match(req["brief"])
+⋮----
+op = req.get("production_os")
+⋮----
+def _line_statement(line: str) -> ast.Assign
+⋮----
+node = ast.parse(line.strip()).body
+⋮----
+def apply_model_edit(original: str, reply: dict, task: SourceTask) -> str
+⋮----
+"""Verify a one-line model proposal structurally against the vetted task."""
+⋮----
+new = reply["replacement_line"]
+old = task.old_line
+indent = old[:len(old) - len(old.lstrip())]
+⋮----
+before_ast = _line_statement(old)
+after_ast = _line_statement(new)
+⋮----
+expected = ast.Call(
+⋮----
+# Require the line to remain inside the approved function, not another
+# coincidentally identical statement. No other source bytes may change.
+function = re.search(
+⋮----
+changed = original.replace(old + "\n", new + "\n", 1)
+⋮----
+def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict
+⋮----
+approved = contract(req)
+⋮----
+github = GitHub(task.repo)
+repo = GenericRepository(github, task.repo, req["repository_branch_id"])
+⋮----
+target = work / task.path
+⋮----
+before = target.read_text(encoding="utf-8")
+⋮----
+# Public source only. Single provider request, caller-owned model budget,
+# and no local synthesized patch when model fails.
+start = before.index("def " + task.function + "(")
+end = before.find("\ndef ", start + 1)
+excerpt = before[start:end if end >= 0 else None][:5500]
+⋮----
+after = apply_model_edit(before, response, task)
+⋮----
+sha = repo.publish_approved_source(base_sha, work, task.path,
+evidence = {
+checkpoint = advance_checkpoint(new_checkpoint(req["id"], "generic", base_sha),
+checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
+⋮----
+pr = repo.await_trusted_review(sha)
+⋮----
+denied = any(status in str(exc) for status in ("HTTP 401", "HTTP 403"))
+handoff = repo.request_trusted_review_handoff(sha) if denied else None
+pr = (repo.await_trusted_review(sha)
+confirmed = (isinstance(pr, dict) and type(pr.get("number")) is int
+ci = {"status": "pending", "reason": "review_pr_not_confirmed"}
+⋮----
+ci = wait_for_exact_commit_ci(
+⋮----
+complete = bool(confirmed and ci["status"] == "passed")
+⋮----
+checkpoint = advance_checkpoint(checkpoint, phase="complete", last_verification=evidence)
+⋮----
+blockers = [] if complete else [str(ci.get("reason") or "exact_commit_ci_not_confirmed")]
+report = {
+````
+
 ## File: studio/production_os_jumpy_source_repair.py
 ````python
 """Single-source, model-authored Jumpy repair with exact review handoff.
@@ -22504,6 +22641,35 @@ checkpoint = advance_checkpoint(checkpoint, phase="complete")
 report = {
 ````
 
+## File: studio/production_os_source_tasks.py
+````python
+"""Operator-reviewed public one-file repair tasks; never inferred from briefs.
+
+Adding a task requires reviewing its source, behavioral acceptance and target
+workflow first. The shared engine has no repository-specific edit logic.
+"""
+⋮----
+@dataclass(frozen=True)
+class SourceTask
+⋮----
+task_id: str
+repo: str
+path: str
+function: str
+old_line: str
+method: str
+argument: str
+objective: str
+workflow_path: str
+required_steps: tuple[str, ...]
+⋮----
+TASKS = {
+⋮----
+def instruction(sequence: int, task_id: str) -> str
+⋮----
+task = TASKS[task_id]
+````
+
 ## File: studio/production_os_worker_canary.py
 ````python
 """Launch and verify a bounded live Production-OS worker canary."""
@@ -22535,7 +22701,9 @@ repository = payload.get("repository")
 ⋮----
 scenario = payload.get("scenario", "file")
 ⋮----
-def canary_instruction(sequence, scenario="file")
+task_id = payload.get("task_id")
+⋮----
+def canary_instruction(sequence, scenario="file", task_id=None)
 ⋮----
 path = f".production-os/worker-canary-{sequence}.txt"
 content = f"production-os-worker-canary sequence {sequence}"
@@ -22551,10 +22719,16 @@ def source_canary_preflight(control, *, api=None)
 scenario = control.get("scenario", "file")
 ⋮----
 api = API("https://api.github.com", os.environ.get("PRODUCTION_OS_CANARY_DISPATCH_TOKEN", ""))
+⋮----
+task = TASKS[control["task_id"]]
+path = task.path
+⋮----
 path = ("scripts/integrations.gd" if scenario == "jumpy_share_clipboard_guard"
 response = api.call(
 ⋮----
 source = base64.b64decode("".join(response["content"].split()), validate=True).decode("utf-8")
+⋮----
+applicable = source.count(task.old_line + "\n") == 1
 ⋮----
 function = re.search(r"(?ms)^func share_score\([^\n]*\n(.*?)(?=^func |\Z)", source)
 applicable = bool(
@@ -32086,6 +32260,27 @@ result = repository.ensure_pull_request(
 ⋮----
 posts = [
 ⋮----
+# A bounded public source task must restore and publish only its one
+# operator-approved source file, not hundreds of unrelated repository
+# blobs. The target's own CI still validates the proposed patch later.
+⋮----
+source_path = "scripts/validate_websites.py"
+original = b"def check_websites(data, schema):\n    root = website.hostname.lower()\n"
+base = "a" * 40
+proposed_commit = "b" * 40
+branch = "studio/mp-" + "f" * 24
+⋮----
+class OneFileGitHub
+⋮----
+def __init__(self)
+⋮----
+endpoint = OneFileGitHub()
+bounded = GenericRepository(endpoint, "dbrckk/star-list", "mp-" + "f" * 24)
+⋮----
+modified = Path(directory) / source_path
+⋮----
+published = bounded.publish_approved_source(
+⋮----
 # A POST receipt does not prove delivery unless GitHub attests the exact
 # branch, target, draft state and numeric URL. Stay fail-closed.
 valid = {
@@ -34702,6 +34897,19 @@ source = (
 answer = {"guard_lines": [
 fixed = apply_model_guard(source, answer)
 ⋮----
+# The second public target uses the same bounded one-source engine.
+# A trusted source request must be exact; do not invoke the game engine.
+⋮----
+task = TASKS["starlist_mcp_www_guard"]
+request = {
+⋮----
+proposal = {"replacement_line": task.old_line + '.removeprefix("www.")'}
+updated = apply_model_edit(source, proposal, task)
+⋮----
+root = Path(td); req_path = root / "request.json"
+⋮----
+observed = run_project(str(req_path), root / "out", str(root / "work"),
+⋮----
 # PR creation and GitHub_TOKEN pull_request checks do not prove that
 # the independent, exact-commit Godot validation has actually passed.
 ⋮----
@@ -35763,6 +35971,8 @@ class WorkerCanaryTests(unittest.TestCase)
 ⋮----
 def test_control_is_strict(self)
 ⋮----
+trusted = {"sequence": 41, "repository": "dbrckk/star-list",
+⋮----
 def test_canary_instruction_is_bounded_and_sequence_specific(self)
 ⋮----
 instruction = canary_instruction(12)
@@ -35772,6 +35982,8 @@ gameplay = canary_instruction(32, "jumpy_landing_feedback")
 guarded = canary_instruction(34, "jumpy_settings_tap_guard")
 ⋮----
 share = canary_instruction(39, "jumpy_share_clipboard_guard")
+⋮----
+brief = canary_instruction(41, "approved_source_repair", "starlist_mcp_www_guard")
 ⋮----
 def test_launch_is_idempotent_and_uses_dashboard_api(self)
 ⋮----

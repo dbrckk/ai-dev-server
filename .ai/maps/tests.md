@@ -5493,6 +5493,27 @@ result = repository.ensure_pull_request(
 ⋮----
 posts = [
 ⋮----
+# A bounded public source task must restore and publish only its one
+# operator-approved source file, not hundreds of unrelated repository
+# blobs. The target's own CI still validates the proposed patch later.
+⋮----
+source_path = "scripts/validate_websites.py"
+original = b"def check_websites(data, schema):\n    root = website.hostname.lower()\n"
+base = "a" * 40
+proposed_commit = "b" * 40
+branch = "studio/mp-" + "f" * 24
+⋮----
+class OneFileGitHub
+⋮----
+def __init__(self)
+⋮----
+endpoint = OneFileGitHub()
+bounded = GenericRepository(endpoint, "dbrckk/star-list", "mp-" + "f" * 24)
+⋮----
+modified = Path(directory) / source_path
+⋮----
+published = bounded.publish_approved_source(
+⋮----
 # A POST receipt does not prove delivery unless GitHub attests the exact
 # branch, target, draft state and numeric URL. Stay fail-closed.
 valid = {
@@ -8109,6 +8130,19 @@ source = (
 answer = {"guard_lines": [
 fixed = apply_model_guard(source, answer)
 ⋮----
+# The second public target uses the same bounded one-source engine.
+# A trusted source request must be exact; do not invoke the game engine.
+⋮----
+task = TASKS["starlist_mcp_www_guard"]
+request = {
+⋮----
+proposal = {"replacement_line": task.old_line + '.removeprefix("www.")'}
+updated = apply_model_edit(source, proposal, task)
+⋮----
+root = Path(td); req_path = root / "request.json"
+⋮----
+observed = run_project(str(req_path), root / "out", str(root / "work"),
+⋮----
 # PR creation and GitHub_TOKEN pull_request checks do not prove that
 # the independent, exact-commit Godot validation has actually passed.
 ⋮----
@@ -9170,6 +9204,8 @@ class WorkerCanaryTests(unittest.TestCase)
 ⋮----
 def test_control_is_strict(self)
 ⋮----
+trusted = {"sequence": 41, "repository": "dbrckk/star-list",
+⋮----
 def test_canary_instruction_is_bounded_and_sequence_specific(self)
 ⋮----
 instruction = canary_instruction(12)
@@ -9179,6 +9215,8 @@ gameplay = canary_instruction(32, "jumpy_landing_feedback")
 guarded = canary_instruction(34, "jumpy_settings_tap_guard")
 ⋮----
 share = canary_instruction(39, "jumpy_share_clipboard_guard")
+⋮----
+brief = canary_instruction(41, "approved_source_repair", "starlist_mcp_www_guard")
 ⋮----
 def test_launch_is_idempotent_and_uses_dashboard_api(self)
 ⋮----

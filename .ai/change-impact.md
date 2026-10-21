@@ -1,12 +1,12 @@
 # Change impact
 
-Base: b63257d2208d988fcf108c50890444570ffc51d6
-Head: 4e45cc94ee7b8d7c3bba23c9aa62db7ed643262f
+Base: 055e0ab805bf0069f72436ea119f4aa9dc066f36
+Head: d97c37ead3b080a8263e7e8bdcb9f50c32fced99
 
 ## Changed files
-- M studio/production_os_jumpy_source_repair.py
-- A studio/target_ci_verification.py
-- M tests/test_multi_engine_orchestrator.py
+- M studio/generic_repository.py
+- M studio/production_os_bounded_source_repair.py
+- M tests/test_generic_repository_pull_request.py
 
 ## Affected areas
 - studio

@@ -142,9 +142,10 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-  "sequence": 40,
-  "repository": "dbrckk/Jumpy",
-  "scenario": "jumpy_share_clipboard_guard"
+    "sequence": 41,
+    "repository": "dbrckk/star-list",
+    "scenario": "approved_source_repair",
+    "task_id": "starlist_mcp_www_guard"
 }
 ```
 

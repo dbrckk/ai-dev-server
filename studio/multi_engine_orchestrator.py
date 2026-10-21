@@ -72,7 +72,10 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
     # engine on the SAME managed branch as an approved one-file source repair.
     # This failed closed only after the exact authorized routes above.
     if (isinstance(canary_req, dict)
-            and canary_req.get("target_repo") in {task.repo for task in TASKS.values()}
+            and isinstance(canary_req.get("target_repo"), str)
+            and canary_req["target_repo"].casefold() in {
+                task.repo.casefold() for task in TASKS.values()
+            }
             and re.fullmatch(
                 r"mp-[a-f0-9]{24}",
                 str(canary_req.get("repository_branch_id") or ""),

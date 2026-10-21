@@ -16619,9 +16619,13 @@ def source_canary_preflight(control, *, api=None)
 scenario = control.get("scenario", "file")
 ⋮----
 api = API("https://api.github.com", os.environ.get("PRODUCTION_OS_CANARY_DISPATCH_TOKEN", ""))
+path = ("scripts/integrations.gd" if scenario == "jumpy_share_clipboard_guard"
 response = api.call(
 ⋮----
 source = base64.b64decode("".join(response["content"].split()), validate=True).decode("utf-8")
+⋮----
+function = re.search(r"(?ms)^func share_score\([^\n]*\n(.*?)(?=^func |\Z)", source)
+applicable = bool(
 ⋮----
 function = re.search(r"(?ms)^func _unhandled_input\([^\n]*\n(.*?)(?=^func |\Z)", source)
 applicable = bool(function and re.search(

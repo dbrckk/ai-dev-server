@@ -141,16 +141,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-21T07:41:00Z
+Generated: 2026-10-21T08:49:28Z
 
 ### Git
 - Branch: `main`
-- Head: `bc73c67f8e76`
-- Commit date: 2026-10-21T03:40:44-04:00
-- Commit: feat(diagnostics): verify free model coding on hosted runner without secrets (#357)
-- Tracked files: 869
+- Head: `958de8bfcbb6`
+- Commit date: 2026-10-21T04:49:16-04:00
+- Commit: feat(canary): exercise real Jumpy clipboard source repair through Production-OS worker (#360)
+- Tracked files: 870
 
 ### Recently changed files
+- `studio/production_os_worker_canary.py`
+- `tests/test_production_os_worker_canary.py`
 - `.github/workflows/public-free-code-smoke.yml`
 - `docs/DSH_FREE_MODEL.md`
 - `studio/public_free_code_smoke.py`
@@ -158,16 +160,8 @@ Generated: 2026-10-21T07:41:00Z
 - `docs/qualification/public-model-diagnostic-fix-20261020.json`
 - `studio/production_os_live_diagnostics.py`
 - `docs/PRODUCTION_OS_WORKER.md`
-- `studio/production_os_worker_canary.py`
-- `tests/test_production_os_worker_canary.py`
 - `studio/provider_router.py`
 - `tests/test_provider_router.py`
-- `.github/workflows/production-os-worker-integration.yml`
-- `studio/generic_project.py`
-- `tests/test_asset_forge_bridge.py`
-- `tests/test_generic_published_checkpoint.py`
-- `tests/test_generic_repository_pull_request.py`
-- `tests/test_generic_worker_canary_resume.py`
 
 ### Project signals
 - No common build descriptor detected

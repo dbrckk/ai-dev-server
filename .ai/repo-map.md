@@ -22463,9 +22463,13 @@ def source_canary_preflight(control, *, api=None)
 scenario = control.get("scenario", "file")
 ⋮----
 api = API("https://api.github.com", os.environ.get("PRODUCTION_OS_CANARY_DISPATCH_TOKEN", ""))
+path = ("scripts/integrations.gd" if scenario == "jumpy_share_clipboard_guard"
 response = api.call(
 ⋮----
 source = base64.b64decode("".join(response["content"].split()), validate=True).decode("utf-8")
+⋮----
+function = re.search(r"(?ms)^func share_score\([^\n]*\n(.*?)(?=^func |\Z)", source)
+applicable = bool(
 ⋮----
 function = re.search(r"(?ms)^func _unhandled_input\([^\n]*\n(.*?)(?=^func |\Z)", source)
 applicable = bool(function and re.search(
@@ -35615,6 +35619,8 @@ gameplay = canary_instruction(32, "jumpy_landing_feedback")
 ⋮----
 guarded = canary_instruction(34, "jumpy_settings_tap_guard")
 ⋮----
+share = canary_instruction(39, "jumpy_share_clipboard_guard")
+⋮----
 def test_launch_is_idempotent_and_uses_dashboard_api(self)
 ⋮----
 client = FakeClient()
@@ -35640,6 +35646,14 @@ guard_result = run_canary(guard_client, {
 ⋮----
 blocked_client = FakeClient()
 blocked = run_canary(blocked_client, {
+⋮----
+unsafe_share = (
+⋮----
+share_client = FakeClient()
+share_control = {"sequence": 39, "repository": "dbrckk/Jumpy",
+share_result = run_canary(share_client, share_control, source_api=source_api)
+⋮----
+already_fixed = FakeClient()
 ⋮----
 # A bearer-authenticated GitHub dispatch must reject redirects,
 # even if an unexpected HTTP 3xx response points off-site.

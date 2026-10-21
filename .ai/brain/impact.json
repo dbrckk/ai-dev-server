@@ -1,181 +1,207 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "dc523dca3472ba31061acd2c64201748f71c9d27",
-  "head": "bc73c67f8e760239dd19e730eb524e5911162cb0",
+  "base": "bc73c67f8e760239dd19e730eb524e5911162cb0",
+  "head": "958de8bfcbb6f933c3a51787637d48cfd1131ea2",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": ".github/workflows/public-free-code-smoke.yml",
-      "status": "A"
-    },
-    {
-      "path": "docs/DSH_FREE_MODEL.md",
+      "path": "studio/production_os_worker_canary.py",
       "status": "M"
     },
     {
-      "path": "docs/qualification/public-model-diagnostic-fix-20261020.json",
-      "status": "A"
-    },
-    {
-      "path": "studio/production_os_live_diagnostics.py",
-      "status": "M"
-    },
-    {
-      "path": "studio/public_free_code_smoke.py",
-      "status": "A"
-    },
-    {
-      "path": "tests/test_production_os_live_diagnostics.py",
+      "path": "tests/test_production_os_worker_canary.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "studio/production_os_live_diagnostics.py",
-    "studio/public_free_code_smoke.py",
-    "tests/test_production_os_live_diagnostics.py"
+    "studio/production_os_worker_canary.py",
+    "tests/test_production_os_worker_canary.py"
   ],
   "impacted_files": [
-    "studio/production_os_live_diagnostics.py",
-    "studio/public_free_code_smoke.py",
-    "tests/test_production_os_live_diagnostics.py"
+    "studio/production_os_worker_canary.py",
+    "tests/test_generic_worker_canary_resume.py",
+    "tests/test_production_os_worker_canary.py"
   ],
   "impacted_symbols": [
     {
-      "name": "_warm_operator_connection",
+      "name": "dispatch_worker_after_enqueue",
       "kind": "function",
-      "file": "studio/production_os_live_diagnostics.py",
-      "line": 12
+      "file": "studio/production_os_worker_canary.py",
+      "line": 21
     },
     {
-      "name": "_provider_family",
+      "name": "validate_control",
       "kind": "function",
-      "file": "studio/production_os_live_diagnostics.py",
-      "line": 38
+      "file": "studio/production_os_worker_canary.py",
+      "line": 62
     },
     {
-      "name": "_safe_increment_source",
+      "name": "canary_instruction",
       "kind": "function",
-      "file": "studio/production_os_live_diagnostics.py",
-      "line": 50
+      "file": "studio/production_os_worker_canary.py",
+      "line": 84
     },
     {
-      "name": "interpret",
+      "name": "source_canary_preflight",
       "kind": "function",
-      "file": "studio/production_os_live_diagnostics.py",
-      "line": 66
+      "file": "studio/production_os_worker_canary.py",
+      "line": 149
     },
     {
-      "name": "diagnose",
+      "name": "launch_canary",
       "kind": "function",
-      "file": "studio/production_os_live_diagnostics.py",
-      "line": 81
+      "file": "studio/production_os_worker_canary.py",
+      "line": 197
+    },
+    {
+      "name": "_polling_parameters",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 246
+    },
+    {
+      "name": "wait_for_workflow",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 256
+    },
+    {
+      "name": "wait_for_readiness",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 279
+    },
+    {
+      "name": "run_canary",
+      "kind": "function",
+      "file": "studio/production_os_worker_canary.py",
+      "line": 310
     },
     {
       "name": "main",
       "kind": "function",
-      "file": "studio/production_os_live_diagnostics.py",
-      "line": 211
+      "file": "studio/production_os_worker_canary.py",
+      "line": 347
     },
     {
-      "name": "_catalog_confirms_zero_cost",
-      "kind": "function",
-      "file": "studio/public_free_code_smoke.py",
-      "line": 19
-    },
-    {
-      "name": "run",
-      "kind": "function",
-      "file": "studio/public_free_code_smoke.py",
-      "line": 44
-    },
-    {
-      "name": "LiveDiagnosticsTests",
+      "name": "ExistingWorkerCanaryVerificationTests",
       "kind": "class",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 13
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 16
     },
     {
-      "name": "test_provider_fallback_recovers_gone_model_and_output_excludes_secrets",
+      "name": "_request",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 14
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 17
     },
     {
-      "name": "FakeAPI",
+      "name": "test_accepts_exact_existing_canary_with_or_without_final_newline",
+      "kind": "function",
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 35
+    },
+    {
+      "name": "test_rejects_wrong_content",
+      "kind": "function",
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 90
+    },
+    {
+      "name": "test_rejects_non_canary_repository_or_missing_contract",
+      "kind": "function",
+      "file": "tests/test_generic_worker_canary_resume.py",
+      "line": 100
+    },
+    {
+      "name": "FakeClient",
       "kind": "class",
-      "file": "tests/test_production_os_live_diagnostics.py",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 17
+    },
+    {
+      "name": "__init__",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
       "line": 18
     },
     {
-      "name": "__init__",
+      "name": "submit",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 19
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 24
     },
     {
-      "name": "call",
+      "name": "get",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 21
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 34
     },
     {
-      "name": "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready",
-      "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 77
-    },
-    {
-      "name": "FakeAPI",
+      "name": "WorkerCanaryTests",
       "kind": "class",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 88
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 40
     },
     {
-      "name": "__init__",
+      "name": "test_control_is_strict",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 89
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 41
     },
     {
-      "name": "call",
+      "name": "test_canary_instruction_is_bounded_and_sequence_specific",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 91
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 60
     },
     {
-      "name": "test_operator_probe_is_read_only_and_no_token_is_reported",
+      "name": "test_launch_is_idempotent_and_uses_dashboard_api",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 102
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 96
     },
     {
-      "name": "FakeAPI",
-      "kind": "class",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 104
-    },
-    {
-      "name": "__init__",
+      "name": "test_wait_observes_real_terminal_success",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 105
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 235
     },
     {
-      "name": "call",
+      "name": "clock",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 107
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 238
     },
     {
-      "name": "test_defaults_preserve_explicit_configuration_and_other_providers",
+      "name": "sleep",
       "kind": "function",
-      "file": "tests/test_production_os_live_diagnostics.py",
-      "line": 140
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 240
+    },
+    {
+      "name": "test_terminal_failure_returns_without_retrying_mutation",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 249
+    },
+    {
+      "name": "test_wait_is_bounded",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 262
+    },
+    {
+      "name": "test_canary_workflow_verifies_terminal_worker_completion",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_canary.py",
+      "line": 287
     }
   ],
   "selected_tests": [
-    "tests/test_diagnostics.py",
-    "tests/test_production_os_live_diagnostics.py"
+    "tests/test_generic_worker_canary_resume.py",
+    "tests/test_production_os_worker.py",
+    "tests/test_production_os_worker_canary.py"
   ]
 }

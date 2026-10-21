@@ -1,22 +1,18 @@
 # Change impact
 
-Base: 6942e449a7d4dd84cb7f10ca2396f7f60ea2c6d9
-Head: bc73c67f8e760239dd19e730eb524e5911162cb0
+Base: 9dd2464a25cae35a81b8cad9231552bdc086256a
+Head: 958de8bfcbb6f933c3a51787637d48cfd1131ea2
 
 ## Changed files
-- A .github/workflows/public-free-code-smoke.yml
-- M docs/DSH_FREE_MODEL.md
-- A studio/public_free_code_smoke.py
-- M tests/test_production_os_live_diagnostics.py
+- M studio/production_os_worker_canary.py
+- M tests/test_production_os_worker_canary.py
 
 ## Affected areas
-- .github
-- docs
 - studio
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_production_os_worker_canary.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

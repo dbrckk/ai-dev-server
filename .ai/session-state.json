@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "updated_at": "2026-10-20",
-  "task": "Verify real startup and correct generic inference plus execution commit telemetry",
-  "base_commit": "1cb258facb9fcd2877de97e677a83f7ccb72785f",
-  "branch": "feat/canary-jumpy-settings-tap-guard-20261015",
+  "updated_at": "2026-10-21",
+  "task": "Retain request-bound source publication proof when delivery is blocked",
+  "base_commit": "485e7cc",
+  "branch": "fix/retain-published-source-evidence",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -454,7 +454,7 @@
   "published_source_resume_20261021": {
     "branch": "fix/resume-published-source",
     "base": "e4a2541",
-    "status": "Locally verified; exact branch CI and review pending.",
+    "status": "PR372 merged as8c8301b after seven branch workflows and three CircleCI checks; all eight postmerge workflows passed.",
     "reproduction": [
       "Existing approved-source checkpoint followed by the same request fails as obsolete or asks the model for an already-applied edit.",
       "The persistent source-review goal is terminal, so subsequent valid PR/CI observations are never executed."
@@ -481,6 +481,24 @@
       "No new hosted source task, inference, provider setting or target merge.",
       "Legacy checkpoints without request binding require reviewed recovery.",
       "Historical HTTP403 endpoint and response body were not retained; stage diagnostics qualify future failures, not its past cause."
+    ]
+  },
+  "blocked_source_publication_20261021": {
+    "branch": "fix/retain-published-source-evidence",
+    "reproduction": "Blocked source result omits commit/file after delivery throws or an already-blocked goal skips execution, despite retained published checkpoint",
+    "change": "Copy only bound checkpoint commit/approved file for blocked approved-source tasks; keep unsuccessful state and do not copy checkpoint CI/validation",
+    "validation": {
+      "unittest": "1784 passed",
+      "pytest": "1845 passed, 199 subtests",
+      "server_integration": "6 passed against current Production-OS",
+      "actual_worker_receipt": "Sealed fixture publication -> actual worker/native receipt -> authenticated Production-OS285 -> one failed attempt, retained commit/file, safe403, no stale CI -> durable restart",
+      "test_inventory": "Existing test functions extended; no new functions"
+    },
+    "qualification": "Final branch/postmerge CI and merge evidence in associated PR",
+    "limits": [
+      "Retained publication checkpoint is not current remote-head or passing-CI proof",
+      "No model, GitHub mutation, canary retry, provider change, budget increase or target merge",
+      "Jumpy37/star-list154 remain drafts; durable free inference remains unqualified"
     ]
   }
 }

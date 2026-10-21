@@ -1191,6 +1191,30 @@ def run(
             sha = saved.get('commit_sha')
             if isinstance(sha, str) and len(sha) == 40 and all(c in '0123456789abcdef' for c in sha):
                 checkpoint_commit = sha
+    if checkpoint_commit is None and status == 'blocked' and state.get('blocked_reason') in {
+        'source_delivery_access_denied', 'source_delivery_checkpoint_changed',
+        'source_review_or_exact_sha_ci_unverified',
+    }:
+        # Source delivery may throw after publishing but before returning a
+        # report. Keep its bound publication proof for review, without copying
+        # stale validation/CI success or changing the checkpoint or goal.
+        from production_os_bounded_source_repair import contract as bounded_contract
+        from production_os_jumpy_source_repair import contract as jumpy_contract
+        from source_delivery_checkpoint import load_published_source, SourceCheckpointError
+        approved = bounded_contract(request)
+        source_path = approved[1].path if approved else (
+            'scripts/integrations.gd' if jumpy_contract(request) is not None else None
+        )
+        if source_path is not None:
+            try:
+                published = load_published_source(
+                    out/'.autonomy/generic-execution-checkpoint.json', request, source_path,
+                )
+            except (SourceCheckpointError, UnicodeError):
+                published = None
+            if published is not None:
+                checkpoint_commit = published['base_sha']
+                summary['changed_files'] = [source_path]
     if isinstance(checkpoint_commit,str) and len(checkpoint_commit)==40:
         summary['commit_shas']=[checkpoint_commit]
     if improvement is not None:

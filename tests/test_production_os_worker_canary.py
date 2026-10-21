@@ -51,6 +51,7 @@ class WorkerCanaryTests(unittest.TestCase):
             {"sequence": 1, "repository": "owner/repo", "scenario": "unknown"},
             {"sequence": 1, "repository": "owner/repo", "scenario": "jumpy_landing_feedback"},
             {"sequence": 1, "repository": "owner/repo", "scenario": "jumpy_settings_tap_guard"},
+            {"sequence": 1, "repository": "owner/repo", "scenario": "jumpy_share_clipboard_guard"},
             {"sequence": 1, "repository": "dbrckk/Jumpy", "scenario": 4},
         ):
             with self.subTest(value=value), self.assertRaises(ValueError):
@@ -78,6 +79,16 @@ class WorkerCanaryTests(unittest.TestCase):
             validate_control({"sequence": 34, "repository": "dbrckk/Jumpy",
                               "scenario": "jumpy_settings_tap_guard"}),
             (34, "dbrckk/Jumpy"),
+        )
+        share = canary_instruction(39, "jumpy_share_clipboard_guard")
+        self.assertIn("scripts/integrations.gd", share)
+        self.assertIn("FEATURE_CLIPBOARD", share)
+        self.assertIn("share_unavailable", share)
+        self.assertNotIn(".production-os/worker-canary-", share)
+        self.assertEqual(
+            validate_control({"sequence": 39, "repository": "dbrckk/Jumpy",
+                              "scenario": "jumpy_share_clipboard_guard"}),
+            (39, "dbrckk/Jumpy"),
         )
         with self.assertRaises(ValueError):
             canary_instruction(32, "untrusted")
@@ -162,6 +173,39 @@ class WorkerCanaryTests(unittest.TestCase):
             self.assertEqual(blocked["result"]["reason"], "scenario_no_longer_applicable")
             self.assertEqual(blocked_client.submissions, [])
             self.assertEqual(blocked_client.lookups, [])
+        unsafe_share = (
+            "func share_score(score: int, daily: bool = false) -> void:\n"
+            "\tDisplayServer.clipboard_set(text)\n"
+            '\tevent("share_score", {"score": score})\n'
+            "func leaderboard_submit(score):\n\tpass\n"
+        )
+        source_api.call.return_value["content"] = base64.b64encode(
+            unsafe_share.encode()
+        ).decode()
+        share_client = FakeClient()
+        share_control = {"sequence": 39, "repository": "dbrckk/Jumpy",
+                         "scenario": "jumpy_share_clipboard_guard"}
+        share_result = run_canary(share_client, share_control, source_api=source_api)
+        self.assertEqual(share_result["source_preflight"]["path"], "scripts/integrations.gd")
+        self.assertEqual(share_client.submissions[0][1]["token_budget"], 60000)
+        self.assertIn("share_score", share_client.submissions[0][1]["instruction"])
+        self.assertEqual(
+            source_api.call.call_args.args[1],
+            "/repos/dbrckk/Jumpy/contents/scripts/integrations.gd?ref=main",
+        )
+        source_api.call.return_value["content"] = base64.b64encode(
+            unsafe_share.replace(
+                "\tDisplayServer.clipboard_set(text)",
+                "\tif not DisplayServer.has_feature(DisplayServer.FEATURE_CLIPBOARD):\n"
+                "\t\treturn\n\tDisplayServer.clipboard_set(text)",
+            ).encode()
+        ).decode()
+        already_fixed = FakeClient()
+        self.assertEqual(
+            run_canary(already_fixed, share_control, source_api=source_api)["result"]["reason"],
+            "scenario_no_longer_applicable",
+        )
+        self.assertEqual(already_fixed.submissions, [])
         source_api.call.side_effect = APIError(503)
         with self.assertRaises(APIError):
             run_canary(blocked_client, {"sequence": 36, "repository": "dbrckk/Jumpy",

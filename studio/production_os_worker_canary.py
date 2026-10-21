@@ -74,14 +74,33 @@ def validate_control(payload):
     if owner in {".", ".."} or name in {".", ".."}:
         raise ValueError("canary repository is invalid")
     scenario = payload.get("scenario", "file")
-    if not isinstance(scenario, str) or scenario not in {"file", "jumpy_landing_feedback", "jumpy_settings_tap_guard"}:
+    if not isinstance(scenario, str) or scenario not in {"file", "jumpy_landing_feedback", "jumpy_settings_tap_guard", "jumpy_share_clipboard_guard"}:
         raise ValueError("canary scenario is invalid")
-    if scenario in {"jumpy_landing_feedback", "jumpy_settings_tap_guard"} and repository != "dbrckk/Jumpy":
+    if scenario in {"jumpy_landing_feedback", "jumpy_settings_tap_guard", "jumpy_share_clipboard_guard"} and repository != "dbrckk/Jumpy":
         raise ValueError("gameplay scenario requires the trusted Jumpy repository")
     return sequence, repository
 
 
 def canary_instruction(sequence, scenario="file"):
+    if scenario == "jumpy_share_clipboard_guard":
+        return (
+            f"Production-OS verified Jumpy source qualification {sequence}. "
+            "Fix ONE observable Android/share reliability defect in "
+            "scripts/integrations.gd, in existing share_score(): the current "
+            "unconditional DisplayServer.clipboard_set(text) is unsafe when "
+            "DisplayServer.FEATURE_CLIPBOARD is unsupported. Check the capability "
+            "before writing to the clipboard; on unsupported devices exit "
+            "gracefully with a concise share_unavailable event instead of "
+            "pretending copying worked. Preserve the existing share text, "
+            "supported-device behavior, and share_score analytics. "
+            "Change ONLY scripts/integrations.gd. Do not create marker files, "
+            "tests, documentation, SDK dependencies, permissions, workflows "
+            "or monetization changes. This must be a useful source-code edit, "
+            "not a deterministic canary. Verify the real Godot 4.7.2 headless "
+            "project import and input smoke, then persist a reviewed branch "
+            "and draft pull request; do not merge or publish Jumpy. "
+            "Report model capacity/CI failure accurately."
+        )
     if scenario == "jumpy_settings_tap_guard":
         return (
             f"Production-OS verified autonomous Jumpy code-change qualification {sequence}. "
@@ -139,8 +158,10 @@ def source_canary_preflight(control, *, api=None):
         return None
     if api is None:
         api = API("https://api.github.com", os.environ.get("PRODUCTION_OS_CANARY_DISPATCH_TOKEN", ""))
+    path = ("scripts/integrations.gd" if scenario == "jumpy_share_clipboard_guard"
+            else "scripts/main.gd")
     response = api.call(
-        "GET", "/repos/" + repository + "/contents/scripts/main.gd?ref=main",
+        "GET", "/repos/" + repository + "/contents/" + path + "?ref=main",
         timeout_seconds=15, max_attempts=1,
     )
     if (not isinstance(response, dict) or response.get("type") != "file"
@@ -150,7 +171,14 @@ def source_canary_preflight(control, *, api=None):
             or len(response["content"]) > 600_000):
         raise RuntimeError("Canary source preflight returned invalid content")
     source = base64.b64decode("".join(response["content"].split()), validate=True).decode("utf-8")
-    if scenario == "jumpy_settings_tap_guard":
+    if scenario == "jumpy_share_clipboard_guard":
+        function = re.search(r"(?ms)^func share_score\([^\n]*\n(.*?)(?=^func |\Z)", source)
+        applicable = bool(
+            function
+            and "DisplayServer.clipboard_set(text)" in function.group(1)
+            and "DisplayServer.has_feature(" not in function.group(1)
+        )
+    elif scenario == "jumpy_settings_tap_guard":
         function = re.search(r"(?ms)^func _unhandled_input\([^\n]*\n(.*?)(?=^func |\Z)", source)
         applicable = bool(function and re.search(
             r'(?m)^\tif state == "READY":\n\t\tstart_run\(\)', function.group(1),
@@ -163,7 +191,7 @@ def source_canary_preflight(control, *, api=None):
                       and 'judgement = "PERFECT"' in source
                       and 'judgement = "CLUTCH"' in source)
     return {"status": "applicable" if applicable else "scenario_no_longer_applicable",
-            "source_blob_sha": response["sha"], "path": "scripts/main.gd"}
+            "source_blob_sha": response["sha"], "path": path}
 
 
 def launch_canary(client, control, *, source_api=None):
@@ -180,7 +208,7 @@ def launch_canary(client, control, *, source_api=None):
         "instruction": canary_instruction(sequence, scenario),
         "request_id": f"worker-canary-{sequence}",
     }
-    if scenario in {"jumpy_landing_feedback", "jumpy_settings_tap_guard"}:
+    if scenario in {"jumpy_landing_feedback", "jumpy_settings_tap_guard", "jumpy_share_clipboard_guard"}:
         # Actual gameplay changes need several planning, coding and validation
         # calls. The historical 30k one-tap default has failed before any
         # implementation; use the existing operator-only bounded profile.

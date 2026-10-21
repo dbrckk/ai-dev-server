@@ -400,6 +400,15 @@ class GenericRepository:
         base_tree=self.github.get("/git/commits/"+base_sha).get("tree",{}).get("sha")
         if not isinstance(base_tree,str):
             raise StudioError("Generic base tree unavailable")
+        # Publishing a restored text snapshot must not silently chmod every
+        # executable script to 100644. GitHub compares modes as real changes,
+        # which can break one-file delivery contracts and target CI.
+        # Obtain modes from this exact parent revision (not the live branch).
+        parent_modes = {
+            item["path"]: item["mode"]
+            for item in self._tree(base_sha)["tree"]
+            if item.get("type") == "blob" and isinstance(item.get("path"), str)
+        }
         entries=[]
         for p in sorted(root.rglob("*")):
             if not p.is_file() or p.is_symlink():
@@ -416,7 +425,12 @@ class GenericRepository:
                 continue
             if SECRET.search(text):
                 raise StudioError("Generic publication rejected a credential pattern")
-            entries.append({"path":rel,"mode":"100644","type":"blob","content":text})
+            mode = parent_modes.get(rel, "100644")
+            # Symlinks and gitlinks are not safe plain-text publication
+            # targets. Do not change their Git type through a snapshot write.
+            if mode not in {"100644", "100755"}:
+                raise StudioError("Generic publication rejected unsupported source mode")
+            entries.append({"path":rel,"mode":mode,"type":"blob","content":text})
 
         tree=self.github.call("POST",self.github.repo+"/git/trees",{"base_tree":base_tree,"tree":entries})
         commit=self.github.call("POST",self.github.repo+"/git/commits",{"message":message,"tree":tree["sha"],"parents":[base_sha]})

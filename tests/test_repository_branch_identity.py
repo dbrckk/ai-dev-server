@@ -70,6 +70,12 @@ class RepositoryBranchIdentityTests(unittest.TestCase):
             def get(path):
                 if path == "/git/commits/" + base_sha:
                     return {"tree": {"sha": tree_sha}}
+                if path == "/git/trees/" + base_sha + "?recursive=1":
+                    # Existing executable permission must survive publication
+                    # even when the file text was restored into a plain file.
+                    return {"truncated": False, "tree": [
+                        {"path": "README.md", "type": "blob", "mode": "100755"},
+                    ]}
                 if path == "/git/matching-refs/heads/studio/mp-abcdef123456":
                     return [{"ref": "refs/heads/studio/mp-abcdef123456",
                              "object": {"sha": current["sha"]}}]
@@ -77,6 +83,10 @@ class RepositoryBranchIdentityTests(unittest.TestCase):
 
             def call(method, path, payload):
                 if path.endswith("/git/trees"):
+                    self.assertEqual(payload["tree"], [
+                        {"path": "README.md", "mode": "100755",
+                         "type": "blob", "content": "Changed\\n"},
+                    ])
                     return {"sha": tree_sha}
                 if path.endswith("/git/commits"):
                     return {"sha": commit_sha}

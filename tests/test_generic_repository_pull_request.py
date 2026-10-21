@@ -67,6 +67,27 @@ def test_ensure_pull_request_creates_one_for_managed_branch():
     assert len(posts) == 1
     assert posts[0][2]["draft"] is True
 
+    # Regression: a different generic task must never overwrite the managed
+    # source-repair branch after a restricted model-authored checkpoint.
+    reserved = GenericRepository(
+        FakeGitHub(), "dbrckk/star-list", "mp-" + "4" * 24
+    )
+    from tempfile import TemporaryDirectory
+    with patch.object(reserved.github, "get", side_effect=AssertionError(
+        "generic reserved branch must not reach GitHub"
+    )):
+        with TemporaryDirectory() as directory:
+            for op in (
+                lambda: reserved.restore(Path(directory)),
+                lambda: reserved.publish("a" * 40, Path(directory), "bad generic edit"),
+            ):
+                try:
+                    op()
+                except StudioError as exc:
+                    assert "reserved" in str(exc)
+                else:
+                    raise AssertionError("Generic overwrite of approved source accepted")
+
     # A bounded public source task must restore and publish only its one
     # operator-approved source file, not hundreds of unrelated repository
     # blobs. The target's own CI still validates the proposed patch later.

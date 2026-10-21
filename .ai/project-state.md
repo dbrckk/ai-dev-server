@@ -141,28 +141,23 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-21T11:08:47Z
+Generated: 2026-10-21T12:45:33Z
 
 ### Git
 - Branch: `main`
-- Head: `580072af8333`
-- Commit date: 2026-10-21T07:08:36-04:00
-- Commit: fix(worker): deliver bounded model-authored Jumpy source repair without full game pipeline (#362)
-- Tracked files: 871
+- Head: `4e45cc94ee7b`
+- Commit date: 2026-10-21T08:45:22-04:00
+- Commit: fix(worker): require independent exact-SHA target CI before task completion (#364)
+- Tracked files: 872
 
 ### Recently changed files
-- `studio/multi_engine_orchestrator.py`
 - `studio/production_os_jumpy_source_repair.py`
+- `studio/target_ci_verification.py`
 - `tests/test_multi_engine_orchestrator.py`
 - `control/production-os-worker-canary.json`
+- `studio/multi_engine_orchestrator.py`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
-- `.github/workflows/public-free-code-smoke.yml`
-- `docs/DSH_FREE_MODEL.md`
-- `studio/public_free_code_smoke.py`
-- `tests/test_production_os_live_diagnostics.py`
-- `docs/qualification/public-model-diagnostic-fix-20261020.json`
-- `studio/production_os_live_diagnostics.py`
 
 ### Project signals
 - No common build descriptor detected

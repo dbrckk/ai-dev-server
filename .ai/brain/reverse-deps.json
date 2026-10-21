@@ -1617,6 +1617,7 @@
         "studio/smoke.py",
         "studio/store_stage.py",
         "studio/strict_task_claim_store.py",
+        "studio/target_ci_verification.py",
         "studio/task_claim_store.py",
         "studio/telemetry.py",
         "studio/workflow_checkpoint.py",
@@ -1688,7 +1689,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 224,
+      "in_degree": 225,
       "out_degree": 18
     },
     "studio/cost_drift.py": {
@@ -3903,6 +3904,7 @@
         "studio/generic_repository.py",
         "studio/production_os_worker_canary.py",
         "studio/run.py",
+        "studio/target_ci_verification.py",
         "tests/test_journeys.py",
         "tests/test_studio.py",
         "tests/test_unified_routing_score.py"
@@ -3912,7 +3914,7 @@
         "tests/test_multi_engine_orchestrator.py"
       ],
       "in_degree": 2,
-      "out_degree": 9
+      "out_degree": 10
     },
     "studio/production_os_live_diagnostics.py": {
       "dependencies": [
@@ -4890,6 +4892,17 @@
       ],
       "in_degree": 2,
       "out_degree": 3
+    },
+    "studio/target_ci_verification.py": {
+      "dependencies": [
+        "studio/core.py"
+      ],
+      "dependents": [
+        "studio/production_os_jumpy_source_repair.py",
+        "tests/test_multi_engine_orchestrator.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 1
     },
     "studio/task_claim_store.py": {
       "dependencies": [
@@ -6992,11 +7005,12 @@
         "studio/multi_engine_orchestrator.py",
         "studio/production_os_jumpy_source_repair.py",
         "studio/production_os_worker_canary.py",
-        "studio/stage_registry.py"
+        "studio/stage_registry.py",
+        "studio/target_ci_verification.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 5
+      "out_degree": 6
     },
     "tests/test_multi_project_canary.py": {
       "dependencies": [

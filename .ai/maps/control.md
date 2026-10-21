@@ -142,7 +142,7 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-  "sequence": 39,
+  "sequence": 40,
   "repository": "dbrckk/Jumpy",
   "scenario": "jumpy_share_clipboard_guard"
 }

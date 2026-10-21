@@ -1,11 +1,11 @@
 # Change impact
 
-Base: 832630cc84fc80e4511abbbc3752b05565c96920
-Head: 580072af8333639085f6cd81cf1e9504414acb71
+Base: b63257d2208d988fcf108c50890444570ffc51d6
+Head: 4e45cc94ee7b8d7c3bba23c9aa62db7ed643262f
 
 ## Changed files
-- M studio/multi_engine_orchestrator.py
-- A studio/production_os_jumpy_source_repair.py
+- M studio/production_os_jumpy_source_repair.py
+- A studio/target_ci_verification.py
 - M tests/test_multi_engine_orchestrator.py
 
 ## Affected areas
@@ -13,7 +13,7 @@ Head: 580072af8333639085f6cd81cf1e9504414acb71
 - tests
 
 ## Related test candidates
-- tests/test_multi_engine_orchestrator.py
+- No direct filename-based test match detected.
 
 ## Agent guidance
 - Read this file before broad repository exploration.

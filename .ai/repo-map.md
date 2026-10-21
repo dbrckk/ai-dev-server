@@ -437,6 +437,7 @@ studio/
   store_stage.py
   strategy_efficiency.py
   strict_task_claim_store.py
+  target_ci_verification.py
   task_claim_store.py
   task_context.py
   task_lease.py
@@ -3498,7 +3499,7 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-  "sequence": 39,
+  "sequence": 40,
   "repository": "dbrckk/Jumpy",
   "scenario": "jumpy_share_clipboard_guard"
 }
@@ -22240,10 +22241,16 @@ denied = any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
 handoff = repo.request_trusted_review_handoff(sha) if denied else None
 confirmed = (
 pr = confirmed if confirmed is not None else {
-delivered = (type(pr.get("number")) is int
+pr_confirmed = (type(pr.get("number")) is int
+ci = {"status": "pending", "reason": "review_pr_not_confirmed"}
 ⋮----
-checkpoint = advance_checkpoint(checkpoint, phase="complete")
+ci = wait_for_exact_commit_ci(
 ⋮----
+qualified = pr_confirmed and ci["status"] == "passed"
+⋮----
+checkpoint = advance_checkpoint(checkpoint, phase="complete", last_verification=verification)
+⋮----
+blockers = [] if qualified else [
 report = {
 ````
 
@@ -26470,6 +26477,34 @@ current_expires = current.get("expires_at")
 def heartbeat(task_id: str, owner: str, token: str, expires_at: float, *, now: float | None = None) -> None
 ⋮----
 def release(task_id: str, owner: str | None = None, token: str | None = None) -> None
+````
+
+## File: studio/target_ci_verification.py
+````python
+"""Read-only exact-commit CI proof for trusted source repair."""
+⋮----
+_SHA = re.compile(r"[a-f0-9]{40}\Z")
+_BRANCH = re.compile(r"studio/mp-[a-f0-9]{24}\Z")
+_WORKFLOW = re.compile(r"\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml\Z")
+⋮----
+listing = github.get("/actions/runs?head_sha=" + commit_sha
+runs = listing.get("workflow_runs") if isinstance(listing, dict) else None
+⋮----
+eligible = [r for r in runs if isinstance(r, dict)
+⋮----
+run = max(eligible, key=lambda r: r["id"])
+rid = run["id"]
+⋮----
+response = github.get("/actions/runs/" + str(rid) + "/jobs?per_page=100")
+jobs = response.get("jobs") if isinstance(response, dict) else None
+⋮----
+passed = set()
+⋮----
+steps = job.get("steps")
+⋮----
+deadline = clock() + timeout_seconds
+⋮----
+result = inspect_exact_commit_ci(github, commit_sha=commit_sha, branch=branch,
 ````
 
 ## File: studio/task_claim_store.py
@@ -34666,6 +34701,24 @@ result = run_project(str(req), root / "out", str(root / "work"),
 source = (
 answer = {"guard_lines": [
 fixed = apply_model_guard(source, answer)
+⋮----
+# PR creation and GitHub_TOKEN pull_request checks do not prove that
+# the independent, exact-commit Godot validation has actually passed.
+⋮----
+source_sha = "f" * 40
+review_branch = "studio/mp-" + "a" * 24
+workflow_path = ".github/workflows/validate.yml"
+required_steps = (
+good_run = {"id": 12, "head_sha": source_sha,
+good_job = {"status": "completed", "conclusion": "success",
+⋮----
+class ReadOnlyGitHub
+⋮----
+def __init__(self, runs, jobs=None)
+def get(self, endpoint)
+⋮----
+def inspect(client)
+verified = inspect(ReadOnlyGitHub([good_run]))
 ````
 
 ## File: tests/test_multi_project_canary.py

@@ -182,6 +182,7 @@
         "studio/smoke.py",
         "studio/store_stage.py",
         "studio/strict_task_claim_store.py",
+        "studio/target_ci_verification.py",
         "studio/task_claim_store.py",
         "studio/telemetry.py",
         "studio/workflow_checkpoint.py",
@@ -253,7 +254,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 224,
+      "in_degree": 225,
       "out_degree": 18,
       "path": "studio/core.py"
     },
@@ -1609,6 +1610,27 @@
     },
     {
       "dependencies": [
+        "studio/core.py",
+        "studio/execution_checkpoint.py",
+        "studio/generic_model.py",
+        "studio/generic_repository.py",
+        "studio/production_os_worker_canary.py",
+        "studio/run.py",
+        "studio/target_ci_verification.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "studio/multi_engine_orchestrator.py",
+        "tests/test_multi_engine_orchestrator.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 10,
+      "path": "studio/production_os_jumpy_source_repair.py"
+    },
+    {
+      "dependencies": [
         "studio/core.py"
       ],
       "dependents": [
@@ -1686,26 +1708,6 @@
       "in_degree": 6,
       "out_degree": 5,
       "path": "studio/goal_loop.py"
-    },
-    {
-      "dependencies": [
-        "studio/core.py",
-        "studio/execution_checkpoint.py",
-        "studio/generic_model.py",
-        "studio/generic_repository.py",
-        "studio/production_os_worker_canary.py",
-        "studio/run.py",
-        "tests/test_journeys.py",
-        "tests/test_studio.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "studio/multi_engine_orchestrator.py",
-        "tests/test_multi_engine_orchestrator.py"
-      ],
-      "in_degree": 2,
-      "out_degree": 9,
-      "path": "studio/production_os_jumpy_source_repair.py"
     },
     {
       "dependencies": [
@@ -2108,8 +2110,8 @@
       "path": "studio/strategy_efficiency.py"
     }
   ],
-  "edge_count": 1956,
+  "edge_count": 1959,
   "generated_by": "dbrckk/repo-brain-v7-graph",
-  "node_count": 638,
+  "node_count": 639,
   "schema_version": 1
 }

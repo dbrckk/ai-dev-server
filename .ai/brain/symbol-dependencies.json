@@ -5,164 +5,11 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "_remaining": {
-      "source": {
-        "file": "studio/multi_engine_orchestrator.py",
-        "start": 16,
-        "end": 19
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "_detect": {
-      "source": {
-        "file": "studio/multi_engine_orchestrator.py",
-        "start": 22,
-        "end": 34
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_remaining",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "_run_stage": {
-      "source": {
-        "file": "studio/multi_engine_orchestrator.py",
-        "start": 37,
-        "end": 40
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_remaining",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 16,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "run_project": {
-      "source": {
-        "file": "studio/multi_engine_orchestrator.py",
-        "start": 43,
-        "end": 206
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_detect",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "_run_stage",
-          "definitions": [
-            {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 37,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "contract",
-          "definitions": [
-            {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 31,
-              "kind": "function",
-              "language": "python"
-            },
-            {
-              "file": "studio/production_os_review_canary.py",
-              "line": 21,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "load_report",
-          "definitions": [
-            {
-              "file": "studio/orchestrator.py",
-              "line": 268,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "request_check",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 41,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
     "contract": {
       "source": {
         "file": "studio/production_os_jumpy_source_repair.py",
-        "start": 31,
-        "end": 52
+        "start": 32,
+        "end": 53
       },
       "symbol_dependencies": [
         {
@@ -195,8 +42,8 @@
     "apply_model_guard": {
       "source": {
         "file": "studio/production_os_jumpy_source_repair.py",
-        "start": 55,
-        "end": 88
+        "start": 56,
+        "end": 89
       },
       "symbol_dependencies": [
         {
@@ -217,8 +64,8 @@
     "run": {
       "source": {
         "file": "studio/production_os_jumpy_source_repair.py",
-        "start": 91,
-        "end": 211
+        "start": 92,
+        "end": 212
       },
       "symbol_dependencies": [
         {
@@ -274,7 +121,7 @@
           "definitions": [
             {
               "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 55,
+              "line": 56,
               "kind": "function",
               "language": "python"
             }
@@ -312,18 +159,6 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "canonical",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
           "symbol": "checkpoint",
           "definitions": [
             {
@@ -340,7 +175,7 @@
           "definitions": [
             {
               "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 31,
+              "line": 32,
               "kind": "function",
               "language": "python"
             }
@@ -418,15 +253,39 @@
             }
           ],
           "relation": "imported_module"
+        },
+        {
+          "symbol": "validate",
+          "definitions": [
+            {
+              "file": "studio/execution_checkpoint.py",
+              "line": 47,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "wait_for_exact_commit_ci",
+          "definitions": [
+            {
+              "file": "studio/target_ci_verification.py",
+              "line": 62,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
         }
       ],
-      "dependency_count": 15
+      "dependency_count": 16
     },
-    "MultiEngineOrchestratorTests": {
+    "inspect_exact_commit_ci": {
       "source": {
-        "file": "tests/test_multi_engine_orchestrator.py",
-        "start": 15,
-        "end": 271
+        "file": "studio/target_ci_verification.py",
+        "start": 11,
+        "end": 60
       },
       "symbol_dependencies": [
         {
@@ -436,6 +295,116 @@
               "file": "studio/core.py",
               "line": 35,
               "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 926,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "wait_for_exact_commit_ci": {
+      "source": {
+        "file": "studio/target_ci_verification.py",
+        "start": 62,
+        "end": 75
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "inspect_exact_commit_ci",
+          "definitions": [
+            {
+              "file": "studio/target_ci_verification.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 2
+    },
+    "MultiEngineOrchestratorTests": {
+      "source": {
+        "file": "tests/test_multi_engine_orchestrator.py",
+        "start": 15,
+        "end": 330
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReadOnlyGitHub",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 292,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 329,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 434,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 923,
+              "kind": "function",
               "language": "python"
             }
           ],
@@ -458,7 +427,7 @@
           "definitions": [
             {
               "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 55,
+              "line": 56,
               "kind": "function",
               "language": "python"
             }
@@ -494,7 +463,43 @@
           "definitions": [
             {
               "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 31,
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 296,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "inspect",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 303,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "inspect_exact_commit_ci",
+          "definitions": [
+            {
+              "file": "studio/target_ci_verification.py",
+              "line": 11,
               "kind": "function",
               "language": "python"
             }
@@ -670,7 +675,7 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 20
+      "dependency_count": 25
     },
     "request": {
       "source": {
@@ -1248,9 +1253,21 @@
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
         "start": 205,
-        "end": 271
+        "end": 330
       },
       "symbol_dependencies": [
+        {
+          "symbol": "ReadOnlyGitHub",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 292,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
         {
           "symbol": "StudioError",
           "definitions": [
@@ -1264,11 +1281,41 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 329,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 434,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 923,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "apply_model_guard",
           "definitions": [
             {
               "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 55,
+              "line": 56,
               "kind": "function",
               "language": "python"
             }
@@ -1292,7 +1339,43 @@
           "definitions": [
             {
               "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 31,
+              "line": 32,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 296,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "inspect",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 303,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "inspect_exact_commit_ci",
+          "definitions": [
+            {
+              "file": "studio/target_ci_verification.py",
+              "line": 11,
               "kind": "function",
               "language": "python"
             }
@@ -1336,13 +1419,137 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 7
+      "dependency_count": 12
     },
     "never_detect": {
       "source": {
         "file": "tests/test_multi_engine_orchestrator.py",
         "start": 233,
         "end": 353
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReadOnlyGitHub",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 292,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 329,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 434,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 923,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "apply_model_guard",
+          "definitions": [
+            {
+              "file": "studio/production_os_jumpy_source_repair.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 296,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "inspect",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 303,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "inspect_exact_commit_ci",
+          "definitions": [
+            {
+              "file": "studio/target_ci_verification.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run_project",
+          "definitions": [
+            {
+              "file": "studio/multi_engine_orchestrator.py",
+              "line": 43,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "ReadOnlyGitHub": {
+      "source": {
+        "file": "tests/test_multi_engine_orchestrator.py",
+        "start": 292,
+        "end": 412
       },
       "symbol_dependencies": [
         {
@@ -1358,11 +1565,29 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "apply_model_guard",
+          "symbol": "__init__",
           "definitions": [
             {
-              "file": "studio/production_os_jumpy_source_repair.py",
-              "line": 55,
+              "file": "studio/core.py",
+              "line": 329,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 434,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 923,
               "kind": "function",
               "language": "python"
             }
@@ -1370,11 +1595,209 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "run_project",
+          "symbol": "get",
           "definitions": [
             {
-              "file": "studio/multi_engine_orchestrator.py",
-              "line": 43,
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 296,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "inspect",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 303,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "inspect_exact_commit_ci",
+          "definitions": [
+            {
+              "file": "studio/target_ci_verification.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "__init__": {
+      "source": {
+        "file": "tests/test_multi_engine_orchestrator.py",
+        "start": 293,
+        "end": 413
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReadOnlyGitHub",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 292,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "get",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 296,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "inspect",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 303,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "inspect_exact_commit_ci",
+          "definitions": [
+            {
+              "file": "studio/target_ci_verification.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "get": {
+      "source": {
+        "file": "tests/test_multi_engine_orchestrator.py",
+        "start": 296,
+        "end": 416
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReadOnlyGitHub",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 292,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "inspect",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 303,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "inspect_exact_commit_ci",
+          "definitions": [
+            {
+              "file": "studio/target_ci_verification.py",
+              "line": 11,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "inspect": {
+      "source": {
+        "file": "tests/test_multi_engine_orchestrator.py",
+        "start": 303,
+        "end": 423
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ReadOnlyGitHub",
+          "definitions": [
+            {
+              "file": "tests/test_multi_engine_orchestrator.py",
+              "line": 292,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "inspect_exact_commit_ci",
+          "definitions": [
+            {
+              "file": "studio/target_ci_verification.py",
+              "line": 11,
               "kind": "function",
               "language": "python"
             }

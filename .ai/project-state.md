@@ -1,9 +1,16 @@
+## 2026-10-21 — retain bound publication proof in blocked source results
+
+- Reproduced `commit_shas` missing from a blocked result even though an approved source checkpoint had already published its commit. This happens when delivery throws before returning a report, or an already-blocked review goal skips execution.
+- The runner now recovers only the commit and approved file from a sealed publication checkpoint bound to the exact request. It handles both approved source lanes and the three source blockers. Changed identity, repository or file scope and corrupt/unreadable checkpoints contribute no proof. It does not rewrite the checkpoint, rearm the goal, infer, republish or copy stale passing CI/validation.
+- Verified: 1,784 unittest cases, 1,845 pytest cases with199 subtests and six actual authenticated server/worker integrations passed. Existing runner assertions extended without new test functions. A sealed publication fixture through the actual worker/native receipt and current Production-OS preserves the commit/file after restart while keeping one failed task attempt and no CI success. No GitHub or model request in that scenario.
+- Final exact-head CI/merge observations are recorded in the associated PR. Production-OS285 is merged/deployed at7b922fed, all four branch/postmerge jobs passed, health/readiness/dashboard HTTP200. Jumpy37 and star-list154 remain drafts; no hosted source retry, provider change or target merge.
+
 ## 2026-10-21 — resume approved published source delivery without regeneration
 
 - Reproduced two related defects: the source lane treated its already-applied edit as obsolete (or asked the model again), and a saved source-review blocker never reopened to observe later PR/CI progress.
 - New request-bound checkpoints verify project, repository, review branch, operator instruction, workflow task, exact commit and source hash. A fresh worker rechecks delivery only; no new model request or source commit. Pending/failed CI stops the loop again and the original attempt ceiling remains enforced. Changed or legacy unbound checkpoints require reviewed recovery.
 - Source API errors now carry a fixed operation and HTTP status through both the pipeline summary and native Production-OS result; 401/403 stops after one goal attempt with bounded evidence. The old canary41 HTTP403 endpoint remains unavailable, so no historical permission/rate-limit cause is claimed.
-- Verified locally: 1,784 unittest cases; 1,845 pytest cases and 199 subtests; six authenticated server/worker integrations. Existing tests extended; no new unit-test functions. Compilation and whitespace checks pass. Exact branch CI/review pending on `fix/resume-published-source`.
+- Verified locally: 1,784 unittest cases; 1,845 pytest cases and 199 subtests; six authenticated server/worker integrations. Existing tests extended; no new unit-test functions. Compilation and whitespace checks pass. PR372 merged as8c8301b; seven branch workflows, three CircleCI checks and all eight postmerge workflows passed.
 - Real loopback HTTP 401/403 checks each make one authenticated restore request, block after one attempt and omit private response bodies. The actual authenticated control-plane receipt also preserves safe source stage/status. Existing runner assertions cover all four stages, both denial statuses and malformed evidence.
 - No hosted canary, model request, provider change or target merge in this continuation. Jumpy37 and recovered star-list154 remain review drafts.
 

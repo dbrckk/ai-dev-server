@@ -529,3 +529,17 @@ Source API failures identify one bounded operation: `restore`, `publish`,
 records the operation/status under `source_delivery_error` in the goal evidence.
 Worker exception diagnostics expose `error_stage` and `error_http_status` without
 remote response bodies, request URLs or credentials.
+
+### Publication proof when source delivery is blocked
+
+If approved source delivery is blocked after publication, its result retains the
+published commit and approved changed file even when no source report was returned.
+The reporter accepts only the sealed published checkpoint bound to the same project,
+repository, review branch, operator instruction and workflow task. Unbound, changed,
+corrupt or unreadable checkpoints contribute no publication proof.
+
+This is the retained publication checkpoint, not a claim that the remote branch is
+still unchanged or that its review/CI passed. The goal remains blocked, the native
+result stays unsuccessful, and stale checkpoint validation/CI success is not copied.
+Reporting does not reopen a goal, rewrite the checkpoint, regenerate source or publish
+another commit. Legacy recovery still requires reviewed evidence.

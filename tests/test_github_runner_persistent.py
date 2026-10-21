@@ -144,6 +144,78 @@ class GithubRunnerPersistentTests(unittest.TestCase):
                 self.assertIsNone(native["evidence"].get("source_delivery_error"))
 
 
+
+            # Delivery can throw after publication, before returning a report.
+            # Retain only the bound source proof, never successful CI evidence.
+            from execution_checkpoint import new, advance, save
+            from source_delivery_checkpoint import request_fingerprint
+            from production_os_source_tasks import TASKS, instruction
+            from production_os_worker_canary import canary_instruction
+            task = TASKS["starlist_mcp_www_guard"]
+            cases = ((task.repo, task.path, instruction(41, task.task_id)),
+                     ("dbrckk/Jumpy", "scripts/integrations.gd",
+                      canary_instruction(40, "jumpy_share_clipboard_guard")))
+            for repository, source_path, brief in cases:
+                approved = {**correlated, "target_repo": repository, "brief": brief,
+                            "repository_branch_id": "mp-" + "a" * 24}
+                request.write_text(json.dumps(approved))
+                checkpoint_path = out / ".autonomy/generic-execution-checkpoint.json"
+                proof = {"target_repo": repository, "source_path": source_path,
+                         "request_fingerprint": request_fingerprint(approved),
+                         "changed_files": [source_path], "model_authored": True,
+                         "source_validation": "passed", "updated_source_sha256": "a" * 64,
+                         "status": "passed", "passed": True, "target_ci": "passed"}
+                checkpoint = advance(new(approved["id"], "generic", "b" * 40),
+                                     base_sha="c" * 40, round_index=1,
+                                     phase="published", last_verification=proof)
+                save(checkpoint_path, checkpoint)
+                before = checkpoint_path.read_bytes()
+                for reason in ("source_delivery_access_denied", "source_delivery_checkpoint_changed",
+                               "source_review_or_exact_sha_ci_unverified"):
+                    saved = {"status": "blocked", "blocked_reason": reason}
+                    with patch("github_runner.run_persistent_project", return_value=saved):
+                        result = run(request, out, runner=lambda *a, **k: None,
+                                     clock=lambda: 0, budget_seconds=100)
+                    self.assertEqual(result["commit_shas"], ["c" * 40])
+                    self.assertEqual(result["changed_files"], [source_path])
+                    self.assertEqual(result["status"], "blocked")
+                    self.assertFalse(result["finished"])
+                    native = json.loads((out / "production-os-result.json").read_text())
+                    self.assertEqual(native["evidence"]["commit_shas"], ["c" * 40])
+                    self.assertEqual(native["evidence"]["changed_files"], [source_path])
+                    self.assertIsNone(native["evidence"]["validation"])
+                    self.assertIsNone(native["evidence"]["ci"])
+                    self.assertFalse(native["succeeded"])
+                    self.assertEqual(checkpoint_path.read_bytes(), before)
+                for altered_request in (
+                    {**approved, "repository_branch_id": "mp-" + "b" * 24},
+                    {**approved, "production_os": {**approved["production_os"], "workflow_id": "e" * 32}},
+                    {**approved, "id": "other-project"},
+                ):
+                    request.write_text(json.dumps(altered_request))
+                    with patch("github_runner.run_persistent_project", return_value=saved):
+                        result = run(request, out, runner=lambda *a, **k: None,
+                                     clock=lambda: 0, budget_seconds=100)
+                    self.assertNotIn("commit_shas", result)
+                    self.assertNotIn("changed_files", result)
+                request.write_text(json.dumps(approved))
+                for altered in ({**proof, "target_repo": "other/repo"},
+                                {**proof, "request_fingerprint": "0" * 64},
+                                {**proof, "changed_files": ["other.py"]}):
+                    save(checkpoint_path, advance(checkpoint, last_verification=altered))
+                    with patch("github_runner.run_persistent_project", return_value=saved):
+                        result = run(request, out, runner=lambda *a, **k: None,
+                                     clock=lambda: 0, budget_seconds=100)
+                    self.assertNotIn("commit_shas", result)
+                    self.assertNotIn("changed_files", result)
+                checkpoint_path.write_bytes(b"\xff")
+                with patch("github_runner.run_persistent_project", return_value=saved):
+                    result = run(request, out, runner=lambda *a, **k: None,
+                                 clock=lambda: 0, budget_seconds=100)
+                self.assertNotIn("commit_shas", result)
+                checkpoint_path.unlink()
+
+
     def test_remote_checkpoint_ingests_memory_before_state_persistence(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td); request=self.request(root); out=root/"out"

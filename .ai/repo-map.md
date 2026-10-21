@@ -10283,6 +10283,16 @@ action = next_stage if isinstance(next_stage, str) and next_stage else "external
 detail = next_stage if isinstance(next_stage, str) and next_stage else "unknown_capability"
 phase = result.get("pending_status") or result.get("promotion_status") or result.get("research_status") or "in_progress"
 ⋮----
+# A model-authored source edit has already been published to an exact
+# review branch. If target PR creation or independent exact-SHA CI is
+# unverified, treat this as a durable external review blocker, not a
+# transient model failure. Retrying the same goal inside one worker spent
+# eleven additional cycles on source canary #41 without a second edit.
+⋮----
+blocked = {"blocked_reason": "source_review_or_exact_sha_ci_unverified"}
+sha = report.get("checkpoint_commit")
+repo = report.get("target_repo")
+⋮----
 blocked = {'blocked_reason': 'godot_preview_cycle_budget_exhausted'}
 sha = report.get('checkpoint_commit')
 repo = report.get('target_repo')
@@ -29645,6 +29655,19 @@ def test_ordinary_failure_remains_autonomous_failure(self)
 ⋮----
 exhausted = {"status": "blocked", "next_stage": "godot_preview_cycle_budget_exhausted",
 ⋮----
+# An exact model-authored source checkpoint awaiting target PR/CI is
+# not a fresh implementation failure. One attempt must persist the
+# checkpoint and stop rather than consume a 20-attempt goal budget.
+⋮----
+pending = {
+translated = translate_orchestrator_result(pending)
+⋮----
+run_once = Mock(return_value=pending)
+state = run_persistent_project(
+⋮----
+# Unrelated generic test failures retain the existing retry behavior.
+other = {
+⋮----
 run_once = Mock(return_value=exhausted)
 state = run_persistent_project("request.json", Path(td)/"out", str(Path(td)/"work"),
 ⋮----
@@ -29662,8 +29685,6 @@ root = Path(td)
 calls = {"n": 0}
 ⋮----
 def run_once(*args)
-⋮----
-state = run_persistent_project(
 ⋮----
 def test_persistent_godot_failure_counts_once_then_yields_for_fresh_workspace(self)
 ⋮----

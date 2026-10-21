@@ -141,16 +141,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-21T16:57:06Z
+Generated: 2026-10-21T16:58:26Z
 
 ### Git
 - Branch: `main`
-- Head: `188868d182e1`
-- Commit date: 2026-10-21T12:56:55-04:00
-- Commit: fix(worker): require target CI before marking source delivery passed (#369)
+- Head: `0b394c363b09`
+- Commit date: 2026-10-21T12:58:15-04:00
+- Commit: fix(worker): stop retrying published source while review is blocked (#371)
 - Tracked files: 874
 
 ### Recently changed files
+- `studio/autonomous_project.py`
+- `tests/test_autonomous_project.py`
 - `studio/production_os_bounded_source_repair.py`
 - `studio/production_os_jumpy_source_repair.py`
 - `studio/target_ci_verification.py`

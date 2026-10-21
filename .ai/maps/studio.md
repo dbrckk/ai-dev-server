@@ -4438,6 +4438,16 @@ action = next_stage if isinstance(next_stage, str) and next_stage else "external
 detail = next_stage if isinstance(next_stage, str) and next_stage else "unknown_capability"
 phase = result.get("pending_status") or result.get("promotion_status") or result.get("research_status") or "in_progress"
 ⋮----
+# A model-authored source edit has already been published to an exact
+# review branch. If target PR creation or independent exact-SHA CI is
+# unverified, treat this as a durable external review blocker, not a
+# transient model failure. Retrying the same goal inside one worker spent
+# eleven additional cycles on source canary #41 without a second edit.
+⋮----
+blocked = {"blocked_reason": "source_review_or_exact_sha_ci_unverified"}
+sha = report.get("checkpoint_commit")
+repo = report.get("target_repo")
+⋮----
 blocked = {'blocked_reason': 'godot_preview_cycle_budget_exhausted'}
 sha = report.get('checkpoint_commit')
 repo = report.get('target_repo')

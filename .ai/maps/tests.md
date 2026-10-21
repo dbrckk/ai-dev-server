@@ -2866,6 +2866,19 @@ def test_ordinary_failure_remains_autonomous_failure(self)
 ⋮----
 exhausted = {"status": "blocked", "next_stage": "godot_preview_cycle_budget_exhausted",
 ⋮----
+# An exact model-authored source checkpoint awaiting target PR/CI is
+# not a fresh implementation failure. One attempt must persist the
+# checkpoint and stop rather than consume a 20-attempt goal budget.
+⋮----
+pending = {
+translated = translate_orchestrator_result(pending)
+⋮----
+run_once = Mock(return_value=pending)
+state = run_persistent_project(
+⋮----
+# Unrelated generic test failures retain the existing retry behavior.
+other = {
+⋮----
 run_once = Mock(return_value=exhausted)
 state = run_persistent_project("request.json", Path(td)/"out", str(Path(td)/"work"),
 ⋮----
@@ -2883,8 +2896,6 @@ root = Path(td)
 calls = {"n": 0}
 ⋮----
 def run_once(*args)
-⋮----
-state = run_persistent_project(
 ⋮----
 def test_persistent_godot_failure_counts_once_then_yields_for_fresh_workspace(self)
 ⋮----

@@ -1,20 +1,18 @@
 # Change impact
 
-Base: d4cb3579cfd4b16422e6b15cde6a8d3013ce629b
-Head: 188868d182e191fd5a7712a337fa0060ebd3cdb6
+Base: 8a1e80702efbff469b8a5d6f29cdc176271c0dd8
+Head: 0b394c363b09637b40f8ab3329a7381872ce4ee0
 
 ## Changed files
-- M studio/production_os_bounded_source_repair.py
-- M studio/production_os_jumpy_source_repair.py
-- M studio/target_ci_verification.py
-- M tests/test_multi_engine_orchestrator.py
+- M studio/autonomous_project.py
+- M tests/test_autonomous_project.py
 
 ## Affected areas
 - studio
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_autonomous_project.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

@@ -73,3 +73,31 @@ def wait_for_exact_commit_ci(github, *, commit_sha: str, branch: str,
         if result["status"] != "pending" or clock() >= deadline:
             return result
         sleeper(min(poll_seconds, max(0, deadline - clock())))
+
+
+def finalize_source_delivery_evidence(
+    provisional: dict, ci: dict, *, pr_confirmed: bool
+) -> tuple[dict, bool]:
+    """Distinguish verified code edit from independently accepted delivery.
+
+    A draft PR, published commit, or in-progress workflow does not make a
+    source repair complete. Keep the pending/failed gate in sealed checkpoints.
+    """
+    if (not isinstance(provisional, dict) or not isinstance(ci, dict)
+            or type(pr_confirmed) is not bool
+            or ci.get("status") not in {"pending", "failed", "passed"}):
+        raise StudioError("Target source delivery evidence invalid")
+    validated = dict(provisional)
+    complete = pr_confirmed and ci["status"] == "passed"
+    validated["source_validation"] = "passed"
+    validated["target_ci"] = ci["status"]
+    validated["status"] = (
+        "passed" if complete else
+        "failed" if ci["status"] == "failed" else
+        "pending"
+    )
+    validated["passed"] = complete
+    validated.pop("target_ci_run_id", None)
+    if type(ci.get("run_id")) is int and ci["run_id"] > 0:
+        validated["target_ci_run_id"] = ci["run_id"]
+    return validated, complete

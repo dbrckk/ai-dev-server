@@ -360,17 +360,19 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as td:
             root = Path(td); request_path = root / "request.json"
-            unsafe = {
-                **request, "brief": "Please rebuild this whole source catalog",
-            }
-            request_path.write_text(json.dumps(unsafe))
             def no_fallback(*args, **kwargs):
                 raise AssertionError("Unapproved generic engine was invoked")
-            with self.assertRaisesRegex(StudioError, "exact operator-authorized"):
-                run_project(
-                    str(request_path), root / "out", str(root / "work"),
-                    no_fallback, 100, lambda: 0, "a" * 40,
-                )
+            for target in (task.repo, "DBRCKK/Star-List"):
+                unsafe = {
+                    **request, "target_repo": target,
+                    "brief": "Please rebuild this whole source catalog",
+                }
+                request_path.write_text(json.dumps(unsafe))
+                with self.assertRaisesRegex(StudioError, "exact operator-authorized"):
+                    run_project(
+                        str(request_path), root / "out", str(root / "work"),
+                        no_fallback, 100, lambda: 0, "a" * 40,
+                    )
 
         # PR creation and GitHub_TOKEN pull_request checks do not prove that
         # the independent, exact-commit Godot validation has actually passed.

@@ -450,5 +450,37 @@
     "branch": "fix/canary-source-preflight",
     "status": "Both historical Jumpy source objectives already implemented. Bounded public source GET blocks their relaunch. Invalid timing also rejected before enqueue. 35 tests +44 subtests and live read-only source checks passed.",
     "remaining": "Exact-head CI; select a genuinely unsatisfied public-source objective before any new generation task."
+  },
+  "published_source_resume_20261021": {
+    "branch": "fix/resume-published-source",
+    "base": "e4a2541",
+    "status": "Locally verified; exact branch CI and review pending.",
+    "reproduction": [
+      "Existing approved-source checkpoint followed by the same request fails as obsolete or asks the model for an already-applied edit.",
+      "The persistent source-review goal is terminal, so subsequent valid PR/CI observations are never executed."
+    ],
+    "changes": [
+      "Bind published checkpoint to the exact approved request, repository, branch, workflow task, commit and source hash; resume only review/CI without inference or another source commit.",
+      "Reopen only the source-review blocker on a new invocation, retain attempt count/ceiling, stop again on pending or failed CI.",
+      "Reject changed/unbound checkpoints without generation. Preserve exact commit proof and report delivery_resumed.",
+      "Label source API errors with fixed restore/publish/review/target_ci stages; stop 401/403 after one goal attempt and retain safe stage/status evidence.",
+      "Propagate whitelisted persisted source stage/status into pipeline summary and native Production-OS evidence even when the goal catches the exception."
+    ],
+    "validation": {
+      "unittest": "1784 passed",
+      "full_pytest_tests_directory": "1845 passed, 199 subtests",
+      "actual_server_integration": "6 passed against Production-OS85e7370b",
+      "compileall": "passed",
+      "diff_check": "passed",
+      "regression": "Existing source test first failed on obsolete-source restoration, then on a terminal goal never observing failed CI; corrected full goal flow resumes pending/failed/passed without additional model/publish calls.",
+      "real_http_denials": "Actual authenticated loopback 401/403: one restore request, one blocked attempt, no private response body in persisted goal.",
+      "real_control_plane_receipt": "Actual authenticated local worker/server receipt retains target_ci HTTP403 diagnostics.",
+      "runner_result_contract": "15 existing runner/result tests passed, including every source stage with 401/403 and malformed evidence rejection."
+    },
+    "limits": [
+      "No new hosted source task, inference, provider setting or target merge.",
+      "Legacy checkpoints without request binding require reviewed recovery.",
+      "Historical HTTP403 endpoint and response body were not retained; stage diagnostics qualify future failures, not its past cause."
+    ]
   }
 }

@@ -1032,6 +1032,12 @@ def _failure_diagnostics(exc: Exception) -> dict[str, Any]:
         elif " persistence failed:" in message:
             code = "remote_state_persistence_failed"
     result = {"error_type": type(exc).__name__, "error_code": code}
+    source_failure = re.fullmatch(
+        r"Source delivery (restore|publish|review|target_ci) failed: HTTP ([1-5][0-9]{2})",
+        message,
+    )
+    if source_failure:
+        result.update(error_code="source_delivery_http_error", error_stage=source_failure.group(1))
     components = ("autonomous state", "project memory", "agent performance", "provider health",
                   "provider metrics", "routing history", "verification cost", "phase cost baseline",
                   "strategy efficiency", "contextual strategy efficiency", "quick gate cache",

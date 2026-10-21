@@ -168,6 +168,19 @@ def collect_agent_usage(report: dict) -> dict:
     return totals
 
 
+def _source_delivery_error(value):
+    """Copy only bounded source diagnostics from persisted goal evidence."""
+    if not isinstance(value, dict):
+        return None
+    stage = value.get("stage")
+    status = value.get("http_status")
+    if (not isinstance(stage, str)
+            or stage not in {"restore", "publish", "review", "target_ci"}
+            or type(status) is not int or not 100 <= status <= 599):
+        return None
+    return {"stage": stage, "http_status": status}
+
+
 def write_production_os_result(out: Path, request: dict, summary: dict):
     correlation = request.get("production_os")
     if not isinstance(correlation, dict):
@@ -525,6 +538,7 @@ def write_production_os_result(out: Path, request: dict, summary: dict):
         "usage": dict(usage),
         "evidence": {
             "pipeline_status": summary.get("status"),
+            "source_delivery_error": _source_delivery_error(summary.get("source_delivery_error")),
             "next_stage": summary.get("next_stage"),
             "finished": bool(summary.get("finished") is True),
             "summary": result_summary,
@@ -1109,6 +1123,12 @@ def run(
         'next_stage':last_result.get('next_stage'),
         'finished':status=='complete',
     }
+    goal_evidence = state.get('evidence')
+    source_error = _source_delivery_error(
+        goal_evidence.get('source_delivery_error') if isinstance(goal_evidence, dict) else None
+    )
+    if source_error is not None:
+        summary['source_delivery_error'] = source_error
     if telemetry_degraded_from is not None:
         summary['persistence_status'] = 'verified_checkpoint_telemetry_degraded'
         summary['persistence_component'] = telemetry_degraded_from

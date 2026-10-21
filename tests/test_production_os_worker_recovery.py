@@ -23,6 +23,20 @@ class WorkerRecoveryTests(unittest.TestCase):
         self.assertEqual(result['error_component'], 'provider_metrics')
         self.assertNotIn('error_reason', result)
         self.assertNotIn('credential-private-response', json.dumps(result))
+        from core import APIError
+        from source_delivery_checkpoint import source_operation, SourceDeliveryHTTPError
+        for stage in ("restore", "publish", "review", "target_ci"):
+            with self.assertRaises(SourceDeliveryHTTPError) as raised:
+                with source_operation(stage):
+                    raise APIError(403)
+            result = _failure_diagnostics(raised.exception)
+            self.assertEqual(result["error_code"], "source_delivery_http_error")
+            self.assertEqual(result["error_stage"], stage)
+            self.assertEqual(result["error_http_status"], 403)
+        with self.assertRaises(ValueError):
+            SourceDeliveryHTTPError("private-response", 403)
+        with self.assertRaises(ValueError):
+            SourceDeliveryHTTPError("restore", "private-response")
     def test_runner_diagnostics_keep_http_status_and_never_publish_message(self):
         client = _FakeClient(sample_job())
         secret = 'sensitive-provider-response'

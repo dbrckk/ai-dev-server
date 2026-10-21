@@ -114,6 +114,35 @@ class GithubRunnerPersistentTests(unittest.TestCase):
                 result = run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100)
             self.assertNotIn('commit_shas', result)
 
+            correlated = json.loads(request.read_text())
+            correlated["production_os"] = {"workflow_id": "d" * 32, "workflow_task_id": "source"}
+            request.write_text(json.dumps(correlated))
+            for stage in ("restore", "publish", "review", "target_ci"):
+                for status in (401, 403):
+                    saved = {"status": "blocked", "blocked_reason": "source_delivery_access_denied",
+                             "evidence": {"source_delivery_error": {
+                                 "stage": stage, "http_status": status, "body": "private-response"}}}
+                    with patch("github_runner.run_persistent_project", return_value=saved):
+                        result = run(request, out, runner=lambda *a, **k: None,
+                                     clock=lambda: 0, budget_seconds=100)
+                    expected = {"stage": stage, "http_status": status}
+                    self.assertEqual(result["source_delivery_error"], expected)
+                    native = json.loads((out / "production-os-result.json").read_text())
+                    self.assertEqual(native["evidence"]["source_delivery_error"], expected)
+                    self.assertFalse(native["succeeded"])
+                    self.assertNotIn("private-response", json.dumps(native))
+            for invalid in (None, [], {"stage": "private-url", "http_status": 403},
+                            {"stage": "restore", "http_status": True},
+                            {"stage": "restore", "http_status": "403"},
+                            {"stage": "restore", "http_status": 999}):
+                saved["evidence"]["source_delivery_error"] = invalid
+                with patch("github_runner.run_persistent_project", return_value=saved):
+                    result = run(request, out, runner=lambda *a, **k: None,
+                                 clock=lambda: 0, budget_seconds=100)
+                self.assertNotIn("source_delivery_error", result)
+                native = json.loads((out / "production-os-result.json").read_text())
+                self.assertIsNone(native["evidence"].get("source_delivery_error"))
+
 
     def test_remote_checkpoint_ingests_memory_before_state_persistence(self):
         with tempfile.TemporaryDirectory() as td:

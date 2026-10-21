@@ -1,3 +1,12 @@
+## 2026-10-21 — resume approved published source delivery without regeneration
+
+- Reproduced two related defects: the source lane treated its already-applied edit as obsolete (or asked the model again), and a saved source-review blocker never reopened to observe later PR/CI progress.
+- New request-bound checkpoints verify project, repository, review branch, operator instruction, workflow task, exact commit and source hash. A fresh worker rechecks delivery only; no new model request or source commit. Pending/failed CI stops the loop again and the original attempt ceiling remains enforced. Changed or legacy unbound checkpoints require reviewed recovery.
+- Source API errors now carry a fixed operation and HTTP status through both the pipeline summary and native Production-OS result; 401/403 stops after one goal attempt with bounded evidence. The old canary41 HTTP403 endpoint remains unavailable, so no historical permission/rate-limit cause is claimed.
+- Verified locally: 1,784 unittest cases; 1,845 pytest cases and 199 subtests; six authenticated server/worker integrations. Existing tests extended; no new unit-test functions. Compilation and whitespace checks pass. Exact branch CI/review pending on `fix/resume-published-source`.
+- Real loopback HTTP 401/403 checks each make one authenticated restore request, block after one attempt and omit private response bodies. The actual authenticated control-plane receipt also preserves safe source stage/status. Existing runner assertions cover all four stages, both denial statuses and malformed evidence.
+- No hosted canary, model request, provider change or target merge in this continuation. Jumpy37 and recovered star-list154 remain review drafts.
+
 ## 2026-10-20 — reject obsolete source canaries before spending capacity
 
 - Inspected current public Jumpy main: settings tap guard and landing cues are already implemented. Added a bounded source applicability GET before either old 60k source objective can enqueue. Both block with scenario_no_longer_applicable on live blob 1f4c52618356fe1bbd684a1a3f4d0b717073501e; no queue mutation, dispatch or model call. Unknown/unreadable source fails closed; no product-completion claim.

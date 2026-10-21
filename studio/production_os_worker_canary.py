@@ -279,18 +279,35 @@ def wait_for_workflow(client, workflow_id, *, timeout_seconds, poll_seconds=10.0
     deadline = float(clock()) + timeout
     last_status = "unknown"
     while True:
-        payload = client.get("/v1/workflows/" + workflow_id)
-        workflow = payload.get("workflow") if isinstance(payload, dict) else None
-        if not isinstance(workflow, dict):
-            raise RuntimeError("canary workflow lookup returned invalid response")
-        last_status = str(workflow.get("status") or "unknown").lower()
-        if last_status == "succeeded":
-            return {"status": "succeeded"}
-        if last_status in _TERMINAL_FAILURES:
-            return {"status": last_status}
-        if float(clock()) >= deadline:
+        remaining = deadline - float(clock())
+        # API.call has a one-second minimum transport timeout. Do not start
+        # another read when the remaining budget cannot contain that request.
+        if remaining < 1:
             return {"status": "timed_out", "last_status": last_status}
-        sleeper(min(poll, max(0.0, deadline - float(clock()))))
+        try:
+            payload = client.get("/v1/workflows/" + workflow_id,
+                                 timeout_seconds=min(30.0, remaining))
+        except APIError as exc:
+            if exc.status not in {502, 503, 504}:
+                raise
+        except StudioError as exc:
+            if str(exc) != "API unavailable or timed out":
+                raise
+        except (TimeoutError, ConnectionError, urllib.error.URLError):
+            pass
+        else:
+            workflow = payload.get("workflow") if isinstance(payload, dict) else None
+            if not isinstance(workflow, dict):
+                raise RuntimeError("canary workflow lookup returned invalid response")
+            last_status = str(workflow.get("status") or "unknown").lower()
+            if last_status == "succeeded":
+                return {"status": "succeeded"}
+            if last_status in _TERMINAL_FAILURES:
+                return {"status": last_status}
+        remaining = deadline - float(clock())
+        if remaining <= 0:
+            return {"status": "timed_out", "last_status": last_status}
+        sleeper(min(poll, remaining))
 
 
 
@@ -303,10 +320,14 @@ def wait_for_readiness(client, *, timeout_seconds=180.0, poll_seconds=5.0,
     dashboard launch is idempotent by request_id, but this probe deliberately
     uses read-only requests and leaves the actual submission exactly once.
     """
-    deadline = float(clock()) + max(0.0, float(timeout_seconds))
+    timeout, poll = _polling_parameters(timeout_seconds, poll_seconds)
+    deadline = float(clock()) + timeout
     while True:
+        remaining = deadline - float(clock())
+        if remaining < 1:
+            raise TimeoutError("Production-OS did not become ready")
         try:
-            response = client.get("/readyz")
+            response = client.get("/readyz", timeout_seconds=min(30.0, remaining))
             if isinstance(response, dict) and response.get("status") == "ready":
                 return
             if not isinstance(response, dict) or response.get("status") != "not_ready":
@@ -322,7 +343,7 @@ def wait_for_readiness(client, *, timeout_seconds=180.0, poll_seconds=5.0,
         remaining = deadline - float(clock())
         if remaining <= 0:
             raise TimeoutError("Production-OS did not become ready")
-        sleeper(min(max(1.0, float(poll_seconds)), remaining))
+        sleeper(min(poll, remaining))
 
 
 def run_canary(client, control, *, wait_seconds=0, poll_seconds=10.0,

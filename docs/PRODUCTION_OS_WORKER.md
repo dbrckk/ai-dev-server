@@ -543,3 +543,16 @@ still unchanged or that its review/CI passed. The goal remains blocked, the nati
 result stays unsuccessful, and stale checkpoint validation/CI success is not copied.
 Reporting does not reopen a goal, rewrite the checkpoint, regenerate source or publish
 another commit. Legacy recovery still requires reviewed evidence.
+
+### Canary read deadlines
+
+Readiness and workflow-status probes cap each GET timeout at the remaining wait
+budget (up to the existing 30-second default). They do not begin a transport call
+when less than the API client's one-second minimum remains. Warmup uses the same
+finite timeout/poll validation as workflow monitoring.
+
+Transient gateway and connection failures during workflow monitoring may retry
+GETs within that budget. Authorization errors and malformed responses still stop
+the monitor. The launch POST remains a single submission, and monitoring timeout
+reports the last observed workflow state without claiming completion or creating
+another task. This changes no inference or project token budget.

@@ -1,3 +1,11 @@
+## 2026-10-21 — enforce remaining read budgets in canary warmup and monitoring
+
+- Actual HTTP reproduction: a readiness budget of 2 seconds accepted a delayed response at 3.02 seconds because the operator GET always used 30 seconds. Readiness and workflow-status reads now pass the remaining budget to the transport (capped at 30 seconds), avoid starting a minimum-one-second call with less time left, and validate finite warmup timing. Actual delayed-server checks now return timeout at 2.01/2.02 seconds for readiness/workflow status.
+- Workflow monitoring retries only transient gateway/connection GET failures inside the original budget. Authorization failures and malformed payloads still stop; the launch POST is unchanged and not retried. Existing assertions cover remaining per-read timeouts, expiration without new reads, transient recovery and immediate 403 refusal.
+- Verified: 1,784 unittest cases; 1,845 pytest cases and199 subtests; six actual authenticated server/worker integrations. Existing test functions extended, no new unit tests. Compile/whitespace checks and final exact-head CI/merge observations are tracked in the associated PR.
+- Previous worker373 is merged at84ace29 with all seven branch workflows, three CircleCI checks and eight postmerge workflows passed. Production-OS286 at06d0fc81 passed four branch/postmerge jobs; Render dep-dbcilnbncjis73asspo0 is live. A first idle HTTP probe timed out, then read-only warmup confirmed health/readiness200 and database reachable.
+- Fresh read-only source preview for the prior star-list task returned scenario_no_longer_applicable on blob a7712c0410df84467f6792469729c455edd8d041. Sequence42 was NOT activated; no task, new source commit or model request was made. Select a new reviewed applicable objective before hosted generation. No provider/budget change or target merge; Jumpy37/star-list154 remain drafts.
+
 ## 2026-10-21 — retain bound publication proof in blocked source results
 
 - Reproduced `commit_shas` missing from a blocked result even though an approved source checkpoint had already published its commit. This happens when delivery throws before returning a report, or an already-blocked review goal skips execution.

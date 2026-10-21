@@ -1,9 +1,9 @@
 {
   "version": 1,
   "updated_at": "2026-10-21",
-  "task": "Retain request-bound source publication proof when delivery is blocked",
-  "base_commit": "485e7cc",
-  "branch": "fix/retain-published-source-evidence",
+  "task": "Bound canary readiness and workflow-status reads by remaining monitoring budget",
+  "base_commit": "a40d667",
+  "branch": "fix/canary-read-deadlines",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -494,11 +494,41 @@
       "actual_worker_receipt": "Sealed fixture publication -> actual worker/native receipt -> authenticated Production-OS285 -> one failed attempt, retained commit/file, safe403, no stale CI -> durable restart",
       "test_inventory": "Existing test functions extended; no new functions"
     },
-    "qualification": "Final branch/postmerge CI and merge evidence in associated PR",
+    "qualification": "PR373 merged as84ace29; seven branch workflows, three CircleCI checks and all eight postmerge workflows passed. Production-OS286 merged06d0fc81, four branch/postmerge jobs passed; Render live and warmed health/readiness200.",
     "limits": [
       "Retained publication checkpoint is not current remote-head or passing-CI proof",
       "No model, GitHub mutation, canary retry, provider change, budget increase or target merge",
       "Jumpy37/star-list154 remain drafts; durable free inference remains unqualified"
+    ]
+  },
+  "canary_read_deadlines_20261021": {
+    "branch": "fix/canary-read-deadlines",
+    "reproduction": "Actual HTTP: readiness accepted after3.02 seconds despite2-second budget because GET used a fixed30-second timeout",
+    "changes": [
+      "Cap readiness/workflow GET timeout to remaining budget, retaining30-second default for other OperatorClient callers",
+      "Stop before a GET when less than the transport minimum remains; validate warmup timing",
+      "Retry only transient gateway/connection reads while monitoring, without another launch POST"
+    ],
+    "validation": {
+      "unittest": "1784 passed",
+      "pytest": "1845 passed, 199 subtests",
+      "server_integration": "6 passed",
+      "actual_http": "Delayed server: baseline ready at3.02s with2s budget; corrected readiness/workflow timeout at2.01/2.02s",
+      "tests": "Existing functions extended; no new test functions"
+    },
+    "source_preview": {
+      "sequence": 42,
+      "activated": false,
+      "status": "scenario_no_longer_applicable",
+      "source_blob_sha": "a7712c0410df84467f6792469729c455edd8d041",
+      "task_id": "starlist_mcp_www_guard",
+      "model_or_queue_calls": 0
+    },
+    "qualification": "Final branch/postmerge CI and merge evidence in associated PR",
+    "limits": [
+      "No fresh hosted source task or provider settings change",
+      "No inference/project budget increase or target PR merge",
+      "Select a new reviewed applicable source objective before generation; Jumpy37/star-list154 remain drafts"
     ]
   }
 }

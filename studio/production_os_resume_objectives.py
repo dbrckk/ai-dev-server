@@ -19,8 +19,8 @@ INSTRUCTION = (
 
 
 class OperatorClient(API):
-    def get(self, path):
-        return self.call("GET", path, timeout_seconds=30)
+    def get(self, path, *, timeout_seconds=30):
+        return self.call("GET", path, timeout_seconds=timeout_seconds)
 
     def continue_project(self, project_id):
         return self.submit("/v1/managed-projects/" + project_id + "/instructions", {"instruction": INSTRUCTION})

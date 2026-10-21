@@ -107,18 +107,20 @@ class GenericRepository:
                    and r.get("ref") == "refs/heads/" + self.branch]
         if len(matches) > 1:
             raise StudioError("Approved source branch ref ambiguous")
-        branch_head = matches[0].get("object") if matches else None
-        base_sha = (
-            branch_head.get("sha") if isinstance(branch_head, dict)
-            else self.github.get("/branches/main").get("commit", {}).get("sha")
-        )
+        if matches:
+            branch_head = matches[0].get("object")
+            if not isinstance(branch_head, dict):
+                raise StudioError("Approved source branch revision unavailable")
+            base_sha = branch_head.get("sha")
+        else:
+            base_sha = self.github.get("/branches/main").get("commit", {}).get("sha")
         if not isinstance(base_sha, str) or not re.fullmatch(r"[a-f0-9]{40}", base_sha):
             raise StudioError("Approved source revision invalid")
         response = self.github.get("/contents/" + quote(path, safe="/") + "?ref=" + base_sha)
         if (not isinstance(response, dict) or response.get("type") != "file"
                 or response.get("path") != path or response.get("encoding") != "base64"
                 or not isinstance(response.get("content"), str)
-                or not isinstance(response.get("size"), int)
+                or type(response.get("size")) is not int
                 or not 1 <= response["size"] <= 400_000
                 or not isinstance(response.get("sha"), str)
                 or not re.fullmatch(r"[a-f0-9]{40}", response["sha"])):
@@ -152,7 +154,8 @@ class GenericRepository:
                 or not re.fullmatch(r"[a-f0-9]{40}", base_sha)):
             raise StudioError("Approved publication source invalid")
         target = root / path
-        if not target.is_file() or target.is_symlink():
+        if (not target.is_file() or target.is_symlink()
+                or any(item.is_symlink() for item in (root, *target.parents))):
             raise StudioError("Approved publication file missing or symlinked")
         raw = target.read_bytes()
         if not 1 <= len(raw) <= 400_000:

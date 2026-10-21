@@ -17,6 +17,7 @@ from generic_model import ask
 from generic_repository import GenericRepository
 from production_os_source_tasks import TASKS, SourceTask, instruction
 from run import GitHub
+from source_delivery_checkpoint import request_fingerprint, resume_published_source, source_operation
 from target_ci_verification import wait_for_exact_commit_ci, finalize_source_delivery_evidence
 
 _SEQUENCE = re.compile(
@@ -106,73 +107,84 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     github = GitHub(task.repo)
     repo = GenericRepository(github, task.repo, req["repository_branch_id"])
-    base_sha, restore = repo.restore_approved_source(work, task.path)
+    with source_operation("restore"):
+        base_sha, restore = repo.restore_approved_source(work, task.path)
     target = work / task.path
     if not target.is_file() or target.is_symlink():
         raise StudioError("Approved source target missing or unsafe")
     before = target.read_text(encoding="utf-8")
-    if before.count(task.old_line + "\n") != 1:
-        raise StudioError("Approved source task is obsolete or ambiguous")
-    # Public source only. Single provider request, caller-owned model budget,
-    # and no local synthesized patch when model fails.
-    start = before.index("def " + task.function + "(")
-    end = before.find("\ndef ", start + 1)
-    excerpt = before[start:end if end >= 0 else None][:5500]
-    response, provider = ask(
-        "Return JSON only: {\"replacement_line\":\"...\"}, no markdown. "
-        "Change only the requested Python assignment. Keep leading spaces "
-        "exactly; preserve original expression and wrap it only with "
-        f".{task.method}({json.dumps(task.argument)}). Do not add imports, "
-        "other statements or unrelated code. Model must author the new line.",
-        task.objective + "\nExisting source:\n" + excerpt +
-        "\nExisting exact assignment:\n" + task.old_line +
-        "\nReturn the complete replacement source line including indentation.",
-        code=True, role="implementation", timeout_seconds=120,
-    )
-    after = apply_model_edit(before, response, task)
-    target.write_text(after, encoding="utf-8")
-    if target.read_text(encoding="utf-8") != after:
-        raise StudioError("Source edit write verification failed")
-    sha = repo.publish_approved_source(base_sha, work, task.path,
-        f"Source: approved model-authored repair {task.task_id} ({sequence})")
-    evidence = {
-        "status": "pending", "passed": False, "source_validation": "passed", "model_authored": True,
-        "target_ci": "pending_exact_commit", "source_path": task.path,
-        "changed_files": [task.path],
-        "model": str(provider.get("model") or "") if isinstance(provider, dict) else "",
-        "base_source_sha256": hashlib.sha256(before.encode()).hexdigest(),
-        "updated_source_sha256": hashlib.sha256(after.encode()).hexdigest(),
-    }
-    checkpoint = advance_checkpoint(new_checkpoint(req["id"], "generic", base_sha),
-                                    base_sha=sha, round_index=1,
-                                    phase="published", last_verification=evidence)
     checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
+    resumed = resume_published_source(checkpoint_path, req, task.path, base_sha, before)
+    if resumed is None:
+        if before.count(task.old_line + "\n") != 1:
+            raise StudioError("Approved source task is obsolete or ambiguous")
+        # Public source only. Single provider request, caller-owned model budget,
+        # and no local synthesized patch when model fails.
+        start = before.index("def " + task.function + "(")
+        end = before.find("\ndef ", start + 1)
+        excerpt = before[start:end if end >= 0 else None][:5500]
+        response, provider = ask(
+            "Return JSON only: {\"replacement_line\":\"...\"}, no markdown. "
+            "Change only the requested Python assignment. Keep leading spaces "
+            "exactly; preserve original expression and wrap it only with "
+            f".{task.method}({json.dumps(task.argument)}). Do not add imports, "
+            "other statements or unrelated code. Model must author the new line.",
+            task.objective + "\nExisting source:\n" + excerpt +
+            "\nExisting exact assignment:\n" + task.old_line +
+            "\nReturn the complete replacement source line including indentation.",
+            code=True, role="implementation", timeout_seconds=120,
+        )
+        after = apply_model_edit(before, response, task)
+        target.write_text(after, encoding="utf-8")
+        if target.read_text(encoding="utf-8") != after:
+            raise StudioError("Source edit write verification failed")
+        with source_operation("publish"):
+            sha = repo.publish_approved_source(base_sha, work, task.path,
+                f"Source: approved model-authored repair {task.task_id} ({sequence})")
+        evidence = {
+            "target_repo": req["target_repo"],
+            "request_fingerprint": request_fingerprint(req),
+            "status": "pending", "passed": False, "source_validation": "passed", "model_authored": True,
+            "target_ci": "pending_exact_commit", "source_path": task.path,
+            "changed_files": [task.path],
+            "model": str(provider.get("model") or "") if isinstance(provider, dict) else "",
+            "base_source_sha256": hashlib.sha256(before.encode()).hexdigest(),
+            "updated_source_sha256": hashlib.sha256(after.encode()).hexdigest(),
+        }
+        checkpoint = advance_checkpoint(new_checkpoint(req["id"], "generic", base_sha),
+                                        base_sha=sha, round_index=1,
+                                        phase="published", last_verification=evidence)
+    else:
+        checkpoint, evidence = resumed
+        sha = base_sha
     save_checkpoint(checkpoint_path, checkpoint)
     if checkpoint_observer is not None:
         checkpoint_observer(dict(checkpoint))
-    try:
-        repo.ensure_pull_request(
-            title=f"star-list: model-authored MCP host normalization ({sequence})",
-            body="One approved model-authored source edit. Independently validate the exact SHA; no automatic merge.",
-            expected_sha=sha,
-        )
-        pr = repo.await_trusted_review(sha)
-    except StudioError as exc:
-        denied = any(status in str(exc) for status in ("HTTP 401", "HTTP 403"))
-        handoff = repo.request_trusted_review_handoff(sha) if denied else None
-        pr = (repo.await_trusted_review(sha)
-              if isinstance(handoff, dict) and handoff.get("status") == "accepted"
-              else None)
+    with source_operation("review"):
+        try:
+            repo.ensure_pull_request(
+                title=f"star-list: model-authored MCP host normalization ({sequence})",
+                body="One approved model-authored source edit. Independently validate the exact SHA; no automatic merge.",
+                expected_sha=sha,
+            )
+            pr = repo.await_trusted_review(sha)
+        except StudioError as exc:
+            denied = any(status in str(exc) for status in ("HTTP 401", "HTTP 403"))
+            handoff = repo.request_trusted_review_handoff(sha) if denied else None
+            pr = (repo.await_trusted_review(sha)
+                  if isinstance(handoff, dict) and handoff.get("status") == "accepted"
+                  else None)
     confirmed = (isinstance(pr, dict) and type(pr.get("number")) is int
                  and pr.get("url") == f"https://github.com/{task.repo}/pull/{pr['number']}")
     ci = {"status": "pending", "reason": "review_pr_not_confirmed"}
     if confirmed:
-        ci = wait_for_exact_commit_ci(
-            github, commit_sha=sha, branch=repo.branch,
-            workflow_path=task.workflow_path,
-            required_steps=task.required_steps,
-            timeout_seconds=500,
-        )
+        with source_operation("target_ci"):
+            ci = wait_for_exact_commit_ci(
+                github, commit_sha=sha, branch=repo.branch,
+                workflow_path=task.workflow_path,
+                required_steps=task.required_steps,
+                timeout_seconds=500,
+            )
     evidence, complete = finalize_source_delivery_evidence(
         evidence, ci, pr_confirmed=confirmed,
     )
@@ -202,6 +214,7 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
         "release_status": "source_review_pending_human_approval" if complete
                           else "source_review_pending_exact_sha_ci",
         "resume_mode": "operator_approved_bounded_source_repair",
+        "delivery_resumed": resumed is not None,
     }
     (out / "generic-report.json").write_text(canonical(report), encoding="utf-8")
     return {"status": "complete" if complete else "blocked",

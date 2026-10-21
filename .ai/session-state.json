@@ -107,7 +107,7 @@
   "current_work": [
     "PR #309 merged f4137d62598333b52dc1988ef8aca2c3978247fe with 7 successful exact-head workflows; bounded Godot planning context now on ai-dev-server/main",
     "Add strict Jumpy-only settings tap guard source-code canary scenario; extend existing tests and qualify exact-head CI before triggering",
-    "After merge increment control canary sequence 33\u219234 and choose jumpy_settings_tap_guard to verify real model-generated GDScript patch (not marker file)",
+    "After merge increment control canary sequence 33→34 and choose jumpy_settings_tap_guard to verify real model-generated GDScript patch (not marker file)",
     "Review actual worker model capacity, change diff, Jumpy headless CI and PR before claiming source-code delivery. Never merge Jumpy checkpoint automatically."
   ],
   "merged_changes": [
@@ -450,5 +450,33 @@
     "branch": "fix/canary-source-preflight",
     "status": "Both historical Jumpy source objectives already implemented. Bounded public source GET blocks their relaunch. Invalid timing also rejected before enqueue. 35 tests +44 subtests and live read-only source checks passed.",
     "remaining": "Exact-head CI; select a genuinely unsatisfied public-source objective before any new generation task."
+  },
+  "published_source_resume_20261021": {
+    "branch": "fix/resume-published-source",
+    "base": "e4a2541",
+    "status": "Locally verified; exact branch CI and review pending.",
+    "reproduction": [
+      "Existing approved-source checkpoint followed by the same request fails as obsolete or asks the model for an already-applied edit.",
+      "The persistent source-review goal is terminal, so subsequent valid PR/CI observations are never executed."
+    ],
+    "changes": [
+      "Bind published checkpoint to the exact approved request, repository, branch, workflow task, commit and source hash; resume only review/CI without inference or another source commit.",
+      "Reopen only the source-review blocker on a new invocation, retain attempt count/ceiling, stop again on pending or failed CI.",
+      "Reject changed/unbound checkpoints without generation. Preserve exact commit proof and report delivery_resumed.",
+      "Label source API errors with fixed restore/publish/review/target_ci stages; stop 401/403 after one goal attempt and retain safe stage/status evidence."
+    ],
+    "validation": {
+      "unittest": "1784 passed",
+      "full_pytest_tests_directory": "1845 passed, 199 subtests",
+      "actual_server_integration": "6 passed against Production-OS85e7370b",
+      "compileall": "passed",
+      "diff_check": "passed",
+      "regression": "Existing source test first failed on obsolete-source restoration, then on a terminal goal never observing failed CI; corrected full goal flow resumes pending/failed/passed without additional model/publish calls."
+    },
+    "limits": [
+      "No new hosted source task, inference, provider setting or target merge.",
+      "Legacy checkpoints without request binding require reviewed recovery.",
+      "Historical HTTP403 endpoint and response body were not retained; stage diagnostics qualify future failures, not its past cause."
+    ]
   }
 }

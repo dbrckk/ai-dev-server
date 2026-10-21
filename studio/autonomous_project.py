@@ -8,7 +8,7 @@ import os
 try:
     from .core import StudioError
     from .capability_registry import new_registry, save as save_registry, load as load_registry, register, has_capability
-    from .goal_engine import new_goal, save as save_goal, load as load_goal, resume_human_action
+    from .goal_engine import new_goal, save as save_goal, load as load_goal, resume_human_action, resume_source_review
     from .goal_loop import run_goal
     from .promoted_capabilities import sync_into_registry
     from .capability_runtime import execute_capability
@@ -27,7 +27,7 @@ try:
 except ImportError:
     from core import StudioError
     from capability_registry import new_registry, save as save_registry, load as load_registry, register, has_capability
-    from goal_engine import new_goal, save as save_goal, load as load_goal, resume_human_action
+    from goal_engine import new_goal, save as save_goal, load as load_goal, resume_human_action, resume_source_review
     from goal_loop import run_goal
     from promoted_capabilities import sync_into_registry
     from capability_runtime import execute_capability
@@ -253,6 +253,30 @@ def run_persistent_project(
         project_out, goal_id, objective, max_attempts=max_attempts
     )
     goal_state = load_goal(goal_path)
+    if (goal_state.get("status") == "blocked"
+            and goal_state.get("blocked_reason") == "source_review_or_exact_sha_ci_unverified"
+            and goal_state["attempt"] < goal_state["max_attempts"]):
+        # A new worker invocation may recheck external review progress. The
+        # same invocation still stops after one blocked observation. Bind it
+        # to the exact approved request and retained source commit first.
+        from production_os_bounded_source_repair import contract as bounded_contract
+        from production_os_jumpy_source_repair import contract as jumpy_contract
+        from source_delivery_checkpoint import load_published_source
+        approved = bounded_contract(native_request)
+        source_path = approved[1].path if approved else (
+            "scripts/integrations.gd" if jumpy_contract(native_request) is not None else None
+        )
+        if source_path is not None:
+            checkpoint = load_published_source(
+                project_out / AUTONOMY_DIR / "generic-execution-checkpoint.json",
+                native_request, source_path,
+            )
+            if checkpoint is not None:
+                goal_state = resume_source_review(
+                    goal_state, commit_sha=checkpoint["base_sha"],
+                    target_repo=native_request["target_repo"],
+                )
+                save_goal(goal_path, goal_state)
     if goal_state.get("status") == "human_action_required":
         detail = str(goal_state.get("human_action") or "external_human_action_required")
         if prerequisite_satisfied(detail):
@@ -326,6 +350,15 @@ def run_persistent_project(
                 )
             except Exception as exc:
                 from native_model_usage import NativeCapacityError
+                from source_delivery_checkpoint import SourceCheckpointError, SourceDeliveryHTTPError
+                if isinstance(exc, SourceCheckpointError):
+                    return {"blocked_reason": "source_delivery_checkpoint_changed"}
+                if isinstance(exc, SourceDeliveryHTTPError) and exc.status in {401, 403}:
+                    return {"blocked_reason": "source_delivery_access_denied", "evidence": {
+                        "source_delivery_error": {
+                            "stage": exc.source_stage, "http_status": exc.status,
+                        },
+                    }}
                 detail = str(exc)
                 if (
                     isinstance(exc, (StudioError, NativeCapacityError))

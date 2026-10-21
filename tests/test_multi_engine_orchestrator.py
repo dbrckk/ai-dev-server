@@ -360,6 +360,97 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
 
         # PR creation and GitHub_TOKEN pull_request checks do not prove that
         # the independent, exact-commit Godot validation has actually passed.
+        # A fresh worker must recheck the published source without asking the
+        # model for an already-applied edit or publishing another commit.
+        import production_os_bounded_source_repair as bounded_lane
+        import production_os_jumpy_source_repair as jumpy_lane
+        from execution_checkpoint import load as load_checkpoint
+        cases = (
+            (bounded_lane, request, task.path, source, proposal),
+            (jumpy_lane, exact, "scripts/integrations.gd",
+             'func share_score(score: int, daily: bool = false) -> void:\n'
+             '\tvar text = "Score"\n\tDisplayServer.clipboard_set(text)\n'
+             '\tevent("share_score", {"score": score, "daily": daily})\n', answer),
+        )
+        for lane, source_request, source_path, original, model_reply in cases:
+            with tempfile.TemporaryDirectory() as td:
+                root = Path(td); out = root / "out"
+                published = {"sha": "b" * 40, "source": original, "count": 0}
+
+                class Repository:
+                    branch = "studio/" + source_request["repository_branch_id"]
+                    def __init__(self, *_args): pass
+                    def restore(self, work):
+                        file = work / source_path
+                        file.parent.mkdir(parents=True, exist_ok=True)
+                        file.write_text(published["source"])
+                        return published["sha"], {"source_sha": published["sha"]}
+                    def restore_approved_source(self, work, path):
+                        assert path == source_path
+                        return self.restore(work)
+                    def publish(self, base, work, *_args):
+                        assert base == published["sha"]
+                        published.update(sha="c" * 40, source=(work / source_path).read_text(), count=published["count"] + 1)
+                        return published["sha"]
+                    def publish_approved_source(self, base, work, path, message):
+                        assert path == source_path
+                        return self.publish(base, work, message)
+                    def ensure_pull_request(self, **kwargs):
+                        assert kwargs["expected_sha"] == published["sha"]
+                    def await_trusted_review(self, sha):
+                        return review["pr"]
+
+                review = {"pr": None}
+                from autonomous_project import run_persistent_project
+                request_path = root / "request.json"
+                request_path.write_text(json.dumps(source_request))
+                def execute_lane(_request, output, work, *_args):
+                    return lane.run(source_request, output, Path(work))
+                def continue_goal(work):
+                    return run_persistent_project(
+                        request_path, out, str(work), lambda *a: None,
+                        100, lambda: 0, goal_id=source_request["id"],
+                        run_once=execute_lane, max_cycles=3, max_attempts=4,
+                    )
+                with patch.object(lane, "GitHub"), patch.object(lane, "GenericRepository", Repository), patch.object(lane, "ask", return_value=(model_reply, {"model": "fixture"})) as model, patch.object(lane, "wait_for_exact_commit_ci") as ci:
+                    result = continue_goal(root / "first")
+                    self.assertEqual(result["status"], "blocked")
+                    self.assertEqual(model.call_count, 1)
+                    ci.assert_not_called()
+                    model.reset_mock()
+                    review["pr"] = {"number": 7, "url": f"https://github.com/{source_request['target_repo']}/pull/7"}
+                    for index, status in enumerate(("pending", "failed", "passed")):
+                        ci.return_value = {"status": status, "run_id": 12}
+                        result = continue_goal(root / f"resume-{index}")
+                        self.assertEqual(result["status"], "complete" if status == "passed" else "blocked")
+                        self.assertEqual(result["attempt"], index + 2)
+                        saved = load_checkpoint(out / ".autonomy/generic-execution-checkpoint.json")
+                        self.assertEqual(saved["last_verification"]["target_ci"], status)
+                        self.assertEqual(saved["base_sha"], "c" * 40)
+                        self.assertTrue(json.loads((out / "generic-report.json").read_text())["delivery_resumed"])
+                    model.assert_not_called()
+                    from core import APIError
+                    with patch.object(Repository, "restore", side_effect=APIError(403)):
+                        denied = run_persistent_project(
+                            request_path, root / "denied", str(root / "denied-work"),
+                            lambda *a: None, 100, lambda: 0,
+                            goal_id=source_request["id"], run_once=execute_lane, max_cycles=4,
+                        )
+                    self.assertEqual(denied["status"], "blocked")
+                    self.assertEqual(denied["attempt"], 1)
+                    self.assertEqual(denied["evidence"]["source_delivery_error"],
+                                     {"stage": "restore", "http_status": 403})
+                    model.assert_not_called()
+                    self.assertEqual(published["count"], 1)
+                    # Neither another request nor moved/edited source may
+                    # reuse the checkpoint, even if the PR remains green.
+                    for modified in ({**source_request, "id": "other-project"}, source_request):
+                        if modified is source_request:
+                            published["source"] += "\n# changed after publication\n"
+                        with self.assertRaises(StudioError):
+                            lane.run(modified, out, root / ("moved" if modified is source_request else "other"))
+                    model.assert_not_called()
+
         from target_ci_verification import inspect_exact_commit_ci
         source_sha = "f" * 40
         review_branch = "studio/mp-" + "a" * 24

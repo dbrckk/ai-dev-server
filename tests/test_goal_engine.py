@@ -61,6 +61,26 @@ class GoalEngineTests(unittest.TestCase):
         s=finalize(record_cycle(goal(),evidence={"build_sha":"abc","qa_report":"ok"}))
         with self.assertRaisesRegex(GoalStateError,"immutable"):
             record_cycle(s,evidence={"x":"y"})
+        from studio.goal_engine import resume_source_review
+        with self.assertRaises(GoalStateError):
+            resume_source_review(s, commit_sha="a" * 40, target_repo="owner/repo")
+        checkpoint = {"commit_sha": "a" * 40, "target_repo": "owner/repo",
+                      "validation_pending": True}
+        pending = finalize(record_cycle(
+            goal(), evidence={"source_review_checkpoint": checkpoint},
+            blocked_reason="source_review_or_exact_sha_ci_unverified"))
+        resumed = resume_source_review(pending, commit_sha="a" * 40, target_repo="owner/repo")
+        self.assertEqual(resumed["status"], "active")
+        self.assertEqual(resumed["attempt"], pending["attempt"])
+        self.assertEqual(pending["status"], "blocked")
+        for sha, repo in (("b" * 40, "owner/repo"), ("a" * 40, "other/repo"), (None, None)):
+            with self.assertRaises(GoalStateError):
+                resume_source_review(pending, commit_sha=sha, target_repo=repo)
+        exhausted = finalize(record_cycle(
+            goal(max_attempts=1), evidence={"source_review_checkpoint": checkpoint},
+            blocked_reason="source_review_or_exact_sha_ci_unverified"))
+        with self.assertRaises(GoalStateError):
+            resume_source_review(exhausted, commit_sha="a" * 40, target_repo="owner/repo")
 
     def test_false_evidence_rejected(self):
         with self.assertRaisesRegex(GoalStateError,"evidence invalid"):

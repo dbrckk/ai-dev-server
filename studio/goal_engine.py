@@ -120,3 +120,25 @@ def resume_human_action(state):
     x["human_action"]=None
     x["history"].append({"attempt":x["attempt"],"human_action_resumed":True})
     return _seal(x)
+
+
+def resume_source_review(state, *, commit_sha, target_repo):
+    """Recheck one published review checkpoint without resetting its budget."""
+    validate(state)
+    checkpoint = state.get("evidence", {}).get("source_review_checkpoint")
+    if (state.get("status") != "blocked"
+            or state.get("blocked_reason") != "source_review_or_exact_sha_ci_unverified"
+            or state["attempt"] >= state["max_attempts"]
+            or not isinstance(checkpoint, dict)
+            or checkpoint.get("commit_sha") != commit_sha
+            or checkpoint.get("target_repo") != target_repo
+            or checkpoint.get("validation_pending") is not True
+            or not isinstance(commit_sha, str) or len(commit_sha) != 40
+            or any(ch not in "0123456789abcdef" for ch in commit_sha)
+            or not isinstance(target_repo, str) or not target_repo):
+        raise GoalStateError("source review checkpoint cannot resume")
+    x = {**state, "status": "active", "blocked_reason": None,
+         "evidence": dict(state["evidence"]), "history": list(state["history"])}
+    x["evidence"].pop("source_review_checkpoint")
+    x["history"].append({"attempt": x["attempt"], "source_review_resumed": commit_sha})
+    return _seal(x)

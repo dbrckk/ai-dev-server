@@ -507,3 +507,25 @@ Marker-only scenarios need no source GET.
 Polling durations are also validated before submission: wait 0–7200 seconds,
 poll 1–60 seconds, finite numeric values. Invalid durations must never leave a
 real queued task behind a failed CLI invocation.
+
+## Resuming an approved published source repair
+
+The two approved source lanes retain the published commit while their draft PR
+or independent CI is pending. A new worker invocation can recheck that delivery
+without another model request or source commit. It requires an integrity-sealed
+checkpoint bound to the same project, operator instruction, workflow task,
+repository, review branch, commit SHA and source hash. A moved branch, modified
+source or different request blocks resumption. Older checkpoints without the
+request binding require reviewed recovery; they never trigger a replacement edit.
+
+Only the source-review blocker can reopen for this check. Each pending check
+consumes one existing goal attempt, stops again when review is pending or failed,
+and preserves the original attempt ceiling. Other terminal goals stay immutable.
+The report records `delivery_resumed=true`; completion still requires a verified
+draft PR and passing independent CI for the exact commit.
+
+Source API failures identify one bounded operation: `restore`, `publish`,
+`review`, or `target_ci`. HTTP 401/403 blocks the goal on its first attempt and
+records the operation/status under `source_delivery_error` in the goal evidence.
+Worker exception diagnostics expose `error_stage` and `error_http_status` without
+remote response bodies, request URLs or credentials.

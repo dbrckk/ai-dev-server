@@ -16,6 +16,7 @@ from generic_model import ask
 from generic_repository import GenericRepository
 from production_os_worker_canary import canary_instruction
 from run import GitHub
+from source_delivery_checkpoint import request_fingerprint, resume_published_source, source_operation
 from target_ci_verification import wait_for_exact_commit_ci, finalize_source_delivery_evidence
 
 _TARGET = "dbrckk/Jumpy"
@@ -96,95 +97,106 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     github = GitHub(_TARGET)
     repo = GenericRepository(github, _TARGET, req["repository_branch_id"])
-    base_sha, restore = repo.restore(work)
+    with source_operation("restore"):
+        base_sha, restore = repo.restore(work)
     target = work / _FILE
     if not target.is_file() or target.is_symlink():
         raise StudioError("Source repair target missing or unsafe")
     before = target.read_text(encoding="utf-8")
-    match = _FUNCTION.search(before)
-    if match is None:
-        raise StudioError("Source repair target function not found")
-    # One genuine bounded provider inference instead of fifteen full-game
-    # product/design/implementation/review calls. Never synthesize a patch
-    # locally if the model fails or its proposal violates the code contract.
-    response, provider = ask(
-        "Return only a JSON object with one key guard_lines: three short GDScript "
-        "statement strings without indentation. No Markdown or extra fields. "
-        "The three lines must check DisplayServer.FEATURE_CLIPBOARD with "
-        "DisplayServer.has_feature, emit event(\"share_unavailable\", "
-        "{\"reason\": \"clipboard_unsupported\"}) or reason "
-        "clipboard_unavailable when unsupported, then return. Preserve the "
-        "original supported clipboard and share_score event path unchanged.",
-        "Review this public source function:\n" + match.group(0)
-        + "\nSupply only the three model-authored lines inserted immediately "
-        "before DisplayServer.clipboard_set(text). Do not rewrite the function.",
-        code=True,
-        role="implementation",
-        timeout_seconds=120,
-    )
-    after = apply_model_guard(before, response)
-    target.write_text(after, encoding="utf-8")
-    if target.read_text(encoding="utf-8") != after:
-        raise StudioError("Source repair write verification failed")
-    sha = repo.publish(base_sha, work, f"Jumpy: model-authored clipboard guard (canary {sequence})")
-    verification = {
-        "status": "pending",
-        "passed": False,
-        "source_validation": "passed",
-        "model_authored": True,
-        "structural_only": False,
-        "target_ci": "pending_exact_commit",
-        "model": str(provider.get("model") or "") if isinstance(provider, dict) else "",
-        "source_path": _FILE,
-        "base_source_sha256": hashlib.sha256(before.encode()).hexdigest(),
-        "updated_source_sha256": hashlib.sha256(after.encode()).hexdigest(),
-        "changed_files": [_FILE],
-    }
-    checkpoint = advance_checkpoint(
-        new_checkpoint(req["id"], "generic", base_sha),
-        base_sha=sha,
-        round_index=1,
-        phase="published",
-        last_verification=verification,
-    )
     checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
+    resumed = resume_published_source(checkpoint_path, req, _FILE, base_sha, before)
+    if resumed is None:
+        match = _FUNCTION.search(before)
+        if match is None:
+            raise StudioError("Source repair target function not found")
+        # One genuine bounded provider inference instead of fifteen full-game
+        # product/design/implementation/review calls. Never synthesize a patch
+        # locally if the model fails or its proposal violates the code contract.
+        response, provider = ask(
+            "Return only a JSON object with one key guard_lines: three short GDScript "
+            "statement strings without indentation. No Markdown or extra fields. "
+            "The three lines must check DisplayServer.FEATURE_CLIPBOARD with "
+            "DisplayServer.has_feature, emit event(\"share_unavailable\", "
+            "{\"reason\": \"clipboard_unsupported\"}) or reason "
+            "clipboard_unavailable when unsupported, then return. Preserve the "
+            "original supported clipboard and share_score event path unchanged.",
+            "Review this public source function:\n" + match.group(0)
+            + "\nSupply only the three model-authored lines inserted immediately "
+            "before DisplayServer.clipboard_set(text). Do not rewrite the function.",
+            code=True,
+            role="implementation",
+            timeout_seconds=120,
+        )
+        after = apply_model_guard(before, response)
+        target.write_text(after, encoding="utf-8")
+        if target.read_text(encoding="utf-8") != after:
+            raise StudioError("Source repair write verification failed")
+        with source_operation("publish"):
+            sha = repo.publish(base_sha, work, f"Jumpy: model-authored clipboard guard (canary {sequence})")
+        verification = {
+            "target_repo": req["target_repo"],
+            "request_fingerprint": request_fingerprint(req),
+            "status": "pending",
+            "passed": False,
+            "source_validation": "passed",
+            "model_authored": True,
+            "structural_only": False,
+            "target_ci": "pending_exact_commit",
+            "model": str(provider.get("model") or "") if isinstance(provider, dict) else "",
+            "source_path": _FILE,
+            "base_source_sha256": hashlib.sha256(before.encode()).hexdigest(),
+            "updated_source_sha256": hashlib.sha256(after.encode()).hexdigest(),
+            "changed_files": [_FILE],
+        }
+        checkpoint = advance_checkpoint(
+            new_checkpoint(req["id"], "generic", base_sha),
+            base_sha=sha,
+            round_index=1,
+            phase="published",
+            last_verification=verification,
+        )
+    else:
+        checkpoint, verification = resumed
+        sha = base_sha
     save_checkpoint(checkpoint_path, checkpoint)
     if checkpoint_observer is not None:
         checkpoint_observer(dict(checkpoint))
-    try:
-        repo.ensure_pull_request(
-            title="Jumpy: guard clipboard sharing when unavailable",
-            body="One model-authored source-only repair; requires independent exact-SHA Godot CI and human review.",
-            expected_sha=sha,
-        )
-        confirmed = repo.await_trusted_review(sha)
-        pr = confirmed if confirmed is not None else {"state": "unavailable", "reason": "review_commit_unverified"}
-    except StudioError as exc:
-        denied = any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
-        handoff = repo.request_trusted_review_handoff(sha) if denied else None
-        confirmed = (
-            repo.await_trusted_review(sha)
-            if isinstance(handoff, dict) and handoff.get("status") == "accepted"
-            else None
-        )
-        pr = confirmed if confirmed is not None else {
-            "state": "unavailable",
-            "reason": "pull_request_write_denied" if denied else "pull_request_unavailable",
-            **({"review_handoff": handoff} if handoff is not None else {}),
-        }
+    with source_operation("review"):
+        try:
+            repo.ensure_pull_request(
+                title="Jumpy: guard clipboard sharing when unavailable",
+                body="One model-authored source-only repair; requires independent exact-SHA Godot CI and human review.",
+                expected_sha=sha,
+            )
+            confirmed = repo.await_trusted_review(sha)
+            pr = confirmed if confirmed is not None else {"state": "unavailable", "reason": "review_commit_unverified"}
+        except StudioError as exc:
+            denied = any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
+            handoff = repo.request_trusted_review_handoff(sha) if denied else None
+            confirmed = (
+                repo.await_trusted_review(sha)
+                if isinstance(handoff, dict) and handoff.get("status") == "accepted"
+                else None
+            )
+            pr = confirmed if confirmed is not None else {
+                "state": "unavailable",
+                "reason": "pull_request_write_denied" if denied else "pull_request_unavailable",
+                **({"review_handoff": handoff} if handoff is not None else {}),
+            }
     pr_confirmed = (type(pr.get("number")) is int
                     and pr.get("url") == f"https://github.com/dbrckk/Jumpy/pull/{pr['number']}")
     ci = {"status": "pending", "reason": "review_pr_not_confirmed"}
     if pr_confirmed:
-        ci = wait_for_exact_commit_ci(
-            github, commit_sha=sha, branch=repo.branch,
-            workflow_path=".github/workflows/validate.yml",
-            required_steps=(
-                "Verify dispatched checkpoint identity",
-                "Import and parse project",
-                "Smoke-test touch routing and HUD input passthrough",
-            ),
-        )
+        with source_operation("target_ci"):
+            ci = wait_for_exact_commit_ci(
+                github, commit_sha=sha, branch=repo.branch,
+                workflow_path=".github/workflows/validate.yml",
+                required_steps=(
+                    "Verify dispatched checkpoint identity",
+                    "Import and parse project",
+                    "Smoke-test touch routing and HUD input passthrough",
+                ),
+            )
     verification, qualified = finalize_source_delivery_evidence(
         verification, ci, pr_confirmed=pr_confirmed,
     )
@@ -218,6 +230,7 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
         },
         "release_status": "source_review_pending_human_approval" if qualified else "source_review_pending_exact_sha_ci",
         "resume_mode": "model_authored_jumpy_source_repair",
+        "delivery_resumed": resumed is not None,
     }
     (out / "generic-report.json").write_text(canonical(report), encoding="utf-8")
     return {"status": "complete" if qualified else "blocked", "report": report, "next_stage": None if qualified else "exact_commit_target_ci"}

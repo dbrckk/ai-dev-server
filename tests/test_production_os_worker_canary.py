@@ -3,7 +3,8 @@ from pathlib import Path
 import unittest
 from unittest.mock import Mock, patch
 
-from core import APIError, NoRedirect
+from core import APIError, NoRedirect, StudioError
+from production_os_resume_objectives import OperatorClient
 
 from production_os_worker_canary import (
     canary_instruction,
@@ -11,6 +12,7 @@ from production_os_worker_canary import (
     run_canary,
     validate_control,
     wait_for_workflow,
+    wait_for_readiness,
 )
 
 
@@ -20,6 +22,7 @@ class FakeClient:
         self.wake_status = wake_status
         self.submissions = []
         self.lookups = []
+        self.lookup_timeouts = []
 
     def submit(self, path, payload):
         self.submissions.append((path, payload))
@@ -31,9 +34,12 @@ class FakeClient:
             "launch": {"worker_wake": {"status": self.wake_status}},
         }
 
-    def get(self, path):
+    def get(self, path, *, timeout_seconds=30):
         self.lookups.append(path)
+        self.lookup_timeouts.append(timeout_seconds)
         status = self.statuses.pop(0) if len(self.statuses) > 1 else self.statuses[0]
+        if isinstance(status, Exception):
+            raise status
         return {"workflow": {"status": status}}
 
 
@@ -289,6 +295,39 @@ class WorkerCanaryTests(unittest.TestCase):
             sleeper=lambda seconds: now.__setitem__(0, now[0] + seconds),
         )
         self.assertEqual(result, {"status": "timed_out", "last_status": "running"})
+        self.assertEqual(client.lookup_timeouts, [20.0, 10.0])
+        # The real OperatorClient must pass the remaining warmup budget down
+        # to the HTTP transport instead of always requesting 30 seconds.
+        now = [0.0]
+        operator = OperatorClient("https://unused.example", "fixture")
+        def expire(method, path, **kwargs):
+            now[0] += kwargs["timeout_seconds"]
+            raise StudioError("API unavailable or timed out")
+        with patch.object(operator, "call", side_effect=expire) as call:
+            with self.assertRaises(TimeoutError):
+                wait_for_readiness(operator, timeout_seconds=2, poll_seconds=1,
+                                   clock=lambda: now[0], sleeper=lambda seconds: now.__setitem__(0, now[0]+seconds))
+        self.assertEqual(now[0], 2.0)
+        self.assertEqual(call.call_count, 1)
+        self.assertEqual(call.call_args.kwargs["timeout_seconds"], 2.0)
+        for budget in (0, 0.5):
+            untouched = FakeClient()
+            with self.assertRaises(TimeoutError):
+                wait_for_readiness(untouched, timeout_seconds=budget, poll_seconds=1,
+                                   clock=lambda: 0, sleeper=lambda seconds: self.fail("no sleep"))
+            self.assertEqual(untouched.lookups, [])
+        recovering = FakeClient((APIError(503), "succeeded"))
+        now = [0.0]
+        outcome = wait_for_workflow(recovering, "b"*32, timeout_seconds=5, poll_seconds=1,
+                                    clock=lambda: now[0], sleeper=lambda seconds: now.__setitem__(0, now[0]+seconds))
+        self.assertEqual(outcome, {"status": "succeeded"})
+        self.assertEqual(recovering.lookup_timeouts, [5.0, 4.0])
+        self.assertEqual(recovering.submissions, [])
+        denied = FakeClient((APIError(403),))
+        with self.assertRaises(APIError):
+            wait_for_workflow(denied, "b"*32, timeout_seconds=5, poll_seconds=1,
+                              clock=lambda: 0, sleeper=lambda seconds: self.fail("denial must not retry"))
+        self.assertEqual(len(denied.lookups), 1)
         for wait, poll in ((-1, 10), (7201, 10), (float("nan"), 10),
                            (float("inf"), 10), (60, 0), (60, 61), (60, float("nan"))):
             with self.subTest(wait=wait, poll=poll):

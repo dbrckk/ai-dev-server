@@ -16,7 +16,7 @@ from generic_model import ask
 from generic_repository import GenericRepository
 from production_os_worker_canary import canary_instruction
 from run import GitHub
-from target_ci_verification import wait_for_exact_commit_ci
+from target_ci_verification import wait_for_exact_commit_ci, finalize_source_delivery_evidence
 
 _TARGET = "dbrckk/Jumpy"
 _FILE = "scripts/integrations.gd"
@@ -128,8 +128,9 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
         raise StudioError("Source repair write verification failed")
     sha = repo.publish(base_sha, work, f"Jumpy: model-authored clipboard guard (canary {sequence})")
     verification = {
-        "status": "passed",
-        "passed": True,
+        "status": "pending",
+        "passed": False,
+        "source_validation": "passed",
         "model_authored": True,
         "structural_only": False,
         "target_ci": "pending_exact_commit",
@@ -184,15 +185,16 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
                 "Smoke-test touch routing and HUD input passthrough",
             ),
         )
-    verification["target_ci"] = ci["status"]
-    if type(ci.get("run_id")) is int:
-        verification["target_ci_run_id"] = ci["run_id"]
-    qualified = pr_confirmed and ci["status"] == "passed"
-    if qualified:
-        checkpoint = advance_checkpoint(checkpoint, phase="complete", last_verification=verification)
-        save_checkpoint(checkpoint_path, checkpoint)
-        if checkpoint_observer is not None:
-            checkpoint_observer(dict(checkpoint))
+    verification, qualified = finalize_source_delivery_evidence(
+        verification, ci, pr_confirmed=pr_confirmed,
+    )
+    checkpoint = advance_checkpoint(
+        checkpoint, phase="complete" if qualified else "published",
+        last_verification=verification,
+    )
+    save_checkpoint(checkpoint_path, checkpoint)
+    if checkpoint_observer is not None:
+        checkpoint_observer(dict(checkpoint))
     blockers = [] if qualified else [
         str(ci.get("reason") or "Target CI is incomplete") if pr_confirmed
         else "Source review PR not confirmed"

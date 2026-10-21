@@ -270,6 +270,34 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
         with self.assertRaises(StudioError):
             apply_model_guard(fixed, answer)
 
+        # A successful source edit or a draft PR is not a verified delivery.
+        # Persist the exact CI gate in the execution checkpoint instead of
+        # publishing a misleading local "passed" success.
+        from target_ci_verification import finalize_source_delivery_evidence
+        provisional = {"status": "pending", "passed": False,
+                       "source_validation": "passed", "target_ci": "pending_exact_commit"}
+        for ci, reviewed, expected_status, finished in (
+            ({"status": "pending"}, False, "pending", False),
+            ({"status": "pending", "run_id": 12}, True, "pending", False),
+            ({"status": "failed", "run_id": 12}, True, "failed", False),
+            ({"status": "passed", "run_id": 12}, False, "pending", False),
+            ({"status": "passed", "run_id": 12}, True, "passed", True),
+        ):
+            evidence, complete = finalize_source_delivery_evidence(
+                provisional, ci, pr_confirmed=reviewed)
+            self.assertEqual(evidence["status"], expected_status)
+            self.assertEqual(evidence["passed"], finished)
+            self.assertEqual(complete, finished)
+            self.assertEqual(evidence["source_validation"], "passed")
+            self.assertEqual(evidence["target_ci"], ci["status"])
+            if "run_id" in ci:
+                self.assertEqual(evidence["target_ci_run_id"], ci["run_id"])
+        self.assertEqual(provisional["status"], "pending")
+        self.assertFalse(provisional["passed"])
+        with self.assertRaises(StudioError):
+            finalize_source_delivery_evidence(
+                provisional, {"status": "not_validated"}, pr_confirmed=True)
+
         # The second public target uses the same bounded one-source engine.
         # A trusted source request must be exact; do not invoke the game engine.
         from production_os_bounded_source_repair import (

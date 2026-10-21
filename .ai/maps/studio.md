@@ -16743,7 +16743,7 @@ INSTRUCTION = (
 ⋮----
 class OperatorClient(API)
 ⋮----
-def get(self, path)
+def get(self, path, *, timeout_seconds=30)
 ⋮----
 def continue_project(self, project_id)
 ⋮----
@@ -16988,7 +16988,12 @@ poll = float(poll_seconds)
 deadline = float(clock()) + timeout
 last_status = "unknown"
 ⋮----
-payload = client.get("/v1/workflows/" + workflow_id)
+remaining = deadline - float(clock())
+# API.call has a one-second minimum transport timeout. Do not start
+# another read when the remaining budget cannot contain that request.
+⋮----
+payload = client.get("/v1/workflows/" + workflow_id,
+⋮----
 workflow = payload.get("workflow") if isinstance(payload, dict) else None
 ⋮----
 last_status = str(workflow.get("status") or "unknown").lower()
@@ -17000,11 +17005,8 @@ last_status = str(workflow.get("status") or "unknown").lower()
     dashboard launch is idempotent by request_id, but this probe deliberately
     uses read-only requests and leaves the actual submission exactly once.
     """
-deadline = float(clock()) + max(0.0, float(timeout_seconds))
 ⋮----
-response = client.get("/readyz")
-⋮----
-remaining = deadline - float(clock())
+response = client.get("/readyz", timeout_seconds=min(30.0, remaining))
 ⋮----
 # Invalid monitoring parameters must not leave a real task queued.
 ⋮----

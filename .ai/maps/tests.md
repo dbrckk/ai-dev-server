@@ -9282,7 +9282,7 @@ def __init__(self, statuses=("succeeded",), wake_status="dispatched")
 ⋮----
 def submit(self, path, payload)
 ⋮----
-def get(self, path)
+def get(self, path, *, timeout_seconds=30)
 ⋮----
 status = self.statuses.pop(0) if len(self.statuses) > 1 else self.statuses[0]
 ⋮----
@@ -9359,7 +9359,19 @@ def test_wait_is_bounded(self)
 ⋮----
 client = FakeClient(("running",))
 ⋮----
+# The real OperatorClient must pass the remaining warmup budget down
+# to the HTTP transport instead of always requesting 30 seconds.
+⋮----
+operator = OperatorClient("https://unused.example", "fixture")
+def expire(method, path, **kwargs)
+⋮----
 untouched = FakeClient()
+⋮----
+recovering = FakeClient((APIError(503), "succeeded"))
+⋮----
+outcome = wait_for_workflow(recovering, "b"*32, timeout_seconds=5, poll_seconds=1,
+⋮----
+denied = FakeClient((APIError(403),))
 ⋮----
 def test_canary_workflow_verifies_terminal_worker_completion()
 ⋮----

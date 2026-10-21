@@ -4,12 +4,12 @@
     "expand_to": 12,
     "max_files": 3,
     "requested_max_files": 12,
-    "score_margin": 3,
+    "score_margin": 6,
     "tier": "narrow",
-    "top_score": 42
+    "top_score": 45
   },
   "cache": {
-    "fingerprint": "21cfefd77ee37b099c6ce1d40564f5b5a956e9a8520d09698ee62550309bb76f",
+    "fingerprint": "82ad5105bb6e52f8588d3f573b46fc320debeada86d8a44980b0af3fbb0558b3",
     "hit": false
   },
   "candidate_count": 101,
@@ -21,28 +21,33 @@
         "engine",
         "game"
       ],
-      "path": "tests/test_github_runner_persistent.py",
+      "path": "tests/test_multi_engine_orchestrator.py",
       "reasons": [
         "impact",
-        "recently-changed",
         "search-index"
       ],
-      "score": 42,
+      "score": 45,
       "symbols": [
-        "GithubRunnerPersistentTests",
-        "completed_cycle",
-        "fake_native_project",
-        "fake_persistent_project",
+        "MultiEngineOrchestratorTests",
+        "ReadOnlyGitHub",
+        "Repository",
+        "_runner",
+        "await_trusted_review",
+        "continue_goal",
+        "ensure_pull_request",
+        "execute_lane",
+        "get",
+        "inspect",
+        "never_detect",
+        "publish",
+        "publish_approved_source",
         "request",
-        "test_blocked_state_preserves_reason",
-        "test_human_action_is_not_reported_complete",
-        "test_invalid_memory_ingestion_blocks_state_checkpoint",
-        "test_promotion_handoff_rejects_cross_candidate_validation",
-        "test_promotion_required_handoff_is_sealed_and_non_promoting",
-        "test_published_round_remote_api_failure_stops_without_leaking_response",
-        "test_remote_checkpoint_ingests_memory_before_state_persistence",
-        "test_run_uses_persistent_goal_engine",
-        "test_transient_capacity_exhaustion_is_reported_without_terminal_goal_block"
+        "restore",
+        "restore_approved_source",
+        "test_credentials_lost_between_preflight_and_signing_return_to_human_action",
+        "test_each_failed_godot_stage_stays_on_itself",
+        "test_flutter_delegates_unchanged",
+        "test_generic_only_forwards_published_round_checkpoint_callback"
       ]
     },
     {
@@ -69,32 +74,27 @@
         "engine",
         "game"
       ],
-      "path": "tests/test_multi_engine_orchestrator.py",
+      "path": "tests/test_github_runner_persistent.py",
       "reasons": [
+        "impact",
         "search-index"
       ],
       "score": 39,
       "symbols": [
-        "MultiEngineOrchestratorTests",
-        "ReadOnlyGitHub",
-        "Repository",
-        "_runner",
-        "await_trusted_review",
-        "continue_goal",
-        "ensure_pull_request",
-        "execute_lane",
-        "get",
-        "inspect",
-        "never_detect",
-        "publish",
-        "publish_approved_source",
+        "GithubRunnerPersistentTests",
+        "completed_cycle",
+        "fake_native_project",
+        "fake_persistent_project",
         "request",
-        "restore",
-        "restore_approved_source",
-        "test_credentials_lost_between_preflight_and_signing_return_to_human_action",
-        "test_each_failed_godot_stage_stays_on_itself",
-        "test_flutter_delegates_unchanged",
-        "test_generic_only_forwards_published_round_checkpoint_callback"
+        "test_blocked_state_preserves_reason",
+        "test_human_action_is_not_reported_complete",
+        "test_invalid_memory_ingestion_blocks_state_checkpoint",
+        "test_promotion_handoff_rejects_cross_candidate_validation",
+        "test_promotion_required_handoff_is_sealed_and_non_promoting",
+        "test_published_round_remote_api_failure_stops_without_leaking_response",
+        "test_remote_checkpoint_ingests_memory_before_state_persistence",
+        "test_run_uses_persistent_goal_engine",
+        "test_transient_capacity_exhaustion_is_reported_without_terminal_goal_block"
       ]
     }
   ],

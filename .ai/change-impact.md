@@ -1,12 +1,13 @@
 # Change impact
 
-Base: 485e7cc1a1ca821344f8b8b202d0612c79dfd785
-Head: 84ace29b7db322e487d79e619041cb84142b2e85
+Base: a40d6677d5443101ceb48f895b84dac885617f83
+Head: 623b1b142b61b7b8d111640cdfad8151f1616e45
 
 ## Changed files
 - M docs/PRODUCTION_OS_WORKER.md
-- M studio/github_runner.py
-- M tests/test_github_runner_persistent.py
+- M studio/production_os_resume_objectives.py
+- M studio/production_os_worker_canary.py
+- M tests/test_production_os_worker_canary.py
 
 ## Affected areas
 - docs
@@ -14,7 +15,8 @@ Head: 84ace29b7db322e487d79e619041cb84142b2e85
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_production_os_resume_objectives.py
+- tests/test_production_os_worker_canary.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

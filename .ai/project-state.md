@@ -165,17 +165,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-21T21:13:06Z
+Generated: 2026-10-21T22:04:13Z
 
 ### Git
 - Branch: `main`
-- Head: `84ace29b7db3`
-- Commit date: 2026-10-21T17:12:55-04:00
-- Commit: fix(worker): retain bound source publication proof in blocked results (#373)
+- Head: `623b1b142b61`
+- Commit date: 2026-10-21T18:04:02-04:00
+- Commit: fix(canary): bound readiness and status reads by remaining wait budget (#374)
 - Tracked files: 875
 
 ### Recently changed files
 - `docs/PRODUCTION_OS_WORKER.md`
+- `studio/production_os_resume_objectives.py`
+- `studio/production_os_worker_canary.py`
+- `tests/test_production_os_worker_canary.py`
 - `studio/github_runner.py`
 - `tests/test_github_runner_persistent.py`
 - `studio/autonomous_project.py`
@@ -189,8 +192,6 @@ Generated: 2026-10-21T21:13:06Z
 - `tests/test_production_os_worker_recovery.py`
 - `tests/test_autonomous_project.py`
 - `studio/target_ci_verification.py`
-- `studio/generic_repository.py`
-- `tests/test_repository_branch_identity.py`
 
 ### Project signals
 - No common build descriptor detected

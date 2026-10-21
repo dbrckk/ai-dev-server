@@ -5,26 +5,27 @@
     "example_count": 64,
     "rejected_count": 0,
     "terms": [
-      "blocked",
-      "delivery",
-      "is",
-      "proof",
-      "publication",
-      "request-bound",
-      "retain",
-      "source",
-      "when"
+      "bound",
+      "budget",
+      "by",
+      "canary",
+      "monitoring",
+      "readiness",
+      "reads",
+      "remaining",
+      "workflow-status"
     ],
     "test_count": 0,
-    "useful_count": 2
+    "useful_count": 3
   },
   "note": "Selected tests are routing hints; this artifact does not claim they executed successfully.",
   "rejected": [],
   "schema_version": 1,
-  "task": "Retain request-bound source publication proof when delivery is blocked",
+  "task": "Bound canary readiness and workflow-status reads by remaining monitoring budget",
   "tests_selected": [],
   "useful": [
-    "studio/github_runner.py",
-    "tests/test_github_runner_persistent.py"
+    "studio/production_os_resume_objectives.py",
+    "studio/production_os_worker_canary.py",
+    "tests/test_production_os_worker_canary.py"
   ]
 }

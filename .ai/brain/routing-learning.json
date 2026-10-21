@@ -24,33 +24,6 @@
       ],
       "tests": [],
       "useful": [
-        "tests/test_production_os_actions_worker_workflow.py"
-      ]
-    },
-    {
-      "rejected": [],
-      "task": "Prevent verified Production-OS commits from being reported as runner failures due only to rejected optional GitHub telemetry writes.",
-      "terms": [
-        "as",
-        "being",
-        "commits",
-        "due",
-        "failures",
-        "from",
-        "github",
-        "only",
-        "optional",
-        "prevent",
-        "production-os",
-        "rejected",
-        "reported",
-        "runner",
-        "telemetry",
-        "verified",
-        "writes."
-      ],
-      "tests": [],
-      "useful": [
         "studio/generic_project.py",
         "studio/generic_repository.py",
         "studio/production_os_worker_canary.py",
@@ -1465,6 +1438,27 @@
         "studio/github_runner.py",
         "tests/test_github_runner_persistent.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "Bound canary readiness and workflow-status reads by remaining monitoring budget",
+      "terms": [
+        "bound",
+        "budget",
+        "by",
+        "canary",
+        "monitoring",
+        "readiness",
+        "reads",
+        "remaining",
+        "workflow-status"
+      ],
+      "tests": [],
+      "useful": [
+        "studio/production_os_resume_objectives.py",
+        "studio/production_os_worker_canary.py",
+        "tests/test_production_os_worker_canary.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1749,6 +1743,11 @@
       "studio/github_runner.py": 4,
       "tests/test_github_runner_persistent.py": 4
     },
+    "bound": {
+      "studio/production_os_resume_objectives.py": 4,
+      "studio/production_os_worker_canary.py": 4,
+      "tests/test_production_os_worker_canary.py": 4
+    },
     "bounded": {
       "studio/agents/adapters.py": 4,
       "tests/test_codex_output_retention.py": 4
@@ -1785,12 +1784,22 @@
       "tests/test_production_os_result_contract.py": 4,
       "tests/test_production_os_worker_runtime.py": 4
     },
+    "budget": {
+      "studio/production_os_resume_objectives.py": 4,
+      "studio/production_os_worker_canary.py": 4,
+      "tests/test_production_os_worker_canary.py": 4
+    },
     "build": {
       "scripts/preflight-production-os-worker.py": 4,
       "studio/production_os_worker.py": 4,
       "tests/test_asset_forge_installer.py": 4,
       "tests/test_imagen_codex_installer.py": 4,
       "tests/test_production_os_worker.py": 4
+    },
+    "by": {
+      "studio/production_os_resume_objectives.py": 4,
+      "studio/production_os_worker_canary.py": 4,
+      "tests/test_production_os_worker_canary.py": 4
     },
     "bytes": {
       "studio/generic_project.py": 4,
@@ -1805,7 +1814,9 @@
       "studio/generic_repository.py": 4,
       "studio/github_runner.py": 4,
       "studio/production_os_provider_config.py": 4,
-      "studio/production_os_worker_canary.py": 4
+      "studio/production_os_resume_objectives.py": 4,
+      "studio/production_os_worker_canary.py": 8,
+      "tests/test_production_os_worker_canary.py": 4
     },
     "capabilities": {
       "studio/production_os_worker.py": 4,
@@ -2999,6 +3010,11 @@
       "studio/production_os_provider_config.py": 4,
       "studio/production_os_worker_canary.py": 4
     },
+    "monitoring": {
+      "studio/production_os_resume_objectives.py": 4,
+      "studio/production_os_worker_canary.py": 4,
+      "tests/test_production_os_worker_canary.py": 4
+    },
     "multi-asset": {
       "studio/asset_forge_bridge.py": 4,
       "studio/orchestrator.py": 4,
@@ -3462,11 +3478,14 @@
     "readiness": {
       "scripts/preflight-production-os-worker.py": 4,
       "studio/asset_forge_bridge.py": 4,
+      "studio/production_os_resume_objectives.py": 4,
       "studio/production_os_worker.py": 12,
+      "studio/production_os_worker_canary.py": 4,
       "tests/test_asset_forge_installer.py": 4,
       "tests/test_production_os_actions_worker_workflow.py": 4,
       "tests/test_production_os_local_e2e.py": 4,
       "tests/test_production_os_worker.py": 4,
+      "tests/test_production_os_worker_canary.py": 4,
       "tests/test_production_os_worker_cli.py": 4,
       "tests/test_production_os_worker_preflight.py": 4,
       "tests/test_production_os_worker_runtime.py": 4
@@ -3484,6 +3503,11 @@
       "tests/test_godot_repository_probe.py": 4,
       "tests/test_production_os_actions_worker_workflow.py": 4,
       "tests/test_provider_router.py": 4
+    },
+    "reads": {
+      "studio/production_os_resume_objectives.py": 4,
+      "studio/production_os_worker_canary.py": 4,
+      "tests/test_production_os_worker_canary.py": 4
     },
     "real": {
       "integration_tests/test_production_os_server_integration.py": 4,
@@ -3577,6 +3601,11 @@
       "tests/test_godot_repository_probe.py": 4,
       "tests/test_production_os_actions_worker_workflow.py": 4,
       "tests/test_provider_router.py": 4
+    },
+    "remaining": {
+      "studio/production_os_resume_objectives.py": 4,
+      "studio/production_os_worker_canary.py": 4,
+      "tests/test_production_os_worker_canary.py": 4
     },
     "rembg": {
       "scripts/preflight-production-os-worker.py": 4,
@@ -4347,6 +4376,11 @@
       "studio/production_os_worker.py": 4,
       "tests/test_production_os_worker_cli.py": 4,
       "tests/test_production_os_worker_runtime.py": 4
+    },
+    "workflow-status": {
+      "studio/production_os_resume_objectives.py": 4,
+      "studio/production_os_worker_canary.py": 4,
+      "tests/test_production_os_worker_canary.py": 4
     },
     "writes.": {
       "studio/generic_model.py": 4,

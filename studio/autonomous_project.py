@@ -153,6 +153,33 @@ def translate_orchestrator_result(result: dict) -> dict:
             }
         }
 
+    # A model-authored source edit has already been published to an exact
+    # review branch. If target PR creation or independent exact-SHA CI is
+    # unverified, treat this as a durable external review blocker, not a
+    # transient model failure. Retrying the same goal inside one worker spent
+    # eleven additional cycles on source canary #41 without a second edit.
+    if (status == "blocked" and next_stage == "exact_commit_target_ci"
+            and isinstance(report, dict)
+            and report.get("engine") == "generic"
+            and report.get("resume_mode") in {
+                "operator_approved_bounded_source_repair",
+                "model_authored_jumpy_source_repair",
+            }):
+        blocked = {"blocked_reason": "source_review_or_exact_sha_ci_unverified"}
+        sha = report.get("checkpoint_commit")
+        repo = report.get("target_repo")
+        if (isinstance(sha, str) and len(sha) == 40
+                and all(ch in "0123456789abcdef" for ch in sha)
+                and isinstance(repo, str) and repo):
+            blocked["evidence"] = {
+                "source_review_checkpoint": {
+                    "commit_sha": sha,
+                    "target_repo": repo,
+                    "validation_pending": True,
+                }
+            }
+        return blocked
+
     if (status == 'blocked' and next_stage == 'godot_preview_cycle_budget_exhausted'
             and isinstance(report, dict) and report.get('engine') == 'godot'
             and report.get('preview_cycle_budget_exhausted') is True):

@@ -61,9 +61,10 @@ def apply_model_edit(original: str, reply: dict, task: SourceTask) -> str:
         raise StudioError("Source edit reply must contain only replacement_line")
     new = reply["replacement_line"]
     old = task.old_line
+    indent = old[:len(old) - len(old.lstrip())]
     if (not isinstance(new, str) or not new or len(new) > 240
             or "\n" in new or "\r" in new or "\t" in new
-            or not new.startswith(old[:len(old) - len(old.lstrip())])
+            or new[:len(new) - len(new.lstrip())] != indent
             or new == old or original.count(old + "\n") != 1):
         raise StudioError("Source edit outside one unique bounded line")
 

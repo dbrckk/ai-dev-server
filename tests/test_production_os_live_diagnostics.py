@@ -41,6 +41,8 @@ class LiveDiagnosticsTests(unittest.TestCase):
     def test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready(self):
         self.assertTrue(_safe_increment_source('def increment(value):\n    return value + 1'))
         for unsafe in ('__import__("os").system("id")',
+                       'def increment(value: forbidden_call()):\n    return value + 1',
+                       'def increment(value: int):\n    return value + 1',
                        'def increment(value):\n    return eval("value+1")',
                        'def increment(value):\n    return 11',
                        'def increment(value):\n    return value + 2',

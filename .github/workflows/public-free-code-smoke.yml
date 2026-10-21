@@ -1,0 +1,48 @@
+name: Public Free Model Code Smoke
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'studio/public_free_code_smoke.py'
+      - '.github/workflows/public-free-code-smoke.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'studio/public_free_code_smoke.py'
+      - '.github/workflows/public-free-code-smoke.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-free-code-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  free-coding:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Checkout isolated public smoke
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Validate synthetic free coding response
+        env:
+          PYTHONPATH: studio
+        run: |
+          python -m compileall -q studio/public_free_code_smoke.py
+          python studio/public_free_code_smoke.py
+      - name: Retain redacted qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: public-free-code-smoke-${{ github.run_number }}
+          path: studio-output/public-free-code-smoke/report.json
+          if-no-files-found: warn
+          retention-days: 7

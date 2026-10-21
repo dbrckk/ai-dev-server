@@ -209,4 +209,65 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
             with self.assertRaisesRegex(StudioError,'produced no evidence'):
                 run_project(str(req),root/'out',str(root/'work'),runner,100,lambda:0,'a'*40)
 
+        # An exact operator-approved *model* source-repair canary must bypass
+        # the costly Godot game-generation pipeline. It must never fall back
+        # to a deterministic patch or match unrelated projects/instructions.
+        from production_os_jumpy_source_repair import contract, apply_model_guard
+        from production_os_worker_canary import canary_instruction
+        exact = {
+            **REQUEST,
+            "target_repo": "dbrckk/Jumpy",
+            "repository_branch_id": "mp-" + "a" * 24,
+            "production_os": {"workflow_id": "wf", "workflow_task_id": "implementation"},
+            "brief": canary_instruction(40, "jumpy_share_clipboard_guard"),
+        }
+        self.assertEqual(contract(exact), 40)
+        self.assertIsNone(contract({**exact, "target_repo": "other/repo"}))
+        self.assertIsNone(contract({**exact, "brief": exact["brief"] + " extra"}))
+        self.assertIsNone(contract({**exact, "repository_branch_id": "unsafe"}))
+        with tempfile.TemporaryDirectory() as td, patch(
+            "multi_engine_orchestrator.run_jumpy_source_repair"
+        ) as repair:
+            root = Path(td); req = root / "request.json"; req.write_text(json.dumps(exact))
+            repair.return_value = {"status": "complete", "report": {}, "next_stage": None}
+            def never_detect(*args, **kwargs):
+                raise AssertionError("Exact source canary must not invoke game stages")
+            marker = object()
+            result = run_project(str(req), root / "out", str(root / "work"),
+                                 never_detect, 100, lambda: 0, "a" * 40,
+                                 checkpoint_observer=lambda item: marker)
+            self.assertEqual(result["status"], "complete")
+            repair.assert_called_once()
+
+        # The model's narrowly reviewed contribution is a real GDScript
+        # insertion. Baseline and successful-share analytics remain byte-identical.
+        source = (
+            "func share_score(score: int, daily: bool = false) -> void:\n"
+            '\tvar text = "Score"\n'
+            "\tDisplayServer.clipboard_set(text)\n"
+            '\tevent("share_score", {"score": score, "daily": daily})\n'
+            "func leaderboard_submit(score):\n\tpass\n"
+        )
+        answer = {"guard_lines": [
+            "if not DisplayServer.has_feature(DisplayServer.FEATURE_CLIPBOARD):",
+            'event("share_unavailable", {"reason": "clipboard_unsupported"})',
+            "return",
+        ]}
+        fixed = apply_model_guard(source, answer)
+        self.assertNotEqual(fixed, source)
+        self.assertIn('event("share_score", {"score": score, "daily": daily})', fixed)
+        self.assertEqual(
+            fixed.replace(
+                '\tif not DisplayServer.has_feature(DisplayServer.FEATURE_CLIPBOARD):\n'
+                '\t\tevent("share_unavailable", {"reason": "clipboard_unsupported"})\n'
+                '\t\treturn\n',
+                "", 1,
+            ),
+            source,
+        )
+        with self.assertRaises(StudioError):
+            apply_model_guard(source, {"guard_lines": ["return", "return", "return"]})
+        with self.assertRaises(StudioError):
+            apply_model_guard(fixed, answer)
+
 if __name__=='__main__': unittest.main()

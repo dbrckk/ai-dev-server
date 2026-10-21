@@ -141,16 +141,20 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-21T08:49:28Z
+Generated: 2026-10-21T11:08:47Z
 
 ### Git
 - Branch: `main`
-- Head: `958de8bfcbb6`
-- Commit date: 2026-10-21T04:49:16-04:00
-- Commit: feat(canary): exercise real Jumpy clipboard source repair through Production-OS worker (#360)
-- Tracked files: 870
+- Head: `580072af8333`
+- Commit date: 2026-10-21T07:08:36-04:00
+- Commit: fix(worker): deliver bounded model-authored Jumpy source repair without full game pipeline (#362)
+- Tracked files: 871
 
 ### Recently changed files
+- `studio/multi_engine_orchestrator.py`
+- `studio/production_os_jumpy_source_repair.py`
+- `tests/test_multi_engine_orchestrator.py`
+- `control/production-os-worker-canary.json`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
 - `.github/workflows/public-free-code-smoke.yml`
@@ -159,9 +163,6 @@ Generated: 2026-10-21T08:49:28Z
 - `tests/test_production_os_live_diagnostics.py`
 - `docs/qualification/public-model-diagnostic-fix-20261020.json`
 - `studio/production_os_live_diagnostics.py`
-- `docs/PRODUCTION_OS_WORKER.md`
-- `studio/provider_router.py`
-- `tests/test_provider_router.py`
 
 ### Project signals
 - No common build descriptor detected

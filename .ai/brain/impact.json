@@ -1,207 +1,349 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "bc73c67f8e760239dd19e730eb524e5911162cb0",
-  "head": "958de8bfcbb6f933c3a51787637d48cfd1131ea2",
+  "base": "958de8bfcbb6f933c3a51787637d48cfd1131ea2",
+  "head": "580072af8333639085f6cd81cf1e9504414acb71",
   "index_mode": "incremental",
   "changed_files": [
     {
-      "path": "studio/production_os_worker_canary.py",
+      "path": "control/production-os-worker-canary.json",
       "status": "M"
     },
     {
-      "path": "tests/test_production_os_worker_canary.py",
+      "path": "studio/multi_engine_orchestrator.py",
+      "status": "M"
+    },
+    {
+      "path": "studio/production_os_jumpy_source_repair.py",
+      "status": "A"
+    },
+    {
+      "path": "tests/test_multi_engine_orchestrator.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
-    "studio/production_os_worker_canary.py",
-    "tests/test_production_os_worker_canary.py"
+    "studio/multi_engine_orchestrator.py",
+    "studio/production_os_jumpy_source_repair.py",
+    "tests/test_multi_engine_orchestrator.py"
   ],
   "impacted_files": [
-    "studio/production_os_worker_canary.py",
-    "tests/test_generic_worker_canary_resume.py",
-    "tests/test_production_os_worker_canary.py"
+    "studio/autonomous_project.py",
+    "studio/github_runner.py",
+    "studio/multi_engine_orchestrator.py",
+    "studio/production_os_jumpy_source_repair.py",
+    "tests/test_multi_engine_orchestrator.py"
   ],
   "impacted_symbols": [
     {
-      "name": "dispatch_worker_after_enqueue",
+      "name": "_state_paths",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 21
+      "file": "studio/autonomous_project.py",
+      "line": 46
     },
     {
-      "name": "validate_control",
+      "name": "_clear_human_input_request",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 62
+      "file": "studio/autonomous_project.py",
+      "line": 51
     },
     {
-      "name": "canary_instruction",
+      "name": "ensure_project_goal",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 84
+      "file": "studio/autonomous_project.py",
+      "line": 59
     },
     {
-      "name": "source_canary_preflight",
+      "name": "_sync_promoted_capabilities",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 149
+      "file": "studio/autonomous_project.py",
+      "line": 80
     },
     {
-      "name": "launch_canary",
+      "name": "translate_orchestrator_result",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 197
+      "file": "studio/autonomous_project.py",
+      "line": 112
     },
     {
-      "name": "_polling_parameters",
+      "name": "run_persistent_project",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 246
+      "file": "studio/autonomous_project.py",
+      "line": 183
     },
     {
-      "name": "wait_for_workflow",
+      "name": "context_provider",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 256
+      "file": "studio/autonomous_project.py",
+      "line": 251
     },
     {
-      "name": "wait_for_readiness",
+      "name": "execute_cycle",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 279
+      "file": "studio/autonomous_project.py",
+      "line": 286
     },
     {
-      "name": "run_canary",
+      "name": "cycle_observer",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 310
+      "file": "studio/autonomous_project.py",
+      "line": 334
+    },
+    {
+      "name": "execute_registered_capability",
+      "kind": "function",
+      "file": "studio/autonomous_project.py",
+      "line": 346
+    },
+    {
+      "name": "_prepare_capability_promotion_handoff",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 57
+    },
+    {
+      "name": "_usage_count",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 97
+    },
+    {
+      "name": "collect_agent_usage",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 106
+    },
+    {
+      "name": "write_production_os_result",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 171
+    },
+    {
+      "name": "_stop_bounded_process",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 563
+    },
+    {
+      "name": "bounded_run",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 599
+    },
+    {
+      "name": "_update_improvements",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 627
+    },
+    {
+      "name": "run",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 645
+    },
+    {
+      "name": "effective_runner",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 655
+    },
+    {
+      "name": "persist_published_round",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 948
+    },
+    {
+      "name": "run_once",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 972
+    },
+    {
+      "name": "persist_verified_cycle",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 982
+    },
+    {
+      "name": "improvement_project_cycle",
+      "kind": "function",
+      "file": "studio/github_runner.py",
+      "line": 1023
     },
     {
       "name": "main",
       "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 347
+      "file": "studio/github_runner.py",
+      "line": 1214
     },
     {
-      "name": "ExistingWorkerCanaryVerificationTests",
-      "kind": "class",
-      "file": "tests/test_generic_worker_canary_resume.py",
+      "name": "_remaining",
+      "kind": "function",
+      "file": "studio/multi_engine_orchestrator.py",
       "line": 16
     },
     {
-      "name": "_request",
+      "name": "_detect",
       "kind": "function",
-      "file": "tests/test_generic_worker_canary_resume.py",
-      "line": 17
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 22
     },
     {
-      "name": "test_accepts_exact_existing_canary_with_or_without_final_newline",
+      "name": "_run_stage",
       "kind": "function",
-      "file": "tests/test_generic_worker_canary_resume.py",
-      "line": 35
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 37
     },
     {
-      "name": "test_rejects_wrong_content",
+      "name": "run_project",
       "kind": "function",
-      "file": "tests/test_generic_worker_canary_resume.py",
-      "line": 90
+      "file": "studio/multi_engine_orchestrator.py",
+      "line": 43
     },
     {
-      "name": "test_rejects_non_canary_repository_or_missing_contract",
+      "name": "contract",
       "kind": "function",
-      "file": "tests/test_generic_worker_canary_resume.py",
-      "line": 100
+      "file": "studio/production_os_jumpy_source_repair.py",
+      "line": 31
     },
     {
-      "name": "FakeClient",
+      "name": "apply_model_guard",
+      "kind": "function",
+      "file": "studio/production_os_jumpy_source_repair.py",
+      "line": 55
+    },
+    {
+      "name": "run",
+      "kind": "function",
+      "file": "studio/production_os_jumpy_source_repair.py",
+      "line": 91
+    },
+    {
+      "name": "MultiEngineOrchestratorTests",
       "kind": "class",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 17
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 15
     },
     {
-      "name": "__init__",
+      "name": "request",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 18
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 16
     },
     {
-      "name": "submit",
+      "name": "test_flutter_delegates_unchanged",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 20
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
       "line": 24
     },
     {
-      "name": "get",
+      "name": "test_generic_only_forwards_published_round_checkpoint_callback",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 34
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 32
     },
     {
-      "name": "WorkerCanaryTests",
-      "kind": "class",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 40
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 42
     },
     {
-      "name": "test_control_is_strict",
+      "name": "test_generic_without_callback_preserves_original_call",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 41
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 62
     },
     {
-      "name": "test_canary_instruction_is_bounded_and_sequence_specific",
+      "name": "runner",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 60
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 71
     },
     {
-      "name": "test_launch_is_idempotent_and_uses_dashboard_api",
+      "name": "_runner",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 96
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 84
     },
     {
-      "name": "test_wait_observes_real_terminal_success",
+      "name": "runner",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 235
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 86
     },
     {
-      "name": "clock",
+      "name": "test_godot_stops_cleanly_when_release_keystore_is_missing",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 238
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 145
     },
     {
-      "name": "sleep",
+      "name": "test_release_chain_reaches_human_play_submission_only",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 240
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 152
     },
     {
-      "name": "test_terminal_failure_returns_without_retrying_mutation",
+      "name": "test_opt_in_play_validation_can_complete_godot_pipeline",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 249
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 159
     },
     {
-      "name": "test_wait_is_bounded",
+      "name": "test_credentials_lost_between_preflight_and_signing_return_to_human_action",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 262
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 171
     },
     {
-      "name": "test_canary_workflow_verifies_terminal_worker_completion",
+      "name": "test_each_failed_godot_stage_stays_on_itself",
       "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 287
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 177
+    },
+    {
+      "name": "test_journey_stage_cannot_fake_execution_coverage",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 193
+    },
+    {
+      "name": "test_visual_stage_cannot_fake_visual_coverage",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 199
+    },
+    {
+      "name": "test_missing_detection_evidence_fails_closed",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 205
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 208
+    },
+    {
+      "name": "never_detect",
+      "kind": "function",
+      "file": "tests/test_multi_engine_orchestrator.py",
+      "line": 233
     }
   ],
   "selected_tests": [
-    "tests/test_generic_worker_canary_resume.py",
-    "tests/test_production_os_worker.py",
-    "tests/test_production_os_worker_canary.py"
+    "tests/test_multi_engine_orchestrator.py",
+    "tests/test_orchestrator.py"
   ]
 }

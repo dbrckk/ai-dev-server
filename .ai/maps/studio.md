@@ -287,6 +287,7 @@ preemption_apply.py
 preemption_controller.py
 privacy_audit.py
 privacy_stage.py
+production_os_jumpy_source_repair.py
 production_os_live_diagnostics.py
 production_os_provider_config.py
 production_os_resume_objectives.py
@@ -14579,6 +14580,8 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
 ⋮----
 canary_req=json.loads(Path(request_path).read_text())
 ⋮----
+verified_repair = request_check(canary_req)
+⋮----
 verified_canary=request_check(canary_req)
 ⋮----
 engine=_detect(request_path,project_out,runner,deadline,clock)
@@ -16320,6 +16323,84 @@ parser = argparse.ArgumentParser()
 args = parser.parse_args()
 state = advance(Path(args.request), Path(args.work), Path(args.out))
 evidence = state.get('release_evidence', {}).get('privacy_policy')
+````
+
+## File: production_os_jumpy_source_repair.py
+````python
+"""Single-source, model-authored Jumpy repair with exact review handoff.
+
+This path is deliberately limited to an operator-launched public Jumpy canary.
+It bypasses full game generation but never substitutes a deterministic patch.
+"""
+⋮----
+_TARGET = "dbrckk/Jumpy"
+_FILE = "scripts/integrations.gd"
+_SEQUENCE = re.compile(r"^Production-OS verified Jumpy source qualification ([1-9][0-9]{0,8})\.")
+_FUNCTION = re.compile(r"(?ms)^func share_score\([^\n]*\n.*?(?=^func |\Z)")
+_CLIPBOARD = "\tDisplayServer.clipboard_set(text)\n"
+_SHARE_EVENT = re.compile(r'(?m)^\tevent\("share_score",\s*\{')
+_UNAVAILABLE_EVENT = re.compile(
+⋮----
+def contract(req: dict) -> int | None
+⋮----
+"""Fail closed unless the full trusted control-plane instruction matches."""
+⋮----
+op = req.get("production_os")
+⋮----
+brief = req.get("brief")
+⋮----
+matched = _SEQUENCE.match(brief)
+⋮----
+sequence = int(matched.group(1))
+⋮----
+def apply_model_guard(original: str, answer: dict) -> str
+⋮----
+"""Validate model-authored GDScript before touching the on-disk project."""
+⋮----
+lines = answer["guard_lines"]
+⋮----
+match = _FUNCTION.search(original)
+⋮----
+original_function = match.group(0)
+⋮----
+inserted = "\t" + lines[0] + "\n\t\t" + lines[1] + "\n\t\t" + lines[2] + "\n"
+changed = original.replace(_CLIPBOARD, inserted + _CLIPBOARD, 1)
+⋮----
+def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict
+⋮----
+sequence = contract(req)
+⋮----
+github = GitHub(_TARGET)
+repo = GenericRepository(github, _TARGET, req["repository_branch_id"])
+⋮----
+target = work / _FILE
+⋮----
+before = target.read_text(encoding="utf-8")
+match = _FUNCTION.search(before)
+⋮----
+# One genuine bounded provider inference instead of fifteen full-game
+# product/design/implementation/review calls. Never synthesize a patch
+# locally if the model fails or its proposal violates the code contract.
+⋮----
+after = apply_model_guard(before, response)
+⋮----
+sha = repo.publish(base_sha, work, f"Jumpy: model-authored clipboard guard (canary {sequence})")
+verification = {
+checkpoint = advance_checkpoint(
+checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
+⋮----
+confirmed = repo.await_trusted_review(sha)
+pr = confirmed if confirmed is not None else {"state": "unavailable", "reason": "review_commit_unverified"}
+⋮----
+denied = any(marker in str(exc) for marker in ("HTTP 401", "HTTP 403"))
+handoff = repo.request_trusted_review_handoff(sha) if denied else None
+confirmed = (
+pr = confirmed if confirmed is not None else {
+delivered = (type(pr.get("number")) is int
+⋮----
+checkpoint = advance_checkpoint(checkpoint, phase="complete")
+⋮----
+report = {
 ````
 
 ## File: production_os_live_diagnostics.py

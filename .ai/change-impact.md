@@ -1,18 +1,19 @@
 # Change impact
 
-Base: 9dd2464a25cae35a81b8cad9231552bdc086256a
-Head: 958de8bfcbb6f933c3a51787637d48cfd1131ea2
+Base: 832630cc84fc80e4511abbbc3752b05565c96920
+Head: 580072af8333639085f6cd81cf1e9504414acb71
 
 ## Changed files
-- M studio/production_os_worker_canary.py
-- M tests/test_production_os_worker_canary.py
+- M studio/multi_engine_orchestrator.py
+- A studio/production_os_jumpy_source_repair.py
+- M tests/test_multi_engine_orchestrator.py
 
 ## Affected areas
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_production_os_worker_canary.py
+- tests/test_multi_engine_orchestrator.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

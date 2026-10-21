@@ -11,7 +11,7 @@ Large repository detected. Prefer the relevant segmented map before .ai/repo-map
 
 ## Segmented maps
 - .ai/maps/tests.md (325 source/config files)
-- .ai/maps/studio.md (321 source/config files)
+- .ai/maps/studio.md (322 source/config files)
 - .ai/maps/scripts.md (31 source/config files)
 - .ai/maps/control.md (13 source/config files)
 - .ai/maps/projects.md (1 source/config files)

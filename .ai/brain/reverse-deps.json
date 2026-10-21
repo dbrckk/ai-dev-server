@@ -1589,6 +1589,7 @@
         "studio/portfolio_scan.py",
         "studio/post_preview.py",
         "studio/privacy_stage.py",
+        "studio/production_os_jumpy_source_repair.py",
         "studio/production_os_live_diagnostics.py",
         "studio/production_os_provider_config.py",
         "studio/production_os_resume_objectives.py",
@@ -1687,7 +1688,7 @@
         "tests/test_studio.py",
         "tests/test_transport.py"
       ],
-      "in_degree": 223,
+      "in_degree": 224,
       "out_degree": 18
     },
     "studio/cost_drift.py": {
@@ -2010,13 +2011,14 @@
         "studio/generic_project.py",
         "studio/github_execution_checkpoint_store.py",
         "studio/preemption_apply.py",
+        "studio/production_os_jumpy_source_repair.py",
         "studio/production_os_review_canary.py",
         "tests/test_execution_checkpoint.py",
         "tests/test_generic_published_checkpoint.py",
         "tests/test_generic_published_round_checkpoint.py",
         "tests/test_preemption_apply.py"
       ],
-      "in_degree": 11,
+      "in_degree": 12,
       "out_degree": 0
     },
     "studio/existing_project.py": {
@@ -2314,11 +2316,12 @@
       "dependents": [
         "studio/generic_project.py",
         "studio/generic_verifier_adaptation.py",
+        "studio/production_os_jumpy_source_repair.py",
         "tests/test_generic_adaptive_quota_budget.py",
         "tests/test_generic_model_capacity.py",
         "tests/test_provider_429_cooldown.py"
       ],
-      "in_degree": 5,
+      "in_degree": 6,
       "out_degree": 22
     },
     "studio/generic_policy.py": {
@@ -2424,13 +2427,14 @@
       "dependents": [
         "studio/generic_project.py",
         "studio/generic_smoke.py",
+        "studio/production_os_jumpy_source_repair.py",
         "studio/production_os_review_canary.py",
         "tests/test_generic_published_checkpoint.py",
         "tests/test_generic_repository_pull_request.py",
         "tests/test_generic_worker_canary_resume.py",
         "tests/test_repository_branch_identity.py"
       ],
-      "in_degree": 7,
+      "in_degree": 8,
       "out_degree": 3
     },
     "studio/generic_sandbox.py": {
@@ -3547,6 +3551,7 @@
         "studio/core.py",
         "studio/generic_project.py",
         "studio/orchestrator.py",
+        "studio/production_os_jumpy_source_repair.py",
         "studio/production_os_review_canary.py",
         "studio/stage_registry.py"
       ],
@@ -3556,7 +3561,7 @@
         "tests/test_multi_engine_orchestrator.py"
       ],
       "in_degree": 3,
-      "out_degree": 6
+      "out_degree": 7
     },
     "studio/native_model_usage.py": {
       "dependencies": [
@@ -3890,6 +3895,25 @@
       "in_degree": 1,
       "out_degree": 4
     },
+    "studio/production_os_jumpy_source_repair.py": {
+      "dependencies": [
+        "studio/core.py",
+        "studio/execution_checkpoint.py",
+        "studio/generic_model.py",
+        "studio/generic_repository.py",
+        "studio/production_os_worker_canary.py",
+        "studio/run.py",
+        "tests/test_journeys.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "studio/multi_engine_orchestrator.py",
+        "tests/test_multi_engine_orchestrator.py"
+      ],
+      "in_degree": 2,
+      "out_degree": 9
+    },
     "studio/production_os_live_diagnostics.py": {
       "dependencies": [
         "studio/core.py",
@@ -3978,10 +4002,12 @@
         "tests/test_unified_routing_score.py"
       ],
       "dependents": [
+        "studio/production_os_jumpy_source_repair.py",
         "tests/test_generic_worker_canary_resume.py",
+        "tests/test_multi_engine_orchestrator.py",
         "tests/test_production_os_worker_canary.py"
       ],
-      "in_degree": 2,
+      "in_degree": 4,
       "out_degree": 4
     },
     "studio/project_budget.py": {
@@ -4167,14 +4193,13 @@
     "studio/provider_probe.py": {
       "dependencies": [
         "studio/core.py",
-        "studio/run.py",
-        "tests/test_unified_routing_score.py"
+        "studio/run.py"
       ],
       "dependents": [
         "studio/ci_runner.py"
       ],
       "in_degree": 1,
-      "out_degree": 3
+      "out_degree": 2
     },
     "studio/provider_router.py": {
       "dependencies": [
@@ -4605,6 +4630,7 @@
         "studio/play_stage.py",
         "studio/post_preview.py",
         "studio/privacy_stage.py",
+        "studio/production_os_jumpy_source_repair.py",
         "studio/production_os_review_canary.py",
         "studio/provider_probe.py",
         "studio/security_stage.py",
@@ -4613,7 +4639,7 @@
         "tests/test_star_recommendations.py",
         "tests/test_studio.py"
       ],
-      "in_degree": 33,
+      "in_degree": 34,
       "out_degree": 30
     },
     "studio/run_cost_controller.py": {
@@ -6807,6 +6833,7 @@
         "studio/godot_repository_probe.py",
         "studio/jumpy_save_checks.gd",
         "studio/portfolio_scan.py",
+        "studio/production_os_jumpy_source_repair.py",
         "studio/run.py",
         "tests/test_capability_registry_promotion_persist.py",
         "tests/test_engine_entry.py",
@@ -6819,7 +6846,7 @@
         "tests/test_godot_repository_probe.py",
         "tests/test_provider_429_cooldown.py"
       ],
-      "in_degree": 41,
+      "in_degree": 42,
       "out_degree": 2
     },
     "tests/test_jumpy_v13_migration.py": {
@@ -6963,11 +6990,13 @@
       "dependencies": [
         "studio/core.py",
         "studio/multi_engine_orchestrator.py",
+        "studio/production_os_jumpy_source_repair.py",
+        "studio/production_os_worker_canary.py",
         "studio/stage_registry.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 3
+      "out_degree": 5
     },
     "tests/test_multi_project_canary.py": {
       "dependencies": [
@@ -7850,6 +7879,7 @@
         "studio/notification_qa.py",
         "studio/omniroute_capacity.py",
         "studio/orchestrator.py",
+        "studio/production_os_jumpy_source_repair.py",
         "studio/production_os_review_canary.py",
         "studio/production_os_worker_canary.py",
         "studio/provider_router.py",
@@ -7884,7 +7914,7 @@
         "tests/test_strict_task_claim_store.py",
         "tests/test_task_lease.py"
       ],
-      "in_degree": 112,
+      "in_degree": 113,
       "out_degree": 3
     },
     "tests/test_task_claim_store.py": {
@@ -8004,6 +8034,7 @@
         "studio/native_model_usage.py",
         "studio/omniroute_capacity.py",
         "studio/orchestrator.py",
+        "studio/production_os_jumpy_source_repair.py",
         "studio/production_os_live_diagnostics.py",
         "studio/production_os_provider_config.py",
         "studio/production_os_worker.py",
@@ -8012,8 +8043,7 @@
         "studio/provider_cost.py",
         "studio/provider_health.py",
         "studio/provider_metrics.py",
-        "studio/provider_monthly_quota.py",
-        "studio/provider_probe.py"
+        "studio/provider_monthly_quota.py"
       ],
       "in_degree": 64,
       "out_degree": 1

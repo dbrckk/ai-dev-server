@@ -8090,6 +8090,24 @@ def test_missing_detection_evidence_fails_closed(self)
 ⋮----
 root=Path(td); req=self.request(root)
 def runner(args,timeout): return subprocess.CompletedProcess(args,0)
+⋮----
+# An exact operator-approved *model* source-repair canary must bypass
+# the costly Godot game-generation pipeline. It must never fall back
+# to a deterministic patch or match unrelated projects/instructions.
+⋮----
+exact = {
+⋮----
+root = Path(td); req = root / "request.json"; req.write_text(json.dumps(exact))
+⋮----
+def never_detect(*args, **kwargs)
+marker = object()
+result = run_project(str(req), root / "out", str(root / "work"),
+⋮----
+# The model's narrowly reviewed contribution is a real GDScript
+# insertion. Baseline and successful-share analytics remain byte-identical.
+source = (
+answer = {"guard_lines": [
+fixed = apply_model_guard(source, answer)
 ```
 
 ## File: test_multi_project_canary.py

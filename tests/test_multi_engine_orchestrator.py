@@ -270,4 +270,63 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
         with self.assertRaises(StudioError):
             apply_model_guard(fixed, answer)
 
+        # PR creation and GitHub_TOKEN pull_request checks do not prove that
+        # the independent, exact-commit Godot validation has actually passed.
+        from target_ci_verification import inspect_exact_commit_ci
+        source_sha = "f" * 40
+        review_branch = "studio/mp-" + "a" * 24
+        workflow_path = ".github/workflows/validate.yml"
+        required_steps = (
+            "Verify dispatched checkpoint identity",
+            "Import and parse project",
+            "Smoke-test touch routing and HUD input passthrough",
+        )
+        good_run = {"id": 12, "head_sha": source_sha,
+                    "head_branch": review_branch, "path": workflow_path,
+                    "event": "workflow_dispatch", "status": "completed",
+                    "conclusion": "success"}
+        good_job = {"status": "completed", "conclusion": "success",
+                    "steps": [{"name": name, "status": "completed",
+                               "conclusion": "success"} for name in required_steps]}
+
+        class ReadOnlyGitHub:
+            def __init__(self, runs, jobs=None):
+                self.runs = runs
+                self.jobs = [good_job] if jobs is None else jobs
+            def get(self, endpoint):
+                if endpoint.startswith("/actions/runs?"):
+                    return {"workflow_runs": self.runs}
+                if endpoint.endswith("/jobs?per_page=100"):
+                    return {"total_count": len(self.jobs), "jobs": self.jobs}
+                raise AssertionError("Unexpected CI endpoint")
+
+        def inspect(client):
+            return inspect_exact_commit_ci(
+                client, commit_sha=source_sha, branch=review_branch,
+                workflow_path=workflow_path, required_steps=required_steps)
+        verified = inspect(ReadOnlyGitHub([good_run]))
+        self.assertEqual(verified["status"], "passed")
+        self.assertEqual(verified["commit_sha"], source_sha)
+        for invalid in (
+            {**good_run, "event": "pull_request"},
+            {**good_run, "head_sha": "e" * 40},
+            {**good_run, "head_branch": "main"},
+            {**good_run, "path": ".github/workflows/other.yml"},
+        ):
+            self.assertEqual(inspect(ReadOnlyGitHub([invalid]))["status"], "pending")
+        self.assertEqual(inspect(ReadOnlyGitHub([]))["status"], "pending")
+        self.assertEqual(inspect(ReadOnlyGitHub([
+            {**good_run, "status": "in_progress"}]))["status"], "pending")
+        self.assertEqual(inspect(ReadOnlyGitHub([
+            {**good_run, "conclusion": "failure"}]))["status"], "failed")
+        self.assertEqual(inspect(ReadOnlyGitHub([
+            good_run, {**good_run, "id": 13, "conclusion": "failure"}]))["status"], "failed")
+        self.assertEqual(inspect(ReadOnlyGitHub([good_run], [
+            {**good_job, "steps": good_job["steps"][:-1]}]))["status"], "failed")
+        with self.assertRaises(StudioError):
+            inspect_exact_commit_ci(
+                ReadOnlyGitHub([good_run]), commit_sha="wrong",
+                branch=review_branch, workflow_path=workflow_path,
+                required_steps=required_steps)
+
 if __name__=='__main__': unittest.main()

@@ -141,17 +141,18 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-21T15:46:38Z
+Generated: 2026-10-21T15:55:21Z
 
 ### Git
 - Branch: `main`
-- Head: `d97c37ead3b0`
-- Commit date: 2026-10-21T11:46:20-04:00
-- Commit: perf(worker): single-file approved source restore and exact diff review (#368)
+- Head: `bc82897efb17`
+- Commit date: 2026-10-21T11:55:09-04:00
+- Commit: fix(worker): preserve source executable bits during Git publication (#370)
 - Tracked files: 874
 
 ### Recently changed files
 - `studio/generic_repository.py`
+- `tests/test_repository_branch_identity.py`
 - `studio/production_os_bounded_source_repair.py`
 - `tests/test_generic_repository_pull_request.py`
 - `control/production-os-worker-canary.json`
@@ -160,8 +161,6 @@ Generated: 2026-10-21T15:46:38Z
 - `studio/production_os_worker_canary.py`
 - `tests/test_multi_engine_orchestrator.py`
 - `tests/test_production_os_worker_canary.py`
-- `studio/production_os_jumpy_source_repair.py`
-- `studio/target_ci_verification.py`
 
 ### Project signals
 - No common build descriptor detected

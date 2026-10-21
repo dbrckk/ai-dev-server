@@ -1,12 +1,11 @@
 # Change impact
 
-Base: 055e0ab805bf0069f72436ea119f4aa9dc066f36
-Head: d97c37ead3b080a8263e7e8bdcb9f50c32fced99
+Base: 3eac71fd0311bf285090b6edc46c29ff92a31ed5
+Head: bc82897efb170c7ef5de923975c03429f03e71fb
 
 ## Changed files
 - M studio/generic_repository.py
-- M studio/production_os_bounded_source_repair.py
-- M tests/test_generic_repository_pull_request.py
+- M tests/test_repository_branch_identity.py
 
 ## Affected areas
 - studio

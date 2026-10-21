@@ -1,135 +1,33 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "4e45cc94ee7b8d7c3bba23c9aa62db7ed643262f",
-  "head": "d97c37ead3b080a8263e7e8bdcb9f50c32fced99",
+  "base": "d97c37ead3b080a8263e7e8bdcb9f50c32fced99",
+  "head": "bc82897efb170c7ef5de923975c03429f03e71fb",
   "index_mode": "incremental",
   "changed_files": [
-    {
-      "path": "control/production-os-worker-canary.json",
-      "status": "M"
-    },
     {
       "path": "studio/generic_repository.py",
       "status": "M"
     },
     {
-      "path": "studio/multi_engine_orchestrator.py",
-      "status": "M"
-    },
-    {
-      "path": "studio/production_os_bounded_source_repair.py",
-      "status": "A"
-    },
-    {
-      "path": "studio/production_os_source_tasks.py",
-      "status": "A"
-    },
-    {
-      "path": "studio/production_os_worker_canary.py",
-      "status": "M"
-    },
-    {
-      "path": "tests/test_generic_repository_pull_request.py",
-      "status": "M"
-    },
-    {
-      "path": "tests/test_multi_engine_orchestrator.py",
-      "status": "M"
-    },
-    {
-      "path": "tests/test_production_os_worker_canary.py",
+      "path": "tests/test_repository_branch_identity.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
     "studio/generic_repository.py",
-    "studio/multi_engine_orchestrator.py",
-    "studio/production_os_bounded_source_repair.py",
-    "studio/production_os_source_tasks.py",
-    "studio/production_os_worker_canary.py",
-    "tests/test_generic_repository_pull_request.py",
-    "tests/test_multi_engine_orchestrator.py",
-    "tests/test_production_os_worker_canary.py"
+    "tests/test_repository_branch_identity.py"
   ],
   "impacted_files": [
-    "studio/autonomous_project.py",
     "studio/generic_project.py",
     "studio/generic_repository.py",
-    "studio/github_runner.py",
-    "studio/multi_engine_orchestrator.py",
     "studio/production_os_bounded_source_repair.py",
     "studio/production_os_jumpy_source_repair.py",
     "studio/production_os_review_canary.py",
-    "studio/production_os_source_tasks.py",
-    "studio/production_os_worker_canary.py",
     "tests/test_generic_repository_pull_request.py",
-    "tests/test_generic_worker_canary_resume.py",
-    "tests/test_multi_engine_orchestrator.py",
-    "tests/test_production_os_worker_canary.py",
     "tests/test_repository_branch_identity.py"
   ],
   "impacted_symbols": [
-    {
-      "name": "_state_paths",
-      "kind": "function",
-      "file": "studio/autonomous_project.py",
-      "line": 46
-    },
-    {
-      "name": "_clear_human_input_request",
-      "kind": "function",
-      "file": "studio/autonomous_project.py",
-      "line": 51
-    },
-    {
-      "name": "ensure_project_goal",
-      "kind": "function",
-      "file": "studio/autonomous_project.py",
-      "line": 59
-    },
-    {
-      "name": "_sync_promoted_capabilities",
-      "kind": "function",
-      "file": "studio/autonomous_project.py",
-      "line": 80
-    },
-    {
-      "name": "translate_orchestrator_result",
-      "kind": "function",
-      "file": "studio/autonomous_project.py",
-      "line": 112
-    },
-    {
-      "name": "run_persistent_project",
-      "kind": "function",
-      "file": "studio/autonomous_project.py",
-      "line": 183
-    },
-    {
-      "name": "context_provider",
-      "kind": "function",
-      "file": "studio/autonomous_project.py",
-      "line": 251
-    },
-    {
-      "name": "execute_cycle",
-      "kind": "function",
-      "file": "studio/autonomous_project.py",
-      "line": 286
-    },
-    {
-      "name": "cycle_observer",
-      "kind": "function",
-      "file": "studio/autonomous_project.py",
-      "line": 334
-    },
-    {
-      "name": "execute_registered_capability",
-      "kind": "function",
-      "file": "studio/autonomous_project.py",
-      "line": 346
-    },
     {
       "name": "_snapshot",
       "kind": "function",
@@ -287,114 +185,6 @@
       "line": 399
     },
     {
-      "name": "_prepare_capability_promotion_handoff",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 57
-    },
-    {
-      "name": "_usage_count",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 97
-    },
-    {
-      "name": "collect_agent_usage",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 106
-    },
-    {
-      "name": "write_production_os_result",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 171
-    },
-    {
-      "name": "_stop_bounded_process",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 563
-    },
-    {
-      "name": "bounded_run",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 599
-    },
-    {
-      "name": "_update_improvements",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 627
-    },
-    {
-      "name": "run",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 645
-    },
-    {
-      "name": "effective_runner",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 655
-    },
-    {
-      "name": "persist_published_round",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 948
-    },
-    {
-      "name": "run_once",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 972
-    },
-    {
-      "name": "persist_verified_cycle",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 982
-    },
-    {
-      "name": "improvement_project_cycle",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 1023
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/github_runner.py",
-      "line": 1214
-    },
-    {
-      "name": "_remaining",
-      "kind": "function",
-      "file": "studio/multi_engine_orchestrator.py",
-      "line": 17
-    },
-    {
-      "name": "_detect",
-      "kind": "function",
-      "file": "studio/multi_engine_orchestrator.py",
-      "line": 23
-    },
-    {
-      "name": "_run_stage",
-      "kind": "function",
-      "file": "studio/multi_engine_orchestrator.py",
-      "line": 38
-    },
-    {
-      "name": "run_project",
-      "kind": "function",
-      "file": "studio/multi_engine_orchestrator.py",
-      "line": 44
-    },
-    {
       "name": "contract",
       "kind": "function",
       "file": "studio/production_os_bounded_source_repair.py",
@@ -447,78 +237,6 @@
       "kind": "function",
       "file": "studio/production_os_review_canary.py",
       "line": 53
-    },
-    {
-      "name": "SourceTask",
-      "kind": "class",
-      "file": "studio/production_os_source_tasks.py",
-      "line": 11
-    },
-    {
-      "name": "instruction",
-      "kind": "function",
-      "file": "studio/production_os_source_tasks.py",
-      "line": 51
-    },
-    {
-      "name": "dispatch_worker_after_enqueue",
-      "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 22
-    },
-    {
-      "name": "validate_control",
-      "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 63
-    },
-    {
-      "name": "canary_instruction",
-      "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 92
-    },
-    {
-      "name": "source_canary_preflight",
-      "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 161
-    },
-    {
-      "name": "launch_canary",
-      "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 215
-    },
-    {
-      "name": "_polling_parameters",
-      "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 264
-    },
-    {
-      "name": "wait_for_workflow",
-      "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 274
-    },
-    {
-      "name": "wait_for_readiness",
-      "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 297
-    },
-    {
-      "name": "run_canary",
-      "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 328
-    },
-    {
-      "name": "main",
-      "kind": "function",
-      "file": "studio/production_os_worker_canary.py",
-      "line": 365
     },
     {
       "name": "FakeGitHub",
@@ -593,270 +311,6 @@
       "line": 290
     },
     {
-      "name": "ExistingWorkerCanaryVerificationTests",
-      "kind": "class",
-      "file": "tests/test_generic_worker_canary_resume.py",
-      "line": 16
-    },
-    {
-      "name": "_request",
-      "kind": "function",
-      "file": "tests/test_generic_worker_canary_resume.py",
-      "line": 17
-    },
-    {
-      "name": "test_accepts_exact_existing_canary_with_or_without_final_newline",
-      "kind": "function",
-      "file": "tests/test_generic_worker_canary_resume.py",
-      "line": 35
-    },
-    {
-      "name": "test_rejects_wrong_content",
-      "kind": "function",
-      "file": "tests/test_generic_worker_canary_resume.py",
-      "line": 90
-    },
-    {
-      "name": "test_rejects_non_canary_repository_or_missing_contract",
-      "kind": "function",
-      "file": "tests/test_generic_worker_canary_resume.py",
-      "line": 100
-    },
-    {
-      "name": "MultiEngineOrchestratorTests",
-      "kind": "class",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 15
-    },
-    {
-      "name": "request",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 16
-    },
-    {
-      "name": "test_flutter_delegates_unchanged",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 20
-    },
-    {
-      "name": "runner",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 24
-    },
-    {
-      "name": "test_generic_only_forwards_published_round_checkpoint_callback",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 32
-    },
-    {
-      "name": "runner",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 42
-    },
-    {
-      "name": "test_generic_without_callback_preserves_original_call",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 62
-    },
-    {
-      "name": "runner",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 71
-    },
-    {
-      "name": "_runner",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 84
-    },
-    {
-      "name": "runner",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 86
-    },
-    {
-      "name": "test_godot_stops_cleanly_when_release_keystore_is_missing",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 145
-    },
-    {
-      "name": "test_release_chain_reaches_human_play_submission_only",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 152
-    },
-    {
-      "name": "test_opt_in_play_validation_can_complete_godot_pipeline",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 159
-    },
-    {
-      "name": "test_credentials_lost_between_preflight_and_signing_return_to_human_action",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 171
-    },
-    {
-      "name": "test_each_failed_godot_stage_stays_on_itself",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 177
-    },
-    {
-      "name": "test_journey_stage_cannot_fake_execution_coverage",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 193
-    },
-    {
-      "name": "test_visual_stage_cannot_fake_visual_coverage",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 199
-    },
-    {
-      "name": "test_missing_detection_evidence_fails_closed",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 205
-    },
-    {
-      "name": "runner",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 208
-    },
-    {
-      "name": "never_detect",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 233
-    },
-    {
-      "name": "never_detect",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 326
-    },
-    {
-      "name": "ReadOnlyGitHub",
-      "kind": "class",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 352
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 353
-    },
-    {
-      "name": "get",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 356
-    },
-    {
-      "name": "inspect",
-      "kind": "function",
-      "file": "tests/test_multi_engine_orchestrator.py",
-      "line": 363
-    },
-    {
-      "name": "FakeClient",
-      "kind": "class",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 17
-    },
-    {
-      "name": "__init__",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 18
-    },
-    {
-      "name": "submit",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 24
-    },
-    {
-      "name": "get",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 34
-    },
-    {
-      "name": "WorkerCanaryTests",
-      "kind": "class",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 40
-    },
-    {
-      "name": "test_control_is_strict",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 41
-    },
-    {
-      "name": "test_canary_instruction_is_bounded_and_sequence_specific",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 75
-    },
-    {
-      "name": "test_launch_is_idempotent_and_uses_dashboard_api",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 117
-    },
-    {
-      "name": "test_wait_observes_real_terminal_success",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 256
-    },
-    {
-      "name": "clock",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 259
-    },
-    {
-      "name": "sleep",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 261
-    },
-    {
-      "name": "test_terminal_failure_returns_without_retrying_mutation",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 270
-    },
-    {
-      "name": "test_wait_is_bounded",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 283
-    },
-    {
-      "name": "test_canary_workflow_verifies_terminal_worker_completion",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_canary.py",
-      "line": 308
-    },
-    {
       "name": "RepositoryBranchIdentityTests",
       "kind": "class",
       "file": "tests/test_repository_branch_identity.py",
@@ -890,16 +344,11 @@
       "name": "call",
       "kind": "function",
       "file": "tests/test_repository_branch_identity.py",
-      "line": 78
+      "line": 84
     }
   ],
   "selected_tests": [
     "tests/test_generic_repository_pull_request.py",
-    "tests/test_generic_worker_canary_resume.py",
-    "tests/test_multi_engine_orchestrator.py",
-    "tests/test_orchestrator.py",
-    "tests/test_production_os_worker.py",
-    "tests/test_production_os_worker_canary.py",
     "tests/test_repository_branch_identity.py"
   ]
 }

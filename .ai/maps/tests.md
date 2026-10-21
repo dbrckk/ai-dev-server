@@ -11015,6 +11015,9 @@ current = {"sha": base_sha}
 ⋮----
 def get(path)
 ⋮----
+# Existing executable permission must survive publication
+# even when the file text was restored into a plain file.
+⋮----
 def call(method, path, payload)
 ⋮----
 producer = GenericRepository(github, "owner/repo", "mp-abcdef123456")

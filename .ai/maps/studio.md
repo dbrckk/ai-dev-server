@@ -9913,6 +9913,11 @@ def publish(self,base_sha:str,root:Path,message:str)->str
 ⋮----
 base_tree=self.github.get("/git/commits/"+base_sha).get("tree",{}).get("sha")
 ⋮----
+# Publishing a restored text snapshot must not silently chmod every
+# executable script to 100644. GitHub compares modes as real changes,
+# which can break one-file delivery contracts and target CI.
+# Obtain modes from this exact parent revision (not the live branch).
+parent_modes = {
 entries=[]
 ⋮----
 rel=p.relative_to(root).as_posix()
@@ -9920,6 +9925,10 @@ rel=p.relative_to(root).as_posix()
 raw=p.read_bytes()
 ⋮----
 text=raw.decode("utf-8")
+⋮----
+mode = parent_modes.get(rel, "100644")
+# Symlinks and gitlinks are not safe plain-text publication
+# targets. Do not change their Git type through a snapshot write.
 ⋮----
 tree=self.github.call("POST",self.github.repo+"/git/trees",{"base_tree":base_tree,"tree":entries})
 commit=self.github.call("POST",self.github.repo+"/git/commits",{"message":message,"tree":tree["sha"],"parents":[base_sha]})

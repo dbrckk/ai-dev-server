@@ -61,6 +61,7 @@ The content is organized as follows:
     production-os-worker-canary.yml
     production-os-worker-integration.yml
     provider-preview.yml
+    public-free-code-smoke.yml
     remote-control.yml
     resilience-soak.yml
     semantic-refresh.yml
@@ -84,6 +85,9 @@ control/
   provider-probe.json
   release.json
   request.json
+docs/
+  qualification/
+    public-model-diagnostic-fix-20261020.json
 integration_tests/
   test_production_os_server_integration.py
 projects/
@@ -390,6 +394,7 @@ studio/
   provider_probe.py
   provider_router.py
   provider_runtime_reliability.py
+  public_free_code_smoke.py
   queue.py
   quick_gate_cache.py
   readiness.py
@@ -2981,6 +2986,58 @@ jobs:
           retention-days: 14
 ````
 
+## File: .github/workflows/public-free-code-smoke.yml
+````yaml
+name: Public Free Model Code Smoke
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'studio/public_free_code_smoke.py'
+      - '.github/workflows/public-free-code-smoke.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'studio/public_free_code_smoke.py'
+      - '.github/workflows/public-free-code-smoke.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-free-code-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  free-coding:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Checkout isolated public smoke
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Validate synthetic free coding response
+        env:
+          PYTHONPATH: studio
+        run: |
+          python -m compileall -q studio/public_free_code_smoke.py
+          python studio/public_free_code_smoke.py
+      - name: Retain redacted qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: public-free-code-smoke-${{ github.run_number }}
+          path: studio-output/public-free-code-smoke/report.json
+          if-no-files-found: warn
+          retention-days: 7
+````
+
 ## File: .github/workflows/remote-control.yml
 ````yaml
 name: Remote Codespace Control
@@ -3517,6 +3574,65 @@ initial_prompt: |
   "requested_by": "chatgpt",
   "reason": "Reconnect Production-OS persistent worker and restore dashboard production execution",
   "request_id": 35
+}
+````
+
+## File: docs/qualification/public-model-diagnostic-fix-20261020.json
+````json
+{
+  "requested_model": "kilo-auto/free",
+  "reported_model": "nvidia/nemotron-3.5-super-vl:free",
+  "usage": {
+    "prompt_tokens": 489,
+    "completion_tokens": 1003,
+    "total_tokens": 1492,
+    "cost": 0,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0,
+      "upstream_inference_prompt_cost": 0,
+      "upstream_inference_completions_cost": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 941,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  },
+  "finish_reason": "stop",
+  "max_tokens": 1024,
+  "max_attempts": 1,
+  "source_sha256": "a5b11226be891f91d4ebe4633ad86aff6870ae7284f78da26e91732617463496",
+  "patch_sha256": "522c1baf9a593f9797ede094d0142f92cf67cb2ae76c02339ffa20949ec966de",
+  "schema_version": 1,
+  "observed_on": "2026-10-20",
+  "target_repository": "dbrckk/ai-dev-server",
+  "target_visibility": "public",
+  "target_path": "studio/production_os_live_diagnostics.py",
+  "base_commit": "d28b09e",
+  "transport": "existing core.API, fixed HTTPS Kilo public gateway, empty credential, one POST without retry",
+  "free_preflight": "fresh catalog isFree=true and zero prompt/completion prices",
+  "proposed_edit": {
+    "old": "or len(fn.args.args) != 1 or fn.args.args[0].arg != \"value\"",
+    "new": "or len(fn.args.args) != 1 or fn.args.args[0].arg != \"value\" or fn.args.args[0].annotation is not None"
+  },
+  "validation": {
+    "before": "existing regression extended; annotated argument accepted and regression failed",
+    "after": "23 tests and 20 subtests passed; exact proposed source edit applied",
+    "hosted_ci": "pending"
+  },
+  "limits": [
+    "model identity and cost are gateway-reported",
+    "not a hosted Production-OS queue-to-worker run",
+    "not sustained quota or arbitrary coding-quality proof",
+    "no private content sent; no provider-generated executable code run"
+  ]
 }
 ````
 
@@ -23731,6 +23847,54 @@ confidence = max(0.0, min(1.0, float(row.get("confidence", 0.0) or 0.0)))
 score = max(0.05, min(0.95, float(row.get("reliability_score", 0.5) or 0.5)))
 ````
 
+## File: studio/public_free_code_smoke.py
+````python
+"""Single bounded, non-secret free-model coding qualification.
+
+This probe deliberately never reads project sources, GitHub credentials,
+operator tokens, or runtime secrets. It does not enqueue production work.
+"""
+⋮----
+GATEWAY = "https://api.kilo.ai/api/gateway"
+MODEL = "kilo-auto/free"
+OUTPUT = Path("studio-output/public-free-code-smoke/report.json")
+⋮----
+def _catalog_confirms_zero_cost(payload: object) -> bool
+⋮----
+"""Reject uncertain pricing rather than assume an advertised free tier."""
+⋮----
+prices = entry.get("pricing")
+⋮----
+def run() -> int
+⋮----
+# Save only bounded, nonsensitive evidence. Never emit remote text.
+evidence = {
+⋮----
+client = API(GATEWAY, "")
+catalog = client.call("GET", "/models", timeout_seconds=18, max_attempts=1)
+⋮----
+# The *only* submitted content is a fixed, synthetic, public exercise.
+# Free-tier reasoning may consume 512 tokens before any content. Keep
+# a single request with a fixed 1024-token ceiling, never retry.
+⋮----
+response = client.call("POST", "/chat/completions", {
+⋮----
+usage = response.get("usage")
+⋮----
+tokens = usage.get("completion_tokens")
+⋮----
+# Gateways report charge data either at the top level or in usage.
+# Inspect every present field: a zero field cannot hide another charge.
+costs = []
+⋮----
+details = usage.get("cost_details") if isinstance(usage, dict) else None
+⋮----
+choices = response.get("choices")
+first = choices[0] if isinstance(choices, list) and choices else None
+message = first.get("message") if isinstance(first, dict) else None
+source = message.get("content") if isinstance(message, dict) else None
+````
+
 ## File: studio/queue.py
 ````python
 """Validate the entire trusted request queue before starting any privileged job."""
@@ -35152,6 +35316,19 @@ def call(self, method, path, data=None, **kwargs)
 result = diagnose(api_factory=FakeAPI, providers=providers, environ={})
 ⋮----
 smoke = diagnose(api_factory=FakeAPI, providers=providers,
+⋮----
+# The real public gateway reports costs inside usage, including
+# separate upstream fields. None may be ignored in a free-code proof.
+⋮----
+catalog = {"data": [{"id": public_smoke.MODEL, "isFree": True,
+cases = (
+⋮----
+output = Path(tmp) / "report.json"
+response = {"choices": [{"message": {"content": 'def increment(value):\n    return value + 1'}}], **cost_fields}
+⋮----
+live_call = api.return_value.call.call_args_list[1]
+⋮----
+report = json.loads(output.read_text())
 ⋮----
 def test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready(self)
 ⋮----

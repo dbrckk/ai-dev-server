@@ -1601,6 +1601,7 @@
         "studio/provider_probe.py",
         "studio/provider_router.py",
         "studio/provider_runtime_reliability.py",
+        "studio/public_free_code_smoke.py",
         "studio/queue.py",
         "studio/release.py",
         "studio/release_candidate_search.py",
@@ -1609,7 +1610,6 @@
         "studio/repair_search_policy.py",
         "studio/routing_calibration.py",
         "studio/run.py",
-        "studio/run_cost_controller.py",
         "studio/runtime_journeys.py",
         "studio/security_agent.py",
         "studio/security_stage.py",
@@ -3898,9 +3898,10 @@
         "tests/test_unified_routing_score.py"
       ],
       "dependents": [
+        "studio/public_free_code_smoke.py",
         "tests/test_production_os_live_diagnostics.py"
       ],
-      "in_degree": 1,
+      "in_degree": 2,
       "out_degree": 4
     },
     "studio/production_os_provider_config.py": {
@@ -4220,6 +4221,18 @@
       ],
       "in_degree": 3,
       "out_degree": 1
+    },
+    "studio/public_free_code_smoke.py": {
+      "dependencies": [
+        "studio/core.py",
+        "studio/production_os_live_diagnostics.py",
+        "tests/test_studio.py"
+      ],
+      "dependents": [
+        "tests/test_production_os_live_diagnostics.py"
+      ],
+      "in_degree": 1,
+      "out_degree": 3
     },
     "studio/queue.py": {
       "dependencies": [
@@ -4604,16 +4617,14 @@
       "out_degree": 30
     },
     "studio/run_cost_controller.py": {
-      "dependencies": [
-        "studio/core.py"
-      ],
+      "dependencies": [],
       "dependents": [
         "studio/fault_injection_smoke.py",
         "studio/generic_project.py",
         "tests/test_run_cost_controller.py"
       ],
       "in_degree": 3,
-      "out_degree": 1
+      "out_degree": 0
     },
     "studio/runtime_health.py": {
       "dependencies": [
@@ -7158,11 +7169,12 @@
         "studio/core.py",
         "studio/production_os_live_diagnostics.py",
         "studio/production_os_provider_config.py",
-        "studio/provider_router.py"
+        "studio/provider_router.py",
+        "studio/public_free_code_smoke.py"
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 4
+      "out_degree": 5
     },
     "tests/test_production_os_local_e2e.py": {
       "dependencies": [
@@ -7841,6 +7853,7 @@
         "studio/production_os_review_canary.py",
         "studio/production_os_worker_canary.py",
         "studio/provider_router.py",
+        "studio/public_free_code_smoke.py",
         "studio/repair_search_policy.py",
         "studio/runtime_health.py",
         "studio/task_context.py",
@@ -7871,7 +7884,7 @@
         "tests/test_strict_task_claim_store.py",
         "tests/test_task_lease.py"
       ],
-      "in_degree": 111,
+      "in_degree": 112,
       "out_degree": 3
     },
     "tests/test_task_claim_store.py": {

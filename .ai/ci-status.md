@@ -2,13 +2,13 @@
 
 Summary: 2 success / 0 failure / 6 active
 
-- Multi-Engine E2E Benchmark: in_progress / pending (dc523dca)
-- CI: in_progress / pending (dc523dca)
-- Validate AI Dev Server: in_progress / pending (dc523dca)
-- Mobile Studio Real Build: in_progress / pending (dc523dca)
-- Production-OS worker integration: in_progress / pending (dc523dca)
-- Fault Injection Gate: completed / success (dc523dca)
-- Resilience Soak: in_progress / pending (dc523dca)
-- CI: completed / success (f2412a0e)
+- Mobile Studio Real Build: pending / pending (bc73c67f)
+- Public Free Model Code Smoke: in_progress / pending (bc73c67f)
+- Multi-Engine E2E Benchmark: pending / pending (bc73c67f)
+- Production-OS worker integration: in_progress / pending (bc73c67f)
+- CI: pending / pending (bc73c67f)
+- Fault Injection Gate: completed / success (bc73c67f)
+- Resilience Soak: completed / success (bc73c67f)
+- Validate AI Dev Server: pending / pending (bc73c67f)
 
 > Generated summary only; inspect GitHub Actions for full logs when needed.

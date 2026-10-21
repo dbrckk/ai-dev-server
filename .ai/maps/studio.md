@@ -307,6 +307,7 @@ provider_monthly_quota.py
 provider_probe.py
 provider_router.py
 provider_runtime_reliability.py
+public_free_code_smoke.py
 queue.py
 quick_gate_cache.py
 readiness.py
@@ -18000,6 +18001,54 @@ row = routes.get(str(provider) + "::*")
 ⋮----
 confidence = max(0.0, min(1.0, float(row.get("confidence", 0.0) or 0.0)))
 score = max(0.05, min(0.95, float(row.get("reliability_score", 0.5) or 0.5)))
+````
+
+## File: public_free_code_smoke.py
+````python
+"""Single bounded, non-secret free-model coding qualification.
+
+This probe deliberately never reads project sources, GitHub credentials,
+operator tokens, or runtime secrets. It does not enqueue production work.
+"""
+⋮----
+GATEWAY = "https://api.kilo.ai/api/gateway"
+MODEL = "kilo-auto/free"
+OUTPUT = Path("studio-output/public-free-code-smoke/report.json")
+⋮----
+def _catalog_confirms_zero_cost(payload: object) -> bool
+⋮----
+"""Reject uncertain pricing rather than assume an advertised free tier."""
+⋮----
+prices = entry.get("pricing")
+⋮----
+def run() -> int
+⋮----
+# Save only bounded, nonsensitive evidence. Never emit remote text.
+evidence = {
+⋮----
+client = API(GATEWAY, "")
+catalog = client.call("GET", "/models", timeout_seconds=18, max_attempts=1)
+⋮----
+# The *only* submitted content is a fixed, synthetic, public exercise.
+# Free-tier reasoning may consume 512 tokens before any content. Keep
+# a single request with a fixed 1024-token ceiling, never retry.
+⋮----
+response = client.call("POST", "/chat/completions", {
+⋮----
+usage = response.get("usage")
+⋮----
+tokens = usage.get("completion_tokens")
+⋮----
+# Gateways report charge data either at the top level or in usage.
+# Inspect every present field: a zero field cannot hide another charge.
+costs = []
+⋮----
+details = usage.get("cost_details") if isinstance(usage, dict) else None
+⋮----
+choices = response.get("choices")
+first = choices[0] if isinstance(choices, list) and choices else None
+message = first.get("message") if isinstance(first, dict) else None
+source = message.get("content") if isinstance(message, dict) else None
 ````
 
 ## File: queue.py

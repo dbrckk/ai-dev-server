@@ -8844,6 +8844,19 @@ result = diagnose(api_factory=FakeAPI, providers=providers, environ={})
 ⋮----
 smoke = diagnose(api_factory=FakeAPI, providers=providers,
 ⋮----
+# The real public gateway reports costs inside usage, including
+# separate upstream fields. None may be ignored in a free-code proof.
+⋮----
+catalog = {"data": [{"id": public_smoke.MODEL, "isFree": True,
+cases = (
+⋮----
+output = Path(tmp) / "report.json"
+response = {"choices": [{"message": {"content": 'def increment(value):\n    return value + 1'}}], **cost_fields}
+⋮----
+live_call = api.return_value.call.call_args_list[1]
+⋮----
+report = json.loads(output.read_text())
+⋮----
 def test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready(self)
 ⋮----
 provider = ProviderSpec('p', 'https://provider.example/v1', 'key', 'product', code_model='code')

@@ -107,7 +107,7 @@
   "current_work": [
     "PR #309 merged f4137d62598333b52dc1988ef8aca2c3978247fe with 7 successful exact-head workflows; bounded Godot planning context now on ai-dev-server/main",
     "Add strict Jumpy-only settings tap guard source-code canary scenario; extend existing tests and qualify exact-head CI before triggering",
-    "After merge increment control canary sequence 33→34 and choose jumpy_settings_tap_guard to verify real model-generated GDScript patch (not marker file)",
+    "After merge increment control canary sequence 33\u219234 and choose jumpy_settings_tap_guard to verify real model-generated GDScript patch (not marker file)",
     "Review actual worker model capacity, change diff, Jumpy headless CI and PR before claiming source-code delivery. Never merge Jumpy checkpoint automatically."
   ],
   "merged_changes": [
@@ -463,7 +463,8 @@
       "Bind published checkpoint to the exact approved request, repository, branch, workflow task, commit and source hash; resume only review/CI without inference or another source commit.",
       "Reopen only the source-review blocker on a new invocation, retain attempt count/ceiling, stop again on pending or failed CI.",
       "Reject changed/unbound checkpoints without generation. Preserve exact commit proof and report delivery_resumed.",
-      "Label source API errors with fixed restore/publish/review/target_ci stages; stop 401/403 after one goal attempt and retain safe stage/status evidence."
+      "Label source API errors with fixed restore/publish/review/target_ci stages; stop 401/403 after one goal attempt and retain safe stage/status evidence.",
+      "Propagate whitelisted persisted source stage/status into pipeline summary and native Production-OS evidence even when the goal catches the exception."
     ],
     "validation": {
       "unittest": "1784 passed",
@@ -471,7 +472,10 @@
       "actual_server_integration": "6 passed against Production-OS85e7370b",
       "compileall": "passed",
       "diff_check": "passed",
-      "regression": "Existing source test first failed on obsolete-source restoration, then on a terminal goal never observing failed CI; corrected full goal flow resumes pending/failed/passed without additional model/publish calls."
+      "regression": "Existing source test first failed on obsolete-source restoration, then on a terminal goal never observing failed CI; corrected full goal flow resumes pending/failed/passed without additional model/publish calls.",
+      "real_http_denials": "Actual authenticated loopback 401/403: one restore request, one blocked attempt, no private response body in persisted goal.",
+      "real_control_plane_receipt": "Actual authenticated local worker/server receipt retains target_ci HTTP403 diagnostics.",
+      "runner_result_contract": "15 existing runner/result tests passed, including every source stage with 401/403 and malformed evidence rejection."
     },
     "limits": [
       "No new hosted source task, inference, provider setting or target merge.",

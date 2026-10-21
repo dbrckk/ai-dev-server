@@ -72,6 +72,45 @@ class AutonomousProjectTests(unittest.TestCase):
         self.assertEqual(translate_orchestrator_result(exhausted),
                          {"blocked_reason": "godot_preview_cycle_budget_exhausted"})
         exhausted['report'].update(checkpoint_commit='f'*40, target_repo='owner/game')
+        # An exact model-authored source checkpoint awaiting target PR/CI is
+        # not a fresh implementation failure. One attempt must persist the
+        # checkpoint and stop rather than consume a 20-attempt goal budget.
+        for mode in (
+            "operator_approved_bounded_source_repair",
+            "model_authored_jumpy_source_repair",
+        ):
+            pending = {
+                "status": "blocked", "next_stage": "exact_commit_target_ci",
+                "report": {
+                    "engine": "generic", "resume_mode": mode,
+                    "checkpoint_commit": "a" * 40,
+                    "target_repo": "dbrckk/star-list" if "approved" in mode else "dbrckk/Jumpy",
+                    "blockers": ["review_pr_not_confirmed"],
+                },
+            }
+            translated = translate_orchestrator_result(pending)
+            self.assertEqual(translated["blocked_reason"],
+                             "source_review_or_exact_sha_ci_unverified")
+            self.assertNotIn("failure", translated)
+            self.assertEqual(translated["evidence"]["source_review_checkpoint"]["commit_sha"],
+                             "a" * 40)
+            with tempfile.TemporaryDirectory() as local:
+                from unittest.mock import Mock
+                run_once = Mock(return_value=pending)
+                state = run_persistent_project(
+                    "request.json", Path(local) / "out", str(Path(local) / "work"),
+                    runner=lambda *a, **k: None, deadline=100,
+                    clock=lambda: 0, max_cycles=20, run_once=run_once)
+                self.assertEqual(state["status"], "blocked")
+                self.assertEqual(state["attempt"], 1)
+                self.assertEqual(run_once.call_count, 1)
+                self.assertIn("source_review_checkpoint", state["evidence"])
+        # Unrelated generic test failures retain the existing retry behavior.
+        other = {
+            "status": "blocked", "next_stage": "exact_commit_target_ci",
+            "report": {"engine": "generic", "resume_mode": "arbitrary_untrusted"},
+        }
+        self.assertIn("failure", translate_orchestrator_result(other))
         with tempfile.TemporaryDirectory() as td:
             from unittest.mock import Mock
             run_once = Mock(return_value=exhausted)

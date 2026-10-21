@@ -5980,6 +5980,14 @@ saved = {'status':'blocked', 'blocked_reason':'godot_preview_cycle_budget_exhaus
 ⋮----
 result = run(request,out,runner=lambda *a,**k:None,clock=lambda:0,budget_seconds=100)
 ⋮----
+correlated = json.loads(request.read_text())
+⋮----
+saved = {"status": "blocked", "blocked_reason": "source_delivery_access_denied",
+⋮----
+expected = {"stage": stage, "http_status": status}
+⋮----
+native = json.loads((out / "production-os-result.json").read_text())
+⋮----
 def test_remote_checkpoint_ingests_memory_before_state_persistence(self)
 ⋮----
 order=[]
@@ -6160,6 +6168,12 @@ value=json.loads(p.read_text())
 def test_terminal_state_is_immutable(self)
 ⋮----
 s=finalize(record_cycle(goal(),evidence={"build_sha":"abc","qa_report":"ok"}))
+⋮----
+checkpoint = {"commit_sha": "a" * 40, "target_repo": "owner/repo",
+pending = finalize(record_cycle(
+resumed = resume_source_review(pending, commit_sha="a" * 40, target_repo="owner/repo")
+⋮----
+exhausted = finalize(record_cycle(
 ⋮----
 def test_false_evidence_rejected(self)
 ⋮----
@@ -8162,6 +8176,45 @@ observed = run_project(str(req_path), root / "out", str(root / "work"),
 ⋮----
 # PR creation and GitHub_TOKEN pull_request checks do not prove that
 # the independent, exact-commit Godot validation has actually passed.
+# A fresh worker must recheck the published source without asking the
+# model for an already-applied edit or publishing another commit.
+⋮----
+cases = (
+⋮----
+root = Path(td); out = root / "out"
+published = {"sha": "b" * 40, "source": original, "count": 0}
+⋮----
+class Repository
+⋮----
+branch = "studio/" + source_request["repository_branch_id"]
+def __init__(self, *_args): pass
+def restore(self, work)
+⋮----
+file = work / source_path
+⋮----
+def restore_approved_source(self, work, path)
+def publish(self, base, work, *_args)
+def publish_approved_source(self, base, work, path, message)
+def ensure_pull_request(self, **kwargs)
+def await_trusted_review(self, sha)
+⋮----
+review = {"pr": None}
+⋮----
+request_path = root / "request.json"
+⋮----
+def execute_lane(_request, output, work, *_args)
+def continue_goal(work)
+⋮----
+result = continue_goal(root / "first")
+⋮----
+result = continue_goal(root / f"resume-{index}")
+⋮----
+saved = load_checkpoint(out / ".autonomy/generic-execution-checkpoint.json")
+⋮----
+denied = run_persistent_project(
+⋮----
+# Neither another request nor moved/edited source may
+# reuse the checkpoint, even if the PR remains green.
 ⋮----
 source_sha = "f" * 40
 review_branch = "studio/mp-" + "a" * 24
@@ -9422,6 +9475,8 @@ result = _failure_diagnostics(RuntimeError('Remote autonomous state persistence 
 result = _failure_diagnostics(RuntimeError('Remote provider health persistence failed: provider health fields invalid'))
 ⋮----
 result = _failure_diagnostics(RuntimeError('Remote provider metrics persistence failed: credential-private-response'))
+⋮----
+result = _failure_diagnostics(raised.exception)
 ⋮----
 def test_runner_diagnostics_keep_http_status_and_never_publish_message(self)
 ⋮----

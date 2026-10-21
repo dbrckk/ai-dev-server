@@ -1,18 +1,31 @@
 # Change impact
 
-Base: 8a1e80702efbff469b8a5d6f29cdc176271c0dd8
-Head: 0b394c363b09637b40f8ab3329a7381872ce4ee0
+Base: e4a2541f767eca5627539b5162572ca21410cf72
+Head: 8c8301bae7445b377bd16cce28a02379e7b5963c
 
 ## Changed files
+- M docs/PRODUCTION_OS_WORKER.md
 - M studio/autonomous_project.py
-- M tests/test_autonomous_project.py
+- M studio/github_runner.py
+- M studio/goal_engine.py
+- M studio/production_os_bounded_source_repair.py
+- M studio/production_os_jumpy_source_repair.py
+- M studio/production_os_worker.py
+- A studio/source_delivery_checkpoint.py
+- M tests/test_github_runner_persistent.py
+- M tests/test_goal_engine.py
+- M tests/test_multi_engine_orchestrator.py
+- M tests/test_production_os_worker_recovery.py
 
 ## Affected areas
+- docs
 - studio
 - tests
 
 ## Related test candidates
 - tests/test_autonomous_project.py
+- tests/test_goal_engine.py
+- tests/test_production_os_worker.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

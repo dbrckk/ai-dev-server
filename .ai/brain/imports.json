@@ -561,8 +561,11 @@
       "native_model_usage",
       "os",
       "pathlib",
+      "production_os_bounded_source_repair",
+      "production_os_jumpy_source_repair",
       "project_memory",
       "promoted_capabilities",
+      "source_delivery_checkpoint",
       "telemetry",
       "telemetry_maintenance"
     ],
@@ -2343,6 +2346,7 @@
       "production_os_source_tasks",
       "re",
       "run",
+      "source_delivery_checkpoint",
       "target_ci_verification"
     ],
     "studio/production_os_jumpy_source_repair.py": [
@@ -2357,6 +2361,7 @@
       "production_os_worker_canary",
       "re",
       "run",
+      "source_delivery_checkpoint",
       "target_ci_verification"
     ],
     "studio/production_os_live_diagnostics.py": [
@@ -2852,6 +2857,15 @@
       "pathlib",
       "shutil",
       "sys"
+    ],
+    "studio/source_delivery_checkpoint.py": [
+      "__future__",
+      "contextlib",
+      "core",
+      "execution_checkpoint",
+      "hashlib",
+      "pathlib",
+      "re"
     ],
     "studio/stage_registry.py": [
       "__future__",
@@ -4757,7 +4771,9 @@
       "unittest"
     ],
     "tests/test_multi_engine_orchestrator.py": [
+      "autonomous_project",
       "core",
+      "execution_checkpoint",
       "json",
       "multi_engine_orchestrator",
       "pathlib",
@@ -5050,10 +5066,12 @@
       "unittest.mock"
     ],
     "tests/test_production_os_worker_recovery.py": [
+      "core",
       "json",
       "math",
       "pathlib",
       "production_os_worker",
+      "source_delivery_checkpoint",
       "tempfile",
       "test_production_os_worker_cli",
       "test_production_os_worker_runtime",

@@ -150,26 +150,33 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-21T16:58:26Z
+Generated: 2026-10-21T18:16:37Z
 
 ### Git
 - Branch: `main`
-- Head: `0b394c363b09`
-- Commit date: 2026-10-21T12:58:15-04:00
-- Commit: fix(worker): stop retrying published source while review is blocked (#371)
-- Tracked files: 874
+- Head: `8c8301bae744`
+- Commit date: 2026-10-21T14:16:25-04:00
+- Commit: fix(worker): resume published source review and preserve safe diagnostics (#372)
+- Tracked files: 875
 
 ### Recently changed files
+- `docs/PRODUCTION_OS_WORKER.md`
 - `studio/autonomous_project.py`
-- `tests/test_autonomous_project.py`
+- `studio/github_runner.py`
+- `studio/goal_engine.py`
 - `studio/production_os_bounded_source_repair.py`
 - `studio/production_os_jumpy_source_repair.py`
-- `studio/target_ci_verification.py`
+- `studio/production_os_worker.py`
+- `studio/source_delivery_checkpoint.py`
+- `tests/test_github_runner_persistent.py`
+- `tests/test_goal_engine.py`
 - `tests/test_multi_engine_orchestrator.py`
+- `tests/test_production_os_worker_recovery.py`
+- `tests/test_autonomous_project.py`
+- `studio/target_ci_verification.py`
 - `studio/generic_repository.py`
 - `tests/test_repository_branch_identity.py`
 - `tests/test_generic_repository_pull_request.py`
-- `control/production-os-worker-canary.json`
 
 ### Project signals
 - No common build descriptor detected

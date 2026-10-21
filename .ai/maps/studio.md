@@ -345,6 +345,7 @@ security_audit.py
 security_remediation.py
 security_stage.py
 smoke.py
+source_delivery_checkpoint.py
 stage_registry.py
 stagnation_controller.py
 star_scanner.py
@@ -4472,6 +4473,17 @@ native_request = json.loads(Path(request_path).read_text())
 native_request = {}
 ⋮----
 goal_state = load_goal(goal_path)
+⋮----
+# A new worker invocation may recheck external review progress. The
+# same invocation still stops after one blocked observation. Bind it
+# to the exact approved request and retained source commit first.
+⋮----
+approved = bounded_contract(native_request)
+source_path = approved[1].path if approved else (
+⋮----
+checkpoint = load_published_source(
+⋮----
+goal_state = resume_source_review(
 ⋮----
 detail = str(goal_state.get("human_action") or "external_human_action_required")
 ⋮----
@@ -11225,6 +11237,13 @@ reasoning_tokens = _usage_count(
 raw_total = usage.get("total_tokens")
 total_tokens = (
 ⋮----
+def _source_delivery_error(value)
+⋮----
+"""Copy only bounded source diagnostics from persisted goal evidence."""
+⋮----
+stage = value.get("stage")
+status = value.get("http_status")
+⋮----
 def write_production_os_result(out: Path, request: dict, summary: dict)
 ⋮----
 correlation = request.get("production_os")
@@ -11493,6 +11512,9 @@ optional_telemetry = (
 # other HTTP failures and mandatory persistence still fail.
 ⋮----
 telemetry_degraded_from = component
+⋮----
+goal_evidence = state.get('evidence')
+source_error = _source_delivery_error(
 ⋮----
 project_report=(
 ⋮----
@@ -11795,6 +11817,14 @@ x=dict(state); x["status"]=d["decision"]; return _seal(x)
 def resume_human_action(state)
 ⋮----
 x={**state,"history":list(state["history"])}
+⋮----
+def resume_source_review(state, *, commit_sha, target_repo)
+⋮----
+"""Recheck one published review checkpoint without resetting its budget."""
+⋮----
+checkpoint = state.get("evidence", {}).get("source_review_checkpoint")
+⋮----
+x = {**state, "status": "active", "blocked_reason": None,
 ````
 
 ## File: goal_learning.py
@@ -16449,6 +16479,8 @@ repo = GenericRepository(github, task.repo, req["repository_branch_id"])
 target = work / task.path
 ⋮----
 before = target.read_text(encoding="utf-8")
+checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
+resumed = resume_published_source(checkpoint_path, req, task.path, base_sha, before)
 ⋮----
 # Public source only. Single provider request, caller-owned model budget,
 # and no local synthesized patch when model fails.
@@ -16461,7 +16493,8 @@ after = apply_model_edit(before, response, task)
 sha = repo.publish_approved_source(base_sha, work, task.path,
 evidence = {
 checkpoint = advance_checkpoint(new_checkpoint(req["id"], "generic", base_sha),
-checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
+⋮----
+sha = base_sha
 ⋮----
 pr = repo.await_trusted_review(sha)
 ⋮----
@@ -16530,6 +16563,9 @@ repo = GenericRepository(github, _TARGET, req["repository_branch_id"])
 target = work / _FILE
 ⋮----
 before = target.read_text(encoding="utf-8")
+checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
+resumed = resume_published_source(checkpoint_path, req, _FILE, base_sha, before)
+⋮----
 match = _FUNCTION.search(before)
 ⋮----
 # One genuine bounded provider inference instead of fifteen full-game
@@ -16541,7 +16577,8 @@ after = apply_model_guard(before, response)
 sha = repo.publish(base_sha, work, f"Jumpy: model-authored clipboard guard (canary {sequence})")
 verification = {
 checkpoint = advance_checkpoint(
-checkpoint_path = out / ".autonomy" / "generic-execution-checkpoint.json"
+⋮----
+sha = base_sha
 ⋮----
 confirmed = repo.await_trusted_review(sha)
 pr = confirmed if confirmed is not None else {"state": "unavailable", "reason": "review_commit_unverified"}
@@ -17285,6 +17322,8 @@ code = "remote_state_restore_failed"
 ⋮----
 code = "remote_state_persistence_failed"
 result = {"error_type": type(exc).__name__, "error_code": code}
+source_failure = re.fullmatch(
+⋮----
 components = ("autonomous state", "project memory", "agent performance", "provider health",
 ⋮----
 # These are fixed local validator messages, never free-form remote bodies.
@@ -20351,6 +20390,39 @@ evidence = state.get('release_evidence', {}).get('security_scan')
 """Real Docker/Flutter smoke test with a deterministic app; no model or GitHub secrets."""
 ⋮----
 root=Path(os.environ.get('STUDIO_SMOKE_ROOT','/tmp/studio-smoke')); root.mkdir(parents=True,exist_ok=False); sandbox=Sandbox(root); sandbox.create('smoke_app')
+````
+
+## File: source_delivery_checkpoint.py
+````python
+"""Bind published-source resumption to its request, commit and exact bytes."""
+⋮----
+class SourceCheckpointError(StudioError)
+⋮----
+"""A changed checkpoint requires new evidence, never another model edit."""
+⋮----
+class SourceDeliveryHTTPError(APIError)
+⋮----
+def __init__(self, stage: str, status: int)
+⋮----
+@contextmanager
+def source_operation(stage: str)
+⋮----
+def request_fingerprint(request: dict) -> str
+⋮----
+operator = request.get("production_os") or {}
+identity = {key: request.get(key) for key in (
+⋮----
+def load_published_source(path: Path, request: dict, source_path: str) -> dict | None
+⋮----
+checkpoint = load(path)
+⋮----
+evidence = checkpoint.get("last_verification")
+⋮----
+checkpoint = load_published_source(path, request, source_path)
+⋮----
+evidence = dict(checkpoint["last_verification"])
+⋮----
+# Revalidate review/CI even after an earlier successful observation.
 ````
 
 ## File: stage_registry.py

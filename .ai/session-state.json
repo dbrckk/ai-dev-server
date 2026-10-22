@@ -1,9 +1,9 @@
 {
   "version": 1,
   "updated_at": "2026-10-22",
-  "task": "Recover bounded configured-provider inference qualification",
-  "base_commit": "f01c620abf53ad876e7512eef833c233afec822e",
-  "branch": "fix/bounded-inference-probes",
+  "task": "Prefer currently code-qualified Lightning in automatic NVIDIA fallback order",
+  "base_commit": "77df54a",
+  "branch": "fix/prefer-qualified-nvidia",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -559,7 +559,7 @@
     "final_evidence": "https://github.com/dbrckk/ai-dev-server/pull/376",
     "next_priority": "Stabilize/qualify existing configured inference before a new reviewed applicable source task; no automatic retry or provider/budget change"
   },
-  "status": "Diagnostic and real native budget fallback fixed against actual HTTP fixtures; final full suite/CI/live requalification pending",
+  "status": "Worker377 hosted inference requalification passed; automatic default-order correction and control20 prepared, exact CI/live qualification pending",
   "bounded_inference_recovery_20261022": {
     "control_sequence": 19,
     "changes": [
@@ -583,6 +583,28 @@
       "fixed": "Refresh per-provider budget from live ledger; second POST max1612 succeeds; total conservative consumed4292<=6000",
       "tests": "Second existing test function extended; no new test functions",
       "insufficient_guard": "4500-token envelope:4242 charged, one POST only, fallback correctly stopped below useful minimum"
+    }
+  },
+  "nvidia_order_recovery_20261022": {
+    "prior_worker_merge": "c0d521e19fa66af726324abb570ce20aef512143",
+    "successful_hosted_diagnosis": 39703457758,
+    "verified_code_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "degraded_models": "Super404; Poolside unavailable",
+    "change": "Automatic Lightning priority70 to95 before Poolside90; primary100/custom provider JSON preserved",
+    "control_sequence": 20,
+    "test_policy": "Existing test function extended; no new test functions",
+    "qualification": "Associated PR records exact CI and hosted result",
+    "limits": [
+      "No project/provider budget change or target merge",
+      "No source queue/canary",
+      "Kilo project-data consent pending; no activation",
+      "No full autonomous-delivery or durable-free-capacity claim"
+    ],
+    "local_verification": {
+      "pytest": "1845 passed +199 subtests in29.93s",
+      "authenticated_integrations": "6 passed in4.505s",
+      "actual_http": "Old order: Super404, Poolside503 three transport attempts, Lightning success;5POSTs/4283charged. New: Super404, Lightning success;2POSTs/50charged. Both within6000 envelope. Real generic_model.ask/config/HTTP/ledger/journal; fixed public fixture only.",
+      "prior_postmerge": "377:9 Actions and3 CircleCI successful;289:4 CI jobs andstandards successful"
     }
   }
 }

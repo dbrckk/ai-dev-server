@@ -1,3 +1,11 @@
+## 2026-10-22 — prefer the currently qualified NVIDIA fallback
+
+- Worker377 merged c0d521e19fa66af726324abb570ce20aef512143 after7 Actions/3 CircleCI success. Actual hosted diagnostic39703457758 SUCCEEDED: Lightning ready/stop and AST-verified Python code within384 output tokens; operator GET ready and server declares immediate wake with no missing configuration. Super still returned404 and Poolside was unavailable; no claim that all providers are healthy.
+- The default registry still placed Poolside90 before qualified Lightning70. Existing registry test now reproduces the wrong preference. Raise only automatic Lightning priority to95; primary100 and custom STUDIO_PROVIDERS_JSON remain unchanged. Existing models/keys, production reasoning, budgets, validation and quota accounting remain intact.
+- Control20 requests one postmerge bounded diagnosis to verify actual hosted order and continued code availability. Final CI/live evidence in associated PR; inherited native fallback budget correction remains qualified by actual6000/4500-envelope HTTP cases and full suites.
+- Fresh local verification:1845 pytest +199 subtests in29.93s;6 authenticated integrations in4.505s. Actual native HTTP/config/ledger/journal fixture: prior order5 POSTs (Super404, three Poolside503 transport attempts, Lightning success),4283 charged; corrected order2 POSTs (Super404, Lightning success),50 charged. Both respect6000 envelope; no project/model API request in fixture. Previous377 all9 postmerge Actions/3 CircleCI and289 four CI jobs/standards passed.
+- No source queue/canary or target merge. Kilo public toy succeeded at75 completion tokens/declared zero cost; project-data fallback remains inactive pending explicit public-only consent. Full source autonomy and sustained free capacity remain unqualified.
+
 ## 2026-10-22 — bounded inference qualification recovery
 
 - Reproduced two diagnostic defects against an actual HTTP fixture: tiny thinking-heavy readiness output is rejected, then the code probe stops at the first503 although another configured provider could work. Existing real worker routing already has provider fallback.

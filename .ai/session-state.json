@@ -1,9 +1,9 @@
 {
   "version": 1,
   "updated_at": "2026-10-22",
-  "task": "Clear phantom activity after the first Actions-worker heartbeat fails",
-  "base_commit": "c3b7b88111ba4da722afbcf81009f2a0a75c35a0",
-  "branch": "fix/worker-startup-heartbeat-cleanup",
+  "task": "Fence obsolete workflow generations in the Actions worker",
+  "base_commit": "22fde26134d73f08b35fa4c152e5cf4852965865",
+  "branch": "fix/worker-stale-generation",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -96,8 +96,10 @@
     "limit": "Historical counters, no hosted model inference or completed end-to-end task"
   },
   "pending": [
-    "Record6 new-worker/new-server integrations and qualify exact-head7 Actions/3 CircleCI",
-    "Coordinate Production-OS291 and worker merge/postmerge live verification"
+    "Qualify7 exact-head Actions and3 CircleCI,then merge",
+    "Observe8 exact-merge Actions and3 CircleCI",
+    "Full new-source autonomy and sustained free inference remain unqualified",
+    "Kilo project-data routing remains inactive pending explicit consent"
   ],
   "merged_pr": {
     "number": 240,
@@ -557,7 +559,7 @@
     "final_evidence": "https://github.com/dbrckk/ai-dev-server/pull/376",
     "next_priority": "Stabilize/qualify existing configured inference before a new reviewed applicable source task; no automatic retry or provider/budget change"
   },
-  "status": "1845+206subtests and6 actual integrations passed;exact-head CI pending",
+  "status": "Real HTTP baseline/fixed,full1845+210 and6 integrations passed;exact-head CI pending",
   "bounded_inference_recovery_20261022": {
     "control_sequence": 19,
     "changes": [
@@ -693,5 +695,93 @@
     "native_counterpart": "Production-OS291:move initial activation inside existing cleanup;1325+6integrations passed;CI pending",
     "limits": "No provider/budget/hosted source task/target merge;Kilo project-data consent pending",
     "worker_server_integration": "6 passed in4.212s against both cleanup corrections"
+  },
+  "paired_startup_cleanup_20261022": {
+    "native_pr": 291,
+    "native_merge": "25ad61d00a23f671247f4bba14d9c2f338e38ba2",
+    "native_main": "15703a633ade7e054f0c39b1cceaa0414850e2c8",
+    "native_ci": {
+      "pre": 39768195984,
+      "post": 39768936076,
+      "standards": 39768937420,
+      "latest_main": 39769034244,
+      "all": "success;4 pre,4 post,4 latest-main jobs"
+    },
+    "worker_pr": 380,
+    "worker_candidate": "554a331ad42d7a4c195df1ba793afbf0b5989399",
+    "worker_merge": "9d81a338de955c2b3ee99c4b49cb8a7de87fd426",
+    "worker_main": "22fde26134d73f08b35fa4c152e5cf4852965865",
+    "worker_pre": "7 Actions and3 CircleCI passed",
+    "worker_post": "8 Actions and3 CircleCI passed",
+    "worker_post_runs": [
+      {
+        "id": 39769967481,
+        "name": "Repository standards",
+        "conclusion": "success"
+      },
+      {
+        "id": 39769965925,
+        "name": "Resilience Soak",
+        "conclusion": "success"
+      },
+      {
+        "id": 39769965766,
+        "name": "Fault Injection Gate",
+        "conclusion": "success"
+      },
+      {
+        "id": 39769965773,
+        "name": "Production-OS worker integration",
+        "conclusion": "success"
+      },
+      {
+        "id": 39769965768,
+        "name": "Validate AI Dev Server",
+        "conclusion": "success"
+      },
+      {
+        "id": 39769965770,
+        "name": "CI",
+        "conclusion": "success"
+      },
+      {
+        "id": 39769965821,
+        "name": "Multi-Engine E2E Benchmark",
+        "conclusion": "success"
+      },
+      {
+        "id": 39769965830,
+        "name": "Mobile Studio Real Build",
+        "conclusion": "success"
+      }
+    ],
+    "render": {
+      "deploy": "dep-dbcuvj6k1f9s73b3oqb0",
+      "status": "live",
+      "commit": "25ad61d00a23f671247f4bba14d9c2f338e38ba2",
+      "last_http": "2026-10-22 11:31:26 UTC:health200/0.30s,ready200/0.59s/database reachable,dashboard200,protectedAPI401",
+      "cold_start": "11:30:59UTC:initial four reads timed out after30s following idle;subsequent unchanged-service reads all expected at11:31:26"
+    },
+    "tests": {
+      "server": "1325 passed,no skips,127.39s,isolated PostgreSQL16",
+      "worker": "1845 passed+206subtests,27.31s",
+      "integration": "6 real authenticated new-worker/new-server passed,4.212s",
+      "test_function_inventory": "unchanged;no new unit tests"
+    },
+    "limits": [
+      "Full new-source autonomous delivery and sustained free inference remain unqualified",
+      "Kilo project-data routing inactive pending explicit public-only consent",
+      "Free Render idle wake can exceed30 seconds;no uptime guarantee"
+    ],
+    "completed_at": "2026-10-22T11:32:27Z"
+  },
+  "stale_generation_recovery_20261022": {
+    "root_cause": "Actions worker ignored current key in stale_job_keys;obsolete generation executed and attempted completion",
+    "baseline": "actual server supersede:obsolete runner starts1,no cancel,complete POST1 rejected,server active1;next current workflow already succeeds",
+    "fixed": "startup0starts;periodic success/error cooperative cancellation;all0obsolete result POSTs,active0,current workflow succeeds",
+    "test_functions": "existing cancellation test extended;AST inventory unchanged",
+    "validation": "1845+210 full26.80s;57+35 selected1.52s;6 authenticated integrations4.089s;compile/diff passed",
+    "ci": "pending",
+    "scope": "worker only,no new hosted/source/model/provider/budget/target change"
   }
 }

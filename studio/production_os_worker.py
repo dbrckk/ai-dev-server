@@ -1203,9 +1203,15 @@ def run_once(
         raise ProductionOSWorkerError("claimed job has no key")
     client.ack(key, worker_id)
     cancel_event = threading.Event()
+    stale_event = threading.Event()
 
     def observe_job_control(response):
         if not isinstance(response, dict):
+            return
+        stale_keys = response.get("stale_job_keys")
+        if isinstance(stale_keys, list) and key in stale_keys:
+            stale_event.set()
+            cancel_event.set()
             return
         control_payload = response.get("control")
         if not isinstance(control_payload, dict):
@@ -1219,6 +1225,15 @@ def run_once(
             and state.get("desired_state") == "cancel_requested"
         ):
             cancel_event.set()
+
+    def finish_stale_job():
+        # The server already invalidated this generation. Clear activity
+        # without reporting an outcome or acknowledging an operator cancel.
+        kwargs = {"active_job_keys": ()}
+        if capacity is not None:
+            kwargs["capacity"] = capacity
+        client.heartbeat(worker_id, **kwargs)
+        return {"status": "stale", "worker_id": worker_id, "key": key}
 
     startup_heartbeat = {"active_job_keys": (key,)}
     if capacity is not None:
@@ -1234,6 +1249,8 @@ def run_once(
             pass
         raise
     observe_job_control(response)
+    if stale_event.is_set():
+        return finish_stale_job()
 
     native_usage_owned = False
 
@@ -1413,6 +1430,8 @@ def run_once(
         stop_heartbeat.set()
         heartbeat_thread.join(timeout=min(heartbeat_interval, 1.0))
         duration = max(0.0, float(clock()) - started)
+        if stale_event.is_set():
+            return finish_stale_job()
         if cancel_event.is_set():
             kwargs = {
                 "active_job_keys":(),
@@ -1480,6 +1499,8 @@ def run_once(
     stop_heartbeat.set()
     heartbeat_thread.join(timeout=min(heartbeat_interval, 1.0))
     duration = max(0.0, float(clock()) - started)
+    if stale_event.is_set():
+        return finish_stale_job()
     if cancel_event.is_set():
         kwargs = {
             "active_job_keys":(),

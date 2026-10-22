@@ -171,6 +171,15 @@ error. Cleanup failure does not replace that error. No executor has started;
 the acknowledged job is left for normal session reconciliation without sending
 a fabricated failure/completion or replaying the active heartbeat.
 
+When a heartbeat lists the current key in `stale_job_keys`, the worker stops that
+generation. Before execution, it returns `stale` without creating project output
+or invoking the runner. During execution, it signals the runner's cooperative
+cancellation event, then returns `stale` when the runner exits, including when it
+raises or returns success. It clears active keys with the same capacity snapshot
+and sends neither a result nor an operator-cancellation acknowledgment. Keys for
+other jobs do not stop the current execution. This preserves the server's
+superseding generation and lets the next poll execute current work.
+
 Local request/output preparation failures and unreadable or mismatched result
 files are reported through `/v1/jobs/fail`, followed by an inactive heartbeat.
 The worker checks the schema, workflow, task, project and repository correlation

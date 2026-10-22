@@ -866,6 +866,44 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             {"job-abc123":"cancel_requested"},
         )
 
+        # A superseded generation is not an operator cancellation. Fence only
+        # this job, without delivering an outcome or acknowledging a cancel.
+        for stage in ("startup", "periodic"):
+            for runner_raises in (False, True):
+                with self.subTest(stage=stage, runner_raises=runner_raises):
+                    stale_client = _FakeClient(sample_job())
+                    counts = {"active": 0, "runs": 0}
+
+                    def stale_heartbeat(worker_id, *, active_job_keys=(), **kwargs):
+                        stale_client.calls.append(("heartbeat", worker_id, tuple(active_job_keys), kwargs))
+                        if active_job_keys:
+                            counts["active"] += 1
+                            threshold = 1 if stage == "startup" else 2
+                            return {"stale_job_keys": ["job-abc123" if counts["active"] >= threshold else "other-job"]}
+                        return {}
+
+                    def stale_runner(request_path, out, **kwargs):
+                        counts["runs"] += 1
+                        self.assertTrue(kwargs["cancel_event"].wait(0.5))
+                        if runner_raises:
+                            raise RuntimeError("obsolete execution stopped")
+                        return {"status": "complete", "finished": True, "usage": {}}
+
+                    stale_client.heartbeat = stale_heartbeat
+                    with tempfile.TemporaryDirectory() as td:
+                        result = run_once(stale_client, worker_id="ai-dev-1", output_root=Path(td),
+                                          run_project=stale_runner, heartbeat_interval_seconds=0.01,
+                                          runner_retry_attempts=0, capacity={"source_status": "fixture"})
+                        if stage == "startup":
+                            self.assertEqual(list(Path(td).iterdir()), [])
+                    self.assertEqual(result["status"], "stale")
+                    self.assertEqual(counts["runs"], 0 if stage == "startup" else 1)
+                    self.assertNotIn("complete", [c[0] for c in stale_client.calls])
+                    self.assertNotIn("fail", [c[0] for c in stale_client.calls])
+                    self.assertEqual(stale_client.calls[-1][2], ())
+                    self.assertNotIn("job_control_states", stale_client.calls[-1][3])
+                    self.assertEqual(stale_client.calls[-1][3]["capacity"], {"source_status": "fixture"})
+
     def test_run_once_reports_runner_exception_and_clears_active_job(self):
         client = _FakeClient(sample_job())
 

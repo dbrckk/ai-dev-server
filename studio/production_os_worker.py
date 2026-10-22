@@ -1002,14 +1002,21 @@ _RETRYABLE_RUNNER_ERROR_TOKENS = (
     "502",
     "503",
     "504",
-    "provider",
 )
 
 
 def _retryable_runner_error(exc: Exception) -> bool:
+    """Retry transient failures, not explicit permanent HTTP denials."""
     if isinstance(exc, (TimeoutError, ConnectionError, subprocess.TimeoutExpired)):
         return True
+    status = getattr(exc, "status", None)
+    if type(status) is int and 400 <= status <= 599:
+        return status in {429, 502, 503, 504}
     message = str(exc).lower()
+    # Explicit HTTP status takes precedence over free-form provider wording.
+    http_status = re.search(r"\b(?:api )?http(?: status)?\s+([45][0-9]{2})\b", message)
+    if http_status:
+        return int(http_status.group(1)) in {429, 502, 503, 504}
     return any(token in message for token in _RETRYABLE_RUNNER_ERROR_TOKENS)
 
 

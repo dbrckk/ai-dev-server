@@ -24,6 +24,20 @@ class WorkerRecoveryTests(unittest.TestCase):
         self.assertNotIn('error_reason', result)
         self.assertNotIn('credential-private-response', json.dumps(result))
         from core import APIError
+        from production_os_worker import _retryable_runner_error
+        for permanent in (400, 401, 403, 404, 410, 422):
+            self.assertFalse(_retryable_runner_error(APIError(permanent)))
+            self.assertFalse(_retryable_runner_error(
+                RuntimeError(f"All configured providers unavailable; last HTTP status {permanent}")))
+            self.assertFalse(_retryable_runner_error(
+                RuntimeError(f"provider temporarily unavailable; API HTTP {permanent}")))
+        for transient in (429, 502, 503, 504):
+            self.assertTrue(_retryable_runner_error(APIError(transient)))
+            self.assertTrue(_retryable_runner_error(
+                RuntimeError(f"provider unavailable; HTTP status {transient}")))
+        self.assertTrue(_retryable_runner_error(TimeoutError("provider temporarily unavailable")))
+        self.assertTrue(_retryable_runner_error(RuntimeError("provider temporarily unavailable")))
+        self.assertFalse(_retryable_runner_error(RuntimeError("provider authorization denied")))
         from source_delivery_checkpoint import source_operation, SourceDeliveryHTTPError
         for stage in ("restore", "publish", "review", "target_ci"):
             with self.assertRaises(SourceDeliveryHTTPError) as raised:

@@ -533,6 +533,25 @@ def ask(
             break
         model = provider.model_for(role)
         completion_budget, estimated_call_tokens = call_budgets[provider.name]
+        if capacity_ledger_path is not None and project_id is not None:
+            # An earlier failed POST can consume its conservative estimate.
+            # Resize this fallback against the live ledger rather than deny
+            # a stale reservation while useful bounded capacity still remains.
+            budget = _bounded_model_token_budget(
+                provider,
+                estimated_prompt_tokens=estimated_prompt_tokens,
+                max_completion_tokens=max_completion_tokens,
+                quota_data=provider_quota_data,
+                quota_reserve_ratio=quota_reserve_ratio,
+                allow_quota_reserve=allow_quota_reserve,
+                project_envelope_tokens=project_capacity_envelope,
+                ledger_data=load_capacity_ledger(capacity_ledger_path),
+                project_id=project_id,
+            )
+            if budget is None:
+                last = StudioError("Insufficient remaining capacity for provider fallback")
+                continue
+            completion_budget, estimated_call_tokens = budget
         api = API(provider.base, provider.key)
         params = {
             "model": model,

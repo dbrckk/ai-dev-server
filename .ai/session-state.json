@@ -559,7 +559,7 @@
     "final_evidence": "https://github.com/dbrckk/ai-dev-server/pull/376",
     "next_priority": "Stabilize/qualify existing configured inference before a new reviewed applicable source task; no automatic retry or provider/budget change"
   },
-  "status": "Implementation prepared; actual HTTP fallback reproduction fixed; full suite/CI/hosted qualification pending",
+  "status": "Diagnostic and real native budget fallback fixed against actual HTTP fixtures; final full suite/CI/live requalification pending",
   "bounded_inference_recovery_20261022": {
     "control_sequence": 19,
     "changes": [
@@ -577,6 +577,12 @@
       "No change to production reasoning/provider/project budgets",
       "Full autonomy and sustained free inference unqualified"
     ],
-    "pytest": "1845 passed,199 subtests in27.63s"
+    "pytest": "1845 passed,199 subtests in31.03s after native budget fix",
+    "native_budget_fix": {
+      "reproduction": "Actual native generic HTTP503 consumes4242 of6000; stale next reservation denies fallback despite1758 remaining",
+      "fixed": "Refresh per-provider budget from live ledger; second POST max1612 succeeds; total conservative consumed4292<=6000",
+      "tests": "Second existing test function extended; no new test functions",
+      "insufficient_guard": "4500-token envelope:4242 charged, one POST only, fallback correctly stopped below useful minimum"
+    }
   }
 }

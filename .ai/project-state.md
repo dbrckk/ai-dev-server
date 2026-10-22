@@ -1,3 +1,17 @@
+# 2026-10-22 — honor cancellation before worker setup
+
+- Actual authenticated HTTP initial heartbeat requests operator cancellation. Baseline valid job still invokes runner/creates output;malformed handoff is falsely failed without cancellation acknowledgment. Corrected valid/malformed jobs:zero executor starts/output,no fail/complete,queue cancelled,operator cancellation acknowledged,active0.
+- Check cancellation immediately after the initial heartbeat (stale-generation precedence retained). Share the existing cancellation acknowledgment path with mid-execution cancellation. Full1845+212subtests passed25.00s;selected57+37subtests and6 actual combined-worker/server integrations4.138s passed. Existing cancellation test extended,no new test functions. Native counterpart also fixed;its full PostgreSQL suite running.
+- Exact-head CI and postmerge gates pending. Prior381 final manual receipts retained below. No new hosted source/model request,provider/budget change,Kilo activation or target merge. Full source autonomy/sustained free capacity and free Render idle-wake limits remain.
+
+# 2026-10-22 — Actions stale-generation fence381 delivered and qualified
+
+- Worker381 mergeda49b116ba4621f9e9991bbd5bbf03ea514e9b4cd after7 Actions/3 CircleCI passed at0456db206d3b1c09e0a024c4f4f1955971891691;all8 Actions/3 CircleCI after merge passed. Mobile39788674882,multi-engine39788674770,integration39788674907,standards39788676615 passed;Circle smoke succeeded13:49:57UTC. Mainc131384c006afa52049444f695c4d7619924986c changes only44 .ai metadata files since qualified runtime (verified).
+- Real authenticated server-supersede fixtures:baseline ignored stale_job_keys,executed obsolete work,attempted completion (server rejects),left active1. Fixed startup0starts/no output;periodic normal/error cooperate with cancellation;all0obsolete fail/complete POSTs,activity0,old workflow/job cancelled,current workflow then succeeds. That current workflow already succeeded before fix;no claim of a previously broken reconnect.
+- Full1845+210subtests in26.80s;selected57+35subtests in1.52s;six current-server integrations4.089s;three real HTTP stale-generation scenarios;compile/diff and unchanged test-function inventory passed. One existing test extended,no new unit-test functions.
+- Fresh13:48:57UTC health200/0.33s,ready200/1.04s/database reachable,dashboard200,API401. Server runtime25ad61d0/deploydep-dbcuvj6k1f9s73b3oqb0 unchanged. Earlier first idle read timed out at30s,then succeeded without configuration/code change;free Render wake remains a limitation.
+- Proof https://github.com/dbrckk/ai-dev-server/pull/381 ;report /workspace/validation-production-os-20261022.md. Local mains synchronized;own clean worktree removed;fixture defaults point to main. Prior final manual receipts preserved in published candidate;latest manual .ai observations intentionally local. No new server deployment,model/hosted source task,provider/quota change,Kilo project-data activation or target-project merge. Full new-source autonomy/sustained free inference remain unqualified.
+
 # 2026-10-22 — fence superseded generations in the Actions worker
 
 - Real authenticated HTTP fixture supersedes the actual claimed workflow immediately before its initial active heartbeat or during execution. Baseline ignores stale_job_keys,starts/runs obsolete work,does not signal cancellation,attempts complete (server rejects),and leaves server activity1. The next current workflow already succeeded before the correction;the defect is obsolete execution/delivery and activity cleanup.

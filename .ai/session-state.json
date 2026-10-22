@@ -1,9 +1,9 @@
 {
   "version": 1,
   "updated_at": "2026-10-22",
-  "task": "Fence obsolete workflow generations in the Actions worker",
-  "base_commit": "22fde26134d73f08b35fa4c152e5cf4852965865",
-  "branch": "fix/worker-stale-generation",
+  "task": "Respect startup cancellation before request setup/execution",
+  "base_commit": "c131384c006afa52049444f695c4d7619924986c",
+  "branch": "fix/worker-startup-cancel",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -96,10 +96,8 @@
     "limit": "Historical counters, no hosted model inference or completed end-to-end task"
   },
   "pending": [
-    "Qualify7 exact-head Actions and3 CircleCI,then merge",
-    "Observe8 exact-merge Actions and3 CircleCI",
-    "Full new-source autonomy and sustained free inference remain unqualified",
-    "Kilo project-data routing remains inactive pending explicit consent"
+    "Qualify7 premerge Actions/3 CircleCI and8 postmerge Actions/3 CircleCI",
+    "Qualify native counterpart and rollout"
   ],
   "merged_pr": {
     "number": 240,
@@ -559,7 +557,7 @@
     "final_evidence": "https://github.com/dbrckk/ai-dev-server/pull/376",
     "next_priority": "Stabilize/qualify existing configured inference before a new reviewed applicable source task; no automatic retry or provider/budget change"
   },
-  "status": "Real HTTP baseline/fixed,full1845+210 and6 integrations passed;exact-head CI pending",
+  "status": "Worker full1845+212 and6 combined integrations passed;exact CI pending",
   "bounded_inference_recovery_20261022": {
     "control_sequence": 19,
     "changes": [
@@ -781,7 +779,86 @@
     "fixed": "startup0starts;periodic success/error cooperative cancellation;all0obsolete result POSTs,active0,current workflow succeeds",
     "test_functions": "existing cancellation test extended;AST inventory unchanged",
     "validation": "1845+210 full26.80s;57+35 selected1.52s;6 authenticated integrations4.089s;compile/diff passed",
-    "ci": "pending",
+    "ci": "381 fully qualified;see stale_generation_followup_20261022",
     "scope": "worker only,no new hosted/source/model/provider/budget/target change"
+  },
+  "stale_generation_followup_20261022": {
+    "pr": 381,
+    "candidate": "0456db206d3b1c09e0a024c4f4f1955971891691",
+    "merge": "a49b116ba4621f9e9991bbd5bbf03ea514e9b4cd",
+    "worker_main": "c131384c006afa52049444f695c4d7619924986c",
+    "server_main": "15703a633ade7e054f0c39b1cceaa0414850e2c8",
+    "server_runtime": "25ad61d00a23f671247f4bba14d9c2f338e38ba2",
+    "render_deploy": "dep-dbcuvj6k1f9s73b3oqb0",
+    "defect": "Actions worker ignored current stale_job_keys;obsolete generation executed and attempted completion after actual server supersede",
+    "before": "startup/periodic obsolete execution1,no cancellation,obsolete complete POST1 rejected,server active1;next current workflow already succeeded",
+    "after": "startup0starts/no output;periodic normal/error cooperative cancellation;0 obsolete complete/fail POSTs,activity0,old job/workflow cancelled,current workflow subsequently succeeds",
+    "pre_ci": "7 Actions and3 CircleCI passed at exact candidate",
+    "post_ci": "8 Actions and3 CircleCI passed at exact merge",
+    "post_runs": [
+      {
+        "id": 39788674720,
+        "name": "Fault Injection Gate",
+        "conclusion": "success"
+      },
+      {
+        "id": 39788674907,
+        "name": "Production-OS worker integration",
+        "conclusion": "success"
+      },
+      {
+        "id": 39788674770,
+        "name": "Multi-Engine E2E Benchmark",
+        "conclusion": "success"
+      },
+      {
+        "id": 39788674749,
+        "name": "Resilience Soak",
+        "conclusion": "success"
+      },
+      {
+        "id": 39788674784,
+        "name": "CI",
+        "conclusion": "success"
+      },
+      {
+        "id": 39788674935,
+        "name": "Validate AI Dev Server",
+        "conclusion": "success"
+      },
+      {
+        "id": 39788676615,
+        "name": "Repository standards",
+        "conclusion": "success"
+      },
+      {
+        "id": 39788674882,
+        "name": "Mobile Studio Real Build",
+        "conclusion": "success"
+      }
+    ],
+    "local": {
+      "full": "1845 passed +210 subtests,26.80s",
+      "selected": "57 passed +35 subtests,1.52s",
+      "integration": "6 actual authenticated current-server integrations passed,4.089s",
+      "functional": "3 actual HTTP/server-supersede scenarios passed",
+      "static": "compile/diff/unchanged test-function AST inventory passed;no new unit tests"
+    },
+    "server_http": "2026-10-22T13:48:57UTC:health200/0.33s,ready200/1.04s/database reachable,dashboard200,protectedAPI401",
+    "cold_start": "13:38:initial health read timed out after30s;following unchanged-service reads succeeded.Free Render wake remains a limitation",
+    "scope": "worker-only;no new server deploy,model/hosted source task,provider/quota change,Kilo project-data activation or target-project merge",
+    "cleanup": "Own clean merged worktree removed;fixture default points at synchronized worker main;prior receipts preserved in published candidate",
+    "limits": [
+      "Full new-source autonomous delivery and sustained free inference remain unqualified",
+      "Kilo project-data routing inactive pending explicit public-only consent",
+      "Free Render idle wake can exceed30 seconds;no uptime guarantee"
+    ],
+    "completed_at": "2026-10-22T13:51:15Z"
+  },
+  "startup_cancel_recovery_20261022": {
+    "baseline": "real HTTP valid job starts1;malformed job failed instead of cancellation",
+    "fixed": "bothcancelled,acknowledged,active0,starts0,output0",
+    "validation": "1845+212 full25.00s;57+37 selected;6 combined integrations4.138s;AST unchanged",
+    "ci": "pending"
   }
 }

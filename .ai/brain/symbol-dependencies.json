@@ -5,11 +5,134 @@
   "semantic": false,
   "note": "Dependencies are known symbol names lexically present inside the symbol's AST/source range.",
   "symbols": {
-    "OperatorClient": {
+    "_decode": {
       "source": {
-        "file": "studio/production_os_resume_objectives.py",
-        "start": 21,
-        "end": 41
+        "file": "studio/generic_model.py",
+        "start": 68,
+        "end": 81
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ProtocolError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 336,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_reported_usage_tokens": {
+      "source": {
+        "file": "studio/generic_model.py",
+        "start": 85,
+        "end": 119
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "token_count",
+          "definitions": [
+            {
+              "file": "studio/generic_model.py",
+              "line": 100,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "token_count": {
+      "source": {
+        "file": "studio/generic_model.py",
+        "start": 100,
+        "end": 220
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_bounded_model_token_budget",
+          "definitions": [
+            {
+              "file": "studio/generic_model.py",
+              "line": 122,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/generic_model.py",
+              "line": 173,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "candidates_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 339,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_providers",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 302,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 5
+    },
+    "_bounded_model_token_budget": {
+      "source": {
+        "file": "studio/generic_model.py",
+        "start": 122,
+        "end": 170
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "ask": {
+      "source": {
+        "file": "studio/generic_model.py",
+        "start": 173,
+        "end": 746
       },
       "symbol_dependencies": [
         {
@@ -25,308 +148,256 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "_response",
+          "symbol": "APIError",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 363,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "continue_project",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "launch",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "submit",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 34,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 8
-    },
-    "get": {
-      "source": {
-        "file": "studio/production_os_resume_objectives.py",
-        "start": 22,
-        "end": 23
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "continue_project": {
-      "source": {
-        "file": "studio/production_os_resume_objectives.py",
-        "start": 25,
-        "end": 26
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "submit",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 34,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "launch": {
-      "source": {
-        "file": "studio/production_os_resume_objectives.py",
-        "start": 28,
-        "end": 32
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "submit",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 34,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "submit": {
-      "source": {
-        "file": "studio/production_os_resume_objectives.py",
-        "start": 34,
-        "end": 41
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_response",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 363,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "canonical",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 38,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "recover_legacy": {
-      "source": {
-        "file": "studio/production_os_resume_objectives.py",
-        "start": 44,
-        "end": 76
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "launch",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 926,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "resume": {
-      "source": {
-        "file": "studio/production_os_resume_objectives.py",
-        "start": 79,
-        "end": 109
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "continue_project",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 25,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "recover_legacy",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 44,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "main": {
-      "source": {
-        "file": "studio/production_os_resume_objectives.py",
-        "start": 112,
-        "end": 232
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "OperatorClient",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 21,
+              "line": 328,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "canonical",
+          "symbol": "NativeAccountingError",
+          "definitions": [
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProtocolError",
           "definitions": [
             {
               "file": "studio/core.py",
+              "line": 336,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ScoreTrace",
+          "definitions": [
+            {
+              "file": "studio/adaptive_scoring.py",
+              "line": 8,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_bounded_model_token_budget",
+          "definitions": [
+            {
+              "file": "studio/generic_model.py",
+              "line": 122,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_decode",
+          "definitions": [
+            {
+              "file": "studio/generic_model.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_reported_usage_tokens",
+          "definitions": [
+            {
+              "file": "studio/generic_model.py",
+              "line": 85,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "as_dict",
+          "definitions": [
+            {
+              "file": "studio/adaptive_scoring.py",
+              "line": 13,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "budget_eligible",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 413,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 399,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 110,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "candidates_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 339,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "contextual_adjustment",
+          "definitions": [
+            {
+              "file": "studio/contextual_routing_memory.py",
+              "line": 159,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "contextual_bandit_score",
+          "definitions": [
+            {
+              "file": "studio/contextual_routing_memory.py",
+              "line": 96,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "eligible",
+          "definitions": [
+            {
+              "file": "studio/provider_health.py",
+              "line": 82,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "estimate_call_cost",
+          "definitions": [
+            {
+              "file": "studio/provider_cost.py",
+              "line": 56,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "exploration_bonus",
+          "definitions": [
+            {
+              "file": "studio/safe_rewrite_learning.py",
+              "line": 228,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "latency_bonus",
+          "definitions": [
+            {
+              "file": "studio/provider_metrics.py",
+              "line": 68,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "learned_weights",
+          "definitions": [
+            {
+              "file": "studio/routing_history.py",
+              "line": 94,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_providers",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 302,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "model_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
               "line": 38,
               "kind": "function",
               "language": "python"
@@ -335,23 +406,196 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "get",
+          "symbol": "origin_violation_penalty",
           "definitions": [
             {
-              "file": "studio/production_os_resume_objectives.py",
+              "file": "studio/safe_rewrite_learning.py",
+              "line": 198,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "reliability_bonus",
+          "definitions": [
+            {
+              "file": "studio/provider_health.py",
+              "line": 146,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "reserve",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rewrite_recovery_bonus",
+          "definitions": [
+            {
+              "file": "studio/safe_rewrite_learning.py",
+              "line": 204,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "rows",
+          "definitions": [
+            {
+              "file": "studio/safe_rewrite_learning.py",
+              "line": 131,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "score",
+          "definitions": [
+            {
+              "file": "studio/local_model_reputation.py",
+              "line": 162,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "score_provider",
+          "definitions": [
+            {
+              "file": "studio/adaptive_scoring.py",
               "line": 22,
               "kind": "function",
               "language": "python"
             }
           ],
-          "relation": "same_file"
+          "relation": "imported_module"
         },
         {
-          "symbol": "resume",
+          "symbol": "stagnation_routing_penalty",
           "definitions": [
             {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 79,
+              "file": "studio/capacity_efficiency.py",
+              "line": 222,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "utility_score",
+          "definitions": [
+            {
+              "file": "studio/contextual_utility.py",
+              "line": 14,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 31
+    },
+    "_warm_operator_connection": {
+      "source": {
+        "file": "studio/production_os_live_diagnostics.py",
+        "start": 12,
+        "end": 35
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 328,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 399,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 4
+    },
+    "_provider_family": {
+      "source": {
+        "file": "studio/production_os_live_diagnostics.py",
+        "start": 38,
+        "end": 47
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_probe_options": {
+      "source": {
+        "file": "studio/production_os_live_diagnostics.py",
+        "start": 50,
+        "end": 57
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "_provider_family",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 38,
               "kind": "function",
               "language": "python"
             }
@@ -359,15 +603,164 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 1
     },
-    "dispatch_worker_after_enqueue": {
+    "_model_profile": {
       "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 22,
-        "end": 60
+        "file": "studio/production_os_live_diagnostics.py",
+        "start": 60,
+        "end": 67
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "_coding_smoke": {
+      "source": {
+        "file": "studio/production_os_live_diagnostics.py",
+        "start": 70,
+        "end": 114
       },
       "symbol_dependencies": [
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 328,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_model_profile",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 60,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_probe_options",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_provider_family",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_safe_increment_source",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 117,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 399,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "model_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "_safe_increment_source": {
+      "source": {
+        "file": "studio/production_os_live_diagnostics.py",
+        "start": 117,
+        "end": 145
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "interpret",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 133,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "interpret": {
+      "source": {
+        "file": "studio/production_os_live_diagnostics.py",
+        "start": 133,
+        "end": 253
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 328,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
         {
           "symbol": "GitHub",
           "definitions": [
@@ -393,33 +786,131 @@
           "relation": "class_like"
         },
         {
-          "symbol": "NoRedirect",
+          "symbol": "_coding_smoke",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 70,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_model_profile",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 60,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_probe_options",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_provider_family",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_warm_operator_connection",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "allowed",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 339,
-              "kind": "class",
+              "line": 210,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 2
-    },
-    "validate_control": {
-      "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 63,
-        "end": 89
-      },
-      "symbol_dependencies": [
+        },
         {
-          "symbol": "get",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 22,
+              "file": "studio/core.py",
+              "line": 399,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "configure",
+          "definitions": [
+            {
+              "file": "studio/production_os_provider_config.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "diagnose",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 148,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "load_providers",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 302,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "model_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 38,
               "kind": "function",
               "language": "python"
             }
@@ -427,35 +918,13 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 1
+      "dependency_count": 14
     },
-    "canary_instruction": {
+    "diagnose": {
       "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 92,
-        "end": 158
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "create",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 950,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "source_canary_preflight": {
-      "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 161,
-        "end": 212
+        "file": "studio/production_os_live_diagnostics.py",
+        "start": 148,
+        "end": 249
       },
       "symbol_dependencies": [
         {
@@ -471,11 +940,35 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "Reject",
+          "symbol": "APIError",
           "definitions": [
             {
-              "file": "tests/test_studio.py",
-              "line": 160,
+              "file": "studio/core.py",
+              "line": 328,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "GitHub",
+          "definitions": [
+            {
+              "file": "studio/run.py",
+              "line": 59,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_registry_review.py",
+              "line": 20,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_capability_review.py",
+              "line": 14,
               "kind": "class",
               "language": "python"
             }
@@ -483,201 +976,76 @@
           "relation": "class_like"
         },
         {
-          "symbol": "call",
+          "symbol": "_coding_smoke",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 70,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_model_profile",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 60,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_probe_options",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 50,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_provider_family",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 38,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_warm_operator_connection",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 12,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "allowed",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 399,
+              "line": 210,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_control",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 5
-    },
-    "launch_canary": {
-      "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 215,
-        "end": 261
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "canary_instruction",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 92,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "instruction",
-          "definitions": [
-            {
-              "file": "studio/production_os_source_tasks.py",
-              "line": 51,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "launch",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "source_canary_preflight",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 161,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "submit",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 34,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_control",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        }
-      ],
-      "dependency_count": 7
-    },
-    "_polling_parameters": {
-      "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 264,
-        "end": 271
-      },
-      "symbol_dependencies": [],
-      "dependency_count": 0
-    },
-    "wait_for_workflow": {
-      "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 274,
-        "end": 310
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "API",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 343,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_polling_parameters",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 264,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
         },
         {
           "symbol": "call",
@@ -692,11 +1060,35 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "get",
+          "symbol": "configure",
           "definitions": [
             {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 22,
+              "file": "studio/production_os_provider_config.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_providers",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 302,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "model_for",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 38,
               "kind": "function",
               "language": "python"
             }
@@ -704,139 +1096,21 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 6
+      "dependency_count": 13
     },
-    "wait_for_readiness": {
+    "main": {
       "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 314,
-        "end": 346
+        "file": "studio/production_os_live_diagnostics.py",
+        "start": 252,
+        "end": 372
       },
       "symbol_dependencies": [
         {
-          "symbol": "API",
+          "symbol": "diagnose",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 343,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "_polling_parameters",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 264,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "launch",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 6
-    },
-    "run_canary": {
-      "source": {
-        "file": "studio/production_os_worker_canary.py",
-        "start": 349,
-        "end": 383
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "_polling_parameters",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 264,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "get",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "launch_canary",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 215,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "wait_for_workflow",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 274,
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 148,
               "kind": "function",
               "language": "python"
             }
@@ -844,13 +1118,13 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 1
     },
-    "FakeClient": {
+    "_FakeAPI": {
       "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 19,
-        "end": 43
+        "file": "tests/test_generic_model_capacity.py",
+        "start": 15,
+        "end": 25
       },
       "symbol_dependencies": [
         {
@@ -884,35 +1158,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "get",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "studio/production_os_resume_objectives.py",
+              "file": "tests/test_generic_model_capacity.py",
               "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "launch",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "submit",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 27,
               "kind": "function",
               "language": "python"
             }
@@ -920,22 +1170,31 @@
           "relation": "same_file"
         }
       ],
-      "dependency_count": 4
+      "dependency_count": 2
     },
     "__init__": {
       "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 20,
+        "file": "tests/test_generic_model_capacity.py",
+        "start": 19,
+        "end": 20
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "call": {
+      "source": {
+        "file": "tests/test_generic_model_capacity.py",
+        "start": 22,
         "end": 25
       },
       "symbol_dependencies": [],
       "dependency_count": 0
     },
-    "WorkerCanaryTests": {
+    "GenericModelCapacityTests": {
       "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 46,
-        "end": 340
+        "file": "tests/test_generic_model_capacity.py",
+        "start": 28,
+        "end": 221
       },
       "symbol_dependencies": [
         {
@@ -963,47 +1222,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "FakeClient",
+          "symbol": "ProviderSpec",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "GitHub",
-          "definitions": [
-            {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "class_like"
-        },
-        {
-          "symbol": "NoRedirect",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 339,
+              "file": "studio/provider_router.py",
+              "line": 23,
               "kind": "class",
               "language": "python"
             }
@@ -1011,11 +1234,818 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "OperatorClient",
+          "symbol": "_FakeAPI",
           "definitions": [
             {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 21,
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_env",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_provider",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 460,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/generic_model.py",
+              "line": 173,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "consumed_tokens",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 110,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_active",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 46,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_providers",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 302,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "release",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 294,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "reserve",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "settle",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 209,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "snapshot",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 536,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 61,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "test_denied_reservation_skips_provider_call",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 155,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_protocol_failure_settles_consumed_tokens_without_double_release",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 78,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_success_settles_transactional_reservation_with_actual_usage",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 46,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "test_transport_failure_releases_open_reservation",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 100,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        }
+      ],
+      "dependency_count": 19
+    },
+    "_provider": {
+      "source": {
+        "file": "tests/test_generic_model_capacity.py",
+        "start": 29,
+        "end": 37
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
+    },
+    "_env": {
+      "source": {
+        "file": "tests/test_generic_model_capacity.py",
+        "start": 39,
+        "end": 44
+      },
+      "symbol_dependencies": [],
+      "dependency_count": 0
+    },
+    "test_success_settles_transactional_reservation_with_actual_usage": {
+      "source": {
+        "file": "tests/test_generic_model_capacity.py",
+        "start": 46,
+        "end": 76
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_FakeAPI",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_env",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_provider",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 460,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/generic_model.py",
+              "line": 173,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_providers",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 302,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "release",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 294,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "reserve",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "settle",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 209,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "snapshot",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 536,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/native_model_usage.py",
+              "line": 61,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 10
+    },
+    "test_protocol_failure_settles_consumed_tokens_without_double_release": {
+      "source": {
+        "file": "tests/test_generic_model_capacity.py",
+        "start": 78,
+        "end": 98
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_FakeAPI",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_env",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_provider",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 460,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/generic_model.py",
+              "line": 173,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_providers",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 302,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "release",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 294,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "settle",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 209,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 8
+    },
+    "test_transport_failure_releases_open_reservation": {
+      "source": {
+        "file": "tests/test_generic_model_capacity.py",
+        "start": 100,
+        "end": 153
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 328,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_FakeAPI",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_env",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_provider",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 460,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/generic_model.py",
+              "line": 173,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 22,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "consumed_tokens",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 110,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_active",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 46,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_providers",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 302,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "release",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 294,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "settle",
+          "definitions": [
+            {
+              "file": "studio/capacity_ledger.py",
+              "line": 209,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 13
+    },
+    "test_denied_reservation_skips_provider_call": {
+      "source": {
+        "file": "tests/test_generic_model_capacity.py",
+        "start": 155,
+        "end": 221
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_FakeAPI",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 15,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_env",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 39,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "_provider",
+          "definitions": [
+            {
+              "file": "tests/test_generic_model_capacity.py",
+              "line": 29,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ask",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 460,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/generic_model.py",
+              "line": 173,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "load_providers",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 302,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 6
+    },
+    "LiveDiagnosticsTests": {
+      "source": {
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "start": 13,
+        "end": 215
+      },
+      "symbol_dependencies": [
+        {
+          "symbol": "API",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "APIError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 328,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "FakeAPI",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 124,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 140,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
               "kind": "class",
               "language": "python"
             }
@@ -1035,11 +2065,29 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "call",
+          "symbol": "__init__",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 399,
+              "line": 329,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 434,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 923,
               "kind": "function",
               "language": "python"
             }
@@ -1047,11 +2095,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "canary_instruction",
+          "symbol": "_catalog_confirms_zero_cost",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 92,
+              "file": "studio/public_free_code_smoke.py",
+              "line": 19,
               "kind": "function",
               "language": "python"
             }
@@ -1059,23 +2107,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "clock",
+          "symbol": "_safe_increment_source",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 265,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "dispatch_worker_after_enqueue",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 22,
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 117,
               "kind": "function",
               "language": "python"
             }
@@ -1083,11 +2119,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "expire",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 303,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 143,
               "kind": "function",
               "language": "python"
             }
@@ -1095,11 +2143,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "instruction",
+          "symbol": "configure",
           "definitions": [
             {
-              "file": "studio/production_os_source_tasks.py",
-              "line": 51,
+              "file": "studio/production_os_provider_config.py",
+              "line": 41,
               "kind": "function",
               "language": "python"
             }
@@ -1107,11 +2155,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "launch",
+          "symbol": "diagnose",
           "definitions": [
             {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 28,
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 148,
               "kind": "function",
               "language": "python"
             }
@@ -1119,11 +2167,17 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "run_canary",
+          "symbol": "run",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 349,
+              "file": "studio/core.py",
+              "line": 926,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/public_free_code_smoke.py",
+              "line": 44,
               "kind": "function",
               "language": "python"
             }
@@ -1131,11 +2185,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "sleep",
+          "symbol": "test_defaults_preserve_explicit_configuration_and_other_providers",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 267,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 176,
               "kind": "function",
               "language": "python"
             }
@@ -1143,11 +2197,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_canary_instruction_is_bounded_and_sequence_specific",
+          "symbol": "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 81,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 113,
               "kind": "function",
               "language": "python"
             }
@@ -1155,11 +2209,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_control_is_strict",
+          "symbol": "test_operator_probe_is_read_only_and_no_token_is_reported",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 47,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 138,
               "kind": "function",
               "language": "python"
             }
@@ -1167,167 +2221,39 @@
           "relation": "same_file"
         },
         {
-          "symbol": "test_launch_is_idempotent_and_uses_dashboard_api",
+          "symbol": "test_provider_fallback_recovers_gone_model_and_output_excludes_secrets",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 123,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 14,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 276,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_wait_is_bounded",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 289,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_wait_observes_real_terminal_success",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 262,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "validate_control",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_readiness",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_workflow",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 274,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
-      "dependency_count": 25
+      "dependency_count": 16
     },
-    "test_control_is_strict": {
+    "test_provider_fallback_recovers_gone_model_and_output_excludes_secrets": {
       "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 47,
-        "end": 79
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "start": 14,
+        "end": 111
       },
       "symbol_dependencies": [
         {
-          "symbol": "validate_control",
+          "symbol": "API",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 1
-    },
-    "test_canary_instruction_is_bounded_and_sequence_specific": {
-      "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 81,
-        "end": 121
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "canary_instruction",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 92,
-              "kind": "function",
+              "file": "studio/core.py",
+              "line": 343,
+              "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
-        {
-          "symbol": "instruction",
-          "definitions": [
-            {
-              "file": "studio/production_os_source_tasks.py",
-              "line": 51,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "validate_control",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 63,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_launch_is_idempotent_and_uses_dashboard_api": {
-      "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 123,
-        "end": 260
-      },
-      "symbol_dependencies": [
         {
           "symbol": "APIError",
           "definitions": [
@@ -1341,11 +2267,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "FakeClient",
+          "symbol": "FakeAPI",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 19,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 124,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 140,
               "kind": "class",
               "language": "python"
             }
@@ -1353,36 +2291,54 @@
           "relation": "same_file"
         },
         {
-          "symbol": "GitHub",
+          "symbol": "ProviderSpec",
           "definitions": [
             {
-              "file": "studio/run.py",
-              "line": 59,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_registry_review.py",
-              "line": 20,
-              "kind": "class",
-              "language": "python"
-            },
-            {
-              "file": "tests/test_capability_review.py",
-              "line": 14,
+              "file": "studio/provider_router.py",
+              "line": 23,
               "kind": "class",
               "language": "python"
             }
           ],
-          "relation": "class_like"
+          "relation": "imported_module"
         },
         {
-          "symbol": "NoRedirect",
+          "symbol": "__init__",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 339,
-              "kind": "class",
+              "line": 329,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 434,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 923,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_catalog_confirms_zero_cost",
+          "definitions": [
+            {
+              "file": "studio/public_free_code_smoke.py",
+              "line": 19,
+              "kind": "function",
               "language": "python"
             }
           ],
@@ -1392,56 +2348,50 @@
           "symbol": "call",
           "definitions": [
             {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 143,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "diagnose",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 148,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "run",
+          "definitions": [
+            {
               "file": "studio/core.py",
-              "line": 399,
+              "line": 926,
               "kind": "function",
               "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "dispatch_worker_after_enqueue",
-          "definitions": [
+            },
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 22,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "instruction",
-          "definitions": [
-            {
-              "file": "studio/production_os_source_tasks.py",
-              "line": 51,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "launch",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 28,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "run_canary",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 349,
+              "file": "studio/public_free_code_smoke.py",
+              "line": 44,
               "kind": "function",
               "language": "python"
             }
@@ -1451,69 +2401,11 @@
       ],
       "dependency_count": 9
     },
-    "test_wait_observes_real_terminal_success": {
+    "FakeAPI": {
       "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 262,
-        "end": 274
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "FakeClient",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "clock",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 265,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "sleep",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 267,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "wait_for_workflow",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 274,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 4
-    },
-    "clock": {
-      "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 265,
-        "end": 385
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "start": 18,
+        "end": 138
       },
       "symbol_dependencies": [
         {
@@ -1541,23 +2433,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "FakeClient",
+          "symbol": "ProviderSpec",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "OperatorClient",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 21,
+              "file": "studio/provider_router.py",
+              "line": 23,
               "kind": "class",
               "language": "python"
             }
@@ -1577,189 +2457,107 @@
           "relation": "imported_module"
         },
         {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 329,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 434,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 923,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_catalog_confirms_zero_cost",
+          "definitions": [
+            {
+              "file": "studio/public_free_code_smoke.py",
+              "line": 19,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_safe_increment_source",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 117,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
           "symbol": "call",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "expire",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 303,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_canary",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 349,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "sleep",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 267,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_canary_workflow_verifies_terminal_worker_completion",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 347,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 276,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_wait_is_bounded",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 289,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "wait_for_readiness",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_workflow",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 274,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 14
-    },
-    "sleep": {
-      "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 267,
-        "end": 387
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "API",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 343,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "FakeClient",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "OperatorClient",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
+              "file": "tests/test_production_os_live_diagnostics.py",
               "line": 21,
-              "kind": "class",
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 143,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "diagnose",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 148,
+              "kind": "function",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
         {
-          "symbol": "StudioError",
+          "symbol": "run",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
+              "line": 926,
+              "kind": "function",
               "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
+            },
             {
-              "file": "studio/core.py",
-              "line": 399,
+              "file": "studio/public_free_code_smoke.py",
+              "line": 44,
               "kind": "function",
               "language": "python"
             }
@@ -1767,11 +2565,11 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "clock",
+          "symbol": "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 265,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 113,
               "kind": "function",
               "language": "python"
             }
@@ -1779,311 +2577,163 @@
           "relation": "same_file"
         },
         {
-          "symbol": "expire",
+          "symbol": "test_operator_probe_is_read_only_and_no_token_is_reported",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 303,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 138,
               "kind": "function",
               "language": "python"
             }
           ],
           "relation": "same_file"
-        },
-        {
-          "symbol": "run_canary",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 349,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "test_canary_workflow_verifies_terminal_worker_completion",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 347,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_terminal_failure_returns_without_retrying_mutation",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 276,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_wait_is_bounded",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 289,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "wait_for_readiness",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_workflow",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 274,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 14
-    },
-    "test_terminal_failure_returns_without_retrying_mutation": {
-      "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 276,
-        "end": 287
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "FakeClient",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "clock",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 265,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_canary",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 349,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        }
-      ],
-      "dependency_count": 3
-    },
-    "test_wait_is_bounded": {
-      "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 289,
-        "end": 340
-      },
-      "symbol_dependencies": [
-        {
-          "symbol": "API",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 343,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "APIError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 328,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "FakeClient",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 19,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "OperatorClient",
-          "definitions": [
-            {
-              "file": "studio/production_os_resume_objectives.py",
-              "line": 21,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "StudioError",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 35,
-              "kind": "class",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "call",
-          "definitions": [
-            {
-              "file": "studio/core.py",
-              "line": 399,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "clock",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 265,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "expire",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 303,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "run_canary",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 349,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "sleep",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 267,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "wait_for_readiness",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_workflow",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 274,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
         }
       ],
       "dependency_count": 12
     },
-    "expire": {
+    "test_invalid_or_empty_completions_and_failed_coding_model_are_not_ready": {
       "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 303,
-        "end": 423
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "start": 113,
+        "end": 136
       },
       "symbol_dependencies": [
         {
-          "symbol": "API",
+          "symbol": "FakeAPI",
           "definitions": [
             {
-              "file": "studio/core.py",
-              "line": 343,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 124,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 140,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "ProviderSpec",
+          "definitions": [
+            {
+              "file": "studio/provider_router.py",
+              "line": 23,
               "kind": "class",
               "language": "python"
             }
           ],
           "relation": "imported_module"
         },
+        {
+          "symbol": "StudioError",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 35,
+              "kind": "class",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "__init__",
+          "definitions": [
+            {
+              "file": "studio/core.py",
+              "line": 329,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 434,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 923,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "_safe_increment_source",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 117,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        },
+        {
+          "symbol": "call",
+          "definitions": [
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 143,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "same_file"
+        },
+        {
+          "symbol": "diagnose",
+          "definitions": [
+            {
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 148,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 7
+    },
+    "test_operator_probe_is_read_only_and_no_token_is_reported": {
+      "source": {
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "start": 138,
+        "end": 174
+      },
+      "symbol_dependencies": [
         {
           "symbol": "APIError",
           "definitions": [
@@ -2097,11 +2747,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "FakeClient",
+          "symbol": "FakeAPI",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 19,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 18,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 124,
+              "kind": "class",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 140,
               "kind": "class",
               "language": "python"
             }
@@ -2121,11 +2783,29 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "call",
+          "symbol": "__init__",
           "definitions": [
             {
               "file": "studio/core.py",
-              "line": 399,
+              "line": 329,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 345,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 434,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "studio/core.py",
+              "line": 923,
               "kind": "function",
               "language": "python"
             }
@@ -2133,11 +2813,23 @@
           "relation": "imported_module"
         },
         {
-          "symbol": "clock",
+          "symbol": "call",
           "definitions": [
             {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 265,
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 21,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 127,
+              "kind": "function",
+              "language": "python"
+            },
+            {
+              "file": "tests/test_production_os_live_diagnostics.py",
+              "line": 143,
               "kind": "function",
               "language": "python"
             }
@@ -2145,59 +2837,11 @@
           "relation": "same_file"
         },
         {
-          "symbol": "run_canary",
+          "symbol": "diagnose",
           "definitions": [
             {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 349,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "sleep",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 267,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "test_canary_workflow_verifies_terminal_worker_completion",
-          "definitions": [
-            {
-              "file": "tests/test_production_os_worker_canary.py",
-              "line": 347,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "same_file"
-        },
-        {
-          "symbol": "wait_for_readiness",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 314,
-              "kind": "function",
-              "language": "python"
-            }
-          ],
-          "relation": "imported_module"
-        },
-        {
-          "symbol": "wait_for_workflow",
-          "definitions": [
-            {
-              "file": "studio/production_os_worker_canary.py",
-              "line": 274,
+              "file": "studio/production_os_live_diagnostics.py",
+              "line": 148,
               "kind": "function",
               "language": "python"
             }
@@ -2205,16 +2849,29 @@
           "relation": "imported_module"
         }
       ],
-      "dependency_count": 11
+      "dependency_count": 6
     },
-    "test_canary_workflow_verifies_terminal_worker_completion": {
+    "test_defaults_preserve_explicit_configuration_and_other_providers": {
       "source": {
-        "file": "tests/test_production_os_worker_canary.py",
-        "start": 347,
-        "end": 363
+        "file": "tests/test_production_os_live_diagnostics.py",
+        "start": 176,
+        "end": 215
       },
-      "symbol_dependencies": [],
-      "dependency_count": 0
+      "symbol_dependencies": [
+        {
+          "symbol": "configure",
+          "definitions": [
+            {
+              "file": "studio/production_os_provider_config.py",
+              "line": 41,
+              "kind": "function",
+              "language": "python"
+            }
+          ],
+          "relation": "imported_module"
+        }
+      ],
+      "dependency_count": 1
     }
   }
 }

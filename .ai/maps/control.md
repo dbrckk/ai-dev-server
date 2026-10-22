@@ -113,9 +113,9 @@ request.json
 ## File: production-os-diagnostics-kick.json
 ```json
 {
-  "sequence": 17,
-  "reason": "Post-merge bounded provider attribution and non-executing Python code-generation smoke; check Cloudflare Free configuration; no queue claim",
-  "target": "cloudflare-workers-free-fallback",
+  "sequence": 19,
+  "reason": "Qualify bounded configured-provider code fallback and tiny Nemotron non-thinking probes; preserve384 output tokens/40 seconds and retain all failed attempts",
+  "target": "current-configured-providers",
   "worker_resume_allowed": false
 }
 ```

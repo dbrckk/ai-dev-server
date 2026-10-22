@@ -5371,6 +5371,22 @@ def test_protocol_failure_settles_consumed_tokens_without_double_release(self)
 ⋮----
 def test_transport_failure_releases_open_reservation(self)
 ⋮----
+# A 5xx keeps its conservative charge. The next provider must still
+# fit useful work into the remaining envelope instead of reusing
+# the first provider's stale 4096-token reservation.
+⋮----
+root = Path(td)
+plan = root / 'plan.json'
+ledger = root / 'ledger.json'
+⋮----
+env = {'STUDIO_CAPACITY_PLAN_PATH': str(plan),
+providers = (ProviderSpec('first', 'http://127.0.0.1:1/v1', '', 'first', priority=100, unmetered=True),
+response = {'choices': [{'finish_reason': 'stop', 'message': {'content': '{"ok":true}'}}],
+⋮----
+limits = [c.args[2]['max_tokens'] for c in calls.call_args_list]
+⋮----
+charged = consumed_tokens(load_active(ledger), project_id='small')
+⋮----
 def test_denied_reservation_skips_provider_call(self)
 ⋮----
 denied = {
@@ -8999,6 +9015,19 @@ def call(self, method, path, data=None, **kwargs)
 result = diagnose(api_factory=FakeAPI, providers=providers, environ={})
 ⋮----
 smoke = diagnose(api_factory=FakeAPI, providers=providers,
+⋮----
+# A healthy readiness response does not guarantee the code endpoint.
+# Match native fallback within the ORIGINAL 384-token output ceiling.
+nim_base = 'https://integrate.api.nvidia.com/v1'
+nim = [ProviderSpec('laguna', nim_base, 'credential', 'poolside/laguna-xs-2.1'),
+⋮----
+recovered = diagnose(api_factory=FakeAPI, providers=nim,
+⋮----
+code_calls = [c for c in calls if 'Write only Python code' in c[2]['messages'][0]['content']]
+⋮----
+# Each candidate is tried once, sharing a deadline, not 40s each.
+⋮----
+exhausted = diagnose(api_factory=FakeAPI, providers=nim,
 ⋮----
 # The real public gateway reports costs inside usage, including
 # separate upstream fields. None may be ignored in a free-code proof.

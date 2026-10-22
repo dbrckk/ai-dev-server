@@ -3473,9 +3473,9 @@ initial_prompt: |
 ## File: control/production-os-diagnostics-kick.json
 ````json
 {
-  "sequence": 17,
-  "reason": "Post-merge bounded provider attribution and non-executing Python code-generation smoke; check Cloudflare Free configuration; no queue claim",
-  "target": "cloudflare-workers-free-fallback",
+  "sequence": 19,
+  "reason": "Qualify bounded configured-provider code fallback and tiny Nemotron non-thinking probes; preserve384 output tokens/40 seconds and retain all failed attempts",
+  "target": "current-configured-providers",
   "worker_resume_allowed": false
 }
 ````
@@ -14797,6 +14797,12 @@ remaining = deadline - time.monotonic()
 ⋮----
 model = provider.model_for(role)
 ⋮----
+# An earlier failed POST can consume its conservative estimate.
+# Resize this fallback against the live ledger rather than deny
+# a stale reservation while useful bounded capacity still remains.
+⋮----
+last = StudioError("Insufficient remaining capacity for provider fallback")
+⋮----
 api = API(provider.base, provider.key)
 params = {
 # Keep real structured calls aligned with live diagnostics: NVIDIA
@@ -22475,6 +22481,41 @@ def _provider_family(provider)
 ⋮----
 """Public, bounded category; never print arbitrary provider names or URLs."""
 ⋮----
+def _probe_options(provider, model)
+⋮----
+# These tiny probes need an answer inside 128/384 tokens. Supported
+# Nemotron templates otherwise spend that output allowance on reasoning.
+# Production requests retain their existing reasoning and token budgets.
+⋮----
+def _model_profile(model)
+⋮----
+# Only public allowlisted labels; arbitrary configuration may be private.
+⋮----
+def _coding_smoke(selected, ready_indices, api_factory)
+⋮----
+# Match real provider fallback without opaque POST retries or more output
+# capacity: all attempts share the original 384 tokens and 40 seconds.
+ordered = sorted(ready_indices,
+remaining_tokens = 384
+deadline = time.monotonic() + 40
+attempts = []
+result = {"status": "no_ready_provider", "attempts": attempts}
+⋮----
+remaining = deadline - time.monotonic()
+⋮----
+limit = remaining_tokens // (len(ordered) - offset)
+⋮----
+provider = selected[index]
+model = provider.model_for("implementation")
+attempt = {"provider_index": index, "provider_family": _provider_family(provider),
+⋮----
+response = api_factory(provider.base, provider.key).call(
+choices = response.get("choices") if isinstance(response, dict) else None
+message = choices[0].get("message") if isinstance(choices, list) and choices and isinstance(choices[0], dict) else None
+source = message.get("content") if isinstance(message, dict) else None
+⋮----
+result = {**attempt, "attempts": attempts}
+⋮----
 def _safe_increment_source(source)
 ⋮----
 """Check generated Python behavior by interpreting a tiny safe AST, never exec."""
@@ -22505,9 +22546,8 @@ record = {"provider_index": index, "provider_family": _provider_family(provider)
 ⋮----
 params = {
 ⋮----
-response = api_factory(provider.base, provider.key).call(
-choices = response.get("choices") if isinstance(response, dict) else None
-message = choices[0].get("message") if isinstance(choices, list) and choices and isinstance(choices[0], dict) else None
+finish = choices[0].get("finish_reason") if isinstance(choices, list) and choices and isinstance(choices[0], dict) else None
+⋮----
 content = message.get("content") if isinstance(message, dict) else None
 parsed = json.loads(content) if isinstance(content, str) else None
 ⋮----
@@ -22526,16 +22566,6 @@ wake = readiness.get("worker_wake") if isinstance(readiness, dict) else None
 allowed = {
 ⋮----
 ready_indices = [
-⋮----
-# One additional request, no retries. Only the source AST is inspected;
-# generated code is never run on the trusted Actions runner.
-code_smoke = {"status": "no_ready_provider"}
-⋮----
-chosen = next(
-provider = selected[chosen]
-code_smoke = {"provider_index": chosen,
-⋮----
-source = message.get("content") if isinstance(message, dict) else None
 ⋮----
 def main()
 ⋮----
@@ -32247,6 +32277,22 @@ def test_protocol_failure_settles_consumed_tokens_without_double_release(self)
 ⋮----
 def test_transport_failure_releases_open_reservation(self)
 ⋮----
+# A 5xx keeps its conservative charge. The next provider must still
+# fit useful work into the remaining envelope instead of reusing
+# the first provider's stale 4096-token reservation.
+⋮----
+root = Path(td)
+plan = root / 'plan.json'
+ledger = root / 'ledger.json'
+⋮----
+env = {'STUDIO_CAPACITY_PLAN_PATH': str(plan),
+providers = (ProviderSpec('first', 'http://127.0.0.1:1/v1', '', 'first', priority=100, unmetered=True),
+response = {'choices': [{'finish_reason': 'stop', 'message': {'content': '{"ok":true}'}}],
+⋮----
+limits = [c.args[2]['max_tokens'] for c in calls.call_args_list]
+⋮----
+charged = consumed_tokens(load_active(ledger), project_id='small')
+⋮----
 def test_denied_reservation_skips_provider_call(self)
 ⋮----
 denied = {
@@ -35875,6 +35921,19 @@ def call(self, method, path, data=None, **kwargs)
 result = diagnose(api_factory=FakeAPI, providers=providers, environ={})
 ⋮----
 smoke = diagnose(api_factory=FakeAPI, providers=providers,
+⋮----
+# A healthy readiness response does not guarantee the code endpoint.
+# Match native fallback within the ORIGINAL 384-token output ceiling.
+nim_base = 'https://integrate.api.nvidia.com/v1'
+nim = [ProviderSpec('laguna', nim_base, 'credential', 'poolside/laguna-xs-2.1'),
+⋮----
+recovered = diagnose(api_factory=FakeAPI, providers=nim,
+⋮----
+code_calls = [c for c in calls if 'Write only Python code' in c[2]['messages'][0]['content']]
+⋮----
+# Each candidate is tried once, sharing a deadline, not 40s each.
+⋮----
+exhausted = diagnose(api_factory=FakeAPI, providers=nim,
 ⋮----
 # The real public gateway reports costs inside usage, including
 # separate upstream fields. None may be ignored in a free-code proof.

@@ -2,36 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "Prevent verified Production-OS commits from being reported as runner failures due only to rejected optional GitHub telemetry writes.",
-      "terms": [
-        "as",
-        "being",
-        "commits",
-        "due",
-        "failures",
-        "from",
-        "github",
-        "only",
-        "optional",
-        "prevent",
-        "production-os",
-        "rejected",
-        "reported",
-        "runner",
-        "telemetry",
-        "verified",
-        "writes."
-      ],
-      "tests": [],
-      "useful": [
-        "studio/generic_project.py",
-        "studio/generic_repository.py",
-        "studio/production_os_worker_canary.py",
-        "tests/test_production_os_worker_canary.py"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "Keep reliable idle worker queue-health evidence visible and verify real hosted capacity before claiming production readiness.",
       "terms": [
         "before",
@@ -1459,6 +1429,24 @@
         "studio/production_os_worker_canary.py",
         "tests/test_production_os_worker_canary.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "Recover bounded configured-provider inference qualification",
+      "terms": [
+        "bounded",
+        "configured-provider",
+        "inference",
+        "qualification",
+        "recover"
+      ],
+      "tests": [],
+      "useful": [
+        "studio/generic_model.py",
+        "studio/production_os_live_diagnostics.py",
+        "tests/test_generic_model_capacity.py",
+        "tests/test_production_os_live_diagnostics.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1750,7 +1738,11 @@
     },
     "bounded": {
       "studio/agents/adapters.py": 4,
-      "tests/test_codex_output_retention.py": 4
+      "studio/generic_model.py": 4,
+      "studio/production_os_live_diagnostics.py": 4,
+      "tests/test_codex_output_retention.py": 4,
+      "tests/test_generic_model_capacity.py": 4,
+      "tests/test_production_os_live_diagnostics.py": 4
     },
     "branch": {
       "studio/core.py": 4,
@@ -2108,6 +2100,12 @@
     "completion": {
       "tests/test_production_os_result_contract.py": 4,
       "tests/test_production_os_worker.py": 4
+    },
+    "configured-provider": {
+      "studio/generic_model.py": 4,
+      "studio/production_os_live_diagnostics.py": 4,
+      "tests/test_generic_model_capacity.py": 4,
+      "tests/test_production_os_live_diagnostics.py": 4
     },
     "consistency": {
       "studio/asset_forge_bridge.py": 4,
@@ -2826,7 +2824,7 @@
       "studio/capacity_budget.py": 4,
       "studio/core.py": 20,
       "studio/engine_patch.py": 4,
-      "studio/generic_model.py": 16,
+      "studio/generic_model.py": 20,
       "studio/generic_project.py": 28,
       "studio/generic_repository.py": 32,
       "studio/generic_verify.py": 4,
@@ -2839,7 +2837,7 @@
       "studio/native_model_usage.py": 20,
       "studio/production_os_bounded_source_repair.py": 12,
       "studio/production_os_jumpy_source_repair.py": 16,
-      "studio/production_os_live_diagnostics.py": 8,
+      "studio/production_os_live_diagnostics.py": 12,
       "studio/production_os_provider_config.py": 4,
       "studio/production_os_review_canary.py": 12,
       "studio/production_os_source_tasks.py": 4,
@@ -2855,7 +2853,7 @@
       "tests/test_autonomous_project.py": 4,
       "tests/test_capacity_budget.py": 4,
       "tests/test_engine_patch.py": 4,
-      "tests/test_generic_model_capacity.py": 4,
+      "tests/test_generic_model_capacity.py": 8,
       "tests/test_generic_published_checkpoint.py": 4,
       "tests/test_generic_repository_pull_request.py": 28,
       "tests/test_generic_toolchain.py": 4,
@@ -2868,7 +2866,7 @@
       "tests/test_multi_engine_orchestrator.py": 20,
       "tests/test_patch_safety_rebuild.py": 4,
       "tests/test_production_os_actions_worker_workflow.py": 8,
-      "tests/test_production_os_live_diagnostics.py": 12,
+      "tests/test_production_os_live_diagnostics.py": 16,
       "tests/test_production_os_worker_canary.py": 36,
       "tests/test_production_os_worker_recovery.py": 4,
       "tests/test_production_os_worker_runtime.py": 4,
@@ -3432,6 +3430,12 @@
       "studio/asset_forge_bridge.py": 4,
       "tests/test_asset_forge_bridge.py": 4
     },
+    "qualification": {
+      "studio/generic_model.py": 4,
+      "studio/production_os_live_diagnostics.py": 4,
+      "tests/test_generic_model_capacity.py": 4,
+      "tests/test_production_os_live_diagnostics.py": 4
+    },
     "qualified": {
       "tests/test_production_os_actions_worker_workflow.py": 4
     },
@@ -3572,6 +3576,12 @@
       "tests/test_provider_router.py": 12,
       "tests/test_repository_branch_identity.py": 8,
       "tests/test_studio.py": 4
+    },
+    "recover": {
+      "studio/generic_model.py": 4,
+      "studio/production_os_live_diagnostics.py": 4,
+      "tests/test_generic_model_capacity.py": 4,
+      "tests/test_production_os_live_diagnostics.py": 4
     },
     "rejected": {
       "studio/generic_model.py": 4,

@@ -188,17 +188,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-21T22:04:13Z
+Generated: 2026-10-22T01:03:51Z
 
 ### Git
 - Branch: `main`
-- Head: `623b1b142b61`
-- Commit date: 2026-10-21T18:04:02-04:00
-- Commit: fix(canary): bound readiness and status reads by remaining wait budget (#374)
+- Head: `c0d521e19fa6`
+- Commit date: 2026-10-21T21:03:38-04:00
+- Commit: fix(inference): recover provider fallback within remaining capacity
 - Tracked files: 875
 
 ### Recently changed files
+- `control/production-os-diagnostics-kick.json`
 - `docs/PRODUCTION_OS_WORKER.md`
+- `studio/generic_model.py`
+- `studio/production_os_live_diagnostics.py`
+- `tests/test_generic_model_capacity.py`
+- `tests/test_production_os_live_diagnostics.py`
 - `studio/production_os_resume_objectives.py`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
@@ -213,8 +218,6 @@ Generated: 2026-10-21T22:04:13Z
 - `tests/test_goal_engine.py`
 - `tests/test_multi_engine_orchestrator.py`
 - `tests/test_production_os_worker_recovery.py`
-- `tests/test_autonomous_project.py`
-- `studio/target_ci_verification.py`
 
 ### Project signals
 - No common build descriptor detected

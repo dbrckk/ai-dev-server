@@ -866,6 +866,24 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             {"job-abc123":"cancel_requested"},
         )
 
+        for invalid_request in (False, True):
+            with self.subTest(startup_cancel=True, invalid_request=invalid_request):
+                job = sample_job()
+                if invalid_request:
+                    del job["payload"]["handoff"]
+                cancelled_client = _FakeClient(job)
+                cancelled_client.heartbeat_response = {"control": {"jobs": {
+                    "job-abc123": {"desired_state": "cancel_requested"}}}}
+                with tempfile.TemporaryDirectory() as td:
+                    result = run_once(cancelled_client, worker_id="ai-dev-1", output_root=Path(td),
+                                      run_project=lambda *a, **kw: self.fail("cancelled job must not start"))
+                    self.assertEqual(list(Path(td).iterdir()), [])
+                self.assertEqual(result["status"], "cancelled")
+                self.assertNotIn("fail", [c[0] for c in cancelled_client.calls])
+                self.assertNotIn("complete", [c[0] for c in cancelled_client.calls])
+                self.assertEqual(cancelled_client.calls[-1][2], ())
+                self.assertEqual(cancelled_client.calls[-1][5], {"job-abc123": "cancel_requested"})
+
         # A superseded generation is not an operator cancellation. Fence only
         # this job, without delivering an outcome or acknowledging a cancel.
         for stage in ("startup", "periodic"):

@@ -1235,6 +1235,19 @@ def run_once(
         client.heartbeat(worker_id, **kwargs)
         return {"status": "stale", "worker_id": worker_id, "key": key}
 
+    def finish_cancelled_job(project_id=None):
+        kwargs = {
+            "active_job_keys": (),
+            "job_control_states": {key: "cancel_requested"},
+        }
+        if capacity is not None:
+            kwargs["capacity"] = capacity
+        client.heartbeat(worker_id, **kwargs)
+        return {
+            "status": "cancelled", "worker_id": worker_id, "key": key,
+            "project_id": project_id, "usage": {},
+        }
+
     startup_heartbeat = {"active_job_keys": (key,)}
     if capacity is not None:
         startup_heartbeat["capacity"] = capacity
@@ -1251,6 +1264,8 @@ def run_once(
     observe_job_control(response)
     if stale_event.is_set():
         return finish_stale_job()
+    if cancel_event.is_set():
+        return finish_cancelled_job()
 
     native_usage_owned = False
 
@@ -1433,20 +1448,7 @@ def run_once(
         if stale_event.is_set():
             return finish_stale_job()
         if cancel_event.is_set():
-            kwargs = {
-                "active_job_keys":(),
-                "job_control_states":{key:"cancel_requested"},
-            }
-            if capacity is not None:
-                kwargs["capacity"] = capacity
-            client.heartbeat(worker_id, **kwargs)
-            return {
-                "status":"cancelled",
-                "worker_id":worker_id,
-                "key":key,
-                "project_id":request["id"],
-                "usage":{},
-            }
+            return finish_cancelled_job(request["id"])
         envelope = {
             "schema_version": "ai-dev-server/production-os-result/v1",
             "workflow_id": request["production_os"]["workflow_id"],
@@ -1502,20 +1504,7 @@ def run_once(
     if stale_event.is_set():
         return finish_stale_job()
     if cancel_event.is_set():
-        kwargs = {
-            "active_job_keys":(),
-            "job_control_states":{key:"cancel_requested"},
-        }
-        if capacity is not None:
-            kwargs["capacity"] = capacity
-        client.heartbeat(worker_id, **kwargs)
-        return {
-            "status":"cancelled",
-            "worker_id":worker_id,
-            "key":key,
-            "project_id":request["id"],
-            "usage":{},
-        }
+        return finish_cancelled_job(request["id"])
 
     try:
         result_path = project_out / "production-os-result.json"

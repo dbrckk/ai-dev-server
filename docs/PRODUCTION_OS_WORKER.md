@@ -165,6 +165,12 @@ Verify that the target repository actually contains the expected commit or PR an
 
 ## Failure recovery and automated verification
 
+An operator cancellation reported by the initial active heartbeat is acknowledged
+before request validation, output preparation or runner invocation. This also
+applies to malformed job requests: cancellation takes precedence over setup
+failure. The worker clears activity and reports `cancelled`, without completing
+or failing the job. Later cancellation uses the same acknowledgment path.
+
 If the first active heartbeat fails after acknowledgment, the worker attempts an
 inactive heartbeat with the same capacity snapshot, then propagates the original
 error. Cleanup failure does not replace that error. No executor has started;

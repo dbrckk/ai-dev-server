@@ -172,6 +172,12 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
                 body="One approved model-authored source edit. Independently validate the exact SHA; no automatic merge.",
                 expected_sha=sha,
             )
+            if task.task_id == "production_os_worktree_git_ref":
+                # A direct PR creation may succeed with a PAT. The independent
+                # qualification workflow still needs its trusted dispatch.
+                handoff = repo.request_trusted_review_handoff(sha)
+                if handoff.get("status") != "accepted":
+                    raise StudioError("Independent source qualification handoff unavailable")
             pr = repo.await_trusted_review(sha)
         except StudioError as exc:
             denied = any(status in str(exc) for status in ("HTTP 401", "HTTP 403"))

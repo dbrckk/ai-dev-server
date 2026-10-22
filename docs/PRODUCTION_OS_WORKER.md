@@ -458,6 +458,16 @@ capacity, worker execution, source delivery, target tests and CI are separately
 verified. Do not bypass stop markers or enable an automatic production merge.
 
 
+## Bounded configured-provider coding qualification
+
+Real generic-project fallback also refreshes its output reservation from the current project ledger before each provider. A failed POST retains its conservative charge; the next provider can use the useful remaining capacity with a smaller response cap instead of attempting the original stale reservation. Actual loopback inference within a6000-token project:503 leaves1758 tokens; the second provider succeeds with a1612-token output cap, leaving total charged capacity4292/6000. The minimum useful completion size and all project/provider admission checks still apply.
+
+The live diagnostic uses a shared ceiling of384 code-output tokens and40 seconds across responsive configured providers, with exactly one POST per candidate and no opaque retry. Failed attempts remain in `coding_smoke.attempts`; success means that at least one configured provider produced AST-verified synthetic code, never that every provider is healthy. The Cloudflare Free opt-in retains preference when present. Only the fixed synthetic exercise is submitted, and generated code is interpreted by the existing restricted AST checker, never executed.
+
+Tiny NVIDIA Nemotron3/3.5 probes explicitly set `chat_template_kwargs.enable_thinking=false`: their128-token readiness cap should measure the answer, not consume it in reasoning. This is supported by [NVIDIA's Lightning model card](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4). Production model reasoning, providers, quota accounting and project budgets are unaffected. Readiness records add only allowlisted public model-profile and finish-reason labels; raw model IDs, remote bodies and generated source are not logged.
+
+A loopback HTTP reproduction of the old diagnostic observed one code503 and an incorrectly unusable thinking-heavy fallback. The corrected diagnostic recovered on its second provider within the same384-token total allowance. Actual NVIDIA availability still requires the trusted-main hosted diagnostic; a model catalog entry alone is not inference availability. Kilo's separate one-request public synthetic probe passed with75 completion tokens and reported zero cost on2026-10-22; it does not activate a project-data fallback.
+
 ## Redacted coding smoke for free-provider qualification
 
 The live diagnostics workflow sets `PRODUCTION_OS_DIAGNOSE_CODE_SMOKE=1` and

@@ -47,6 +47,73 @@ def _provider_family(provider):
     return "other"
 
 
+def _probe_options(provider, model):
+    # These tiny probes need an answer inside 128/384 tokens. Supported
+    # Nemotron templates otherwise spend that output allowance on reasoning.
+    # Production requests retain their existing reasoning and token budgets.
+    if (_provider_family(provider) == "nvidia_nim"
+            and model.startswith(("nvidia/nemotron-3-", "nvidia/nemotron-3.5-"))):
+        return {"chat_template_kwargs": {"enable_thinking": False}}
+    return {}
+
+
+def _model_profile(model):
+    # Only public allowlisted labels; arbitrary configuration may be private.
+    return {
+        "nvidia/nemotron-3-super-120b-a12b": "nemotron_3_super",
+        "nvidia/nemotron-3.5-lightning-30b-a3b": "nemotron_3_5_lightning",
+        "poolside/laguna-xs-2.1": "laguna_xs_2_1",
+        "@cf/zai-org/glm-4.7-flash": "cloudflare_glm_4_7_flash",
+    }.get(model, "other")
+
+
+def _coding_smoke(selected, ready_indices, api_factory):
+    # Match real provider fallback without opaque POST retries or more output
+    # capacity: all attempts share the original 384 tokens and 40 seconds.
+    ordered = sorted(ready_indices,
+                     key=lambda i: _provider_family(selected[i]) != "cloudflare_workers_free")
+    remaining_tokens = 384
+    deadline = time.monotonic() + 40
+    attempts = []
+    result = {"status": "no_ready_provider", "attempts": attempts}
+    for offset, index in enumerate(ordered):
+        remaining = deadline - time.monotonic()
+        if remaining < 1:
+            break
+        limit = remaining_tokens // (len(ordered) - offset)
+        remaining_tokens -= limit
+        provider = selected[index]
+        model = provider.model_for("implementation")
+        attempt = {"provider_index": index, "provider_family": _provider_family(provider),
+                   "model_profile": _model_profile(model), "max_tokens": limit,
+                   "status": "unavailable"}
+        try:
+            response = api_factory(provider.base, provider.key).call(
+                "POST", "/chat/completions", {
+                    "model": model,
+                    "messages": [{"role": "user", "content": (
+                        "Write only Python code, no Markdown. Define exactly "
+                        "def increment(value): with one return statement "
+                        "that returns the input integer plus one."
+                    )}],
+                    "max_tokens": limit, "temperature": 0,
+                    **_probe_options(provider, model),
+                }, timeout_seconds=remaining, max_attempts=1)
+            choices = response.get("choices") if isinstance(response, dict) else None
+            message = choices[0].get("message") if isinstance(choices, list) and choices and isinstance(choices[0], dict) else None
+            source = message.get("content") if isinstance(message, dict) else None
+            attempt["status"] = "ready" if _safe_increment_source(source) else "invalid_code"
+        except APIError as exc:
+            attempt["http_status"] = int(exc.status)
+        except Exception:
+            pass
+        attempts.append(attempt)
+        result = {**attempt, "attempts": attempts}
+        if attempt["status"] == "ready":
+            break
+    return result
+
+
 def _safe_increment_source(source):
     """Check generated Python behavior by interpreting a tiny safe AST, never exec."""
     if not isinstance(source, str) or len(source) > 1024:
@@ -98,11 +165,12 @@ def diagnose(*, api_factory=API, providers=None, environ=None):
             if role == "implementation" and model == provider.model_for("product"):
                 continue
             record = {"provider_index": index, "provider_family": _provider_family(provider),
-                      "role": role, "status": "unavailable"}
+                      "model_profile": _model_profile(model), "role": role, "status": "unavailable"}
             try:
                 params = {
                     "model": model, "messages": [{"role": "user", "content": 'Return only JSON {"ready":true}.'}],
                     "max_tokens": 128, "temperature": 0,
+                    **_probe_options(provider, model),
                 }
                 if provider.base.rstrip('/') == 'https://integrate.api.nvidia.com/v1':
                     params['response_format'] = {'type': 'json_object'}
@@ -110,6 +178,9 @@ def diagnose(*, api_factory=API, providers=None, environ=None):
                     "POST", "/chat/completions", params, timeout_seconds=30)
                 choices = response.get("choices") if isinstance(response, dict) else None
                 message = choices[0].get("message") if isinstance(choices, list) and choices and isinstance(choices[0], dict) else None
+                finish = choices[0].get("finish_reason") if isinstance(choices, list) and choices and isinstance(choices[0], dict) else None
+                if finish in {"stop", "length", "content_filter", "tool_calls"}:
+                    record["finish_reason"] = finish
                 content = message.get("content") if isinstance(message, dict) else None
                 parsed = json.loads(content) if isinstance(content, str) else None
                 record["status"] = "ready" if isinstance(parsed, dict) and parsed.get('ready') is True else "invalid_response"
@@ -173,38 +244,8 @@ def diagnose(*, api_factory=API, providers=None, environ=None):
     ]
     result["inference_ready"] = bool(ready_indices)
     if str(env.get("PRODUCTION_OS_DIAGNOSE_CODE_SMOKE") or "") == "1":
-        # One additional request, no retries. Only the source AST is inspected;
-        # generated code is never run on the trusted Actions runner.
-        code_smoke = {"status": "no_ready_provider"}
-        if ready_indices:
-            chosen = next(
-                (i for i in ready_indices if _provider_family(selected[i]) == "cloudflare_workers_free"),
-                ready_indices[0],
-            )
-            provider = selected[chosen]
-            code_smoke = {"provider_index": chosen,
-                          "provider_family": _provider_family(provider),
-                          "status": "unavailable"}
-            try:
-                response = api_factory(provider.base, provider.key).call(
-                    "POST", "/chat/completions", {
-                        "model": provider.model_for("implementation"),
-                        "messages": [{"role": "user", "content": (
-                            "Write only Python code, no Markdown. Define exactly "
-                            "def increment(value): with one return statement "
-                            "that returns the input integer plus one."
-                        )}],
-                        "max_tokens": 384, "temperature": 0,
-                    }, timeout_seconds=40, max_attempts=1)
-                choices = response.get("choices") if isinstance(response, dict) else None
-                message = choices[0].get("message") if isinstance(choices, list) and choices and isinstance(choices[0], dict) else None
-                source = message.get("content") if isinstance(message, dict) else None
-                code_smoke["status"] = "ready" if _safe_increment_source(source) else "invalid_code"
-            except APIError as exc:
-                code_smoke["http_status"] = int(exc.status)
-            except Exception:
-                pass
-        result["coding_smoke"] = code_smoke
+        result["coding_smoke"] = _coding_smoke(selected, ready_indices, api_factory)
+
     return result
 
 

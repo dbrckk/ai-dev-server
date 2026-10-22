@@ -120,6 +120,38 @@ class GenericModelCapacityTests(unittest.TestCase):
         release.assert_not_called()
         _FakeAPI.error = None
 
+        # A 5xx keeps its conservative charge. The next provider must still
+        # fit useful work into the remaining envelope instead of reusing
+        # the first provider's stale 4096-token reservation.
+        import json
+        from capacity_ledger import load_active, consumed_tokens
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            plan = root / 'plan.json'
+            ledger = root / 'ledger.json'
+            plan.write_text(json.dumps({'projects': [{'id': 'small', 'token_envelope': 6000}]}))
+            env = {'STUDIO_CAPACITY_PLAN_PATH': str(plan),
+                   'STUDIO_CAPACITY_LEDGER_PATH': str(ledger),
+                   'STUDIO_NATIVE_MODEL_USAGE_PATH': str(root / 'usage.json'),
+                   'STUDIO_PROJECT_ID': 'small'}
+            providers = (ProviderSpec('first', 'http://127.0.0.1:1/v1', '', 'first', priority=100, unmetered=True),
+                         ProviderSpec('second', 'http://127.0.0.1:1/v1', '', 'second', priority=90, unmetered=True))
+            response = {'choices': [{'finish_reason': 'stop', 'message': {'content': '{"ok":true}'}}],
+                        'usage': {'prompt_tokens': 30, 'completion_tokens': 20, 'total_tokens': 50}}
+            with (patch.dict(os.environ, env, clear=True),
+                  patch('generic_model.load_providers', return_value=providers),
+                  patch('generic_model.API', _FakeAPI),
+                  patch.object(_FakeAPI, 'call', side_effect=[APIError(503), response]) as calls):
+                value, meta = generic_model.ask('Return JSON.', 'Verify fallback.', code=True)
+            self.assertEqual(value, {'ok': True})
+            self.assertEqual(meta['provider'], 'second')
+            self.assertEqual(calls.call_count, 2)
+            limits = [c.args[2]['max_tokens'] for c in calls.call_args_list]
+            self.assertEqual(limits[0], 4096)
+            self.assertTrue(1024 <= limits[1] < limits[0])
+            charged = consumed_tokens(load_active(ledger), project_id='small')
+            self.assertTrue(limits[0] < charged <= 6000)
+
     def test_denied_reservation_skips_provider_call(self):
         _FakeAPI.response = None
         denied = {

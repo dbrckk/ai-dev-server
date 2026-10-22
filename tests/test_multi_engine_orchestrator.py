@@ -407,6 +407,8 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
         from execution_checkpoint import load as load_checkpoint
         cases = (
             (bounded_lane, request, task.path, source, proposal),
+            (bounded_lane, worktree_request, worktree_task.path, worktree_source,
+             {"replacement_line": changed_line}),
             (jumpy_lane, exact, "scripts/integrations.gd",
              'func share_score(score: int, daily: bool = false) -> void:\n'
              '\tvar text = "Score"\n\tDisplayServer.clipboard_set(text)\n'
@@ -437,6 +439,10 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                         return self.publish(base, work, message)
                     def ensure_pull_request(self, **kwargs):
                         assert kwargs["expected_sha"] == published["sha"]
+                    def request_trusted_review_handoff(self, sha):
+                        assert sha == published["sha"]
+                        published["handoff"] = sha
+                        return {"status": "accepted"}
                     def await_trusted_review(self, sha):
                         return review["pr"]
 
@@ -456,6 +462,8 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                     result = continue_goal(root / "first")
                     self.assertEqual(result["status"], "blocked")
                     self.assertEqual(model.call_count, 1)
+                    if source_request is worktree_request:
+                        self.assertEqual(published["handoff"], published["sha"])
                     ci.assert_not_called()
                     model.reset_mock()
                     review["pr"] = {"number": 7, "url": f"https://github.com/{source_request['target_repo']}/pull/7"}

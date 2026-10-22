@@ -1351,6 +1351,9 @@ def run_once(
                 write_production_os_result(project_out, request, summary)
                 break
             try:
+                # The same task can execute again or continue without writing
+                # an envelope. Never reuse a preceding invocation's outcome.
+                (project_out / "production-os-result.json").unlink(missing_ok=True)
                 summary = run_project(
                     request_path,
                     project_out,

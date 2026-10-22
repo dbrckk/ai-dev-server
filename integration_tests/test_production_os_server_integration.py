@@ -28,7 +28,7 @@ except ModuleNotFoundError as exc:
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'studio'))
-from production_os_worker import ProductionOSClient, run_once
+from production_os_worker import ProductionOSClient, build_studio_request, run_once
 from core import request_check
 from production_os_resume_objectives import OperatorClient, resume
 
@@ -161,6 +161,17 @@ class RealServerWorkerTests(unittest.TestCase):
                     self.assertIn('base_available=true', outputs.read_text())
                     self.assertEqual(control.queue.get(abandoned['key'])['status'], 'queued')
 
+                # A retry can reuse this project's directory. A correlated old
+                # receipt must not decide the new execution's outcome or usage.
+                from github_runner import write_production_os_result
+                previous_request = build_studio_request(control.queue.get(jobs[0]['key']))
+                project_out = root / 'output' / previous_request['id']
+                write_production_os_result(project_out, previous_request, {
+                    'status': 'complete' if expected == 'failed' else 'blocked',
+                    'finished': expected == 'failed',
+                    'usage': {'total_tokens': 777, 'runs': 1},
+                    'commit_shas': ['b' * 40],
+                })
                 executed = []
                 def runner(request_path, project_out, **kwargs):
                     request = request_check(json.loads(request_path.read_text()))
@@ -173,6 +184,11 @@ class RealServerWorkerTests(unittest.TestCase):
                     if expected == 'failed':
                         (project_out / 'production-os-result.json').write_text('{')
                     if active_before_complete and len(executed) == 1:
+                        write_production_os_result(project_out, request, {
+                            'status': 'active', 'finished': False,
+                            'usage': {'total_tokens': 777, 'runs': 1},
+                            'commit_shas': ['b' * 40],
+                        })
                         return {'status': 'active', 'finished': False,
                                 'next_stage': 'preview', 'usage': {}}
                     return {'status': 'complete', 'finished': True, 'commit_shas': ['a'*40], 'usage': {'total_tokens':150,'runs':1,'api_calls':1}}

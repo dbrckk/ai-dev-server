@@ -3473,8 +3473,8 @@ initial_prompt: |
 ## File: control/production-os-diagnostics-kick.json
 ````json
 {
-  "sequence": 19,
-  "reason": "Qualify bounded configured-provider code fallback and tiny Nemotron non-thinking probes; preserve384 output tokens/40 seconds and retain all failed attempts",
+  "sequence": 20,
+  "reason": "Verify qualified Lightning before unavailable Poolside in automatic NVIDIA fallback order; preserve explicit provider configuration and existing budgets",
   "target": "current-configured-providers",
   "worker_resume_allowed": false
 }
@@ -35973,6 +35973,11 @@ def test_defaults_preserve_explicit_configuration_and_other_providers(self)
 env = {'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1/'}
 ⋮----
 models = [p['model'] for p in json.loads(env['STUDIO_PROVIDERS_JSON'])]
+⋮----
+# Fresh hosted code proof qualifies Lightning; keep an unavailable
+# Poolside fallback from preceding it in the actual default registry.
+⋮----
+ordered = load_providers()
 ⋮----
 cloudflare_env = {
 ⋮----

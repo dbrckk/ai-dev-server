@@ -113,8 +113,8 @@ request.json
 ## File: production-os-diagnostics-kick.json
 ```json
 {
-  "sequence": 19,
-  "reason": "Qualify bounded configured-provider code fallback and tiny Nemotron non-thinking probes; preserve384 output tokens/40 seconds and retain all failed attempts",
+  "sequence": 20,
+  "reason": "Verify qualified Lightning before unavailable Poolside in automatic NVIDIA fallback order; preserve explicit provider configuration and existing budgets",
   "target": "current-configured-providers",
   "worker_resume_allowed": false
 }

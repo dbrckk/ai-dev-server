@@ -196,36 +196,28 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-22T01:03:51Z
+Generated: 2026-10-22T06:20:10Z
 
 ### Git
 - Branch: `main`
-- Head: `c0d521e19fa6`
-- Commit date: 2026-10-21T21:03:38-04:00
-- Commit: fix(inference): recover provider fallback within remaining capacity
+- Head: `c50a0a4085be`
+- Commit date: 2026-10-22T02:20:00-04:00
+- Commit: fix(inference): prefer code-qualified NVIDIA fallback
 - Tracked files: 875
 
 ### Recently changed files
 - `control/production-os-diagnostics-kick.json`
 - `docs/PRODUCTION_OS_WORKER.md`
+- `studio/production_os_provider_config.py`
+- `tests/test_production_os_live_diagnostics.py`
 - `studio/generic_model.py`
 - `studio/production_os_live_diagnostics.py`
 - `tests/test_generic_model_capacity.py`
-- `tests/test_production_os_live_diagnostics.py`
 - `studio/production_os_resume_objectives.py`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
 - `studio/github_runner.py`
 - `tests/test_github_runner_persistent.py`
-- `studio/autonomous_project.py`
-- `studio/goal_engine.py`
-- `studio/production_os_bounded_source_repair.py`
-- `studio/production_os_jumpy_source_repair.py`
-- `studio/production_os_worker.py`
-- `studio/source_delivery_checkpoint.py`
-- `tests/test_goal_engine.py`
-- `tests/test_multi_engine_orchestrator.py`
-- `tests/test_production_os_worker_recovery.py`
 
 ### Project signals
 - No common build descriptor detected

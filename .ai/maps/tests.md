@@ -9068,6 +9068,11 @@ env = {'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1/'}
 ⋮----
 models = [p['model'] for p in json.loads(env['STUDIO_PROVIDERS_JSON'])]
 ⋮----
+# Fresh hosted code proof qualifies Lightning; keep an unavailable
+# Poolside fallback from preceding it in the actual default registry.
+⋮----
+ordered = load_providers()
+⋮----
 cloudflare_env = {
 ⋮----
 configured = json.loads(cloudflare_env['STUDIO_PROVIDERS_JSON'])

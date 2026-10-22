@@ -177,17 +177,40 @@ class LiveDiagnosticsTests(unittest.TestCase):
         env = {'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1/'}
         self.assertTrue(configure(env))
         models = [p['model'] for p in json.loads(env['STUDIO_PROVIDERS_JSON'])]
-        self.assertEqual(models, ['nvidia/nemotron-3.5-lightning-30b-a3b', 'poolside/laguna-xs-2.1'])
+        self.assertEqual(models, ['poolside/laguna-xs-2.1'])
         # Fresh hosted code proof qualifies Lightning; keep an unavailable
         # Poolside fallback from preceding it in the actual default registry.
         from provider_router import load_providers
         with patch.dict('os.environ', {**env, 'STUDIO_API_KEY': 'fixture'}, clear=True):
             ordered = load_providers()
         self.assertEqual([p.model_for('implementation') for p in ordered], [
-            'nvidia/nemotron-3-super-120b-a12b',
             'nvidia/nemotron-3.5-lightning-30b-a3b',
             'poolside/laguna-xs-2.1',
         ])
+        # A deliberate primary model override remains untouched and gains
+        # the verified Lightning fallback rather than losing it.
+        override_env = {
+            'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1',
+            'STUDIO_MODEL': 'nvidia/nemotron-3-super-120b-a12b',
+        }
+        self.assertTrue(configure(override_env))
+        with patch.dict('os.environ', {**override_env, 'STUDIO_API_KEY': 'fixture'}, clear=True):
+            overridden = load_providers()
+        self.assertEqual(
+            [p.model_for('implementation') for p in overridden],
+            ['nvidia/nemotron-3-super-120b-a12b',
+             'nvidia/nemotron-3.5-lightning-30b-a3b',
+             'poolside/laguna-xs-2.1'],
+        )
+        custom_code = {
+            'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1',
+            'STUDIO_CODE_MODEL': 'operator-selected-code-model',
+        }
+        self.assertTrue(configure(custom_code))
+        self.assertEqual(
+            [p['model'] for p in json.loads(custom_code['STUDIO_PROVIDERS_JSON'])],
+            ['nvidia/nemotron-3.5-lightning-30b-a3b', 'poolside/laguna-xs-2.1'],
+        )
         cloudflare_env = {
             'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1',
             'STUDIO_CLOUDFLARE_FREE_TIER_ONLY': '1',
@@ -197,11 +220,11 @@ class LiveDiagnosticsTests(unittest.TestCase):
         self.assertTrue(configure(cloudflare_env))
         self.assertNotIn('sensitive-cloudflare-key', cloudflare_env['STUDIO_PROVIDERS_JSON'])
         configured = json.loads(cloudflare_env['STUDIO_PROVIDERS_JSON'])
-        self.assertEqual(len(configured), 3)
-        self.assertEqual(configured[2]['model'], '@cf/zai-org/glm-4.7-flash')
-        self.assertEqual(configured[2]['key_env'], 'CLOUDFLARE_API_TOKEN')
+        self.assertEqual(len(configured), 2)
+        self.assertEqual(configured[1]['model'], '@cf/zai-org/glm-4.7-flash')
+        self.assertEqual(configured[1]['key_env'], 'CLOUDFLARE_API_TOKEN')
         self.assertEqual(
-            configured[2]['base'],
+            configured[1]['base'],
             'https://api.cloudflare.com/client/v4/accounts/' + 'a' * 32 + '/ai/v1',
         )
         for excluded in (
@@ -217,7 +240,7 @@ class LiveDiagnosticsTests(unittest.TestCase):
             }
             disabled.update(excluded)
             self.assertTrue(configure(disabled))
-            self.assertEqual(len(json.loads(disabled['STUDIO_PROVIDERS_JSON'])), 2)
+            self.assertEqual(len(json.loads(disabled['STUDIO_PROVIDERS_JSON'])), 1)
         for env in ({'STUDIO_API_BASE': 'https://another.example/v1'},
                     {'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1', 'STUDIO_PROVIDERS_JSON': '[]'}):
             before = dict(env)

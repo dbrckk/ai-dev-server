@@ -1,3 +1,18 @@
+## 2026-10-22 — bounded inference qualification recovery
+
+- Reproduced two diagnostic defects against an actual HTTP fixture: tiny thinking-heavy readiness output is rejected, then the code probe stops at the first503 although another configured provider could work. Existing real worker routing already has provider fallback.
+- Tiny supported NVIDIA Nemotron probes disable reasoning only for the fixed synthetic exercise. Code attempts share the original384 output tokens and40-second deadline, one POST per candidate, retain failed attempts, and never execute generated source. Add only allowlisted profile/finish metadata; production providers/reasoning/budgets unchanged.
+- Extended one existing test function, no new unit-test functions. Red baseline and green checks recorded; actual HTTP baseline: code unavailable/one384-token request, corrected: ready/two requests with384 combined. Fresh full pytest:1,845 passed and199 subtests in27.63s. Final CI and actual hosted observations will be recorded in associated PR.
+- Public NVIDIA catalog still lists the configured default model families; old404 does not prove removal. Separate Kilo public synthetic probe: one request,75 completion tokens, zero declared cost; no project data or provider activation. Explicit public-only fallback consent is pending; independent NVIDIA work continues.
+- Control19 requests one trusted-main hosted recheck after exact-head CI and merge. No queue task, obsolete source canary, provider budget increase or target merge. Full autonomy and sustained free capacity remain unqualified.
+
+## 2026-10-22 — validation complete; hosted inference not qualified
+
+- Workerf01c620: all seven software Actions workflows and all three CircleCI checks passed after merge. Fresh worker1,845+199 subtests; server1,325/no skips with isolated PostgreSQL16;6 authenticated integrations; actual HTTP deadlines/recovery/403 and server distribution/wheel checks passed.
+- Trusted-main diagnostic39697046716 failed: one provider readiness JSON ready, others HTTP404/invalid JSON; the single code-generation probe received HTTP503. Operator-authorized GET succeeded and server readiness declares immediate wake/no missing configuration; no live task or dispatch was exercised. Cloudflare free fallback is not configured. HTTP statuses alone do not identify a permanent outage, removed model or quota cause.
+- Render stays live atcd85b78f; fresh corrected readiness client ready in1.26s, health/readiness200/base reachable. Source and server runtime code unchanged by validation. Final evidence: https://github.com/dbrckk/ai-dev-server/pull/376 and https://github.com/dbrckk/Production-OS/pull/288.
+- Jumpy37 is owner-merged with three exact-merge checks passed; star-list154 remains draft. Complete new-task autonomy and durable free inference remain unqualified. No diagnostic rerun, source task, provider/budget change or target merge in validation.
+
 ## 2026-10-21 — owner-requested validation of the merged stack
 
 - Freshly checked worker623b1b1: all eight postmerge workflows successful. Production-OScd85b78f is the exact live Render deployment dep-dbcjdlss728c73al7810. Worker main only adds generated .ai metadata since its qualified merge.

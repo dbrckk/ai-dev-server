@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "updated_at": "2026-10-21",
-  "task": "Validate merged worker/control-plane stack and current hosted diagnostics",
-  "base_commit": "1831aab1bb38762741ce3a85d8ab6bb7c52e9a2b",
-  "branch": "chore/validate-live-stack",
+  "updated_at": "2026-10-22",
+  "task": "Recover bounded configured-provider inference qualification",
+  "base_commit": "f01c620abf53ad876e7512eef833c233afec822e",
+  "branch": "fix/bounded-inference-probes",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -539,7 +539,7 @@
     "fresh_worker_pytest": "1845 passed, 199 subtests in28.23s",
     "server_and_authenticated_integration": "Fresh full server suite1325 passed, no skips, PostgreSQL16;6 authenticated integrations passed",
     "diagnostic_sequence": 18,
-    "diagnostic_status": "Pending trusted-main trigger after exact-head CI and merge",
+    "diagnostic_status": "Failed qualification: code probe HTTP503; other readiness probes404/invalid JSON; operator GET ready; immediate wake declared by server only",
     "limits": [
       "Synthetic configured-model smoke does not prove autonomous source delivery or sustained free capacity",
       "Do not retry obsolete Jumpy/star-list objectives or activate sequence42",
@@ -553,6 +553,30 @@
       "merge_sha": "7ba62fce709f852aa1a43f4246f1ca8a142c7ad2",
       "ci": "All3 exact-merge workflows success including Godot validation and Android APK"
     },
-    "starlist154": "draft, unmerged, head c415a3235fe701c93e19cf656722bc03b70c735b"
+    "starlist154": "draft, unmerged, head c415a3235fe701c93e19cf656722bc03b70c735b",
+    "software_postmerge": "7/7 Actions and3/3 CircleCI passed atf01c620abf53ad876e7512eef833c233afec822e",
+    "diagnostic_run": "https://github.com/dbrckk/ai-dev-server/actions/runs/39697046716",
+    "final_evidence": "https://github.com/dbrckk/ai-dev-server/pull/376",
+    "next_priority": "Stabilize/qualify existing configured inference before a new reviewed applicable source task; no automatic retry or provider/budget change"
+  },
+  "status": "Implementation prepared; actual HTTP fallback reproduction fixed; full suite/CI/hosted qualification pending",
+  "bounded_inference_recovery_20261022": {
+    "control_sequence": 19,
+    "changes": [
+      "Non-thinking tiny supported Nemotron probes",
+      "384 output tokens/40 seconds shared across code fallback candidates; one POST each; retain failures",
+      "Allowlisted model-profile and finish metadata only"
+    ],
+    "actual_http": "Baseline unavailable with one code request; corrected ready with two code requests, combined output ceiling384",
+    "unit_test_policy": "One existing function extended; no new unit-test functions",
+    "public_kilo_probe": "Passed one fixed public toy request;75 completion tokens and reported zero cost",
+    "kilo_project_fallback": "Not activated; public-only project data consent pending",
+    "final_evidence": "Associated PR will record exact CI and trusted-main live diagnosis",
+    "limits": [
+      "No queue/source task or target merge",
+      "No change to production reasoning/provider/project budgets",
+      "Full autonomy and sustained free inference unqualified"
+    ],
+    "pytest": "1845 passed,199 subtests in27.63s"
   }
 }

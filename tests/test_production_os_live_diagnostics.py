@@ -22,6 +22,12 @@ class LiveDiagnosticsTests(unittest.TestCase):
                 calls.append((method, path, data, kwargs))
                 if data and data['model'] == 'old':
                     raise APIError(410)
+                if (data and data['model'] == 'nvidia/nemotron-3.5-lightning-30b-a3b'
+                        and data.get('chat_template_kwargs') != {'enable_thinking': False}):
+                    return {'choices': [{'finish_reason': 'length', 'message': {'content': ''}}]}
+                if (data and data['model'] == 'poolside/laguna-xs-2.1'
+                        and 'Write only Python code' in data['messages'][0]['content']):
+                    raise APIError(503)
                 if data and 'Write only Python code' in data['messages'][0]['content']:
                     return {'choices': [{'message': {'content': 'def increment(value):\n    return value + 1\n'}}]}
                 return {'choices': [{'message': {'content': '{"ready":true,"private":"credential remote text"}'}}]}
@@ -37,6 +43,36 @@ class LiveDiagnosticsTests(unittest.TestCase):
         self.assertEqual(smoke['coding_smoke']['status'], 'ready')
         self.assertEqual(smoke['coding_smoke']['provider_index'], 1)
         self.assertNotIn('credential', json.dumps(smoke))
+
+        # A healthy readiness response does not guarantee the code endpoint.
+        # Match native fallback within the ORIGINAL 384-token output ceiling.
+        nim_base = 'https://integrate.api.nvidia.com/v1'
+        nim = [ProviderSpec('laguna', nim_base, 'credential', 'poolside/laguna-xs-2.1'),
+               ProviderSpec('lightning', nim_base, 'credential', 'nvidia/nemotron-3.5-lightning-30b-a3b')]
+        calls.clear()
+        recovered = diagnose(api_factory=FakeAPI, providers=nim,
+                             environ={'PRODUCTION_OS_DIAGNOSE_CODE_SMOKE': '1'})
+        self.assertTrue(recovered['inference_ready'])
+        self.assertEqual([p['status'] for p in recovered['providers']], ['ready', 'ready'])
+        self.assertEqual(recovered['coding_smoke']['status'], 'ready')
+        self.assertEqual(recovered['coding_smoke']['provider_index'], 1)
+        self.assertEqual(recovered['coding_smoke']['attempts'][0]['http_status'], 503)
+        code_calls = [c for c in calls if 'Write only Python code' in c[2]['messages'][0]['content']]
+        self.assertEqual(len(code_calls), 2)
+        self.assertLessEqual(sum(c[2]['max_tokens'] for c in code_calls), 384)
+        self.assertTrue(all(c[3]['max_attempts'] == 1 for c in code_calls))
+        self.assertNotIn('credential', json.dumps(recovered))
+
+        # Each candidate is tried once, sharing a deadline, not 40s each.
+        calls.clear()
+        with patch('production_os_live_diagnostics.time.monotonic', side_effect=[0, 0, 40]):
+            exhausted = diagnose(api_factory=FakeAPI, providers=nim,
+                                 environ={'PRODUCTION_OS_DIAGNOSE_CODE_SMOKE': '1'})
+        self.assertEqual(exhausted['coding_smoke']['status'], 'unavailable')
+        self.assertEqual(len(exhausted['coding_smoke']['attempts']), 1)
+        self.assertEqual(exhausted['coding_smoke']['attempts'][0]['http_status'], 503)
+        self.assertEqual(len([c for c in calls if 'Write only Python code' in c[2]['messages'][0]['content']]), 1)
+        self.assertNotIn('credential', json.dumps(exhausted))
 
         # The real public gateway reports costs inside usage, including
         # separate upstream fields. None may be ignored in a free-code proof.

@@ -5520,6 +5520,11 @@ result = repository.ensure_pull_request(
 ⋮----
 posts = [
 ⋮----
+# Regression: a different generic task must never overwrite the managed
+# source-repair branch after a restricted model-authored checkpoint.
+⋮----
+reserved = GenericRepository(
+⋮----
 # A bounded public source task must restore and publish only its one
 # operator-approved source file, not hundreds of unrelated repository
 # blobs. The target's own CI still validates the proposed patch later.
@@ -8206,6 +8211,11 @@ root = Path(td); req_path = root / "request.json"
 ⋮----
 observed = run_project(str(req_path), root / "out", str(root / "work"),
 ⋮----
+root = Path(td); request_path = root / "request.json"
+def no_fallback(*args, **kwargs)
+⋮----
+unsafe = {
+⋮----
 # PR creation and GitHub_TOKEN pull_request checks do not prove that
 # the independent, exact-commit Godot validation has actually passed.
 # A fresh worker must recheck the published source without asking the
@@ -9782,6 +9792,10 @@ def test_run_once_cooperatively_cancels_only_target_job(self)
 cancel_event = kwargs["cancel_event"]
 ⋮----
 final = client.calls[-1]
+⋮----
+cancelled_client = _FakeClient(job)
+⋮----
+result = run_once(cancelled_client, worker_id="ai-dev-1", output_root=Path(td),
 ⋮----
 # A superseded generation is not an operator cancellation. Fence only
 # this job, without delivering an outcome or acknowledging a cancel.

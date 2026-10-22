@@ -261,27 +261,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-22T13:39:31Z
+Generated: 2026-10-22T15:12:56Z
 
 ### Git
 - Branch: `main`
-- Head: `a49b116ba462`
-- Commit date: 2026-10-22T09:38:44-04:00
-- Commit: fix(worker): stop superseded workflow generations (#381)
+- Head: `7b1e365ac17a`
+- Commit date: 2026-10-22T11:12:12-04:00
+- Commit: fix(worker): honor cancellation before execution setup (#382)
 - Tracked files: 875
 
 ### Recently changed files
 - `docs/PRODUCTION_OS_WORKER.md`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_worker_runtime.py`
+- `studio/generic_repository.py`
+- `studio/multi_engine_orchestrator.py`
+- `tests/test_generic_repository_pull_request.py`
+- `tests/test_multi_engine_orchestrator.py`
 - `tests/test_production_os_worker_recovery.py`
 - `integration_tests/test_production_os_server_integration.py`
-- `control/production-os-diagnostics-kick.json`
-- `studio/production_os_provider_config.py`
-- `tests/test_production_os_live_diagnostics.py`
-- `studio/generic_model.py`
-- `studio/production_os_live_diagnostics.py`
-- `tests/test_generic_model_capacity.py`
 
 ### Project signals
 - No common build descriptor detected

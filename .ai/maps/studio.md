@@ -9778,6 +9778,17 @@ class GenericRepository
 ⋮----
 def __init__(self,github,repo:str,project_id:str)
 ⋮----
+def _reject_reserved_generic_branch(self) -> None
+⋮----
+"""Only the reviewed source lane may write an approved task branch.
+
+        The generic fallback must never reinterpret a Production-OS approved
+        source request as a whole-project rewrite after a transient failure.
+        This guard is local and runs before GitHub restores or publishes data.
+        """
+⋮----
+protected = {task.repo.casefold() for task in TASKS.values()}
+⋮----
 def _tree(self,sha:str)->dict
 ⋮----
 tree=self.github.get("/git/trees/"+sha+"?recursive=1")
@@ -14707,6 +14718,10 @@ verified_repair = request_check(canary_req)
 ⋮----
 verified_canary=request_check(canary_req)
 ⋮----
+# A malformed, stale or unrelated task must never use the unrestricted
+# engine on the SAME managed branch as an approved one-file source repair.
+# This failed closed only after the exact authorized routes above.
+⋮----
 engine=_detect(request_path,project_out,runner,deadline,clock)
 ⋮----
 req=json.loads(Path(request_path).read_text())
@@ -17426,6 +17441,10 @@ def finish_stale_job()
 # without reporting an outcome or acknowledging an operator cancel.
 kwargs = {"active_job_keys": ()}
 ⋮----
+def finish_cancelled_job(project_id=None)
+⋮----
+kwargs = {
+⋮----
 startup_heartbeat = {"active_job_keys": (key,)}
 ⋮----
 response = client.heartbeat(worker_id, **startup_heartbeat)
@@ -17493,8 +17512,6 @@ summary = run_project(
 delay = retry_backoff * (2 ** (retry_count - 1))
 ⋮----
 duration = max(0.0, float(clock()) - started)
-⋮----
-kwargs = {
 ⋮----
 # Preserve bounded diagnostics even when failure delivery is interrupted.
 ⋮----

@@ -106,7 +106,7 @@ def _primary() -> ProviderSpec | None:
     key = os.environ.get("STUDIO_API_KEY", "")
     if not key and not _is_local_base(base):
         return None
-    model = os.environ.get("STUDIO_MODEL", "nvidia/nemotron-3-super-120b-a12b")
+    model = os.environ.get("STUDIO_MODEL", "nvidia/nemotron-3.5-lightning-30b-a3b")
     code_model = os.environ.get("STUDIO_CODE_MODEL", "") or model
     vision = os.environ.get("STUDIO_VISION_MODEL", "")
     if not vision and base.rstrip("/") == "https://integrate.api.nvidia.com/v1":

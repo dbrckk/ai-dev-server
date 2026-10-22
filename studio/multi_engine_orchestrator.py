@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from pathlib import Path
 import sys
 
@@ -12,6 +13,7 @@ from generic_project import run_project as run_generic_project
 from production_os_review_canary import contract as jum_review_canary_contract, run as run_jumpy_review_canary
 from production_os_jumpy_source_repair import contract as jumpy_source_repair_contract, run as run_jumpy_source_repair
 from production_os_bounded_source_repair import contract as bounded_source_contract, run as run_bounded_source
+from production_os_source_tasks import TASKS
 
 
 def _remaining(deadline, clock):
@@ -65,6 +67,21 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
         return run_jumpy_review_canary(
             verified_canary,project_out,Path(work),
             checkpoint_observer=checkpoint_observer,
+        )
+    # A malformed, stale or unrelated task must never use the unrestricted
+    # engine on the SAME managed branch as an approved one-file source repair.
+    # This failed closed only after the exact authorized routes above.
+    if (isinstance(canary_req, dict)
+            and isinstance(canary_req.get("target_repo"), str)
+            and canary_req["target_repo"].casefold() in {
+                task.repo.casefold() for task in TASKS.values()
+            }
+            and re.fullmatch(
+                r"mp-[a-f0-9]{24}",
+                str(canary_req.get("repository_branch_id") or ""),
+            )):
+        raise StudioError(
+            "Approved source task branch requires the exact operator-authorized contract"
         )
     engine=_detect(request_path,project_out,runner,deadline,clock)
     if engine is None: return {'status':'deferred','report':{},'next_stage':'preview'}

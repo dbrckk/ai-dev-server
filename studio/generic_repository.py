@@ -27,6 +27,21 @@ class GenericRepository:
         self.github=github; self.repo=repo; self.project_id=project_id; self.branch="studio/"+project_id
         self.default_branch=None
 
+    def _reject_reserved_generic_branch(self) -> None:
+        """Only the reviewed source lane may write an approved task branch.
+
+        The generic fallback must never reinterpret a Production-OS approved
+        source request as a whole-project rewrite after a transient failure.
+        This guard is local and runs before GitHub restores or publishes data.
+        """
+        from production_os_source_tasks import TASKS
+        protected = {task.repo.casefold() for task in TASKS.values()}
+        if (self.repo.casefold() in protected
+                and re.fullmatch(r"studio/mp-[a-f0-9]{24}", self.branch)):
+            raise StudioError(
+                "Approved source task branch is reserved; generic restore/publish denied"
+            )
+
     def _tree(self,sha:str)->dict:
         tree=self.github.get("/git/trees/"+sha+"?recursive=1")
         if not isinstance(tree,dict) or tree.get("truncated") or not isinstance(tree.get("tree"),list):
@@ -34,6 +49,7 @@ class GenericRepository:
         return tree
 
     def restore(self,root:Path)->tuple[str,dict]:
+        self._reject_reserved_generic_branch()
         metadata=self.github.get("")
         if not isinstance(metadata,dict) or metadata.get("archived"):
             raise StudioError("Target repository unavailable or archived")
@@ -397,6 +413,7 @@ class GenericRepository:
         return {"status": "accepted"}
 
     def publish(self,base_sha:str,root:Path,message:str)->str:
+        self._reject_reserved_generic_branch()
         base_tree=self.github.get("/git/commits/"+base_sha).get("tree",{}).get("sha")
         if not isinstance(base_tree,str):
             raise StudioError("Generic base tree unavailable")

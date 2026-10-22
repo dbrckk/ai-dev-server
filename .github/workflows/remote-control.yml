@@ -88,7 +88,7 @@ jobs:
           set -euo pipefail
           test -n "${NVIDIA_NIM_API_KEY:-}" || { echo 'Missing repository secret: NVIDIA_NIM_API_KEY'; exit 1; }
           NAME='${{ steps.codespace.outputs.name }}'
-          PAYLOAD=$(jq -nc --arg key "$NVIDIA_NIM_API_KEY" '{values:{NVIDIA_NIM_API_KEY:$key,MODEL:"nvidia_nim/nvidia/nemotron-3-super-120b-a12b"}}')
+          PAYLOAD=$(jq -nc --arg key "$NVIDIA_NIM_API_KEY" '{values:{NVIDIA_NIM_API_KEY:$key,MODEL:"nvidia_nim/nvidia/nemotron-3.5-lightning-30b-a3b"}}')
           DATA=$(printf '%s' "$PAYLOAD" | base64 -w0)
           CMD="set -e; printf '%s' '$DATA' | base64 -d > /tmp/fcc-provider.json; curl -fsS -H 'Content-Type: application/json' -X POST http://127.0.0.1:8082/admin/api/config/apply --data-binary @/tmp/fcc-provider.json >/tmp/fcc-apply.json; rm -f /tmp/fcc-provider.json; python -c \"import json; d=json.load(open('/tmp/fcc-apply.json')); print('nvidia_configuration: applied' if d.get('applied') else 'nvidia_configuration: failed')\"; rm -f /tmp/fcc-apply.json; curl -sS -X POST http://127.0.0.1:8082/admin/api/providers/nvidia_nim/test | python -c \"import json,sys; d=json.load(sys.stdin); print('nvidia_provider_test:', 'OK' if d.get('ok') else 'FAILED')\""
           timeout 120s gh codespace ssh -c "$NAME" "$CMD" | tee remote-output.txt

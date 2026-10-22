@@ -3708,6 +3708,12 @@ block = workflow_source.split('- name: Probe compatible Production-OS work', 1)[
 block = block.split("python - <<'PY'\n", 1)[1].split('\n          PY', 1)[0]
 outputs = root / 'github-output'
 ⋮----
+# A retry can reuse this project's directory. A correlated old
+# receipt must not decide the new execution's outcome or usage.
+⋮----
+previous_request = build_studio_request(control.queue.get(jobs[0]['key']))
+project_out = root / 'output' / previous_request['id']
+⋮----
 executed = []
 def runner(request_path, project_out, **kwargs)
 ⋮----
@@ -23318,6 +23324,9 @@ remaining = runtime_limit - (float(clock()) - started)
 ⋮----
 summary = {
 ⋮----
+# The same task can execute again or continue without writing
+# an envelope. Never reuse a preceding invocation's outcome.
+⋮----
 summary = run_project(
 ⋮----
 delay = retry_backoff * (2 ** (retry_count - 1))
@@ -36472,6 +36481,18 @@ def runner(request_path, project_out, **kwargs)
 ⋮----
 request = json.loads(request_path.read_text())
 result = {
+⋮----
+# Correlation alone cannot distinguish an earlier execution/continuation
+# of the same workflow task. Early runner returns must get fresh results.
+⋮----
+request = build_studio_request(client.job)
+project_out = Path(td) / request['id']
+previous = {'status': previous_status, 'finished': previous_status == 'complete',
+⋮----
+current = {'status': current_status, 'finished': current_status == 'complete',
+def runner(request_path, output, **kwargs)
+⋮----
+reported = json.loads((project_out / 'production-os-result.json').read_text())
 ⋮----
 def test_invalid_timing_configuration_does_not_claim_job(self)
 ⋮----

@@ -17473,6 +17473,9 @@ remaining = runtime_limit - (float(clock()) - started)
 ⋮----
 summary = {
 ⋮----
+# The same task can execute again or continue without writing
+# an envelope. Never reuse a preceding invocation's outcome.
+⋮----
 summary = run_project(
 ⋮----
 delay = retry_backoff * (2 ** (retry_count - 1))

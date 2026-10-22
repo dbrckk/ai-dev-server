@@ -1,22 +1,22 @@
 # Change impact
 
-Base: 77df54ad9772eed9d93974ec810ad66670bf90b1
-Head: c50a0a4085be249af67795685890c4bd1fa5c778
+Base: fbace1893fe0b7f44ec0697ced1bba24285a744a
+Head: 56f4fc60a65660ee0604c1dea2590e1aef5ba262
 
 ## Changed files
-- M control/production-os-diagnostics-kick.json
 - M docs/PRODUCTION_OS_WORKER.md
-- M studio/production_os_provider_config.py
-- M tests/test_production_os_live_diagnostics.py
+- M integration_tests/test_production_os_server_integration.py
+- M studio/production_os_worker.py
+- M tests/test_production_os_worker_recovery.py
 
 ## Affected areas
-- control
 - docs
+- integration_tests
 - studio
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_production_os_worker.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

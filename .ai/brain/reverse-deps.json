@@ -3,6 +3,7 @@
     "integration_tests/test_production_os_server_integration.py": {
       "dependencies": [
         "studio/core.py",
+        "studio/github_runner.py",
         "studio/production_os_resume_objectives.py",
         "studio/production_os_worker.py",
         "tests/test_multi_engine_orchestrator.py",
@@ -10,7 +11,7 @@
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 5
+      "out_degree": 6
     },
     "scripts/preflight-production-os-worker.py": {
       "dependencies": [
@@ -2797,14 +2798,16 @@
         "tests/test_unified_routing_score.py"
       ],
       "dependents": [
+        "integration_tests/test_production_os_server_integration.py",
         "studio/production_os_worker.py",
         "tests/test_github_runner_persistent.py",
         "tests/test_github_runner_round_persistence.py",
         "tests/test_github_runner_usage.py",
         "tests/test_orchestrator.py",
-        "tests/test_production_os_result_contract.py"
+        "tests/test_production_os_result_contract.py",
+        "tests/test_production_os_worker_recovery.py"
       ],
-      "in_degree": 6,
+      "in_degree": 8,
       "out_degree": 48
     },
     "studio/github_strategy_efficiency_store.py": {
@@ -7523,6 +7526,7 @@
     "tests/test_production_os_worker_recovery.py": {
       "dependencies": [
         "studio/core.py",
+        "studio/github_runner.py",
         "studio/production_os_worker.py",
         "studio/source_delivery_checkpoint.py",
         "studio/stage_registry.py",
@@ -7531,7 +7535,7 @@
       ],
       "dependents": [],
       "in_degree": 0,
-      "out_degree": 6
+      "out_degree": 7
     },
     "tests/test_production_os_worker_runtime.py": {
       "dependencies": [

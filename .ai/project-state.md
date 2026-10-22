@@ -210,18 +210,21 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-22T06:20:10Z
+Generated: 2026-10-22T08:45:44Z
 
 ### Git
 - Branch: `main`
-- Head: `c50a0a4085be`
-- Commit date: 2026-10-22T02:20:00-04:00
-- Commit: fix(inference): prefer code-qualified NVIDIA fallback
+- Head: `56f4fc60a656`
+- Commit date: 2026-10-22T04:45:35-04:00
+- Commit: fix(worker): reject stale results across execution attempts
 - Tracked files: 875
 
 ### Recently changed files
-- `control/production-os-diagnostics-kick.json`
 - `docs/PRODUCTION_OS_WORKER.md`
+- `integration_tests/test_production_os_server_integration.py`
+- `studio/production_os_worker.py`
+- `tests/test_production_os_worker_recovery.py`
+- `control/production-os-diagnostics-kick.json`
 - `studio/production_os_provider_config.py`
 - `tests/test_production_os_live_diagnostics.py`
 - `studio/generic_model.py`
@@ -230,8 +233,6 @@ Generated: 2026-10-22T06:20:10Z
 - `studio/production_os_resume_objectives.py`
 - `studio/production_os_worker_canary.py`
 - `tests/test_production_os_worker_canary.py`
-- `studio/github_runner.py`
-- `tests/test_github_runner_persistent.py`
 
 ### Project signals
 - No common build descriptor detected

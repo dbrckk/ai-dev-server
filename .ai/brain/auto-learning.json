@@ -5,25 +5,26 @@
     "example_count": 64,
     "rejected_count": 0,
     "terms": [
-      "automatic",
-      "code-qualified",
-      "currently",
-      "fallback",
-      "lightning",
-      "nvidia",
-      "order",
-      "prefer"
+      "across",
+      "continuations",
+      "receipts",
+      "reject",
+      "retries",
+      "stale",
+      "task",
+      "worker"
     ],
     "test_count": 0,
-    "useful_count": 2
+    "useful_count": 3
   },
   "note": "Selected tests are routing hints; this artifact does not claim they executed successfully.",
   "rejected": [],
   "schema_version": 1,
-  "task": "Prefer currently code-qualified Lightning in automatic NVIDIA fallback order",
+  "task": "Reject stale worker receipts across task retries and continuations",
   "tests_selected": [],
   "useful": [
-    "studio/production_os_provider_config.py",
-    "tests/test_production_os_live_diagnostics.py"
+    "integration_tests/test_production_os_server_integration.py",
+    "studio/production_os_worker.py",
+    "tests/test_production_os_worker_recovery.py"
   ]
 }

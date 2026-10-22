@@ -109,6 +109,12 @@ block = workflow_source.split('- name: Probe compatible Production-OS work', 1)[
 block = block.split("python - <<'PY'\n", 1)[1].split('\n          PY', 1)[0]
 outputs = root / 'github-output'
 ⋮----
+# A retry can reuse this project's directory. A correlated old
+# receipt must not decide the new execution's outcome or usage.
+⋮----
+previous_request = build_studio_request(control.queue.get(jobs[0]['key']))
+project_out = root / 'output' / previous_request['id']
+⋮----
 executed = []
 def runner(request_path, project_out, **kwargs)
 ⋮----

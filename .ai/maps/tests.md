@@ -9567,6 +9567,18 @@ def runner(request_path, project_out, **kwargs)
 request = json.loads(request_path.read_text())
 result = {
 ⋮----
+# Correlation alone cannot distinguish an earlier execution/continuation
+# of the same workflow task. Early runner returns must get fresh results.
+⋮----
+request = build_studio_request(client.job)
+project_out = Path(td) / request['id']
+previous = {'status': previous_status, 'finished': previous_status == 'complete',
+⋮----
+current = {'status': current_status, 'finished': current_status == 'complete',
+def runner(request_path, output, **kwargs)
+⋮----
+reported = json.loads((project_out / 'production-os-result.json').read_text())
+⋮----
 def test_invalid_timing_configuration_does_not_claim_job(self)
 ⋮----
 def test_uncertain_completion_delivery_does_not_report_opposite_outcome(self)

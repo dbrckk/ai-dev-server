@@ -76,7 +76,10 @@ def apply_model_edit(original: str, reply: dict, task: SourceTask) -> str:
         raise StudioError("Model source edit changes assignment destination")
     expected = ast.Call(
         func=ast.Attribute(value=before_ast.value, attr=task.method, ctx=ast.Load()),
-        args=[ast.Constant(value=task.argument)], keywords=[],
+        args=[ast.Constant(value=value) for value in (
+            (task.argument,) if task.second_argument is None
+            else (task.argument, task.second_argument)
+        )], keywords=[],
     )
     if ast.dump(expected) != ast.dump(after_ast.value):
         raise StudioError("Model edit violates the operator-reviewed AST transform")
@@ -127,7 +130,9 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
             "Return JSON only: {\"replacement_line\":\"...\"}, no markdown. "
             "Change only the requested Python assignment. Keep leading spaces "
             "exactly; preserve original expression and wrap it only with "
-            f".{task.method}({json.dumps(task.argument)}). Do not add imports, "
+            f".{task.method}({json.dumps(task.argument)}"
+            + ("" if task.second_argument is None else ", " + json.dumps(task.second_argument))
+            + "). Do not add imports, "
             "other statements or unrelated code. Model must author the new line.",
             task.objective + "\nExisting source:\n" + excerpt +
             "\nExisting exact assignment:\n" + task.old_line +
@@ -163,7 +168,7 @@ def run(req: dict, out: Path, work: Path, *, checkpoint_observer=None) -> dict:
     with source_operation("review"):
         try:
             repo.ensure_pull_request(
-                title=f"star-list: model-authored MCP host normalization ({sequence})",
+                title=f"{task.repo.split('/')[-1]}: model-authored {task.task_id} ({sequence})",
                 body="One approved model-authored source edit. Independently validate the exact SHA; no automatic merge.",
                 expected_sha=sha,
             )

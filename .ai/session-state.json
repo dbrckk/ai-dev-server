@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "updated_at": "2026-10-22",
-  "task": "Respect startup cancellation before request setup/execution",
-  "base_commit": "c131384c006afa52049444f695c4d7619924986c",
-  "branch": "fix/worker-startup-cancel",
+  "updated_at": "2026-10-22T18:53:59.187676+00:00",
+  "task": "Qualify bounded autonomous Production-OS worktree Git-ref repair",
+  "base_commit": "e5ee6a0a54996c0bf516b3759953717c1ecb8e15",
+  "branch": "feat/production-os-source-qualification",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -96,8 +96,9 @@
     "limit": "Historical counters, no hosted model inference or completed end-to-end task"
   },
   "pending": [
-    "Qualify7 premerge Actions/3 CircleCI and8 postmerge Actions/3 CircleCI",
-    "Qualify native counterpart and rollout"
+    "Qualify and merge trusted target handoff and worker task registration",
+    "Launch one bounded source task after both infrastructure gates",
+    "Require model-authored exact-source draft PR and independent exact-commit CI;do not merge target source change"
   ],
   "merged_pr": {
     "number": 240,
@@ -557,7 +558,7 @@
     "final_evidence": "https://github.com/dbrckk/ai-dev-server/pull/376",
     "next_priority": "Stabilize/qualify existing configured inference before a new reviewed applicable source task; no automatic retry or provider/budget change"
   },
-  "status": "Worker full1845+212 and6 combined integrations passed;exact CI pending",
+  "status": "Infrastructure prepared;actual Git baseline fails for double dots;8 fixture worktrees pass;hosted model task not yet launched",
   "bounded_inference_recovery_20261022": {
     "control_sequence": 19,
     "changes": [
@@ -860,5 +861,65 @@
     "fixed": "bothcancelled,acknowledged,active0,starts0,output0",
     "validation": "1845+212 full25.00s;57+37 selected;6 combined integrations4.138s;AST unchanged",
     "ci": "pending"
+  },
+  "initial_cancellation_final_20261022": {
+    "observed_at": "2026-10-22T18:38:50.977093+00:00",
+    "native_pr": 292,
+    "native_merge": "4e76d405f5283c15c126ee00eb7d1cd96b6f3172",
+    "worker_pr": 382,
+    "worker_merge": "7b1e365ac17ac0ea35d22dfa07dec75381057b98",
+    "server_ci": "4 jobs before merge,4 after merge,standards and4 latest-main jobs successful",
+    "worker_ci": "7 Actions+3 CircleCI before merge;8 Actions+3 CircleCI after merge successful",
+    "render": {
+      "deploy": "dep-dbd2en3bc2fs7392gkkg",
+      "status": "live",
+      "runtime": "4e76d405f5283c15c126ee00eb7d1cd96b6f3172",
+      "http": "healthz200/22.81s,readyz200/0.53s,dashboard200/0.67s,unauthenticated workers401"
+    },
+    "fresh_validation": "Latest main:23 existing tests+31 subtests passed;6 authenticated integrations passed in4.441s;3 initial cancellation HTTP scenarios passed with0 starts,acknowledged cancellation,0 active jobs,no output",
+    "later_worker_changes": "Main also includes375 approved-source branch protection,383 permanent HTTP retry fix,384 diagnostic control;existing targeted tests validated;diagnostics39826731824 successful,provider-level result not inspected",
+    "limits": [
+      "Full autonomous delivery on a new applicable source objective remains unqualified",
+      "Sustained free inference capacity and immediate Render wake remain unqualified",
+      "Kilo project-data routing remains inactive pending explicit consent"
+    ]
+  },
+  "autonomy_applicability_20261022": {
+    "observed_at": "2026-10-22T18:53:59.187676+00:00",
+    "diagnostic_run": 39826731824,
+    "diagnostic_executed_at": "2026-10-22T17:55:03Z",
+    "provider": "NVIDIA Nemotron3.5 Lightning:inference ready and bounded384-token coding smoke ready",
+    "other_providers": "Super404/unavailable;Laguna unavailable",
+    "operator_access": "ready",
+    "worker_wake": "immediate configuration reported;new execution not demonstrated",
+    "source_preflight": [
+      {
+        "scenario": "jumpy_share_clipboard_guard",
+        "status": "scenario_no_longer_applicable",
+        "source_blob_sha": "58bf64cdb5f8b0fe65ca879963ab12dcc661f526",
+        "path": "scripts/integrations.gd"
+      },
+      {
+        "scenario": "jumpy_settings_tap_guard",
+        "status": "scenario_no_longer_applicable",
+        "source_blob_sha": "ed92da17711359e067cf00d0ad8b91cd0e245a22",
+        "path": "scripts/main.gd"
+      },
+      {
+        "scenario": "jumpy_landing_feedback",
+        "status": "scenario_no_longer_applicable",
+        "source_blob_sha": "ed92da17711359e067cf00d0ad8b91cd0e245a22",
+        "path": "scripts/main.gd"
+      },
+      {
+        "scenario": "approved_source_repair",
+        "status": "scenario_no_longer_applicable",
+        "source_blob_sha": "2a29ac48dd242273a58f1986e93261328df37ae6",
+        "path": "scripts/validate_websites.py"
+      }
+    ],
+    "qualification": "blocked:no applicable registered source objective;no new task launched",
+    "next": "Choose and review a new real source objective;require model-authored source change,verified draft PR and independent exact-commit CI",
+    "capacity": "Single successful diagnostic does not establish sustained free capacity"
   }
 }

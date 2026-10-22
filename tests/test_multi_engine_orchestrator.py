@@ -345,6 +345,30 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                 apply_model_edit(source, rejected, task)
         with self.assertRaises(StudioError):
             apply_model_edit(updated, proposal, task)
+        worktree_task = TASKS["production_os_worktree_git_ref"]
+        worktree_source = "def _slug(value, *, limit=32):\n" + worktree_task.old_line + "\n    return text[:limit]\n"
+        worktree_request = {
+            **request, "target_repo": worktree_task.repo,
+            "brief": instruction(42, worktree_task.task_id),
+        }
+        self.assertEqual(bounded_contract(worktree_request)[1], worktree_task)
+        changed_line = worktree_task.old_line + '.replace(".", "-")'
+        self.assertEqual(
+            apply_model_edit(worktree_source, {"replacement_line": changed_line}, worktree_task),
+            worktree_source.replace(worktree_task.old_line, changed_line),
+        )
+        for suffix in ('.replace(".", "")', '.replace("..", "-")', '.strip(".")'):
+            with self.assertRaises(StudioError):
+                apply_model_edit(worktree_source, {
+                    "replacement_line": worktree_task.old_line + suffix,
+                }, worktree_task)
+        from generic_repository import GenericRepository
+        reviewed = GenericRepository(None, worktree_task.repo, "mp-" + "b" * 24)
+        self.assertTrue(reviewed._approved_source_path(worktree_task.path))
+        self.assertFalse(reviewed._approved_source_path("src/production_os/control_plane.py"))
+        self.assertFalse(reviewed._approved_source_path(".github/workflows/ci.yml"))
+        self.assertFalse(GenericRepository(None, "other/repo", "mp-" + "b" * 24)
+                         ._approved_source_path(worktree_task.path))
         with tempfile.TemporaryDirectory() as td, patch(
             "multi_engine_orchestrator.run_bounded_source"
         ) as source_repair:

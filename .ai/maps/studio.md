@@ -17369,7 +17369,13 @@ _RETRYABLE_RUNNER_ERROR_TOKENS = (
 ⋮----
 def _retryable_runner_error(exc: Exception) -> bool
 ⋮----
+"""Retry transient failures, not explicit permanent HTTP denials."""
+⋮----
+status = getattr(exc, "status", None)
+⋮----
 message = str(exc).lower()
+# Explicit HTTP status takes precedence over free-form provider wording.
+http_status = re.search(r"\b(?:api )?http(?: status)?\s+([45][0-9]{2})\b", message)
 ⋮----
 def _failure_diagnostics(exc: Exception) -> dict[str, Any]
 ⋮----

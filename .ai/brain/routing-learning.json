@@ -2,30 +2,6 @@
   "examples": [
     {
       "rejected": [],
-      "task": "Prevent Godot numeric round counters from crashing native worker result reporting",
-      "terms": [
-        "counters",
-        "crashing",
-        "from",
-        "godot",
-        "native",
-        "numeric",
-        "prevent",
-        "reporting",
-        "result",
-        "round",
-        "worker"
-      ],
-      "tests": [],
-      "useful": [
-        "studio/github_runner.py",
-        "studio/production_os_live_diagnostics.py",
-        "tests/test_github_runner_persistent.py",
-        "tests/test_production_os_live_diagnostics.py"
-      ]
-    },
-    {
-      "rejected": [],
       "task": "Stop exhausted Godot preview continuations and retain authoritative checkpoint SHA",
       "terms": [
         "authoritative",
@@ -1407,6 +1383,23 @@
         "tests/test_multi_engine_orchestrator.py",
         "tests/test_production_os_worker_runtime.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "Respect startup cancellation before request setup/execution",
+      "terms": [
+        "before",
+        "cancellation",
+        "request",
+        "respect",
+        "setup/execution",
+        "startup"
+      ],
+      "tests": [],
+      "useful": [
+        "studio/production_os_worker.py",
+        "tests/test_production_os_worker_recovery.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1679,7 +1672,7 @@
       "studio/generic_repository.py": 12,
       "studio/godot_repository_probe.py": 4,
       "studio/multi_engine_orchestrator.py": 4,
-      "studio/production_os_worker.py": 8,
+      "studio/production_os_worker.py": 12,
       "studio/provider_router.py": 4,
       "tests/test_capacity_ledger.py": 4,
       "tests/test_generic_model_capacity.py": 4,
@@ -1687,6 +1680,7 @@
       "tests/test_godot_repository_probe.py": 4,
       "tests/test_multi_engine_orchestrator.py": 4,
       "tests/test_production_os_actions_worker_workflow.py": 4,
+      "tests/test_production_os_worker_recovery.py": 4,
       "tests/test_production_os_worker_runtime.py": 8,
       "tests/test_provider_router.py": 4
     },
@@ -1790,9 +1784,10 @@
     "cancellation": {
       "studio/generic_repository.py": 4,
       "studio/multi_engine_orchestrator.py": 4,
-      "studio/production_os_worker.py": 4,
+      "studio/production_os_worker.py": 8,
       "tests/test_generic_repository_pull_request.py": 4,
       "tests/test_multi_engine_orchestrator.py": 4,
+      "tests/test_production_os_worker_recovery.py": 4,
       "tests/test_production_os_worker_runtime.py": 4
     },
     "capabilities": {
@@ -3704,10 +3699,11 @@
       "studio/generic_repository.py": 8,
       "studio/github_runner.py": 4,
       "studio/multi_engine_orchestrator.py": 4,
-      "studio/production_os_worker.py": 4,
+      "studio/production_os_worker.py": 8,
       "tests/test_generic_repository_pull_request.py": 8,
       "tests/test_multi_engine_orchestrator.py": 4,
       "tests/test_production_os_actions_worker_workflow.py": 4,
+      "tests/test_production_os_worker_recovery.py": 4,
       "tests/test_production_os_worker_runtime.py": 4
     },
     "request-bound": {
@@ -3744,9 +3740,10 @@
     "respect": {
       "studio/generic_repository.py": 4,
       "studio/multi_engine_orchestrator.py": 4,
-      "studio/production_os_worker.py": 4,
+      "studio/production_os_worker.py": 8,
       "tests/test_generic_repository_pull_request.py": 4,
       "tests/test_multi_engine_orchestrator.py": 4,
+      "tests/test_production_os_worker_recovery.py": 4,
       "tests/test_production_os_worker_runtime.py": 4
     },
     "restore": {
@@ -3877,9 +3874,10 @@
     "setup/execution": {
       "studio/generic_repository.py": 4,
       "studio/multi_engine_orchestrator.py": 4,
-      "studio/production_os_worker.py": 4,
+      "studio/production_os_worker.py": 8,
       "tests/test_generic_repository_pull_request.py": 4,
       "tests/test_multi_engine_orchestrator.py": 4,
+      "tests/test_production_os_worker_recovery.py": 4,
       "tests/test_production_os_worker_runtime.py": 4
     },
     "sha": {
@@ -3968,7 +3966,7 @@
       "studio/production_os_provider_config.py": 4,
       "studio/production_os_review_canary.py": 12,
       "studio/production_os_source_tasks.py": 4,
-      "studio/production_os_worker.py": 12,
+      "studio/production_os_worker.py": 16,
       "studio/production_os_worker_canary.py": 36,
       "studio/provider_router.py": 8,
       "studio/public_free_code_smoke.py": 4,
@@ -3995,7 +3993,7 @@
       "tests/test_production_os_actions_worker_workflow.py": 8,
       "tests/test_production_os_live_diagnostics.py": 12,
       "tests/test_production_os_worker_canary.py": 36,
-      "tests/test_production_os_worker_recovery.py": 4,
+      "tests/test_production_os_worker_recovery.py": 8,
       "tests/test_production_os_worker_runtime.py": 8,
       "tests/test_provider_429_cooldown.py": 8,
       "tests/test_provider_router.py": 8,

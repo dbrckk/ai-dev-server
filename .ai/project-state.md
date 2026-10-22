@@ -261,25 +261,24 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-22T15:12:56Z
+Generated: 2026-10-22T17:33:04Z
 
 ### Git
 - Branch: `main`
-- Head: `7b1e365ac17a`
-- Commit date: 2026-10-22T11:12:12-04:00
-- Commit: fix(worker): honor cancellation before execution setup (#382)
+- Head: `9e1136981eb7`
+- Commit date: 2026-10-22T13:32:51-04:00
+- Commit: fix(worker): stop retrying permanent provider HTTP failures (#383)
 - Tracked files: 875
 
 ### Recently changed files
-- `docs/PRODUCTION_OS_WORKER.md`
 - `studio/production_os_worker.py`
+- `tests/test_production_os_worker_recovery.py`
+- `docs/PRODUCTION_OS_WORKER.md`
 - `tests/test_production_os_worker_runtime.py`
 - `studio/generic_repository.py`
 - `studio/multi_engine_orchestrator.py`
 - `tests/test_generic_repository_pull_request.py`
 - `tests/test_multi_engine_orchestrator.py`
-- `tests/test_production_os_worker_recovery.py`
-- `integration_tests/test_production_os_server_integration.py`
 
 ### Project signals
 - No common build descriptor detected

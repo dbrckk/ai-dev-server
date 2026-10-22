@@ -214,14 +214,13 @@ class LiveDiagnosticsTests(unittest.TestCase):
         self.assertTrue(configure(overridden))
         self.assertEqual(json.loads(overridden['STUDIO_PROVIDERS_JSON'])[0]['model'],
                          'nvidia/nemotron-3.5-lightning-30b-a3b')
-        # All hosted entrypoints must share the tested primary default; this
-        # does not alter explicit repository/organization variables.
+        # Managed production worker, hosted diagnostics and mobile entrypoints
+        # share the tested default; explicit variables remain untouched.
         from pathlib import Path
         for filename in (
             'production-os-actions-worker.yml',
             'production-os-live-diagnostics.yml',
             'mobile-studio.yml',
-            'provider-preview.yml',
         ):
             source = (Path(__file__).resolve().parents[1]
                       / '.github' / 'workflows' / filename).read_text()

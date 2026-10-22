@@ -1,9 +1,9 @@
 {
   "version": 1,
   "updated_at": "2026-10-22",
-  "task": "Prefer currently code-qualified Lightning in automatic NVIDIA fallback order",
-  "base_commit": "77df54a",
-  "branch": "fix/prefer-qualified-nvidia",
+  "task": "Reject stale worker receipts across task retries and continuations",
+  "base_commit": "fbace1893fe0b7f44ec0697ced1bba24285a744a",
+  "branch": "fix/fresh-execution-receipt",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -96,9 +96,8 @@
     "limit": "Historical counters, no hosted model inference or completed end-to-end task"
   },
   "pending": [
-    "Exact-head CI and review, then merge this bounded recovery correction",
-    "Native Godot usage telemetry and a completed hosted objective remain unqualified",
-    "Referenced image pilot still requires explicit metered-provider approval"
+    "Qualify exact-head7 Actions and3 CircleCI; review and merge",
+    "Observe postmerge checks; preserve full-autonomy/free-capacity limits"
   ],
   "merged_pr": {
     "number": 240,
@@ -559,7 +558,7 @@
     "final_evidence": "https://github.com/dbrckk/ai-dev-server/pull/376",
     "next_priority": "Stabilize/qualify existing configured inference before a new reviewed applicable source task; no automatic retry or provider/budget change"
   },
-  "status": "Worker377 hosted inference requalification passed; automatic default-order correction and control20 prepared, exact CI/live qualification pending",
+  "status": "Local real-server reproduction corrected; exact-head CI pending",
   "bounded_inference_recovery_20261022": {
     "control_sequence": 19,
     "changes": [
@@ -603,8 +602,39 @@
     "local_verification": {
       "pytest": "1845 passed +199 subtests in29.93s",
       "authenticated_integrations": "6 passed in4.505s",
-      "actual_http": "Old order: Super404, Poolside503 three transport attempts, Lightning success;5POSTs/4283charged. New: Super404, Lightning success;2POSTs/50charged. Both within6000 envelope. Real generic_model.ask/config/HTTP/ledger/journal; fixed public fixture only.",
+      "actual_http": "Actual core.API capability flag preserved: baseline3POSTs (Super404, Poolside503, Lightning success)/4283 charged; corrected2POSTs (Super404, Lightning success)/50 charged;6000 envelope. Initial wrapper five-POST count superseded.",
       "prior_postmerge": "377:9 Actions and3 CircleCI successful;289:4 CI jobs andstandards successful"
     }
+  },
+  "inference_final_qualification_20261022": {
+    "worker_merge": "c50a0a4085be249af67795685890c4bd1fa5c778",
+    "worker_pr": 378,
+    "hosted_run": 39733281780,
+    "hosted_job": 119673031069,
+    "inference": "Lightning index1 ready and AST-verified Python code within384 output tokens; Super404/Poolside503 unavailable",
+    "operator": "Authorized GET ready; immediate wake declared, no new task/wake sent",
+    "premerge": "7 Actions and3 CircleCI successful at3c8b30653620e005c6e88c12a69b2e8b73b276b4",
+    "postmerge": "All9 Actions and3 CircleCI successful atc50a0a4085be249af67795685890c4bd1fa5c778",
+    "tests": "1845 pytest +199 subtests;6 actual authenticated integrations; no new unit-test functions",
+    "actual_http_corrected": "Actual core.API capability flag preserved: baseline3POSTs (Super404, Poolside503, Lightning success)/4283 charged; corrected2POSTs (Super404, Lightning success)/50 charged;6000 envelope. Initial wrapper five-POST count superseded.",
+    "server_main_ci": "0b18299de17a4f80ab1b8ed0e27ddac462f73149:4 jobs passed in39703557654",
+    "render": "cd85b78ff9a4050366c061bde509d1b20e282d67 live;healthz/readyz/dashboard200;database reachable;protected API401",
+    "limits": [
+      "No full new-source autonomous-delivery or sustained free-capacity claim",
+      "Kilo project-data consent pending; not activated",
+      "No obsolete source canary/task or target merge"
+    ],
+    "receipt": "https://github.com/dbrckk/ai-dev-server/pull/378",
+    "final_readiness": "2026-10-22 06:31 UTC:healthz200;readyz200;database reachable",
+    "local_receipt": "Manual final observations retained locally; published exact-merge evidence in PR378"
+  },
+  "receipt_freshness_recovery_20261022": {
+    "baseline": "Actual server+github_runner:adaptation_required falsely completed/succeeded with old777 tokens and commit",
+    "fix": "Clear execution envelope before each runner invocation; current-summary fallback and durable checkpoints retained",
+    "real_corrected": "worker/workflow failed;current adaptation_required;no stale tokens/commit",
+    "pytest": "1845+202subtests in25.37s",
+    "actual_integrations": "6 passed in4.196s",
+    "policy": "Existing test functions extended; no new unit-test functions",
+    "limits": "No model/GitHub call in reproduction; no live source task or target merge; production providers and budgets unchanged"
   }
 }

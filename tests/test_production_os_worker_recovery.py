@@ -101,6 +101,40 @@ class WorkerRecoveryTests(unittest.TestCase):
                 self.assertEqual(client.calls[-1][2], ())
                 self.assertEqual(client.calls[-2][1]['result']['evidence']['pipeline_status'], 'result_error')
 
+        # Correlation alone cannot distinguish an earlier execution/continuation
+        # of the same workflow task. Early runner returns must get fresh results.
+        from github_runner import write_production_os_result
+        from production_os_worker import build_studio_request
+        for previous_status, current_status, continuation in (
+            ('complete', 'adaptation_required', False),
+            ('blocked', 'complete', False),
+            ('active', 'complete', True),
+        ):
+            with self.subTest(previous=previous_status, current=current_status), tempfile.TemporaryDirectory() as td:
+                client = _FakeClient(sample_job())
+                request = build_studio_request(client.job)
+                project_out = Path(td) / request['id']
+                previous = {'status': previous_status, 'finished': previous_status == 'complete',
+                            'commit_shas': ['a' * 40], 'usage': {'total_tokens': 777, 'runs': 1}}
+                write_production_os_result(project_out, request, previous)
+                calls = []
+                current = {'status': current_status, 'finished': current_status == 'complete',
+                           'usage': {'total_tokens': 7, 'runs': 1}}
+                def runner(request_path, output, **kwargs):
+                    calls.append(True)
+                    if continuation and len(calls) == 1:
+                        write_production_os_result(output, request, previous)
+                        return {'status': 'active', 'finished': False}
+                    return current
+                result = run_once(client, worker_id='w', output_root=Path(td),
+                                  run_project=runner, capabilities=['python'])
+                self.assertEqual(result['status'], 'completed' if current['finished'] else 'failed')
+                reported = json.loads((project_out / 'production-os-result.json').read_text())
+                self.assertEqual(reported['evidence']['pipeline_status'], current_status)
+                self.assertEqual(reported['usage'], current['usage'])
+                self.assertEqual(reported['evidence']['commit_shas'], [])
+                self.assertEqual(len(calls), 2 if continuation else 1)
+
     def test_invalid_timing_configuration_does_not_claim_job(self):
         for kwargs in ({'heartbeat_interval_seconds': math.nan},
                        {'heartbeat_interval_seconds': 0},

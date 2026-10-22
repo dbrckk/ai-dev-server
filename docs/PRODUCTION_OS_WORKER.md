@@ -172,6 +172,12 @@ before reporting completion. Transport errors while reporting completion remain
 errors; the worker does not send a contradictory failure when completion may
 already have reached the server.
 
+Each runner invocation starts without the previous `production-os-result.json`,
+including transient retries and autonomous continuations of the same task. If an
+early runner return produces no envelope, the worker writes one from its current
+summary. Correlation alone does not make an earlier execution's success, usage
+or commits current. Durable autonomy and publication checkpoints are retained.
+
 A bounded invocation (`--once` or `--cycles`) returns exit code 1 if any job fails,
 while preserving the status JSON artifact. Continuous workers wait between idle,
 paused and draining polls. Invalid heartbeat/retry timing is rejected before a

@@ -1,3 +1,10 @@
+## 2026-10-21 — owner-requested validation of the merged stack
+
+- Freshly checked worker623b1b1: all eight postmerge workflows successful. Production-OScd85b78f is the exact live Render deployment dep-dbcjdlss728c73al7810. Worker main only adds generated .ai metadata since its qualified merge.
+- Fresh full worker pytest:1,845 passed and199 subtests. Fresh isolated PostgreSQL16 server suite:1,325 passed, no skips. Six authenticated server/worker integrations passed. Actual HTTP deadline/recovery/403 checks passed; final hosted observations will be recorded in the associated PR.
+- Request one bounded existing trusted-main live diagnostic with control sequence18 after exact-head CI and merge: configured-model JSON/code smoke, operator GET authorization and wake configuration GET. No queue claim, source mutation, automatic resume or provider/budget change.
+- Point-in-time model readiness does not qualify full autonomous source delivery or sustained zero-cost capacity. Both old source objectives are obsolete; do not activate sequence42. Current-state correction: Jumpy37 was merged by dbrckk at2026-10-21T18:37:29Z as7ba62fce709f852aa1a43f4246f1ca8a142c7ad2; all three exact-merge workflows passed, including Godot validation and Android APK build. Earlier draft wording was stale. Star-list154 remains a draft; no target merge performed in this validation.
+
 ## 2026-10-21 — enforce remaining read budgets in canary warmup and monitoring
 
 - Actual HTTP reproduction: a readiness budget of 2 seconds accepted a delayed response at 3.02 seconds because the operator GET always used 30 seconds. Readiness and workflow-status reads now pass the remaining budget to the transport (capped at 30 seconds), avoid starting a minimum-one-second call with less time left, and validate finite warmup timing. Actual delayed-server checks now return timeout at 2.01/2.02 seconds for readiness/workflow status.

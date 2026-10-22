@@ -1220,14 +1220,19 @@ def run_once(
         ):
             cancel_event.set()
 
-    if capacity is None:
-        response = client.heartbeat(worker_id, active_job_keys=(key,))
-    else:
-        response = client.heartbeat(
-            worker_id,
-            active_job_keys=(key,),
-            capacity=capacity,
-        )
+    startup_heartbeat = {"active_job_keys": (key,)}
+    if capacity is not None:
+        startup_heartbeat["capacity"] = capacity
+    try:
+        response = client.heartbeat(worker_id, **startup_heartbeat)
+    except Exception:
+        # The server may have accepted activity before its response was lost.
+        # Preserve that error while clearing an execution that never started.
+        try:
+            client.heartbeat(worker_id, **{**startup_heartbeat, "active_job_keys": ()})
+        except Exception:
+            pass
+        raise
     observe_job_control(response)
 
     native_usage_owned = False

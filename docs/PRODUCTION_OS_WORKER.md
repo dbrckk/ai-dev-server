@@ -165,6 +165,12 @@ Verify that the target repository actually contains the expected commit or PR an
 
 ## Failure recovery and automated verification
 
+If the first active heartbeat fails after acknowledgment, the worker attempts an
+inactive heartbeat with the same capacity snapshot, then propagates the original
+error. Cleanup failure does not replace that error. No executor has started;
+the acknowledged job is left for normal session reconciliation without sending
+a fabricated failure/completion or replaying the active heartbeat.
+
 Local request/output preparation failures and unreadable or mismatched result
 files are reported through `/v1/jobs/fail`, followed by an inactive heartbeat.
 The worker checks the schema, workflow, task, project and repository correlation

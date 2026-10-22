@@ -158,6 +158,32 @@ class WorkerRecoveryTests(unittest.TestCase):
                          capabilities=['python'])
         self.assertNotIn('fail', [c[0] for c in client.calls])
 
+        for capacity in (None, {'providers': []}):
+            for cleanup_fails in (False, True):
+                with self.subTest(capacity=capacity, cleanup_fails=cleanup_fails):
+                    client = _FakeClient(sample_job())
+                    heartbeat = client.heartbeat
+                    lost = []
+                    def lost_startup_response(*args, **kwargs):
+                        response = heartbeat(*args, **kwargs)
+                        if kwargs.get('active_job_keys'):
+                            lost.append(True)
+                            raise ProductionOSWorkerError('startup delivery unavailable')
+                        if lost and cleanup_fails:
+                            raise ProductionOSWorkerError('cleanup unavailable')
+                        return response
+                    with tempfile.TemporaryDirectory() as td, patch.object(
+                        client, 'heartbeat', side_effect=lost_startup_response
+                    ):
+                        with self.assertRaisesRegex(ProductionOSWorkerError, '^startup delivery unavailable$'):
+                            run_once(client, worker_id='w', output_root=Path(td),
+                                     run_project=lambda *a, **kw: self.fail('must not start'),
+                                     capabilities=['python'], capacity=capacity)
+                    self.assertEqual([c[0] for c in client.calls],
+                                     ['heartbeat', 'claim', 'ack', 'heartbeat', 'heartbeat'])
+                    self.assertEqual(client.calls[-1][2], ())
+                    self.assertEqual(client.calls[-1][3], capacity)
+
     def _main(self, args, run_once_fn, **kwargs):
         return main(args, environ={'PRODUCTION_OS_URL': 'http://localhost:8787',
                                    'PRODUCTION_OS_WORKER_TOKEN': 'test'},

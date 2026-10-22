@@ -1,3 +1,24 @@
+# 2026-10-22 — clear phantom startup activity in the Actions worker
+
+- Actual authenticated proxy forwards the first active heartbeat then returns503. Baseline Actions worker propagates ProductionOSWorkerError and performs no execution,but server active_tasks remains1. A lost ACK response was checked separately:active0 already,no ACK behavior change needed. Reconnect already succeeds;the defect is missing startup cleanup.
+- On initial active-heartbeat exception,attempt one inactive heartbeat with the same capacity snapshot,then preserve/rethrow the original error even if cleanup fails. No active-heartbeat replay,fabricated fail/complete,executor start,attempt/budget increase or provider change. Actual same-job/workflow recovery after normal registration completes once;server activity returns0 before reconnect.
+- One existing uncertain-delivery test extended:four red-before/green-after combinations for capacity absent/present and cleanup succeeding/failing;original startup error retained. Full1845pytest+206subtests passed in27.31s;selected57+31subtests passed. Six actual new-worker/new-server integrations passed in4.212s. No new test functions. Native-side counterpart Production-OS291 is separately qualified (1325 PostgreSQL tests/no skips,6 integrations) and awaiting exact CI.
+- Exact-head7 Actions/3 CircleCI and postmerge qualification to be recorded in associated PR. No new hosted task/model/source-canary request,Kilo project-data activation or target-project merge. Prior290/379/inference qualifications retained below.
+
+# 2026-10-22 — native worker HTTP recovery deployed and qualified
+
+- Production-OS290 merged1b4866975b64955186411c78cd894b6f4b332982;Renderdep-dbctdjou01pc73bnhga0 LIVE at that exact commit. Actualhealth200/0.56s,ready200/0.55s/base reachable,dashboard200,protectedAPI401;no matching app/error logs09:28-09:30UTC.
+- Actual native runner previously escaped on HTML200 heartbeat without cancellation/stop;strict bounded HTTP/JSON/framing and normalized read errors now preserve existing threshold/cancellation fence. After local gateway recovery,the SAME job reconnects/completes. No POST replay or runtime budget increase.
+- Final isolated PostgreSQL16 full suite1325/no skips in124.95s;6 current-worker/new-server integrations in3.964s. Initial full-suite one-tap timing failure independently reproduced with unmodified client+150ms executor;existing fixture now waits for actual3-attempt exhaustion in one bounded continuous session. Three existing test functions changed,no new unit tests. Test container/volumes removed.
+- All4 candidate CI jobs,4 merge CI jobs+standards,and4 current-main8775b5f0 jobs passed. Main adds only .ai metadata since runtime;worker runtime remains379-qualified. Published evidence https://github.com/dbrckk/Production-OS/pull/290;local report /workspace/validation-production-os-20261022.md.
+- No hosted task/source canary/model request,provider/budget change,Kilo project-data activation or target merge in this correction. Full new-source autonomous delivery/sustained free inference remain unqualified.
+
+# 2026-10-22 — current execution receipt qualification
+
+- Worker379 merged56f4fc60a65660ee0604c1dea2590e1aef5ba262 after7 Actions/3 CircleCI passed;all3 server matrix variants passed. Actual authenticated server+real github_runner reproduced false success from a correlated old777-token/commit receipt while current run awaited capability review. Current invocation now produces its own outcome;the corrected review-pending result is unsuccessful and contains no stale usage/commit.
+- Full1845pytest+202subtests in25.37s;6 real authenticated integrations in4.196s;no new test functions. Only execution receipt removed before each invocation;durable checkpoints and journal remain. No provider/budget/source-task/target-merge change.
+- Postmerge all8 Actions and3 CircleCI passed at exact merge56f4fc60a65660ee0604c1dea2590e1aef5ba262, observed08:57UTC. Render remainscd85b78f live;firsthealthGET expired on wake,thenhealth200/0.28s,ready200/database reachable,dashboard200,protectedAPI401. Final evidence: https://github.com/dbrckk/ai-dev-server/pull/379 and /workspace/validation-production-os-20261022.md.
+
 # 2026-10-22 — reject stale execution receipts
 
 - Actual authenticated Production-OS HTTP + real github_runner awaiting-capability-review reproduction: runner returns adaptation_required, but a correlated prior complete envelope makes worker/workflow falsely completed/succeeded, carrying old777 tokens and an old commit. No model or GitHub request; portfolio boundary stubbed.

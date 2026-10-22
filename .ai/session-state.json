@@ -1,9 +1,9 @@
 {
   "version": 1,
   "updated_at": "2026-10-22",
-  "task": "Reject stale worker receipts across task retries and continuations",
-  "base_commit": "fbace1893fe0b7f44ec0697ced1bba24285a744a",
-  "branch": "fix/fresh-execution-receipt",
+  "task": "Clear phantom activity after the first Actions-worker heartbeat fails",
+  "base_commit": "c3b7b88111ba4da722afbcf81009f2a0a75c35a0",
+  "branch": "fix/worker-startup-heartbeat-cleanup",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -96,18 +96,17 @@
     "limit": "Historical counters, no hosted model inference or completed end-to-end task"
   },
   "pending": [
-    "Qualify exact-head7 Actions and3 CircleCI; review and merge",
-    "Observe postmerge checks; preserve full-autonomy/free-capacity limits"
+    "Record6 new-worker/new-server integrations and qualify exact-head7 Actions/3 CircleCI",
+    "Coordinate Production-OS291 and worker merge/postmerge live verification"
   ],
   "merged_pr": {
     "number": 240,
     "commit": "31d76cfef7e953eeea4806ec7300b4feefefb149"
   },
   "current_work": [
-    "PR #309 merged f4137d62598333b52dc1988ef8aca2c3978247fe with 7 successful exact-head workflows; bounded Godot planning context now on ai-dev-server/main",
-    "Add strict Jumpy-only settings tap guard source-code canary scenario; extend existing tests and qualify exact-head CI before triggering",
-    "After merge increment control canary sequence 33\u219234 and choose jumpy_settings_tap_guard to verify real model-generated GDScript patch (not marker file)",
-    "Review actual worker model capacity, change diff, Jumpy headless CI and PR before claiming source-code delivery. Never merge Jumpy checkpoint automatically."
+    "Production-OS290 merged1b486697,deployed live;strict native-worker HTTP errors preserve cancellation and reconnect recovery",
+    "All4 premerge,4 postmerge and4 latest-main CI jobs passed;local1325/no-skips tests+6 worker integrations passed",
+    "Worker379 receipt-freshness recovery remains qualified;no new source task/provider/budget/target merge"
   ],
   "merged_changes": [
     {
@@ -558,7 +557,7 @@
     "final_evidence": "https://github.com/dbrckk/ai-dev-server/pull/376",
     "next_priority": "Stabilize/qualify existing configured inference before a new reviewed applicable source task; no automatic retry or provider/budget change"
   },
-  "status": "Local real-server reproduction corrected; exact-head CI pending",
+  "status": "1845+206subtests and6 actual integrations passed;exact-head CI pending",
   "bounded_inference_recovery_20261022": {
     "control_sequence": 19,
     "changes": [
@@ -636,5 +635,63 @@
     "actual_integrations": "6 passed in4.196s",
     "policy": "Existing test functions extended; no new unit-test functions",
     "limits": "No model/GitHub call in reproduction; no live source task or target merge; production providers and budgets unchanged"
+  },
+  "receipt_freshness_final_20261022": {
+    "worker_pr": 379,
+    "worker_candidate": "a0cc6204a450f013fb3d548fe762da7bbee895c6",
+    "worker_merge": "56f4fc60a65660ee0604c1dea2590e1aef5ba262",
+    "baseline": "Actual authenticated server+github_runner awaiting review: adaptation_required falsely completed/succeeded using old777tokens and commit",
+    "correction": "Only execution receipt cleared before every runner invocation; fresh summary fallback; durable checkpoints/usage journal preserved",
+    "real_result": "Correct failed/review-pending;adaptation_required retained;old usage and commit absent",
+    "local_tests": "1845pytest+202subtests in25.37s;6 actual authenticated integrations in4.196s;no new test functions",
+    "premerge": "7 Actions+3 CircleCI passed;all3 server matrix variants passed",
+    "postmerge": "All8 Actions and3 CircleCI successful at56f4fc60a65660ee0604c1dea2590e1aef5ba262",
+    "render": "cd85b78f live;first health GET timed out on wake, thenhealth200/0.28s,ready200/database reachable,dashboard200,protected API401",
+    "limits": [
+      "No live source task or target merge",
+      "No provider/quota/budget change",
+      "Full autonomous source delivery/sustained free capacity remain unqualified",
+      "Kilo project-data consent pending;not activated"
+    ],
+    "receipt": "https://github.com/dbrckk/ai-dev-server/pull/379",
+    "final_observed_at": "2026-10-22T08:57:21Z"
+  },
+  "native_response_final_20261022": {
+    "server_pr": 290,
+    "candidate": "d8872c6f6065ba429f175c1a64d6e7a990cb25aa",
+    "runtime_merge": "1b4866975b64955186411c78cd894b6f4b332982",
+    "server_main": "8775b5f045c04c446ca9b4262259797be48b5c4a",
+    "correction": "Malformed/truncated/non-object/oversized HTTP responses and read/network failures use existing native cancellation/recovery;HTTP status retained on unreadable error bodies",
+    "actual_http": "Before:JSONDecodeError escaped,native not cancelled/stopped,job acked. After:cancellation+handler stop before abandoned;gateway repair/reconnect completed SAME job",
+    "local_full_suite": "1325 passed,no skips,in124.95s with isolated PostgreSQL16;container/volumes removed",
+    "initial_full_failure": "1324pass/1 timing failure in release51 actionable-production test;unmodified baseline client+150ms executor reproduced2/3attempts at6polls;existing fixture now uses bounded completion condition in one continuous session,3/3attempts",
+    "worker_integration": "6 passed in3.964s against current worker and new server source",
+    "test_policy": "Three existing functions changed;no new unit-test functions",
+    "premerge_ci": "4 successful jobs at candidate;run39754744290",
+    "postmerge_ci": "4 successful jobs at merge;run39755458048;standards39755459687 success",
+    "latest_main_ci": "4 successful jobs at8775b5f0;run39755542730",
+    "render_deploy": "dep-dbctdjou01pc73bnhga0 live at exact runtime_merge",
+    "post_live_http": "health200/0.56s,ready200/0.55s,database reachable,dashboard200,protected API401",
+    "bounded_logs": "App/error-level query09:28-09:30UTC:0matches,hasMore=false",
+    "qualified_at": "2026-10-22T09:31:00Z",
+    "receipt": "https://github.com/dbrckk/Production-OS/pull/290",
+    "limits": [
+      "No new hosted source task/model request or target-project merge",
+      "No provider/quota/budget change",
+      "Full new-source autonomy and sustained free inference remain unqualified",
+      "Kilo project-data consent remains pending;no activation"
+    ]
+  },
+  "startup_cleanup_recovery_20261022": {
+    "baseline": "Proxy forwards first active heartbeat then503:original error,0executions,butserver active1",
+    "fix": "Best-effort inactive heartbeat using same capacity;original exception rethrown even if cleanup fails;no active request replay/fail/complete",
+    "actual_fixed": "server active0 before reconnect;normal session recovery completes same job/workflow with1 executor start total",
+    "ack_control": "Lost ACK response already leaves active0;no ACK change",
+    "pytest": "1845 passed+206subtests in27.31s",
+    "selected": "57 passed+31subtests",
+    "test_policy": "One existing function extended;no new unit tests",
+    "native_counterpart": "Production-OS291:move initial activation inside existing cleanup;1325+6integrations passed;CI pending",
+    "limits": "No provider/budget/hosted source task/target merge;Kilo project-data consent pending",
+    "worker_server_integration": "6 passed in4.212s against both cleanup corrections"
   }
 }

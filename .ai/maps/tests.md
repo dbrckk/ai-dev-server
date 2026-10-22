@@ -9583,6 +9583,12 @@ def test_invalid_timing_configuration_does_not_claim_job(self)
 ⋮----
 def test_uncertain_completion_delivery_does_not_report_opposite_outcome(self)
 ⋮----
+heartbeat = client.heartbeat
+lost = []
+def lost_startup_response(*args, **kwargs)
+⋮----
+response = heartbeat(*args, **kwargs)
+⋮----
 def _main(self, args, run_once_fn, **kwargs)
 ⋮----
 def test_bounded_failure_returns_nonzero_and_preserves_status_artifact(self)

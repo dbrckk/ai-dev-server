@@ -231,29 +231,26 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-22T08:45:44Z
+Generated: 2026-10-22T11:21:38Z
 
 ### Git
 - Branch: `main`
-- Head: `56f4fc60a656`
-- Commit date: 2026-10-22T04:45:35-04:00
-- Commit: fix(worker): reject stale results across execution attempts
+- Head: `9d81a338de95`
+- Commit date: 2026-10-22T07:21:28-04:00
+- Commit: fix: clean Actions worker activity after startup heartbeat failure (#380)
 - Tracked files: 875
 
 ### Recently changed files
 - `docs/PRODUCTION_OS_WORKER.md`
-- `integration_tests/test_production_os_server_integration.py`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_worker_recovery.py`
+- `integration_tests/test_production_os_server_integration.py`
 - `control/production-os-diagnostics-kick.json`
 - `studio/production_os_provider_config.py`
 - `tests/test_production_os_live_diagnostics.py`
 - `studio/generic_model.py`
 - `studio/production_os_live_diagnostics.py`
 - `tests/test_generic_model_capacity.py`
-- `studio/production_os_resume_objectives.py`
-- `studio/production_os_worker_canary.py`
-- `tests/test_production_os_worker_canary.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -23268,9 +23268,12 @@ jobs = control_payload.get("jobs")
 ⋮----
 state = jobs.get(key)
 ⋮----
-response = client.heartbeat(worker_id, active_job_keys=(key,))
+startup_heartbeat = {"active_job_keys": (key,)}
 ⋮----
-response = client.heartbeat(
+response = client.heartbeat(worker_id, **startup_heartbeat)
+⋮----
+# The server may have accepted activity before its response was lost.
+# Preserve that error while clearing an execution that never started.
 ⋮----
 native_usage_owned = False
 ⋮----
@@ -23308,6 +23311,8 @@ stop_heartbeat = threading.Event()
 heartbeat_errors: list[str] = []
 ⋮----
 def keep_job_alive()
+⋮----
+response = client.heartbeat(
 ⋮----
 heartbeat_thread = threading.Thread(
 ⋮----
@@ -36497,6 +36502,12 @@ reported = json.loads((project_out / 'production-os-result.json').read_text())
 def test_invalid_timing_configuration_does_not_claim_job(self)
 ⋮----
 def test_uncertain_completion_delivery_does_not_report_opposite_outcome(self)
+⋮----
+heartbeat = client.heartbeat
+lost = []
+def lost_startup_response(*args, **kwargs)
+⋮----
+response = heartbeat(*args, **kwargs)
 ⋮----
 def _main(self, args, run_once_fn, **kwargs)
 ⋮----

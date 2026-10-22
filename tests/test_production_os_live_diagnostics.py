@@ -178,6 +178,16 @@ class LiveDiagnosticsTests(unittest.TestCase):
         self.assertTrue(configure(env))
         models = [p['model'] for p in json.loads(env['STUDIO_PROVIDERS_JSON'])]
         self.assertEqual(models, ['nvidia/nemotron-3.5-lightning-30b-a3b', 'poolside/laguna-xs-2.1'])
+        # Fresh hosted code proof qualifies Lightning; keep an unavailable
+        # Poolside fallback from preceding it in the actual default registry.
+        from provider_router import load_providers
+        with patch.dict('os.environ', {**env, 'STUDIO_API_KEY': 'fixture'}, clear=True):
+            ordered = load_providers()
+        self.assertEqual([p.model_for('implementation') for p in ordered], [
+            'nvidia/nemotron-3-super-120b-a12b',
+            'nvidia/nemotron-3.5-lightning-30b-a3b',
+            'poolside/laguna-xs-2.1',
+        ])
         cloudflare_env = {
             'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1',
             'STUDIO_CLOUDFLARE_FREE_TIER_ONLY': '1',

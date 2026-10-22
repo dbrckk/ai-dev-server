@@ -177,17 +177,58 @@ class LiveDiagnosticsTests(unittest.TestCase):
         env = {'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1/'}
         self.assertTrue(configure(env))
         models = [p['model'] for p in json.loads(env['STUDIO_PROVIDERS_JSON'])]
-        self.assertEqual(models, ['nvidia/nemotron-3.5-lightning-30b-a3b', 'poolside/laguna-xs-2.1'])
-        # Fresh hosted code proof qualifies Lightning; keep an unavailable
-        # Poolside fallback from preceding it in the actual default registry.
+        self.assertEqual(models, ['poolside/laguna-xs-2.1'])
+        # The qualified Lightning model is the primary, not an unnecessary
+        # duplicate fallback with the same API key and model. Preserve the
+        # secondary named provider for operator-selected alternatives.
         from provider_router import load_providers
         with patch.dict('os.environ', {**env, 'STUDIO_API_KEY': 'fixture'}, clear=True):
             ordered = load_providers()
         self.assertEqual([p.model_for('implementation') for p in ordered], [
-            'nvidia/nemotron-3-super-120b-a12b',
             'nvidia/nemotron-3.5-lightning-30b-a3b',
             'poolside/laguna-xs-2.1',
         ])
+        # A deliberately customized model is never overwritten by defaults;
+        # the verified Lightning model remains available as its fallback.
+        selected = {
+            'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1',
+            'STUDIO_MODEL': 'nvidia/nemotron-3-super-120b-a12b',
+        }
+        self.assertTrue(configure(selected))
+        self.assertEqual(selected['STUDIO_MODEL'], 'nvidia/nemotron-3-super-120b-a12b')
+        self.assertEqual([p['model'] for p in json.loads(selected['STUDIO_PROVIDERS_JSON'])], [
+            'nvidia/nemotron-3.5-lightning-30b-a3b',
+            'poolside/laguna-xs-2.1',
+        ])
+        with patch.dict('os.environ', {**selected, 'STUDIO_API_KEY': 'fixture'}, clear=True):
+            self.assertEqual([p.model_for('implementation') for p in load_providers()], [
+                'nvidia/nemotron-3-super-120b-a12b',
+                'nvidia/nemotron-3.5-lightning-30b-a3b',
+                'poolside/laguna-xs-2.1',
+            ])
+        # A non-default implementation model also merits a Lightning fallback.
+        overridden = {
+            'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1',
+            'STUDIO_CODE_MODEL': 'operator-selected-code-model',
+        }
+        self.assertTrue(configure(overridden))
+        self.assertEqual(json.loads(overridden['STUDIO_PROVIDERS_JSON'])[0]['model'],
+                         'nvidia/nemotron-3.5-lightning-30b-a3b')
+        # All hosted entrypoints must share the tested primary default; this
+        # does not alter explicit repository/organization variables.
+        from pathlib import Path
+        for filename in (
+            'production-os-actions-worker.yml',
+            'production-os-live-diagnostics.yml',
+            'mobile-studio.yml',
+            'provider-preview.yml',
+        ):
+            source = (Path(__file__).resolve().parents[1]
+                      / '.github' / 'workflows' / filename).read_text()
+            self.assertIn(
+                "vars.STUDIO_MODEL || 'nvidia/nemotron-3.5-lightning-30b-a3b'",
+                source,
+            )
         cloudflare_env = {
             'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1',
             'STUDIO_CLOUDFLARE_FREE_TIER_ONLY': '1',
@@ -197,11 +238,11 @@ class LiveDiagnosticsTests(unittest.TestCase):
         self.assertTrue(configure(cloudflare_env))
         self.assertNotIn('sensitive-cloudflare-key', cloudflare_env['STUDIO_PROVIDERS_JSON'])
         configured = json.loads(cloudflare_env['STUDIO_PROVIDERS_JSON'])
-        self.assertEqual(len(configured), 3)
-        self.assertEqual(configured[2]['model'], '@cf/zai-org/glm-4.7-flash')
-        self.assertEqual(configured[2]['key_env'], 'CLOUDFLARE_API_TOKEN')
+        self.assertEqual(len(configured), 2)
+        self.assertEqual(configured[1]['model'], '@cf/zai-org/glm-4.7-flash')
+        self.assertEqual(configured[1]['key_env'], 'CLOUDFLARE_API_TOKEN')
         self.assertEqual(
-            configured[2]['base'],
+            configured[1]['base'],
             'https://api.cloudflare.com/client/v4/accounts/' + 'a' * 32 + '/ai/v1',
         )
         for excluded in (
@@ -217,7 +258,7 @@ class LiveDiagnosticsTests(unittest.TestCase):
             }
             disabled.update(excluded)
             self.assertTrue(configure(disabled))
-            self.assertEqual(len(json.loads(disabled['STUDIO_PROVIDERS_JSON'])), 2)
+            self.assertEqual(len(json.loads(disabled['STUDIO_PROVIDERS_JSON'])), 1)
         for env in ({'STUDIO_API_BASE': 'https://another.example/v1'},
                     {'STUDIO_API_BASE': 'https://integrate.api.nvidia.com/v1', 'STUDIO_PROVIDERS_JSON': '[]'}):
             before = dict(env)

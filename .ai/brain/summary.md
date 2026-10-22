@@ -3,7 +3,7 @@
 - Index mode: incremental
 - Files indexed: 654
 - Files reparsed this run: 2
-- Symbols: 4766
+- Symbols: 4769
 - Internal import edges: 1400
 - Impacted files: 10
 - Selected tests: 10
@@ -14,11 +14,11 @@
 
 ## Highest-density symbol files
 - tests/test_release_candidate_search.py: 95 symbols
-- tests/test_production_os_worker_runtime.py: 92 symbols
+- tests/test_production_os_worker_runtime.py: 94 symbols
 - tests/test_replacement_ci_policy.py: 62 symbols
 - tests/test_studio.py: 60 symbols
 - tests/test_architecture_reputation_policy_migration.py: 44 symbols
-- studio/production_os_worker.py: 42 symbols
+- studio/production_os_worker.py: 43 symbols
 - tests/test_architecture_replacement_planner.py: 42 symbols
 - tests/test_journeys.py: 41 symbols
 - tests/test_multi_engine_orchestrator.py: 35 symbols

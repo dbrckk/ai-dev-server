@@ -247,18 +247,19 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-22T11:21:38Z
+Generated: 2026-10-22T13:39:31Z
 
 ### Git
 - Branch: `main`
-- Head: `9d81a338de95`
-- Commit date: 2026-10-22T07:21:28-04:00
-- Commit: fix: clean Actions worker activity after startup heartbeat failure (#380)
+- Head: `a49b116ba462`
+- Commit date: 2026-10-22T09:38:44-04:00
+- Commit: fix(worker): stop superseded workflow generations (#381)
 - Tracked files: 875
 
 ### Recently changed files
 - `docs/PRODUCTION_OS_WORKER.md`
 - `studio/production_os_worker.py`
+- `tests/test_production_os_worker_runtime.py`
 - `tests/test_production_os_worker_recovery.py`
 - `integration_tests/test_production_os_server_integration.py`
 - `control/production-os-diagnostics-kick.json`

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "generated_by": "dbrckk/repo-brain",
-  "base": "56f4fc60a65660ee0604c1dea2590e1aef5ba262",
-  "head": "9d81a338de955c2b3ee99c4b49cb8a7de87fd426",
+  "base": "9d81a338de955c2b3ee99c4b49cb8a7de87fd426",
+  "head": "a49b116ba4621f9e9991bbd5bbf03ea514e9b4cd",
   "index_mode": "incremental",
   "changed_files": [
     {
@@ -14,13 +14,13 @@
       "status": "M"
     },
     {
-      "path": "tests/test_production_os_worker_recovery.py",
+      "path": "tests/test_production_os_worker_runtime.py",
       "status": "M"
     }
   ],
   "changed_source_files": [
     "studio/production_os_worker.py",
-    "tests/test_production_os_worker_recovery.py"
+    "tests/test_production_os_worker_runtime.py"
   ],
   "impacted_files": [
     "integration_tests/test_production_os_server_integration.py",
@@ -321,31 +321,37 @@
       "name": "observe_job_control",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 1207
+      "line": 1208
+    },
+    {
+      "name": "finish_stale_job",
+      "kind": "function",
+      "file": "studio/production_os_worker.py",
+      "line": 1229
     },
     {
       "name": "retain_native_usage",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 1240
+      "line": 1257
     },
     {
       "name": "report_local_failure",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 1254
+      "line": 1271
     },
     {
       "name": "keep_job_alive",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 1311
+      "line": 1328
     },
     {
       "name": "main",
       "kind": "function",
       "file": "studio/production_os_worker.py",
-      "line": 1579
+      "line": 1600
     },
     {
       "name": "request",
@@ -1248,172 +1254,172 @@
       "line": 843
     },
     {
+      "name": "stale_heartbeat",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 877
+    },
+    {
+      "name": "stale_runner",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 885
+    },
+    {
       "name": "test_run_once_reports_runner_exception_and_clears_active_job",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 869
+      "line": 907
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 872
+      "line": 910
     },
     {
       "name": "test_failed_envelope_is_enriched_with_ci_diagnostic_when_sha_exists",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 895
+      "line": 933
     },
     {
       "name": "test_failed_envelope_ci_enrichment_is_optional_without_token",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 934
+      "line": 972
     },
     {
       "name": "test_run_once_retries_transient_runner_error_then_completes",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 950
+      "line": 988
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 954
+      "line": 992
     },
     {
       "name": "test_run_once_retries_explicit_retry_summary_then_completes",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 981
+      "line": 1019
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 985
+      "line": 1023
     },
     {
       "name": "test_transient_error_after_autonomous_progress_keeps_retry_budget",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1016
+      "line": 1054
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1020
+      "line": 1058
     },
     {
       "name": "test_retry_summary_after_autonomous_progress_is_retried",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1050
+      "line": 1088
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1054
+      "line": 1092
     },
     {
       "name": "test_transient_retry_after_progress_stays_bounded",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1074
+      "line": 1112
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1078
+      "line": 1116
     },
     {
       "name": "test_run_once_does_not_retry_non_transient_runner_error",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1098
+      "line": 1136
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1102
+      "line": 1140
     },
     {
       "name": "test_capacity_snapshot_prefers_authenticated_omniroute",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1121
+      "line": 1159
     },
     {
       "name": "Snapshot",
       "kind": "class",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1124
+      "line": 1162
     },
     {
       "name": "fetch",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1134
+      "line": 1172
     },
     {
       "name": "test_capacity_snapshot_fails_closed_without_authenticated_usage",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1155
+      "line": 1193
     },
     {
       "name": "Snapshot",
       "kind": "class",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1158
+      "line": 1196
     },
     {
       "name": "test_client_heartbeat_posts_capacity_snapshot",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1177
+      "line": 1215
     },
     {
       "name": "opener",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1180
+      "line": 1218
     },
     {
       "name": "test_run_once_writes_project_token_envelope_before_execution",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1218
+      "line": 1256
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1227
+      "line": 1265
     },
     {
       "name": "test_project_token_envelope_is_capped_by_live_global_remaining_capacity",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1261
-    },
-    {
-      "name": "runner",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1270
-    },
-    {
-      "name": "test_long_autonomous_progress_can_complete_beyond_old_eight_cycle_limit",
-      "kind": "function",
-      "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1304
+      "line": 1299
     },
     {
       "name": "runner",
@@ -1422,34 +1428,46 @@
       "line": 1308
     },
     {
-      "name": "test_runtime_budget_fences_every_stage_and_reports_checkpoint_limit",
+      "name": "test_long_autonomous_progress_can_complete_beyond_old_eight_cycle_limit",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1326
+      "line": 1342
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1331
+      "line": 1346
+    },
+    {
+      "name": "test_runtime_budget_fences_every_stage_and_reports_checkpoint_limit",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 1364
+    },
+    {
+      "name": "runner",
+      "kind": "function",
+      "file": "tests/test_production_os_worker_runtime.py",
+      "line": 1369
     },
     {
       "name": "test_resource_exhaustion_with_retry_hint_does_not_reexecute_without_quota",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1352
+      "line": 1390
     },
     {
       "name": "runner",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1356
+      "line": 1394
     },
     {
       "name": "test_invalid_worker_runtime_limit_is_rejected_before_claim",
       "kind": "function",
       "file": "tests/test_production_os_worker_runtime.py",
-      "line": 1379
+      "line": 1417
     }
   ],
   "selected_tests": [

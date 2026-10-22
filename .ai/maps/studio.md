@@ -17408,14 +17408,23 @@ job = client.claim(worker_id, capabilities)
 key = str(job.get("key") or "")
 ⋮----
 cancel_event = threading.Event()
+stale_event = threading.Event()
 ⋮----
 def observe_job_control(response)
+⋮----
+stale_keys = response.get("stale_job_keys")
 ⋮----
 control_payload = response.get("control")
 ⋮----
 jobs = control_payload.get("jobs")
 ⋮----
 state = jobs.get(key)
+⋮----
+def finish_stale_job()
+⋮----
+# The server already invalidated this generation. Clear activity
+# without reporting an outcome or acknowledging an operator cancel.
+kwargs = {"active_job_keys": ()}
 ⋮----
 startup_heartbeat = {"active_job_keys": (key,)}
 ⋮----
@@ -17438,8 +17447,6 @@ def report_local_failure(exc, stage, request=None, duration=0.0)
 ⋮----
 # Report only the exception type: messages may contain credentials.
 envelope = {
-⋮----
-kwargs = {"active_job_keys": ()}
 ⋮----
 request = None
 ⋮----

@@ -1,12 +1,12 @@
 # Change impact
 
-Base: c3b7b88111ba4da722afbcf81009f2a0a75c35a0
-Head: 9d81a338de955c2b3ee99c4b49cb8a7de87fd426
+Base: 22fde26134d73f08b35fa4c152e5cf4852965865
+Head: a49b116ba4621f9e9991bbd5bbf03ea514e9b4cd
 
 ## Changed files
 - M docs/PRODUCTION_OS_WORKER.md
 - M studio/production_os_worker.py
-- M tests/test_production_os_worker_recovery.py
+- M tests/test_production_os_worker_runtime.py
 
 ## Affected areas
 - docs

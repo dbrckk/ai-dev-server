@@ -9783,6 +9783,20 @@ cancel_event = kwargs["cancel_event"]
 ⋮----
 final = client.calls[-1]
 ⋮----
+# A superseded generation is not an operator cancellation. Fence only
+# this job, without delivering an outcome or acknowledging a cancel.
+⋮----
+stale_client = _FakeClient(sample_job())
+counts = {"active": 0, "runs": 0}
+⋮----
+def stale_heartbeat(worker_id, *, active_job_keys=(), **kwargs)
+⋮----
+threshold = 1 if stage == "startup" else 2
+⋮----
+def stale_runner(request_path, out, **kwargs)
+⋮----
+result = run_once(stale_client, worker_id="ai-dev-1", output_root=Path(td),
+⋮----
 def test_run_once_reports_runner_exception_and_clears_active_job(self)
 ⋮----
 def test_failed_envelope_is_enriched_with_ci_diagnostic_when_sha_exists(self)

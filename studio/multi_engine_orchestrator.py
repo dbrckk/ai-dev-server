@@ -6,6 +6,7 @@ import os
 import re
 from pathlib import Path
 import sys
+import tempfile
 
 from core import StudioError, request_check
 from orchestrator import load_report, run_project as run_flutter_project
@@ -52,16 +53,21 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
         canary_req=json.loads(Path(request_path).read_text())
     except (OSError,json.JSONDecodeError):
         raise StudioError('Project request is unreadable') from None
-    if bounded_source_contract(canary_req) is not None:
+    source_runner = (
+        run_bounded_source if bounded_source_contract(canary_req) is not None
+        else run_jumpy_source_repair if jumpy_source_repair_contract(canary_req) is not None
+        else None
+    )
+    if source_runner is not None:
         checked = request_check(canary_req)
-        return run_bounded_source(checked, project_out, Path(work),
-                                  checkpoint_observer=checkpoint_observer)
-    if jumpy_source_repair_contract(canary_req) is not None:
-        verified_repair = request_check(canary_req)
-        return run_jumpy_source_repair(
-            verified_repair, project_out, Path(work),
-            checkpoint_observer=checkpoint_observer,
-        )
+        # The persistent goal loop reuses work after a model/API failure.
+        # Restore each source attempt into an empty owned directory; durable
+        # publication evidence remains under project_out for later resumption.
+        work_root = Path(work)
+        work_root.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="approved-source-", dir=work_root) as source_work:
+            return source_runner(checked, project_out, Path(source_work),
+                                 checkpoint_observer=checkpoint_observer)
     if jum_review_canary_contract(canary_req) is not None:
         verified_canary=request_check(canary_req)
         return run_jumpy_review_canary(

@@ -261,25 +261,25 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-23T12:46:37Z
+Generated: 2026-10-23T17:50:55Z
 
 ### Git
 - Branch: `main`
-- Head: `11a40ea0c814`
-- Commit date: 2026-10-23T08:46:27-04:00
-- Commit: fix: preserve approved source contract across workflow retries (#389)
+- Head: `057a1dafe707`
+- Commit date: 2026-10-23T13:50:45-04:00
+- Commit: fix: isolate approved source workspaces across retries (#390)
 - Tracked files: 875
 
 ### Recently changed files
+- `studio/multi_engine_orchestrator.py`
+- `tests/test_multi_engine_orchestrator.py`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_worker_runtime.py`
 - `control/production-os-worker-canary.json`
 - `studio/generic_repository.py`
 - `studio/production_os_bounded_source_repair.py`
 - `studio/production_os_source_tasks.py`
-- `tests/test_multi_engine_orchestrator.py`
 - `control/production-os-diagnostics-kick.json`
-- `tests/test_production_os_worker_recovery.py`
 
 ### Project signals
 - No common build descriptor detected

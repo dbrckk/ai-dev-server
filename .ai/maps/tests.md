@@ -8256,6 +8256,10 @@ request_path = root / "request.json"
 def execute_lane(_request, output, work, *_args)
 def continue_goal(work)
 ⋮----
+shared_work = root / "first"
+⋮----
+marker = shared_work / "caller-owned.txt"
+⋮----
 result = continue_goal(root / "first")
 ⋮----
 result = continue_goal(root / f"resume-{index}")

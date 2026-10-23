@@ -14714,9 +14714,13 @@ def run_project(request_path,project_out,work,runner,deadline,clock,baseline_sha
 ⋮----
 canary_req=json.loads(Path(request_path).read_text())
 ⋮----
-checked = request_check(canary_req)
+source_runner = (
 ⋮----
-verified_repair = request_check(canary_req)
+checked = request_check(canary_req)
+# The persistent goal loop reuses work after a model/API failure.
+# Restore each source attempt into an empty owned directory; durable
+# publication evidence remains under project_out for later resumption.
+work_root = Path(work)
 ⋮----
 verified_canary=request_check(canary_req)
 ⋮----

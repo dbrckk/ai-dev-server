@@ -344,6 +344,7 @@
         "studio/godot_model.py",
         "studio/godot_preview.py",
         "studio/godot_visual_qa.py",
+        "studio/multi_engine_orchestrator.py",
         "studio/native_qa.py",
         "studio/notification_qa.py",
         "studio/omniroute_capacity.py",
@@ -386,7 +387,7 @@
         "tests/test_strict_task_claim_store.py",
         "tests/test_task_lease.py"
       ],
-      "in_degree": 117,
+      "in_degree": 118,
       "out_degree": 3,
       "path": "tests/test_studio.py"
     },
@@ -1727,6 +1728,28 @@
     },
     {
       "dependencies": [
+        "studio/agents/orchestrator.py",
+        "studio/core.py",
+        "studio/generic_project.py",
+        "studio/orchestrator.py",
+        "studio/production_os_bounded_source_repair.py",
+        "studio/production_os_jumpy_source_repair.py",
+        "studio/production_os_review_canary.py",
+        "studio/production_os_source_tasks.py",
+        "studio/stage_registry.py",
+        "tests/test_studio.py"
+      ],
+      "dependents": [
+        "studio/autonomous_project.py",
+        "studio/github_runner.py",
+        "tests/test_multi_engine_orchestrator.py"
+      ],
+      "in_degree": 3,
+      "out_degree": 10,
+      "path": "studio/multi_engine_orchestrator.py"
+    },
+    {
+      "dependencies": [
         "studio/atomic_file.py"
       ],
       "dependents": [
@@ -1829,27 +1852,6 @@
       "in_degree": 4,
       "out_degree": 8,
       "path": "studio/github_goal_store.py"
-    },
-    {
-      "dependencies": [
-        "studio/agents/orchestrator.py",
-        "studio/core.py",
-        "studio/generic_project.py",
-        "studio/orchestrator.py",
-        "studio/production_os_bounded_source_repair.py",
-        "studio/production_os_jumpy_source_repair.py",
-        "studio/production_os_review_canary.py",
-        "studio/production_os_source_tasks.py",
-        "studio/stage_registry.py"
-      ],
-      "dependents": [
-        "studio/autonomous_project.py",
-        "studio/github_runner.py",
-        "tests/test_multi_engine_orchestrator.py"
-      ],
-      "in_degree": 3,
-      "out_degree": 9,
-      "path": "studio/multi_engine_orchestrator.py"
     },
     {
       "dependencies": [
@@ -2249,7 +2251,7 @@
       "path": "studio/queue.py"
     }
   ],
-  "edge_count": 2086,
+  "edge_count": 2087,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 642,
   "schema_version": 1

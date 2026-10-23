@@ -1,18 +1,18 @@
 # Change impact
 
-Base: 6bfea8b64e3f09b391cd1f506a92cb049ffa2681
-Head: 11a40ea0c81497a84f2bc1b3ba778af4ef950d5e
+Base: 4bfbffd80110e2d319df920c4cd3acdad85f3b16
+Head: 057a1dafe707265cf686976dac4af4b88b4c4911
 
 ## Changed files
-- M studio/production_os_worker.py
-- M tests/test_production_os_worker_runtime.py
+- M studio/multi_engine_orchestrator.py
+- M tests/test_multi_engine_orchestrator.py
 
 ## Affected areas
 - studio
 - tests
 
 ## Related test candidates
-- tests/test_production_os_worker.py
+- tests/test_multi_engine_orchestrator.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

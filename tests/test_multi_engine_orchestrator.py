@@ -425,6 +425,8 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                     def restore(self, work):
                         file = work / source_path
                         file.parent.mkdir(parents=True, exist_ok=True)
+                        if file.exists():
+                            raise StudioError("Approved source workspace not empty")
                         file.write_text(published["source"])
                         return published["sha"], {"source_sha": published["sha"]}
                     def restore_approved_source(self, work, path):
@@ -451,7 +453,8 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                 request_path = root / "request.json"
                 request_path.write_text(json.dumps(source_request))
                 def execute_lane(_request, output, work, *_args):
-                    return lane.run(source_request, output, Path(work))
+                    return run_project(_request, output, work, lambda *a: None,
+                                       100, lambda: 0)
                 def continue_goal(work):
                     return run_persistent_project(
                         request_path, out, str(work), lambda *a: None,
@@ -459,9 +462,22 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                         run_once=execute_lane, max_cycles=3, max_attempts=4,
                     )
                 with patch.object(lane, "GitHub"), patch.object(lane, "GenericRepository", Repository), patch.object(lane, "ask", return_value=(model_reply, {"model": "fixture"})) as model, patch.object(lane, "wait_for_exact_commit_ci") as ci:
+                    shared_work = root / "first"
+                    shared_work.mkdir()
+                    marker = shared_work / "caller-owned.txt"
+                    marker.write_text("preserve")
+                    model.side_effect = StudioError("Generic model call quota timed out")
+                    with self.assertRaisesRegex(StudioError, "quota timed out"):
+                        execute_lane(str(request_path), out, str(shared_work))
+                    self.assertEqual(marker.read_text(), "preserve")
+                    self.assertEqual(published["count"], 0)
+                    model.side_effect = None
+                    model.reset_mock()
                     result = continue_goal(root / "first")
                     self.assertEqual(result["status"], "blocked")
                     self.assertEqual(model.call_count, 1)
+                    self.assertEqual(marker.read_text(), "preserve")
+                    self.assertEqual(list(shared_work.iterdir()), [marker])
                     if source_request is worktree_request:
                         self.assertEqual(published["handoff"], published["sha"])
                     ci.assert_not_called()

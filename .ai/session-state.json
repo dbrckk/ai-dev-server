@@ -2,8 +2,14 @@
   "version": 1,
   "updated_at": "2026-10-23T11:36:57.142361+00:00",
   "task": "Qualify bounded autonomous Production-OS worktree Git-ref repair",
-  "base_commit": "e5ee6a0a54996c0bf516b3759953717c1ecb8e15",
-  "branch": "fix/preserve-source-retry-contract",
+  "base_commit": "4bfbffd80110e2d319df920c4cd3acdad85f3b16",
+  "branch": "fix/source-retry-workspace",
+  "source_workspace_recovery": {
+    "problem": "Pilot42 model timeout left a restored file in shared work; following three cycles failed Approved source workspace not empty",
+    "fix": "Per-attempt owned temporary directory for approved bounded/Jumpy source lanes; caller files and durable project_out checkpoint preserved",
+    "verification": "Extended existing lifecycle regression reproduces baseline failure then passes all11 orchestrator tests;6 real authenticated server integrations passed4.39s",
+    "remaining": "Complete full suite and remote CI before infrastructure merge. Original source already merged via297; permission recovery302 and independent source CI passed; fresh autonomous source objective remains needed."
+  },
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",

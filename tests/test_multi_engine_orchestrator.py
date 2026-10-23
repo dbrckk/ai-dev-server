@@ -345,6 +345,30 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                 apply_model_edit(source, rejected, task)
         with self.assertRaises(StudioError):
             apply_model_edit(updated, proposal, task)
+        worktree_task = TASKS["production_os_worktree_git_ref"]
+        worktree_source = "def _slug(value, *, limit=32):\n" + worktree_task.old_line + "\n    return text[:limit]\n"
+        worktree_request = {
+            **request, "target_repo": worktree_task.repo,
+            "brief": instruction(42, worktree_task.task_id),
+        }
+        self.assertEqual(bounded_contract(worktree_request)[1], worktree_task)
+        changed_line = worktree_task.old_line + '.replace(".", "-")'
+        self.assertEqual(
+            apply_model_edit(worktree_source, {"replacement_line": changed_line}, worktree_task),
+            worktree_source.replace(worktree_task.old_line, changed_line),
+        )
+        for suffix in ('.replace(".", "")', '.replace("..", "-")', '.strip(".")'):
+            with self.assertRaises(StudioError):
+                apply_model_edit(worktree_source, {
+                    "replacement_line": worktree_task.old_line + suffix,
+                }, worktree_task)
+        from generic_repository import GenericRepository
+        reviewed = GenericRepository(None, worktree_task.repo, "mp-" + "b" * 24)
+        self.assertTrue(reviewed._approved_source_path(worktree_task.path))
+        self.assertFalse(reviewed._approved_source_path("src/production_os/control_plane.py"))
+        self.assertFalse(reviewed._approved_source_path(".github/workflows/ci.yml"))
+        self.assertFalse(GenericRepository(None, "other/repo", "mp-" + "b" * 24)
+                         ._approved_source_path(worktree_task.path))
         with tempfile.TemporaryDirectory() as td, patch(
             "multi_engine_orchestrator.run_bounded_source"
         ) as source_repair:
@@ -383,6 +407,8 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
         from execution_checkpoint import load as load_checkpoint
         cases = (
             (bounded_lane, request, task.path, source, proposal),
+            (bounded_lane, worktree_request, worktree_task.path, worktree_source,
+             {"replacement_line": changed_line}),
             (jumpy_lane, exact, "scripts/integrations.gd",
              'func share_score(score: int, daily: bool = false) -> void:\n'
              '\tvar text = "Score"\n\tDisplayServer.clipboard_set(text)\n'
@@ -413,6 +439,10 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                         return self.publish(base, work, message)
                     def ensure_pull_request(self, **kwargs):
                         assert kwargs["expected_sha"] == published["sha"]
+                    def request_trusted_review_handoff(self, sha):
+                        assert sha == published["sha"]
+                        published["handoff"] = sha
+                        return {"status": "accepted"}
                     def await_trusted_review(self, sha):
                         return review["pr"]
 
@@ -432,6 +462,8 @@ class MultiEngineOrchestratorTests(unittest.TestCase):
                     result = continue_goal(root / "first")
                     self.assertEqual(result["status"], "blocked")
                     self.assertEqual(model.call_count, 1)
+                    if source_request is worktree_request:
+                        self.assertEqual(published["handoff"], published["sha"])
                     ci.assert_not_called()
                     model.reset_mock()
                     review["pr"] = {"number": 7, "url": f"https://github.com/{source_request['target_repo']}/pull/7"}

@@ -20,12 +20,20 @@ TRUSTED_REVIEW_TARGETS = frozenset({
     "dbrckk/Jumpy",
     "dbrckk/star-list",
     "dbrckk/Ai-trading",
+    "dbrckk/Production-OS",
 })
 
 class GenericRepository:
     def __init__(self,github,repo:str,project_id:str):
         self.github=github; self.repo=repo; self.project_id=project_id; self.branch="studio/"+project_id
         self.default_branch=None
+
+    def _approved_source_path(self, path: str) -> bool:
+        from production_os_source_tasks import TASKS
+        return editable(path) and (
+            path.startswith("scripts/")
+            or any(task.repo == self.repo and task.path == path for task in TASKS.values())
+        )
 
     def _reject_reserved_generic_branch(self) -> None:
         """Only the reviewed source lane may write an approved task branch.
@@ -109,7 +117,7 @@ class GenericRepository:
         operator-approved source lane must not request hundreds of unrelated
         blobs, spend quota reading them or publish incidental file changes.
         """
-        if not editable(path) or not path.startswith("scripts/"):
+        if not self._approved_source_path(path):
             raise StudioError("Approved source path rejected")
         metadata = self.github.get("")
         if (not isinstance(metadata, dict) or metadata.get("private") is not False
@@ -165,7 +173,7 @@ class GenericRepository:
     def publish_approved_source(self, base_sha: str, root: Path, path: str,
                                 message: str) -> str:
         """Publish only the approved file, verify the branch and exact diff."""
-        if (not editable(path) or not path.startswith("scripts/")
+        if (not self._approved_source_path(path)
                 or not isinstance(base_sha, str)
                 or not re.fullmatch(r"[a-f0-9]{40}", base_sha)):
             raise StudioError("Approved publication source invalid")

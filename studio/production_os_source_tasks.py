@@ -19,8 +19,35 @@ class SourceTask:
     objective: str
     workflow_path: str
     required_steps: tuple[str, ...]
+    second_argument: str | None = None
 
 TASKS = {
+    "production_os_worktree_git_ref": SourceTask(
+        task_id="production_os_worktree_git_ref",
+        repo="dbrckk/Production-OS",
+        path="src/production_os/worktree_contract.py",
+        function="_slug",
+        old_line='    text = re.sub(r"-+", "-", text).strip("-.").lower()',
+        method="replace",
+        argument=".",
+        second_argument="-",
+        objective=(
+            "Fix invalid Git worktree branch names produced by identifiers containing "
+            "consecutive dots or a workflow segment ending in .lock. In _slug, "
+            "normalize periods to hyphens after the existing normalization assignment. "
+            "Preserve length limits, fallback, digest inputs, attempt isolation and all "
+            "other source bytes. Change only src/production_os/worktree_contract.py. "
+            "Require real Git worktree creation and independent exact-commit CI. "
+            "Open a draft PR only; do not merge or deploy the resulting source change."
+        ),
+        workflow_path=".github/workflows/production-os-source-qualification.yml",
+        required_steps=(
+            "Compile",
+            "Existing worktree and runner checks",
+            "Create real worktrees for adversarial identifiers",
+            "Build distribution",
+        ),
+    ),
     "starlist_mcp_www_guard": SourceTask(
         task_id="starlist_mcp_www_guard",
         repo="dbrckk/star-list",

@@ -288,3 +288,20 @@ Generated: 2026-10-22T17:33:04Z
 
 ## Current capacity-accounting follow-up (2026-10-09)
 - On the real generic provider path, a response containing `total_tokens` but omitting `prompt_tokens` and `completion_tokens` could previously settle reserved model tokens at zero and undercount monthly quotas. Branch `fix/provider-total-token-usage-ledger` normalizes aggregate and split counters, defaulting to the admitted estimate for missing usage. Requires existing CI, and main-head verification before merging.
+
+
+### Qualification finale292/382 — 2026-10-22T18:38:50.977093+00:00
+
+Les deux corrections sont fusionnées. Serveur :4 jobs avant fusion,4 après fusion,standards et4 sur le dernier main réussis. Worker :7 Actions et3 CircleCI avant fusion,8 Actions et3 CircleCI après fusion réussis. Render dep-dbd2en3bc2fs7392gkkg live au runtime4e76d405f5283c15c126ee00eb7d1cd96b6f3172. HTTP frais :healthz200 (22,81s),readyz200, dashboard200,API sans authentification401.
+
+Main synchronisés en préservant les observations antérieures. Les changements worker375/383/384 sont pris en compte :23 tests existants et31 sous-tests réussis,6 intégrations authentifiées réussies en4,441s. Les trois scénarios HTTP d’annulation initiale réussissent sur ces versions finales :aucun démarrage ni sortie,annulation acquittée,activité nulle. Diagnostic hébergé39826731824 réussi ; résultat détaillé par fournisseur non inspecté durant cette reprise. Aucun nouveau travail source lancé. Autonomie complète sur un nouvel objectif,capacité gratuite durable et réveil immédiat restent non qualifiés.
+
+
+### Reprise de la qualification autonome — 2026-10-22T18:53:59.187676+00:00
+
+Lecture détaillée du diagnostic39826731824 (exécuté17:55UTC) :Lightning répond et réussit le smoke de code borné384 tokens ;accès opérateur ready. Super reste indisponible404, Laguna indisponible. Cela ne démontre pas une capacité gratuite durable. Vérification du code main actuel Jumpy/star-list avec le précontrôle existant :les quatre scénarios source sont déjà résolus et retournent scenario_no_longer_applicable. Aucun nouveau job créé. Une nouvelle tâche réelle doit être sélectionnée et revue avant la qualification complète ;choix de cible demandé à l’utilisateur.
+
+
+## Bounded Production-OS source pilot
+
+Actual Git rejects worktree identifiers containing consecutive dots or workflow segments ending in .lock. Proposed task permits only a period-to-hyphen normalization in _slug. Target runtime is intentionally unchanged for the model-authored trial. Trusted handoff restricts the exact one-file assignment and requests read-only independent source CI. Seven handoff functional cases passed; the real Git gate fails on baseline and passes eight worktrees with a temporary acceptance fixture. Worker full suite1845 tests+212 subtests passed in26.31s. Hosted execution remains pending infrastructure CI.

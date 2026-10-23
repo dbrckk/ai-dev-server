@@ -261,24 +261,27 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-22T17:33:04Z
+Generated: 2026-10-23T05:57:40Z
 
 ### Git
 - Branch: `main`
-- Head: `9e1136981eb7`
-- Commit date: 2026-10-22T13:32:51-04:00
-- Commit: fix(worker): stop retrying permanent provider HTTP failures (#383)
+- Head: `e124a6829083`
+- Commit date: 2026-10-23T01:57:30-04:00
+- Commit: feat(worker): register bounded Production-OS Git-ref repair (#387)
 - Tracked files: 875
 
 ### Recently changed files
+- `studio/generic_repository.py`
+- `studio/production_os_bounded_source_repair.py`
+- `studio/production_os_source_tasks.py`
+- `tests/test_multi_engine_orchestrator.py`
+- `control/production-os-diagnostics-kick.json`
 - `studio/production_os_worker.py`
 - `tests/test_production_os_worker_recovery.py`
 - `docs/PRODUCTION_OS_WORKER.md`
 - `tests/test_production_os_worker_runtime.py`
-- `studio/generic_repository.py`
 - `studio/multi_engine_orchestrator.py`
 - `tests/test_generic_repository_pull_request.py`
-- `tests/test_multi_engine_orchestrator.py`
 
 ### Project signals
 - No common build descriptor detected

@@ -113,8 +113,8 @@ request.json
 ## File: production-os-diagnostics-kick.json
 ```json
 {
-  "sequence": 20,
-  "reason": "Verify qualified Lightning before unavailable Poolside in automatic NVIDIA fallback order; preserve explicit provider configuration and existing budgets",
+  "sequence": 21,
+  "reason": "Verify current configured inference providers and operator access after worker permanent-HTTP retry fix; bounded smoke only, no job restart",
   "target": "current-configured-providers",
   "worker_resume_allowed": false
 }

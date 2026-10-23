@@ -17,32 +17,6 @@
       "tests": [],
       "useful": [
         "studio/autonomous_project.py",
-        "studio/github_runner.py",
-        "studio/godot_preview.py",
-        "studio/multi_engine_orchestrator.py",
-        "tests/test_autonomous_project.py",
-        "tests/test_github_runner_persistent.py",
-        "tests/test_godot_preview.py",
-        "tests/test_multi_engine_orchestrator.py"
-      ]
-    },
-    {
-      "rejected": [],
-      "task": "Stop exhausted Godot preview continuations and retain authoritative checkpoint SHA",
-      "terms": [
-        "authoritative",
-        "checkpoint",
-        "continuations",
-        "exhausted",
-        "godot",
-        "preview",
-        "retain",
-        "sha",
-        "stop"
-      ],
-      "tests": [],
-      "useful": [
-        "studio/autonomous_project.py",
         "studio/core.py",
         "studio/github_runner.py",
         "studio/godot_model.py",
@@ -1400,6 +1374,26 @@
         "studio/production_os_worker.py",
         "tests/test_production_os_worker_recovery.py"
       ]
+    },
+    {
+      "rejected": [],
+      "task": "Qualify bounded autonomous Production-OS worktree Git-ref repair",
+      "terms": [
+        "autonomous",
+        "bounded",
+        "git-ref",
+        "production-os",
+        "qualify",
+        "repair",
+        "worktree"
+      ],
+      "tests": [],
+      "useful": [
+        "studio/generic_repository.py",
+        "studio/production_os_bounded_source_repair.py",
+        "studio/production_os_source_tasks.py",
+        "tests/test_multi_engine_orchestrator.py"
+      ]
     }
   ],
   "generated_by": "dbrckk/repo-brain-learning-v1",
@@ -1640,12 +1634,16 @@
       "studio/capability_registry_review.py": 4,
       "studio/capability_review.py": 4,
       "studio/ci_diagnostics.py": 4,
+      "studio/generic_repository.py": 4,
       "studio/github_pr_gate.py": 4,
       "studio/github_runner.py": 4,
+      "studio/production_os_bounded_source_repair.py": 4,
+      "studio/production_os_source_tasks.py": 4,
       "studio/production_os_worker.py": 4,
       "tests/test_capability_registry_review.py": 4,
       "tests/test_capability_review.py": 4,
       "tests/test_ci_diagnostics.py": 4,
+      "tests/test_multi_engine_orchestrator.py": 4,
       "tests/test_production_os_result_contract.py": 4,
       "tests/test_production_os_worker_runtime.py": 4
     },
@@ -1710,9 +1708,13 @@
     "bounded": {
       "studio/agents/adapters.py": 4,
       "studio/generic_model.py": 4,
+      "studio/generic_repository.py": 4,
+      "studio/production_os_bounded_source_repair.py": 4,
       "studio/production_os_live_diagnostics.py": 4,
+      "studio/production_os_source_tasks.py": 4,
       "tests/test_codex_output_retention.py": 4,
       "tests/test_generic_model_capacity.py": 4,
+      "tests/test_multi_engine_orchestrator.py": 4,
       "tests/test_production_os_live_diagnostics.py": 4
     },
     "branch": {
@@ -2723,6 +2725,12 @@
       "tests/test_repository_branch_identity.py": 8,
       "tests/test_studio.py": 4
     },
+    "git-ref": {
+      "studio/generic_repository.py": 4,
+      "studio/production_os_bounded_source_repair.py": 4,
+      "studio/production_os_source_tasks.py": 4,
+      "tests/test_multi_engine_orchestrator.py": 4
+    },
     "github": {
       "studio/generic_model.py": 8,
       "studio/generic_project.py": 8,
@@ -3377,7 +3385,7 @@
       "studio/core.py": 12,
       "studio/generic_model.py": 24,
       "studio/generic_project.py": 20,
-      "studio/generic_repository.py": 8,
+      "studio/generic_repository.py": 12,
       "studio/generic_verify.py": 4,
       "studio/github_provider_health_store.py": 4,
       "studio/github_runner.py": 24,
@@ -3386,9 +3394,11 @@
       "studio/godot_runtime.py": 4,
       "studio/multi_engine_orchestrator.py": 4,
       "studio/omniroute_capacity.py": 4,
+      "studio/production_os_bounded_source_repair.py": 4,
       "studio/production_os_live_diagnostics.py": 12,
       "studio/production_os_provider_config.py": 8,
       "studio/production_os_resume_objectives.py": 8,
+      "studio/production_os_source_tasks.py": 4,
       "studio/production_os_worker.py": 40,
       "studio/production_os_worker_canary.py": 12,
       "tests/test_agent_router.py": 4,
@@ -3407,7 +3417,7 @@
       "tests/test_goal_loop.py": 8,
       "tests/test_godot_model.py": 8,
       "tests/test_godot_runtime.py": 4,
-      "tests/test_multi_engine_orchestrator.py": 4,
+      "tests/test_multi_engine_orchestrator.py": 8,
       "tests/test_omniroute_capacity.py": 4,
       "tests/test_production_os_actions_worker_workflow.py": 40,
       "tests/test_production_os_live_diagnostics.py": 8,
@@ -3474,8 +3484,11 @@
     "qualify": {
       "studio/generic_model.py": 4,
       "studio/generic_project.py": 4,
-      "studio/generic_repository.py": 4,
-      "studio/github_runner.py": 4
+      "studio/generic_repository.py": 8,
+      "studio/github_runner.py": 4,
+      "studio/production_os_bounded_source_repair.py": 4,
+      "studio/production_os_source_tasks.py": 4,
+      "tests/test_multi_engine_orchestrator.py": 4
     },
     "quality": {
       "studio/asset_forge_bridge.py": 4,
@@ -3668,6 +3681,12 @@
       "studio/production_os_worker.py": 4,
       "tests/test_production_os_actions_worker_workflow.py": 4,
       "tests/test_production_os_remote_asset_capability.py": 4
+    },
+    "repair": {
+      "studio/generic_repository.py": 4,
+      "studio/production_os_bounded_source_repair.py": 4,
+      "studio/production_os_source_tasks.py": 4,
+      "tests/test_multi_engine_orchestrator.py": 4
     },
     "repin": {
       "tests/test_asset_forge_installer.py": 4,
@@ -4472,6 +4491,12 @@
       "studio/production_os_resume_objectives.py": 4,
       "studio/production_os_worker_canary.py": 4,
       "tests/test_production_os_worker_canary.py": 4
+    },
+    "worktree": {
+      "studio/generic_repository.py": 4,
+      "studio/production_os_bounded_source_repair.py": 4,
+      "studio/production_os_source_tasks.py": 4,
+      "tests/test_multi_engine_orchestrator.py": 4
     },
     "writes.": {
       "studio/generic_model.py": 4,

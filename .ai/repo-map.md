@@ -3473,8 +3473,8 @@ initial_prompt: |
 ## File: control/production-os-diagnostics-kick.json
 ````json
 {
-  "sequence": 20,
-  "reason": "Verify qualified Lightning before unavailable Poolside in automatic NVIDIA fallback order; preserve explicit provider configuration and existing budgets",
+  "sequence": 21,
+  "reason": "Verify current configured inference providers and operator access after worker permanent-HTTP retry fix; bounded smoke only, no job restart",
   "target": "current-configured-providers",
   "worker_resume_allowed": false
 }
@@ -15629,6 +15629,8 @@ class GenericRepository
 ⋮----
 def __init__(self,github,repo:str,project_id:str)
 ⋮----
+def _approved_source_path(self, path: str) -> bool
+⋮----
 def _reject_reserved_generic_branch(self) -> None
 ⋮----
 """Only the reviewed source lane may write an approved task branch.
@@ -22381,6 +22383,10 @@ checkpoint = advance_checkpoint(new_checkpoint(req["id"], "generic", base_sha),
 ⋮----
 sha = base_sha
 ⋮----
+# A direct PR creation may succeed with a PAT. The independent
+# qualification workflow still needs its trusted dispatch.
+handoff = repo.request_trusted_review_handoff(sha)
+⋮----
 pr = repo.await_trusted_review(sha)
 ⋮----
 denied = any(status in str(exc) for status in ("HTTP 401", "HTTP 403"))
@@ -22776,6 +22782,7 @@ argument: str
 objective: str
 workflow_path: str
 required_steps: tuple[str, ...]
+second_argument: str | None = None
 ⋮----
 TASKS = {
 ⋮----
@@ -35157,6 +35164,14 @@ request = {
 proposal = {"replacement_line": task.old_line + '.removeprefix("www.")'}
 updated = apply_model_edit(source, proposal, task)
 ⋮----
+worktree_task = TASKS["production_os_worktree_git_ref"]
+worktree_source = "def _slug(value, *, limit=32):\n" + worktree_task.old_line + "\n    return text[:limit]\n"
+worktree_request = {
+⋮----
+changed_line = worktree_task.old_line + '.replace(".", "-")'
+⋮----
+reviewed = GenericRepository(None, worktree_task.repo, "mp-" + "b" * 24)
+⋮----
 root = Path(td); req_path = root / "request.json"
 ⋮----
 observed = run_project(str(req_path), root / "out", str(root / "work"),
@@ -35188,6 +35203,7 @@ def restore_approved_source(self, work, path)
 def publish(self, base, work, *_args)
 def publish_approved_source(self, base, work, path, message)
 def ensure_pull_request(self, **kwargs)
+def request_trusted_review_handoff(self, sha)
 def await_trusted_review(self, sha)
 ⋮----
 review = {"pr": None}

@@ -777,12 +777,7 @@ def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
     if not all((repository, task, workflow_id, workflow_task_id, job_key)):
         raise ValueError("Production-OS job correlation is incomplete")
 
-    brief = (
-        _brief(task, final_goal)
-        + _upstream_guidance(handoff)
-        + _retry_guidance(handoff)
-        + _asset_forge_guidance(handoff)
-    )[:24000]
+    brief = _brief(task, final_goal)[:24000]
     request = {
         "id": _project_id(
             job_key,
@@ -806,6 +801,16 @@ def build_studio_request(job: dict[str, Any]) -> dict[str, Any]:
     )
     if repository_branch_id is not None:
         request["repository_branch_id"] = repository_branch_id
+    # Approved source contracts and published checkpoints bind the exact brief.
+    # Retry diagnostics remain in the job handoff; appending them here would
+    # change both the approved contract and the durable request fingerprint.
+    from production_os_bounded_source_repair import contract as bounded_contract
+    from production_os_jumpy_source_repair import contract as jumpy_contract
+    if bounded_contract(request) is None and jumpy_contract(request) is None:
+        request["brief"] = (
+            brief + _upstream_guidance(handoff) + _retry_guidance(handoff)
+            + _asset_forge_guidance(handoff)
+        )[:24000]
     tool_contracts = handoff.get("tool_contracts")
     if isinstance(tool_contracts, dict) and tool_contracts:
         request["tool_contracts"] = dict(tool_contracts)

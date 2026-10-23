@@ -308,3 +308,10 @@ Lecture détaillée du diagnostic39826731824 (exécuté17:55UTC) :Lightning rép
 ## Bounded Production-OS source pilot
 
 Actual Git rejects worktree identifiers containing consecutive dots or workflow segments ending in .lock. Proposed task permits only a period-to-hyphen normalization in _slug. Target runtime is intentionally unchanged for the model-authored trial. Trusted handoff restricts the exact one-file assignment and requests read-only independent source CI. Seven handoff functional cases passed; the real Git gate fails on baseline and passes eight worktrees with a temporary acceptance fixture. Worker full suite1845 tests+212 subtests passed in26.31s. Hosted execution remains pending infrastructure CI.
+
+
+## Pilot42 actual outcome and durable retry correction (2026-10-23)
+
+The model published 39c7453d535873c2e0cce284301de78f723221b2 on Production-OS studio/mp-7f6bd4bb55826074ad315ee8. Independent local checks passed54 existing tests and8 real Git worktrees. Target handoff39910344503 failed with a GitHub permission error before PR creation; canary39909908437 failed accurately. No independent target CI or end-to-end success is claimed. Four model calls:12616 reported tokens,21230 accounted including one estimated call; automatic retries consumed zero new model calls.
+
+Actual retry artifacts retained the source checkpoint, but worker request enrichment changed the exact approved brief. The adapter now recognizes approved bounded/Jumpy contracts before enriching ordinary briefs. Diagnostics remain in the original handoff. Offline replay of the actual archived pilot fails on baseline attempt2 and succeeds on all3 attempts with the correction, retaining original fingerprint, SHA and source bytes; CI proof is reset to pending, never fabricated. Full unittest discovery:1784 passed in21.615s. Source PR must remain unmerged. GitHub repository Actions PR-creation permission requires operator resolution before trusted handoff recovery. Original canary failure remains historical even after recovery.

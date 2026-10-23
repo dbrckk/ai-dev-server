@@ -3502,10 +3502,10 @@ initial_prompt: |
 ## File: control/production-os-worker-canary.json
 ````json
 {
-    "sequence": 41,
-    "repository": "dbrckk/star-list",
+    "sequence": 42,
+    "repository": "dbrckk/Production-OS",
     "scenario": "approved_source_repair",
-    "task_id": "starlist_mcp_www_guard"
+    "task_id": "production_os_worktree_git_ref"
 }
 ````
 
@@ -23161,9 +23161,13 @@ workflow_id = str(payload.get("workflow_id") or "").strip()
 workflow_task_id = str(payload.get("workflow_task_id") or "").strip()
 job_key = str(job.get("key") or "").strip()
 ⋮----
-brief = (
+brief = _brief(task, final_goal)[:24000]
 request = {
 repository_branch_id = _repository_branch_id(
+⋮----
+# Approved source contracts and published checkpoints bind the exact brief.
+# Retry diagnostics remain in the job handoff; appending them here would
+# change both the approved contract and the durable request fingerprint.
 ⋮----
 tool_contracts = handoff.get("tool_contracts")
 ⋮----
@@ -36668,6 +36672,8 @@ second = sample_job()
 third = sample_job()
 ⋮----
 requests = [build_studio_request(job) for job in (first, second, third)]
+⋮----
+approved = [build_studio_request(job) for job in (first, second, third)]
 ⋮----
 def test_workflow_checkpoint_identity_isolated_between_tasks_and_generations(self)
 ⋮----

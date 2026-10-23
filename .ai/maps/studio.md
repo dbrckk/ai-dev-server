@@ -17310,9 +17310,13 @@ workflow_id = str(payload.get("workflow_id") or "").strip()
 workflow_task_id = str(payload.get("workflow_task_id") or "").strip()
 job_key = str(job.get("key") or "").strip()
 ⋮----
-brief = (
+brief = _brief(task, final_goal)[:24000]
 request = {
 repository_branch_id = _repository_branch_id(
+⋮----
+# Approved source contracts and published checkpoints bind the exact brief.
+# Retry diagnostics remain in the job handoff; appending them here would
+# change both the approved contract and the durable request fingerprint.
 ⋮----
 tool_contracts = handoff.get("tool_contracts")
 ⋮----

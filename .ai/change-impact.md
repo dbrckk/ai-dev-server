@@ -1,20 +1,18 @@
 # Change impact
 
-Base: e5ee6a0a54996c0bf516b3759953717c1ecb8e15
-Head: e124a68290833aa0db4e198482777b0015dd8ee8
+Base: 6bfea8b64e3f09b391cd1f506a92cb049ffa2681
+Head: 11a40ea0c81497a84f2bc1b3ba778af4ef950d5e
 
 ## Changed files
-- M studio/generic_repository.py
-- M studio/production_os_bounded_source_repair.py
-- M studio/production_os_source_tasks.py
-- M tests/test_multi_engine_orchestrator.py
+- M studio/production_os_worker.py
+- M tests/test_production_os_worker_runtime.py
 
 ## Affected areas
 - studio
 - tests
 
 ## Related test candidates
-- No direct filename-based test match detected.
+- tests/test_production_os_worker.py
 
 ## Agent guidance
 - Read this file before broad repository exploration.

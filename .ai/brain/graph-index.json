@@ -1210,6 +1210,36 @@
       "path": "studio/agents/orchestrator.py"
     },
     {
+      "dependencies": [
+        "studio/atomic_file.py",
+        "studio/ci_diagnostics.py",
+        "studio/core.py",
+        "studio/file_lock.py",
+        "studio/github_runner.py",
+        "studio/native_model_usage.py",
+        "studio/omniroute_capacity.py",
+        "studio/production_os_bounded_source_repair.py",
+        "studio/production_os_jumpy_source_repair.py",
+        "studio/stage_registry.py",
+        "tests/test_multi_engine_orchestrator.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "integration_tests/test_production_os_server_integration.py",
+        "scripts/production-os-live-resume-proof.py",
+        "tests/test_mobile_validation_contract.py",
+        "tests/test_production_os_local_e2e.py",
+        "tests/test_production_os_remote_asset_capability.py",
+        "tests/test_production_os_worker.py",
+        "tests/test_production_os_worker_cli.py",
+        "tests/test_production_os_worker_recovery.py",
+        "tests/test_production_os_worker_runtime.py"
+      ],
+      "in_degree": 9,
+      "out_degree": 12,
+      "path": "studio/production_os_worker.py"
+    },
+    {
       "dependencies": [],
       "dependents": [
         "scripts/production-os-live-resume-proof.py",
@@ -1263,34 +1293,6 @@
       "in_degree": 15,
       "out_degree": 4,
       "path": "studio/capacity_ledger.py"
-    },
-    {
-      "dependencies": [
-        "studio/atomic_file.py",
-        "studio/ci_diagnostics.py",
-        "studio/core.py",
-        "studio/file_lock.py",
-        "studio/github_runner.py",
-        "studio/native_model_usage.py",
-        "studio/omniroute_capacity.py",
-        "studio/stage_registry.py",
-        "tests/test_multi_engine_orchestrator.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "integration_tests/test_production_os_server_integration.py",
-        "scripts/production-os-live-resume-proof.py",
-        "tests/test_mobile_validation_contract.py",
-        "tests/test_production_os_local_e2e.py",
-        "tests/test_production_os_remote_asset_capability.py",
-        "tests/test_production_os_worker.py",
-        "tests/test_production_os_worker_cli.py",
-        "tests/test_production_os_worker_recovery.py",
-        "tests/test_production_os_worker_runtime.py"
-      ],
-      "in_degree": 9,
-      "out_degree": 10,
-      "path": "studio/production_os_worker.py"
     },
     {
       "dependencies": [
@@ -1612,6 +1614,31 @@
         "studio/execution_checkpoint.py",
         "studio/generic_model.py",
         "studio/generic_repository.py",
+        "studio/production_os_source_tasks.py",
+        "studio/run.py",
+        "studio/source_delivery_checkpoint.py",
+        "studio/target_ci_verification.py",
+        "tests/test_studio.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "studio/autonomous_project.py",
+        "studio/github_runner.py",
+        "studio/multi_engine_orchestrator.py",
+        "studio/production_os_worker.py",
+        "tests/test_multi_engine_orchestrator.py",
+        "tests/test_production_os_worker_runtime.py"
+      ],
+      "in_degree": 6,
+      "out_degree": 10,
+      "path": "studio/production_os_bounded_source_repair.py"
+    },
+    {
+      "dependencies": [
+        "studio/core.py",
+        "studio/execution_checkpoint.py",
+        "studio/generic_model.py",
+        "studio/generic_repository.py",
         "studio/production_os_worker_canary.py",
         "studio/run.py",
         "studio/source_delivery_checkpoint.py",
@@ -1624,9 +1651,10 @@
         "studio/autonomous_project.py",
         "studio/github_runner.py",
         "studio/multi_engine_orchestrator.py",
+        "studio/production_os_worker.py",
         "tests/test_multi_engine_orchestrator.py"
       ],
-      "in_degree": 4,
+      "in_degree": 5,
       "out_degree": 11,
       "path": "studio/production_os_jumpy_source_repair.py"
     },
@@ -1674,29 +1702,6 @@
       "in_degree": 13,
       "out_degree": 1,
       "path": "studio/replacement_ci_policy.py"
-    },
-    {
-      "dependencies": [
-        "studio/core.py",
-        "studio/execution_checkpoint.py",
-        "studio/generic_model.py",
-        "studio/generic_repository.py",
-        "studio/production_os_source_tasks.py",
-        "studio/run.py",
-        "studio/source_delivery_checkpoint.py",
-        "studio/target_ci_verification.py",
-        "tests/test_studio.py",
-        "tests/test_unified_routing_score.py"
-      ],
-      "dependents": [
-        "studio/autonomous_project.py",
-        "studio/github_runner.py",
-        "studio/multi_engine_orchestrator.py",
-        "tests/test_multi_engine_orchestrator.py"
-      ],
-      "in_degree": 4,
-      "out_degree": 10,
-      "path": "studio/production_os_bounded_source_repair.py"
     },
     {
       "dependencies": [
@@ -1868,6 +1873,26 @@
     },
     {
       "dependencies": [
+        "studio/core.py",
+        "tests/test_multi_engine_orchestrator.py",
+        "tests/test_unified_routing_score.py"
+      ],
+      "dependents": [
+        "studio/generic_repository.py",
+        "studio/multi_engine_orchestrator.py",
+        "studio/production_os_bounded_source_repair.py",
+        "studio/production_os_worker_canary.py",
+        "tests/test_github_runner_persistent.py",
+        "tests/test_multi_engine_orchestrator.py",
+        "tests/test_production_os_worker_canary.py",
+        "tests/test_production_os_worker_runtime.py"
+      ],
+      "in_degree": 8,
+      "out_degree": 3,
+      "path": "studio/production_os_source_tasks.py"
+    },
+    {
+      "dependencies": [
         "studio/capability_registry.py",
         "studio/core.py",
         "studio/goal_engine.py",
@@ -2005,21 +2030,21 @@
     {
       "dependencies": [
         "studio/core.py",
-        "tests/test_multi_engine_orchestrator.py",
-        "tests/test_unified_routing_score.py"
+        "studio/execution_checkpoint.py",
+        "studio/stage_registry.py"
       ],
       "dependents": [
-        "studio/generic_repository.py",
-        "studio/multi_engine_orchestrator.py",
+        "studio/autonomous_project.py",
+        "studio/github_runner.py",
         "studio/production_os_bounded_source_repair.py",
-        "studio/production_os_worker_canary.py",
+        "studio/production_os_jumpy_source_repair.py",
         "tests/test_github_runner_persistent.py",
-        "tests/test_multi_engine_orchestrator.py",
-        "tests/test_production_os_worker_canary.py"
+        "tests/test_production_os_worker_recovery.py",
+        "tests/test_production_os_worker_runtime.py"
       ],
       "in_degree": 7,
       "out_degree": 3,
-      "path": "studio/production_os_source_tasks.py"
+      "path": "studio/source_delivery_checkpoint.py"
     },
     {
       "dependencies": [
@@ -2222,27 +2247,9 @@
       "in_degree": 7,
       "out_degree": 2,
       "path": "studio/queue.py"
-    },
-    {
-      "dependencies": [
-        "studio/core.py",
-        "tests/test_multi_engine_orchestrator.py",
-        "tests/test_studio.py"
-      ],
-      "dependents": [
-        "studio/architecture_replacement_merge.py",
-        "studio/architecture_replacement_postmerge.py",
-        "studio/architecture_replacement_pr_validator.py",
-        "studio/architecture_replacement_rollback.py",
-        "studio/architecture_reputation_policy_github_collect.py",
-        "tests/test_architecture_replacement_persist.py"
-      ],
-      "in_degree": 6,
-      "out_degree": 3,
-      "path": "studio/architecture_replacement_persist.py"
     }
   ],
-  "edge_count": 2081,
+  "edge_count": 2086,
   "generated_by": "dbrckk/repo-brain-v7-graph",
   "node_count": 642,
   "schema_version": 1

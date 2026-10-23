@@ -142,10 +142,10 @@ request.json
 ## File: production-os-worker-canary.json
 ```json
 {
-    "sequence": 41,
-    "repository": "dbrckk/star-list",
+    "sequence": 42,
+    "repository": "dbrckk/Production-OS",
     "scenario": "approved_source_repair",
-    "task_id": "starlist_mcp_www_guard"
+    "task_id": "production_os_worktree_git_ref"
 }
 ```
 

@@ -9712,6 +9712,8 @@ third = sample_job()
 ⋮----
 requests = [build_studio_request(job) for job in (first, second, third)]
 ⋮----
+approved = [build_studio_request(job) for job in (first, second, third)]
+⋮----
 def test_workflow_checkpoint_identity_isolated_between_tasks_and_generations(self)
 ⋮----
 another_task = sample_job()

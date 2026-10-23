@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "updated_at": "2026-10-22T18:53:59.187676+00:00",
+  "updated_at": "2026-10-23T11:36:57.142361+00:00",
   "task": "Qualify bounded autonomous Production-OS worktree Git-ref repair",
   "base_commit": "e5ee6a0a54996c0bf516b3759953717c1ecb8e15",
-  "branch": "feat/production-os-source-qualification",
+  "branch": "fix/preserve-source-retry-contract",
   "completed": [
     "Correct GitHub-Actions-only queue-health artifact and job-summary sinks to be conditional when existing real-server integration harness executes the same preflight without those environment paths (CI 38458123656)",
     "Persist bounded queue-health.json artifact and GitHub Summary on idle worker preflight, marking historical capacity exhausted failures separately from current availability",
@@ -558,7 +558,7 @@
     "final_evidence": "https://github.com/dbrckk/ai-dev-server/pull/376",
     "next_priority": "Stabilize/qualify existing configured inference before a new reviewed applicable source task; no automatic retry or provider/budget change"
   },
-  "status": "Infrastructure prepared;actual Git baseline fails for double dots;8 fixture worktrees pass;hosted model task not yet launched",
+  "status": "Pilot42 published model commit; review permission blocked; retry contract fix under qualification",
   "bounded_inference_recovery_20261022": {
     "control_sequence": 19,
     "changes": [
@@ -921,5 +921,23 @@
     "qualification": "blocked:no applicable registered source objective;no new task launched",
     "next": "Choose and review a new real source objective;require model-authored source change,verified draft PR and independent exact-commit CI",
     "capacity": "Single successful diagnostic does not establish sustained free capacity"
+  },
+  "pilot42_resume": {
+    "source_sha": "39c7453d535873c2e0cce284301de78f723221b2",
+    "worker_run": 39909928906,
+    "handoff_run": 39910344503,
+    "canary_run": 39909908437,
+    "result": "blocked; no target PR or independent CI",
+    "root_cause": "worker request adapter appended retry guidance to exact approved brief, invalidating contract and checkpoint fingerprint",
+    "fix": "Keep exact bounded/Jumpy source brief; diagnostics retained in original job handoff; ordinary requests retain enrichment",
+    "verification": "Actual archived request/checkpoint/goal/source replay fails on baseline at retry2 and accepts all3 attempts with fix; CI evidence remains pending. 1784 unittest tests passed21.615s.",
+    "next": "Qualify and merge worker correction; user must resolve GitHub handoff PR permission; rerun handoff for existing source commit; revalidate source CI before any completion claim",
+    "usage": {
+      "calls": 4,
+      "reported_tokens": 12616,
+      "accounted_tokens": 21230,
+      "estimated_calls": 1,
+      "automatic_retry_model_calls": 0
+    }
   }
 }

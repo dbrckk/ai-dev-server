@@ -385,6 +385,21 @@ class ProductionOSWorkerRuntimeTests(unittest.TestCase):
             requests[0]["production_os"], requests[1]["production_os"],
         )
 
+        from production_os_source_tasks import TASKS, instruction
+        from production_os_bounded_source_repair import contract
+        from source_delivery_checkpoint import request_fingerprint
+        for task_id, task in TASKS.items():
+            with self.subTest(approved_task=task_id):
+                for job in (first, second, third):
+                    job["payload"]["managed_project_id"] = "managed-source"
+                    job["payload"]["handoff"]["repository"] = task.repo
+                    job["payload"]["handoff"]["task"] = instruction(42, task_id)
+                approved = [build_studio_request(job) for job in (first, second, third)]
+                self.assertTrue(all(contract(request) is not None for request in approved))
+                self.assertEqual(len({request_fingerprint(request) for request in approved}), 1)
+                self.assertEqual(approved[1]["brief"], instruction(42, task_id))
+                self.assertIn("retry_context", second["payload"]["handoff"])
+
     def test_workflow_checkpoint_identity_isolated_between_tasks_and_generations(self):
         first = sample_job()
         first["payload"]["workflow_attempt"] = 1

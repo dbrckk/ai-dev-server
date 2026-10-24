@@ -332,7 +332,7 @@ def run_persistent_project(
         atomic_write_text(context_path, json.dumps(items, ensure_ascii=False, sort_keys=True, indent=2) + "\n")
         return items
 
-    cycle_control = {"capacity_exhausted": False}
+    cycle_control = {"capacity_exhausted": False, "capacity_reason": None}
 
     def execute_cycle(_goal_state):
         previous = os.environ.get("STUDIO_LEARNED_CONTEXT_PATH")
@@ -360,12 +360,25 @@ def run_persistent_project(
                         },
                     }}
                 detail = str(exc)
-                if (
-                    isinstance(exc, (StudioError, NativeCapacityError))
-                    and "project_envelope_exhausted" in detail
-                ):
-                    cycle_control["capacity_exhausted"] = True
-                    return {"yield_run": True}
+                if isinstance(exc, (StudioError, NativeCapacityError)):
+                    if "project_envelope_exhausted" in detail:
+                        cycle_control["capacity_exhausted"] = True
+                        cycle_control["capacity_reason"] = "project_envelope_exhausted"
+                        return {"yield_run": True}
+                    # The provider pool cannot accept an additional model
+                    # call now. Another immediate goal cycle cannot create
+                    # quota or reset a provider circuit breaker. Preserve the
+                    # original sealed goal attempt budget for a *later* run.
+                    if (
+                        detail.startswith(
+                            "No provider remains: insufficient pooled token quota "
+                            "or no healthy provider"
+                        )
+                        or detail.startswith("Generic model call quota timed out")
+                    ):
+                        cycle_control["capacity_exhausted"] = True
+                        cycle_control["capacity_reason"] = "provider_capacity_unavailable"
+                        return {"yield_run": True}
                 raise
         finally:
             if previous is None: os.environ.pop("STUDIO_LEARNED_CONTEXT_PATH", None)
@@ -450,7 +463,11 @@ def run_persistent_project(
             "blocked_reason": result.get("blocked_reason"),
         })
         if cycle_control["capacity_exhausted"] and result.get("status") == "active":
-            result = {**result, "transient_capacity_exhausted": True}
+            result = {
+                **result,
+                "transient_capacity_exhausted": True,
+                "transient_capacity_reason": cycle_control["capacity_reason"],
+            }
         emit_telemetry("goal_run_finished", goal_id=goal_id, status=result.get("status"))
         try:
             compact_telemetry(Path(runtime_paths["STUDIO_TELEMETRY_PATH"]))

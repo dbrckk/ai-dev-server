@@ -215,33 +215,73 @@ class AutonomousProjectTests(unittest.TestCase):
 
 
     def test_project_capacity_exhaustion_yields_without_burning_attempt_budget(self):
-        with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
-            calls = {"n": 0}
+        from native_model_usage import NativeCapacityError
 
-            from native_model_usage import NativeCapacityError
-
-            def run_once(*args):
-                calls["n"] += 1
-                raise NativeCapacityError(
+        # Exercise genuine production failure strings from the canary
+        # artifacts, not a pretend successful provider or increased quota.
+        for failure, reason in (
+            (
+                NativeCapacityError(
                     "All generic-project providers failed: "
                     "Capacity reservation denied: project_envelope_exhausted"
-                )
+                ),
+                "project_envelope_exhausted",
+            ),
+            (
+                StudioError(
+                    "No provider remains: insufficient pooled token quota "
+                    "or no healthy provider"
+                ),
+                "provider_capacity_unavailable",
+            ),
+            (
+                StudioError("Generic model call quota timed out"),
+                "provider_capacity_unavailable",
+            ),
+        ):
+            with self.subTest(reason=str(failure)), tempfile.TemporaryDirectory() as td:
+                root = Path(td)
+                calls = {"n": 0}
 
-            state = run_persistent_project(
-                "request.json",
-                root / "out",
-                str(root / "work"),
-                runner=lambda *a, **k: None,
-                deadline=100,
-                clock=lambda: 0,
-                run_once=run_once,
-                max_cycles=4,
-            )
-            self.assertEqual(calls["n"], 1)
-            self.assertEqual(state["status"], "active")
-            self.assertEqual(state["attempt"], 0)
-            self.assertTrue(state["transient_capacity_exhausted"])
+                def no_capacity(*args):
+                    calls["n"] += 1
+                    raise failure
+
+                state = run_persistent_project(
+                    "request.json",
+                    root / "out",
+                    str(root / "work"),
+                    runner=lambda *a, **k: None,
+                    deadline=100,
+                    clock=lambda: 0,
+                    run_once=no_capacity,
+                    max_cycles=4,
+                )
+                self.assertEqual(calls["n"], 1)
+                self.assertEqual(state["status"], "active")
+                self.assertEqual(state["attempt"], 0)
+                self.assertTrue(state["transient_capacity_exhausted"])
+                self.assertEqual(state["transient_capacity_reason"], reason)
+                self.assertEqual(load_goal(root / "out" / ".autonomy" / "goal.json")["attempt"], 0)
+
+                # Capacity becoming available on a subsequent worker session
+                # can still finish the original goal, without reauthorizing
+                # or resetting its model-attempt budget.
+                recovered = run_persistent_project(
+                    "request.json",
+                    root / "out",
+                    str(root / "work"),
+                    runner=lambda *a, **k: None,
+                    deadline=100,
+                    clock=lambda: 0,
+                    run_once=lambda *a: {
+                        "status": "complete",
+                        "report": {"status": "finished", "completion": {"finished": True}},
+                    },
+                    max_cycles=2,
+                )
+                self.assertEqual(recovered["status"], "complete")
+                self.assertEqual(recovered["attempt"], 1)
 
     def test_human_action_persists_terminal_state(self):
         with tempfile.TemporaryDirectory() as td:

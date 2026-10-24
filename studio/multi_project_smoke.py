@@ -53,7 +53,9 @@ def main() -> int:
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                     text=True,
-                    timeout=25 * 60,
+                    # Leave headroom for a 20-minute cold APK build plus
+                    # Flutter dependency, analyze and screenshot gates.
+                    timeout=35 * 60,
                 )
                 print(f"project-{index + 1}: exit={result.returncode} attempt={attempt + 1}")
                 print(result.stdout[-12000:])

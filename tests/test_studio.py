@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import subprocess
 from pathlib import Path
 import sys
 import tempfile
@@ -156,6 +157,34 @@ class StudioTests(unittest.TestCase):
         state, root, _ = self.run_fixture(sandbox=Failed)
         self.assertEqual(state['status'], 'repair_needed')
         self.assertFalse((root / 'out/app-debug.apk').exists())
+        # Docker may time out before its normal in-container chmod trailer.
+        # Simulate both ownership-recovery outcomes without running Docker.
+        for recovery_exit, expected in (
+            (0, 'Sandbox command timed out'),
+            (1, 'Sandbox command timed out; workspace ownership recovery failed'),
+        ):
+            with self.subTest(recovery_exit=recovery_exit):
+                with tempfile.TemporaryDirectory() as directory:
+                    fake_results = [
+                        subprocess.TimeoutExpired(cmd=['docker', 'run'], timeout=10),
+                        subprocess.CompletedProcess(args=['docker', 'rm'], returncode=0),
+                        subprocess.CompletedProcess(args=['docker', 'run'], returncode=recovery_exit),
+                    ]
+                    with patch('core.subprocess.run', side_effect=fake_results) as run_mock:
+                        with self.assertRaisesRegex(StudioError, expected):
+                            Sandbox(Path(directory)).run(
+                                ['flutter', 'analyze', '--no-pub'], timeout=10,
+                            )
+                    self.assertEqual(run_mock.call_count, 3)
+                    removal = run_mock.call_args_list[1].args[0]
+                    self.assertEqual(removal[:4], ['docker', 'rm', '-f', removal[3]])
+                    rescue = run_mock.call_args_list[2].args[0]
+                    self.assertIn('--network=none', rescue)
+                    self.assertIn('--cap-drop=ALL', rescue)
+                    self.assertEqual(rescue[-4:], ['chmod', '-R', 'a+rwX', '/app'])
+                    self.assertTrue(
+                        rescue[rescue.index('-v') + 1].endswith(':/app')
+                    )
     def test_visual_rejection_repairs(self):
         class Reject(FakeModel):
             def ask(self, role, context, screenshots=()):

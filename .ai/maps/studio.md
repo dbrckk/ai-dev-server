@@ -21055,6 +21055,9 @@ deadline = clock() + timeout_seconds
 ⋮----
 result = inspect_exact_commit_ci(github, commit_sha=commit_sha, branch=branch,
 ⋮----
+"""Expose the observed gate in the worker result without inferring success."""
+receipt = {"provider": "github_actions", "status": ci["status"],
+⋮----
 """Distinguish verified code edit from independently accepted delivery.
 
     A draft PR, published commit, or in-progress workflow does not make a

@@ -273,16 +273,22 @@ Status: active
 <!-- AUTO:START -->
 ## Automatic repository state
 
-Generated: 2026-10-24T15:16:23Z
+Generated: 2026-10-24T19:53:10Z
 
 ### Git
 - Branch: `main`
-- Head: `a29fffb867cb`
-- Commit date: 2026-10-24T11:16:05-04:00
-- Commit: fix(studio): recover timed-out Android builds and workspace permissions (#396)
+- Head: `fa2c2ef4505e`
+- Commit date: 2026-10-24T15:52:59-04:00
+- Commit: fix: retain exact-commit CI receipts in Production-OS results (#395)
 - Tracked files: 876
 
 ### Recently changed files
+- `studio/github_runner.py`
+- `studio/production_os_bounded_source_repair.py`
+- `studio/production_os_jumpy_source_repair.py`
+- `studio/target_ci_verification.py`
+- `tests/test_github_runner_persistent.py`
+- `tests/test_multi_engine_orchestrator.py`
 - `.github/workflows/studio-smoke.yml`
 - `studio/core.py`
 - `studio/multi_project_smoke.py`
@@ -290,7 +296,6 @@ Generated: 2026-10-24T15:16:23Z
 - `control/production-os-worker-canary.json`
 - `docs/production-os-pilot44.md`
 - `studio/autonomous_project.py`
-- `studio/github_runner.py`
 - `tests/test_autonomous_project.py`
 - `.github/workflows/mobile-studio.yml`
 - `.github/workflows/production-os-actions-worker.yml`
@@ -298,10 +303,6 @@ Generated: 2026-10-24T15:16:23Z
 - `control/production-os-diagnostics-kick.json`
 - `studio/production_os_provider_config.py`
 - `studio/provider_router.py`
-- `tests/test_production_os_live_diagnostics.py`
-- `studio/production_os_bounded_source_repair.py`
-- `studio/production_os_source_tasks.py`
-- `tests/test_multi_engine_orchestrator.py`
 
 ### Project signals
 - No common build descriptor detected

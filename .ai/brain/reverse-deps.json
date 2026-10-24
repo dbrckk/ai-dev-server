@@ -3986,6 +3986,7 @@
         "studio/run.py",
         "studio/source_delivery_checkpoint.py",
         "studio/target_ci_verification.py",
+        "tests/test_multi_engine_orchestrator.py",
         "tests/test_studio.py",
         "tests/test_unified_routing_score.py"
       ],
@@ -3998,7 +3999,7 @@
         "tests/test_production_os_worker_runtime.py"
       ],
       "in_degree": 6,
-      "out_degree": 10
+      "out_degree": 11
     },
     "studio/production_os_jumpy_source_repair.py": {
       "dependencies": [
@@ -4011,6 +4012,7 @@
         "studio/source_delivery_checkpoint.py",
         "studio/target_ci_verification.py",
         "tests/test_journeys.py",
+        "tests/test_multi_engine_orchestrator.py",
         "tests/test_studio.py",
         "tests/test_unified_routing_score.py"
       ],
@@ -4022,7 +4024,7 @@
         "tests/test_multi_engine_orchestrator.py"
       ],
       "in_degree": 5,
-      "out_degree": 11
+      "out_degree": 12
     },
     "studio/production_os_live_diagnostics.py": {
       "dependencies": [
@@ -4661,15 +4663,13 @@
       "out_degree": 0
     },
     "studio/repository_research_provider.py": {
-      "dependencies": [
-        "tests/test_multi_engine_orchestrator.py"
-      ],
+      "dependencies": [],
       "dependents": [
         "studio/github_runner.py",
         "tests/test_repository_research_provider.py"
       ],
       "in_degree": 2,
-      "out_degree": 1
+      "out_degree": 0
     },
     "studio/reputation_policy_check.py": {
       "dependencies": [
@@ -4743,8 +4743,7 @@
         "studio/repair_queue.py",
         "studio/safe_rewrite_learning.py",
         "studio/task_context.py",
-        "tests/test_journeys.py",
-        "tests/test_multi_engine_orchestrator.py"
+        "tests/test_journeys.py"
       ],
       "dependents": [
         "scripts/production-os-live-resume-proof.py",
@@ -4784,7 +4783,7 @@
         "tests/test_studio.py"
       ],
       "in_degree": 35,
-      "out_degree": 31
+      "out_degree": 30
     },
     "studio/run_cost_controller.py": {
       "dependencies": [],
@@ -7240,6 +7239,8 @@
         "studio/orchestrator.py",
         "studio/portfolio_scan.py",
         "studio/predictive_budget.py",
+        "studio/production_os_bounded_source_repair.py",
+        "studio/production_os_jumpy_source_repair.py",
         "studio/production_os_live_diagnostics.py",
         "studio/production_os_resume_objectives.py",
         "studio/production_os_source_tasks.py",
@@ -7249,9 +7250,7 @@
         "studio/project_engine.py",
         "studio/provider_probe.py",
         "studio/replacement_ci_policy_v11.py",
-        "studio/repo_maintenance.py",
-        "studio/repository_research_provider.py",
-        "studio/run.py"
+        "studio/repo_maintenance.py"
       ],
       "in_degree": 64,
       "out_degree": 12

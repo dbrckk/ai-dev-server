@@ -26906,6 +26906,9 @@ deadline = clock() + timeout_seconds
 ⋮----
 result = inspect_exact_commit_ci(github, commit_sha=commit_sha, branch=branch,
 ⋮----
+"""Expose the observed gate in the worker result without inferring success."""
+receipt = {"provider": "github_actions", "status": ci["status"],
+⋮----
 """Distinguish verified code edit from independently accepted delivery.
 
     A draft PR, published commit, or in-progress workflow does not make a
@@ -33007,6 +33010,11 @@ def completed_cycle(*args, **kwargs)
 ⋮----
 result = run(request, out, runner=lambda *a, **k: None,
 ⋮----
+# Explicit independent gate evidence must survive report -> summary.
+# A passing gate alone must not turn this blocked goal into success.
+⋮----
+receipt = {"provider": "github_actions", "status": ci_status,
+⋮----
 # An already-blocked goal skips run_once on a later worker.
 # Retain only its matching repository's durable source evidence.
 saved = {'status':'blocked', 'blocked_reason':'godot_preview_cycle_budget_exhausted',
@@ -35282,6 +35290,8 @@ result = continue_goal(root / "first")
 result = continue_goal(root / f"resume-{index}")
 ⋮----
 saved = load_checkpoint(out / ".autonomy/generic-execution-checkpoint.json")
+⋮----
+report = json.loads((out / "generic-report.json").read_text())
 ⋮----
 denied = run_persistent_project(
 ⋮----

@@ -1,16 +1,17 @@
 # Change impact
 
-Base: 79073c30813346b8004e7d0e24c179bde37e5db2
-Head: a29fffb867cb2de5671577c99145e879695432cc
+Base: 05ee394dc9d27ec801e2771efc610ec64e83c759
+Head: fa2c2ef4505e5a633e51f5f2b5c91ae4b441beb6
 
 ## Changed files
-- M .github/workflows/studio-smoke.yml
-- M studio/core.py
-- M studio/multi_project_smoke.py
-- M tests/test_studio.py
+- M studio/github_runner.py
+- M studio/production_os_bounded_source_repair.py
+- M studio/production_os_jumpy_source_repair.py
+- M studio/target_ci_verification.py
+- M tests/test_github_runner_persistent.py
+- M tests/test_multi_engine_orchestrator.py
 
 ## Affected areas
-- .github
 - studio
 - tests
 
